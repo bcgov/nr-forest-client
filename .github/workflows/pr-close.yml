@@ -1,0 +1,67 @@
+name: Cleanup
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+      - dev
+
+env:
+  NAME: nrfl
+
+jobs:
+  cleanup-openshift:
+    name: Cleanup OpenShift
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+      - uses: actions/checkout@v2
+      - name: Remove OpenShift artifacts
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }}
+          # Remove old build runs, build pods and deployment pods
+          oc delete all,pvc,secret -l app=${{ env.NAME }}-${{ github.event.number }}
+          oc delete configmap ${{ env.NAME }}-${{ github.event.number }}-frontend
+
+  promote-images:
+    name: Promote DEV images to TEST
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Promote Backend Image to TEST
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GHCR_TOKEN }}
+          target: ${{ github.event.number }}-backend
+          tags: |
+            test-backend
+      - name: Promote Frontend Image to TEST
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GHCR_TOKEN }}
+          target: ${{ github.event.number }}-frontend
+          tags: |
+            test-frontend
+
+  merge-notification:
+    name: Merge Notification
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Pre-merge update
+        uses: mshick/add-pr-comment@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
+        with:
+          allow-repeats: false
+          message: |
+            Your Pull Request code is being promoted!  Please follow the link below.
+            [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)

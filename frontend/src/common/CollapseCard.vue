@@ -1,0 +1,89 @@
+<template>
+  <b-card no-body class="mb-1">
+    <b-card-header
+      header-tag="header"
+      :id="'header-' + id"
+      role="tab"
+      style="display: flex"
+      @click="handleClick"
+    >
+      <div
+        :class="visible ? null : 'collapsed'"
+        :aria-expanded="visible ? 'true' : 'false'"
+        :aria-controls="id"
+        style="
+          width: 100%;
+          margin-top: 8px;
+          margin-bottom: 8px;
+          font-weight: bold;
+          display: flex;
+        "
+      >
+        <div v-if="!alwaysOpen">
+          <b-icon-arrow-up-short
+            v-if="visible"
+            style="margin-bottom: 2px; margin-right: 2px"
+          />
+          <b-icon-arrow-down-short
+            v-else
+            style="margin-bottom: 2px; margin-right: 2px"
+          />
+        </div>
+        {{ title }}
+      </div>
+    </b-card-header>
+    <b-collapse :id="id" role="tabpanel" v-model="visible">
+      <b-card-body style="margin: 16px 10px 16px 10px">
+        <slot />
+        <b-button
+          v-if="nextId"
+          variant="primary"
+          :style="'background-color:' + primary + ';margin-top: 16px'"
+          @click="openNext"
+          >{{ nextText }}</b-button
+        >
+      </b-card-body>
+    </b-collapse>
+  </b-card>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+import { primary } from "../utils/color";
+
+export default defineComponent({
+  name: "CollapseCard",
+  props: {
+    title: String,
+    id: String,
+    defaultOpen: { type: Boolean, default: false },
+    nextId: { type: String || null, default: null }, // id of the collapse content to open when click next button
+    nextText: { type: String, default: "" }, // text on the next button
+    alwaysOpen: { type: Boolean, default: false },
+  },
+  data() {
+    return {
+      visible: this.defaultOpen,
+      primary,
+    };
+  },
+  methods: {
+    openNext() {
+      if (
+        !document
+          .getElementById(this.nextId.slice(7)) // remove the "header-" part in the nextId, the rest is the child id
+          .classList.contains("show")
+      ) {
+        document.getElementById(this.nextId).click();
+      }
+    },
+    handleClick() {
+      if (!this.alwaysOpen) {
+        this.visible = !this.visible;
+      }
+    },
+  },
+});
+</script>
+
+<style scoped></style>

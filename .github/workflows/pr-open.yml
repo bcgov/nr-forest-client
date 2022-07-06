@@ -1,0 +1,317 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+
+env:
+  REGISTRY: ghcr.io
+  NAME: nrfl
+
+jobs:
+  build-backend:
+    name: Backend Image Build
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    env:
+      TRIGGERS: ('backend/' '.github/openshift/deploy.backend.yml')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check and process modified files
+        id: check
+        run: |
+          # Fetch main to diff against
+          git fetch origin main:refs/remotes/origin/master
+
+          # Trigger build if diff matches any triggers
+          TRIGGERS=${{ env.TRIGGERS }}
+          while read -r check
+          do
+              for t in "${TRIGGERS[@]}"; do
+                  if [[ "${check}" =~ "${t}" ]]
+                  then
+                      # Output build=true for next steps
+                      echo "::set-output name=build::true"
+                      echo -e "${t}\n --> ${check}\n"
+                      exit 0
+                  fi
+              done
+          done < <(git diff origin/main --name-only)
+          echo "Container build not required"
+
+      - if: steps.check.outputs.build == 'true'
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - if: steps.check.outputs.build == 'true'
+        name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - if: steps.check.outputs.build == 'true'
+        name: Log in to the Container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - if: steps.check.outputs.build == 'true'
+        name: Build and push backend Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./backend/
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-backend
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - if: steps.check.outputs.build != 'true'
+        name: Recycle/regag PROD Backend Image
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          repository: ${{ github.repository }}
+          target: prod-backend
+          tags: |
+            ${{ github.event.number }}-backend
+
+  build-frontend:
+    name: Frontend Image Build
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    env:
+      TRIGGERS: ('frontend/' '.github/openshift/deploy.frontend.yml')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check and process modified files
+        id: check
+        run: |
+          # Fetch main to diff against
+          git fetch origin main:refs/remotes/origin/master
+          # Trigger build if diff matches any triggers
+          TRIGGERS=${{ env.TRIGGERS }}
+          while read -r check
+          do
+              for t in "${TRIGGERS[@]}"; do
+                  if [[ "${check}" =~ "${t}" ]]
+                  then
+                      # Output build=true for next steps
+                      echo "::set-output name=build::true"
+                      echo -e "${t}\n --> ${check}\n"
+                      exit 0
+                  fi
+              done
+          done < <(git diff origin/main --name-only)
+          echo "Container build not required"
+
+      - if: steps.check.outputs.build == 'true'
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - if: steps.check.outputs.build == 'true'
+        name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - if: steps.check.outputs.build == 'true'
+        name: Log in to the Container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - if: steps.check.outputs.build == 'true'
+        name: Build and push Frontend Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./frontend/
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-frontend
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - if: steps.check.outputs.build != 'true'
+        name: Recycle/regag PROD Frontend Image
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          repository: ${{ github.repository }}
+          target: prod-frontend
+          tags: |
+            ${{ github.event.number }}-frontend
+
+  tests-backend:
+    name: Backend Unit Tests
+    if: needs.build-backend.outputs.build == 'true'
+    needs:
+      - deploy-dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Tests
+        run: |
+          cd backend
+          npm ci
+          npm test
+
+      - name: Report code coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          title: Backend coverage report
+          delete-old-comments: true
+          github-token: ${{ secrets.GHCR_TOKEN }}
+          lcov-file: ./backend/coverage/lcov.info
+
+  tests-frontend:
+    name: Frontend Unit Tests
+    if: needs.build-frontend.outputs.build == 'true'
+    needs:
+      - deploy-dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Tests
+        run: |
+          cd frontend
+          npm ci
+          npm test
+
+      - name: Report code coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          title: Frontend coverage report
+          delete-old-comments: true
+          github-token: ${{ secrets.GHCR_TOKEN }}
+          lcov-file: ./frontend/coverage/lcov.info
+
+  # sonarcloud:
+  #   name: Static Analysis
+  #   needs:
+  #     - deploy-dev
+  #   if: needs.build-backend.outputs.build == 'true' || needs.build-frontend.outputs.build == 'true'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       # Disable shallow clone for SonarCloud analysis
+  #       with:
+  #         fetch-depth: 0
+
+  #     - name: SonarCloud Scan
+  #       uses: SonarSource/sonarcloud-github-action@master
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }} # Needed to get PR information, if any
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #       with:
+  #         args: >
+  #           -Dsonar.exclusions=**/test/**
+  #           -Dsonar.organization=bcgov-sonarcloud
+  #           -Dsonar.project.monorepo.enabled=true
+  #           -Dsonar.projectKey=greenfield-template
+  #           -Dsonar.sources=backend,frontend
+  #           -Dsonar.test=**/test
+
+  deploy-dev:
+    name: DEV Deployment
+    if: needs.build-backend.outputs.build == 'true' || needs.build-frontend.outputs.build == 'true'
+    needs:
+      - build-backend
+      - build-frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: dev
+    env:
+      ZONE: ${{ github.event.number }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy
+        run: |
+          # Login to OpenShift and select project
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }}
+
+          # Create frontend config (Remove the old one if exists)
+          oc delete configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend 2> /dev/null \
+            || true && echo "No existing frontend config"
+          oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
+            --from-literal=config.js="const config = (() => { return { VITE_BACKEND_URL: 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca'}; })();"
+
+          # Database uses a default build
+          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} | oc apply -f -
+
+          # Clean previous image, if rebuilding
+          if [ ${{ needs.build-backend.outputs.build == 'true' }} ]
+          then
+            # Clear stale images for import/replacement
+            oc delete is ${{ env.NAME }}-${{ env.ZONE }}-backend || \
+              echo "No previously imported images have been found"
+          fi
+
+          # Process and apply template  
+          oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-backend \
+            -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
+            -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
+            -p EMAIL_TOKEN_URL='https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
+            -p EMAIL_API_URL='https://ches-dev.apps.silver.devops.gov.bc.ca/api/v1' \
+            -p NODE_ENV='development' | oc apply -f -
+
+          # Clean previous image, if rebuilding
+          if [ ${{ needs.build-backend.outputs.build == 'true' }} ]
+          then
+            # Clear stale images for import/replacement
+            oc delete is ${{ env.NAME }}-${{ env.ZONE }}-frontend || \
+              echo "No previously imported images have been found"
+          fi
+
+          # Process and apply template
+          oc process -f .github/openshift/deploy.frontend.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-frontend | oc apply -f -
+
+          # Follow any active rollouts (see deploymentconfigs)
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-database -w
+
+          # Run database migration
+          oc exec dc/${{ env.NAME }}-${{ env.ZONE }}-database -- psql -d ${{ env.NAME }} -U ${{ env.NAME }} -c "$(cat backend/src/databasescripts/fsa.sql)"
+
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-backend -w
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-frontend -w
+
+      - name: DEV Deployment update
+        uses: mshick/add-pr-comment@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
+        with:
+          allow-repeats: false
+          message: |
+            DEV deployments have completed successfully!
+            Backend: [https://${{ env.NAME }}-${{ github.event.number }}-backend.apps.silver.devops.gov.bc.ca/]()
+            Frontend: [https://${{ env.NAME }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca/]()
