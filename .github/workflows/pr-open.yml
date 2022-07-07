@@ -49,6 +49,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
+          token: ${{ secrets.GHCR_TOKEN }}
           target: prod-backend
           tags: |
             ${{ github.event.number }}-backend
@@ -91,6 +92,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
+          token: ${{ secrets.GHCR_TOKEN }}
           target: prod-frontend
           tags: |
             ${{ github.event.number }}-frontend
