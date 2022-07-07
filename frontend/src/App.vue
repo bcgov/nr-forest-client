@@ -2,7 +2,7 @@
   <div>
     <MainHeader />
     <b-container>
-      Hello World
+      Hello World !
     </b-container>
   </div>
 </template>
