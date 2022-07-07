@@ -55,6 +55,41 @@ jobs:
   #     with:
   #       sarif_file: snyk.sarif
 
+  # sonarcloud:
+  #   name: Static Analysis
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       # Disable shallow clone for SonarCloud analysis
+  #       with:
+  #         fetch-depth: 0
+
+  #     - name: Backend Tests
+  #       run: |
+  #         cd frontend
+  #         npm ci
+  #         npm run test:cov
+  #     - name: Frontend Tests
+  #       run: |
+  #         cd frontend
+  #         npm ci
+  #         npm run test:cov
+  #     - name: SonarCloud Scan
+  #       uses: SonarSource/sonarcloud-github-action@master
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #       with:
+  #         args: >
+  #           -Dsonar.exclusions=**/test/**,.github/**/*
+  #           -Dsonar.organization=bcgov-sonarcloud
+  #           -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info,frontend/coverage/lcov.info
+  #           -Dsonar.cobertura.reportPaths=backend/coverage/cobertura-coverage.xml,frontend/coverage/cobertura-coverage.xml
+  #           -Dsonar.project.monorepo.enabled=true
+  #           -Dsonar.projectKey=greenfield-template
+  #           -Dsonar.sources=backend,frontend
+  #           -Dsonar.tests=backend/test,frontend/test
+
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy-backend:
     name: Backend Image Report
@@ -226,7 +261,7 @@ jobs:
         with:
           target: https://${{ env.NAME }}-test-backend.apps.silver.devops.gov.bc.ca/
           cmd_options: "-a"
-          allow_issue_writing: true
+          allow_issue_writing: false
           fail_action: false
 
   zap-frontend:
@@ -243,7 +278,7 @@ jobs:
         with:
           target: https://${{ env.NAME }}-test-frontend.apps.silver.devops.gov.bc.ca/
           cmd_options: "-a"
-          allow_issue_writing: true
+          allow_issue_writing: false
           fail_action: false
 
   deploy-prod:
@@ -311,3 +346,23 @@ jobs:
               || true && echo "Rollout in progress"
             oc logs -f dc/${{ env.NAME }}-${{ env.ZONE }}-dbbackup
           fi
+
+      - name: Promote Backend Image to PROD
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GHCR_TOKEN }}
+          target: ${{ env.PREV }}-backend
+          tags: |
+            prod-backend
+
+      - name: Promote Frontend Image to PROD
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GHCR_TOKEN }}
+          target: ${{ env.PREV }}-frontend
+          tags: |
+            prod-frontend

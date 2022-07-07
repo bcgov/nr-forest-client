@@ -34,27 +34,6 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  # # https://github.com/snyk/snyk
-  # snyk:
-  #   name: Dependency Report
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Checkout repository
-  #     uses: actions/checkout@v2
-
-  #   - name: Run Snyk to check for vulnerabilities
-  #     uses: snyk/actions/node@master
-  #     continue-on-error: true # To make sure that SARIF upload gets called
-  #     env:
-  #       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-  #     with:
-  #       args: --all-projects --severity-threshold=high --sarif-file-output=snyk.sarif
-
-  #   - name: Upload result to GitHub Code Scanning
-  #     uses: github/codeql-action/upload-sarif@v2
-  #     with:
-  #       sarif_file: snyk.sarif
-
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy-backend:
     name: Backend Image Report
@@ -226,7 +205,7 @@ jobs:
         with:
           target: https://${{ env.NAME }}-test-backend.apps.silver.devops.gov.bc.ca/
           cmd_options: "-a"
-          allow_issue_writing: true
+          allow_issue_writing: false
           fail_action: false
 
   zap-frontend:
@@ -243,5 +222,5 @@ jobs:
         with:
           target: https://${{ env.NAME }}-test-frontend.apps.silver.devops.gov.bc.ca/
           cmd_options: "-a"
-          allow_issue_writing: true
+          allow_issue_writing: false
           fail_action: false
