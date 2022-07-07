@@ -38,31 +38,31 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-old-growth:prod-backend
-  - name: EMAIL_USERNAME
-    description: CHES service client
-    required: true
-  - name: EMAIL_PASSWORD
-    description: CHES service client password
-    required: true
-  - name: EMAIL_TOKEN_URL
-    description: CHES authentication url
-    required: true
-  - name: EMAIL_API_URL
-    description: CHES email api url
-    required: true
+  # - name: EMAIL_USERNAME
+  #   description: CHES service client
+  #   required: true
+  # - name: EMAIL_PASSWORD
+  #   description: CHES service client password
+  #   required: true
+  # - name: EMAIL_TOKEN_URL
+  #   description: CHES authentication url
+  #   required: true
+  # - name: EMAIL_API_URL
+  #   description: CHES email api url
+  #   required: true
   - name: NODE_ENV
     description: environment mode
     required: true
 objects:
-  - apiVersion: v1
-    kind: Secret
-    metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}
-      labels:
-        app: ${NAME}-${ZONE}
-    stringData:
-      email-username: "${EMAIL_USERNAME}"
-      email-password: "${EMAIL_PASSWORD}"
+  # - apiVersion: v1
+  #   kind: Secret
+  #   metadata:
+  #     name: ${NAME}-${ZONE}-${COMPONENT}
+  #     labels:
+  #       app: ${NAME}-${ZONE}
+  #   stringData:
+  #     email-username: "${EMAIL_USERNAME}"
+  #     email-password: "${EMAIL_PASSWORD}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -133,22 +133,22 @@ objects:
                   value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
-                - name: EMAIL_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: email-username
-                - name: EMAIL_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: email-password
-                - name: EMAIL_TOKEN_URL
-                  value: ${EMAIL_TOKEN_URL}
-                - name: EMAIL_API_URL
-                  value: ${EMAIL_API_URL}
-                - name: EMAIL_FROM
-                  value: "FSA_donotreply@gov.bc.ca"
+                # - name: EMAIL_USERNAME
+                #   valueFrom:
+                #     secretKeyRef:
+                #       name: ${NAME}-${ZONE}-${COMPONENT}
+                #       key: email-username
+                # - name: EMAIL_PASSWORD
+                #   valueFrom:
+                #     secretKeyRef:
+                #       name: ${NAME}-${ZONE}-${COMPONENT}
+                #       key: email-password
+                # - name: EMAIL_TOKEN_URL
+                #   value: ${EMAIL_TOKEN_URL}
+                # - name: EMAIL_API_URL
+                #   value: ${EMAIL_API_URL}
+                # - name: EMAIL_FROM
+                #   value: "FSA_donotreply@gov.bc.ca"
                 - name: NODE_ENV
                   value: ${NODE_ENV}
 
