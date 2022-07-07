@@ -224,11 +224,11 @@ jobs:
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} | oc apply -f -
           oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-backend \
-            -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
-            -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
-            -p EMAIL_TOKEN_URL='https://oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
-            -p EMAIL_API_URL='https://ches-dev.apps.silver.devops.gov.bc.ca/api/v1' \
             -p NODE_ENV='development' | oc apply -f -
+            # -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
+            # -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
+            # -p EMAIL_TOKEN_URL='https://oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
+            # -p EMAIL_API_URL='https://ches-dev.apps.silver.devops.gov.bc.ca/api/v1' | oc apply -f -
           oc process -f .github/openshift/deploy.frontend.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-frontend | oc apply -f -
 
@@ -281,88 +281,88 @@ jobs:
           allow_issue_writing: false
           fail_action: false
 
-  deploy-prod:
-    name: PROD Deployment
-    needs:
-      - zap-backend
-      - zap-frontend
-    runs-on: ubuntu-latest
-    environment:
-      name: prod
-    env:
-      ZONE: prod
-      PREV: test
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
+  # deploy-prod:
+  #   name: PROD Deployment
+  #   needs:
+  #     - zap-backend
+  #     - zap-frontend
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: prod
+  #   env:
+  #     ZONE: prod
+  #     PREV: test
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Deploy
+  #       run: |
+  #         # Login to OpenShift and select project
+  #         oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+  #         oc project ${{ secrets.OC_NAMESPACE }}
 
-          # Clear stale images for import/replacement
-          if [ $(oc get is -l app=${{ env.NAME }}-${{ env.ZONE }} -o name | grep -v database | wc -l) -gt 0 ]; then
-            oc delete is -l app=${{ env.NAME }}-${{ env.ZONE }}
-          fi
+  #         # Clear stale images for import/replacement
+  #         if [ $(oc get is -l app=${{ env.NAME }}-${{ env.ZONE }} -o name | grep -v database | wc -l) -gt 0 ]; then
+  #           oc delete is -l app=${{ env.NAME }}-${{ env.ZONE }}
+  #         fi
 
-          # Cancel db backup rollout if exists
-          if [ $(oc get dc -l app=backup-container -o name | wc -l) -gt 0 ]; then
-            oc rollout cancel dc/${{ env.NAME }}-${{ env.ZONE }}-dbbackup 2> /dev/null \
-              || true && echo "No rollout in progress"
-          fi
+  #         # Cancel db backup rollout if exists
+  #         if [ $(oc get dc -l app=backup-container -o name | wc -l) -gt 0 ]; then
+  #           oc rollout cancel dc/${{ env.NAME }}-${{ env.ZONE }}-dbbackup 2> /dev/null \
+  #             || true && echo "No rollout in progress"
+  #         fi
 
-          # Create frontend config (Remove the old one if exists)
-          oc delete configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend 2> /dev/null \
-            || true && echo "No existing frontend config"
-          oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
-            --from-literal=config.js="const config = (() => { return { VITE_BACKEND_URL: 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca'}; })();"
+  #         # Create frontend config (Remove the old one if exists)
+  #         oc delete configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend 2> /dev/null \
+  #           || true && echo "No existing frontend config"
+  #         oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
+  #           --from-literal=config.js="const config = (() => { return { VITE_BACKEND_URL: 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca'}; })();"
 
-          # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} | oc apply -f -
-          oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-backend \
-            -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
-            -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
-            -p EMAIL_TOKEN_URL='https://oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
-            -p EMAIL_API_URL='https://ches.apps.silver.devops.gov.bc.ca/api/v1' \
-            -p NODE_ENV='production' | oc apply -f -
-          oc process -f .github/openshift/deploy.frontend.yml -p ZONE=${{ env.ZONE }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-frontend | oc apply -f -
+  #         # Process and apply deployment templates
+  #         oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} | oc apply -f -
+  #         oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
+  #           -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-backend \
+  #           -p NODE_ENV='production' | oc apply -f -
+  #           # -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
+  #           # -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
+  #           # -p EMAIL_TOKEN_URL='https://oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
+  #           # -p EMAIL_API_URL='https://ches.apps.silver.devops.gov.bc.ca/api/v1' | oc apply -f -
+  #         oc process -f .github/openshift/deploy.frontend.yml -p ZONE=${{ env.ZONE }} \
+  #           -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-frontend | oc apply -f -
 
-          # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-database -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-backend -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-frontend -w
+  #         # Follow any active rollouts (see deploymentconfigs)
+  #         oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-database -w
+  #         oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-backend -w
+  #         oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-frontend -w
 
-          # Remove completed build runs, build pods and deployment pods
-          for p in $(oc get po | grep "Completed" | awk '{print $1}')
-          do
-            oc delete po ${p}
-          done
+  #         # Remove completed build runs, build pods and deployment pods
+  #         for p in $(oc get po | grep "Completed" | awk '{print $1}')
+  #         do
+  #           oc delete po ${p}
+  #         done
 
-          # Restart db backup rollout if exists
-          if [ $(oc get dc -l app=backup-container -o name | wc -l) -gt 0 ]; then
-            oc rollout latest dc/${{ env.NAME }}-${{ env.ZONE }}-dbbackup 2> /dev/null \
-              || true && echo "Rollout in progress"
-            oc logs -f dc/${{ env.NAME }}-${{ env.ZONE }}-dbbackup
-          fi
+  #         # Restart db backup rollout if exists
+  #         if [ $(oc get dc -l app=backup-container -o name | wc -l) -gt 0 ]; then
+  #           oc rollout latest dc/${{ env.NAME }}-${{ env.ZONE }}-dbbackup 2> /dev/null \
+  #             || true && echo "Rollout in progress"
+  #           oc logs -f dc/${{ env.NAME }}-${{ env.ZONE }}-dbbackup
+  #         fi
 
-      - name: Promote Backend Image to PROD
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GHCR_TOKEN }}
-          target: ${{ env.PREV }}-backend
-          tags: |
-            prod-backend
+  #     - name: Promote Backend Image to PROD
+  #       uses: shrink/actions-docker-registry-tag@v2
+  #       with:
+  #         registry: ghcr.io
+  #         repository: ${{ github.repository }}
+  #         token: ${{ secrets.GHCR_TOKEN }}
+  #         target: ${{ env.PREV }}-backend
+  #         tags: |
+  #           prod-backend
 
-      - name: Promote Frontend Image to PROD
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GHCR_TOKEN }}
-          target: ${{ env.PREV }}-frontend
-          tags: |
-            prod-frontend
+  #     - name: Promote Frontend Image to PROD
+  #       uses: shrink/actions-docker-registry-tag@v2
+  #       with:
+  #         registry: ghcr.io
+  #         repository: ${{ github.repository }}
+  #         token: ${{ secrets.GHCR_TOKEN }}
+  #         target: ${{ env.PREV }}-frontend
+  #         tags: |
+  #           prod-frontend

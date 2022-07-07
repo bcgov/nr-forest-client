@@ -2,7 +2,7 @@
   <div>
     <MainHeader />
     <b-container>
-      <NewFormSubmission />
+      Hello World !
     </b-container>
   </div>
 </template>
@@ -10,13 +10,11 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import MainHeader from "./common/MainHeader.vue";
-import NewFormSubmission from "./pages/NewFormSubmission.vue";
 
 export default defineComponent({
   name: "App",
   components: {
     MainHeader,
-    NewFormSubmission,
   },
   data() {
     return {};

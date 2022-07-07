@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: ${NAME}
   annotations:
-    description: "Nr-Forest-Client"
+    description: "NR-Forest-Client"
     tags: "nrfl"
     iconClass: icon-js
 objects:
