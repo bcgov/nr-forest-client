@@ -358,11 +358,12 @@ jobs:
           # Process and apply template  
           oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-backend \
+            -p NODE_ENV='development' | oc apply -f -
             # -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
             # -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
             # -p EMAIL_TOKEN_URL='https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
-            # -p EMAIL_API_URL='https://ches-dev.apps.silver.devops.gov.bc.ca/api/v1' \
-            -p NODE_ENV='development' | oc apply -f -
+            # -p EMAIL_API_URL='https://ches-dev.apps.silver.devops.gov.bc.ca/api/v1' | oc apply -f -
+           
 
           # Clean previous image, if rebuilding
           if [ ${{ needs.build-backend.outputs.build == 'true' }} ]
