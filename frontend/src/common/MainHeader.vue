@@ -7,7 +7,7 @@
           alt="Go to the Government of British Columbia website"
         />
       </a>
-      <h1>FSA - Old Growth</h1>
+      <h1>FSA - Forest Client</h1>
     </div>
   </header>
 </template>
