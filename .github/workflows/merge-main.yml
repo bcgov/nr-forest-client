@@ -224,11 +224,11 @@ jobs:
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} | oc apply -f -
           oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-backend \
-            -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
-            -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
-            -p EMAIL_TOKEN_URL='https://oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
-            -p EMAIL_API_URL='https://ches-dev.apps.silver.devops.gov.bc.ca/api/v1' \
             -p NODE_ENV='development' | oc apply -f -
+            # -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
+            # -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
+            # -p EMAIL_TOKEN_URL='https://oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
+            # -p EMAIL_API_URL='https://ches-dev.apps.silver.devops.gov.bc.ca/api/v1' | oc apply -f -
           oc process -f .github/openshift/deploy.frontend.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-frontend | oc apply -f -
 
@@ -321,11 +321,11 @@ jobs:
   #         oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} | oc apply -f -
   #         oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
   #           -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-backend \
-  #           -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
-  #           -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
-  #           -p EMAIL_TOKEN_URL='https://oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
-  #           -p EMAIL_API_URL='https://ches.apps.silver.devops.gov.bc.ca/api/v1' \
   #           -p NODE_ENV='production' | oc apply -f -
+  #           # -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
+  #           # -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
+  #           # -p EMAIL_TOKEN_URL='https://oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
+  #           # -p EMAIL_API_URL='https://ches.apps.silver.devops.gov.bc.ca/api/v1' | oc apply -f -
   #         oc process -f .github/openshift/deploy.frontend.yml -p ZONE=${{ env.ZONE }} \
   #           -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-frontend | oc apply -f -
 
