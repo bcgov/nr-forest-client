@@ -1,4 +1,4 @@
-export interface PublicClient {
+export interface ClientPublic {
   CLIENT_NAME: string;
   CLIENT_NUMBER: string;
   CLIENT_STATUS_CODE: string;

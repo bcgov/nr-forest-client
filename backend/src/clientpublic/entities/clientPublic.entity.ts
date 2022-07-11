@@ -1,7 +1,7 @@
 import { BaseEntity, ViewColumn, ViewEntity, PrimaryColumn } from 'typeorm';
 
 @ViewEntity({ name: 'V_CLIENT_PUBLIC' })
-export class PublicClientEntity extends BaseEntity {
+export class ClientPublicEntity extends BaseEntity {
   @ViewColumn({ name: 'CLIENT_NAME' })
   CLIENT_NAME: string;
 
