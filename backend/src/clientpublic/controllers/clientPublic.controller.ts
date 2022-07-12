@@ -1,5 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery } from '@nestjs/swagger';
 import { ClientPublicService } from '../services/clientPublic.service';
 
 @ApiTags('Client')
@@ -13,6 +14,16 @@ export class ClientPublicController {
   }
 
   @Get('/findBy')
+  @ApiQuery({
+    name: 'clientNumber',
+    required: false,
+    type: String,
+  })
+  @ApiQuery({
+    name: 'clientName',
+    required: false,
+    type: String,
+  })
   findBy(
     @Query('clientNumber') clientNumber?: string,
     @Query('clientName') clientName?: string,
