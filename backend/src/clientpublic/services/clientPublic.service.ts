@@ -11,17 +11,17 @@ export class ClientPublicService {
     private clientPublicRepository: Repository<ClientPublicEntity>,
   ) {}
 
-  findByClientNumber(clientNumber: string): Promise<ClientPublic[]> {
+  findByClientNumber(clientNumber: number): Promise<ClientPublic[]> {
     return this.clientPublicRepository.find({
-      where: { CLIENT_NUMBER: clientNumber },
+      where: { clientNumber: clientNumber },
     });
   }
 
   // the full non individual client list is too long, currently only set to return 10
-  findAllNonIndividualClient(): Promise<ClientPublic[]> {
+  findAllNonIndividualClients(): Promise<ClientPublic[]> {
     return this.clientPublicRepository
       .createQueryBuilder('V_CLIENT_PUBLIC')
-      .where('V_CLIENT_PUBLIC.CLIENT_TYPE_CODE!=:CLIENT_TYPE_CODE', {
+      .where('V_CLIENT_PUBLIC.CLIENT_TYPE_CODE != :CLIENT_TYPE_CODE', {
         CLIENT_TYPE_CODE: 'I',
       })
       .take(10)
