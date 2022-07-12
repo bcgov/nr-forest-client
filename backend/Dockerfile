@@ -1,6 +1,15 @@
 # RedHat UBI 8 with nodejs 16
 FROM registry.access.redhat.com/ubi8/ubi
-RUN dnf module install -y nodejs:16
+RUN dnf module install -y nodejs:16 
+
+# Install required packages for oracle client
+RUN dnf install -y wget unzip libaio
+RUN mkdir -p /opt/oracle && \
+    cd /opt/oracle && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linuxx64.zip && \
+    unzip instantclient-basiclite-linuxx64.zip && rm -f instantclient-basiclite-linuxx64.zip && \
+    cd /opt/oracle/instantclient* && rm -f *jdbc* *occi* *mysql* *mql1* *ipc1* *jar uidrvci genezi adrci && \
+    echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf && ldconfig
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
