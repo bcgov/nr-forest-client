@@ -1,5 +1,5 @@
 export interface ClientPublic {
-  clientNumber: number;
+  clientNumber: string;
   clientName: string;
   clientStatusCode: string;
   clientTypeCode: string;

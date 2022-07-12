@@ -11,7 +11,7 @@ export class ClientPublicService {
     private clientPublicRepository: Repository<ClientPublicEntity>,
   ) {}
 
-  findByClientNumber(clientNumber: number): Promise<ClientPublic[]> {
+  findByClientNumber(clientNumber: string): Promise<ClientPublic[]> {
     return this.clientPublicRepository.find({
       where: { clientNumber: clientNumber },
     });

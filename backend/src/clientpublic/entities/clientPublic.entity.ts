@@ -4,7 +4,7 @@ import { BaseEntity, ViewColumn, ViewEntity, PrimaryColumn } from 'typeorm';
 export class ClientPublicEntity extends BaseEntity {
 
   @PrimaryColumn({ name: 'CLIENT_NUMBER' })
-  clientNumber: number;
+  clientNumber: string;
 
   @ViewColumn({ name: 'CLIENT_NAME' })
   clientName: string;
