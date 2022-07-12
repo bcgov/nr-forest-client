@@ -1,20 +1,28 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ClientPublicService } from '../services/clientPublic.service';
 
-@ApiTags('Client Public')
-@Controller('clientPublic')
+@ApiTags('Client')
+@Controller('client')
 export class ClientPublicController {
   constructor(private readonly clientPublicService: ClientPublicService) {}
 
-  @Get('/client/:clientNumber')
-  findByClientNumber(@Param('clientNumber') clientNumber: string) {
+  @Get('/clientNumber')
+  findByClientNumber(@Query('clientNumber') clientNumber: string) {
     return this.clientPublicService.findByClientNumber(clientNumber);
   }
 
+  @Get('/findBy')
+  findBy(
+    @Query('clientNumber') clientNumber?: string,
+    @Query('clientName') clientName?: string,
+  ) {
+    return this.clientPublicService.findBy(clientNumber, clientName);
+  }
+
   // need to add limit on this, the full client list is too long to get
-  @Get('/clients/nonIndividual')
-  findAllNonIndividualClient() {
-    return this.clientPublicService.findAllNonIndividualClient();
+  @Get('/allNonIndividualClients')
+  findAllNonIndividualClients() {
+    return this.clientPublicService.findAllNonIndividualClients();
   }
 }
