@@ -8,7 +8,7 @@ export class ClientPublicController {
   constructor(private readonly clientPublicService: ClientPublicService) {}
 
   @Get('/client/:clientNumber')
-  findByClientNumber(@Param('clientNumber') clientNumber: number) {
+  findByClientNumber(@Param('clientNumber') clientNumber: string) {
     return this.clientPublicService.findByClientNumber(clientNumber);
   }
 
