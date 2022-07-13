@@ -38,4 +38,5 @@ export class ClientPublicEntity extends BaseEntity {
   })
   @ViewColumn({ name: 'CLIENT_TYPE_CODE' })
   clientTypeCode: string;
+
 }

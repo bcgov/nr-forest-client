@@ -8,11 +8,6 @@ import { ClientPublicService } from '../services/clientPublic.service';
 export class ClientPublicController {
   constructor(private readonly clientPublicService: ClientPublicService) {}
 
-  @Get('/clientNumber')
-  findByClientNumber(@Query('clientNumber') clientNumber: string) {
-    return this.clientPublicService.findByClientNumber(clientNumber);
-  }
-
   @Get('/findBy')
   @ApiQuery({
     name: 'clientNumber',
