@@ -165,23 +165,18 @@ jobs:
             --from-literal=config.js="const config = (() => { return { VITE_BACKEND_URL: 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca'}; })();"
 
           # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} | oc apply -f -
           oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-backend \
-            -p NODE_ENV='development' | oc apply -f -
-            # -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
-            # -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
-            # -p EMAIL_TOKEN_URL='https://oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
-            # -p EMAIL_API_URL='https://ches-dev.apps.silver.devops.gov.bc.ca/api/v1' | oc apply -f -
+            -p NODE_ENV='development' \
+            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USER }} \
+            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }} \
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }} \
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }} \
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }} | oc apply -f -
           oc process -f .github/openshift/deploy.frontend.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-frontend | oc apply -f -
 
           # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-database -w
-
-          # Run database migration
-          oc exec dc/${{ env.NAME }}-${{ env.ZONE }}-database -- psql -d ${{ env.NAME }} -U ${{ env.NAME }} -c "$(cat backend/src/databasescripts/fsa.sql)"
-
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-backend -w
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-frontend -w
 
