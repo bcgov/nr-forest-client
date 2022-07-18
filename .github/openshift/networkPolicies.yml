@@ -4,7 +4,7 @@ metadata:
   name: ${NAME}
   annotations:
     description: "NR-Forest-Client"
-    tags: "nrfl"
+    tags: "nrfc"
     iconClass: icon-js
 objects:
   - apiVersion: networking.k8s.io/v1
