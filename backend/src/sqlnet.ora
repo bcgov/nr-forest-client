@@ -2,7 +2,7 @@ WALLET_LOCATION =
   (SOURCE =
     (METHOD = FILE)
     (METHOD_DATA =
-      (DIRECTORY = /opt/oracle/instantclient-basiclite-linuxx64/network/admin/wallets)
+      (DIRECTORY = /opt/oracle/wallets)
     )
   )
 

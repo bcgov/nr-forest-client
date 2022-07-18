@@ -123,7 +123,7 @@ objects:
               name: ${NAME}
               volumeMounts:
                 - name: ${NAME}-${ZONE}-${COMPONENT}-ora-volume
-                  mountPath: "/opt/oracle/instantclient-basiclite-linuxx64/network/admin/wallets"
+                  mountPath: "/opt/oracle/wallets"
                   subPath: wallets
               env:
                 - name: FRONTEND_URL
