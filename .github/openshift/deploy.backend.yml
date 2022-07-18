@@ -4,7 +4,7 @@ metadata:
   name: ${NAME}
   annotations:
     description: "Nr-Old-Growth"
-    tags: "nrfl"
+    tags: "nrfc"
     iconClass: icon-js
 labels:
   app: ${NAME}-${ZONE}
@@ -12,7 +12,7 @@ labels:
 parameters:
   - name: NAME
     description: Module name
-    value: nrfl
+    value: nrfc
   - name: COMPONENT
     description: Component name
     value: backend
@@ -38,31 +38,37 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-old-growth:prod-backend
-  # - name: EMAIL_USERNAME
-  #   description: CHES service client
-  #   required: true
-  # - name: EMAIL_PASSWORD
-  #   description: CHES service client password
-  #   required: true
-  # - name: EMAIL_TOKEN_URL
-  #   description: CHES authentication url
-  #   required: true
-  # - name: EMAIL_API_URL
-  #   description: CHES email api url
-  #   required: true
+  - name: ORACLEDB_USER
+    description: Oracle database user name
+    required: true
+  - name: ORACLEDB_PASSWORD
+    description: Oracle database password
+    required: true
+  - name: ORACLEDB_DATABASE
+    description: Oracle database database name
+    required: true
+  - name: ORACLEDB_HOST
+    description: Oracle database host
+    required: true
+  - name: ORACLEDB_SERVICENAME
+    description: Oracle database service name
+    required: true
   - name: NODE_ENV
     description: environment mode
     required: true
 objects:
-  # - apiVersion: v1
-  #   kind: Secret
-  #   metadata:
-  #     name: ${NAME}-${ZONE}-${COMPONENT}
-  #     labels:
-  #       app: ${NAME}-${ZONE}
-  #   stringData:
-  #     email-username: "${EMAIL_USERNAME}"
-  #     email-password: "${EMAIL_PASSWORD}"
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+      labels:
+        app: ${NAME}-${ZONE}
+    stringData:
+      oracle-user: "${ORACLEDB_USER}"
+      oracle-password: "${ORACLEDB_PASSWORD}"
+      oracle-database: "${ORACLEDB_DATABASE}"
+      oracle-host: "${ORACLEDB_HOST}"
+      oracle-service: "${ORACLEDB_SERVICENAME}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -112,43 +118,35 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               env:
-                - name: POSTGRESQL_HOST
-                  value: ${NAME}-${ZONE}-database
-                - name: POSTGRESQL_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
-                      key: database-name
-                - name: POSTGRESQL_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
-                      key: database-password
-                - name: POSTGRESQL_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
-                      key: database-user
                 - name: FRONTEND_URL
                   value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
-                # - name: EMAIL_USERNAME
-                #   valueFrom:
-                #     secretKeyRef:
-                #       name: ${NAME}-${ZONE}-${COMPONENT}
-                #       key: email-username
-                # - name: EMAIL_PASSWORD
-                #   valueFrom:
-                #     secretKeyRef:
-                #       name: ${NAME}-${ZONE}-${COMPONENT}
-                #       key: email-password
-                # - name: EMAIL_TOKEN_URL
-                #   value: ${EMAIL_TOKEN_URL}
-                # - name: EMAIL_API_URL
-                #   value: ${EMAIL_API_URL}
-                # - name: EMAIL_FROM
-                #   value: "FSA_donotreply@gov.bc.ca"
+                - name: ORACLEDB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-user
+                - name: ORACLEDB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-password
+                - name: ORACLEDB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-database
+                - name: ORACLEDB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-host
+                - name: ORACLEDB_SERVICENAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-service
                 - name: NODE_ENV
                   value: ${NODE_ENV}
 

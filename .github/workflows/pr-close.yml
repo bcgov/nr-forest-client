@@ -9,7 +9,7 @@ on:
       - dev
 
 env:
-  NAME: nrfl
+  NAME: nrfc
 
 jobs:
   cleanup-openshift:

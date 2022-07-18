@@ -1,9 +1,7 @@
 <template>
   <div>
     <MainHeader />
-    <b-container>
-      Hello World !
-    </b-container>
+    <b-container> Hello World </b-container>
   </div>
 </template>
 

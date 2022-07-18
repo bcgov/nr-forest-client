@@ -3,26 +3,23 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// import { EmailModule } from './email/email.module';
-// import { SptialFileModule } from './spatialfile/spatialFile.module';
-// import { DeferralCategoryCodeModule } from './deferralcategorycode/deferralCategoryCode.module';
+import { ClientPublicModule } from './clientpublic/clientPublic.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRESQL_HOST || 'localhost',
-      port: 5432,
-      database: process.env.POSTGRESQL_DATABASE || 'postgres',
-      username: process.env.POSTGRESQL_USER || 'postgres',
-      password: process.env.POSTGRESQL_PASSWORD,
-      autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
-      synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
-    }),
-    // EmailModule,
-    // DeferralCategoryCodeModule,
-    // SptialFileModule,
+    // TypeOrmModule.forRoot({
+    //   type: 'oracle',
+    //   host: process.env.ORACLEDB_HOST || 'localhost',
+    //   port: 1521,
+    //   serviceName: process.env.ORACLEDB_SERVICENAME,
+    //   database: process.env.ORACLEDB_DATABASE || 'postgres',
+    //   username: process.env.ORACLEDB_USER || 'postgres',
+    //   password: process.env.ORACLEDB_PASSWORD,
+    //   autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
+    //   synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
+    // }),
+    // ClientPublicModule,
   ],
   controllers: [AppController],
   providers: [AppService],
