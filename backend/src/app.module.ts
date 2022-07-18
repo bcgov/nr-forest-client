@@ -5,13 +5,17 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ClientPublicModule } from './clientpublic/clientPublic.module';
 
+let port = '1521';
+if (process.env.ORACLEDB_PORT) {
+  port = process.env.ORACLEDB_PORT;
+}
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'oracle',
       host: process.env.ORACLEDB_HOST || 'localhost',
-      port: 1521,
+      port: Number(port),
       serviceName: process.env.ORACLEDB_SERVICENAME,
       database: process.env.ORACLEDB_DATABASE || 'postgres',
       username: process.env.ORACLEDB_USER || 'postgres',

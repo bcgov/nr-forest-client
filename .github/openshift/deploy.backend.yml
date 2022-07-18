@@ -113,10 +113,18 @@ objects:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
+          volumes:
+            - name: ${NAME}-${ZONE}-${COMPONENT}-ora-volume
+              configMap:
+                name: ora.crt
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
+              volumeMounts:
+                - name: ${NAME}-${ZONE}-${COMPONENT}-ora-volume
+                  mountPath: "/opt/oracle/instantclient-basiclite-linuxx64/network/admin/wallets"
+                  subPath: wallets
               env:
                 - name: FRONTEND_URL
                   value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
@@ -147,6 +155,8 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: oracle-service
+                - name: ORACLEDB_PORT
+                  value: 1543
                 - name: NODE_ENV
                   value: ${NODE_ENV}
 

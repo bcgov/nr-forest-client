@@ -9,7 +9,9 @@ RUN mkdir -p /opt/oracle && \
     wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linuxx64.zip && \
     unzip instantclient-basiclite-linuxx64.zip && rm -f instantclient-basiclite-linuxx64.zip && \
     cd /opt/oracle/instantclient* && rm -f *jdbc* *occi* *mysql* *mql1* *ipc1* *jar uidrvci genezi adrci && \
-    echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf && ldconfig
+    echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf && ldconfig \
+    cd /opt/oracle/instantclient*/network/admin && mkdir wallets
+COPY /src/sqlnet.ora /opt/oracle/instantclient*/network/admin
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
