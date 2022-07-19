@@ -156,7 +156,7 @@ objects:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: oracle-service
                 - name: ORACLEDB_PORT
-                  value: 1543
+                  value: "1543"
                 - name: NODE_ENV
                   value: ${NODE_ENV}
 
