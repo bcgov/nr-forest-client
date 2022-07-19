@@ -2,6 +2,8 @@
 FROM registry.access.redhat.com/ubi8/ubi as builder
 RUN dnf module install -y nodejs:14
 
+RUN dnf install -y nc
+
 # Install packages, build and keep only prod packages
 WORKDIR /app
 COPY . ./
