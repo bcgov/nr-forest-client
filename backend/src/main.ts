@@ -2,14 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import * as bodyParser from 'body-parser';
 import 'dotenv/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // const microservice = app.connectMicroservice({
-  //   transport: Transport.TCP,
-  // });
 
   // enable cors only for our frontend/backend address
   const whitelist = [process.env.FRONTEND_URL, process.env.BACKEND_URL];
@@ -41,7 +37,6 @@ async function bootstrap() {
     });
   }
 
-  // await app.startAllMicroservices();
   await app.listen(3000);
 }
 bootstrap();

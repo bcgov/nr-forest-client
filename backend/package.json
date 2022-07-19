@@ -27,7 +27,6 @@
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.4",
     "@nestjs/mapped-types": "*",
-    "@nestjs/microservices": "^9.0.4",
     "@nestjs/platform-express": "^9.0.4",
     "@nestjs/swagger": "^6.0.4",
     "@nestjs/typeorm": "^9.0.0",
