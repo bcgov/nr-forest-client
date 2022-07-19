@@ -10,9 +10,7 @@ RUN mkdir -p /opt/oracle && \
     unzip instantclient-basiclite-linuxx64.zip && rm -f instantclient-basiclite-linuxx64.zip && \
     cd /opt/oracle/instantclient* && rm -f *jdbc* *occi* *mysql* *mql1* *ipc1* *jar uidrvci genezi adrci && \
     echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf && ldconfig && \
-    cd /opt/oracle/ && mkdir wallets && \
-    cd /opt/oracle/wallets && touch root.crt && \
-    cd /opt/oracle/wallets && touch chain.crt
+    cd /opt/oracle/ && mkdir wallet
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
