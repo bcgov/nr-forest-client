@@ -132,12 +132,12 @@ objects:
               name: ${NAME}
               volumeMounts:
                 - name: ${NAME}-${ZONE}-${COMPONENT}-ora-root-volume
-                  mountPath: "/opt/oracle/wallets/"
+                  mountPath: "/opt/oracle/wallets/root.crt"
                   subPath: root.crt
-              volumeMounts:
-                - name: ${NAME}-${ZONE}-${COMPONENT}-ora-chain-volume
-                  mountPath: "/opt/oracle/wallets/"
-                  subPath: chain.crt
+              # volumeMounts:
+              #   - name: ${NAME}-${ZONE}-${COMPONENT}-ora-chain-volume
+              #     mountPath: "/opt/oracle/wallets/chain.crt"
+              #     subPath: chain.crt
               env:
                 - name: FRONTEND_URL
                   value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
