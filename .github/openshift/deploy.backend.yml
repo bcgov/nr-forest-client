@@ -114,17 +114,30 @@ objects:
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           volumes:
-            - name: ${NAME}-${ZONE}-${COMPONENT}-ora-volume
+            - name: ${NAME}-${ZONE}-${COMPONENT}-ora-root-volume
               configMap:
                 name: ora.crt
+                items:
+                  - key: root.crt
+                    path: root.crt
+            - name: ${NAME}-${ZONE}-${COMPONENT}-ora-chain-volume
+              configMap:
+                name: ora.crt
+                items:
+                  - key: CM_chain_cert.crt
+                    path: CM_chain_cert.crt
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
               volumeMounts:
-                - name: ${NAME}-${ZONE}-${COMPONENT}-ora-volume
-                  mountPath: "/opt/oracle/wallets"
-                  subPath: wallets
+                - name: ${NAME}-${ZONE}-${COMPONENT}-ora-root-volume
+                  mountPath: "/opt/oracle/wallets/root.crt"
+                  subPath: root.crt
+              volumeMounts:
+                - name: ${NAME}-${ZONE}-${COMPONENT}-ora-chain-volume
+                  mountPath: "/opt/oracle/wallets/chain.crt"
+                  subPath: chain.crt
               env:
                 - name: FRONTEND_URL
                   value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
