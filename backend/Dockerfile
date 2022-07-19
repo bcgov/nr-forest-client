@@ -3,7 +3,7 @@ FROM registry.access.redhat.com/ubi8/ubi
 RUN dnf module install -y nodejs:16 
 
 # Install required packages for oracle client
-RUN dnf install -y wget unzip libaio nc iputils
+RUN dnf install -y wget unzip libaio nc iputils yum net-tools
 RUN mkdir -p /opt/oracle && \
     cd /opt/oracle && \
     wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linuxx64.zip && \
