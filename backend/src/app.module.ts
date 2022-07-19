@@ -17,7 +17,7 @@ if (process.env.ORACLEDB_PORT) {
       host: process.env.ORACLEDB_HOST || 'localhost',
       port: Number(port),
       serviceName: process.env.ORACLEDB_SERVICENAME,
-      connectString: `(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCPS)(HOST=nrcdb03.bcgov)(PORT=1543))) (CONNECT_DATA=(SERVER=dedicated)(SERVICE_NAME=fortmp1.nrs.bcgov)))`,
+      connectString: `(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCPS)(HOST=nrcdb03.bcgov)(PORT=1543))) (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=FORTMP1.nrs.bcgov)))`,
       database: process.env.ORACLEDB_DATABASE || 'postgres',
       username: process.env.ORACLEDB_USER || 'postgres',
       password: process.env.ORACLEDB_PASSWORD,
