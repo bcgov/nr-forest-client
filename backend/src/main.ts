@@ -7,9 +7,9 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const microservice = app.connectMicroservice({
-    transport: Transport.TCP,
-  });
+  // const microservice = app.connectMicroservice({
+  //   transport: Transport.TCP,
+  // });
 
   // enable cors only for our frontend/backend address
   const whitelist = [process.env.FRONTEND_URL, process.env.BACKEND_URL];
@@ -41,7 +41,7 @@ async function bootstrap() {
     });
   }
 
-  await app.startAllMicroservices();
+  // await app.startAllMicroservices();
   await app.listen(3000);
 }
 bootstrap();

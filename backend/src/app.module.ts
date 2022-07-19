@@ -17,6 +17,7 @@ if (process.env.ORACLEDB_PORT) {
       host: process.env.ORACLEDB_HOST || 'localhost',
       port: Number(port),
       serviceName: process.env.ORACLEDB_SERVICENAME,
+      connectString: `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCPS) (HOST=${process.env.ORACLEDB_HOST})(PORT=1543)) (CONNECT_DATA=(SERVICE_NAME=${process.env.ORACLEDB_SERVICENAME})(SERVER=DEDICATED)))`,
       database: process.env.ORACLEDB_DATABASE || 'postgres',
       username: process.env.ORACLEDB_USER || 'postgres',
       password: process.env.ORACLEDB_PASSWORD,
