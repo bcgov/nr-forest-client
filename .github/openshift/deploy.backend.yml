@@ -117,9 +117,9 @@ objects:
             - name: ${NAME}-${ZONE}-${COMPONENT}-ora-wallet-volume
               configMap:
                 name: ora-wallet
-                items:
-                  - key: cwallet.sso.lck
-                    path: cwallet.sso.lck
+                # items:
+                #   - key: cwallet.sso.lck
+                #     path: cwallet.sso.lck
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
