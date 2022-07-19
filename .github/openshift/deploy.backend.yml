@@ -116,7 +116,7 @@ objects:
           volumes:
             - name: ${NAME}-${ZONE}-${COMPONENT}-ora-wallet-volume
               configMap:
-                name: ora-wallet.crt
+                name: ora-wallet
                 items:
                   - key: cwallet.sso.lck
                     path: cwallet.sso.lck
