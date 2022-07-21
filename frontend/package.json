@@ -1,5 +1,5 @@
 {
-  "name": "old-growth-frontend",
+  "name": "forest-client-frontend",
   "version": "0.0.1",
   "description": "Frontend for old growth project",
   "repository": {
@@ -14,7 +14,7 @@
     "js",
     "devops"
   ],
-  "author": "Derek Roberts, Catherine Meng, Maria Martinez",
+  "author": "Catherine Meng, Maria Martinez",
   "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/bcgov/nr-old-growth-integration/issues"

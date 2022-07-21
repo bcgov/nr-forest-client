@@ -300,21 +300,21 @@ jobs:
           restore-keys: |
             frontend-coverage-
 
-      # - name: SonarCloud Scan
-      #   uses: SonarSource/sonarcloud-github-action@master
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      #   with:
-      #     args: >
-      #       -Dsonar.exclusions=**/test/**,.github/**/*
-      #       -Dsonar.organization=bcgov-sonarcloud
-      #       -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info,frontend/coverage/lcov.info
-      #       -Dsonar.cobertura.reportPaths=backend/coverage/cobertura-coverage.xml,frontend/coverage/cobertura-coverage.xml
-      #       -Dsonar.project.monorepo.enabled=true
-      #       -Dsonar.projectKey=greenfield-template
-      #       -Dsonar.sources=backend,frontend
-      #       -Dsonar.tests=backend/test,frontend/test
+    # - name: SonarCloud Scan
+    #   uses: SonarSource/sonarcloud-github-action@master
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #   with:
+    #     args: >
+    #       -Dsonar.exclusions=**/test/**,.github/**/*
+    #       -Dsonar.organization=bcgov-sonarcloud
+    #       -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info,frontend/coverage/lcov.info
+    #       -Dsonar.cobertura.reportPaths=backend/coverage/cobertura-coverage.xml,frontend/coverage/cobertura-coverage.xml
+    #       -Dsonar.project.monorepo.enabled=true
+    #       -Dsonar.projectKey=greenfield-template
+    #       -Dsonar.sources=backend,frontend
+    #       -Dsonar.tests=backend/test,frontend/test
 
   deploy-dev:
     name: DEV Deployment

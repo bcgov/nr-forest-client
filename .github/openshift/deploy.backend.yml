@@ -25,11 +25,11 @@ parameters:
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
   - name: CPU_LIMIT
-    value: 50m
+    value: 100m
   - name: MEMORY_LIMIT
     value: 0.5Gi
   - name: CPU_REQUEST
-    value: 20m
+    value: 50m
   - name: MEMORY_REQUEST
     value: 0.2Gi
   - name: REGISTRY
@@ -113,10 +113,21 @@ objects:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
+          volumes:
+            - name: ${NAME}-${ZONE}-${COMPONENT}-ora-wallet-volume
+              configMap:
+                name: ora-wallet
+                # items:
+                #   - key: cwallet.sso.lck
+                #     path: cwallet.sso.lck
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
+              volumeMounts:
+                - name: ${NAME}-${ZONE}-${COMPONENT}-ora-wallet-volume
+                  mountPath: "/opt/oracle/wallet/"
+                  # subPath: cwallet.sso.lck
               env:
                 - name: FRONTEND_URL
                   value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
@@ -147,6 +158,8 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: oracle-service
+                - name: ORACLEDB_PORT
+                  value: "1543"
                 - name: NODE_ENV
                   value: ${NODE_ENV}
 
