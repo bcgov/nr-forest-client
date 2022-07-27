@@ -26,4 +26,5 @@ import { ClientPublicModule } from './clientpublic/clientPublic.module';
   controllers: [AppController],
   providers: [AppService],
 })
+
 export class AppModule {}
