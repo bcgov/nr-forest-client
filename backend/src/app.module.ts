@@ -18,7 +18,7 @@ import { ClientPublicModule } from './clientpublic/clientPublic.module';
       database: process.env.ORACLEDB_DATABASE || 'postgres',
       username: process.env.ORACLEDB_USER || 'postgres',
       password: process.env.ORACLEDB_PASSWORD,
-      autoLoadEntities: true, // Auto load all entities regiestered by typeorm forFeature method.
+      autoLoadEntities: true, // Auto load all entities registered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
     }),
     ClientPublicModule,
