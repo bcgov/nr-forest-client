@@ -1,4 +1,4 @@
-export interface ClientPublic {
+export interface ClientPublicView {
   clientNumber: string;
   clientName: string;
   clientStatusCode: string;

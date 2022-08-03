@@ -1,19 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { ClientPublicEntity } from "../entities/clientPublic.entity";
-import { ClientPublic } from "../entities/clientPublic.interface";
+import { ClientPublicViewEntity } from '../entities/clientPublicView.entity';
+import { ClientPublicView } from "../entities/clientPublicView.interface";
 
 @Injectable()
-export class ClientPublicService {
+export class ClientPublicViewService {
   constructor(
-    @InjectRepository(ClientPublicEntity)
-    private clientPublicRepository: Repository<ClientPublicEntity>,
+    @InjectRepository(ClientPublicViewEntity)
+    private clientPublicViewRepository: Repository<ClientPublicViewEntity>,
   ) {}
 
   // the full non individual client list is too long, currently only set to return 10
-  findAllNonIndividualClients(): Promise<ClientPublic[]> {
-    return this.clientPublicRepository
+  findInViewAllNonIndividualClients(): Promise<ClientPublicView[]> {
+    return this.clientPublicViewRepository
       .createQueryBuilder("V_CLIENT_PUBLIC")
       .where("V_CLIENT_PUBLIC.CLIENT_TYPE_CODE != :clientTypeCode", {
         clientTypeCode: "I",
@@ -22,7 +22,7 @@ export class ClientPublicService {
       .getMany();
   }
 
-  findBy(clientNumber: string, clientName: string): Promise<ClientPublic[]> {
+  findInViewBy(clientNumber: string, clientName: string): Promise<ClientPublicView[]> {
     let sqlWhereStr = "1 = 1";
 
     if (clientNumber) {
@@ -40,7 +40,7 @@ export class ClientPublicService {
     }
 
     //TODO: Put harcoded values in a different place
-    return this.clientPublicRepository
+    return this.clientPublicViewRepository
       .createQueryBuilder()
       .select("C.CLIENT_NUMBER", "Client Number")
       .addSelect(
@@ -54,7 +54,7 @@ export class ClientPublicService {
         "CASE WHEN C.CLIENT_STATUS_CODE = 'ACT' " + 
         "THEN 'true' " + 
         "ELSE 'false' END", "Client Active")
-      .from(ClientPublicEntity, "C")
+      .from(ClientPublicViewEntity, "C")
       .where(sqlWhereStr, {
         clientNumber: "%" + clientNumber,
         clientName: clientName + "%",

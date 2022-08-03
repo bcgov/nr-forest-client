@@ -1,8 +1,10 @@
+
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity, ViewColumn, ViewEntity, PrimaryColumn } from 'typeorm';
 
+
 @ViewEntity({ name: 'V_CLIENT_PUBLIC' })
-export class ClientPublicEntity extends BaseEntity {
+export class ClientPublicViewEntity extends BaseEntity {
   @ApiProperty({
     description: 'The client id',
   })
@@ -40,3 +42,4 @@ export class ClientPublicEntity extends BaseEntity {
   clientTypeCode: string;
 
 }
+
