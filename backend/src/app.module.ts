@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ClientPublicModule } from './clientpublicview/clientPublicView.module';
+import { ClientPublicViewModule } from './clientpublicview/clientPublicView.module';
 
 @Module({
   imports: [
@@ -21,7 +21,7 @@ import { ClientPublicModule } from './clientpublicview/clientPublicView.module';
       autoLoadEntities: true, // Auto load all entities registered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
     }),
-    ClientPublicModule,
+    ClientPublicViewModule,
   ],
   controllers: [AppController],
   providers: [AppService],

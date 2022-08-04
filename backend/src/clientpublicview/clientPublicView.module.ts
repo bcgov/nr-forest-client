@@ -11,4 +11,4 @@ import { ClientPublicViewService } from './services/clientPublicView.service';
   controllers: [ClientPublicViewController],
   providers: [ClientPublicViewService],
 })
-export class ClientPublicModule {}
+export class ClientPublicViewModule {}
