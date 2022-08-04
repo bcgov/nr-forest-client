@@ -4,7 +4,7 @@ import { ApiQuery } from '@nestjs/swagger';
 import { ClientPublicViewService } from '../services/clientPublicView.service';
 
 @ApiTags('Client View')
-@Controller('client view')
+@Controller('clientView')
 export class ClientPublicViewController {
   constructor(
     private readonly clientPublicViewService: ClientPublicViewService,
