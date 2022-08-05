@@ -10,6 +10,9 @@
         @updateFormData="
           (id, newValue) => {
             clientName = newValue;
+            if (newValue && newValue !== '') buttonDisabled = false;
+            else if (clientNumber == '' && newValue == '')
+              buttonDisabled = true;
           }
         "
       />
@@ -19,12 +22,15 @@
         @updateFormData="
           (id, newValue) => {
             clientNumber = newValue;
+            if (newValue && newValue !== '') buttonDisabled = false;
+            else if (clientName == '' && newValue == '') buttonDisabled = true;
           }
         "
       />
       <b-button
         variant="primary"
         :style="'background-color:' + primary + ';margin-top: 20px'"
+        :disabled="buttonDisabled"
         @click="searchClient()"
       >
         Search
@@ -32,6 +38,7 @@
     </div>
     <div style="width: 48%; margin-left: 4%">
       <h5 style="margin-bottom: 20px">Search Result:</h5>
+      <b-spinner v-if="loading" variant="primary"></b-spinner>
       <b-card style="height: 100%">{{ result }}</b-card>
     </div>
   </div>
@@ -40,7 +47,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import FormInput from "../common/FormInput.vue";
-import { searchClient } from "../api/ForestClientRequest";
+import { searchClientApi } from "../api/ForestClientRequest";
 import { FormFieldTemplateType } from "../core/AppType";
 import { primary } from "../utils/color";
 
@@ -60,12 +67,16 @@ export default defineComponent({
         label: "Client Number",
       } as FormFieldTemplateType,
       result: "" as string,
+      buttonDisabled: true as boolean,
+      loading: false as boolean,
     };
   },
   methods: {
     searchClient() {
-      searchClient(this.clientNumber, this.clientName).then((response) => {
+      this.loading = true;
+      searchClientApi(this.clientNumber, this.clientName).then((response) => {
         this.result = response;
+        this.loading = false;
       });
     },
   },
