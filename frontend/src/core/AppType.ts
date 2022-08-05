@@ -1,6 +1,3 @@
-export const backendUrl =
-  config.VITE_BACKEND_URL || import.meta.env.VITE_BACKEND_URL;
-
 export interface FormFieldTemplateType {
   label: string;
   required?: boolean;
@@ -12,15 +9,6 @@ export interface FormFieldTemplateType {
 export interface FromSelectOptionType {
   value: { [key: string]: any };
   text: string;
-}
-
-export interface FormGridColumnType {
-  label: string;
-  required?: boolean;
-  id: string;
-  tooltip?: string;
-  type: string;
-  options?: Array<{ value: string; label: string }>;
 }
 
 export interface FormUploadFileType {
