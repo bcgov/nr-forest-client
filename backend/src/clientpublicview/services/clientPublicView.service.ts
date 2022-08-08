@@ -22,31 +22,11 @@ export class ClientPublicViewService {
       .getMany();
   }
 
-  findInViewBy(
-    clientNumber: string,
-    clientName: string,
-    companyName: string,
-  ): Promise<ClientPublicView[]> {
+  async findInViewBy(clientNumber: string): Promise<ClientPublicView[]> {
     let sqlWhereStr = '1 = 1';
 
     if (clientNumber && clientNumber !== '') {
       sqlWhereStr = sqlWhereStr + ' AND C.CLIENT_NUMBER LIKE :clientNumber';
-    }
-
-    if (clientName && clientName !== '') {
-      sqlWhereStr =
-        sqlWhereStr +
-        ' AND ' +
-        '(LOWER(C.LEGAL_FIRST_NAME) LIKE LOWER(:clientName) OR ' +
-        ' LOWER(C.LEGAL_MIDDLE_NAME) LIKE LOWER(:clientName)' +
-        ')';
-    }
-
-    if (companyName && companyName !== '') {
-      sqlWhereStr =
-        sqlWhereStr +
-        ' AND ' +
-        '(LOWER(C.CLIENT_NAME) LIKE LOWER(:companyName))';
     }
 
     return this.clientPublicViewRepository
@@ -55,11 +35,8 @@ export class ClientPublicViewService {
       .from(ClientPublicViewEntity, 'C')
       .where(sqlWhereStr, {
         clientNumber: '%' + clientNumber,
-        clientName: clientName + '%',
-        companyName: companyName + '%',
       })
       .take(10)
       .getMany();
   }
-
 }

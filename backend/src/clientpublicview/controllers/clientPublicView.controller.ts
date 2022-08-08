@@ -16,22 +16,8 @@ export class ClientPublicViewController {
     required: false,
     type: String,
   })
-  @ApiQuery({
-    name: 'clientName',
-    required: false,
-    type: String,
-  })
-  @ApiQuery({
-    name: 'companyName',
-    required: false,
-    type: String,
-  })
-  findBy(
-    @Query('clientNumber') clientNumber?: string,
-    @Query('clientName') clientName?: string,
-    @Query('companyName') companyName?: string,
-  ) {
-    return this.clientPublicViewService.findInViewBy(clientNumber, clientName, companyName);
+  findBy(@Query('clientNumber') clientNumber?: string) {
+    return this.clientPublicViewService.findInViewBy(clientNumber);
   }
 
   // need to add limit on this, the full client list is too long to get
