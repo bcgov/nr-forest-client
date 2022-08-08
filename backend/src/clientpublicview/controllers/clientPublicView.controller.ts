@@ -10,14 +10,42 @@ export class ClientPublicViewController {
     private readonly clientPublicViewService: ClientPublicViewService,
   ) {}
 
-  @Get('/findInViewBy')
+  @Get('/findInViewByNumber')
   @ApiQuery({
     name: 'clientNumber',
+    required: true,
+    type: String,
+  })
+  findByNumber(@Query('clientNumber') clientNumber: string) {
+    return this.clientPublicViewService.findInViewByNumber(clientNumber);
+  }
+
+  @Get('/findInViewByName')
+  @ApiQuery({
+    name: 'clientName',
     required: false,
     type: String,
   })
-  findBy(@Query('clientNumber') clientNumber?: string) {
-    return this.clientPublicViewService.findInViewBy(clientNumber);
+  @ApiQuery({
+    name: 'clientFirstName',
+    required: false,
+    type: String,
+  })
+  @ApiQuery({
+    name: 'clientMiddleName',
+    required: false,
+    type: String,
+  })
+  findBy(
+    @Query('clientName') clientName: string,
+    @Query('clientFirstName') clientFirstName: string,
+    @Query('clientMiddleName') clientMiddleName: string,
+  ) {
+    return this.clientPublicViewService.findInViewByName(
+      clientName,
+      clientFirstName,
+      clientMiddleName,
+    );
   }
 
   // need to add limit on this, the full client list is too long to get
