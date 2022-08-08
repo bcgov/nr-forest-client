@@ -1,18 +1,20 @@
 <template>
   <div>
     <MainHeader />
-    <b-container>Hello World!</b-container>
+    <SearchPage />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import MainHeader from "./common/MainHeader.vue";
+import SearchPage from "./pages/SearchPage.vue";
 
 export default defineComponent({
   name: "App",
   components: {
     MainHeader,
+    SearchPage,
   },
   data() {
     return {};
