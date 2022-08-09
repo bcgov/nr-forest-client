@@ -1,6 +1,9 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PageOptionsDto } from '../../pagination/dtos/page-option.dto';
+import { PageDto } from '../../pagination/dtos/page.dto';
+import { PageMetaDto } from '../../pagination/dtos/page-meta.dto';
 import { ClientPublicViewEntity } from '../entities/clientPublicView.entity';
 import { ClientPublicView } from '../entities/clientPublicView.interface';
 
@@ -11,18 +14,31 @@ export class ClientPublicViewService {
     private clientPublicViewRepository: Repository<ClientPublicViewEntity>,
   ) {}
 
-  // the full non individual client list is too long, currently only set to return 10
-  findInViewAllNonIndividualClients(): Promise<ClientPublicView[]> {
-    return this.clientPublicViewRepository
+  async findAllNonIndividuals(
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<ClientPublicView>> {
+    const skip = (pageOptionsDto.page - 1) * pageOptionsDto.take;
+
+    const queryBuilder = this.clientPublicViewRepository
       .createQueryBuilder('V_CLIENT_PUBLIC')
       .where('V_CLIENT_PUBLIC.CLIENT_TYPE_CODE != :clientTypeCode', {
         clientTypeCode: 'I',
-      })
-      .take(10)
-      .getMany();
+      });
+
+    queryBuilder
+      .orderBy('V_CLIENT_PUBLIC.CLIENT_NUMBER', pageOptionsDto.order)
+      .skip(skip)
+      .take(pageOptionsDto.take);
+
+    const itemCount = await queryBuilder.getCount();
+    const { entities } = await queryBuilder.getRawAndEntities();
+
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+
+    return new PageDto(entities, pageMetaDto);
   }
 
-  async findInViewByNumber(
+  async findByNumber(
     clientNumber: string,
   ): Promise<ClientPublicView[] | HttpException> {
     if (!clientNumber || clientNumber == '')
@@ -33,18 +49,18 @@ export class ClientPublicViewService {
 
     return this.clientPublicViewRepository
       .createQueryBuilder('V_CLIENT_PUBLIC')
-      .where('V_CLIENT_PUBLIC.CLIENT_NUMBER LIKE :clientNumber', {
-        clientNumber: `%${clientNumber}%`,
+      .where('V_CLIENT_PUBLIC.CLIENT_NUMBER=:clientNumber', {
+        clientNumber,
       })
-      .take(10)
       .getMany();
   }
 
-  async findInViewByName(
+  async findByName(
     clientName: string,
     clientFirstName: string,
     clientMiddleName: string,
-  ): Promise<ClientPublicView[] | HttpException> {
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<ClientPublicView> | HttpException> {
     if (!clientName && !clientFirstName && !clientMiddleName)
       return new HttpException(
         'Must provide one of clientName, clientFirstName, clientMiddleName',
@@ -65,14 +81,26 @@ export class ClientPublicViewService {
         sqlWhereStr +
         ' AND LOWER(V_CLIENT_PUBLIC.LEGAL_MIDDLE_NAME) LIKE LOWER(:clientMiddleName)';
 
-    return this.clientPublicViewRepository
+    const skip = (pageOptionsDto.page - 1) * pageOptionsDto.take;
+
+    const queryBuilder = this.clientPublicViewRepository
       .createQueryBuilder('V_CLIENT_PUBLIC')
       .where(sqlWhereStr, {
         clientName: `%${clientName}%`,
         clientFirstName: `%${clientFirstName}%`,
         clientMiddleName: `%${clientMiddleName}%`,
-      })
-      .take(10)
-      .getMany();
+      });
+
+    queryBuilder
+      .orderBy('V_CLIENT_PUBLIC.CLIENT_NUMBER', pageOptionsDto.order)
+      .skip(skip)
+      .take(pageOptionsDto.take);
+
+    const itemCount = await queryBuilder.getCount();
+    const { entities } = await queryBuilder.getRawAndEntities();
+
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+
+    return new PageDto(entities, pageMetaDto);
   }
 }

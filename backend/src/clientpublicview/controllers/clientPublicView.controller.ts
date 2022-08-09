@@ -1,26 +1,27 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiQuery } from '@nestjs/swagger';
+import { PageOptionsDto } from '../../pagination/dtos/page-option.dto';
 import { ClientPublicViewService } from '../services/clientPublicView.service';
 
 @ApiTags('Client View')
-@Controller('clientView')
+@Controller('clientPublicView')
 export class ClientPublicViewController {
   constructor(
     private readonly clientPublicViewService: ClientPublicViewService,
   ) {}
 
-  @Get('/findInViewByNumber')
+  @Get('/findById')
   @ApiQuery({
     name: 'clientNumber',
     required: true,
     type: String,
   })
   findByNumber(@Query('clientNumber') clientNumber: string) {
-    return this.clientPublicViewService.findInViewByNumber(clientNumber);
+    return this.clientPublicViewService.findByNumber(clientNumber);
   }
 
-  @Get('/findInViewByName')
+  @Get('/findByName')
   @ApiQuery({
     name: 'clientName',
     required: false,
@@ -36,21 +37,22 @@ export class ClientPublicViewController {
     required: false,
     type: String,
   })
-  findBy(
+  findByName(
     @Query('clientName') clientName: string,
     @Query('clientFirstName') clientFirstName: string,
     @Query('clientMiddleName') clientMiddleName: string,
+    @Query() pageOptionsDto: PageOptionsDto,
   ) {
-    return this.clientPublicViewService.findInViewByName(
+    return this.clientPublicViewService.findByName(
       clientName,
       clientFirstName,
       clientMiddleName,
+      pageOptionsDto,
     );
   }
 
-  // need to add limit on this, the full client list is too long to get
-  @Get('/findInViewAllNonIndividualClients')
-  findInViewAllNonIndividualClients() {
-    return this.clientPublicViewService.findInViewAllNonIndividualClients();
+  @Get('/findAllNonIndividuals')
+  findAllNonIndividuals(@Query() pageOptionsDto: PageOptionsDto) {
+    return this.clientPublicViewService.findAllNonIndividuals(pageOptionsDto);
   }
 }
