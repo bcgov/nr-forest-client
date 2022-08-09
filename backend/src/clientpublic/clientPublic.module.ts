@@ -5,7 +5,9 @@ import { ClientPublicEntity } from './entities/clientPublic.entity';
 import { ClientPublicService } from './services/clientPublic.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ClientPublicEntity])],
+  imports: [
+    TypeOrmModule.forFeature([ClientPublicEntity]),
+  ],
   controllers: [ClientPublicController],
   providers: [ClientPublicService],
 })

@@ -1,10 +1,10 @@
 {
-  "name": "old-growth-backend",
+  "name": "forest-client-backend",
   "version": "0.0.1",
   "description": "Backend for old growth project",
   "private": true,
   "license": "UNLICENSED",
-  "author": "Derek Roberts, Catherine Meng, Maria Martinez",
+  "author": "Catherine Meng, Maria Martinez",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -40,6 +40,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.5.5",
     "swagger-ui-express": "^4.4.0",
+    "typeorm": "^0.3.7",
     "webpack": "^5.71.0"
   },
   "devDependencies": {

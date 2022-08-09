@@ -1,44 +1,44 @@
 
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
+import { BaseEntity, ViewColumn, ViewEntity, PrimaryColumn } from 'typeorm';
 
 
-@Entity({ name: 'client_public' })
-export class ClientPublicEntity extends BaseEntity {
+@ViewEntity({ name: 'V_CLIENT_PUBLIC' })
+export class ClientPublicViewEntity extends BaseEntity {
   @ApiProperty({
     description: 'The client id',
   })
-  @PrimaryColumn({ name: 'client_number' })
+  @PrimaryColumn({ name: 'CLIENT_NUMBER' })
   clientNumber: string;
 
   @ApiProperty({
     description: 'The client name',
   })
-  @Column({ name: 'client_name' })
+  @ViewColumn({ name: 'CLIENT_NAME' })
   clientName: string;
 
   @ApiProperty({
     description: 'The client first name',
   })
-  @Column({ name: 'legal_first_name' })
+  @ViewColumn({ name: 'LEGAL_FIRST_NAME' })
   legalFirstName: string;
 
   @ApiProperty({
     description: 'The client middle name',
   })
-  @Column({ name: 'legal_middle_name' })
+  @ViewColumn({ name: 'LEGAL_MIDDLE_NAME' })
   legalMiddleName: string;
 
   @ApiProperty({
     description: 'The client status',
   })
-  @Column({ name: 'client_status_code' })
+  @ViewColumn({ name: 'CLIENT_STATUS_CODE' })
   clientStatusCode: string;
 
   @ApiProperty({
     description: 'The client type',
   })
-  @Column({ name: 'client_type_code' })
+  @ViewColumn({ name: 'CLIENT_TYPE_CODE' })
   clientTypeCode: string;
 
 }
