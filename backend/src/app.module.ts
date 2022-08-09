@@ -20,6 +20,7 @@ import { ClientPublicViewModule } from './clientpublicview/clientPublicView.modu
       password: process.env.ORACLEDB_PASSWORD,
       autoLoadEntities: true, // Auto load all entities registered by typeorm forFeature method.
       synchronize: false, // This changes the DB schema to match changes to entities, which we might not want.
+      //logging: true
     }),
     ClientPublicViewModule,
   ],
