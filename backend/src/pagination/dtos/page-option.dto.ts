@@ -27,6 +27,7 @@ export class PageOptionsDto {
     minimum: 1,
     maximum: 50,
     default: 10,
+    description: 'Min value is 1, and max value is 50',
   })
   @Type(() => Number)
   @IsInt()
