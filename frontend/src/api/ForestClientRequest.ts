@@ -3,7 +3,7 @@ import { backendUrl } from "../core/CoreConstants";
 
 export const searchByClientNumberApi = (clientNumber: string) => {
   return axios
-    .get(backendUrl + "/clientView/findInViewByNumber", {
+    .get(backendUrl + "/clientPublicView/findById", {
       params: { clientNumber },
     })
     .then((response) => {
