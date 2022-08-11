@@ -7,7 +7,7 @@ export interface FormFieldTemplateType {
 }
 
 export interface FromSelectOptionType {
-  value: { [key: string]: any };
+  value: { [key: string]: any } | string;
   text: string;
 }
 
