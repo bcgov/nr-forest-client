@@ -1,9 +1,8 @@
 <template>
   <FormFieldTemplate :fieldProps="fieldProps">
     <b-form-select
-      :value="selectedValue"
+      v-model="computedSelectedValue"
       :options="options"
-      @change="updateSelectedValue"
     ></b-form-select>
   </FormFieldTemplate>
 </template>
@@ -31,15 +30,20 @@ export default defineComponent({
         label: "Hello",
       },
     },
-    selectedValue: Object as PropType<CommonObjectType>,
+    selectedValue: [Object, String],
     options: {
       type: Array as PropType<Array<FromSelectOptionType>>,
       required: true,
     },
   },
-  methods: {
-    updateSelectedValue(newValue: CommonObjectType) {
-      this.$emit("updateFormData", this.fieldProps.id, newValue);
+  computed: {
+    computedSelectedValue: {
+      get() {
+        return this.selectedValue;
+      },
+      set(newValue: CommonObjectType | string) {
+        this.$emit("updateFormData", this.fieldProps.id, newValue);
+      },
     },
   },
 });

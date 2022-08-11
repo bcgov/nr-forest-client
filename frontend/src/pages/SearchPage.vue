@@ -1,49 +1,80 @@
 <template>
-  <SearchTemplate
-    :buttonDisabled="numberSearchDisabled"
-    title="Enter the client number to search:"
-    :loading="numberResultLoading"
-    :result="numberResult"
-    @onSearch="searchClientNumber"
-  >
-    <FormInput
-      :inputValue="clientNumber"
-      :fieldProps="clientNumberProps"
-      @updateFormData="
-        (id, newValue) => {
-          clientNumber = newValue;
-          if (newValue && newValue !== '') numberSearchDisabled = false;
-          else numberSearchDisabled = true;
-        }
-      "
-    />
-  </SearchTemplate>
-
-  <!-- <FormInput
-        :inputValue="clientName"
-        :fieldProps="clientNameProps"
+  <div>
+    <SearchTemplate
+      :buttonDisabled="numberSearchDisabled"
+      title="Enter the client number to search:"
+      :loading="numberResultLoading"
+      :result="numberResult"
+      @onSearch="searchClientNumber"
+    >
+      <FormInput
+        :inputValue="clientNumber"
+        :fieldProps="clientNumberProps"
         @updateFormData="
           (id, newValue) => {
-            clientName = newValue;
-            if (newValue && newValue !== '') buttonDisabled = false;
-            else if (clientNumber == '' && newValue == '')
-              buttonDisabled = true;
+            clientNumber = newValue;
+            if (newValue && newValue !== '') numberSearchDisabled = false;
+            else numberSearchDisabled = true;
           }
         "
-      /> -->
+      />
+    </SearchTemplate>
+
+    <SearchTemplate
+      title="Search all non indivudual clients:"
+      :loading="nonindResultLoading"
+      :result="nonindResult"
+      @onSearch="seachAllNonIndividuals"
+    >
+      <FormSelect
+        :fieldProps="nonindOrderProps"
+        :selectedValue="nonindOrder"
+        :options="nonindOrderOption"
+        @updateFormData="
+          (id, newValue) => {
+            nonindOrder = newValue;
+          }
+        "
+      />
+
+      <FormInput
+        :inputValue="nonindPage"
+        :fieldProps="nonindPageProps"
+        @updateFormData="
+          (id, newValue) => {
+            nonindPage = newValue;
+          }
+        "
+      />
+      <FormInput
+        :inputValue="nonindTake"
+        :fieldProps="nonindTakeProps"
+        @updateFormData="
+          (id, newValue) => {
+            nonindTake = newValue;
+          }
+        "
+      />
+    </SearchTemplate>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import FormInput from "../common/FormInput.vue";
+import FormSelect from "../common/FormSelect.vue";
 import SearchTemplate from "../common/SearchTemplate.vue";
-import { searchByClientNumberApi } from "../api/ForestClientRequest";
+import {
+  searchInViewByClientNumber,
+  searchInViewAllNonIndividuals,
+} from "../api/ForestClientRequest";
 import type { FormFieldTemplateType } from "../core/AppType";
 import { primary } from "../utils/color";
 
 export default defineComponent({
   components: {
     FormInput,
+    FormSelect,
     SearchTemplate,
   },
   data() {
@@ -58,18 +89,45 @@ export default defineComponent({
       numberSearchDisabled: true as boolean,
       numberResultLoading: false as boolean,
 
-      // clientName: "" as string,
-      // clientNameProps: {
-      //   label: "Client Name",
-      // } as FormFieldTemplateType,
+      nonindOrder: "ASC" as string,
+      nonindOrderOption: [
+        { value: "ASC", text: "ASC" },
+        { value: "DESC", text: "DESC" },
+      ],
+      nonindOrderProps: {
+        label: "Order",
+      } as FormFieldTemplateType,
+      nonindPage: 1 as number,
+      nonindPageProps: {
+        label: "Page",
+        note: "Default value 1",
+      } as FormFieldTemplateType,
+      nonindTake: 10 as number,
+      nonindTakeProps: {
+        label: "Take",
+        note: "Default value 10, Min value 1, Max value 50",
+      } as FormFieldTemplateType,
+      nonindResult: "" as string,
+      nonindResultLoading: false,
     };
   },
   methods: {
     searchClientNumber() {
       this.numberResultLoading = true;
-      searchByClientNumberApi(this.clientNumber).then((response) => {
+      searchInViewByClientNumber(this.clientNumber).then((response) => {
         this.numberResult = response;
         this.numberResultLoading = false;
+      });
+    },
+    seachAllNonIndividuals() {
+      this.nonindResultLoading = true;
+      searchInViewAllNonIndividuals(
+        this.nonindOrder,
+        this.nonindPage,
+        this.nonindTake
+      ).then((response) => {
+        this.nonindResult = response;
+        this.nonindResultLoading = false;
       });
     },
   },

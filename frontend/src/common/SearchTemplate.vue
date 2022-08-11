@@ -1,5 +1,7 @@
 <template>
-  <div style="margin: 40px; text-align: left; display: flex">
+  <div
+    style="margin: 40px; text-align: left; display: flex; margin-bottom: 100px"
+  >
     <div style="width: 48%">
       <h5 style="margin-bottom: 20px">{{ title }}</h5>
       <slot></slot>
@@ -13,8 +15,10 @@
       </b-button>
     </div>
     <div style="width: 48%; margin-left: 4%">
-      <h5 style="margin-bottom: 20px">Search Result:</h5>
-      <b-spinner v-if="loading" variant="primary"></b-spinner>
+      <h5 style="margin-bottom: 20px">
+        Search Result:
+        <b-spinner v-if="loading" variant="primary" small></b-spinner>
+      </h5>
       <b-card style="height: 100%">{{ result }}</b-card>
     </div>
   </div>
@@ -32,10 +36,10 @@ export default defineComponent({
   props: {
     loading: { type: Boolean, default: false },
     result: {
-      type: [Array, String],
+      type: [Array, String, Object],
       default: "",
     },
-    buttonDisabled: { type: Boolean, default: true },
+    buttonDisabled: { type: Boolean, default: false },
     title: { type: String, default: "" },
   },
   data() {
