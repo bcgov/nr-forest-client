@@ -220,7 +220,7 @@ jobs:
             --client-id=${{ secrets.GWA_ACCT_ID }} \
             --client-secret=${{ secrets.GWA_ACCT_SECRET }}
 
-          gwa pg sample.yaml
+          gwa pg service.yaml
 
   zap-backend:
     name: Backend Pen Tests
