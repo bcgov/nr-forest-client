@@ -48,9 +48,9 @@ objects:
             - namespaceSelector:
                 matchLabels:
                   environment: test
-                  name: d2723f
+                  name: 264e6f
         - from:
             - namespaceSelector:
                 matchLabels:
                   environment: prod
-                  name: d2723f
+                  name: 264e6f
