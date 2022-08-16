@@ -217,8 +217,8 @@ jobs:
 
           gwa init -T \
             --namespace=${{ env.NS }} \
-            --client-id=${ secrets.GWA_ACCT_ID } \
-            --client-secret=${ secrets.GWA_ACCT_SECRET }
+            --client-id=${{ secrets.GWA_ACCT_ID }} \
+            --client-secret=${{ secrets.GWA_ACCT_SECRET }}
 
           gwa pg sample.yaml
 
