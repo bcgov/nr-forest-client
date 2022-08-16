@@ -7,13 +7,13 @@ echo "
 services:
 - name: $NAME
   host: $SERVICE.$NS-$ZONE.svc
-  tags: [ ns.$NS.test ]
+  tags: [ ns.$NS.$ZONE ]
   port: 80
   protocol: http
   retries: 0
   routes:
   - name: $NAME-route
-    tags: [ ns.$NS.test ]
+    tags: [ ns.$NS.$ZONE ]
     hosts:
     - $NAME.api.gov.bc.ca
     paths:
