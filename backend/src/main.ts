@@ -8,19 +8,19 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // enable cors only for our frontend/backend address
-  // const whitelist = [process.env.FRONTEND_URL, process.env.BACKEND_URL];
-  // app.enableCors({
-  //   origin: (origin, callback) => {
-  //     if (!origin || whitelist.indexOf(origin) !== -1) {
-  //       callback(null, true);
-  //     }
-  //     // else {
-  //     //   callback(new Error('Not allowed by CORS'));
-  //     // }
-  //   },
-  // });
+  const whitelist = [process.env.FRONTEND_URL, process.env.BACKEND_URL];
+  app.enableCors({
+    origin: (origin, callback) => {
+      if (!origin || whitelist.indexOf(origin) !== -1) {
+        callback(null, true);
+      }
+      // else {
+      //   callback(new Error('Not allowed by CORS'));
+      // }
+    },
+  });
 
-  app.enableCors();
+  // app.enableCors();
 
   app.use(bodyParser.json({ limit: '100mb' }));
 
