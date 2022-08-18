@@ -1,6 +1,6 @@
 <template>
   <FormFieldTemplate :fieldProps="fieldProps">
-    <b-form-input :value="inputValue" @input="updateInput"></b-form-input>
+    <b-form-input v-model="computedInputValue"></b-form-input>
   </FormFieldTemplate>
 </template>
 
@@ -23,11 +23,16 @@ export default defineComponent({
         label: "Hello",
       },
     },
-    inputValue: String,
+    inputValue: [String, Number],
   },
-  methods: {
-    updateInput(newValue: String) {
-      this.$emit("updateFormData", this.fieldProps.id, newValue);
+  computed: {
+    computedInputValue: {
+      get() {
+        return this.inputValue;
+      },
+      set(newValue: string | number) {
+        this.$emit("updateFormData", this.fieldProps.id, newValue);
+      },
     },
   },
 });

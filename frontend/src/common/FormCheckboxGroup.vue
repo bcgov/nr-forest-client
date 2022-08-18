@@ -8,8 +8,7 @@
       <input
         type="checkbox"
         :value="option.code"
-        @input="updateValue"
-        :checked="checked?.includes(option.code)"
+        v-model="computedInputValue"
         :name="name"
       />
       {{ option.text }}
@@ -50,15 +49,14 @@ export default defineComponent({
       default: "radio-input",
     },
   },
-  methods: {
-    updateValue(event: any) {
-      let newModelValue = this.checked;
-      if (newModelValue?.includes(event.target.value)) {
-        newModelValue = newModelValue.filter((m) => m != event.target.value);
-      } else {
-        newModelValue?.push(event.target.value);
-      }
-      this.$emit("updateFormData", this.fieldProps.id, newModelValue);
+  computed: {
+    computedInputValue: {
+      get() {
+        return this.checked;
+      },
+      set(newValue: string) {
+        this.$emit("updateFormData", this.fieldProps.id, newValue);
+      },
     },
   },
 });
