@@ -163,7 +163,7 @@ jobs:
           oc delete configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend 2> /dev/null \
             || true && echo "No existing frontend config"
           oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
-            --from-literal=config.js="const config = (() => { return { VITE_BACKEND_URL: 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca', VITE_X_API_KEY: ${{ secrets.GWA_X_API_KEY }}}; })();"
+            --from-literal=config.js="const config = (() => { return { VITE_BACKEND_URL: 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca', VITE_X_API_KEY: '${{ secrets.GWA_X_API_KEY }}'}; })();"
 
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
