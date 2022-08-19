@@ -389,7 +389,7 @@ jobs:
           export PATH=`pwd`:$PATH
           cd .github/gwa
 
-          gwa init -T \
+          gwa init -P \
             --namespace=${{ env.NS }} \
             --client-id=${{ secrets.GWA_ACCT_ID }} \
             --client-secret=${{ secrets.GWA_ACCT_SECRET }}
