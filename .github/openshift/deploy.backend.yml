@@ -132,7 +132,7 @@ objects:
                 - name: FRONTEND_URL
                   value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
                 - name: BACKEND_URL
-                  value: https://${NAME}-${ZONE}-backend.${DOMAIN}
+                  value: https://${NAME}-${ZONE}.api.gov.bc.ca
                 - name: ORACLEDB_USER
                   valueFrom:
                     secretKeyRef:

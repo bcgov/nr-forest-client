@@ -8,6 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
   NAME: nrfc
+  NS: nr-d2723f
 
 jobs:
   codeql:
@@ -218,7 +219,7 @@ jobs:
           oc delete configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend 2> /dev/null \
             || true && echo "No existing frontend config"
           oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
-            --from-literal=config.js="const config = (() => { return { VITE_BACKEND_URL: 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca'}; })();"
+            --from-literal=config.js="const config = (() => { return { VITE_BACKEND_URL: 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca', VITE_X_API_KEY: ${{ secrets.GWA_X_API_KEY }}}; })();"
 
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
@@ -241,41 +242,6 @@ jobs:
           do
             oc delete po ${p}
           done
-
-  publish-test-api:
-    name: Publish Test Api
-    needs:
-      - deploy-test
-    runs-on: ubuntu-latest
-    environment:
-      name: test
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 10
-          TOKEN: ${ secrets.GHCR_TOKEN }
-
-      - name: Get GWA Command Line
-        run: |
-          curl -L -O https://github.com/bcgov/gwa-cli/releases/download/v1.3.1/gwa_v1.3.1_linux_x64.zip
-          unzip gwa_v1.3.1_linux_x64.zip
-          export PATH=`pwd`:$PATH
-
-      - name: Apply Namespace Configuration
-        run: |
-          export PATH=`pwd`:$PATH
-          cd .github/gwa
-
-          gwa init -T \
-            --namespace=${{ env.NS }} \
-            --client-id=${{ secrets.GWA_ACCT_ID }} \
-            --client-secret=${{ secrets.GWA_ACCT_SECRET }}
-
-          gwa pg service.yaml
 
   zap-backend:
     name: Backend Pen Tests
@@ -345,7 +311,7 @@ jobs:
           oc delete configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend 2> /dev/null \
             || true && echo "No existing frontend config"
           oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
-            --from-literal=config.js="const config = (() => { return { VITE_BACKEND_URL: 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca'}; })();"
+            --from-literal=config.js="const config = (() => { return { VITE_BACKEND_URL: 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca', VITE_X_API_KEY: ${{ secrets.GWA_X_API_KEY }}}; })();"
 
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
@@ -395,3 +361,38 @@ jobs:
           target: ${{ env.PREV }}-frontend
           tags: |
             prod-frontend
+
+  publish-api:
+    name: Publish Api
+    needs:
+      - deploy-test
+      - deploy-prod
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10
+          TOKEN: ${ secrets.GHCR_TOKEN }
+
+      - name: Get GWA Command Line
+        run: |
+          curl -L -O https://github.com/bcgov/gwa-cli/releases/download/v1.3.1/gwa_v1.3.1_linux_x64.zip
+          unzip gwa_v1.3.1_linux_x64.zip
+          export PATH=`pwd`:$PATH
+
+      - name: Apply Namespace Configuration
+        run: |
+          export PATH=`pwd`:$PATH
+          cd .github/gwa
+
+          gwa init -T \
+            --namespace=${{ env.NS }} \
+            --client-id=${{ secrets.GWA_ACCT_ID }} \
+            --client-secret=${{ secrets.GWA_ACCT_SECRET }}
+
+          gwa pg service-test.yaml
+          gwa pg service-prod.yaml
