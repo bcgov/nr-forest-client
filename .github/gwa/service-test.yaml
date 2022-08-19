@@ -1,15 +1,15 @@
 services:
-  - name: nrfc
+  - name: nrfc-test
     host: nrfc-test-backend.d2723f-test.svc
-    tags: [ns.d2723f.test]
+    tags: [ns.nr-d2723f.test]
     port: 80
     protocol: http
     retries: 0
     routes:
-      - name: nrfc-route
-        tags: [ns.d2723f.test]
+      - name: nrfc-test-route
+        tags: [ns.nr-d2723f.test]
         hosts:
-          - nrfc.api.gov.bc.ca
+          - nrfc-test.api.gov.bc.ca
         paths:
           - /
         methods:
@@ -20,7 +20,7 @@ services:
         path_handling: v0
     plugins:
       - name: key-auth
-        tags: [ns.d2723f.test]
+        tags: [ns.nr-d2723f.test]
         protocols: [http, https]
         config:
           key_names: ["X-API-KEY"]
@@ -28,12 +28,12 @@ services:
           hide_credentials: true
           key_in_body: false
       - name: acl
-        tags: [ns.d2723f.test]
+        tags: [ns.nr-d2723f.test]
         config:
           hide_groups_header: true
-          allow: [E990939D]
+          allow: [864B4BFC]
       - name: cors
-        tags: [ns.d2723f.test]
+        tags: [ns.nr-d2723f.test]
         config:
           origins: ["*"]
           methods: [GET, POST, PUT, DELETE, PATCH]
