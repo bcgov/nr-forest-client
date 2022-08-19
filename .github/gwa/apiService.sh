@@ -1,21 +1,24 @@
-export NS="d2723f"
+# used for initialize the service.yaml file, update the parameters based on your service and your application
+
+export NS="nr-d2723f"
 export NAME="nrfc"
 export ZONE="test"
 export SERVICE="nrfc-test-backend"
+export NAMESPACE="d2723f-test"
 
 echo "
 services:
-- name: $NAME
-  host: $SERVICE.$NS-$ZONE.svc
+- name: $NAME-$ZONE
+  host: $SERVICE.$NAMESPACE.svc
   tags: [ ns.$NS.$ZONE ]
   port: 80
   protocol: http
   retries: 0
   routes:
-  - name: $NAME-route
+  - name: $NAME-$ZONE-route
     tags: [ ns.$NS.$ZONE ]
     hosts:
-    - $NAME.api.gov.bc.ca
+    - $NAME-$ZONE.api.gov.bc.ca
     paths:
     - /
     methods:
