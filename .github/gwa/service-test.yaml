@@ -11,7 +11,7 @@ services:
         hosts:
           - nrfc-test.api.gov.bc.ca
         paths:
-          - /api-doc/
+          - /apidoc
         methods:
           - GET
         strip_path: false
@@ -22,7 +22,7 @@ services:
         hosts:
           - nrfc-test.api.gov.bc.ca
         paths:
-          - /
+          - /api
         methods:
           - GET
           - OPTIONS
