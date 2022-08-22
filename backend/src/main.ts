@@ -33,8 +33,14 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
 
   if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
+    SwaggerModule.setup('/', app, document);
     SwaggerModule.setup('api', app, document);
   } else {
+    SwaggerModule.setup('/', app, document, {
+      swaggerOptions: {
+        supportedSubmitMethods: [],
+      },
+    });
     SwaggerModule.setup('api', app, document, {
       swaggerOptions: {
         supportedSubmitMethods: [],
