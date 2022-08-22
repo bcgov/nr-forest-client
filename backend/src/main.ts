@@ -32,15 +32,17 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
-    SwaggerModule.setup('api', app, document);
-  } else {
-    SwaggerModule.setup('api', app, document, {
-      swaggerOptions: {
-        supportedSubmitMethods: [],
-      },
-    });
-  }
+  SwaggerModule.setup('api', app, document);
+
+  // if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
+  //   SwaggerModule.setup('api', app, document);
+  // } else {
+  //   SwaggerModule.setup('api', app, document, {
+  //     swaggerOptions: {
+  //       supportedSubmitMethods: [],
+  //     },
+  //   });
+  // }
 
   await app.listen(3000);
 }
