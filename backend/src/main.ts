@@ -42,12 +42,6 @@ async function bootstrap() {
     });
   }
 
-  SwaggerModule.setup('apidoc', app, document, {
-    swaggerOptions: {
-      supportedSubmitMethods: [],
-    },
-  });
-
   await app.listen(3000);
 }
 bootstrap();

@@ -396,3 +396,4 @@ jobs:
 
           gwa pg service-test.yaml
           gwa pg service-prod.yaml
+          gwa pg servive-swagger.yaml
