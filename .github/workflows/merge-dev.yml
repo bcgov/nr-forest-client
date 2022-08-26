@@ -134,7 +134,7 @@ jobs:
       - name: Delete old packages
         uses: davahome/ghcr-cleanup@v1
         with:
-          token: ${{ secrets.GHCR_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           package: ${{ github.event.repository.name }}
           owner: orgs/bcgov
           skip_tags: prod-frontend,prod-backend
@@ -200,7 +200,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 10
-          TOKEN: ${ secrets.GHCR_TOKEN }
+          TOKEN: ${ secrets.GITHUB_TOKEN }
 
       - name: Get GWA Command Line
         run: |
