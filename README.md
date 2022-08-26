@@ -26,6 +26,7 @@ First need to create a new reposiroty in github
 - Add required secrets to github repo setting:
   - General secrets: 
     - OC_SERVER: openshift cluster url
+    - GHCR_TOKEN: personal access token generated through user setting -> developer settings -> personal access token with the right to repo and write/delete package
   - Environment secrets:
     - Dev: OC_NAMESPACE (dev namespace), OC_TOKEN (get from openshift namespace -> administer view -> user management -> service account -> pipeline token)
     - Prod: OC_NAMESPACE (prod namespace), OC_TOKEN
