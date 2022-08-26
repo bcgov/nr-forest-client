@@ -3,7 +3,7 @@ import { backendUrl, apiKey } from "../core/CoreConstants";
 
 export const searchInViewByClientNumber = (clientNumber: string) => {
   return axios
-    .get(backendUrl + "/clientPublicView/findById", {
+    .get(backendUrl + "/clientPublicView/findByNumber", {
       params: { clientNumber },
       headers: { "X-API-KEY": apiKey },
     })
