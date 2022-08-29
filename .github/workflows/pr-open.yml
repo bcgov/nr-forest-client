@@ -49,7 +49,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
-          token: ${{ secrets.GHCR_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           target: prod-backend
           tags: |
             ${{ github.event.number }}-backend
@@ -92,7 +92,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
-          token: ${{ secrets.GHCR_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           target: prod-frontend
           tags: |
             ${{ github.event.number }}-frontend
@@ -120,15 +120,16 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
+
       - name: Log in to the Container registry
         uses: docker/login-action@v1
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Backend Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3.1.1
         with:
           context: ./backend/
           push: true
@@ -164,10 +165,10 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Backend Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3.1.1
         with:
           context: ./frontend/
           push: true
@@ -218,7 +219,7 @@ jobs:
         with:
           title: Backend coverage report
           delete-old-comments: true
-          github-token: ${{ secrets.GHCR_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           lcov-file: ./backend/coverage/lcov.info
 
   tests-frontend:
@@ -264,7 +265,7 @@ jobs:
         with:
           title: Frontend coverage report
           delete-old-comments: true
-          github-token: ${{ secrets.GHCR_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           lcov-file: ./frontend/coverage/lcov.info
 
   sonarcloud:
@@ -381,7 +382,7 @@ jobs:
       - name: DEV Deployment update
         uses: mshick/add-pr-comment@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           allow-repeats: false
           message: |

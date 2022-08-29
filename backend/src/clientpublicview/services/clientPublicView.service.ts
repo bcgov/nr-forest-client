@@ -14,15 +14,65 @@ export class ClientPublicViewService {
     private clientPublicViewRepository: Repository<ClientPublicViewEntity>,
   ) {}
 
-  async findAllNonIndividuals(
+  async findByNumber(
+    clientNumber: string,
+  ): Promise<ClientPublicView[] | HttpException> {
+    if (!clientNumber || clientNumber == '')
+      return new HttpException(
+        'Client number is required',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    let sqlWhereStr = '1=1';
+    sqlWhereStr = sqlWhereStr + ' AND CLIENT_NUMBER = :clientNumber';
+    
+    return this.clientPublicViewRepository
+      .createQueryBuilder('V_CLIENT_PUBLIC')
+      .where(sqlWhereStr, {
+        clientNumber: clientNumber,
+      })
+      .getMany();
+  }
+
+  async findByNames(
+    clientName: string,
+    clientFirstName: string,
+    clientMiddleName: string,
+    clientTypeCodesAsCsv: string,
     pageOptionsDto: PageOptionsDto,
-  ): Promise<PageDto<ClientPublicView>> {
+  ): Promise<PageDto<ClientPublicView> | HttpException> {
+    if (!clientName && !clientFirstName && !clientMiddleName && !clientTypeCodesAsCsv)
+      return new HttpException(
+        'Must provide at least one paramater: clientName, clientFirstName, clientMiddleName, clientTypeCode',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    let sqlWhereStr = '1=1';
+    if (clientName && clientName !== '') {
+      sqlWhereStr = sqlWhereStr + ' AND LOWER(V_CLIENT_PUBLIC.CLIENT_NAME) LIKE LOWER(:clientName)';
+    }
+
+    if (clientFirstName && clientFirstName !== '') {
+      sqlWhereStr = sqlWhereStr + ' AND LOWER(V_CLIENT_PUBLIC.LEGAL_FIRST_NAME) LIKE LOWER(:clientFirstName)';
+    }
+
+    if (clientMiddleName && clientMiddleName !== '') {
+      sqlWhereStr = sqlWhereStr + ' AND LOWER(V_CLIENT_PUBLIC.LEGAL_MIDDLE_NAME) LIKE LOWER(:clientMiddleName)';
+    }
+
+    if (clientTypeCodesAsCsv && clientTypeCodesAsCsv !== '') {
+      sqlWhereStr = sqlWhereStr + ' AND CLIENT_TYPE_CODE IN (:...clientTypeCode)';
+    }
+
     const skip = (pageOptionsDto.page - 1) * pageOptionsDto.take;
 
     const queryBuilder = this.clientPublicViewRepository
       .createQueryBuilder('V_CLIENT_PUBLIC')
-      .where('V_CLIENT_PUBLIC.CLIENT_TYPE_CODE != :clientTypeCode', {
-        clientTypeCode: 'I',
+      .where(sqlWhereStr, {
+        clientName: `%${clientName}%`,
+        clientFirstName: `%${clientFirstName}%`,
+        clientMiddleName: `%${clientMiddleName}%`,
+        clientTypeCode: clientTypeCodesAsCsv.toUpperCase().split(',')
       });
 
     queryBuilder
@@ -38,57 +88,15 @@ export class ClientPublicViewService {
     return new PageDto(entities, pageMetaDto);
   }
 
-  async findByNumber(
-    clientNumber: string,
-  ): Promise<ClientPublicView[] | HttpException> {
-    if (!clientNumber || clientNumber == '')
-      return new HttpException(
-        'Client number is required',
-        HttpStatus.BAD_REQUEST,
-      );
-
-    return this.clientPublicViewRepository
-      .createQueryBuilder('V_CLIENT_PUBLIC')
-      .where('V_CLIENT_PUBLIC.CLIENT_NUMBER=:clientNumber', {
-        clientNumber,
-      })
-      .getMany();
-  }
-
-  async findByName(
-    clientName: string,
-    clientFirstName: string,
-    clientMiddleName: string,
+  async findAllNonIndividuals(
     pageOptionsDto: PageOptionsDto,
-  ): Promise<PageDto<ClientPublicView> | HttpException> {
-    if (!clientName && !clientFirstName && !clientMiddleName)
-      return new HttpException(
-        'Must provide one of clientName, clientFirstName, clientMiddleName',
-        HttpStatus.BAD_REQUEST,
-      );
-
-    let sqlWhereStr = '1=1';
-    if (clientName && clientName !== '')
-      sqlWhereStr =
-        sqlWhereStr +
-        ' AND LOWER(V_CLIENT_PUBLIC.CLIENT_NAME) LIKE LOWER(:clientName)';
-    if (clientFirstName && clientFirstName !== '')
-      sqlWhereStr =
-        sqlWhereStr +
-        ' AND LOWER(V_CLIENT_PUBLIC.LEGAL_FIRST_NAME) LIKE LOWER(:clientFirstName)';
-    if (clientMiddleName && clientMiddleName !== '')
-      sqlWhereStr =
-        sqlWhereStr +
-        ' AND LOWER(V_CLIENT_PUBLIC.LEGAL_MIDDLE_NAME) LIKE LOWER(:clientMiddleName)';
-
+  ): Promise<PageDto<ClientPublicView>> {
     const skip = (pageOptionsDto.page - 1) * pageOptionsDto.take;
 
     const queryBuilder = this.clientPublicViewRepository
       .createQueryBuilder('V_CLIENT_PUBLIC')
-      .where(sqlWhereStr, {
-        clientName: `%${clientName}%`,
-        clientFirstName: `%${clientFirstName}%`,
-        clientMiddleName: `%${clientMiddleName}%`,
+      .where('V_CLIENT_PUBLIC.CLIENT_TYPE_CODE != :clientTypeCode', {
+        clientTypeCode: 'I',
       });
 
     queryBuilder
