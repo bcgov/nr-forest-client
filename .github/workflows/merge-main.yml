@@ -125,9 +125,6 @@ jobs:
           oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
             --from-literal=config.js="const config = (() => { return { VITE_BACKEND_URL: 'https://${{ env.NAME }}-${{ env.ZONE }}.api.gov.bc.ca', VITE_X_API_KEY: '${{ secrets.GWA_X_API_KEY }}'}; })();"
 
-          # Do not replace database; 'oc create' kicks up an error if objects already exist
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} | oc create -f - || true
-
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-backend \
@@ -389,9 +386,6 @@ jobs:
             || true && echo "No existing frontend config"
           oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
             --from-literal=config.js="const config = (() => { return { VITE_BACKEND_URL: 'https://${{ env.NAME }}-${{ env.ZONE }}.api.gov.bc.ca', VITE_X_API_KEY: '${{ secrets.GWA_X_API_KEY }}'}; })();"
-
-          # Do not replace database; 'oc create' kicks up an error if objects already exist
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} | oc create -f - || true
 
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
