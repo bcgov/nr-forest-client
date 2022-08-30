@@ -31,6 +31,9 @@ jobs:
     name: Promote DEV images to TEST
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Promote Backend Image to TEST
         uses: shrink/actions-docker-registry-tag@v2
