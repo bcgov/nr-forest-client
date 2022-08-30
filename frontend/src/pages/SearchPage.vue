@@ -11,7 +11,7 @@
         :inputValue="clientNumber"
         :fieldProps="clientNumberProps"
         @updateFormData="
-          (id, newValue) => {
+          (id: any, newValue: string) => {
             clientNumber = newValue;
             if (newValue && newValue !== '') numberSearchDisabled = false;
             else numberSearchDisabled = true;
@@ -31,7 +31,7 @@
         :selectedValue="nonindOrder"
         :options="nonindOrderOption"
         @updateFormData="
-          (id, newValue) => {
+          (id: any, newValue: string) => {
             nonindOrder = newValue;
           }
         "
@@ -41,7 +41,7 @@
         :inputValue="nonindPage"
         :fieldProps="nonindPageProps"
         @updateFormData="
-          (id, newValue) => {
+          (id: any, newValue: number) => {
             nonindPage = newValue;
           }
         "
@@ -50,7 +50,7 @@
         :inputValue="nonindTake"
         :fieldProps="nonindTakeProps"
         @updateFormData="
-          (id, newValue) => {
+          (id: any, newValue: number) => {
             nonindTake = newValue;
           }
         "
@@ -65,9 +65,9 @@ import FormInput from "../common/FormInput.vue";
 import FormSelect from "../common/FormSelect.vue";
 import SearchTemplate from "../common/SearchTemplate.vue";
 import {
-  searchInViewByClientNumber,
-  searchInViewAllNonIndividuals,
-} from "../api/ForestClientRequest";
+  searchInViewByClientNumber, 
+  searchInViewAllNonIndividuals 
+} from "../services/forestClient.service";
 import type { FormFieldTemplateType } from "../core/AppType";
 import { primary } from "../utils/color";
 
