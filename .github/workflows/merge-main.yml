@@ -342,7 +342,7 @@ jobs:
     needs:
       - image-backend
       - image-frontend
-      - snyk
+      # - snyk
       - trivy-repo
     runs-on: ubuntu-22.04
     environment:
