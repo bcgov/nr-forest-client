@@ -60,8 +60,10 @@ export class ClientPublicViewService {
       sqlWhereStr = sqlWhereStr + ' AND LOWER(V_CLIENT_PUBLIC.LEGAL_MIDDLE_NAME) LIKE LOWER(:clientMiddleName)';
     }
 
+    let clientTypeCodeAsList = [];
     if (clientTypeCodesAsCsv && clientTypeCodesAsCsv !== '') {
       sqlWhereStr = sqlWhereStr + ' AND CLIENT_TYPE_CODE IN (:...clientTypeCode)';
+      clientTypeCodeAsList = clientTypeCodesAsCsv.toUpperCase().split(',');
     }
 
     const skip = (pageOptionsDto.page - 1) * pageOptionsDto.take;
@@ -72,7 +74,7 @@ export class ClientPublicViewService {
         clientName: `%${clientName}%`,
         clientFirstName: `%${clientFirstName}%`,
         clientMiddleName: `%${clientMiddleName}%`,
-        clientTypeCode: clientTypeCodesAsCsv.toUpperCase().split(',')
+        clientTypeCode: clientTypeCodeAsList
       });
 
     queryBuilder
