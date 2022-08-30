@@ -109,6 +109,8 @@ jobs:
     env:
       COMPONENT: backend
       ZONE: ${{ github.event.number }}
+    environment:
+      name: dev
     runs-on: ubuntu-latest
     needs:
       - check-backend
@@ -161,6 +163,8 @@ jobs:
     env:
       COMPONENT: frontend
       ZONE: ${{ github.event.number }}
+    environment:
+      name: dev
     runs-on: ubuntu-latest
     needs:
       - check-frontend
