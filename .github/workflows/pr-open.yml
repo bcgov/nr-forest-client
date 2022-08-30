@@ -53,6 +53,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
+          token: ${{ secrets.GHCR_TOKEN }}
           target: ${{ env.PREV }}-${{ env.COMPONENT }}
           tags: |
             ${{ env.ZONE }}-${{ env.COMPONENT }}
@@ -98,6 +99,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
+          token: ${{ secrets.GHCR_TOKEN }}
           target: ${{ env.PREV }}-${{ env.COMPONENT }}
           tags: |
             ${{ env.ZONE }}-${{ env.COMPONENT }}
@@ -134,7 +136,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GHCR_TOKEN }}
 
       # need docker/build-push-action to have version at least v3 in order to have github token works
       - name: Build and push Backend Docker image
@@ -186,7 +188,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GHCR_TOKEN }}
 
       - name: Build and push Backend Docker image
         uses: docker/build-push-action@v3.1.1

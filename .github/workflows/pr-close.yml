@@ -93,6 +93,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
+          token: ${{ secrets.GHCR_TOKEN }}
           target: ${{ env.PREV }}-${{ env.COMPONENT }}
           tags: |
             ${{ env.ZONE }}-${{ env.COMPONENT }}
