@@ -1,14 +1,15 @@
-name: Pull Request
+name: Pull Request Open
 
 on:
   pull_request:
-    branches:
-      - main
-      - dev
 
 env:
   REGISTRY: ghcr.io
   NAME: nrfc
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   check-backend:
@@ -16,8 +17,11 @@ jobs:
     outputs:
       build: ${{ steps.check.outputs.build }}
     env:
-      TRIGGERS: ('backend/' '.github/openshift/deploy.backend.yml')
-    runs-on: ubuntu-latest
+      TRIGGERS: ('backend/')
+      COMPONENT: backend
+      PREV: prod
+      ZONE: ${{ github.event.number }}
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -43,24 +47,26 @@ jobs:
           done < <(git diff origin/main --name-only)
           echo "Container build not required"
 
-      - name: Recycle/retag PROD Image
+      - name: Recycle/retag Previous Images
         if: steps.check.outputs.build != 'true'
         uses: shrink/actions-docker-registry-tag@v2
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          target: prod-backend
+          target: ${{ env.PREV }}-${{ env.COMPONENT }}
           tags: |
-            ${{ github.event.number }}-backend
+            ${{ env.ZONE }}-${{ env.COMPONENT }}
 
   check-frontend:
     name: Check Frontend
     outputs:
       build: ${{ steps.check.outputs.build }}
     env:
-      TRIGGERS: ('frontend/' '.github/openshift/deploy.frontend.yml')
-    runs-on: ubuntu-latest
+      TRIGGERS: ('frontend/')
+      COMPONENT: frontend
+      PREV: prod
+      ZONE: ${{ github.event.number }}
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -86,20 +92,22 @@ jobs:
           done < <(git diff origin/main --name-only)
           echo "Container build not required"
 
-      - name: Recycle/retag PROD Image
+      - name: Recycle/retag Previous Images
         if: steps.check.outputs.build != 'true'
         uses: shrink/actions-docker-registry-tag@v2
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          target: prod-frontend
+          target: ${{ env.PREV }}-${{ env.COMPONENT }}
           tags: |
-            ${{ github.event.number }}-frontend
+            ${{ env.ZONE }}-${{ env.COMPONENT }}
 
   build-backend:
     name: Backend Image Build
-    runs-on: ubuntu-latest
+    env:
+      COMPONENT: backend
+      ZONE: ${{ github.event.number }}
+    runs-on: ubuntu-22.04
     needs:
       - check-backend
     if: needs.check-backend.outputs.build == 'true'
@@ -128,18 +136,30 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # need docker/build-push-action to have version at least v3 in order to have github token works
       - name: Build and push Backend Docker image
         uses: docker/build-push-action@v3.1.1
         with:
           context: ./backend/
           push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-backend
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.ZONE }}-${{ env.COMPONENT }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Clear any previous OpenShift image
+        run: |
+          # Login to OpenShift and select project
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }}
+          # Clean previous image
+          oc delete is ${{ env.NAME }}-${{ env.ZONE }}-${{ env.COMPONENT }} || true
+
   build-frontend:
     name: Frontend Image Build
-    runs-on: ubuntu-latest
+    env:
+      COMPONENT: frontend
+      ZONE: ${{ github.event.number }}
+    runs-on: ubuntu-22.04
     needs:
       - check-frontend
     if: needs.check-frontend.outputs.build == 'true'
@@ -172,13 +192,21 @@ jobs:
         with:
           context: ./frontend/
           push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-frontend
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.ZONE }}-${{ env.COMPONENT }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Clear any previous OpenShift image
+        run: |
+          # Login to OpenShift and select project
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }}
+          # Clean previous image
+          oc delete is ${{ env.NAME }}-${{ env.ZONE }}-${{ env.COMPONENT }} || true
+
   tests-backend:
     name: Backend Unit Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs:
       - check-backend
     if: needs.check-backend.outputs.build == 'true'
@@ -224,7 +252,7 @@ jobs:
 
   tests-frontend:
     name: Frontend Unit Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs:
       - check-frontend
     if: needs.check-frontend.outputs.build == 'true'
@@ -276,7 +304,7 @@ jobs:
       - tests-backend
       - tests-frontend
     if: always() && (needs.build-backend.result == 'success' || needs.build-frontend.result == 'success')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
         # Disable shallow clone for SonarCloud analysis
@@ -325,11 +353,12 @@ jobs:
       - tests-backend
       - tests-frontend
     if: always() && (needs.build-backend.result == 'success' || needs.build-frontend.result == 'success')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
     environment:
       name: dev
     env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
       ZONE: ${{ github.event.number }}
     steps:
       - uses: actions/checkout@v2
@@ -345,14 +374,6 @@ jobs:
           oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
             --from-literal=config.js="const config = (() => { return { VITE_BACKEND_URL: 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca'}; })();"
 
-          # Clean previous image, if rebuilding
-          if [ ${{ needs.build-backend.outputs.build == 'true' }} ]
-          then
-            # Clear stale images for import/replacement
-            oc delete is ${{ env.NAME }}-${{ env.ZONE }}-backend || \
-              echo "No previously imported images have been found"
-          fi
-
           # Process and apply template  
           oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-backend \
@@ -363,14 +384,6 @@ jobs:
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }} \
             -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }} | oc apply -f -
 
-          # Clean previous image, if rebuilding
-          if [ ${{ needs.build-backend.outputs.build == 'true' }} ]
-          then
-            # Clear stale images for import/replacement
-            oc delete is ${{ env.NAME }}-${{ env.ZONE }}-frontend || \
-              echo "No previously imported images have been found"
-          fi
-
           # Process and apply template
           oc process -f .github/openshift/deploy.frontend.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-frontend | oc apply -f -
@@ -378,6 +391,23 @@ jobs:
           # Follow any active rollouts (see deploymentconfigs)
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-backend -w
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-frontend -w
+
+      - name: Deployment Verification
+        env:
+          LINKS: (
+            'https://${{ env.NAME }}-${{ github.event.number }}-backend.${{ env.DOMAIN }}'
+            'https://${{ env.NAME }}-${{ github.event.number }}-frontend.${{ env.DOMAIN }}'
+            )
+        run: |
+          LINKS=${{ env.LINKS }}
+          for l in "${LINKS[@]}"; do
+              if [ $(curl -L -s -o /dev/null -w "%{http_code}" "${l}") -ne 200 ]
+              then
+                  echo "Status != 200 for ${l}"
+                  exit 1
+              fi
+          done
+          echo "Deployment verification successful"
 
       - name: DEV Deployment update
         uses: mshick/add-pr-comment@v1
@@ -387,5 +417,18 @@ jobs:
           allow-repeats: false
           message: |
             DEV deployments have completed successfully!
-            Backend: [https://${{ env.NAME }}-${{ github.event.number }}-backend.apps.silver.devops.gov.bc.ca/]()
-            Frontend: [https://${{ env.NAME }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca/]()
+            [Backend](https://${{ env.NAME }}-${{ github.event.number }}-backend.${{ env.DOMAIN }}/) available
+            [Frontend](https://${{ env.NAME }}-${{ github.event.number }}-frontend.${{ env.DOMAIN }}/) available
+
+  # # Uncomment to for development and troubleshooting
+  # # https://docs.github.com/en/actions/learn-github-actions/contexts
+  # view-context:
+  #   name: View GitHub Context
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - name: Echo GitHub context
+  #       uses: satackey/action-js-inline@v0.0.2
+  #       with:
+  #         script: |
+  #           const github = require('@actions/github');
+  #           console.log(JSON.stringify(github, null, 2));
