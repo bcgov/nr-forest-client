@@ -8,17 +8,17 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // enable cors only for our frontend/backend address
-  // const whitelist = [process.env.FRONTEND_URL, process.env.BACKEND_URL];
-  // app.enableCors({
-  //   origin: (origin, callback) => {
-  //     if (!origin || whitelist.indexOf(origin) !== -1) {
-  //       callback(null, true);
-  //     }
-  //     // else {
-  //     //   callback(new Error('Not allowed by CORS'));
-  //     // }
-  //   },
-  // });
+  const whitelist = [process.env.FRONTEND_URL, process.env.BACKEND_URL];
+  app.enableCors({
+    origin: (origin, callback) => {
+      if (!origin || whitelist.indexOf(origin) !== -1) {
+        callback(null, true);
+      }
+      // else {
+      //   callback(new Error('Not allowed by CORS'));
+      // }
+    },
+  });
 
   app.enableCors();
 
@@ -32,17 +32,15 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('api', app, document);
-
-  // if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
-  //   SwaggerModule.setup('api', app, document);
-  // } else {
-  //   SwaggerModule.setup('api', app, document, {
-  //     swaggerOptions: {
-  //       supportedSubmitMethods: [],
-  //     },
-  //   });
-  // }
+  if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
+    SwaggerModule.setup('api', app, document);
+  } else {
+    SwaggerModule.setup('api', app, document, {
+      swaggerOptions: {
+        supportedSubmitMethods: [],
+      },
+    });
+  }
 
   await app.listen(3000);
 }

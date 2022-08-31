@@ -1,11 +1,7 @@
-
-import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity, ViewColumn, ViewEntity, PrimaryColumn } from 'typeorm';
-
 
 @ViewEntity({ name: 'V_CLIENT_PUBLIC' })
 export class ClientPublicViewEntity extends BaseEntity {
-
   @PrimaryColumn({ name: 'CLIENT_NUMBER' })
   clientNumber: string;
 
@@ -23,6 +19,4 @@ export class ClientPublicViewEntity extends BaseEntity {
 
   @ViewColumn({ name: 'CLIENT_TYPE_CODE' })
   clientTypeCode: string;
-
 }
-
