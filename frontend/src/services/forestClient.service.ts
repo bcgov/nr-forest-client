@@ -1,11 +1,10 @@
 import axios from "axios";
-import { backendUrl, apiKey } from "../core/CoreConstants";
+import { backendUrl } from "../core/CoreConstants";
 
 export const searchInViewByClientNumber = (clientNumber: string) => {
   return axios
-    .get(backendUrl + "/clientPublicView/findByNumber", {
+    .get(backendUrl + "/client/findByNumber", {
       params: { clientNumber },
-      headers: { "X-API-KEY": apiKey },
     })
     .then((response) => {
       return response.data;
@@ -22,9 +21,8 @@ export const searchInViewAllNonIndividuals = (
   take: number
 ) => {
   return axios
-    .get(backendUrl + "/clientPublicView/findAllNonIndividuals", {
+    .get(backendUrl + "/client/findAllNonIndividuals", {
       params: { order, page, take },
-      headers: { "X-API-KEY": apiKey },
     })
     .then((response) => {
       return response.data;
