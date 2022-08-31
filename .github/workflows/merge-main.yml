@@ -324,12 +324,13 @@ jobs:
           fi
           echo "Image promotion not required"
 
-      - name: Promote Backend Image
+      - name: Promote Frontend Image
         if: steps.check.outputs.build == 'true'
         uses: shrink/actions-docker-registry-tag@v2
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
+          token: ${{ secrets.GHCR_TOKEN }}
           target: ${{ env.PREV }}-${{ env.COMPONENT }}
           tags: |
             ${{ env.ZONE }}-${{ env.COMPONENT }}
@@ -421,6 +422,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
+          token: ${{ secrets.GHCR_TOKEN }}
           target: ${{ env.PREV }}-backend
           tags: |
             prod-backend
@@ -430,6 +432,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
+          token: ${{ secrets.GHCR_TOKEN }}
           target: ${{ env.PREV }}-frontend
           tags: |
             prod-frontend
