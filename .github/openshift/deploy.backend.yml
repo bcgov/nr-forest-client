@@ -38,20 +38,11 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-old-growth:prod-backend
-  - name: ORACLEDB_USER
-    description: Oracle database user name
+  - name: API_URL
+    description: URL for the forest client api
     required: true
-  - name: ORACLEDB_PASSWORD
-    description: Oracle database password
-    required: true
-  - name: ORACLEDB_DATABASE
-    description: Oracle database database name
-    required: true
-  - name: ORACLEDB_HOST
-    description: Oracle database host
-    required: true
-  - name: ORACLEDB_SERVICENAME
-    description: Oracle database service name
+  - name: X_API_KEY
+    description: Key to access to the forest client api
     required: true
   - name: NODE_ENV
     description: environment mode
@@ -64,11 +55,7 @@ objects:
       labels:
         app: ${NAME}-${ZONE}
     stringData:
-      oracle-user: "${ORACLEDB_USER}"
-      oracle-password: "${ORACLEDB_PASSWORD}"
-      oracle-database: "${ORACLEDB_DATABASE}"
-      oracle-host: "${ORACLEDB_HOST}"
-      oracle-service: "${ORACLEDB_SERVICENAME}"
+      x-api-key: "${X_API_KEY}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -133,33 +120,13 @@ objects:
                   value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
-                - name: ORACLEDB_USER
+                - name: X_API_KEY
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: oracle-user
-                - name: ORACLEDB_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: oracle-password
-                - name: ORACLEDB_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: oracle-database
-                - name: ORACLEDB_HOST
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: oracle-host
-                - name: ORACLEDB_SERVICENAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: oracle-service
-                - name: ORACLEDB_PORT
-                  value: "1543"
+                      key: x-api-key
+                - name: API_URL
+                  value: ${API_URL}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
 
