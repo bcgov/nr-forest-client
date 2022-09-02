@@ -9,6 +9,7 @@
       </a>
       <h1>FSA - Forest Client</h1>
     </div>
+    <b-button v-if="$keycloak" @click="$keycloak.logoutFn"> Log Out </b-button>
   </header>
 </template>
 
