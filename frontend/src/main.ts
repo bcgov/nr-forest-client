@@ -34,7 +34,7 @@ if (nodeEnv && nodeEnv == "openshift-dev") {
       clientId: keycloakClientId,
     },
     onReady(keycloak: KeycloakInstance) {
-      console.log("Keycloak ready", keycloak);
+      // console.log("Keycloak ready", keycloak);
       app.use(BootstrapIconsPlugin);
       app.use(BootstrapVue3).mount("#app");
     },
