@@ -9,6 +9,14 @@
       </a>
       <h1>FSA - Forest Client</h1>
     </div>
+    <b-button
+      v-if="$keycloak"
+      @click="$keycloak.logoutFn"
+      variant="primary"
+      style="margin: 12px"
+    >
+      Log Out
+    </b-button>
   </header>
 </template>
 
@@ -22,7 +30,7 @@ export default defineComponent({});
 header {
   background-color: #036;
   border-bottom: 2px solid #fcba19;
-  padding: 0 65px 0 65px;
+  padding: 0 30px 0 30px;
   color: #fff;
   display: flex;
   height: 65px;
@@ -40,27 +48,17 @@ header h1 {
 
 header .banner {
   display: flex;
-  justify-content: flex-start;
   align-items: center;
+  justify-content: flex-start;
   margin: 0 10px 0 0;
-  /* border-style: dotted;
-    border-width: 1px;
-    border-color: lightgrey; */
-}
-
-header .other {
-  display: flex;
   flex-grow: 1;
-  /* border-style: dotted;
-    border-width: 1px;
-    border-color: lightgrey; */
 }
 
 /*
-    These are sample media queries only. Media queries are quite subjective
-    but, in general, should be made for the three different classes of screen
-    size: phone, tablet, full.
-  */
+  These are sample media queries only. Media queries are quite subjective
+  but, in general, should be made for the three different classes of screen
+  size: phone, tablet, full.
+*/
 
 @media screen and (min-width: 600px) and (max-width: 899px) {
   header h1 {

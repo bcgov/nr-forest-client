@@ -70,6 +70,8 @@ export default defineComponent({
   methods: {
     openNext() {
       if (
+        document.getElementById(this.nextId) &&
+        document.getElementById(this.nextId.slice(7)) &&
         !document
           .getElementById(this.nextId.slice(7)) // remove the "header-" part in the nextId, the rest is the child id
           .classList.contains("show")

@@ -2,45 +2,44 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import BootstrapVue3 from "bootstrap-vue-3";
 import { BootstrapIconsPlugin } from "bootstrap-icons-vue";
-// import VueKeycloakJs from "@dsb-norge/vue-keycloak-js";
-// import type { KeycloakInstance } from "keycloak-js";
+import VueKeycloakJs from "@dsb-norge/vue-keycloak-js";
+import type { KeycloakInstance } from "keycloak-js";
 import type { VueKeycloakInstance } from "@dsb-norge/vue-keycloak-js/dist/types";
+import { keycloakUrl, keycloakClientId, nodeEnv } from "./core/CoreConstants";
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
-// Enable login authentication
-// const app = createApp(App).use(VueKeycloakJs, {
-//   init: {
-//     // Use 'login-required' to always require authentication
-//     // If using 'login-required', there is no need for the router guards in router.js
-//     onLoad: "login-required",
-//     // onLoad: "check-sso",
-//     // silentCheckSsoRedirectUri: window.location.origin + "/index.html",
-//   },
-//   config: {
-//     url:
-//       config.VITE_KEYCLOAK_URL ||
-//       import.meta.env.VITE_KEYCLOAK_URL ||
-//       "https://dev.oidc.gov.bc.ca/auth/",
-//     clientId:
-//       config.VITE_KEYCLOAK_CLIENT_ID ||
-//       import.meta.env.VITE_KEYCLOAK_CLIENT_ID ||
-//       "nrog",
-//     realm:
-//       config.VITE_KEYCLOAK_REALM ||
-//       import.meta.env.VITE_KEYCLOAK_REALM ||
-//       "ichqx89w",
-//   },
-//   onReady(keycloak: KeycloakInstance) {
-//     console.log("Keycloak ready", keycloak);
-//   },
-// });
-
 const app = createApp(App);
-app.use(BootstrapIconsPlugin);
-app.use(BootstrapVue3).mount("#app");
+
+if (nodeEnv && nodeEnv == "openshift-dev") {
+  // disable the login authentication for the deployment in the openshift dev namespace
+  // cause the url in the dev namespace is not stable
+  app.use(BootstrapIconsPlugin);
+  app.use(BootstrapVue3).mount("#app");
+} else {
+  app.use(VueKeycloakJs, {
+    init: {
+      // Use 'login-required' to always require authentication
+      // If using 'login-required', there is no need for the router guards in router.js
+      onLoad: "login-required",
+      pkceMethod: "S256",
+      // onLoad: "check-sso",
+      // silentCheckSsoRedirectUri: window.location.origin + "/index.html",
+    },
+    config: {
+      url: keycloakUrl,
+      realm: "standard",
+      clientId: keycloakClientId,
+    },
+    onReady(keycloak: KeycloakInstance) {
+      // console.log("Keycloak ready", keycloak);
+      app.use(BootstrapIconsPlugin);
+      app.use(BootstrapVue3).mount("#app");
+    },
+  });
+}
 
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
