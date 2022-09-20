@@ -56,7 +56,6 @@
         "
       />
     </SearchTemplate>
-    <div>{{ $keycloak }}</div>
   </div>
 </template>
 
