@@ -56,6 +56,7 @@
         "
       />
     </SearchTemplate>
+    <div>{{ $keycloak }}</div>
   </div>
 </template>
 
@@ -65,8 +66,8 @@ import FormInput from "../common/FormInput.vue";
 import FormSelect from "../common/FormSelect.vue";
 import SearchTemplate from "../common/SearchTemplate.vue";
 import {
-  searchInViewByClientNumber, 
-  searchInViewAllNonIndividuals 
+  searchInViewByClientNumber,
+  searchInViewAllNonIndividuals,
 } from "../services/forestClient.service";
 import type { FormFieldTemplateType } from "../core/AppType";
 import { primary } from "../utils/color";
