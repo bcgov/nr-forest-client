@@ -21,7 +21,7 @@
     </SearchTemplate>
 
     <SearchTemplate
-      title="Search all non indivudual clients:"
+      title="Search all non individual clients:"
       :loading="nonindResultLoading"
       :result="nonindResult"
       @onSearch="seachAllNonIndividuals"
@@ -56,7 +56,6 @@
         "
       />
     </SearchTemplate>
-    <div>{{ $keycloak }}</div>
   </div>
 </template>
 
