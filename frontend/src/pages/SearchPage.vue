@@ -21,7 +21,7 @@
     </SearchTemplate>
 
     <SearchTemplate
-      title="Search all non indivudual clients:"
+      title="Search all non individual clients:"
       :loading="nonindResultLoading"
       :result="nonindResult"
       @onSearch="seachAllNonIndividuals"
