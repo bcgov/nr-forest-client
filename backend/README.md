@@ -1,28 +1,15 @@
-# Overview
+<!-- PROJECT SHIELDS -->
 
-The backend for nr-old-growth project is written in [NestJS](https://github.com/nestjs/nest) with the openapi integration.
+[![Contributors](https://img.shields.io/github/contributors/bcgov/nr-forest-client-api)](/../../graphs/contributors)
+[![Forks](https://img.shields.io/github/forks/bcgov/nr-forest-client-api)](/../../network/members)
+[![Stargazers](https://img.shields.io/github/stars/bcgov/nr-forest-client-api)](/../../stargazers)
+[![Issues](https://img.shields.io/github/issues/bcgov/nr-forest-client-api)](/../../issues)
+[![MIT License](https://img.shields.io/github/license/bcgov/nr-forest-client-api.svg)](/LICENSE.md)
+[![Lifecycle](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
-## Setup local development
+The nr-forest-client-api application provides the API that allows systems to consume forest client data without having to connect to a database. We are working the process to publish our API  
 
-- Create a .env file inside this backend folder with the following options:
+The nr-forest-client-api is a node.js application built with [nestJS](https://docs.nestjs.com), integrated with the [greenfield-template](https://github.com/bcgov/greenfield-template) to automate the process for testing, security scanning, code quality checking, image building and deploying. It is hosted in openshift, protected and published through [API Services Portal](https://api.gov.bc.ca/)
 
-  ```
-  NODE_ENV=development
 
-  FRONTEND_URL=[enable cors for this frontend url]
 
-  BACKEND_URL=[enable cors for this backend url to enable try in swagger]
-
-  API_URL=[url for the forest client api]
-  
-  X_API_KEY=[key to access to the forest client api]
-
-  ```
-
-- Install dependencies `npm install`
-- Start the server `npm start`
-- Run test `npm run test`
-
-## Reference reading
-
-[Setup openapi module with nestjs](https://dev.to/arnaudcortisse/trying-out-nestjs-part-3-creating-an-openapi-document-3800)
