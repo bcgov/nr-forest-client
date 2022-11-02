@@ -1,11 +1,11 @@
-package ca.bc.gov.app.m.oracle.datavalidation.vo;
+package ca.bc.gov.app.m.om.vo;
 
 import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class OpenMapResponseVO {
+public class OpenMapsResponseVO {
 
 	@JsonProperty("features")
 	public List<FeatureVO> features;
