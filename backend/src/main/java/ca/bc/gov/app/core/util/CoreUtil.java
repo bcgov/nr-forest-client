@@ -11,7 +11,7 @@ public interface CoreUtil {
 	boolean isNumber(String str);
 
     <T> T jsonStringToObj(String jsonInString, Class<T> valueType);
-    
-    String objToJsonString(Object obj);
+
+	String objToJsonString(Object obj);
 	
 }
