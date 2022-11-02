@@ -8,9 +8,9 @@
 		<relativePath />
 	</parent>
 	<groupId>ca.bc.gov</groupId>
-	<artifactId>nr-forest-client-api</artifactId>
+	<artifactId>nr-forest-client</artifactId>
 	<version>0.0.1</version>
-	<name>nr-forest-client-api</name>
+	<name>nr-forest-client</name>
 	<description>Starting NR Forest Client API</description>
 	<licenses>
 		<license>
@@ -111,6 +111,6 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
-		<finalName>nr-forest-client-api</finalName>
+		<finalName>nr-forest-client</finalName>
 	</build>
 </project>
