@@ -2,17 +2,21 @@ package ca.bc.gov.app.m.ob.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ca.bc.gov.app.m.ob.service.OrgBookApiService;
+import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientDoingBusinessAsEntity;
 import io.swagger.annotations.Api;
 
 //NOTE: 
@@ -27,12 +31,19 @@ public class OrgBookApiController {
     
     @Inject
     private OrgBookApiService orgBookApiService;
-
+    
     @RequestMapping(value = "/findByIncorporationNumber", 
                     method = RequestMethod.GET, 
                     produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> findByIncorporationNumber(@RequestParam("incorporationNumber") String incorporationNumber) {
         return orgBookApiService.findByIncorporationNumber(incorporationNumber);
     }
+    
+    //TODO: Remove it as it is for Data Analysis
+  	@GetMapping("/getAllClientDoingBusinessAs")
+  	public List<ClientDoingBusinessAsEntity> getAllClientDoingBusinessAs() {
+  		List<ClientDoingBusinessAsEntity> client = orgBookApiService.getAllClientDoingBusinessAs();
+  		return client;
+  	}
 
 }
