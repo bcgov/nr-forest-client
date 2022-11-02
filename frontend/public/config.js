@@ -8,3 +8,5 @@ const config = (() => {
     // VITE_KEYCLOAK_REALM: ''
   };
 })();
+
+export default config;
