@@ -1,15 +1,25 @@
-<!-- PROJECT SHIELDS -->
+The nr-forest-client backend provides the internal apis that support the frontend development.
 
-[![Contributors](https://img.shields.io/github/contributors/bcgov/nr-forest-client)](/../../graphs/contributors)
-[![Forks](https://img.shields.io/github/forks/bcgov/nr-forest-client)](/../../network/members)
-[![Stargazers](https://img.shields.io/github/stars/bcgov/nr-forest-client)](/../../stargazers)
-[![Issues](https://img.shields.io/github/issues/bcgov/nr-forest-client)](/../../issues)
-[![MIT License](https://img.shields.io/github/license/bcgov/nr-forest-client.svg)](/LICENSE.md)
-[![Lifecycle](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+## Setup local development
 
-The nr-forest-client application provides the API that allows systems to consume forest client data without having to connect to a database. We are working the process to publish our API  
+```
+- Export env variables for database credentials:
 
-The nr-forest-client is a node.js application built with [nestJS](https://docs.nestjs.com), integrated with the [greenfield-template](https://github.com/bcgov/greenfield-template) to automate the process for testing, security scanning, code quality checking, image building and deploying. It is hosted in openshift, protected and published through [API Services Portal](https://api.gov.bc.ca/)
+```
 
+export ORACLEDB_HOST=[]
+export ORACLEDB_PORT=[]
+export ORACLEDB_SERVICENAME=[]
+export ORACLEDB_USER=[]
+export ORACLEDB_PASSWORD=[]
 
+export POSTGRESQL_HOST=[]
+export POSTGRESQL_DATABASE=[]
+export POSTGRESQL_USER=[]
+export POSTGRESQL_PASSWORD=[]
 
+```
+- Start the application: `./mvnw spring-boot:run`
+- Rebuild the application if need: `./mvnw clean package`
+- Run test: `./mvnw test`
+```

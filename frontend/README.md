@@ -22,13 +22,6 @@ VITE_KEYCLOAK_REALM=[keycloak realm name]
 
 ## Technology options
 
-**Map**:  
-[Leaflet Map](https://leafletjs.com)  
-[vue-leaflet](https://github.com/vue-leaflet/vue-leaflet)  
-**Map Drawing**:  
-[leaflet-geoman](https://github.com/geoman-io/leaflet-geoman)  
-**Map Search**:  
-[leaflet-geosearch](https://github.com/smeijer/leaflet-geosearch)  
 **Unit Test**:  
 [Vitest](https://vitest.dev/api/)
 
