@@ -84,7 +84,7 @@ public class OrgBookApiServiceImpl implements OrgBookApiService {
     }
     
     @Override
-	public List<ClientDoingBusinessAsEntity> getAllClientDoingBusinessAs() {
+	public List<ClientDoingBusinessAsEntity> validateClientDoingBusinessAs() {
 		
 		Date startedDate = new Date();
 		

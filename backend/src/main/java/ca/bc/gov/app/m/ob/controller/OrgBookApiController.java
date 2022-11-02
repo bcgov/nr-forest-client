@@ -40,9 +40,9 @@ public class OrgBookApiController {
     }
     
     //TODO: Remove it as it is for Data Analysis
-  	@GetMapping("/getAllClientDoingBusinessAs")
-  	public List<ClientDoingBusinessAsEntity> getAllClientDoingBusinessAs() {
-  		List<ClientDoingBusinessAsEntity> client = orgBookApiService.getAllClientDoingBusinessAs();
+  	@GetMapping("/validateClientDoingBusinessAs")
+  	public List<ClientDoingBusinessAsEntity> validateClientDoingBusinessAs() {
+  		List<ClientDoingBusinessAsEntity> client = orgBookApiService.validateClientDoingBusinessAs();
   		return client;
   	}
 

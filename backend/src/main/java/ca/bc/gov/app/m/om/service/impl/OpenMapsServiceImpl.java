@@ -1,12 +1,11 @@
-package ca.bc.gov.app.m.oracle.datavalidation.service.impl;
+package ca.bc.gov.app.m.om.service.impl;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,16 +14,16 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import ca.bc.gov.app.core.util.CoreUtil;
-import ca.bc.gov.app.m.oracle.datavalidation.service.DataValidationService;
+import ca.bc.gov.app.m.om.service.OpenMapsService;
+import ca.bc.gov.app.m.om.vo.FirstNationBandVidationVO;
+import ca.bc.gov.app.m.om.vo.OpenMapsResponseVO;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientLocationEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ClientLocationRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ForestClientRepository;
-import ca.bc.gov.app.m.oracle.datavalidation.vo.FirstNationBandVidationVO;
-import ca.bc.gov.app.m.oracle.datavalidation.vo.OpenMapResponseVO;
 
-@Service(DataValidationService.BEAN_NAME)
-public class DataValidationServiceImpl implements DataValidationService {
+@Service(OpenMapsService.BEAN_NAME)
+public class OpenMapsServiceImpl implements OpenMapsService {
 
 	@Inject
 	private ForestClientRepository forestClientRepository;
@@ -35,7 +34,7 @@ public class DataValidationServiceImpl implements DataValidationService {
 	@Inject
 	private CoreUtil coreUtil;
 
-	public static final Logger logger = LoggerFactory.getLogger(DataValidationServiceImpl.class);
+	public static final Logger logger = LoggerFactory.getLogger(OpenMapsServiceImpl.class);
 
 	private URI toURI(String uri) {
 		try {
@@ -45,7 +44,7 @@ public class DataValidationServiceImpl implements DataValidationService {
 		}
 	}
 
-	private OpenMapResponseVO checkSourceFirstNationId(String firstNationId) {
+	private OpenMapsResponseVO checkSourceFirstNationId(String firstNationId) {
 
 		try {
 			String url = "https://openmaps.gov.bc.ca/geo/pub/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=WHSE_HUMAN_CULTURAL_ECONOMIC.FN_COMMUNITY_LOCATIONS_SP&count=10000&"
@@ -54,7 +53,7 @@ public class DataValidationServiceImpl implements DataValidationService {
 			RestTemplate restTemplate = new RestTemplate();
 			String restCallResponse = restTemplate.getForObject(toURI(url), String.class);
 
-			OpenMapResponseVO response = coreUtil.jsonStringToObj(restCallResponse, OpenMapResponseVO.class);
+			OpenMapsResponseVO response = coreUtil.jsonStringToObj(restCallResponse, OpenMapsResponseVO.class);
 
 			return response;
 
@@ -82,7 +81,7 @@ public class DataValidationServiceImpl implements DataValidationService {
 		for (ForestClientEntity client : clients) {
 //			logger.info("current number" + client.getCorpRegnNmbr());
 			if (client.getCorpRegnNmbr() != null) {
-				OpenMapResponseVO response = checkSourceFirstNationId(client.getCorpRegnNmbr());
+				OpenMapsResponseVO response = checkSourceFirstNationId(client.getCorpRegnNmbr());
 				ClientLocationEntity clientLocation = clientLocationRepository
 						.findByClientNumber(client.getClientNumber());
 				if (!CollectionUtils.isEmpty(response.features)) {

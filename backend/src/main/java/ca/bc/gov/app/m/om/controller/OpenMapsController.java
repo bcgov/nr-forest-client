@@ -1,4 +1,4 @@
-package ca.bc.gov.app.m.oracle.datavalidation.controller;
+package ca.bc.gov.app.m.om.controller;
 
 import java.util.List;
 
@@ -10,19 +10,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ca.bc.gov.app.m.oracle.datavalidation.service.DataValidationService;
-import ca.bc.gov.app.m.oracle.datavalidation.vo.FirstNationBandVidationVO;
+import ca.bc.gov.app.m.om.service.OpenMapsService;
+import ca.bc.gov.app.m.om.vo.FirstNationBandVidationVO;
 import io.swagger.annotations.Api;
 
-@Api(tags = "Oracle Data Validation")
+@Api(tags = "Open Maps")
 @RestController
-@RequestMapping("app/m/oracle/validation/")
-public class DataValidationController {
+@RequestMapping("app/m/openmaps/")
+public class OpenMapsController {
 
-    public static final Logger logger = LoggerFactory.getLogger(DataValidationController.class);
+    public static final Logger logger = LoggerFactory.getLogger(OpenMapsController.class);
 
     @Inject
-    private DataValidationService dataValidationService;
+    private OpenMapsService dataValidationService;
 
     @GetMapping("/validateFirstNationBand")
     public List<FirstNationBandVidationVO> validateFirstNationBand() {

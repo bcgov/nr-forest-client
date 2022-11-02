@@ -1,4 +1,4 @@
-package ca.bc.gov.app.m.oracle.datavalidation.vo;
+package ca.bc.gov.app.m.om.vo;
 
 import java.io.Serializable;
 

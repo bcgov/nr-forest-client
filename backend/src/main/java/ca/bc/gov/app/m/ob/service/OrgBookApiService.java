@@ -13,7 +13,7 @@ public interface OrgBookApiService {
 
     ResponseEntity<Object> findByIncorporationNumber(String incorporationNumber);
 
-	List<ClientDoingBusinessAsEntity> getAllClientDoingBusinessAs();
+	List<ClientDoingBusinessAsEntity> validateClientDoingBusinessAs();
 
 	OrgBookResponseVO findByClientName(String clientName);
     
