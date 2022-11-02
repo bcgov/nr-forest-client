@@ -8,10 +8,10 @@
 		<relativePath />
 	</parent>
 	<groupId>ca.bc.gov</groupId>
-	<artifactId>nr-forest-client-api</artifactId>
+	<artifactId>nr-forest-client-backend</artifactId>
 	<version>0.0.1</version>
-	<name>nr-forest-client-api</name>
-	<description>Starting NR Forest Client API</description>
+	<name>nr-forest-client-backend</name>
+	<description>Starting NR Forest Client Backend</description>
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
@@ -111,6 +111,6 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
-		<finalName>nr-forest-client-api</finalName>
+		<finalName>nr-forest-client-backend</finalName>
 	</build>
 </project>

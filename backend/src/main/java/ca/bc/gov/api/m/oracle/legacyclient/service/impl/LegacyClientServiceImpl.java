@@ -1,21 +1,21 @@
 package ca.bc.gov.api.m.oracle.legacyclient.service.impl;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 
 import ca.bc.gov.api.m.oracle.legacyclient.entity.ClientPublicViewEntity;
-import ca.bc.gov.api.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.api.m.oracle.legacyclient.repository.ClientPublicViewRepository;
-import ca.bc.gov.api.m.oracle.legacyclient.repository.ForestClientRepository;
 import ca.bc.gov.api.m.oracle.legacyclient.service.LegacyClientService;
 import ca.bc.gov.api.m.oracle.legacyclient.vo.ClientPublicViewVO;
 
@@ -25,8 +25,7 @@ public class LegacyClientServiceImpl implements LegacyClientService {
 	@Inject
 	private ClientPublicViewRepository clientPublicViewRepository;
 
-	@Inject
-    private ForestClientRepository forestClientRepository;
+	public static final Logger logger = LoggerFactory.getLogger(LegacyClientServiceImpl.class);
 	
 	
 	@Override
@@ -64,19 +63,6 @@ public class LegacyClientServiceImpl implements LegacyClientService {
 		else {
 			return null;
 		}
-	}
-
-	@Override
-	public List<ForestClientEntity> validateFirstNationBand() {
-		List<ForestClientEntity> clients = forestClientRepository.findAllFirstNationBandClients();
-		
-		// todo: go for each client to make the api call
-		// for (ClientPublicViewEntity client : clients) { 
-		// 		System.out.println(client.getClientName());
-		// }
-
-		return clients;
-
 	}
 
 }

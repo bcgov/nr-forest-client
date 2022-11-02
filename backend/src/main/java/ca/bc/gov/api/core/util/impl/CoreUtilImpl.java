@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import ca.bc.gov.api.core.util.CoreUtil;
 
@@ -36,5 +37,17 @@ public class CoreUtilImpl implements CoreUtil {
             throw new RuntimeException("Failed to convert JSON string: " + jsonInString + " to object of type: " + valueType.getCanonicalName(), e);
         }
     }
+    
+    @Override
+	public String objToJsonString(Object obj) {
+		try {
+	        ObjectMapper mapper = new ObjectMapper();
+	        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+			return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Failed to convert object: " + obj + " to JSON string", e);
+		}
+	}
 
 }
