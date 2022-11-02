@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-bottom: 24px">My application list</div>
+  <div style="margin-bottom: 24px">Welcome to forest client!</div>
 </template>
 
 <script setup lang="ts">
@@ -9,7 +9,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 export default defineComponent({
-  name: "MyApplication",
+  name: "HomePage",
 });
 </script>
 

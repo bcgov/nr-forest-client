@@ -3,21 +3,52 @@
     <MainHeader />
     <div>
       <b-tabs pills card>
-        <b-tab title="Home" active><p>Welcome to forest client!</p></b-tab>
-        <b-tab title="My Application"><MyApplication /></b-tab>
-        <b-tab title="Create a New Client"><CreateNewClient /></b-tab>
+        <b-tab
+          v-for="(tab, index) in tabs"
+          :title="tab.title"
+          :key="index"
+          :active="index == 0"
+          ><component :is="tab.content"
+        /></b-tab>
       </b-tabs>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { reactive, inject, ref } from "vue";
 import MainHeader from "./common/MainHeader.vue";
-import SearchPage from "./pages/SearchPage.vue";
-import MyApplication from "./pages/MyApplication.vue";
-import CreateNewClient from "./pages/CreateNewClient.vue";
+import HomePage from "./pages/HomePage.vue";
+import ReviewApplicationPage from "./pages/ReviewApplicationPage.vue";
+import MyApplicationPage from "./pages/MyApplicationPage.vue";
+import ApplyNewClientPage from "./pages/ApplyNewClientPage.vue";
+import type { Ref, DefineComponent } from "vue";
+import type { KeycloakInstance } from "keycloak-js";
+import { navBlue, navSelectBlue } from "./core/CoreConstants";
 
 // composition api
+const keycloak: KeycloakInstance = inject("keycloak");
+let tabs: Ref<Array<{ title: String; content: DefineComponent }>> = ref([]);
+
+if (
+  keycloak &&
+  keycloak.tokenParsed &&
+  keycloak.tokenParsed.identity_provider &&
+  keycloak.tokenParsed.identity_provider == "idir"
+) {
+  if (keycloak.tokenParsed.identity_provider == "idir") {
+    tabs = [
+      { title: "Home", content: HomePage },
+      { title: "Review Applications", content: ReviewApplicationPage },
+    ];
+  }
+} else {
+  tabs = [
+    { title: "Home", content: HomePage },
+    { title: "My Application", content: MyApplicationPage },
+    { title: "Apply a New Client", content: ApplyNewClientPage },
+  ];
+}
 </script>
 
 <script lang="ts">
@@ -62,8 +93,9 @@ export default defineComponent({
   margin: 0px 0px 0px 0px;
 }
 
+/* ------------ nav bar ------------------- */
 .nav.nav-pills {
-  background-color: #38598a !important;
+  background-color: v-bind(navBlue) !important;
   height: 45px;
 }
 .nav.nav-pills .nav-item button {
@@ -71,8 +103,7 @@ export default defineComponent({
   height: 100%;
 }
 .nav.nav-pills .nav-item button[aria-selected="true"] {
-  background-color: rgba(84, 117, 167, 1);
-  border-color: rgba(84, 117, 167, 1);
-  /* font-weight: bold; */
+  background-color: v-bind(navSelectBlue);
+  border-color: v-bind(navSelectBlue);
 }
 </style>
