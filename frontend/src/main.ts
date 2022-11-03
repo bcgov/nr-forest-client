@@ -35,6 +35,8 @@ if (nodeEnv && nodeEnv == "openshift-dev") {
     },
     onReady(keycloak: KeycloakInstance) {
       console.log("Keycloak ready", keycloak);
+      // provde global property keycloak to read login information
+      app.provide("keycloak", keycloak);
       app.use(BootstrapIconsPlugin);
       app.use(BootstrapVue3).mount("#app");
     },

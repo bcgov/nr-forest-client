@@ -20,15 +20,20 @@
   </header>
 </template>
 
+<script setup lang="ts">
+import { headerBlue } from "../core/CoreConstants";
+</script>
+
 <script lang="ts">
 import { defineComponent } from "vue";
-
-export default defineComponent({});
+export default defineComponent({
+  name: "MainHeader",
+});
 </script>
 
 <style scoped>
 header {
-  background-color: #036;
+  background-color: v-bind(headerBlue);
   border-bottom: 2px solid #fcba19;
   padding: 0 30px 0 30px;
   color: #fff;

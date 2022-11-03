@@ -1,28 +1,25 @@
-# Overview
-
-The backend for nr-old-growth project is written in [NestJS](https://github.com/nestjs/nest) with the openapi integration.
+The nr-forest-client backend provides the internal apis that support the frontend development.
 
 ## Setup local development
 
-- Create a .env file inside this backend folder with the following options:
+```
+- Export env variables for database credentials:
 
-  ```
-  NODE_ENV=development
+```
 
-  FRONTEND_URL=[enable cors for this frontend url]
+export ORACLEDB_HOST=[]
+export ORACLEDB_PORT=[]
+export ORACLEDB_SERVICENAME=[]
+export ORACLEDB_USER=[]
+export ORACLEDB_PASSWORD=[]
 
-  BACKEND_URL=[enable cors for this backend url to enable try in swagger]
+export POSTGRESQL_HOST=[]
+export POSTGRESQL_DATABASE=[]
+export POSTGRESQL_USER=[]
+export POSTGRESQL_PASSWORD=[]
 
-  API_URL=[url for the forest client api]
-  
-  X_API_KEY=[key to access to the forest client api]
-
-  ```
-
-- Install dependencies `npm install`
-- Start the server `npm start`
-- Run test `npm run test`
-
-## Reference reading
-
-[Setup openapi module with nestjs](https://dev.to/arnaudcortisse/trying-out-nestjs-part-3-creating-an-openapi-document-3800)
+```
+- Start the application: `./mvnw spring-boot:run`
+- Rebuild the application if need: `./mvnw clean package`
+- Run test: `./mvnw test`
+```
