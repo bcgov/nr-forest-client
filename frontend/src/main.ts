@@ -13,8 +13,6 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 
 const app = createApp(App);
 
-console.log("nodeEnv", nodeEnv);
-
 if (nodeEnv && nodeEnv == "openshift-dev") {
   // disable the login authentication for the deployment in the openshift dev namespace
   // cause the url in the dev namespace is not stable
