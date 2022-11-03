@@ -1,5 +1,5 @@
 import axios from "axios";
-import { backendUrl } from "../core/CoreConstants";
+import { backendUrl } from "../core/EnvConstants";
 
 export const searchInViewByClientNumber = (clientNumber: string) => {
   return axios
