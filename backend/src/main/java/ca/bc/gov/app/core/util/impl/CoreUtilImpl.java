@@ -1,8 +1,12 @@
 package ca.bc.gov.app.core.util.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +14,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import ca.bc.gov.app.core.CoreConstant;
 import ca.bc.gov.app.core.util.CoreUtil;
 
 @Component
@@ -49,5 +54,36 @@ public class CoreUtilImpl implements CoreUtil {
 			throw new RuntimeException("Failed to convert object: " + obj + " to JSON string", e);
 		}
 	}
+    
+	@Override
+	public boolean isNullOrBlank(String str) {
+		return str == null || str.trim().length() == 0;
+	}
 
+	@Override
+	public List<String> fromCsvToStringList(String csvString) {
+		if (!isNullOrBlank(csvString)) {
+			return new ArrayList<>(Arrays.asList(csvString.split("\\s*,\\s*")));
+		} else {
+			return new ArrayList<>();
+		}
+	}
+	
+	@Override
+	public String fromStringListToCsvWithAposthrophe(String csvString) {
+		List<String> tempList = fromCsvToStringList(csvString);
+		if (CollectionUtils.isEmpty(tempList)) {
+			return null;
+		}
+		String finalStr = null;
+		for (String listItem : tempList) {
+			if (finalStr == null) {
+				finalStr = CoreConstant.APOSTROPHE + listItem + CoreConstant.APOSTROPHE;
+			} else {
+				finalStr = finalStr + CoreConstant.CSV_SPACE_DELIMITER + CoreConstant.APOSTROPHE + listItem + CoreConstant.APOSTROPHE;
+			}
+		}
+		return finalStr;
+	}
+	
 }
