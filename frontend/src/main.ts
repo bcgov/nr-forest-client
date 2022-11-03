@@ -5,7 +5,7 @@ import { BootstrapIconsPlugin } from "bootstrap-icons-vue";
 import VueKeycloakJs from "@dsb-norge/vue-keycloak-js";
 import type { KeycloakInstance } from "keycloak-js";
 import type { VueKeycloakInstance } from "@dsb-norge/vue-keycloak-js/dist/types";
-import { keycloakUrl, keycloakClientId, nodeEnv } from "./core/EnvConstants";
+import { keycloakUrl, keycloakClientId, nodeEnv } from "./core/CoreConstants";
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import "bootstrap/dist/css/bootstrap.css";
@@ -13,7 +13,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 
 const app = createApp(App);
 
-console.log('nodeEnv', nodeEnv);
+console.log("nodeEnv", nodeEnv);
 
 if (nodeEnv && nodeEnv == "openshift-dev") {
   // disable the login authentication for the deployment in the openshift dev namespace
