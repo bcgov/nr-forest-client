@@ -36,12 +36,10 @@ if (
   keycloak.tokenParsed.identity_provider &&
   keycloak.tokenParsed.identity_provider == "idir"
 ) {
-  if (keycloak.tokenParsed.identity_provider == "idir") {
-    tabs = [
-      { title: "Home", content: HomePage },
-      { title: "Review Applications", content: ReviewApplicationPage },
-    ];
-  }
+  tabs = [
+    { title: "Home", content: HomePage },
+    { title: "Review Applications", content: ReviewApplicationPage },
+  ];
 } else {
   tabs = [
     { title: "Home", content: HomePage },
