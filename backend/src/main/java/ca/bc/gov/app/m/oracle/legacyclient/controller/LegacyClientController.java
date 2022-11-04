@@ -20,6 +20,7 @@ import ca.bc.gov.app.core.util.CoreUtil;
 import ca.bc.gov.app.m.oracle.legacyclient.service.LegacyClientService;
 import ca.bc.gov.app.m.oracle.legacyclient.vo.ClientPublicViewVO;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 
 @Api(tags = OraclePersistenceConfiguration.ORACLE_API_TAG)
 @RestController
@@ -47,16 +48,46 @@ public class LegacyClientController {
 
     //TODO: Improve logic
     @GetMapping("/findAllNonIndividuals")
-    public ResponseEntity<Page<ClientPublicViewVO>> findAllNonIndividuals(@RequestParam(defaultValue = "0") Integer pageNo,
-                                                                          @RequestParam(defaultValue = "10") Integer pageSize,
+    public ResponseEntity<Page<ClientPublicViewVO>> findAllNonIndividuals(@RequestParam(defaultValue = "0") Integer currentPage,
+                                                                          @RequestParam(defaultValue = "10") Integer itemsPerPage,
                                                                           @RequestParam(defaultValue = "CLIENT_NUMBER") String sortBy) {
         try {
-            Page<ClientPublicViewVO> clientData = legacyClientService.findAllNonIndividualClients(pageNo, pageSize, sortBy);
+            Page<ClientPublicViewVO> clientData = legacyClientService.findAllNonIndividualClients(currentPage, itemsPerPage, sortBy);
             return new ResponseEntity<Page<ClientPublicViewVO>>(clientData, HttpStatus.OK);
         } 
         catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    @RequestMapping(value = "/findByNames", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> findByNames(@RequestParam(name="clientNumber", required=false) 
+    										  @ApiParam(value = "The name of the entity or individual's last name") 
+    										  String clientName,
+    										  
+    										  @RequestParam(name="clientFirstName", required=false) 
+    										  @ApiParam(value = "The client's first name", required=false) 
+    										  String clientFirstName,
+    										  
+    										  @RequestParam(name="clientMiddleName", required=false) 
+    										  @ApiParam(value = "The client's middle name", required=false) 
+    										  String clientMiddleName,
+    										  
+    										  @RequestParam(name="clientTypeCodesAsCsv", required=false) 
+    										  @ApiParam(value = "A code indicating a type of ministry client.<br>" +
+    									                 		"Examples include but are not limited to: Corporation, Individual, Association, First Nation Band...<br>" + 
+    									                 		"Please enter one or more client type codes as CSV, i.e. C,A,B.") 
+    										  String clientTypeCodesAsCsv,
+    										  
+    										  @RequestParam(defaultValue = "1") Integer currentPage,
+                                              @RequestParam(defaultValue = "10") Integer itemsPerPage) {
+    	
+    	return ResponseEntity.ok(legacyClientService.findByNames(clientName,
+    															 clientFirstName,
+    															 clientMiddleName,
+    															 clientTypeCodesAsCsv,
+    															 currentPage,
+    															 itemsPerPage));
     }
 
 }
