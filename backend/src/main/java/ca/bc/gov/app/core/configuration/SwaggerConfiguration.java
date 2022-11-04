@@ -28,8 +28,8 @@ public class SwaggerConfiguration {
 
 	private ApiInfo apiInfo() {
 		return new ApiInfoBuilder()
-					.title("FSA Forest Client Rest APIs")
-					.description("APIs that allows systems to consume forest client data.")
+					.title("FSA Forest Client")
+					.description("Forest Client Application.")
 					.version("1.0")
 					.build();
 	}
