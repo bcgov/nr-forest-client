@@ -61,7 +61,7 @@ public class LegacyClientController {
     }
     
     @RequestMapping(value = "/findByNames", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> findByNames(@RequestParam(name="clientNumber", required=false) 
+    public ResponseEntity<Object> findByNames(@RequestParam(name="clientName", required=false) 
     										  @ApiParam(value = "The name of the entity or individual's last name") 
     										  String clientName,
     										  

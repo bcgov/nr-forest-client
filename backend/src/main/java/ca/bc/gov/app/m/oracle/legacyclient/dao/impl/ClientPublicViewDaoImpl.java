@@ -117,7 +117,7 @@ public class ClientPublicViewDaoImpl implements ClientPublicViewDao {
 		}
 		
 		if (!coreUtil.isNullOrBlank(filterObject.clientTypeCodesAsCsv)) {
-			sb.append("and geoproc_status_code in (" + coreUtil.fromStringListToCsvWithAposthrophe(filterObject.clientTypeCodesAsCsv) + ") ");
+			sb.append("and client_type_code in (" + coreUtil.fromStringListToCsvWithAposthrophe(filterObject.clientTypeCodesAsCsv) + ") ");
 		}
 
 	}

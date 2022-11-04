@@ -42,13 +42,18 @@ public class LegacyClientServiceImpl implements LegacyClientService {
 	public ClientPublicViewVO findByClientNumber(String clientNumber) {
 		ClientPublicViewEntity client = clientPublicViewRepository.findByClientNumber(clientNumber);
 		
-		return new ClientPublicViewVO(
-    		        client.getClientNumber(),
-    		        client.getClientName(),
-    		        client.getLegalFirstName(),
-                    client.getLegalMiddleName(),
-                    client.getClientStatusCode(),
-                    client.getClientTypeCode());
+		if (null != client) {
+			return new ClientPublicViewVO(
+	    		        client.getClientNumber(),
+	    		        client.getClientName(),
+	    		        client.getLegalFirstName(),
+	                    client.getLegalMiddleName(),
+	                    client.getClientStatusCode(),
+	                    client.getClientTypeCode());
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override
