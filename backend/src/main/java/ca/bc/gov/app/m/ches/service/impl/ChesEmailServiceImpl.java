@@ -57,7 +57,7 @@ public class ChesEmailServiceImpl implements ChesEmailService {
 	}
 
 	@Override
-	public ResponseEntity<Object> sendEmail(List<String> emailTo, String emailBody) {
+	public ResponseEntity<Object> sendEmail(String emailTo, String emailBody) {
 
 		try {
 			RestTemplate restTemplate = new RestTemplate();
@@ -73,7 +73,8 @@ public class ChesEmailServiceImpl implements ChesEmailService {
 			request.put("body", emailBody);
 			request.put("from", "FSA_donotreply@gov.bc.ca");
 			request.put("subject", "Forest Client Application Confirmation");
-			request.put("to", emailTo);
+			List<String> emailToList = List.of(emailTo.replaceAll("\\s","").split(","));
+			request.put("to", emailToList);
 
 			HttpEntity<String> entity = new HttpEntity<String>(request.toString(), headers);
 			String response = restTemplate.postForObject(toURI(url), entity, String.class);
