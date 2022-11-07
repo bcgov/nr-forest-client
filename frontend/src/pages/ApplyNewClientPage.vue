@@ -2,8 +2,8 @@
   <div style="margin: 24px">
     <FormInput
       :fieldProps="emailInputProps"
-      :inputValue="emailValue"
-      @updateFormData="updateFormData"
+      :value="emailValue"
+      @updateValue="updateEmailValue"
     />
     <b-button
       variant="primary"
@@ -30,7 +30,7 @@ const emailInputProps: FormFieldTemplateType = {
 
 const emailValue = ref("");
 
-const updateFormData = (id: string, newValue: string) => {
+const updateEmailValue = (id: string, newValue: string) => {
   emailValue.value = newValue;
 };
 
