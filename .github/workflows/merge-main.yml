@@ -80,6 +80,7 @@ jobs:
 
       - name: Backend Tests
         run: |
+          cd backend
           ./mvnw test
 
       - name: Frontend Tests
