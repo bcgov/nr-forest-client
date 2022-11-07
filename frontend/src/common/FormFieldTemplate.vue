@@ -18,6 +18,7 @@ import type { PropType } from "vue";
 import FormFieldTitle from "./FormFieldTitle.vue";
 import type { FormFieldTemplateType } from "../core/AppType";
 
+// composition api
 const props = defineProps({
   fieldProps: {
     type: Object as PropType<FormFieldTemplateType>,
@@ -28,7 +29,10 @@ const props = defineProps({
 });
 </script>
 <script lang="ts">
-export default {};
+import { defineComponent } from "vue";
+export default defineComponent({
+  name: "FormFieldTemplate",
+});
 </script>
 
 <style scoped>
