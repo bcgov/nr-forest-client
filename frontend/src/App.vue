@@ -24,7 +24,7 @@ import MyApplicationPage from "./pages/MyApplicationPage.vue";
 import ApplyNewClientPage from "./pages/ApplyNewClientPage.vue";
 import type { Ref, DefineComponent } from "vue";
 import type { KeycloakInstance } from "keycloak-js";
-import { navBlue, navSelectBlue } from "./core/CoreConstants";
+import { navBlue, navSelectBlue } from "./utils/color";
 
 // composition api
 const keycloak: KeycloakInstance = inject("keycloak");
@@ -64,7 +64,7 @@ export default defineComponent({
   font-size: 0.875rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  /* text-align: center; */
   /* color: #2c3e50; */
   color: rgba(0, 0, 0, 0.87);
 }

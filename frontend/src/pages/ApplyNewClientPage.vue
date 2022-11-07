@@ -1,9 +1,42 @@
 <template>
-  <div style="margin-bottom: 24px">New Client Form</div>
+  <div style="margin: 24px">
+    <FormInput
+      :fieldProps="emailInputProps"
+      :inputValue="emailValue"
+      @updateFormData="updateFormData"
+    />
+    <b-button
+      variant="primary"
+      :style="'background-color:' + primary + ';margin-top: 24px'"
+      @click="sendEmail()"
+    >
+      Submit
+    </b-button>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+import FormInput from "../common/FormInput.vue";
+import { sendConfirmationEmail } from "../services/forestClient.service";
+import type { FormFieldTemplateType } from "../core/AppType";
+import { primary } from "../utils/color";
+
 // composition api
+const emailInputProps: FormFieldTemplateType = {
+  label: "Email Address",
+  id: "test-email",
+};
+
+const emailValue = ref("");
+
+const updateFormData = (id: string, newValue: string) => {
+  emailValue.value = newValue;
+};
+
+const sendEmail = () => {
+  sendConfirmationEmail(emailValue.value, "Hello World!");
+};
 </script>
 
 <script lang="ts">
