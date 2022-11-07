@@ -86,7 +86,7 @@ jobs:
         run: |
           cd frontend
           npm ci
-          npm run test:cov
+          npm run test
 
   #     - name: SonarCloud Scan
   #       uses: SonarSource/sonarcloud-github-action@master
