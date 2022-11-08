@@ -83,6 +83,8 @@ objects:
         app: ${NAME}-${ZONE}
     stringData:
       x-api-key: "${X_API_KEY}"
+      email-username: "${EMAIL_USERNAME}"
+      email-password: "${EMAIL_PASSWORD}"
       oracle-user: "${ORACLEDB_USER}"
       oracle-password: "${ORACLEDB_PASSWORD}"
       oracle-database: "${ORACLEDB_DATABASE}"
