@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { headerBlue } from "../core/CoreConstants";
+import { headerBlue } from "../utils/color";
 </script>
 
 <script lang="ts">

@@ -8,7 +8,7 @@
       <input
         type="checkbox"
         :value="option.code"
-        v-model="computedInputValue"
+        v-model="computedValue"
         :name="name"
       />
       {{ option.text }}
@@ -35,7 +35,7 @@ export default defineComponent({
         label: "Hello",
       },
     },
-    checked: Array as PropType<Array<String>>,
+    value: Array as PropType<Array<String>>,
     options: {
       type: Array as
         | PropType<Array<{ code: string; text: string }>>
@@ -50,12 +50,12 @@ export default defineComponent({
     },
   },
   computed: {
-    computedInputValue: {
+    computedValue: {
       get() {
-        return this.checked;
+        return this.value;
       },
       set(newValue: string) {
-        this.$emit("updateFormData", this.fieldProps.id, newValue);
+        this.$emit("updateValue", this.fieldProps.id, newValue);
       },
     },
   },

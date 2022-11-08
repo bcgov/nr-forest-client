@@ -10,6 +10,7 @@ import { keycloakUrl, keycloakClientId, nodeEnv } from "./core/CoreConstants";
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
+import "bootstrap-vue-3/dist/bootstrap-vue-3.css";
 
 const app = createApp(App);
 
