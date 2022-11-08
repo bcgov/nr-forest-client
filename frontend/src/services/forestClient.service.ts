@@ -7,7 +7,6 @@ export const sendConfirmationEmail = (emailTo: String, emailBody: String) => {
       params: { emailTo, emailBody },
     })
     .then((response) => {
-      // console.log("response", response);
       return response;
     })
     .catch((e) => {

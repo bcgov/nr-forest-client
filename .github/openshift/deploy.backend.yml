@@ -44,6 +44,18 @@ parameters:
   - name: X_API_KEY
     description: Key to access to the forest client api
     required: true
+  - name: EMAIL_USERNAME
+    description: CHES service client
+    required: true
+  - name: EMAIL_PASSWORD
+    description: CHES service client password
+    required: true
+  - name: EMAIL_TOKEN_URL
+    description: CHES authentication url
+    required: true
+  - name: EMAIL_API_URL
+    description: CHES email api url
+    required: true
   - name: ORACLEDB_USER
     description: Oracle database user name
     required: true
@@ -71,6 +83,8 @@ objects:
         app: ${NAME}-${ZONE}
     stringData:
       x-api-key: "${X_API_KEY}"
+      email-username: "${EMAIL_USERNAME}"
+      email-password: "${EMAIL_PASSWORD}"
       oracle-user: "${ORACLEDB_USER}"
       oracle-password: "${ORACLEDB_PASSWORD}"
       oracle-database: "${ORACLEDB_DATABASE}"
@@ -125,6 +139,38 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               env:
+                - name: NODE_ENV
+                  value: ${NODE_ENV}
+                - name: FRONTEND_URL
+                  value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
+                - name: BACKEND_URL
+                  value: https://${NAME}-${ZONE}-backend.${DOMAIN}
+                - name: X_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: x-api-key
+                - name: API_URL
+                  value: ${API_URL}
+                - name: EMAIL_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: email-username
+                - name: EMAIL_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: email-password
+                - name: EMAIL_TOKEN_URL
+                  value: ${EMAIL_TOKEN_URL}
+                - name: EMAIL_API_URL
+                  value: ${EMAIL_API_URL}
+                - name: ORACLEDB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-user
                 - name: POSTGRESQL_HOST
                   value: ${NAME}-${ZONE}-database
                 - name: POSTGRESQL_DATABASE
@@ -142,22 +188,6 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-database
                       key: database-user
-                - name: FRONTEND_URL
-                  value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
-                - name: BACKEND_URL
-                  value: https://${NAME}-${ZONE}-backend.${DOMAIN}
-                - name: X_API_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: x-api-key
-                - name: API_URL
-                  value: ${API_URL}
-                - name: ORACLEDB_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: oracle-user
                 - name: ORACLEDB_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -180,8 +210,6 @@ objects:
                       key: oracle-service
                 - name: ORACLEDB_PORT
                   value: "1543"
-                - name: NODE_ENV
-                  value: ${NODE_ENV}
 
               ports:
                 - containerPort: 3000
