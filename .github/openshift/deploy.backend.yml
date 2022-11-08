@@ -137,23 +137,8 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               env:
-                - name: POSTGRESQL_HOST
-                  value: ${NAME}-${ZONE}-database
-                - name: POSTGRESQL_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
-                      key: database-name
-                - name: POSTGRESQL_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
-                      key: database-password
-                - name: POSTGRESQL_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
-                      key: database-user
+                - name: NODE_ENV
+                  value: ${NODE_ENV}
                 - name: FRONTEND_URL
                   value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
                 - name: BACKEND_URL
@@ -184,6 +169,23 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: oracle-user
+                - name: POSTGRESQL_HOST
+                  value: ${NAME}-${ZONE}-database
+                - name: POSTGRESQL_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-database
+                      key: database-name
+                - name: POSTGRESQL_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-database
+                      key: database-password
+                - name: POSTGRESQL_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-database
+                      key: database-user
                 - name: ORACLEDB_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -206,8 +208,6 @@ objects:
                       key: oracle-service
                 - name: ORACLEDB_PORT
                   value: "1543"
-                - name: NODE_ENV
-                  value: ${NODE_ENV}
 
               ports:
                 - containerPort: 3000
