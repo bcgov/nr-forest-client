@@ -44,6 +44,18 @@ parameters:
   - name: X_API_KEY
     description: Key to access to the forest client api
     required: true
+  - name: EMAIL_USERNAME
+    description: CHES service client
+    required: true
+  - name: EMAIL_PASSWORD
+    description: CHES service client password
+    required: true
+  - name: EMAIL_TOKEN_URL
+    description: CHES authentication url
+    required: true
+  - name: EMAIL_API_URL
+    description: CHES email api url
+    required: true
   - name: ORACLEDB_USER
     description: Oracle database user name
     required: true
@@ -153,6 +165,20 @@ objects:
                       key: x-api-key
                 - name: API_URL
                   value: ${API_URL}
+                - name: EMAIL_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: email-username
+                - name: EMAIL_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: email-password
+                - name: EMAIL_TOKEN_URL
+                  value: ${EMAIL_TOKEN_URL}
+                - name: EMAIL_API_URL
+                  value: ${EMAIL_API_URL}
                 - name: ORACLEDB_USER
                   valueFrom:
                     secretKeyRef:
