@@ -80,6 +80,7 @@ jobs:
 
       - name: Backend Tests
         run: |
+          cd backend
           ./mvnw test
 
       - name: Frontend Tests
@@ -136,6 +137,10 @@ jobs:
             -p NODE_ENV='development' \
             -p API_URL='https://nrfc-api-test.api.gov.bc.ca' \
             -p X_API_KEY=${{ secrets.GWA_X_API_KEY }} \
+            -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
+            -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
+            -p EMAIL_TOKEN_URL='https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
+            -p EMAIL_API_URL='https://ches-dev.apps.silver.devops.gov.bc.ca/api/v1' \
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USER }} \
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }} \
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }} \
@@ -394,7 +399,7 @@ jobs:
           oc delete configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend 2> /dev/null \
             || true && echo "No existing frontend config"
           oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
-            --from-literal=config.js="window.localStorage.setItem('VITE_BACKEND_URL', 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca'); window.localStorage.setItem('VITE_KEYCLOAK_URL', 'https://test.loginproxy.gov.bc.ca/auth'); window.localStorage.setItem('VITE_KEYCLOAK_CLIENT_ID', '${{ secrets.KEYCLOAK_CLIENT_ID }}');"
+            --from-literal=config.js="window.localStorage.setItem('VITE_BACKEND_URL', 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca'); window.localStorage.setItem('VITE_KEYCLOAK_URL', 'https://loginproxy.gov.bc.ca/auth'); window.localStorage.setItem('VITE_KEYCLOAK_CLIENT_ID', '${{ secrets.KEYCLOAK_CLIENT_ID }}');"
 
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} | oc apply -f -
@@ -403,6 +408,10 @@ jobs:
             -p NODE_ENV='production' \
             -p API_URL='https://nrfc-api-prod.api.gov.bc.ca' \
             -p X_API_KEY=${{ secrets.GWA_X_API_KEY }} \
+            -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
+            -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
+            -p EMAIL_TOKEN_URL='https://oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
+            -p EMAIL_API_URL='https://ches.apps.silver.devops.gov.bc.ca/api/v1' \
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USER }} \
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }} \
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }} \

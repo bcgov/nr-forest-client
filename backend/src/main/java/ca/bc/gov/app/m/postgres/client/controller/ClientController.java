@@ -31,10 +31,5 @@ public class ClientController {
     public List<ClientStatusCodeEntity> findAllClientStatusCodes() {
         return clientService.findAllClientStatusCodes();
     }
-    
-    @RequestMapping(value = "/findActiveClientStatusCodes", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
-    public List<ClientStatusCodeEntity> findActiveClientStatusCodes() {
-        return clientService.findActiveClientStatusCodes();
-    }
 
 }

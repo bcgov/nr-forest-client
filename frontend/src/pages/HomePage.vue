@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-bottom: 24px">Welcome to forest client!</div>
+  <div style="margin: 24px">Welcome to forest client!</div>
 </template>
 
 <script setup lang="ts">

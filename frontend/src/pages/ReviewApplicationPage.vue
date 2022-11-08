@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-bottom: 24px">Application lists</div>
+  <div style="margin: 24px">Application lists</div>
 </template>
 
 <script setup lang="ts">

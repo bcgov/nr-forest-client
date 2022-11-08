@@ -79,7 +79,6 @@ public class OpenMapsServiceImpl implements OpenMapsService {
 		int addressMatch = 0;
 
 		for (ForestClientEntity client : clients) {
-//			logger.info("current number" + client.getCorpRegnNmbr());
 			if (client.getCorpRegnNmbr() != null) {
 				OpenMapsResponseVO response = checkSourceFirstNationId(client.getCorpRegnNmbr());
 				ClientLocationEntity clientLocation = clientLocationRepository
