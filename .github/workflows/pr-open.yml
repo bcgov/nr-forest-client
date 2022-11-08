@@ -391,7 +391,7 @@ jobs:
 
           # Follow any active rollouts (see deploymentconfigs)
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-database -w
-          oc exec dc/${{ env.NAME }}-${{ env.ZONE }}-database -- psql -d ${{ env.NAME }} -U ${{ env.NAME }} -c "$(cat backend/src/main/databasescripts/databasescripts.sql)"
+          oc exec dc/${{ env.NAME }}-${{ env.ZONE }}-database -- psql -d ${{ env.NAME }} -U ${{ env.NAME }} -c "$(cat backend/src/main/resources/databasescripts/databasescripts.sql)"
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-backend -w
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-frontend -w
 
