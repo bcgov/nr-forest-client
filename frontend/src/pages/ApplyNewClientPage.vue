@@ -1,5 +1,9 @@
 <template>
   <div style="margin: 24px">
+    <b-spinner
+      :style="'color:' + primary + '; margin-bottom: 12px'"
+      v-if="loading"
+    ></b-spinner>
     <SubmitSucessText v-if="success" confirmationId="A123456" />
     <SubmitFailText v-if="error" />
     <FormInput
@@ -51,18 +55,22 @@ const updateEmailValue = (id: string, newValue: string) => {
 };
 
 const modalShow = ref(false);
+const loading = ref(false);
 const openModal = () => {
   modalShow.value = true;
 };
 const onModalOkay = () => {
   modalShow.value = false;
+  loading.value = true;
   sendConfirmationEmail(emailValue.value, "Hello World!").then((response) => {
     if (response.status == 200) {
       if (error) error.value = false;
       success.value = true;
+      loading.value = false;
     } else {
       if (success) success.value = false;
       error.value = true;
+      loading.value = false;
     }
   });
 };
