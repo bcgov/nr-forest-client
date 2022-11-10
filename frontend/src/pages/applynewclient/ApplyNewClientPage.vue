@@ -32,13 +32,13 @@
 <script setup lang="ts">
 // composition api
 import { ref } from "vue";
-import FormInput from "../common/FormInput.vue";
-import SubmitFailText from "../containers/SubmitFailText.vue";
-import SubmitSucessText from "../containers/SubmitSucessText.vue";
-import ConfirmModal from "../common/ConfirmModal.vue";
-import { sendConfirmationEmail } from "../services/forestClient.service";
-import type { FormFieldTemplateType } from "../core/AppType";
-import { primary } from "../utils/color";
+import FormInput from "../../common/FormInput.vue";
+import SubmitFailText from "./SubmitFailText.vue";
+import SubmitSucessText from "./SubmitSucessText.vue";
+import ConfirmModal from "../../common/ConfirmModal.vue";
+import { sendConfirmationEmail } from "../../services/forestClient.service";
+import type { FormFieldTemplateType } from "../../core/AppType";
+import { primary } from "../../utils/color";
 
 const success = ref(false);
 const error = ref(false);

@@ -1,6 +1,6 @@
 <template>
   <FormFieldTemplate :fieldProps="fieldProps">
-    <b-form-input v-model="computedValue"></b-form-input>
+    <b-form-input v-model="computedValue" :disabled="disabled"></b-form-input>
   </FormFieldTemplate>
 </template>
 
@@ -24,6 +24,7 @@ export default defineComponent({
       },
     },
     value: [String, Number],
+    disabled: { type: Boolean, default: false },
   },
   computed: {
     computedValue: {

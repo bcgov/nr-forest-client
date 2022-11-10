@@ -21,7 +21,7 @@ import MainHeader from "./common/MainHeader.vue";
 import HomePage from "./pages/HomePage.vue";
 import ReviewApplicationPage from "./pages/ReviewApplicationPage.vue";
 import MyApplicationPage from "./pages/MyApplicationPage.vue";
-import ApplyNewClientPage from "./pages/ApplyNewClientPage.vue";
+import ApplyNewClientPage from "./pages/applynewclient/ApplyNewClientPage.vue";
 import type { Ref, DefineComponent } from "vue";
 import type { KeycloakInstance } from "keycloak-js";
 import { navBlue, navSelectBlue } from "./utils/color";

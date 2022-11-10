@@ -11,6 +11,11 @@ export interface FromSelectOptionType {
   text: string;
 }
 
+export interface FormCheckBoxGroupOptionType {
+  code: string;
+  text: string;
+}
+
 export interface FormUploadFileType {
   content: string;
   contentType: string;

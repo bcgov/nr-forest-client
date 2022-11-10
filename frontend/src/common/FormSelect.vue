@@ -1,6 +1,10 @@
 <template>
   <FormFieldTemplate :fieldProps="fieldProps">
-    <b-form-select v-model="computedValue" :options="options"></b-form-select>
+    <b-form-select
+      v-model="computedValue"
+      :options="options"
+      :disabled="disabled"
+    ></b-form-select>
   </FormFieldTemplate>
 </template>
 
@@ -28,6 +32,7 @@ export default defineComponent({
       },
     },
     value: [Object, String],
+    disabled: { type: Boolean, default: false },
     options: {
       type: Array as PropType<Array<FromSelectOptionType>>,
       required: true,

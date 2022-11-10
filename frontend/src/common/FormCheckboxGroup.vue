@@ -10,6 +10,7 @@
         :value="option.code"
         v-model="computedValue"
         :name="name"
+        :disabled="disabled"
       />
       {{ option.text }}
     </label>
@@ -20,7 +21,10 @@
 import { defineComponent } from "vue";
 import type { PropType } from "vue";
 import FormFieldTemplate from "./FormFieldTemplate.vue";
-import type { FormFieldTemplateType } from "../core/AppType";
+import type {
+  FormFieldTemplateType,
+  FormCheckBoxGroupOptionType,
+} from "../core/AppType";
 
 export default defineComponent({
   name: "FormRadio",
@@ -37,9 +41,7 @@ export default defineComponent({
     },
     value: Array as PropType<Array<String>>,
     options: {
-      type: Array as
-        | PropType<Array<{ code: string; text: string }>>
-        | undefined,
+      type: Array as PropType<Array<FormCheckBoxGroupOptionType>> | undefined,
       required: true,
       default: [{ code: 1, text: "Option 1" }],
     },
@@ -48,6 +50,7 @@ export default defineComponent({
       type: String,
       default: "radio-input",
     },
+    disabled: { type: Boolean, default: false },
   },
   computed: {
     computedValue: {
