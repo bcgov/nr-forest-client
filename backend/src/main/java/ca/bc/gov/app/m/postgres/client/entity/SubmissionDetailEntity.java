@@ -28,7 +28,7 @@ public class SubmissionDetailEntity implements AbstractEntity {
 
 	private static final long serialVersionUID = -8966248654104607818L;
 
-	public static final String BEAN_NAME = "submissionEntity";
+	public static final String BEAN_NAME = "submissionDetailEntity";
 
 	@Id
 	@GeneratedValue(generator = "SEQ_SUBMISSION_DETAIL")
