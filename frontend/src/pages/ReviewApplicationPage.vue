@@ -2,9 +2,7 @@
   <div style="margin: 24px">Application lists</div>
 </template>
 
-<script setup lang="ts">
-// composition api
-</script>
+<script setup lang="ts"></script>
 
 <script lang="ts">
 import { defineComponent } from "vue";

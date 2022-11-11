@@ -11,7 +11,6 @@
 </template>
 
 <script setup lang="ts">
-// composition api
 const props = defineProps({
   confirmationId: String,
 });

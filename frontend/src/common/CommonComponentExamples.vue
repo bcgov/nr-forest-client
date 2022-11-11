@@ -43,7 +43,7 @@ const form = ref({
 });
 const updateFormValue = (id, value) => {
   form.value[id] = value;
-  console.log("form data", form.value);
+  console.log("form data", form.value, value);
 };
 
 /* -------- input -------- */

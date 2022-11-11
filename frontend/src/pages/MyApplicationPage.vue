@@ -6,7 +6,6 @@
 </template>
 
 <script setup lang="ts">
-// composition api
 // import CommonComponentExamples from "../common/CommonComponentExamples.vue";
 </script>
 

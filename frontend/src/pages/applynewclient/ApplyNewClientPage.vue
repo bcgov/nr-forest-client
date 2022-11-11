@@ -30,7 +30,6 @@
 </template>
 
 <script setup lang="ts">
-// composition api
 import { ref } from "vue";
 import FormInput from "../../common/FormInput.vue";
 import SubmitFailText from "./SubmitFailText.vue";
