@@ -19,10 +19,13 @@ VITE_KEYCLOAK_REALM=[keycloak realm name]
 ## Technology options
 
 **Style**:  
-[Bootstrap for vue3](https://cdmoro.github.io/bootstrap-vue-3/components/Button.html)  
-[Bootstrap icon for vue3](https://github.com/tommyip/bootstrap-icons-vue)  
+[Bootstrap for vue3](https://cdmoro.github.io/bootstrap-vue-3/components/Button.html), installed through this [prefered installation method](https://cdmoro.github.io/bootstrap-vue-3/getting-started/#preferred-installation), so it can automatically importing components, to aviod the warn message that cannot find components when run unit tests  
+[unplugin-icons for bootstrap](https://github.com/antfu/unplugin-icons)
+
+[Bootstrap icon for vue3](https://github.com/tommyip/bootstrap-icons-vue), this doesn't work well with the bootstrap-vue-3 after installed bootstrap-vue-3 using the preferred method, so use unplugin-icons for now, until bootstrap-vue-3 adds the icons. bootstrap-icons-vue naming convention uses b-icon as prefix, so bootstrap-vue-3 will think it belongs to it, and then complains cannot found  
 **Unit Test**:  
 [Vitest](https://vitest.dev/api/)
+[Vue test util](https://v1.test-utils.vuejs.org/api/)
 
 ## Command
 

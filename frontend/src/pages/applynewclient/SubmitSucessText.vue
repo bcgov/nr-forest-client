@@ -1,6 +1,6 @@
 <template>
   <div style="margin-bottom: 24px">
-    <b-icon-check-circle
+    <bi-check-circle
       style="font-size: 16px; color: green; margin-bottom: 2px"
     />
     Thanks for your submission! Your form has been submitted successfully. Your
@@ -11,6 +11,8 @@
 </template>
 
 <script setup lang="ts">
+import BiCheckCircle from "~icons/bi/check-circle";
+
 const props = defineProps({
   confirmationId: String,
 });

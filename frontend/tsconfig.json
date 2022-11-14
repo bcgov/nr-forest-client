@@ -10,5 +10,9 @@
     {
       "path": "./tsconfig.vitest.json"
     }
-  ]
+  ],
+  "include": ["components.d.ts"],
+  "compilerOptions": {
+    "types": ["unplugin-icons/types/vue"]
+  }
 }

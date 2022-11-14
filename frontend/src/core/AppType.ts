@@ -1,3 +1,4 @@
+/* -------------- form component type ----------------- */
 export interface FormFieldTemplateType {
   label: string;
   required?: boolean;
@@ -7,7 +8,7 @@ export interface FormFieldTemplateType {
 }
 
 export interface FromSelectOptionType {
-  value: { [key: string]: any } | string;
+  value: CommonObjectType | string;
   text: string;
 }
 

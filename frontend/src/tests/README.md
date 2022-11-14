@@ -2,5 +2,6 @@
 
 - receive props
 - use computed properties
-- render other components
 - emit events
+
+- render other components

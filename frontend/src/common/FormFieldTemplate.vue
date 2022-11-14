@@ -5,6 +5,7 @@
       :label="props.fieldProps.label"
       :required="props.fieldProps.required"
       :tooltip="props.fieldProps.tooltip"
+      :id="props.fieldProps.id"
     />
     <slot />
     <p v-if="props.fieldProps.note" class="form-field-note">
@@ -23,7 +24,7 @@ const props = defineProps({
   fieldProps: {
     type: Object as PropType<FormFieldTemplateType>,
     default: {
-      label: "Hello",
+      label: "Text Input",
     },
   },
 });
