@@ -16,17 +16,16 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, inject, ref } from "vue";
+import { inject, ref } from "vue";
 import MainHeader from "./common/MainHeader.vue";
 import HomePage from "./pages/HomePage.vue";
 import ReviewApplicationPage from "./pages/ReviewApplicationPage.vue";
 import MyApplicationPage from "./pages/MyApplicationPage.vue";
-import ApplyNewClientPage from "./pages/ApplyNewClientPage.vue";
+import ApplyNewClientPage from "./pages/applynewclient/ApplyNewClientPage.vue";
 import type { Ref, DefineComponent } from "vue";
 import type { KeycloakInstance } from "keycloak-js";
 import { navBlue, navSelectBlue } from "./utils/color";
 
-// composition api
 const keycloak: KeycloakInstance = inject("keycloak");
 let tabs: Ref<Array<{ title: String; content: DefineComponent }>> = ref([]);
 

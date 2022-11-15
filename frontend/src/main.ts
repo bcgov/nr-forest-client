@@ -1,7 +1,5 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import BootstrapVue3 from "bootstrap-vue-3";
-import { BootstrapIconsPlugin } from "bootstrap-icons-vue";
 import VueKeycloakJs from "@dsb-norge/vue-keycloak-js";
 import type { KeycloakInstance } from "keycloak-js";
 import type { VueKeycloakInstance } from "@dsb-norge/vue-keycloak-js/dist/types";
@@ -9,7 +7,6 @@ import { keycloakUrl, keycloakClientId, nodeEnv } from "./core/CoreConstants";
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
 import "bootstrap-vue-3/dist/bootstrap-vue-3.css";
 
 const app = createApp(App);
@@ -17,8 +14,7 @@ const app = createApp(App);
 if (nodeEnv && nodeEnv == "openshift-dev") {
   // disable the login authentication for the deployment in the openshift dev namespace
   // cause the url in the dev namespace is not stable
-  app.use(BootstrapIconsPlugin);
-  app.use(BootstrapVue3).mount("#app");
+  app.mount("#app");
 } else {
   app.use(VueKeycloakJs, {
     init: {
@@ -38,8 +34,7 @@ if (nodeEnv && nodeEnv == "openshift-dev") {
       console.log("Keycloak ready", keycloak);
       // provde global property keycloak to read login information
       app.provide("keycloak", keycloak);
-      app.use(BootstrapIconsPlugin);
-      app.use(BootstrapVue3).mount("#app");
+      app.mount("#app");
     },
   });
 }

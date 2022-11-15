@@ -1,6 +1,6 @@
 <template>
   <div style="margin-bottom: 24px">
-    <b-icon-exclamation-circle
+    <bi-exclamation-circle
       style="font-size: 16px; color: red; margin-bottom: 2px"
     />
     Sorry, your form submittion got an error. Please try it again in a few
@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-// composition api
+import BiExclamationCircle from "~icons/bi/exclamation-circle";
 </script>
 
 <script lang="ts">
