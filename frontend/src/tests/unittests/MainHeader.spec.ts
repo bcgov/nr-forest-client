@@ -1,11 +1,16 @@
 import { describe, it, expect } from "vitest";
-import { mount } from "@vue/test-utils";
+import { shallowMount } from "@vue/test-utils";
 
 import MainHeader from "../../common/MainHeader.vue";
 
 describe("MainHeader", () => {
-  it("renders properly", () => {
-    const wrapper = mount(MainHeader);
+  it("component defined", () => {
+    const wrapper = shallowMount(MainHeader);
+    expect(wrapper).toBeDefined();
+  });
+
+  it("renders find expected text successfully", () => {
+    const wrapper = shallowMount(MainHeader);
     expect(wrapper.text()).toContain("FSA - Forest Client");
   });
 });

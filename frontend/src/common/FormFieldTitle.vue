@@ -26,7 +26,6 @@
 </template>
 
 <script setup lang="ts">
-// composition api
 import BiAsterisk from "~icons/bi/asterisk";
 import BiQuestionCircleFill from "~icons/bi/question-circle-fill";
 

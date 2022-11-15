@@ -24,7 +24,7 @@ const props = defineProps({
   fieldProps: {
     type: Object as PropType<FormFieldTemplateType>,
     default: {
-      label: "Text Input",
+      label: null,
     },
   },
 });

@@ -14,11 +14,8 @@ const props = defineProps({
   // form field template props (optional): label, required, tooltip, note, id
   fieldProps: {
     type: Object as PropType<FormFieldTemplateType>,
-    default: {
-      label: "Hello",
-    },
   },
-  value: [String, Number],
+  value: { tupe: [String, Number], required: true },
   disabled: { type: Boolean, default: false },
 });
 
