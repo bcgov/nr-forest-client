@@ -21,12 +21,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import ca.bc.gov.app.m.ches.service.ChesEmailService;
+import ca.bc.gov.app.m.ches.service.ChesCommonServicesService;
 
-@Service(ChesEmailService.BEAN_NAME)
-public class ChesEmailServiceImpl implements ChesEmailService {
+@Service(ChesCommonServicesService.BEAN_NAME)
+public class ChesCommonServicesServiceImpl implements ChesCommonServicesService {
 
-	public static final Logger logger = LoggerFactory.getLogger(ChesEmailServiceImpl.class);
+	public static final Logger logger = LoggerFactory.getLogger(ChesCommonServicesServiceImpl.class);
 
 	private URI toURI(String uri) {
 		try {
