@@ -5,19 +5,21 @@ drop table if exists nrfc.submission;
 drop table if exists nrfc.submission_status_code;
 drop table if exists nrfc.client_type_code;
 
+drop sequence if exists nrfc.submission_id_seq;
+drop sequence if exists nrfc.submission_detail_id_seq;
+
 -- 
 -- TABLE: submission
 --
 
 create table nrfc.submission(
     submission_id             	integer 		not null,
-    submitter_user_guid        	varchar(40) 	null,
-	recorder_user_guid			varchar(50)     null,
+    submitter_user_guid        	varchar(50) 	null,
     submission_status_code		varchar(5)      null,
     submission_date             timestamp       null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)
+    update_user                 varchar(60)		null
 );
 
 -- 
@@ -49,7 +51,7 @@ create table nrfc.submission_status_code (
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)
+    update_user                 varchar(60)		null
 );
 
 -- 
@@ -64,7 +66,7 @@ create table nrfc.client_type_code (
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)
+    update_user                 varchar(60)		null
 );
 
 -- 
@@ -101,3 +103,33 @@ alter table nrfc.submission_detail
 add constraint submission_detail_client_type_code_fk
 foreign key (client_type_code)
 references nrfc.client_type_code(client_type_code);
+
+-- 
+-- SEQUENCES
+--
+
+create sequence nrfc.submission_id_seq start 1;
+create sequence nrfc.submission_detail_id_seq start 1;
+
+-- 
+-- INSERT STATIC DATA
+--
+
+insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('P', 'In Progress', current_timestamp, 'mariamar');
+insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('A', 'Approved', current_timestamp, 'mariamar');
+insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('R', 'Rejected', current_timestamp, 'mariamar');
+insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('D', 'Deleted', current_timestamp, 'mariamar');
+insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('S', 'Submitted', current_timestamp, 'mariamar');
+
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('A', 'Association', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('B', 'First Nation Band', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('C', 'Corporation', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('F', 'Ministry of Forests and Range', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('G', 'Government', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('I', 'Individual', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('L', 'Limited Partnership', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('P', 'General Partnership', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('R', 'First Nation Group', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('S', 'Society', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('T', 'First Nation Tribal Council', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('U', 'Unregistered Company', current_timestamp, 'mariamar');

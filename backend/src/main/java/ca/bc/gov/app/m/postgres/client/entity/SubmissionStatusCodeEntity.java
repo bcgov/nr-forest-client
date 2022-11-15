@@ -15,20 +15,24 @@ import ca.bc.gov.app.core.entity.AbstractEntity;
 import ca.bc.gov.app.core.misc.scope.ScopeConstant;
 
 @Entity
-@Table(name = "CLIENT_STATUS_CODE", schema = PostgresPersistenceConfiguration.POSTGRES_ATTRIBUTE_SCHEMA)
-@Component(ClientStatusCodeEntity.BEAN_NAME)
+@Table(name = "SUBMISSION_STATUS_CODE", schema = PostgresPersistenceConfiguration.POSTGRES_ATTRIBUTE_SCHEMA)
+@Component(SubmissionStatusCodeEntity.BEAN_NAME)
 @Scope(ScopeConstant.PROTOTYPE)
-public class ClientStatusCodeEntity implements AbstractEntity {
+public class SubmissionStatusCodeEntity implements AbstractEntity {
 
 	private static final long serialVersionUID = 4341025008217142732L;
 
-	public static final String BEAN_NAME = "clientStatusCodeEntity";
+	public static final String BEAN_NAME = "submissionStatusCodeEntity";
 	
-	public static final String ACTIVE = "ACT";
+	public static final String IN_PROGRESS					= "P";
+	public static final String APPROVED						= "A";
+	public static final String REJECTED						= "R";
+	public static final String DELETED						= "E";
+	public static final String SUBMITTED					= "S";
 
 	@Id
-	@Column(name = "CLIENT_STATUS_CODE")
-	private String clientStatusCode;
+	@Column(name = "SUBMISSION_STATUS_CODE")
+	private String submissionStatusCode;
 
 	@Column(name = "DESCRIPTION")
 	private String description;
@@ -51,12 +55,12 @@ public class ClientStatusCodeEntity implements AbstractEntity {
 	@Column(name = "UPDATE_USER")
 	private String updateUser;
 
-	public String getClientStatusCode() {
-		return clientStatusCode;
+	public String getSubmissionStatusCode() {
+		return submissionStatusCode;
 	}
 
-	public void setClientStatusCode(String clientStatusCode) {
-		this.clientStatusCode = clientStatusCode;
+	public void setSubmissionStatusCode(String submissionStatusCode) {
+		this.submissionStatusCode = submissionStatusCode;
 	}
 
 	public String getDescription() {
@@ -114,5 +118,9 @@ public class ClientStatusCodeEntity implements AbstractEntity {
 	public void setUpdateUser(String updateUser) {
 		this.updateUser = updateUser;
 	}
+
+
+	
+	
 
 }
