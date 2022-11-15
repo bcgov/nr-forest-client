@@ -21,7 +21,6 @@ public class OraclePersistenceConfiguration {
     public final static String ORACLE_ATTRIBUTE_SCHEMA = "THE";
     public static final String ORACLE_API_TAG = "Legacy Client";
     
-	@Primary
     @Bean(name = "oracleDataSource")
     @ConfigurationProperties(prefix = "oracle.datasource")
     public DataSource dataSource() {
