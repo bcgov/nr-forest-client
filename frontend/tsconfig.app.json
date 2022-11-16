@@ -1,6 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "components.d.ts"],
   "exclude": ["src/tests/*"],
   "compilerOptions": {
     "composite": true,
@@ -8,6 +8,6 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    // "types": ["vitest/globals"]
+    "types": ["unplugin-icons/types/vue"]
   }
 }

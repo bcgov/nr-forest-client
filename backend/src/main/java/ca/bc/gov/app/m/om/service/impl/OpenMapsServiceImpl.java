@@ -2,19 +2,25 @@ package ca.bc.gov.app.m.om.service.impl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import ca.bc.gov.app.core.util.CoreUtil;
 import ca.bc.gov.app.m.om.service.OpenMapsService;
 import ca.bc.gov.app.m.om.vo.OpenMapsResponseVO;
+import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientLocationEntity;
+import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ClientLocationRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ForestClientRepository;
+import ca.bc.gov.app.m.om.vo.FirstNationBandVidationVO;
 
 @Service(OpenMapsService.BEAN_NAME)
 public class OpenMapsServiceImpl implements OpenMapsService {
@@ -58,7 +64,7 @@ public class OpenMapsServiceImpl implements OpenMapsService {
 
 	}
 
-	/*@Override
+	@Override
 	public List<FirstNationBandVidationVO> validateFirstNationBand() {
 
 		List<ForestClientEntity> clients = forestClientRepository.findAllFirstNationBandClients();
@@ -128,6 +134,6 @@ public class OpenMapsServiceImpl implements OpenMapsService {
 		
 		return firstNationBands;
 
-	}*/
+	}
 
 }
