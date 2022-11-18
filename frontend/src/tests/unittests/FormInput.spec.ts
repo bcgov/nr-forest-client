@@ -1,25 +1,19 @@
 import { describe, it, expect } from "vitest";
-import { mount, shallowMount } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 
 import FormInput from "../../common/FormInput.vue";
 import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 
 describe("FormInput", () => {
   it("component defined", () => {
-    const wrapper = shallowMount(FormInput, {
-      props: {
-        value: "",
-      },
-    });
+    const wrapper = mount(FormInput);
     expect(wrapper).toBeDefined();
+    expect(wrapper.find("input").exists()).toBe(true);
   });
 
-  it("renders fieldProps successfully", () => {
+  it("renders props fieldProps successfully", () => {
     const wrapper = mount(FormInput, {
-      props: {
-        fieldProps: { label: "Test Form Input Title" },
-        value: "",
-      },
+      props: { fieldProps: { label: "Test Form Input Title" } },
     });
     expect(wrapper.findComponent(FormFieldTemplate).exists()).toBe(true);
     expect(wrapper.text()).toContain("Test Form Input Title");
@@ -27,14 +21,12 @@ describe("FormInput", () => {
 
   it("renders props value, emit function successfully", async () => {
     const wrapper = mount(FormInput, {
-      props: {
-        fieldProps: { id: "test-input-id" },
-        value: "",
-      },
+      props: { fieldProps: { id: "test-form-input-id" }, value: "hello" },
     });
-    const input = wrapper.find("input");
-    await input.setValue("Test");
 
+    const input = wrapper.find("input");
+    expect(input.element.value).toBe("hello");
+    await input.setValue("Test");
     expect(input.element.value).toBe("Test");
     // assert the emitted event has been performed
     expect(wrapper.emitted()).toHaveProperty("updateValue");
@@ -43,15 +35,12 @@ describe("FormInput", () => {
     // updateValue has been called once when doing the input.setValue
     expect(updateValueEvent).toHaveLength(1);
     // test the given parameters
-    expect(updateValueEvent[0]).toEqual(["test-input-id", "Test"]);
+    expect(updateValueEvent[0]).toEqual(["test-form-input-id", "Test"]);
   });
 
   it("renders props disabled successfully", async () => {
     const wrapper = mount(FormInput, {
-      props: {
-        value: "",
-        disabled: true,
-      },
+      props: { disabled: true },
     });
 
     const input = wrapper.find("input");

@@ -18,7 +18,6 @@
       :value="form.exampleCheckBoxGroup"
       :options="checkBoxGroupOptions"
       :disabled="checkBoxGroupDisabled"
-      :name="checkBoxGroupName"
       @updateValue="updateFormValue"
     />
   </div>
@@ -78,7 +77,6 @@ const checkBoxGroupOptions: Array<FormCheckBoxGroupOptionType> = [
   { code: "2", text: "Option 2" },
   { code: "3", text: "Option 3" },
 ];
-const checkBoxGroupName = "example-check-box-group";
 </script>
 
 <script lang="ts">

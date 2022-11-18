@@ -1,19 +1,14 @@
 <template>
   <FormFieldTemplate :fieldProps="fieldProps">
-    <label
+    <b-form-checkbox
       v-for="(option, index) in options"
       :key="index"
-      style="display: block; text-align: left; margin-bottom: 4px"
+      v-model="computedValue"
+      :value="option.code"
+      :disabled="disabled"
     >
-      <input
-        type="checkbox"
-        :value="option.code"
-        v-model="computedValue"
-        :name="name"
-        :disabled="disabled"
-      />
       {{ option.text }}
-    </label>
+    </b-form-checkbox>
   </FormFieldTemplate>
 </template>
 
@@ -39,11 +34,6 @@ const props = defineProps({
     type: Array as PropType<Array<FormCheckBoxGroupOptionType>> | undefined,
     required: true,
     default: [{ code: 1, text: "Option 1" }],
-  },
-  // radio group name, has to be unique when using multiple radio groups
-  name: {
-    type: String,
-    default: "radio-input",
   },
   disabled: { type: Boolean, default: false },
 });

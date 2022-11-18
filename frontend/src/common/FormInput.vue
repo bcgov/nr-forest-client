@@ -15,7 +15,7 @@ const props = defineProps({
   fieldProps: {
     type: Object as PropType<FormFieldTemplateType>,
   },
-  value: { tupe: [String, Number], required: true },
+  value: [String, Number],
   disabled: { type: Boolean, default: false },
 });
 
