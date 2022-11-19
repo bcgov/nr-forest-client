@@ -3,6 +3,9 @@ package ca.bc.gov.app.core.util;
 import java.util.Date;
 import java.util.List;
 
+import ca.bc.gov.app.core.entity.AbstractCodeDescrEntity;
+import ca.bc.gov.app.core.vo.CodeDescrVO;
+
 public interface CoreUtil {
 
 	String BEAN_NAME = "coreUtil";
@@ -20,5 +23,9 @@ public interface CoreUtil {
 	List<String> fromCsvToStringList(String csvString);
 
 	String fromStringListToCsvWithAposthrophe(String csvString);
+
+	List<CodeDescrVO> toSortedCodeDescrVOs(List<? extends AbstractCodeDescrEntity> codeDescrEntities);
+
+	CodeDescrVO toCodeDescrVO(AbstractCodeDescrEntity codeDescrEntity);
 
 }
