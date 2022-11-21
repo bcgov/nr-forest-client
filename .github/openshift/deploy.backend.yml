@@ -44,17 +44,17 @@ parameters:
   - name: X_API_KEY
     description: Key to access to the forest client api
     required: true
-  - name: EMAIL_USERNAME
-    description: CHES service client
+  - name: CHES_CLIENT_ID
+    description: CHES service client id
     required: true
-  - name: EMAIL_PASSWORD
-    description: CHES service client password
+  - name: CHES_CLIENT_SECRET
+    description: CHES service client secret
     required: true
-  - name: EMAIL_TOKEN_URL
-    description: CHES authentication url
+  - name: CHES_TOKEN_URL
+    description: CHES service authentication url
     required: true
-  - name: EMAIL_API_URL
-    description: CHES email api url
+  - name: CHES_API_URL
+    description: CHES service api url
     required: true
   - name: ORACLEDB_USER
     description: Oracle database user name
@@ -83,8 +83,8 @@ objects:
         app: ${NAME}-${ZONE}
     stringData:
       x-api-key: "${X_API_KEY}"
-      email-username: "${EMAIL_USERNAME}"
-      email-password: "${EMAIL_PASSWORD}"
+      ches-client-id: "${CHES_CLIENT_ID}"
+      ches-client-secret: "${CHES_CLIENT_SECRET}"
       oracle-user: "${ORACLEDB_USER}"
       oracle-password: "${ORACLEDB_PASSWORD}"
       oracle-database: "${ORACLEDB_DATABASE}"
@@ -152,20 +152,20 @@ objects:
                       key: x-api-key
                 - name: API_URL
                   value: ${API_URL}
-                - name: EMAIL_USERNAME
+                - name: CHES_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: email-username
-                - name: EMAIL_PASSWORD
+                      key: ches-client-id
+                - name: CHES_CLIENT_SECRET
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: email-password
-                - name: EMAIL_TOKEN_URL
-                  value: ${EMAIL_TOKEN_URL}
-                - name: EMAIL_API_URL
-                  value: ${EMAIL_API_URL}
+                      key: ches-client-secret
+                - name: CHES_TOKEN_URL
+                  value: ${CHES_TOKEN_URL}
+                - name: CHES_API_URL
+                  value: ${CHES_API_URL}
                 - name: ORACLEDB_USER
                   valueFrom:
                     secretKeyRef:
