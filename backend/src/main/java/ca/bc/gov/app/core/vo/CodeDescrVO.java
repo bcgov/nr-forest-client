@@ -24,7 +24,6 @@ public class CodeDescrVO implements java.io.Serializable {
 
 	public CodeDescrVO(String code, 
 					   String description, 
-					   String description2, 
 					   Date effectiveDate, 
 					   Date expiryDate) {
 		
@@ -36,25 +35,18 @@ public class CodeDescrVO implements java.io.Serializable {
 	}
 
 	public CodeDescrVO(String code, 
-			   		   String description, 
-			   		   String description2) {
+			   		   String description) {
 
 		super();
 		this.code = code;
 		this.description = description;
 	}
 		
-	public CodeDescrVO(String code, String description, String description2, Long order) {
+	public CodeDescrVO(String code, String description, Long order) {
 		super();
 		this.code = code;
 		this.description = description;
 		this.order = order;
-	}
-	
-	public CodeDescrVO(String code, String description, String description2, String descriptiveText, String descriptiveText2) {
-		super();
-		this.code = code;
-		this.description = description;
 	}
 
 	@Override
