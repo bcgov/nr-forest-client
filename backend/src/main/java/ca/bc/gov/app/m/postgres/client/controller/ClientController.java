@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import ca.bc.gov.app.core.configuration.PostgresPersistenceConfiguration;
-import ca.bc.gov.app.m.postgres.client.entity.ClientTypeCodeEntity;
+import ca.bc.gov.app.core.vo.CodeDescrVO;
 import ca.bc.gov.app.m.postgres.client.service.ClientService;
 import io.swagger.annotations.Api;
 
@@ -28,7 +28,7 @@ public class ClientController {
     private ClientService clientService;
 
     @RequestMapping(value = "/findActiveClientTypeCodes", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
-    public List<ClientTypeCodeEntity> findActiveClientTypeCodes() {
+    public List<CodeDescrVO> findActiveClientTypeCodes() {
         return clientService.findActiveClientTypeCodes();
     }
 
