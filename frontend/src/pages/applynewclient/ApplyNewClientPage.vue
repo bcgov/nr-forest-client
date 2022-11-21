@@ -21,7 +21,7 @@
     </b-button>
 
     <ConfirmModal
-      :value="modalShow"
+      :show="modalShow"
       okayText="Submit"
       @onOkay="onModalOkay()"
       @onCancel="onModalCancel()"
