@@ -41,9 +41,9 @@ public class ChesCommonServicesServiceImpl implements ChesCommonServicesService 
 		try {
 			OAuthClient client = new OAuthClient(new URLConnectionClient());
 
-			OAuthClientRequest request = OAuthClientRequest.tokenLocation(System.getenv("EMAIL_TOKEN_URL"))
-					.setGrantType(GrantType.CLIENT_CREDENTIALS).setClientId(System.getenv("EMAIL_USERNAME"))
-					.setClientSecret(System.getenv("EMAIL_PASSWORD")).setScope("").buildBodyMessage();
+			OAuthClientRequest request = OAuthClientRequest.tokenLocation(System.getenv("CHES_TOKEN_URL"))
+					.setGrantType(GrantType.CLIENT_CREDENTIALS).setClientId(System.getenv("CHES_CLIENT_ID"))
+					.setClientSecret(System.getenv("CHES_CLIENT_SECRET")).setScope("").buildBodyMessage();
 
 			String token = client.accessToken(request, OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class)
 					.getAccessToken();
@@ -66,7 +66,7 @@ public class ChesCommonServicesServiceImpl implements ChesCommonServicesService 
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.set("Authorization", "Bearer " + getToken());
 
-			String url = System.getenv("EMAIL_API_URL") + "/email";
+			String url = System.getenv("CHES_API_URL") + "/email";
 
 			JSONObject request = new JSONObject();
 			request.put("bodyType", "html");
