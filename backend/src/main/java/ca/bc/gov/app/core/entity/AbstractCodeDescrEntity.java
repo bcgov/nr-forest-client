@@ -1,42 +1,26 @@
-package ca.bc.gov.app.m.postgres.client.entity;
+package ca.bc.gov.app.core.entity;
 
 import java.util.Date;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+@MappedSuperclass
+public abstract class AbstractCodeDescrEntity implements AbstractEntity, CodeDescr {
 
-import ca.bc.gov.app.core.configuration.PostgresPersistenceConfiguration;
-import ca.bc.gov.app.core.entity.AbstractEntity;
-import ca.bc.gov.app.core.misc.scope.ScopeConstant;
+	private static final long serialVersionUID = 4380176116164211795L;
 
-@Entity
-@Table(name = "CLIENT_STATUS_CODE", schema = PostgresPersistenceConfiguration.POSTGRES_ATTRIBUTE_SCHEMA)
-@Component(ClientStatusCodeEntity.BEAN_NAME)
-@Scope(ScopeConstant.PROTOTYPE)
-public class ClientStatusCodeEntity implements AbstractEntity {
-
-	private static final long serialVersionUID = 4341025008217142732L;
-
-	public static final String BEAN_NAME = "clientStatusCodeEntity";
-	
-	public static final String ACTIVE = "ACT";
-
-	@Id
-	@Column(name = "CLIENT_STATUS_CODE")
-	private String clientStatusCode;
-
-	@Column(name = "DESCRIPTION")
+	@Column(name = "DESCRIPTION", nullable = false)
 	private String description;
 
-	@Column(name = "EFFECTIVE_DATE")
+	@Temporal(TemporalType.DATE)
+	@Column(name = "EFFECTIVE_DATE", nullable = false)
 	private Date effectiveDate;
 
-	@Column(name = "EXPIRY_DATE")
+	@Temporal(TemporalType.DATE)
+	@Column(name = "EXPIRY_DATE", nullable = true)
 	private Date expiryDate;
 
 	@Column(name = "CREATE_TIMESTAMP")
@@ -50,14 +34,6 @@ public class ClientStatusCodeEntity implements AbstractEntity {
 
 	@Column(name = "UPDATE_USER")
 	private String updateUser;
-
-	public String getClientStatusCode() {
-		return clientStatusCode;
-	}
-
-	public void setClientStatusCode(String clientStatusCode) {
-		this.clientStatusCode = clientStatusCode;
-	}
 
 	public String getDescription() {
 		return description;

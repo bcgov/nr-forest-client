@@ -20,11 +20,11 @@
         "
       >
         <div v-if="!alwaysOpen">
-          <b-icon-arrow-up-short
+          <bi-arrow-up-short
             v-if="visible"
             style="margin-bottom: 2px; margin-right: 2px"
           />
-          <b-icon-arrow-down-short
+          <bi-arrow-down-short
             v-else
             style="margin-bottom: 2px; margin-right: 2px"
           />
@@ -49,6 +49,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import BiArrowUpShort from "~icons/bi/arrow-up-short";
+import BiArrowDownShort from "~icons/bi/arrow-down-short";
 import { primary } from "../utils/color";
 
 export default defineComponent({

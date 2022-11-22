@@ -8,7 +8,6 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -21,7 +20,6 @@ public class OraclePersistenceConfiguration {
     public final static String ORACLE_ATTRIBUTE_SCHEMA = "THE";
     public static final String ORACLE_API_TAG = "Legacy Client";
     
-	@Primary
     @Bean(name = "oracleDataSource")
     @ConfigurationProperties(prefix = "oracle.datasource")
     public DataSource dataSource() {

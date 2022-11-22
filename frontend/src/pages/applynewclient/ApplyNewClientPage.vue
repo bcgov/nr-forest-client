@@ -1,5 +1,9 @@
 <template>
   <div style="margin: 24px">
+    <b-spinner
+      :style="'color:' + primary + '; margin-bottom: 12px'"
+      v-if="loading"
+    ></b-spinner>
     <SubmitSucessText v-if="success" confirmationId="A123456" />
     <SubmitFailText v-if="error" />
     <FormInput
@@ -17,7 +21,7 @@
     </b-button>
 
     <ConfirmModal
-      :value="modalShow"
+      :show="modalShow"
       okayText="Submit"
       @onOkay="onModalOkay()"
       @onCancel="onModalCancel()"
@@ -26,15 +30,14 @@
 </template>
 
 <script setup lang="ts">
-// composition api
 import { ref } from "vue";
-import FormInput from "../common/FormInput.vue";
-import SubmitFailText from "../containers/SubmitFailText.vue";
-import SubmitSucessText from "../containers/SubmitSucessText.vue";
-import ConfirmModal from "../common/ConfirmModal.vue";
-import { sendConfirmationEmail } from "../services/forestClient.service";
-import type { FormFieldTemplateType } from "../core/AppType";
-import { primary } from "../utils/color";
+import FormInput from "../../common/FormInput.vue";
+import SubmitFailText from "./SubmitFailText.vue";
+import SubmitSucessText from "./SubmitSucessText.vue";
+import ConfirmModal from "../../common/ConfirmModal.vue";
+import { sendConfirmationEmail } from "../../services/forestClient.service";
+import type { FormFieldTemplateType } from "../../core/AppType";
+import { primary } from "../../utils/color";
 
 const success = ref(false);
 const error = ref(false);
@@ -51,18 +54,22 @@ const updateEmailValue = (id: string, newValue: string) => {
 };
 
 const modalShow = ref(false);
+const loading = ref(false);
 const openModal = () => {
   modalShow.value = true;
 };
 const onModalOkay = () => {
   modalShow.value = false;
+  loading.value = true;
   sendConfirmationEmail(emailValue.value, "Hello World!").then((response) => {
     if (response.status == 200) {
       if (error) error.value = false;
       success.value = true;
+      loading.value = false;
     } else {
       if (success) success.value = false;
       error.value = true;
+      loading.value = false;
     }
   });
 };

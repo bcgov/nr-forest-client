@@ -15,12 +15,12 @@ import org.springframework.web.client.RestTemplate;
 
 import ca.bc.gov.app.core.util.CoreUtil;
 import ca.bc.gov.app.m.om.service.OpenMapsService;
-import ca.bc.gov.app.m.om.vo.FirstNationBandVidationVO;
 import ca.bc.gov.app.m.om.vo.OpenMapsResponseVO;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientLocationEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ClientLocationRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ForestClientRepository;
+import ca.bc.gov.app.m.om.vo.FirstNationBandVidationVO;
 
 @Service(OpenMapsService.BEAN_NAME)
 public class OpenMapsServiceImpl implements OpenMapsService {

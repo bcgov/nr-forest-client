@@ -137,10 +137,10 @@ jobs:
             -p NODE_ENV='development' \
             -p API_URL='https://nrfc-api-test.api.gov.bc.ca' \
             -p X_API_KEY=${{ secrets.GWA_X_API_KEY }} \
-            -p EMAIL_USERNAME=${{ secrets.CHES_SERVICE_CLIENT }} \
-            -p EMAIL_PASSWORD=${{ secrets.CHES_CLIENT_PASSWORD }} \
-            -p EMAIL_TOKEN_URL='https://dev.oidc.gov.bc.ca/auth/realms/jbd6rnxw/protocol/openid-connect/token' \
-            -p EMAIL_API_URL='https://ches-dev.apps.silver.devops.gov.bc.ca/api/v1' \
+            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }} \
+            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }} \
+            -p CHES_TOKEN_URL='https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token' \
+            -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1' \
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USER }} \
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }} \
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }} \
@@ -151,6 +151,7 @@ jobs:
 
           # Follow any active rollouts (see deploymentconfigs)
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-database -w
+          oc exec dc/${{ env.NAME }}-${{ env.ZONE }}-database -- psql -d ${{ env.NAME }} -U ${{ env.NAME }} -c "$(cat backend/src/main/resources/databasescripts/databasescripts.sql)"
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-backend -w
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-frontend -w
 

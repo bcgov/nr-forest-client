@@ -13,20 +13,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ca.bc.gov.app.m.ches.service.ChesEmailService;
+import ca.bc.gov.app.m.ches.service.ChesCommonServicesService;
 import io.swagger.annotations.Api;
 
 
-@Api(tags = "ChesEmail")
+@Api(tags = "Ches - Common Services")
 @CrossOrigin(origins = "${frontend.url}")
 @RestController
 @RequestMapping("app/m/ches/")
-public class ChesEmailController {
+public class ChesCommonServicesController {
 
-    public static final Logger logger = LoggerFactory.getLogger(ChesEmailController.class);
+    public static final Logger logger = LoggerFactory.getLogger(ChesCommonServicesController.class);
     
     @Inject
-    private ChesEmailService ChesEmailService;
+    private ChesCommonServicesService ChesEmailService;
     
     @RequestMapping(value = "/sendEmail", 
                     method = RequestMethod.POST, 

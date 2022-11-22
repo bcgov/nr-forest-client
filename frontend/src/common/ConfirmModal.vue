@@ -16,13 +16,13 @@
 import { ref, computed } from "vue";
 
 const props = defineProps({
-  value: Boolean,
+  show: Boolean,
   okayText: { type: String, default: "ok" },
 });
 
 const computedValue = computed({
   get() {
-    return props.value;
+    return props.show;
   },
   set(newValue) {},
 });
