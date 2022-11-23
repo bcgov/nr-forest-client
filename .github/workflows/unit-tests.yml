@@ -1,0 +1,76 @@
+name: Unit Tests and Analysis
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests-backend:
+    name: Backend Unit Tests
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17 and Caching maven dependencies
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "17"
+          cache: "maven"
+
+      - name: Tests
+        run: |
+          cd backend
+          ./mvnw test
+
+  tests-frontend:
+    name: Frontend Unit Tests
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get npm cache directory
+        id: npm-cache-dir-frontend
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+
+      - uses: actions/cache@v3
+        id: npm-cache-frontend # use this to check for `cache-hit
+        with:
+          path: ${{ steps.npm-cache-dir-frontend.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Cache for test results
+        id: cache-frontend
+        uses: actions/cache@v3
+        with:
+          path: frontend/coverage
+          key: frontend-coverage-${{ github.run_number }}
+          restore-keys: |
+            frontend-coverage-
+
+      - name: Tests
+        run: |
+          cd frontend
+          npm ci
+          npm run test
