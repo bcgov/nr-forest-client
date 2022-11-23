@@ -21,6 +21,7 @@ concurrency:
 jobs:
   tests-backend:
     name: Backend Unit Tests
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
@@ -40,6 +41,7 @@ jobs:
 
   tests-frontend:
     name: Frontend Unit Tests
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
