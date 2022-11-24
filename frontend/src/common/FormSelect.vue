@@ -4,7 +4,10 @@
       v-model="computedValue"
       :options="options"
       :disabled="disabled"
-    ></b-form-select>
+    >
+    <!-- :state="state" -->
+    <!-- https://github.com/cdmoro/bootstrap-vue-3/issues/819 -->
+    </b-form-select>
   </FormFieldTemplate>
 </template>
 
@@ -28,6 +31,7 @@ const props = defineProps({
   },
   value: [Object, String],
   disabled: { type: Boolean, default: false },
+  state: { type: Boolean, default: null },
   options: {
     type: Array as PropType<Array<FromSelectOptionType>>,
     required: true,
