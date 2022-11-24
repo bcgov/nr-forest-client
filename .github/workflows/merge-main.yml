@@ -62,55 +62,11 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  # # SonarCloud runs in the main branch are needed to compare against PRs
-  sonarcloud:
-    name: Static Analysis
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v2
-        # Disable shallow clone for SonarCloud analysis
-        with:
-          fetch-depth: 0
-
-      - name: Set up JDK 17 and Caching maven dependencies
-        uses: actions/setup-java@v3
-        with:
-          distribution: "temurin"
-          java-version: "17"
-
-      - name: Backend Tests
-        run: |
-          cd backend
-          ./mvnw test
-
-      - name: Frontend Tests
-        run: |
-          cd frontend
-          npm ci
-          npm run test
-
-  #     - name: SonarCloud Scan
-  #       uses: SonarSource/sonarcloud-github-action@master
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #       with:
-  #         args: >
-  #           -Dsonar.exclusions=**/test/**,.github/**/*
-  #           -Dsonar.organization=bcgov-sonarcloud
-  #           -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info,frontend/coverage/lcov.info
-  #           -Dsonar.cobertura.reportPaths=backend/coverage/cobertura-coverage.xml,frontend/coverage/cobertura-coverage.xml
-  #           -Dsonar.project.monorepo.enabled=true
-  #           -Dsonar.projectKey=greenfield-template
-  #           -Dsonar.sources=backend,frontend
-  #           -Dsonar.tests=backend/test,frontend/test
-
   deploy-test:
     name: TEST Deployment
     needs:
       - cleanup-ghcr
       - codeql
-      # - sonarcloud
     runs-on: ubuntu-22.04
     environment:
       name: test
@@ -193,31 +149,6 @@ jobs:
           cmd_options: "-a"
           allow_issue_writing: false
           fail_action: false
-
-  # # https://github.com/snyk/cli, https://github.com/snyk/actions
-  # # Note: using free tier - called late in pipeline to limit runs
-  # snyk:
-  #   name: Vulnerability Report
-  #   needs:
-  #     - zap-backend
-  #     - zap-frontend
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v2
-
-  #     - name: Run Snyk to check for vulnerabilities
-  #       uses: snyk/actions/node@master
-  #       continue-on-error: true # To make sure that SARIF upload gets called
-  #       env:
-  #         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-  #       with:
-  #         args: --all-projects --severity-threshold=high --sarif-file-output=snyk.sarif
-
-  #     - name: Upload result to GitHub Code Scanning
-  #       uses: github/codeql-action/upload-sarif@v2
-  #       with:
-  #         sarif_file: snyk.sarif
 
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy-repo:
@@ -353,7 +284,6 @@ jobs:
     needs:
       - image-backend
       - image-frontend
-      # - snyk
       - trivy-repo
     runs-on: ubuntu-22.04
     environment:
@@ -457,16 +387,3 @@ jobs:
           target: ${{ env.PREV }}-frontend
           tags: |
             prod-frontend
-
-  # # Uncomment to for development and troubleshooting
-  # # https://docs.github.com/en/actions/learn-github-actions/contexts
-  # view-context:
-  #   name: View GitHub Context
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - name: Echo GitHub context
-  #       uses: satackey/action-js-inline@v0.0.2
-  #       with:
-  #         script: |
-  #           const github = require('@actions/github');
-  #           console.log(JSON.stringify(github, null, 2));
