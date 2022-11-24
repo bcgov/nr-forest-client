@@ -8,9 +8,12 @@
       :id="props.fieldProps.id"
     />
     <slot />
-    <p v-if="props.fieldProps.note" class="form-field-note">
+    <div v-if="props.fieldProps.note" class="form-field-note">
       <span v-html="fieldProps.note"></span>
-    </p>
+    </div>
+    <div v-if="props.fieldProps.errorMsg" class="form-field-err-msg">
+      <span v-html="fieldProps.errorMsg"></span>
+    </div>
   </div>
 </template>
 
@@ -39,6 +42,11 @@ export default defineComponent({
 <style scoped>
 .form-field-note {
   color: gray;
+  font-size: 12px;
+  margin-top: 2px;
+}
+.form-field-err-msg {
+  color: #DE4B50;
   font-size: 12px;
   margin-top: 2px;
 }
