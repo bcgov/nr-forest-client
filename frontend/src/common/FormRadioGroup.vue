@@ -1,6 +1,6 @@
 <template>
   <FormFieldTemplate :fieldProps="fieldProps">
-    <b-form-checkbox
+    <b-form-radio
       v-for="(option, index) in options"
       :key="index"
       v-model="computedValue"
@@ -8,7 +8,7 @@
       :disabled="disabled"
     >
       {{ option.text }}
-    </b-form-checkbox>
+    </b-form-radio>
   </FormFieldTemplate>
 </template>
 
@@ -18,7 +18,7 @@ import type { PropType } from "vue";
 import FormFieldTemplate from "./FormFieldTemplate.vue";
 import type {
   FormFieldTemplateType,
-  FormCheckBoxGroupOptionType,
+  FormRadioGroupOptionType,
 } from "../core/AppType";
 
 const props = defineProps({
@@ -31,7 +31,7 @@ const props = defineProps({
   },
   value: Array as PropType<Array<string>>,
   options: {
-    type: Array as PropType<Array<FormCheckBoxGroupOptionType>> | undefined,
+    type: Array as PropType<Array<FormRadioGroupOptionType>> | undefined,
     required: true,
     default: [{ code: 1, text: "Option 1" }],
   },
@@ -53,7 +53,7 @@ const computedValue = computed({
 <script lang="ts">
 import { defineComponent } from "vue";
 export default defineComponent({
-  name: "FormCheckbox",
+  name: "FormRadio",
 });
 </script>
 

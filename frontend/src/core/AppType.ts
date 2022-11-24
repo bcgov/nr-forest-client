@@ -17,6 +17,11 @@ export interface FormCheckBoxGroupOptionType {
   text: string;
 }
 
+export interface FormRadioGroupOptionType {
+  code: string;
+  text: string;
+}
+
 export interface FormUploadFileType {
   content: string;
   contentType: string;
