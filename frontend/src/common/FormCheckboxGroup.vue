@@ -7,6 +7,8 @@
       :value="option.code"
       :disabled="disabled"
     >
+    <!-- :state="state" -->
+    <!-- https://github.com/cdmoro/bootstrap-vue-3/issues/819 -->
       {{ option.text }}
     </b-form-checkbox>
   </FormFieldTemplate>
@@ -36,6 +38,7 @@ const props = defineProps({
     default: [{ code: 1, text: "Option 1" }],
   },
   disabled: { type: Boolean, default: false },
+  state: { type: Boolean, default: null },
 });
 
 const emit = defineEmits(["updateValue"]);

@@ -4,6 +4,7 @@
       :fieldProps="inputFieldProps"
       :value="form.exampleInput"
       :disabled="inputDisabled"
+      :state="inputState"
       @updateValue="updateFormValue"
     />
     <FormSelect
@@ -13,6 +14,8 @@
       :disabled="selectDisabled"
       @updateValue="updateFormValue"
     />
+    <!-- :state="selectState" -->
+    <!-- https://github.com/cdmoro/bootstrap-vue-3/issues/819 -->
     <FormCheckboxGroup
       :fieldProps="checkBoxGroupFieldProps"
       :value="form.exampleCheckBoxGroup"
@@ -20,6 +23,8 @@
       :disabled="checkBoxGroupDisabled"
       @updateValue="updateFormValue"
     />
+    <!-- :state="checkBoxGroupState" -->
+    <!-- https://github.com/cdmoro/bootstrap-vue-3/issues/819 -->
     <FormRadioGroup
       :fieldProps="radioGroupFieldProps"
       :value="form.exampleRadioGroup"
@@ -27,6 +32,12 @@
       :disabled="radioGroupDisabled"
       @updateValue="updateFormValue"
     />
+    <!-- :state="radioGroupState" -->
+    <!-- https://github.com/cdmoro/bootstrap-vue-3/issues/819 -->
+
+    <div>
+      <b-col><b-button type="submit" variant="primary">Submit</b-button></b-col>
+    </div>
   </div>
 </template>
 
@@ -57,18 +68,22 @@
 
   /* -------- input -------- */
   const inputDisabled = ref(false);
+  const inputState = ref(false);
   const inputFieldProps: FormFieldTemplateType = {
     label: "Example Input",
     id: "exampleInput",
+    note: "Example of note text",
+    errorMsg: "Example of error message",
   };
 
   /* -------- select -------- */
   const selectDisabled = ref(false);
+  const selectState = ref(null);
   const selectFieldProps: FormFieldTemplateType = {
     label: "Example Select",
     id: "exampleSelect",
     required: true,
-    note: "example of note text",
+    note: "Example of note text",
     tooltip: "tooltip placeholder",
   };
   const selectOptions: Array<FromSelectOptionType> = [
@@ -78,6 +93,7 @@
 
   /* -------- check box group -------- */
   const checkBoxGroupDisabled = ref(false);
+  const checkBoxGroupState = ref(null);
   const checkBoxGroupFieldProps: FormFieldTemplateType = {
     label: "Example Check Box Group",
     id: "exampleCheckBoxGroup",
@@ -90,6 +106,7 @@
 
   /* -------- radio group -------- */
   const radioGroupDisabled = ref(false);
+  const radioGroupState =  ref(null);
   const radioGroupFieldProps: FormFieldTemplateType = {
     label: "Example Radio Group",
     id: "exampleRadioGroup",
