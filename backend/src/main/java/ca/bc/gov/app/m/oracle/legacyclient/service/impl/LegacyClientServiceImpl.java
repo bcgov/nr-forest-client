@@ -27,9 +27,9 @@ public class LegacyClientServiceImpl implements LegacyClientService {
 	}
 
 	@Override
-	public List<ForestClientEntity> findClientIndividualByNameAndDOB(String firstName, String lastName,
+	public List<ForestClientEntity> findClientByNameAndDOB(String firstName, String lastName,
 			Date birthdate) {
-		return forestClientRepository.findClientIndividualByNameAndDOB(firstName, lastName, birthdate);
+		return forestClientRepository.findClientByNameAndDOB(firstName, lastName, birthdate);
 
 	}
 

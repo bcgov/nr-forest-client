@@ -26,6 +26,6 @@ public interface ForestClientRepository extends CoreRepository<ForestClientEntit
 
 	@Query("select x from ForestClientEntity x "
 			+ "where x.legalFirstName = :firstName and x.clientName = :lastName and x.birthdate = :birthdate")
-	List<ForestClientEntity> findClientIndividualByNameAndDOB(@Param("firstName") String firstName,
+	List<ForestClientEntity> findClientByNameAndDOB(@Param("firstName") String firstName,
 		@Param("lastName") String lastName, @Param("birthdate") Date birthdate);
 }

@@ -42,13 +42,13 @@ public class LegacyClientController {
 	}
 
 	@RequestMapping(value = "/findClientByNameAndDOB", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
-	public List<ForestClientEntity> findClientIndividualByNameAndDOB(@RequestParam("firstName") String firstName,
+	public List<ForestClientEntity> findClientByNameAndDOB(@RequestParam("firstName") String firstName,
 			@RequestParam("lastName") String lastName,
 			@Parameter(name = "birthdate", required = true, description = "in the format of yyyy-mm-dd") String birthdate) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
 		try {
 			Date date = formatter.parse(birthdate);
-			return legacyClientService.findClientIndividualByNameAndDOB(firstName, lastName, date);
+			return legacyClientService.findClientByNameAndDOB(firstName, lastName, date);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -11,6 +11,6 @@ public interface LegacyClientService {
 
 	List<ForestClientEntity> findClientByIncorporationOrName(String incorporationNumber, String companyName);
 
-	List<ForestClientEntity> findClientIndividualByNameAndDOB(String firstName, String lastName, Date birthdate);
+	List<ForestClientEntity> findClientByNameAndDOB(String firstName, String lastName, Date birthdate);
 
 }
