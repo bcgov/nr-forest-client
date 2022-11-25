@@ -2,9 +2,6 @@ package ca.bc.gov.app.m.oracle.legacyclient.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -36,25 +33,18 @@ public class LegacyClientController {
 	private LegacyClientService legacyClientService;
 
 	@RequestMapping(value = "/findClientByIncorporationNumberOrName", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
-	public List<ForestClientEntity> findClientByIncorporationOrName(
-			@Param("incorporationNumber") String incorporationNumber, @Param("companyName") String companyName) {
+	public List<ForestClientEntity> findClientByIncorporationOrName(@Param("incorporationNumber") String incorporationNumber, 
+																	@Param("companyName") String companyName) {
+		
 		return legacyClientService.findClientByIncorporationOrName(incorporationNumber, companyName);
 	}
 
-	@RequestMapping(value = "/findClientByNameAndDOB", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
-	public List<ForestClientEntity> findClientByNameAndDOB(@RequestParam("firstName") String firstName,
-			@RequestParam("lastName") String lastName,
-			@Parameter(name = "birthdate", required = true, description = "in the format of yyyy-mm-dd") String birthdate) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
-		try {
-			Date date = formatter.parse(birthdate);
-			return legacyClientService.findClientByNameAndDOB(firstName, lastName, date);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-
+	@RequestMapping(value = "/findClientByNameAndBirthdate", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+	public List<ForestClientEntity> findClientByNameAndBirthdate(@RequestParam("firstName") String firstName,
+														   		 @RequestParam("lastName") String lastName,
+														   		 @Parameter(name = "birthdate", required = true, description = "in the format of yyyy-mm-dd") String birthdate) {
+	
+		return legacyClientService.findClientByNameAndBirthdate(firstName, lastName, birthdate);
 	}
 
 }

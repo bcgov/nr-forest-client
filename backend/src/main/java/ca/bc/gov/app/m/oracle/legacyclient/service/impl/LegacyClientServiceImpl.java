@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import ca.bc.gov.app.core.util.CoreUtil;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ForestClientRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.service.LegacyClientService;
@@ -17,9 +18,15 @@ import ca.bc.gov.app.m.oracle.legacyclient.service.LegacyClientService;
 public class LegacyClientServiceImpl implements LegacyClientService {
 
 	public static final Logger logger = LoggerFactory.getLogger(LegacyClientServiceImpl.class);
+	
+	public static final String DATE_FORMAT = "yyyy-MM-dd";
 
 	@Inject
 	private ForestClientRepository forestClientRepository;
+	
+	@Inject
+	private CoreUtil coreUtil;
+	
 
 	@Override
 	public List<ForestClientEntity> findClientByIncorporationOrName(String incorporationNumber, String companyName) {
@@ -27,10 +34,9 @@ public class LegacyClientServiceImpl implements LegacyClientService {
 	}
 
 	@Override
-	public List<ForestClientEntity> findClientByNameAndDOB(String firstName, String lastName,
-			Date birthdate) {
-		return forestClientRepository.findClientByNameAndDOB(firstName, lastName, birthdate);
-
+	public List<ForestClientEntity> findClientByNameAndBirthdate(String firstName, String lastName, String birthdate) {
+		Date dateOfBirth = coreUtil.toDate(birthdate, DATE_FORMAT);
+		return forestClientRepository.findClientByNameAndBirthdate(firstName, lastName, dateOfBirth);
 	}
 
 }
