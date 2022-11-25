@@ -67,10 +67,10 @@ public class LegacyClientControllerTest {
 		List<ForestClientEntity> result = Arrays.asList(indivudual);
 
 		// given
-		given(legacyClientController.findClientByNameAndDOB(FirstName, LastName, BirthDate)).willReturn(result);
+		given(legacyClientController.findClientByNameAndBirthdate(FirstName, LastName, BirthDate)).willReturn(result);
 
 		// when
-		List<ForestClientEntity> clients = legacyClientController.findClientByNameAndDOB(FirstName, LastName, BirthDate);
+		List<ForestClientEntity> clients = legacyClientController.findClientByNameAndBirthdate(FirstName, LastName, BirthDate);
 
 		// then
 		assertThat(clients).isNotNull();
