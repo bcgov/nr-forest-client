@@ -1,6 +1,9 @@
 <template>
   <FormFieldTemplate :fieldProps="fieldProps">
-    <b-form-input v-model="computedValue" :disabled="disabled"></b-form-input>
+    <b-form-input v-model="computedValue" 
+                  :disabled="disabled"
+                  :state="state">
+    </b-form-input>
   </FormFieldTemplate>
 </template>
 
@@ -17,6 +20,7 @@ const props = defineProps({
   },
   value: [String, Number],
   disabled: { type: Boolean, default: false },
+  state: { type: Boolean, default: null },
 });
 
 const emit = defineEmits(["updateValue"]);

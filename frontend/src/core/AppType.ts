@@ -5,6 +5,7 @@ export interface FormFieldTemplateType {
   id: string; // id is required when using tooltip, and need to be unique
   note?: string;
   tooltip?: string;
+  errorMsg?: string;
 }
 
 export interface FromSelectOptionType {
@@ -13,6 +14,11 @@ export interface FromSelectOptionType {
 }
 
 export interface FormCheckBoxGroupOptionType {
+  code: string;
+  text: string;
+}
+
+export interface FormRadioGroupOptionType {
   code: string;
   text: string;
 }
