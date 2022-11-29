@@ -47,46 +47,42 @@
   </b-card>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { computed, ref } from "vue";
 import BiArrowUpShort from "~icons/bi/arrow-up-short";
 import BiArrowDownShort from "~icons/bi/arrow-down-short";
 import { primary } from "../utils/color";
 
+const props = defineProps({
+  title: String,
+  id: String,
+  defaultOpen: { type: Boolean, default: false },
+  nextId: { type: String || null, default: null }, // id of the collapse content to open when click next button
+  nextText: { type: String, default: "" }, // text on the next button
+  alwaysOpen: { type: Boolean, default: false },
+});
+
+const visible = ref(props.defaultOpen);
+
+const openNext = () => {
+  if (
+    document.getElementById(props.nextId) &&
+    !document.getElementById(props.nextId).classList.contains("show")
+  ) {
+    document.getElementById("header-" + props.nextId).click();
+  }
+};
+const handleClick = () => {
+  if (!props.alwaysOpen) {
+    visible.value = !visible.value;
+  }
+};
+</script>
+
+<script lang="ts">
+import { defineComponent } from "vue";
 export default defineComponent({
   name: "CollapseCard",
-  props: {
-    title: String,
-    id: String,
-    defaultOpen: { type: Boolean, default: false },
-    nextId: { type: String || null, default: null }, // id of the collapse content to open when click next button
-    nextText: { type: String, default: "" }, // text on the next button
-    alwaysOpen: { type: Boolean, default: false },
-  },
-  data() {
-    return {
-      visible: this.defaultOpen,
-      primary,
-    };
-  },
-  methods: {
-    openNext() {
-      if (
-        document.getElementById(this.nextId) &&
-        document.getElementById(this.nextId.slice(7)) &&
-        !document
-          .getElementById(this.nextId.slice(7)) // remove the "header-" part in the nextId, the rest is the child id
-          .classList.contains("show")
-      ) {
-        document.getElementById(this.nextId).click();
-      }
-    },
-    handleClick() {
-      if (!this.alwaysOpen) {
-        this.visible = !this.visible;
-      }
-    },
-  },
 });
 </script>
 
