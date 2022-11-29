@@ -12,13 +12,7 @@
       @updateValue="updateEmailValue"
     />
 
-    <b-button
-      variant="primary"
-      :style="'background-color:' + primary + ';margin-top: 24px'"
-      @click="openModal()"
-    >
-      Submit
-    </b-button>
+    <PrimarySquareButton @onClick="openModal()" text="Submit" />
 
     <ConfirmModal
       :show="modalShow"
@@ -35,6 +29,7 @@ import FormInput from "../../common/FormInput.vue";
 import SubmitFailText from "./SubmitFailText.vue";
 import SubmitSucessText from "./SubmitSucessText.vue";
 import ConfirmModal from "../../common/ConfirmModal.vue";
+import PrimarySquareButton from "../../common/buttons/PrimarySquareButton.vue";
 import { sendConfirmationEmail } from "../../services/forestClient.service";
 import type { FormFieldTemplateType } from "../../core/AppType";
 import { primary } from "../../utils/color";

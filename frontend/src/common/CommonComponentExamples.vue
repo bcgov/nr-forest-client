@@ -43,9 +43,6 @@
       <!-- :state="radioGroupState" -->
       <!-- https://github.com/cdmoro/bootstrap-vue-3/issues/819 -->
     </CollapseCard>
-    <div>
-      <b-col><b-button type="submit" variant="primary">Submit</b-button></b-col>
-    </div>
   </div>
 </template>
 

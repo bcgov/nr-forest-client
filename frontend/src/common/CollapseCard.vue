@@ -35,13 +35,11 @@
     <b-collapse :id="id" role="tabpanel" v-model="visible">
       <b-card-body style="margin: 16px 10px 16px 10px">
         <slot />
-        <b-button
+        <PrimarySquareButton
           v-if="nextId"
-          variant="primary"
-          :style="'background-color:' + primary + ';margin-top: 16px'"
-          @click="openNext"
-          >{{ nextText }}</b-button
-        >
+          @onClick="openNext"
+          :text="nextText"
+        />
       </b-card-body>
     </b-collapse>
   </b-card>
@@ -49,6 +47,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import PrimarySquareButton from "./buttons/PrimarySquareButton.vue";
 import BiArrowUpShort from "~icons/bi/arrow-up-short";
 import BiArrowDownShort from "~icons/bi/arrow-down-short";
 import { primary } from "../utils/color";
