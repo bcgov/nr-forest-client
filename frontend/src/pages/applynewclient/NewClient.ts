@@ -15,8 +15,8 @@ const formTenureType = [
 
 export const newClientData = {
   begin: {
-    reason: "",
-    tenure_type: "",
+    reason: [""],
+    tenure_type: [""],
     client_type: "",
   },
   information: {
@@ -29,89 +29,99 @@ export const newClientData = {
     business_name: "",
     worksafebc_number: "",
   },
-  contact: [
-    { stree_address: "", country: "", province: "", city: "", postal_code: "" },
-  ],
-  authorized: [
-    {
-      contact_type: "",
-      firsname_or_company: "",
-      last_name: "",
-      phone: "",
-      email: "",
-      index: 0, // need use this index to be unique identity when display data in form tables
-    },
-  ],
+  contact: {
+    address: [
+      {
+        stree_address: "",
+        country: "",
+        province: "",
+        city: "",
+        postal_code: "",
+      },
+    ],
+  },
+  authorized: {
+    individuals: [
+      {
+        contact_type: "",
+        firsname_or_company: "",
+        last_name: "",
+        phone: "",
+        email: "",
+        index: 0, // need use this index to be unique identity when display data in form tables
+      },
+    ],
+  },
 };
 
 // each id is aligned with the newClientData
-export const beginSectionStructure = {
-  title: "Let's begin",
-  id: "begin",
+export const beginSectionSchema = {
+  container: { title: "Let's begin", id: "begin" }, // property for CollapseCard when use it
   content: [
+    // form content for each CollapseCard
     {
-      title: { label: "Why are you applying?" },
-      id: "reason",
-      type: "radio",
+      fieldProps: { label: "Why are you applying?", id: "reason" },
+      type: "radiogroup",
       options: formApplyReason,
     },
     {
-      title: { label: "Select your tenure type" },
-      id: "tenure_type",
-      type: "radio",
+      fieldProps: { label: "Select your tenure type", id: "tenure_type" },
+      type: "radiogroup",
       options: formTenureType,
     },
     {
-      title: { label: "What type of business are you?", required: true },
-      id: "client_type",
+      fieldProps: {
+        label: "What type of business are you?",
+        required: true,
+        id: "client_type",
+      },
       type: "select",
       options: [],
     },
   ],
 };
 
-const informationSectionCommonStructure = [
+const informationSectionCommonSchema = [
   {
-    title: { label: "First name", required: true },
-    id: "first_name",
+    fieldProps: { label: "First name", required: true, id: "first_name" },
     type: "input",
   },
   {
-    title: { label: "Last name" },
-    id: "last_name",
+    fieldProps: { label: "Last name", id: "last_name" },
     type: "input",
   },
   {
-    title: { label: "Please select your birthdate", required: true },
-    id: "birthdate",
+    fieldProps: {
+      label: "Please select your birthdate",
+      required: true,
+      id: "birthdate",
+    },
     type: "input", // todo: change to date
   },
 ];
 
-export const informationSectionStructure = {
+export const informationSectionSchema = {
   individual: {
-    title: "Individual information",
-    id: "information",
-    content: [informationSectionCommonStructure],
+    container: { title: "Individual information", id: "information" },
+    content: [informationSectionCommonSchema],
   },
   soleProprietorship: {
-    title: "Individual information",
-    id: "information",
+    container: { title: "Individual information", id: "information" },
     content: [
-      ...informationSectionCommonStructure,
+      ...informationSectionCommonSchema,
       {
-        title: { label: "Registration number", id: "registration_number" },
+        fieldProps: { label: "Registration number", id: "registration_number" },
         type: "input",
       },
       {
-        title: {
+        fieldProps: {
           label: "Are you 'doing business as'?",
           id: "doing_business_as_check",
         },
         type: "checkbox",
       },
       {
-        title: {
+        fieldProps: {
           label: "Are you 'doing business as'?",
           id: "doing_business_as",
         },
@@ -121,11 +131,10 @@ export const informationSectionStructure = {
     ],
   },
   company: {
-    title: "Company information",
-    id: "information",
+    container: { title: "Company information", id: "information" },
     content: [
       {
-        title: {
+        fieldProps: {
           label: "Registered business name",
           id: "business_name",
           required: true,
@@ -134,7 +143,7 @@ export const informationSectionStructure = {
         type: "input",
       },
       {
-        title: {
+        fieldProps: {
           label: "Incorporation or registration number",
           id: "registration_number",
           required: true,
@@ -142,23 +151,23 @@ export const informationSectionStructure = {
         type: "input",
       },
       {
-        title: {
+        fieldProps: {
           label: "WorkSafe BC number",
           id: "worksafebc_number",
         },
         type: "input",
       },
       {
-        title: {
-          label: "Incorporation or registration number",
+        fieldProps: {
+          label: "Are you 'doing business as'?",
           id: "doing_business_as_check",
           required: true,
         },
         type: "checkbox",
       },
       {
-        title: {
-          label: "Are you 'doing business as'?",
+        fieldProps: {
+          label: "Doing business as",
           id: "doing_business_as",
         },
         type: "input",
@@ -168,23 +177,28 @@ export const informationSectionStructure = {
   },
 };
 
-export const contactSectionStructure = {};
+export const contactSectionSchema = {};
 
-export const authorizedSectionStructure = {
-  title: "Add authorized individuals",
-  id: "authorized",
+export const authorizedSectionSchema = {
+  container: { title: "Add authorized individuals", id: "authorized" },
   content: [
     {
+      fieldProps: {
+        id: "individuals",
+      },
       type: "table",
       addButtonText: "+ Add another authorized person",
       columns: [
         {
-          title: { label: "Contact Type", id: "contact_type" },
+          fieldProps: { label: "Contact Type", id: "contact_type" },
           type: "select",
           options: [],
         },
         {
-          title: { label: "First name or company", id: "firsname_or_company" },
+          fieldProps: {
+            label: "First name or company",
+            id: "firsname_or_company",
+          },
           type: "input",
         },
       ],

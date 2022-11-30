@@ -1,50 +1,65 @@
 <template>
   <CollapseCard
-    :title="authorizedSectionStructure.title"
+    :title="authorizedSectionSchema.container.title"
     defaultOpen
-    :id="authorizedSectionStructure.id"
+    :id="authorizedSectionSchema.container.id"
   >
     <div
-      v-for="(row, rowIndex) in authorizedSectionStructure.content"
+      v-for="(row, rowIndex) in authorizedSectionSchema.content"
       :key="rowIndex"
     >
+      <FormComponentOptions
+        :data="data[row.fieldProps.id]"
+        :schema="row"
+        @updateFormValue="(id, newValue) => updateFormValue(id, newValue)"
+      />
       <FormTable
         v-if="row.type == 'table'"
-        :data="data"
+        :data="data[row.fieldProps.id]"
         :addButtonText="row.addButtonText"
         :columns="row.columns"
         @updateFormTable="updateFormTable"
-        @addRow="addRow"
-        @deleteRow="deleteRow"
+        @addRow="addTableRow"
+        @deleteRow="deleteTableRow"
       />
     </div>
   </CollapseCard>
 </template>
 
 <script setup lang="ts">
-import { ref, onUpdated } from "vue";
+import { ref } from "vue";
+import type { PropType } from "vue";
 import CollapseCard from "../../common/CollapseCard.vue";
+import FormComponentOptions from "../../common/FormComponentOptions.vue";
 import FormTable from "../../common/FormTable.vue";
-import { authorizedSectionStructure, newClientData } from "./NewClient";
+import { authorizedSectionSchema } from "./NewClient";
+import type { FormSectionSchemaType } from "../../core/AppType";
 
-const data = ref([...newClientData[authorizedSectionStructure.id]]);
+const props = defineProps({
+  data: {
+    type: Object as PropType<FormSectionSchemaType>,
+    required: true,
+  },
+});
 
+const emit = defineEmits([
+  "updateFormValue",
+  "updateFormTable",
+  "addTableRow",
+  "deleteTableRow",
+]);
+
+const updateFormValue = (id, newValue) => {
+  emit("updateFormValue", id, newValue);
+};
 const updateFormTable = (id, value, row) => {
-  data.value[row][id] = value;
+  emit("updateFormTable", id, value, row);
 };
-
-const countIndex = ref(0); // must use this to generate unique index
-
-const addRow = () => {
-  countIndex.value += 1;
-  const defaultNew = JSON.parse(
-    JSON.stringify(newClientData[authorizedSectionStructure.id][0])
-  );
-  data.value.push({ ...defaultNew, index: countIndex.value });
+const addTableRow = () => {
+  emit("addTableRow");
 };
-
-const deleteRow = (row) => {
-  data.value.splice(row, 1);
+const deleteTableRow = (row) => {
+  emit("deleteTableRow", row);
 };
 </script>
 

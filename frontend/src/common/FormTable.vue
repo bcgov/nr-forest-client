@@ -9,19 +9,9 @@
           v-for="(column, columnIndex) in columns"
           :key="'col-' + columnIndex"
         >
-          <FormInput
-            v-if="column.type == 'input'"
-            :fieldProps="column.title"
-            :value="row[column]"
-            @updateValue="
-              (id, newValue) => updateFormTable(id, newValue, rowIndex)
-            "
-          />
-          <FormSelect
-            v-if="column.type == 'select'"
-            :fieldProps="column.title"
-            :value="row[column]"
-            :options="column.options"
+          <FormComponentOptions
+            :data="row[column.fieldProps.id]"
+            :schema="column"
             @updateValue="
               (id, newValue) => updateFormTable(id, newValue, rowIndex)
             "
@@ -42,18 +32,17 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import type { PropType } from "vue";
-import FormInput from "./FormInput.vue";
-import FormSelect from "./FormSelect.vue";
+import FormComponentOptions from "./FormComponentOptions.vue";
 import PrimarySquareButton from "./buttons/PrimarySquareButton.vue";
 import BiXCircle from "~icons/bi/x-circle";
 import type {
-  FormComponentStructureType,
+  FormComponentSchemaType,
   CommonObjectType,
 } from "../core/AppType";
 
 const props = defineProps({
   columns: {
-    type: Array as PropType<Array<FormComponentStructureType>>,
+    type: Array as PropType<Array<FormComponentSchemaType>>,
     required: true,
   },
   addButtonText: String,
