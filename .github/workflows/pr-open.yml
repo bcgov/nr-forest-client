@@ -12,56 +12,71 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  builds:
-    name: Builds
-    runs-on: ubuntu-22.04
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        package: [backend, frontend]
-        include:
-          - package: backend
-            triggers: ('backend/')
-          - package: frontend
-            triggers: ('frontend/')
+  # builds:
+  #   name: Builds
+  #   runs-on: ubuntu-22.04
+  #   permissions:
+  #     packages: write
+  #   strategy:
+  #     matrix:
+  #       package: [backend, frontend]
+  #       include:
+  #         - package: backend
+  #           triggers: ('backend/')
+  #         - package: frontend
+  #           triggers: ('frontend/')
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: bcgov-nr/action-builder-ghcr@v0.0.2
+  #       with:
+  #         package: ${{ matrix.package }}
+  #         tag: ${{ github.event.number }}
+  #         tag_fallback: test
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         triggers: ${{ matrix.triggers }}
+
+  deploy-backend:
+    name: Deploy Backend
+    # needs:
+    #   - builds
+    environment: dev
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@v0.0.2
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v0.0.2
         with:
-          package: ${{ matrix.package }}
-          tag: ${{ github.event.number }}
-          tag_fallback: test
-          token: ${{ secrets.GITHUB_TOKEN }}
-          triggers: ${{ matrix.triggers }}
+          file: backend/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: true
+          parameters: -p ZONE=${{ github.event.number }}
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-backend
+            -p NODE_ENV='development'
+            -p API_URL='https://nrfc-api-test.api.gov.bc.ca'
+            -p X_API_KEY=${{ secrets.GWA_X_API_KEY }}
+            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
+            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
+            -p CHES_TOKEN_URL='https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
+            -p CHES_API_URL='https://ches-dev.api.gov.bc.ca/api/v1'
+            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USER }}
+            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
 
   deploys:
     name: Deploys
-    needs:
-      - builds
+    # needs:
+    #   - builds
     runs-on: ubuntu-22.04
+    environment: dev
     strategy:
       matrix:
-        name: [backend, database, init, frontend]
+        name: [database, frontend]
         include:
-          - name: backend
-            file: backend/openshift.deploy.yml
-            overwrite: true
-            parameters:
-              -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
-              -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
-              -p NODE_ENV='development'
-              -p API_URL='https://nrfc-api-test.api.gov.bc.ca'
-              -p X_API_KEY=${{ secrets.GWA_X_API_KEY }}
-              -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
-              -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
-              -p CHES_TOKEN_URL='https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
-              -p CHES_API_URL='https://ches-dev.api.gov.bc.ca/api/v1'
-              -p ORACLEDB_USER=${{ secrets.ORACLEDB_USER }}
-              -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
-              -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
-              -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
-              -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
           - name: database
             file: database/openshift.deploy.yml
             overwrite: false
@@ -71,10 +86,7 @@ jobs:
             overwrite: true
             parameters:
               -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
-              -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
-          - name: init
-            file: common/openshift.init.yml
-            overwrite: true
+              -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v0.0.2
         with:
