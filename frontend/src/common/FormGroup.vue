@@ -1,12 +1,16 @@
 <template>
   <div>
-    <b-card v-for="(row, rowIndex) in data" :key="rowIndex">
+    <b-card
+      v-for="(row, rowIndex) in data"
+      :key="rowIndex"
+      style="margin-bottom: 12px"
+    >
       <div v-for="(column, columnIndex) in columns" :key="'col-' + columnIndex">
         <FormComponentOptions
           :data="row[column.fieldProps.id]"
           :schema="column"
           @updateFormValue="
-            (id, newValue, rowIndex) => updateFormArray(id, newValue, rowIdex)
+            (id, newValue) => updateFormArray(id, newValue, rowIndex)
           "
         />
       </div>

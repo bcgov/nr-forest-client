@@ -22,8 +22,8 @@
         (id, newValue, row) =>
           updateFormArray('contact', 'address', id, newValue, row)
       "
-      @addRow="addTableRow('contact', 'address')"
-      @deleteRow="(row) => deleteTableRow('contact', 'address', row)"
+      @addRow="addRow('contact', 'address')"
+      @deleteRow="(row) => deleteRow('contact', 'address', row)"
     />
     <AddAuthorizedSection
       :data="data.authorized"
