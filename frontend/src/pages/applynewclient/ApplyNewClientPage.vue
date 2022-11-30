@@ -11,8 +11,9 @@
       :value="emailValue"
       @updateValue="updateEmailValue"
     />
+    <AddAuthorizedSection />
 
-    <PrimarySquareButton @onClick="openModal()" text="Submit" />
+    <PrimarySquareButton @click="openModal()" text="Submit" />
 
     <ConfirmModal
       :show="modalShow"
@@ -25,6 +26,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import AddAuthorizedSection from "./AddAuthorizedSection.vue";
 import FormInput from "../../common/FormInput.vue";
 import SubmitFailText from "./SubmitFailText.vue";
 import SubmitSucessText from "./SubmitSucessText.vue";

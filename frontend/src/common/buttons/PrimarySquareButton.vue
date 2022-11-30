@@ -3,7 +3,7 @@
     variant="primary"
     class="primarySquareButton"
     :style="style"
-    @click="onClick"
+    @click="click"
     >{{ text }}</b-button
   >
 </template>
@@ -16,10 +16,10 @@ const props = defineProps({
   style: { type: String, default: "" },
 });
 
-const emit = defineEmits(["onClick"]);
+const emit = defineEmits(["click"]);
 
-const onClick = () => {
-  emit("onClick");
+const click = () => {
+  emit("click");
 };
 </script>
 
