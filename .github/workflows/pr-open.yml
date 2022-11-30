@@ -86,14 +86,6 @@ jobs:
           penetration_test: false
           parameters: ${{ matrix.parameters }}
 
-          # TODO: replace with a template
-          #
-          # # Create frontend config (Remove the old one if exists)
-          # oc delete configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend 2> /dev/null \
-          #   || true && echo "No existing frontend config"
-          # oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
-          #   --from-literal=config.js="window.localStorage.setItem('VITE_BACKEND_URL', 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca'); window.localStorage.setItem('VITE_NODE_ENV', 'openshift-dev');"
-
       # - name: DEV Deployment update
       #   uses: mshick/add-pr-comment@v1
       #   env:
