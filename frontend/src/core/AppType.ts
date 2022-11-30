@@ -35,10 +35,10 @@ export interface CommonObjectType {
   [key: string]: any;
 }
 
-/* --------------- from json structure type ----------------- */
-
+/* --------------- form schema type ----------------- */
 export interface FormSectionSchemaType {
   container: {
+    // properties for CollapseCard component
     title: String;
     id: String;
     defaultOpen?: Boolean;
@@ -56,5 +56,5 @@ export interface FormComponentSchemaType {
   request?: String;
   options?: Array<CommonObjectType>; // for select, checkbox group, radio group
   addButtonText?: String; // for table
-  columns?: Array<CommonObjectType>; // for table
+  columns?: Array<CommonObjectType>; // for table and group
 }

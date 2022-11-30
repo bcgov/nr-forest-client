@@ -177,7 +177,29 @@ export const informationSectionSchema = {
   },
 };
 
-export const contactSectionSchema = {};
+export const contactSectionSchema = {
+  container: { title: "Contact Information", id: "contact" },
+  content: [
+    {
+      fieldProps: {
+        id: "address",
+      },
+      type: "group",
+      addButtonText: "+ Add another address",
+      deleteButtonText: "- Remove this address",
+      columns: [
+        {
+          fieldProps: {
+            label: "Street address",
+            id: "stree_address",
+            required: true,
+          },
+          type: "input",
+        },
+      ],
+    },
+  ],
+};
 
 export const authorizedSectionSchema = {
   container: { title: "Add authorized individuals", id: "authorized" },

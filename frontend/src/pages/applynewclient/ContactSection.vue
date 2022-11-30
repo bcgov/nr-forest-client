@@ -1,11 +1,11 @@
 <template>
   <CollapseCard
-    :title="authorizedSectionSchema.container.title"
+    :title="contactSectionSchema.container.title"
     defaultOpen
-    :id="authorizedSectionSchema.container.id"
+    :id="contactSectionSchema.container.id"
   >
     <div
-      v-for="(row, rowIndex) in authorizedSectionSchema.content"
+      v-for="(row, rowIndex) in contactSectionSchema.content"
       :key="rowIndex"
     >
       <!-- <FormComponentOptions
@@ -13,10 +13,11 @@
         :schema="row"
         @updateFormValue="(id, newValue) => updateFormValue(id, newValue)"
       /> -->
-      <FormTable
-        v-if="row.type == 'table'"
+      <FormGroup
+        v-if="row.type == 'group'"
         :data="data[row.fieldProps.id]"
         :addButtonText="row.addButtonText"
+        :deleteButtonText="row.deleteButtonText"
         :columns="row.columns"
         @updateFormArray="updateFormArray"
         @addRow="addRow"
@@ -27,12 +28,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import type { PropType } from "vue";
 import CollapseCard from "../../common/CollapseCard.vue";
 // import FormComponentOptions from "../../common/FormComponentOptions.vue";
-import FormTable from "../../common/FormTable.vue";
-import { authorizedSectionSchema } from "./NewClient";
+import FormGroup from "../../common/FormGroup.vue";
+import { contactSectionSchema } from "./NewClient";
 import type { FormSectionSchemaType } from "../../core/AppType";
 
 const props = defineProps({
@@ -66,7 +66,7 @@ const deleteRow = (row) => {
 <script lang="ts">
 import { defineComponent } from "vue";
 export default defineComponent({
-  name: "AddAuthorizedSection",
+  name: "ContactSection",
 });
 </script>
 

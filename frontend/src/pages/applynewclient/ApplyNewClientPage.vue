@@ -13,19 +13,29 @@
         (id, newValue) => updateFormValue('begin', id, newValue)
       "
     />
+    <ContactSection
+      :data="data.contact"
+      @updateFormValue="
+        (id, newValue) => updateFormValue('contact', id, newValue)
+      "
+      @updateFormArray="
+        (id, newValue, row) =>
+          updateFormArray('contact', 'address', id, newValue, row)
+      "
+      @addRow="addTableRow('contact', 'address')"
+      @deleteRow="(row) => deleteTableRow('contact', 'address', row)"
+    />
     <AddAuthorizedSection
       :data="data.authorized"
       @updateFormValue="
         (id, newValue) => updateFormValue('authorized', id, newValue)
       "
-      @updateFormTable="
+      @updateFormArray="
         (id, newValue, row) =>
-          updateFormTable('authorized', 'individuals', id, newValue, row)
+          updateFormArray('authorized', 'individuals', id, newValue, row)
       "
-      @addTableRow="addTableRow('authorized', 'individuals')"
-      @deleteTableRow="
-        (row) => deleteTableRow('authorized', 'individuals', row)
-      "
+      @addRow="addRow('authorized', 'individuals')"
+      @deleteRow="(row) => deleteRow('authorized', 'individuals', row)"
     />
 
     <PrimarySquareButton @click="openModal()" text="Submit" />
@@ -41,8 +51,9 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import AddAuthorizedSection from "./AddAuthorizedSection.vue";
 import BeginSection from "./BeginSection.vue";
+import ContactSection from "./ContactSection.vue";
+import AddAuthorizedSection from "./AddAuthorizedSection.vue";
 import SubmitFailText from "./SubmitFailText.vue";
 import SubmitSucessText from "./SubmitSucessText.vue";
 import ConfirmModal from "../../common/ConfirmModal.vue";
@@ -59,21 +70,24 @@ const updateFormValue = (containerId, fieldId, value) => {
   data.value[containerId][fieldId] = value;
 };
 
-const countIndex = ref(0); // must use this to generate unique index
-const updateFormTable = (containerId, fieldId, columnId, value, row) => {
+const countIndex = ref({
+  authorized: 0,
+  contact: 0,
+}); // must use this to generate unique index
+const updateFormArray = (containerId, fieldId, columnId, value, row) => {
   data.value[containerId][fieldId][row][columnId] = value;
 };
-const addTableRow = (containerId, fieldId) => {
-  countIndex.value += 1;
+const addRow = (containerId, fieldId) => {
+  countIndex.value[containerId] += 1;
   const defaultNew = JSON.parse(
     JSON.stringify(newClientData[containerId][fieldId][0])
   );
   data.value[containerId][fieldId].push({
     ...defaultNew,
-    index: countIndex.value,
+    index: countIndex.value[containerId],
   });
 };
-const deleteTableRow = (containerId, fieldId, row) => {
+const deleteRow = (containerId, fieldId, row) => {
   data.value[containerId][fieldId].splice(row, 1);
 };
 
