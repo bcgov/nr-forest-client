@@ -1,5 +1,8 @@
 package ca.bc.gov.app.core.util.impl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -108,6 +111,20 @@ public class CoreUtilImpl implements CoreUtil {
 																codeDescrEntity.getDescription(),
 																codeDescrEntity.getEffectiveDate(),
 																codeDescrEntity.getExpiryDate());
+	}
+	
+	@Override
+	public Date toDate(String dateStr, String format) {
+		if (isNullOrBlank(dateStr)) {
+			return null;
+		}
+        DateFormat dateFormat = new SimpleDateFormat(format);
+        try {
+			return dateFormat.parse(dateStr);
+		} 
+        catch (ParseException e) {
+			throw new IllegalArgumentException("Failed to produce Date instance out of (supposedly) " + format + " format: " + dateStr);
+		}
 	}
 	
 }

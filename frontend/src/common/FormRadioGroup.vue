@@ -7,8 +7,8 @@
       :value="option.code"
       :disabled="disabled"
     >
-    <!-- :state="state" -->
-    <!-- https://github.com/cdmoro/bootstrap-vue-3/issues/819 -->
+      <!-- :state="state" -->
+      <!-- https://github.com/cdmoro/bootstrap-vue-3/issues/819 -->
       {{ option.text }}
     </b-form-radio>
   </FormFieldTemplate>
@@ -56,7 +56,7 @@ const computedValue = computed({
 <script lang="ts">
 import { defineComponent } from "vue";
 export default defineComponent({
-  name: "FormRadio",
+  name: "FormRadioGroup",
 });
 </script>
 
