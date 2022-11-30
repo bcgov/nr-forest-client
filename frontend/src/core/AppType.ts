@@ -34,3 +34,27 @@ export interface FormUploadFileType {
 export interface CommonObjectType {
   [key: string]: any;
 }
+
+/* --------------- from json structure type ----------------- */
+
+export interface FormSectionSchemaType {
+  container: {
+    title: String;
+    id: String;
+    defaultOpen?: Boolean;
+    nextId?: String;
+    nextText?: String;
+    alwaysOpen?: boolean;
+  };
+  content: Array<FormComponentSchemaType>;
+}
+
+export interface FormComponentSchemaType {
+  fieldProps: FormFieldTemplateType;
+  type: String;
+  disabled?: boolean;
+  request?: String;
+  options?: Array<CommonObjectType>; // for select, checkbox group, radio group
+  addButtonText?: String; // for table
+  columns?: Array<CommonObjectType>; // for table
+}

@@ -28,4 +28,6 @@ public interface CoreUtil {
 
 	CodeDescrVO toCodeDescrVO(AbstractCodeDescrEntity codeDescrEntity);
 
+	Date toDate(String dateStr, String format);
+
 }

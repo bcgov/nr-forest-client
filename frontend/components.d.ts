@@ -8,7 +8,11 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     BButton: typeof import('bootstrap-vue-3')['BButton']
+    BCard: typeof import('bootstrap-vue-3')['BCard']
+    BCardBody: typeof import('bootstrap-vue-3')['BCardBody']
+    BCardHeader: typeof import('bootstrap-vue-3')['BCardHeader']
     BCol: typeof import('bootstrap-vue-3')['BCol']
+    BCollapse: typeof import('bootstrap-vue-3')['BCollapse']
     BFormCheckbox: typeof import('bootstrap-vue-3')['BFormCheckbox']
     BFormGroup: typeof import('bootstrap-vue-3')['BFormGroup']
     BFormInput: typeof import('bootstrap-vue-3')['BFormInput']
@@ -20,6 +24,11 @@ declare module '@vue/runtime-core' {
     BRow: typeof import('bootstrap-vue-3')['BRow']
     BSpinner: typeof import('bootstrap-vue-3')['BSpinner']
     BTab: typeof import('bootstrap-vue-3')['BTab']
+    BTable: typeof import('bootstrap-vue-3')['BTable']
+    BTableSimple: typeof import('bootstrap-vue-3')['BTableSimple']
     BTabs: typeof import('bootstrap-vue-3')['BTabs']
+    BTbody: typeof import('bootstrap-vue-3')['BTbody']
+    BTd: typeof import('bootstrap-vue-3')['BTd']
+    BTr: typeof import('bootstrap-vue-3')['BTr']
   }
 }
