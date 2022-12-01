@@ -37,7 +37,7 @@ export const newClientData = {
         province: "",
         city: "",
         postal_code: "",
-        index: 0,
+        index: 0, // any array data need to have this index, as an auto generated random number to be as unique identity
       },
     ],
   },

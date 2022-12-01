@@ -44,10 +44,6 @@ const updateFormValue = (containerId, fieldId, value) => {
   console.log("data", data.value);
 };
 
-const countIndex = ref({
-  authorized: 0,
-  contact: 0,
-}); // must use this to generate unique index
 const updateFormArrayValue = (
   containerId,
   fieldId,
@@ -59,13 +55,12 @@ const updateFormArrayValue = (
   console.log("data array", data.value);
 };
 const addRow = (containerId, fieldId) => {
-  countIndex.value[containerId] += 1;
   const defaultNew = JSON.parse(
     JSON.stringify(newClientData[containerId][fieldId][0])
   );
   data.value[containerId][fieldId].push({
     ...defaultNew,
-    index: countIndex.value[containerId],
+    index: Math.floor(Math.random() * 10000000),
   });
 };
 const deleteRow = (containerId, fieldId, rowIndex) => {
