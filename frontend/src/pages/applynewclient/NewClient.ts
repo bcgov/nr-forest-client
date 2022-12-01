@@ -37,6 +37,7 @@ export const newClientData = {
         province: "",
         city: "",
         postal_code: "",
+        index: 0,
       },
     ],
   },

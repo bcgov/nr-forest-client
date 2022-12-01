@@ -38,6 +38,25 @@
       :disabled="schema.disabled ? true : false"
       @updateValue="updateFormValue"
     />
+    <FormGroup
+      v-if="schema.type == 'group'"
+      :data="data"
+      :addButtonText="schema.addButtonText"
+      :deleteButtonText="schema.deleteButtonText"
+      :columns="schema.columns"
+      @updateFormArrayValue="updateFormArrayValue"
+      @addRow="addRow"
+      @deleteRow="deleteRow"
+    />
+    <FormTable
+      v-if="schema.type == 'table'"
+      :data="data"
+      :addButtonText="schema.addButtonText"
+      :columns="schema.columns"
+      @updateFormArrayValue="updateFormArrayValue"
+      @addRow="addRow"
+      @deleteRow="deleteRow"
+    />
   </div>
 </template>
 
@@ -48,10 +67,9 @@ import FormSelect from "./FormSelect.vue";
 import FormCheckbox from "./FormCheckbox.vue";
 import FormCheckboxGroup from "./FormCheckboxGroup.vue";
 import FormRadioGroup from "./FormRadioGroup.vue";
-import type {
-  FormComponentSchemaType,
-  CommonObjectType,
-} from "../core/AppType";
+import FormGroup from "./FormGroup.vue";
+import FormTable from "./FormTable.vue";
+import type { FormComponentSchemaType } from "../core/AppType";
 
 const props = defineProps({
   schema: {
@@ -64,10 +82,24 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["updateFormValue"]);
+const emit = defineEmits([
+  "updateFormValue",
+  "updateFormArrayValue",
+  "addRow",
+  "deleteRow",
+]);
 
 const updateFormValue = (id, newValue) => {
   emit("updateFormValue", id, newValue);
+};
+const updateFormArrayValue = (id, value, row) => {
+  emit("updateFormArrayValue", id, value, row);
+};
+const addRow = () => {
+  emit("addRow");
+};
+const deleteRow = (row) => {
+  emit("deleteRow", row);
 };
 </script>
 

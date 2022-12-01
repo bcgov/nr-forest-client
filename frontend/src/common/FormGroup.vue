@@ -2,7 +2,7 @@
   <div>
     <b-card
       v-for="(row, rowIndex) in data"
-      :key="rowIndex"
+      :key="row.index"
       style="margin-bottom: 12px"
     >
       <div v-for="(column, columnIndex) in columns" :key="'col-' + columnIndex">

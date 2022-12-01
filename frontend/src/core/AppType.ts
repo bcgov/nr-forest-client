@@ -36,16 +36,18 @@ export interface CommonObjectType {
 }
 
 /* --------------- form schema type ----------------- */
+export interface FormSectionContainerType {
+  // properties for CollapseCard component
+  title: String;
+  id: String;
+  defaultOpen?: Boolean;
+  nextId?: String;
+  nextText?: String;
+  alwaysOpen?: Boolean;
+}
+
 export interface FormSectionSchemaType {
-  container: {
-    // properties for CollapseCard component
-    title: String;
-    id: String;
-    defaultOpen?: Boolean;
-    nextId?: String;
-    nextText?: String;
-    alwaysOpen?: Boolean;
-  };
+  container: FormSectionContainerType;
   content: Array<FormComponentSchemaType>;
 }
 
