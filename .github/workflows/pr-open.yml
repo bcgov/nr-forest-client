@@ -12,33 +12,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # builds:
-  #   name: Builds
-  #   runs-on: ubuntu-22.04
-  #   permissions:
-  #     packages: write
-  #   strategy:
-  #     matrix:
-  #       package: [backend, frontend]
-  #       include:
-  #         - package: backend
-  #           triggers: ('backend/')
-  #         - package: frontend
-  #           triggers: ('frontend/')
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: bcgov-nr/action-builder-ghcr@v0.0.2
-  #       with:
-  #         package: ${{ matrix.package }}
-  #         tag: ${{ github.event.number }}
-  #         tag_fallback: test
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-  #         triggers: ${{ matrix.triggers }}
+  builds:
+    name: Builds
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [backend, frontend]
+        include:
+          - package: backend
+            triggers: ('backend/')
+          - package: frontend
+            triggers: ('frontend/')
+    steps:
+      - uses: actions/checkout@v3
+      - uses: bcgov-nr/action-builder-ghcr@v0.0.2
+        with:
+          package: ${{ matrix.package }}
+          tag: ${{ github.event.number }}
+          tag_fallback: test
+          token: ${{ secrets.GITHUB_TOKEN }}
+          triggers: ${{ matrix.triggers }}
 
   deploy-backend:
     name: Deploy Backend
-    # needs:
-    #   - builds
+    needs:
+      - builds
     environment: dev
     runs-on: ubuntu-latest
     steps:
@@ -69,8 +69,8 @@ jobs:
 
   deploys:
     name: Deploys
-    # needs:
-    #   - builds
+    needs:
+      - builds
     runs-on: ubuntu-22.04
     environment: dev
     strategy:
@@ -98,13 +98,20 @@ jobs:
           penetration_test: false
           parameters: ${{ matrix.parameters }}
 
-      # - name: DEV Deployment update
-      #   uses: mshick/add-pr-comment@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     allow-repeats: false
-      #     message: |
-      #       DEV deployments have completed successfully!
-      #       [Backend](https://${{ env.NAME }}-${{ github.event.number }}-backend.${{ env.DOMAIN }}/) available
-      #       [Frontend](https://${{ env.NAME }}-${{ github.event.number }}-frontend.${{ env.DOMAIN }}/) available
+  deploy-update:
+    name: Deployment update
+    needs:
+      - deploys
+      - deploy-backend
+    runs-on: ubuntu-22.04
+    steps:
+      - name: DEV Deployment update
+        uses: mshick/add-pr-comment@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          allow-repeats: false
+          message: |
+            DEV deployments have completed successfully!
+            [Backend](https://${{ github.event.repository.name }}-${{ github.event.number }}-backend.${{ env.DOMAIN }}/) available
+            [Frontend](https://${{ github.event.repository.name }}-${{ github.event.number }}-frontend.${{ env.DOMAIN }}/) available
