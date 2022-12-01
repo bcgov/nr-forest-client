@@ -15,6 +15,13 @@
       :disabled="schema.disabled ? true : false"
       @updateValue="updateFormValue"
     />
+    <FormCheckbox
+      v-if="schema.type == 'checkbox'"
+      :fieldProps="schema.fieldProps"
+      :value="data"
+      :disabled="schema.disabled ? true : false"
+      @updateValue="updateFormValue"
+    />
     <FormCheckboxGroup
       v-if="schema.type == 'checkboxgroup'"
       :fieldProps="schema.fieldProps"
@@ -38,6 +45,7 @@
 import type { PropType } from "vue";
 import FormInput from "./FormInput.vue";
 import FormSelect from "./FormSelect.vue";
+import FormCheckbox from "./FormCheckbox.vue";
 import FormCheckboxGroup from "./FormCheckboxGroup.vue";
 import FormRadioGroup from "./FormRadioGroup.vue";
 import type {
@@ -51,7 +59,7 @@ const props = defineProps({
     required: true,
   },
   data: {
-    type: [String, Object, Number, Array],
+    type: [String, Object, Number, Array, Boolean],
     required: true,
   },
 });

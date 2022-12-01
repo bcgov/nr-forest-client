@@ -12,7 +12,14 @@ describe("FormRadioGroup", () => {
 
   it("renders props fieldProps successfully", () => {
     const wrapper = mount(FormRadioGroup, {
-      props: { fieldProps: { label: "Test Form Radio Group Title" } },
+      props: {
+        fieldProps: { label: "Test Form Radio Group Title" },
+        options: [
+          { code: "1", text: "Option 1" },
+          { code: "2", text: "Option 2" },
+          { code: "3", text: "Option 3" },
+        ],
+      },
     });
     expect(wrapper.findComponent(FormFieldTemplate).exists()).toBe(true);
     expect(wrapper.text()).toContain("Test Form Radio Group Title");

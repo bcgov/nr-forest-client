@@ -16,10 +16,10 @@
 
 <script setup lang="ts">
 import type { PropType } from "vue";
-import CollapseCard from "../../common/CollapseCard.vue";
-import FormComponentOptions from "../../common/FormComponentOptions.vue";
-import { beginSectionSchema } from "./NewClient";
-import type { FormSectionSchemaType } from "../../core/AppType";
+import CollapseCard from "../../../common/CollapseCard.vue";
+import FormComponentOptions from "../../../common/FormComponentOptions.vue";
+import { beginSectionSchema } from "../NewClient";
+import type { FormSectionSchemaType } from "../../../core/AppType";
 
 const props = defineProps({
   data: {

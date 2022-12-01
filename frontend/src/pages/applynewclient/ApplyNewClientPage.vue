@@ -13,14 +13,22 @@
         (id, newValue) => updateFormValue('begin', id, newValue)
       "
     />
+    <InformationSection
+      v-if="data.begin.client_type"
+      :data="data.information"
+      :companyType="data.begin.client_type"
+      @updateFormValue="
+        (id, newValue) => updateFormValue('information', id, newValue)
+      "
+    />
     <ContactSection
       :data="data.contact"
       @updateFormValue="
         (id, newValue) => updateFormValue('contact', id, newValue)
       "
-      @updateFormArray="
+      @updateFormArrayValue="
         (id, newValue, row) =>
-          updateFormArray('contact', 'address', id, newValue, row)
+          updateFormArrayValue('contact', 'address', id, newValue, row)
       "
       @addRow="addRow('contact', 'address')"
       @deleteRow="(row) => deleteRow('contact', 'address', row)"
@@ -30,9 +38,9 @@
       @updateFormValue="
         (id, newValue) => updateFormValue('authorized', id, newValue)
       "
-      @updateFormArray="
+      @updateFormArrayValue="
         (id, newValue, row) =>
-          updateFormArray('authorized', 'individuals', id, newValue, row)
+          updateFormArrayValue('authorized', 'individuals', id, newValue, row)
       "
       @addRow="addRow('authorized', 'individuals')"
       @deleteRow="(row) => deleteRow('authorized', 'individuals', row)"
@@ -50,10 +58,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import BeginSection from "./BeginSection.vue";
-import ContactSection from "./ContactSection.vue";
-import AddAuthorizedSection from "./AddAuthorizedSection.vue";
+import { ref, onMounted } from "vue";
+import BeginSection from "./formsections/BeginSection.vue";
+import InformationSection from "./formsections/InformationSection.vue";
+import ContactSection from "./formsections/ContactSection.vue";
+import AddAuthorizedSection from "./formsections/AddAuthorizedSection.vue";
 import SubmitFailText from "./SubmitFailText.vue";
 import SubmitSucessText from "./SubmitSucessText.vue";
 import ConfirmModal from "../../common/ConfirmModal.vue";
@@ -70,11 +79,15 @@ const updateFormValue = (containerId, fieldId, value) => {
   data.value[containerId][fieldId] = value;
 };
 
+onMounted(() => {
+  console.log("data", data.value);
+});
+
 const countIndex = ref({
   authorized: 0,
   contact: 0,
 }); // must use this to generate unique index
-const updateFormArray = (containerId, fieldId, columnId, value, row) => {
+const updateFormArrayValue = (containerId, fieldId, columnId, value, row) => {
   data.value[containerId][fieldId][row][columnId] = value;
 };
 const addRow = (containerId, fieldId) => {

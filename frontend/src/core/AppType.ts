@@ -44,7 +44,7 @@ export interface FormSectionSchemaType {
     defaultOpen?: Boolean;
     nextId?: String;
     nextText?: String;
-    alwaysOpen?: boolean;
+    alwaysOpen?: Boolean;
   };
   content: Array<FormComponentSchemaType>;
 }
@@ -53,7 +53,11 @@ export interface FormComponentSchemaType {
   fieldProps: FormFieldTemplateType;
   type: String;
   disabled?: boolean;
-  request?: String;
+  state?: boolean;
+  depend?: {
+    fieldId: String;
+    value: String | Number | Boolean;
+  };
   options?: Array<CommonObjectType>; // for select, checkbox group, radio group
   addButtonText?: String; // for table
   columns?: Array<CommonObjectType>; // for table and group

@@ -1,11 +1,11 @@
 <template>
   <CollapseCard
-    :title="authorizedSectionSchema.container.title"
+    :title="contactSectionSchema.container.title"
     defaultOpen
-    :id="authorizedSectionSchema.container.id"
+    :id="contactSectionSchema.container.id"
   >
     <div
-      v-for="(row, rowIndex) in authorizedSectionSchema.content"
+      v-for="(row, rowIndex) in contactSectionSchema.content"
       :key="rowIndex"
     >
       <!-- <FormComponentOptions
@@ -13,12 +13,13 @@
         :schema="row"
         @updateFormValue="(id, newValue) => updateFormValue(id, newValue)"
       /> -->
-      <FormTable
-        v-if="row.type == 'table'"
+      <FormGroup
+        v-if="row.type == 'group'"
         :data="data[row.fieldProps.id]"
         :addButtonText="row.addButtonText"
+        :deleteButtonText="row.deleteButtonText"
         :columns="row.columns"
-        @updateFormArray="updateFormArray"
+        @updateFormArrayValue="updateFormArrayValue"
         @addRow="addRow"
         @deleteRow="deleteRow"
       />
@@ -27,13 +28,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import type { PropType } from "vue";
-import CollapseCard from "../../common/CollapseCard.vue";
+import CollapseCard from "../../../common/CollapseCard.vue";
 // import FormComponentOptions from "../../common/FormComponentOptions.vue";
-import FormTable from "../../common/FormTable.vue";
-import { authorizedSectionSchema } from "./NewClient";
-import type { FormSectionSchemaType } from "../../core/AppType";
+import FormGroup from "../../../common/FormGroup.vue";
+import { contactSectionSchema } from "../NewClient";
+import type { FormSectionSchemaType } from "../../../core/AppType";
 
 const props = defineProps({
   data: {
@@ -44,7 +44,7 @@ const props = defineProps({
 
 const emit = defineEmits([
   "updateFormValue",
-  "updateFormArray",
+  "updateFormArrayValue",
   "addRow",
   "deleteRow",
 ]);
@@ -52,8 +52,8 @@ const emit = defineEmits([
 const updateFormValue = (id, newValue) => {
   emit("updateFormValue", id, newValue);
 };
-const updateFormArray = (id, value, row) => {
-  emit("updateFormArray", id, value, row);
+const updateFormArrayValue = (id, value, row) => {
+  emit("updateFormArrayValue", id, value, row);
 };
 const addRow = () => {
   emit("addRow");
@@ -66,7 +66,7 @@ const deleteRow = (row) => {
 <script lang="ts">
 import { defineComponent } from "vue";
 export default defineComponent({
-  name: "AddAuthorizedSection",
+  name: "ContactSection",
 });
 </script>
 

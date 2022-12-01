@@ -76,7 +76,10 @@ export const beginSectionSchema = {
         id: "client_type",
       },
       type: "select",
-      options: [],
+      options: [
+        { value: "individual", text: "Individual" },
+        { value: "company", text: "Company" },
+      ],
     },
   ],
 };
@@ -103,7 +106,7 @@ const informationSectionCommonSchema = [
 export const informationSectionSchema = {
   individual: {
     container: { title: "Individual information", id: "information" },
-    content: [informationSectionCommonSchema],
+    content: informationSectionCommonSchema,
   },
   soleProprietorship: {
     container: { title: "Individual information", id: "information" },
@@ -171,7 +174,10 @@ export const informationSectionSchema = {
           id: "doing_business_as",
         },
         type: "input",
-        request: "doing_business_as_check",
+        depend: {
+          fieldId: "doing_business_as_check",
+          value: true,
+        },
       },
     ],
   },
@@ -192,6 +198,38 @@ export const contactSectionSchema = {
           fieldProps: {
             label: "Street address",
             id: "stree_address",
+            required: true,
+          },
+          type: "input",
+        },
+        {
+          fieldProps: {
+            label: "Country",
+            id: "country",
+            required: true,
+          },
+          type: "input",
+        },
+        {
+          fieldProps: {
+            label: "Province",
+            id: "province",
+            required: true,
+          },
+          type: "input",
+        },
+        {
+          fieldProps: {
+            label: "City",
+            id: "city",
+            required: true,
+          },
+          type: "input",
+        },
+        {
+          fieldProps: {
+            label: "Postal code",
+            id: "postal_code",
             required: true,
           },
           type: "input",
@@ -220,6 +258,27 @@ export const authorizedSectionSchema = {
           fieldProps: {
             label: "First name or company",
             id: "firsname_or_company",
+          },
+          type: "input",
+        },
+        {
+          fieldProps: {
+            label: "Last name",
+            id: "last_name",
+          },
+          type: "input",
+        },
+        {
+          fieldProps: {
+            label: "Phone number",
+            id: "phone",
+          },
+          type: "input",
+        },
+        {
+          fieldProps: {
+            label: "Email",
+            id: "email",
           },
           type: "input",
         },
