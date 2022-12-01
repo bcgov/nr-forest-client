@@ -52,7 +52,6 @@ const updateFormArrayValue = (
   rowIndex
 ) => {
   data.value[containerId][fieldId][rowIndex][columnId] = value;
-  console.log("data array", data.value);
 };
 const addRow = (containerId, fieldId) => {
   const defaultNew = JSON.parse(

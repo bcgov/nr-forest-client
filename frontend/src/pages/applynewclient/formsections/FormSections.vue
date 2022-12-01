@@ -115,7 +115,6 @@ const emit = defineEmits([
 
 const updateFormValue = (containerId, fieldId, newValue) => {
   emit("updateFormValue", containerId, fieldId, newValue);
-  console.log("computedCompanyType", computedCompanyType.value);
 };
 const updateFormArrayValue = (
   containerId,

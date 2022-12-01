@@ -6,13 +6,18 @@ import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 
 describe("FormCheckboxGroup", () => {
   it("component defined", () => {
-    const wrapper = mount(FormCheckboxGroup);
+    const wrapper = mount(FormCheckboxGroup, {
+      props: { options: [] },
+    });
     expect(wrapper).toBeDefined();
   });
 
   it("renders props fieldProps successfully", () => {
     const wrapper = mount(FormCheckboxGroup, {
-      props: { fieldProps: { label: "Test Form Checkbox Group Title" } },
+      props: {
+        fieldProps: { label: "Test Form Checkbox Group Title" },
+        options: [],
+      },
     });
     expect(wrapper.findComponent(FormFieldTemplate).exists()).toBe(true);
     expect(wrapper.text()).toContain("Test Form Checkbox Group Title");
