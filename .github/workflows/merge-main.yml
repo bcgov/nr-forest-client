@@ -10,11 +10,6 @@ on:
   #     - "**.md"
   # workflow_dispatch:
 
-env:
-  REGISTRY: ghcr.io
-  NAME: ${{ github.event.repository.name }}
-  NS: nr-d2723f
-
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
@@ -51,7 +46,7 @@ jobs:
       - name: Initialize
         uses: github/codeql-action/init@v2
         with:
-          languages: javascript
+          languages: javascript,java
 
       # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
       # If this step fails, then you should remove it and run the build manually (see below)
@@ -61,33 +56,10 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  # https://github.com/marketplace/actions/aqua-security-trivy
-  trivy:
-    name: Security Scan
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.8.0
-        with:
-          format: "sarif"
-          output: "trivy-results.sarif"
-          ignore-unfixed: true
-          scan-type: "fs"
-          security-checks: "vuln,secret,config"
-          severity: "CRITICAL,HIGH"
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: "trivy-results.sarif"
-
   test-database:
     name: TEST Database
     needs:
       - codeql
-      - trivy
     env:
       ZONE: test
     environment: test
@@ -109,7 +81,6 @@ jobs:
     name: TEST Backend
     needs:
       - codeql
-      - trivy
     env:
       ZONE: test
     environment: test
@@ -145,7 +116,6 @@ jobs:
     name: TEST Frontend
     needs:
       - codeql
-      - trivy
     env:
       ZONE: test
     environment: test
