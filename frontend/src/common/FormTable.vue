@@ -4,7 +4,7 @@
       <!-- row.index must be unique, otherwise v-for can not detect the data change correctly -->
       <!-- VueJS updates the DOM based on the change in key -->
       <!-- https://stackoverflow.com/questions/69890148/element-deleted-from-the-array-but-v-for-doesnt-update-vuejs -->
-      <b-tr v-for="(row, rowIndex) in data" :key="'row-' + row.index">
+      <b-tr v-for="(row, rowIndex) in data" :key="row.index">
         <b-td
           v-for="(column, columnIndex) in columns"
           :key="'col-' + columnIndex"
@@ -12,13 +12,14 @@
           <FormComponentOptions
             :data="row[column.fieldProps.id]"
             :schema="column"
-            @updateValue="
-              (id, newValue) => updateFormTable(id, newValue, rowIndex)
+            @updateFormValue="
+              (id, newValue) => updateFormArray(id, newValue, rowIndex)
             "
           />
         </b-td>
         <b-td>
           <bi-x-circle
+            v-if="data.length > 1"
             style="font-size: 16px; color: red; margin-top: 36px"
             @click="deleteRow(rowIndex)"
           />
@@ -52,10 +53,10 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["updateFormTable", "addRow", "deleteRow"]);
+const emit = defineEmits(["updateFormArray", "addRow", "deleteRow"]);
 
-const updateFormTable = (id, newValue, row) => {
-  emit("updateFormTable", id, newValue, row);
+const updateFormArray = (id, newValue, row) => {
+  emit("updateFormArray", id, newValue, row);
 };
 const addRow = () => {
   emit("addRow");

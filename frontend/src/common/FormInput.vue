@@ -1,8 +1,6 @@
 <template>
   <FormFieldTemplate :fieldProps="fieldProps">
-    <b-form-input v-model="computedValue" 
-                  :disabled="disabled"
-                  :state="state">
+    <b-form-input v-model="computedValue" :disabled="disabled" :state="state">
     </b-form-input>
   </FormFieldTemplate>
 </template>

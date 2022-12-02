@@ -7,25 +7,12 @@
     <SubmitSucessText v-if="success" confirmationId="A123456" />
     <SubmitFailText v-if="error" />
 
-    <BeginSection
-      :data="data.begin"
-      @updateFormValue="
-        (id, newValue) => updateFormValue('begin', id, newValue)
-      "
-    />
-    <AddAuthorizedSection
-      :data="data.authorized"
-      @updateFormValue="
-        (id, newValue) => updateFormValue('authorized', id, newValue)
-      "
-      @updateFormTable="
-        (id, newValue, row) =>
-          updateFormTable('authorized', 'individuals', id, newValue, row)
-      "
-      @addTableRow="addTableRow('authorized', 'individuals')"
-      @deleteTableRow="
-        (row) => deleteTableRow('authorized', 'individuals', row)
-      "
+    <FormSections
+      :data="data"
+      @updateFormValue="updateFormValue"
+      @updateFormArrayValue="updateFormArrayValue"
+      @addRow="addRow"
+      @deleteRow="deleteRow"
     />
 
     <PrimarySquareButton @click="openModal()" text="Submit" />
@@ -41,40 +28,42 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import AddAuthorizedSection from "./AddAuthorizedSection.vue";
-import BeginSection from "./BeginSection.vue";
+import FormSections from "./formsections/FormSections.vue";
 import SubmitFailText from "./SubmitFailText.vue";
 import SubmitSucessText from "./SubmitSucessText.vue";
 import ConfirmModal from "../../common/ConfirmModal.vue";
 import PrimarySquareButton from "../../common/buttons/PrimarySquareButton.vue";
 import { sendConfirmationEmail } from "../../services/forestClient.service";
 import { newClientData } from "./NewClient";
-import type { FormFieldTemplateType } from "../../core/AppType";
-import { primary } from "../../utils/color";
 
 const data = ref(JSON.parse(JSON.stringify(newClientData)));
 
 const updateFormValue = (containerId, fieldId, value) => {
   console.log("containerId", containerId, "fieldId", fieldId, "value", value);
   data.value[containerId][fieldId] = value;
+  console.log("data", data.value);
 };
 
-const countIndex = ref(0); // must use this to generate unique index
-const updateFormTable = (containerId, fieldId, columnId, value, row) => {
-  data.value[containerId][fieldId][row][columnId] = value;
+const updateFormArrayValue = (
+  containerId,
+  fieldId,
+  columnId,
+  value,
+  rowIndex
+) => {
+  data.value[containerId][fieldId][rowIndex][columnId] = value;
 };
-const addTableRow = (containerId, fieldId) => {
-  countIndex.value += 1;
+const addRow = (containerId, fieldId) => {
   const defaultNew = JSON.parse(
     JSON.stringify(newClientData[containerId][fieldId][0])
   );
   data.value[containerId][fieldId].push({
     ...defaultNew,
-    index: countIndex.value,
+    index: Math.floor(Math.random() * 10000000),
   });
 };
-const deleteTableRow = (containerId, fieldId, row) => {
-  data.value[containerId][fieldId].splice(row, 1);
+const deleteRow = (containerId, fieldId, rowIndex) => {
+  data.value[containerId][fieldId].splice(rowIndex, 1);
 };
 
 /* ---------- modal placehoder to confirm submit ----------- */

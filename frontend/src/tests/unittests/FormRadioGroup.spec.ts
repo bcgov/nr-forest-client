@@ -6,13 +6,18 @@ import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 
 describe("FormRadioGroup", () => {
   it("component defined", () => {
-    const wrapper = mount(FormRadioGroup);
+    const wrapper = mount(FormRadioGroup, {
+      props: { options: [] },
+    });
     expect(wrapper).toBeDefined();
   });
 
   it("renders props fieldProps successfully", () => {
     const wrapper = mount(FormRadioGroup, {
-      props: { fieldProps: { label: "Test Form Radio Group Title" } },
+      props: {
+        fieldProps: { label: "Test Form Radio Group Title" },
+        options: [],
+      },
     });
     expect(wrapper.findComponent(FormFieldTemplate).exists()).toBe(true);
     expect(wrapper.text()).toContain("Test Form Radio Group Title");
