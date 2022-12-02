@@ -65,10 +65,10 @@ export interface FormComponentSchemaType {
   columns?: Array<CommonObjectType>; // for table and group
 }
 
-// export interface FormValidationResultType {
-//   [key: string]: Array<{
-//     fieldId: string;
-//     columnId?: string;
-//     errorType: string;
-//   }>;
-// }
+export interface FormValidationResultType {
+  [key: string]: Array<{
+    fieldId: string;
+    columnId?: string;
+    errorMsg: string;
+  }>;
+} // {container_id: [{fieldId, columnId, errorMsg}]}

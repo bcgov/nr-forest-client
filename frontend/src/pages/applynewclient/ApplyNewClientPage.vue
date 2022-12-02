@@ -47,6 +47,7 @@ import {
 
 const data = ref(JSON.parse(JSON.stringify(newClientData)));
 
+/* --------------- update form value functions --------------------- */
 const updateFormValue = (containerId, fieldId, value) => {
   console.log("containerId", containerId, "fieldId", fieldId, "value", value);
   data.value[containerId][fieldId] = value;
@@ -74,6 +75,7 @@ const deleteRow = (containerId, fieldId, rowIndex) => {
   data.value[containerId][fieldId].splice(rowIndex, 1);
 };
 
+/* -------------- check when to enable submit button ------------------- */
 const checkMissingRequireField = (requireList, formData) => {
   let missingRequire = false;
   for (let i = 0; i < requireList.length; i++) {
@@ -100,10 +102,10 @@ const checkMissingRequireField = (requireList, formData) => {
   }
   return missingRequire;
 };
-
 const computedButtonDisable = computed(() => {
   // check when to enable the submit button
   // enable the submit button when got all required fields
+  // create required lists, and then check the data for those required ones
   if (
     data.value.begin["client_type"] == "individual" ||
     data.value.begin["client_type"] == "soleProprietorship"
@@ -117,6 +119,8 @@ const computedButtonDisable = computed(() => {
     checkMissingRequireField(businessRequiredFields, data.value)
   );
 });
+
+/* -------------------- data validation check --------------------------- */
 
 /* ---------- modal placehoder to confirm submit ----------- */
 const success = ref(false);
