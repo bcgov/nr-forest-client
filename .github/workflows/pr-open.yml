@@ -3,42 +3,57 @@ name: Pull Request Open
 on:
   pull_request:
 
-env:
-  REGISTRY: ghcr.io
-  NAME: nrfc
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  builds:
-    name: Builds
-    runs-on: ubuntu-22.04
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        package: [backend, frontend]
-        include:
-          - package: backend
-            triggers: ('backend/')
-          - package: frontend
-            triggers: ('frontend/')
-    steps:
-      - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@v0.0.2
-        with:
-          package: ${{ matrix.package }}
-          tag: ${{ github.event.number }}
-          tag_fallback: test
-          token: ${{ secrets.GITHUB_TOKEN }}
-          triggers: ${{ matrix.triggers }}
+  # builds:
+  #   name: Builds
+  #   runs-on: ubuntu-22.04
+  #   permissions:
+  #     packages: write
+  #   strategy:
+  #     matrix:
+  #       package: [backend, frontend]
+  #       include:
+  #         - package: backend
+  #           triggers: ('backend/')
+  #         - package: frontend
+  #           triggers: ('frontend/')
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: bcgov-nr/action-builder-ghcr@v0.0.2
+  #       with:
+  #         package: ${{ matrix.package }}
+  #         tag: ${{ github.event.number }}
+  #         tag_fallback: test
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         triggers: ${{ matrix.triggers }}
+
+  # deploy-database:
+  #   name: Deploy Database
+  #   needs:
+  #     - builds
+  #   environment: dev
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Deploys
+  #       uses: bcgov-nr/action-deployer-openshift@v0.0.2
+  #       with:
+  #         file: database/openshift.deploy.yml
+  #         oc_namespace: ${{ secrets.OC_NAMESPACE }}
+  #         oc_server: ${{ secrets.OC_SERVER }}
+  #         oc_token: ${{ secrets.OC_TOKEN }}
+  #         overwrite: true
+  #         penetration_test: false
+  #         parameters: -p ZONE=${{ github.event.number }}
 
   deploy-backend:
     name: Deploy Backend
-    needs:
-      - builds
+    # needs:
+    #   - builds
     environment: dev
     runs-on: ubuntu-latest
     steps:
@@ -51,9 +66,9 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: true
-          penetration_test: true
+          penetration_test: false
           parameters: -p ZONE=${{ github.event.number }}
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-backend
+            -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}
             -p NODE_ENV='development'
             -p API_URL='https://nrfc-api-test.api.gov.bc.ca'
             -p X_API_KEY=${{ secrets.GWA_X_API_KEY }}
@@ -67,51 +82,44 @@ jobs:
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
             -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
 
-  deploys:
-    name: Deploys
-    needs:
-      - builds
-    runs-on: ubuntu-22.04
-    environment: dev
-    strategy:
-      matrix:
-        name: [database, frontend]
-        include:
-          - name: database
-            file: database/openshift.deploy.yml
-            overwrite: false
-            parameters: -p ZONE=${{ github.event.number }}
-          - name: frontend
-            file: frontend/openshift.deploy.yml
-            overwrite: true
-            parameters:
-              -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
-              -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v0.0.2
-        with:
-          file: ${{ matrix.file }}
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: ${{ matrix.overwrite }}
-          penetration_test: false
-          parameters: ${{ matrix.parameters }}
+  # deploy-frontend:
+  #   name: Deploy Frontend
+  #   needs:
+  #     - builds
+  #   environment: dev
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Deploys
+  #       uses: bcgov-nr/action-deployer-openshift@v0.0.2
+  #       with:
+  #         file: frontend/openshift.deploy.yml
+  #         oc_namespace: ${{ secrets.OC_NAMESPACE }}
+  #         oc_server: ${{ secrets.OC_SERVER }}
+  #         oc_token: ${{ secrets.OC_TOKEN }}
+  #         overwrite: true
+  #         penetration_test: false
+  #         parameters:
+  #           -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+  #           -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
 
-  deploy-update:
-    name: Deployment update
-    needs:
-      - deploys
-      - deploy-backend
-    runs-on: ubuntu-22.04
-    steps:
-      - name: DEV Deployment update
-        uses: mshick/add-pr-comment@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          allow-repeats: false
-          message: |
-            DEV deployments have completed successfully!
-            [Backend](https://${{ github.event.repository.name }}-${{ github.event.number }}-backend.${{ env.DOMAIN }}/) available
-            [Frontend](https://${{ github.event.repository.name }}-${{ github.event.number }}-frontend.${{ env.DOMAIN }}/) available
+  # deploy-update:
+  #   name: Deployment update
+  #   needs:
+  #     - deploy-database
+  #     - deploy-backend
+  #     - deploy-frontend
+  #   env:
+  #     DOMAIN: apps.silver.devops.gov.bc.ca
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - name: DEV Deployment update
+  #       uses: mshick/add-pr-comment@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         allow-repeats: false
+  #         message: |
+  #           DEV deployments have completed successfully!
+  #           [Backend](https://${{ github.event.repository.name }}-${{ github.event.number }}-backend.${{ env.DOMAIN }}/) available
+  #           [Frontend](https://${{ github.event.repository.name }}-${{ github.event.number }}-frontend.${{ env.DOMAIN }}/) available

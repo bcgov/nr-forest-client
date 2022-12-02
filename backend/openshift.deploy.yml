@@ -222,6 +222,7 @@ objects:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
               readinessProbe:
+                successThreshold: 2
                 httpGet:
                   path: /
                   port: 3000
