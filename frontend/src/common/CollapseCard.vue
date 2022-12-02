@@ -1,5 +1,5 @@
 <template>
-  <b-card no-body class="mb-1">
+  <b-card no-body class="mb-1" style="margin-bottom: 10px !important">
     <b-card-header
       header-tag="header"
       :id="'header-' + id"
