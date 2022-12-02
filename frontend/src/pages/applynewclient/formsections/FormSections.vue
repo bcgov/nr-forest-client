@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import type { PropType } from "vue";
 import FormSectionTemplate from "./FormSectionTemplate.vue";
 import {
@@ -79,7 +79,10 @@ import {
   contactSectionSchema,
   authorizedSectionSchema,
 } from "../NewClient";
-import type { CommonObjectType } from "../../../core/AppType";
+import type {
+  CommonObjectType,
+  FormValidationResultType,
+} from "../../../core/AppType";
 
 const props = defineProps({
   data: {
@@ -87,7 +90,16 @@ const props = defineProps({
     required: true,
     default: { begin: { client_type: "" } },
   },
+  validationResult: Object as PropType<FormValidationResultType>,
 });
+
+// const computedBeginSectionSchema = computed(() => {
+//   if (props.validationResult && props.validationResult.begin) {
+//     const beginSchemaCopy = JSON.parse(JSON.stringify(beginSectionSchema));
+//     beginSchemaCopy.forEach((field) => {});
+//     props.validationResult.begin.forEach((errorField) => {});
+//   }
+// });
 
 const computedCompanyType = computed(() => {
   if (

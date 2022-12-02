@@ -38,12 +38,12 @@ export interface CommonObjectType {
 /* --------------- form schema type ----------------- */
 export interface FormSectionContainerType {
   // properties for CollapseCard component
-  title: String;
-  id: String;
-  defaultOpen?: Boolean;
-  nextId?: String;
-  nextText?: String;
-  alwaysOpen?: Boolean;
+  title: string;
+  id: string;
+  defaultOpen?: boolean;
+  nextId?: string;
+  nextText?: string;
+  alwaysOpen?: boolean;
 }
 
 export interface FormSectionSchemaType {
@@ -53,14 +53,22 @@ export interface FormSectionSchemaType {
 
 export interface FormComponentSchemaType {
   fieldProps: FormFieldTemplateType;
-  type: String;
+  type: string;
   disabled?: boolean;
   state?: boolean;
   depend?: {
-    fieldId: String;
-    value: String | Number | Boolean;
+    fieldId: string;
+    value: string | number | boolean;
   };
   options?: Array<CommonObjectType>; // for select, checkbox group, radio group
-  addButtonText?: String; // for table
+  addButtonText?: string; // for table
   columns?: Array<CommonObjectType>; // for table and group
 }
+
+// export interface FormValidationResultType {
+//   [key: string]: Array<{
+//     fieldId: string;
+//     columnId?: string;
+//     errorType: string;
+//   }>;
+// }

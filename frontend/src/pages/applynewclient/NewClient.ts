@@ -287,3 +287,23 @@ export const authorizedSectionSchema = {
     },
   ],
 };
+
+/* --------------- Required Fields --------------------- */
+export const commonRequiredFields = [
+  { containerId: "begin", fieldId: "client_type" },
+  { containerId: "contact", fieldId: "address", columnId: "stree_address" },
+  { containerId: "contact", fieldId: "address", columnId: "country" },
+  { containerId: "contact", fieldId: "address", columnId: "province" },
+  { containerId: "contact", fieldId: "address", columnId: "city" },
+  { containerId: "contact", fieldId: "address", columnId: "postal_code" },
+];
+
+export const businessRequiredFields = [
+  { containerId: "information", fieldId: "business_name" },
+  { containerId: "information", fieldId: "registration_number" },
+];
+
+export const individualRequiredFields = [
+  { containerId: "information", fieldId: "first_name" },
+  { containerId: "information", fieldId: "birthdate" },
+];

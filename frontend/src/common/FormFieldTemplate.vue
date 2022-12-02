@@ -1,23 +1,24 @@
 <template>
   <div style="margin-bottom: 24px">
     <FormFieldTitle
-      v-if="props.fieldProps.label"
-      :label="props.fieldProps.label"
-      :required="props.fieldProps.required"
-      :tooltip="props.fieldProps.tooltip"
-      :id="props.fieldProps.id"
+      v-if="fieldProps.label"
+      :label="fieldProps.label"
+      :required="fieldProps.required"
+      :tooltip="fieldProps.tooltip"
+      :id="fieldProps.id"
     />
     <slot />
-    <div v-if="props.fieldProps.note" class="form-field-note">
+    <div v-if="fieldProps.note" class="form-field-note">
       <span v-html="fieldProps.note"></span>
     </div>
-    <div v-if="props.fieldProps.errorMsg" class="form-field-err-msg">
-      <span v-html="fieldProps.errorMsg"></span>
+    <div v-if="errorType" class="form-field-err-msg">
+      <span v-html="computedErrorMsg[errorType]"></span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import type { PropType } from "vue";
 import FormFieldTitle from "./FormFieldTitle.vue";
 import type { FormFieldTemplateType } from "../core/AppType";
@@ -29,7 +30,21 @@ const props = defineProps({
     default: {
       label: null,
     },
+    required: true,
   },
+  errorType: String,
+});
+
+const computedErrorMsg = computed(() => {
+  let errorMsgs = {};
+  if (props.fieldProps.errorMsg) errorMsgs = props.fieldProps.errorMsg;
+  if (props.fieldProps.required) {
+    errorMsgs = {
+      missingRequired: "This field is required.",
+      ...errorMsgs,
+    };
+  }
+  return errorMsgs;
 });
 </script>
 <script lang="ts">
@@ -46,7 +61,7 @@ export default defineComponent({
   margin-top: 2px;
 }
 .form-field-err-msg {
-  color: #DE4B50;
+  color: #de4b50;
   font-size: 12px;
   margin-top: 2px;
 }

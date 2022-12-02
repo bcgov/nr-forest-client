@@ -2,6 +2,7 @@
   <b-button
     variant="primary"
     class="primarySquareButton"
+    :disabled="disabled"
     :style="style"
     @click="click"
     >{{ text }}</b-button
@@ -9,10 +10,11 @@
 </template>
 
 <script setup lang="ts">
-import { primary } from "../../utils/color";
+import { primary, primaryDisabled } from "../../utils/color";
 
 const props = defineProps({
   text: String,
+  disabled: { type: Boolean, default: false },
   style: { type: String, default: "" },
 });
 
@@ -33,6 +35,14 @@ export default defineComponent({
 <style scoped>
 .primarySquareButton {
   background-color: v-bind(primary);
+  border-color: v-bind(primary);
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.primarySquareButton.disabled {
+  background-color: v-bind(primaryDisabled);
+  border-color: v-bind(primaryDisabled);
   margin-top: 16px;
   margin-bottom: 8px;
 }
