@@ -22,10 +22,11 @@ public class ClientTypeCodeEntity extends AbstractCodeDescrEntity {
 
 	public static final String BEAN_NAME = "clientTypeCodeEntity";
 	
-	public static final String INDIVIDUAL	       = "I";
-	public static final String ASSOCIATION         = "A";
-	public static final String CORPORATION         = "C";
-	public static final String FIRST_NATION_BAND   = "B";
+	public static final String INDIVIDUAL	       	= "I";
+	public static final String ASSOCIATION         	= "A";
+	public static final String CORPORATION         	= "C";
+	public static final String FIRST_NATION_BAND   	= "B";
+	public static final String UNREGISTERED_COMPANY = "U";
 	
 
 	@Id

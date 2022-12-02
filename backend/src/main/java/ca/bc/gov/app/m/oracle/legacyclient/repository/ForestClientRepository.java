@@ -3,6 +3,7 @@ package ca.bc.gov.app.m.oracle.legacyclient.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -32,4 +33,15 @@ public interface ForestClientRepository extends CoreRepository<ForestClientEntit
 	List<ForestClientEntity> findClientByNameAndBirthdate(@Param("firstName") String firstName,
 														  @Param("lastName") String lastName, 
 														  @Param("birthdate") Date birthdate);
+
+
+	
+	@Query("select x from ForestClientEntity x " +
+		   "where x.clientTypeCode = '" + ClientTypeCodeEntity.UNREGISTERED_COMPANY + "' " +
+		   "and x.clientStatusCode = '" + ClientStatusCodeEntity.ACTIVE + "'")
+	List<ForestClientEntity> findAllPagable(Pageable pageable);
+
+	@Query("select count(x) from ForestClientEntity x")
+	Long countAll();
+	
 }
