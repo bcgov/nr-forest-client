@@ -4,15 +4,10 @@ on:
   pull_request:
     types:
       - closed
-    # paths-ignore:
-    #   - ".**"
-    #   - "**.md"
-    #   - "**.yml"
-    #   - "**.yaml"
 
 env:
   REGISTRY: ghcr.io
-  NAME: nrfc
+  NAME: ${{ github.event.repository.name }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
