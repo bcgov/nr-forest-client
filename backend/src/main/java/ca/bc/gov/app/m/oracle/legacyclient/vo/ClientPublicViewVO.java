@@ -7,6 +7,7 @@ public class ClientPublicViewVO implements Serializable {
 	private static final long serialVersionUID = -3558915712555555036L;
 
 	public String clientNumber;
+	public String incorporationNumber;
 	public String clientName;
 	public String legalFirstName;
 	public String legalMiddleName;

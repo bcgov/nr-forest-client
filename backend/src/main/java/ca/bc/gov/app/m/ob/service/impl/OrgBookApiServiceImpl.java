@@ -160,6 +160,10 @@ public class OrgBookApiServiceImpl implements OrgBookApiService {
 			if (orgBookResponseVO.results.size() > 0) {
 				client.clientNameInOrgBook = orgBookResponseVO.results.get(0).value;
 				client.sameName = client.clientNameInOrgBook.equals(client.clientName);
+				
+				if (client.sameName) {
+					client.incorporationNumber = orgBookResponseVO.results.get(0).topic_source_id;
+				}
 			}
 			
 			clients.add(client);
