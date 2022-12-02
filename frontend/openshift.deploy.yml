@@ -56,6 +56,16 @@ objects:
           referencePolicy:
             type: Local
   - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    data:
+      config.js:
+        window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${ZONE}-backend.${DOMAIN}');
+        window.localStorage.setItem('VITE_NODE_ENV', 'openshift-dev');
+  - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:

@@ -3,290 +3,127 @@ name: Pull Request Open
 on:
   pull_request:
 
-env:
-  REGISTRY: ghcr.io
-  NAME: nrfc
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  check-backend:
-    name: Check Backend
-    outputs:
-      build: ${{ steps.check.outputs.build }}
-    env:
-      TRIGGERS: ('backend/')
-      COMPONENT: backend
-      PREV: prod
-      ZONE: ${{ github.event.number }}
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Check and process modified files
-        id: check
-        run: |
-          # Fetch main to diff against
-          git fetch origin main:refs/remotes/origin/master
-          # Trigger build if diff matches any triggers
-          TRIGGERS=${{ env.TRIGGERS }}
-          while read -r check
-          do
-              for t in "${TRIGGERS[@]}"; do
-                  if [[ "${check}" =~ "${t}" ]]
-                  then
-                      # Output build=true for next steps
-                      echo "::set-output name=build::true"
-                      echo -e "${t}\n --> ${check}\n"
-                      exit 0
-                  fi
-              done
-          done < <(git diff origin/main --name-only)
-          echo "Container build not required"
-
-      - name: Recycle/retag Previous Images
-        if: steps.check.outputs.build != 'true'
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GHCR_TOKEN }}
-          target: ${{ env.PREV }}-${{ env.COMPONENT }}
-          tags: |
-            ${{ env.ZONE }}-${{ env.COMPONENT }}
-
-  check-frontend:
-    name: Check Frontend
-    outputs:
-      build: ${{ steps.check.outputs.build }}
-    env:
-      TRIGGERS: ('frontend/')
-      COMPONENT: frontend
-      PREV: prod
-      ZONE: ${{ github.event.number }}
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Check and process modified files
-        id: check
-        run: |
-          # Fetch main to diff against
-          git fetch origin main:refs/remotes/origin/master
-          # Trigger build if diff matches any triggers
-          TRIGGERS=${{ env.TRIGGERS }}
-          while read -r check
-          do
-              for t in "${TRIGGERS[@]}"; do
-                  if [[ "${check}" =~ "${t}" ]]
-                  then
-                      # Output build=true for next steps
-                      echo "::set-output name=build::true"
-                      echo -e "${t}\n --> ${check}\n"
-                      exit 0
-                  fi
-              done
-          done < <(git diff origin/main --name-only)
-          echo "Container build not required"
-
-      - name: Recycle/retag Previous Images
-        if: steps.check.outputs.build != 'true'
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GHCR_TOKEN }}
-          target: ${{ env.PREV }}-${{ env.COMPONENT }}
-          tags: |
-            ${{ env.ZONE }}-${{ env.COMPONENT }}
-
-  build-backend:
-    name: Backend Image Build
-    env:
-      COMPONENT: backend
-      ZONE: ${{ github.event.number }}
-    environment:
-      name: dev
-    runs-on: ubuntu-latest
-    needs:
-      - check-backend
-    if: needs.check-backend.outputs.build == 'true'
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      # need docker/build-push-action to have version at least v3 in order to have github token works
-      - name: Build and push Backend Docker image
-        uses: docker/build-push-action@v3.1.1
-        with:
-          context: ./backend/
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.ZONE }}-${{ env.COMPONENT }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Clear any previous OpenShift image
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-          # Clean previous image
-          oc delete is ${{ env.NAME }}-${{ env.ZONE }}-${{ env.COMPONENT }} || true
-
-  build-frontend:
-    name: Frontend Image Build
-    env:
-      COMPONENT: frontend
-      ZONE: ${{ github.event.number }}
-    environment:
-      name: dev
-    runs-on: ubuntu-latest
-    needs:
-      - check-frontend
-    if: needs.check-frontend.outputs.build == 'true'
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push Backend Docker image
-        uses: docker/build-push-action@v3.1.1
-        with:
-          context: ./frontend/
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.ZONE }}-${{ env.COMPONENT }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Clear any previous OpenShift image
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-          # Clean previous image
-          oc delete is ${{ env.NAME }}-${{ env.ZONE }}-${{ env.COMPONENT }} || true
-
-  deploy-dev:
-    name: DEV Deployment
-    needs:
-      - build-backend
-      - build-frontend
-    if: always() && (needs.build-backend.result == 'success' || needs.build-frontend.result == 'success')
-    runs-on: ubuntu-22.04
-    timeout-minutes: 15
-    environment:
-      name: dev
+  pr-greeting:
+    name: PR Greeting
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
-      ZONE: ${{ github.event.number }}
+      PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
+    runs-on: ubuntu-22.04
+    permissions:
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v2
-      - name: Deploy
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Create frontend config (Remove the old one if exists)
-          oc delete configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend 2> /dev/null \
-            || true && echo "No existing frontend config"
-          oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
-            --from-literal=config.js="window.localStorage.setItem('VITE_BACKEND_URL', 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca'); window.localStorage.setItem('VITE_NODE_ENV', 'openshift-dev');"
-
-          # Process and apply template  
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} | oc apply -f -
-          oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-backend \
-            -p NODE_ENV='development' \
-            -p API_URL='https://nrfc-api-test.api.gov.bc.ca' \
-            -p X_API_KEY=${{ secrets.GWA_X_API_KEY }} \
-            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }} \
-            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }} \
-            -p CHES_TOKEN_URL='https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token' \
-            -p CHES_API_URL='https://ches-dev.api.gov.bc.ca/api/v1' \
-            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USER }} \
-            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }} \
-            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }} \
-            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }} \
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }} | oc apply -f -
-          oc process -f .github/openshift/deploy.frontend.yml -p ZONE=${{ env.ZONE }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-frontend | oc apply -f -
-
-          # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-database -w
-          oc exec dc/${{ env.NAME }}-${{ env.ZONE }}-database -- psql -d ${{ env.NAME }} -U ${{ env.NAME }} -c "$(cat backend/src/main/resources/databasescripts/databasescripts.sql)"
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-backend -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-frontend -w
-
-      - name: Deployment Verification
-        env:
-          LINKS: (
-            'https://${{ env.NAME }}-${{ github.event.number }}-backend.${{ env.DOMAIN }}'
-            'https://${{ env.NAME }}-${{ github.event.number }}-frontend.${{ env.DOMAIN }}'
-            )
-        run: |
-          LINKS=${{ env.LINKS }}
-          for l in "${LINKS[@]}"; do
-              if [ $(curl -L -s -o /dev/null -w "%{http_code}" "${l}") -ne 200 ]
-              then
-                  echo "Status != 200 for ${l}"
-                  exit 1
-              fi
-          done
-          echo "Deployment verification successful"
-
-      - name: DEV Deployment update
-        uses: mshick/add-pr-comment@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: PR Greeting
+        uses: bcgov-nr/action-pr-description-add@v0.0.2
         with:
-          allow-repeats: false
-          message: |
-            DEV deployments have completed successfully!
-            [Backend](https://${{ env.NAME }}-${{ github.event.number }}-backend.${{ env.DOMAIN }}/) available
-            [Frontend](https://${{ env.NAME }}-${{ github.event.number }}-frontend.${{ env.DOMAIN }}/) available
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          add_markdown: |
+            ---
+            Thanks for the PR!
+
+            Any successful deployments (not always required) will be available below.
+            [Backend](https://${{ env.PREFIX }}-backend.${{ env.DOMAIN }}/) available
+            [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/) available
+
+            Once merged, code will be promoted and handed off to following workflow run.
+            [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+
+  builds:
+    name: Builds
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [backend, frontend]
+        include:
+          - package: backend
+            triggers: ('backend/')
+          - package: frontend
+            triggers: ('frontend/')
+    steps:
+      - uses: actions/checkout@v3
+      - uses: bcgov-nr/action-builder-ghcr@v0.0.2
+        with:
+          package: ${{ matrix.package }}
+          tag: ${{ github.event.number }}
+          tag_fallback: test
+          token: ${{ secrets.GITHUB_TOKEN }}
+          triggers: ${{ matrix.triggers }}
+
+  deploy-database:
+    name: Deploy Database
+    needs:
+      - builds
+    environment: dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        with:
+          file: database/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          parameters: -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+
+  deploy-backend:
+    name: Deploy Backend
+    needs:
+      - builds
+    environment: dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        with:
+          file: backend/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          parameters:
+            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}
+            -p NODE_ENV='development'
+            -p API_URL='https://nrfc-api-test.api.gov.bc.ca'
+            -p X_API_KEY=${{ secrets.GWA_X_API_KEY }}
+            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
+            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
+            -p CHES_TOKEN_URL='https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
+            -p CHES_API_URL='https://ches-dev.api.gov.bc.ca/api/v1'
+            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USER }}
+            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+
+  deploy-frontend:
+    name: Deploy Frontend
+    needs:
+      - builds
+    environment: dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        with:
+          file: frontend/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          parameters:
+            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
