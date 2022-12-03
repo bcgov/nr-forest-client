@@ -15,4 +15,7 @@ RUN chmod -R g+w . && \
 
 EXPOSE 3000
 
+# Non-privileged user
+USER app
+
 ENTRYPOINT ["sh", "startup.sh"]
