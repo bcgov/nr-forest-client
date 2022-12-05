@@ -6,7 +6,6 @@ RUN dnf module install -y nodejs:18
 WORKDIR /app
 COPY . ./
 RUN npm ci --only=prod && \
-    npm i vue-tsc && \
     npm run build && \
     npm i serve
 
