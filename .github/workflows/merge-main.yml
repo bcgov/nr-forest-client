@@ -4,17 +4,10 @@ on:
   push:
     branches:
       - main
-  #   paths-ignore:
-  #     - ".**"
-  #     - "**.md"
-  #     - "**.yml"
-  #     - "**.yaml"
-  # workflow_dispatch:
-
-env:
-  REGISTRY: ghcr.io
-  NAME: nrfc
-  NS: nr-d2723f
+    paths-ignore:
+      - ".github/ISSUE_TEMPLATE/*"
+      - "**.md"
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}
@@ -52,311 +45,210 @@ jobs:
       - name: Initialize
         uses: github/codeql-action/init@v2
         with:
-          languages: javascript
+          languages: javascript,java
 
-      # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
-      # If this step fails, then you should remove it and run the build manually (see below)
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+      # Autobuild failed for Java, so building manually
+      - name: Set up JDK 17 and Caching maven dependencies
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "17"
+          cache: "maven"
+
+      - name: Build for Java
+        run: |
+          cd backend
+          ./mvnw clean package
+
+      - name: Build for Node
+        run: |
+          cd frontend
+          npm ci
+          npm run build
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  deploy-test:
-    name: TEST Deployment
+  test-database:
+    name: TEST Database
     needs:
-      - cleanup-ghcr
       - codeql
-    runs-on: ubuntu-22.04
-    environment:
-      name: test
     env:
       ZONE: test
+    environment: test
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Deploy
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Create frontend config (Remove the old one if exists)
-          oc delete configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend 2> /dev/null \
-            || true && echo "No existing frontend config"
-          oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
-            --from-literal=config.js="window.localStorage.setItem('VITE_BACKEND_URL', 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca'); window.localStorage.setItem('VITE_KEYCLOAK_URL', 'https://test.loginproxy.gov.bc.ca/auth'); window.localStorage.setItem('VITE_KEYCLOAK_CLIENT_ID', '${{ secrets.KEYCLOAK_CLIENT_ID }}');"
-
-          # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} | oc apply -f -
-          oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-backend \
-            -p NODE_ENV='development' \
-            -p API_URL='https://nrfc-api-test.api.gov.bc.ca' \
-            -p X_API_KEY=${{ secrets.GWA_X_API_KEY }} \
-            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }} \
-            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }} \
-            -p CHES_TOKEN_URL='https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token' \
-            -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1' \
-            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USER }} \
-            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }} \
-            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }} \
-            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }} \
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }} | oc apply -f -
-          oc process -f .github/openshift/deploy.frontend.yml -p ZONE=${{ env.ZONE }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-frontend | oc apply -f -
-
-          # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-database -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-backend -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-frontend -w
-
-          # Remove completed build runs, build pods and deployment pods
-          for p in $(oc get po | grep "Completed" | awk '{print $1}')
-          do
-            oc delete po ${p}
-          done
-
-  zap-backend:
-    name: Backend Pen Tests
-    needs:
-      - deploy-test
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.4.0
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v0.1.0
         with:
-          target: https://${{ env.NAME }}-test-backend.apps.silver.devops.gov.bc.ca/
-          cmd_options: "-a"
-          allow_issue_writing: false
-          fail_action: false
+          file: database/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          penetration_test: false
+          parameters: -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
 
-  zap-frontend:
-    name: Frontend Pen Tests
+  test-backend:
+    name: TEST Backend
     needs:
-      - deploy-test
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.4.0
-        with:
-          target: https://${{ env.NAME }}-test-frontend.apps.silver.devops.gov.bc.ca/
-          cmd_options: "-a"
-          allow_issue_writing: false
-          fail_action: false
-
-  image-backend:
-    name: Backend Image Handling
-    needs:
-      - zap-backend
-      - zap-frontend
-    outputs:
-      build: ${{ steps.check.outputs.build }}
+      - codeql
     env:
-      COMPONENT: backend
-      PREV: test
-      ZONE: prod
-    runs-on: ubuntu-22.04
+      ZONE: test
+    environment: test
+    runs-on: ubuntu-latest
     steps:
-      - name: Check for image changes
-        id: check
-        run: |
-          # Vars
-          IMG_PREV="${{ env.REGISTRY }}/${{ github.repository }}:${{ env.PREV }}-${{ env.COMPONENT }}"
-          IMG_ZONE="${{ env.REGISTRY }}/${{ github.repository }}:${{ env.ZONE }}-${{ env.COMPONENT }}"
-
-          # Pull previous image; grab SHA
-          docker pull "${IMG_PREV}"
-          SHA_PREV=$(docker inspect -f '{{.Id}}' "${IMG_PREV}")
-
-          # Use blank SHA for promoted image, unless a real one exists instead
-          docker pull "${IMG_ZONE}" && \
-            SHA_ZONE=$(docker inspect -f '{{.Id}}' "${IMG_ZONE}") ||
-            SHA_ZONE=""
-
-          # Output SHAs
-          echo -e "\n${IMG_PREV}: ${SHA_PREV}"
-          echo -e "${IMG_ZONE}: ${SHA_ZONE}\n"
-
-          # If different, then trigger updates
-          if [[ "${SHA_PREV}" != "${SHA_ZONE}" ]]; then
-            echo "::set-output name=build::true"
-            echo "Image has changed"
-            exit 0
-          fi
-          echo "Image promotion not required"
-
-      - name: Promote Backend Image
-        if: steps.check.outputs.build == 'true'
-        uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          target: ${{ env.PREV }}-${{ env.COMPONENT }}
-          tags: |
-            ${{ env.ZONE }}-${{ env.COMPONENT }}
-
-  image-frontend:
-    name: Frontend Image Handling
-    needs:
-      - zap-backend
-      - zap-frontend
-    outputs:
-      build: ${{ steps.check.outputs.build }}
-    env:
-      COMPONENT: frontend
-      PREV: test
-      ZONE: prod
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Check for image changes
-        id: check
-        run: |
-          # Vars
-          IMG_PREV="${{ env.REGISTRY }}/${{ github.repository }}:${{ env.PREV }}-${{ env.COMPONENT }}"
-          IMG_ZONE="${{ env.REGISTRY }}/${{ github.repository }}:${{ env.ZONE }}-${{ env.COMPONENT }}"
-
-          # Pull previous image; grab SHA
-          docker pull "${IMG_PREV}"
-          SHA_PREV=$(docker inspect -f '{{.Id}}' "${IMG_PREV}")
-
-          # Use blank SHA for promoted image, unless a real one exists instead
-          docker pull "${IMG_ZONE}" && \
-            SHA_ZONE=$(docker inspect -f '{{.Id}}' "${IMG_ZONE}") ||
-            SHA_ZONE=""
-
-          # Output SHAs
-          echo -e "\n${IMG_PREV}: ${SHA_PREV}"
-          echo -e "${IMG_ZONE}: ${SHA_ZONE}\n"
-
-          # If different, then trigger updates
-          if [[ "${SHA_PREV}" != "${SHA_ZONE}" ]]; then
-            echo "::set-output name=build::true"
-            echo "Image has changed"
-            exit 0
-          fi
-          echo "Image promotion not required"
-
-      - name: Promote Frontend Image
-        if: steps.check.outputs.build == 'true'
-        uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GHCR_TOKEN }}
-          target: ${{ env.PREV }}-${{ env.COMPONENT }}
-          tags: |
-            ${{ env.ZONE }}-${{ env.COMPONENT }}
-
-  deploy-prod:
-    name: PROD Deployment
-    needs:
-      - image-backend
-      - image-frontend
-    runs-on: ubuntu-22.04
-    environment:
-      name: prod
-    env:
-      ZONE: prod
-      PREV: test
-    steps:
-      - name: Remove any stale backend images
-        if: needs.image-backend.outputs.build == 'true'
-        env:
-          COMPONENT: backend
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-          oc delete is/${{ env.NAME }}-${{ env.ZONE}}-${{ env.COMPONENT }} || true
-
-      - name: Remove any stale frontend images
-        if: needs.image-frontend.outputs.build == 'true'
-        env:
-          COMPONENT: frontend
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-          oc delete is/${{ env.NAME }}-${{ env.ZONE}}-${{ env.COMPONENT }} || true
-
       - uses: actions/checkout@v3
-      - name: Deploy
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Cancel db backup rollout if exists
-          if [ $(oc get dc -l app=backup-container -o name | wc -l) -gt 0 ]; then
-            oc rollout cancel dc/${{ env.NAME }}-${{ env.ZONE }}-dbbackup 2> /dev/null \
-              || true && echo "No rollout in progress"
-          fi
-
-          # Create frontend config (Remove the old one if exists)
-          oc delete configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend 2> /dev/null \
-            || true && echo "No existing frontend config"
-          oc create configmap ${{ env.NAME }}-${{ env.ZONE }}-frontend  \
-            --from-literal=config.js="window.localStorage.setItem('VITE_BACKEND_URL', 'https://${{ env.NAME }}-${{ env.ZONE }}-backend.apps.silver.devops.gov.bc.ca'); window.localStorage.setItem('VITE_KEYCLOAK_URL', 'https://loginproxy.gov.bc.ca/auth'); window.localStorage.setItem('VITE_KEYCLOAK_CLIENT_ID', '${{ secrets.KEYCLOAK_CLIENT_ID }}');"
-
-          # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} | oc apply -f -
-          oc process -f .github/openshift/deploy.backend.yml -p ZONE=${{ env.ZONE }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-backend \
-            -p NODE_ENV='production' \
-            -p API_URL='https://nrfc-api-prod.api.gov.bc.ca' \
-            -p X_API_KEY=${{ secrets.GWA_X_API_KEY }} \
-            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }} \
-            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }} \
-            -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token' \
-            -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1' \
-            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USER }} \
-            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }} \
-            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }} \
-            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }} \
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }} | oc apply -f -
-          oc process -f .github/openshift/deploy.frontend.yml -p ZONE=${{ env.ZONE }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-frontend | oc apply -f -
-
-          # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-database -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-backend -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-frontend -w
-
-          # Remove completed build runs, build pods and deployment pods
-          for p in $(oc get po | grep "Completed" | awk '{print $1}')
-          do
-            oc delete po ${p}
-          done
-
-          # Restart db backup rollout if exists
-          if [ $(oc get dc -l app=backup-container -o name | wc -l) -gt 0 ]; then
-            oc rollout latest dc/${{ env.NAME }}-${{ env.ZONE }}-dbbackup 2> /dev/null \
-              || true && echo "Rollout in progress"
-            oc logs -f dc/${{ env.NAME }}-${{ env.ZONE }}-dbbackup
-          fi
-
-      - name: Promote Backend Image to PROD
-        uses: shrink/actions-docker-registry-tag@v3
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v0.1.0
         with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GHCR_TOKEN }}
-          target: ${{ env.PREV }}-backend
-          tags: |
-            prod-backend
+          file: backend/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/backend:${{ env.ZONE }}
+            -p NODE_ENV='development'
+            -p API_URL='https://nrfc-api-test.api.gov.bc.ca'
+            -p X_API_KEY=${{ secrets.GWA_X_API_KEY }}
+            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
+            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
+            -p CHES_TOKEN_URL='https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
+            -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1'
+            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USER }}
+            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
 
-      - name: Promote Frontend Image to PROD
-        uses: shrink/actions-docker-registry-tag@v3
+  test-frontend:
+    name: TEST Frontend
+    needs:
+      - codeql
+    env:
+      ZONE: test
+    environment: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v0.1.0
         with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          token: ${{ secrets.GHCR_TOKEN }}
-          target: ${{ env.PREV }}-frontend
-          tags: |
-            prod-frontend
+          file: frontend/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/frontend:${{ env.ZONE }}
+
+  prod-database:
+    name: PROD Database
+    needs:
+      - test-database
+      - test-backend
+      - test-frontend
+    env:
+      ZONE: prod
+    environment: prod
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        with:
+          file: database/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          penetration_test: false
+          parameters: -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+
+  prod-backend:
+    name: PROD Backend
+    needs:
+      - test-database
+      - test-backend
+      - test-frontend
+    env:
+      PREV: test
+      ZONE: prod
+    environment: prod
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        with:
+          file: backend/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/backend:${{ env.PREV }}
+            -p NODE_ENV='production'
+            -p API_URL='https://nrfc-api-prod.api.gov.bc.ca'
+            -p X_API_KEY=${{ secrets.GWA_X_API_KEY }}
+            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
+            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
+            -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
+            -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
+            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USER }}
+            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+
+  prod-frontend:
+    name: PROD Frontend
+    needs:
+      - test-database
+      - test-backend
+      - test-frontend
+    env:
+      PREV: test
+      ZONE: prod
+    environment: prod
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        with:
+          file: frontend/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}
+
+  image-promotions:
+    name: Promote images to PROD
+    needs:
+      - prod-database
+      - prod-backend
+      - prod-frontend
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [backend, frontend]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: test
+          tags: prod

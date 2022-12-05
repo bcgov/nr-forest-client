@@ -67,9 +67,9 @@ parameters:
     description: environment mode
     required: true
   - name: CPU_REQUEST
-    value: 100m
+    value: 75m
   - name: CPU_LIMIT
-    value: 250m
+    value: 225m
   - name: MEMORY_REQUEST
     value: 200Mi
   - name: MEMORY_LIMIT
