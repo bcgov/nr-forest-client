@@ -36,6 +36,14 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: openshift/postgresql:12
+  - name: CPU_REQUEST
+    value: "25m"
+  - name: MEMORY_REQUEST
+    value: "50Mi"
+  - name: CPU_LIMIT
+    value: "75m"
+  - name: MEMORY_LIMIT
+    value: "150Mi"
 objects:
   - apiVersion: v1
     kind: Secret
@@ -118,6 +126,13 @@ objects:
               ports:
                 - containerPort: 5432
                   protocol: TCP
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
               readinessProbe:
                 exec:
                   command:
