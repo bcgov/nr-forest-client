@@ -31,9 +31,9 @@ parameters:
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-old-growth:prod-frontend
   - name: CPU_REQUEST
-    value: 20m
+    value: 10m
   - name: CPU_LIMIT
-    value: 50m
+    value: 25m
   - name: MEMORY_REQUEST
     value: 30Mi
   - name: MEMORY_LIMIT
