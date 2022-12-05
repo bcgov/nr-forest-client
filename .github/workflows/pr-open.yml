@@ -49,10 +49,12 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend, frontend]
+        package: [backend, database, frontend]
         include:
           - package: backend
             triggers: ('backend/')
+          - package: database
+            triggers: ('database/')
           - package: frontend
             triggers: ('frontend/')
     steps:
@@ -80,8 +82,9 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
-          penetration_test: false
-          parameters: -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+          parameters:
+            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
 
   deploy-backend:
     name: Deploy Backend
@@ -98,7 +101,6 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: true
-          penetration_test: false
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}
@@ -130,7 +132,6 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: true
-          penetration_test: false
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
