@@ -24,7 +24,6 @@ jobs:
           oc project ${{ secrets.OC_NAMESPACE }}
           # Remove old build runs, build pods and deployment pods
           oc delete all,pvc,secret -l app=${{ env.NAME }}-${{ github.event.number }}
-          oc delete configmap ${{ env.NAME }}-${{ github.event.number }}-frontend
 
   # If merged into main, then handle any image promotions
   image-promotions:
