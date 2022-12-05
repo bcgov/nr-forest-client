@@ -93,6 +93,9 @@ const props = defineProps({
   validationResult: Object as PropType<FormValidationResultType>,
 });
 
+// todo: based on the validation result,
+// create computed section schemas to determine when to display error messages as specified in the validation result
+
 const computedCompanyType = computed(() => {
   if (
     props.data.begin &&

@@ -52,6 +52,7 @@ const updateFormValue = (containerId, fieldId, value) => {
   console.log("containerId", containerId, "fieldId", fieldId, "value", value);
   data.value[containerId][fieldId] = value;
   console.log("data", data.value);
+  // todo: this is where to check if each field meets its validation rules
 };
 const updateFormArrayValue = (
   containerId,
@@ -133,6 +134,7 @@ const openModal = () => {
 };
 const onModalOkay = () => {
   modalShow.value = false;
+  // todo: call the data validatio api and receive the result from backend and pass it to form sections
 };
 const onModalCancel = () => {
   modalShow.value = false;
