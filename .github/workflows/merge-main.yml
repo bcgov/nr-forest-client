@@ -150,32 +150,6 @@ jobs:
           allow_issue_writing: false
           fail_action: false
 
-  # https://github.com/marketplace/actions/aqua-security-trivy
-  trivy-repo:
-    name: Repository Report
-    needs:
-      - zap-backend
-      - zap-frontend
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.3.0
-        with:
-          scan-type: "fs"
-          format: "sarif"
-          output: "trivy-results.sarif"
-          ignore-unfixed: true
-          severity: "CRITICAL,HIGH"
-          security-checks: "vuln,secret,config"
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: "trivy-results.sarif"
-
   image-backend:
     name: Backend Image Handling
     needs:
@@ -284,7 +258,6 @@ jobs:
     needs:
       - image-backend
       - image-frontend
-      - trivy-repo
     runs-on: ubuntu-22.04
     environment:
       name: prod
