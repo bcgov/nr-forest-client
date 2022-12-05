@@ -88,8 +88,9 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
           penetration_test: false
-          parameters: -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
   test-backend:
     name: TEST Backend
     needs:
@@ -169,7 +170,9 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
           penetration_test: false
-          parameters: -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
 
   prod-backend:
     name: PROD Backend
