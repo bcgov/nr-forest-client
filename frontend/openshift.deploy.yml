@@ -24,20 +24,20 @@ parameters:
     value: latest
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
-  - name: CPU_LIMIT
-    value: 50m
-  - name: MEMORY_LIMIT
-    value: 0.5Gi
-  - name: CPU_REQUEST
-    value: 20m
-  - name: MEMORY_REQUEST
-    value: 0.2Gi
   - name: REGISTRY
     description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
     value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-old-growth:prod-frontend
+  - name: CPU_REQUEST
+    value: 20m
+  - name: MEMORY_REQUEST
+    value: 50Mi
+  - name: CPU_LIMIT
+    value: 50m
+  - name: MEMORY_LIMIT
+    value: 150Mi
 objects:
   - apiVersion: v1
     kind: ImageStream
