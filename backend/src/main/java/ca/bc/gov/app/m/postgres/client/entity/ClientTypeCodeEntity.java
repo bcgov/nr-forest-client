@@ -1,9 +1,9 @@
 package ca.bc.gov.app.m.postgres.client.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -22,10 +22,11 @@ public class ClientTypeCodeEntity extends AbstractCodeDescrEntity {
 
 	public static final String BEAN_NAME = "clientTypeCodeEntity";
 	
-	public static final String INDIVIDUAL	       = "I";
-	public static final String ASSOCIATION         = "A";
-	public static final String CORPORATION         = "C";
-	public static final String FIRST_NATION_BAND   = "B";
+	public static final String INDIVIDUAL	       	= "I";
+	public static final String ASSOCIATION         	= "A";
+	public static final String CORPORATION         	= "C";
+	public static final String FIRST_NATION_BAND   	= "B";
+	public static final String UNREGISTERED_COMPANY = "U";
 	
 
 	@Id

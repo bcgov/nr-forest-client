@@ -24,14 +24,6 @@ parameters:
     value: latest
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
-  - name: CPU_LIMIT
-    value: 100m
-  - name: MEMORY_LIMIT
-    value: 0.5Gi
-  - name: CPU_REQUEST
-    value: 50m
-  - name: MEMORY_REQUEST
-    value: 0.2Gi
   - name: REGISTRY
     description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
     value: ghcr.io
@@ -74,6 +66,14 @@ parameters:
   - name: NODE_ENV
     description: environment mode
     required: true
+  - name: CPU_REQUEST
+    value: 75m
+  - name: CPU_LIMIT
+    value: 225m
+  - name: MEMORY_REQUEST
+    value: 200Mi
+  - name: MEMORY_LIMIT
+    value: 500Mi
 objects:
   - apiVersion: v1
     kind: Secret

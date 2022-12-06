@@ -15,6 +15,7 @@ public class OrgBookResponseVO {
 		private static final long serialVersionUID = 3398116613645404989L;
 		
 		public String value;
+		public String topic_source_id;
     }
     //TODO: Add more fields
     

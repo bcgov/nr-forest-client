@@ -1,17 +1,16 @@
 # RedHat UBI 8 with nodejs 14
-FROM registry.access.redhat.com/ubi8/ubi as builder
-RUN dnf module install -y nodejs:14
+FROM registry.access.redhat.com/ubi8/ubi:8.7 as builder
+RUN dnf module install -y nodejs:18
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
 COPY . ./
-RUN npm ci --only=prod && \
-    npm i vue-tsc && \
+RUN npm ci --omit=dev && \
     npm run build && \
     npm i serve
 
 # Deployment container
-FROM registry.access.redhat.com/ubi8/ubi-micro
+FROM registry.access.redhat.com/ubi8/ubi-micro:8.7
 
 # Set node to production 
 ENV NODE_ENV production
@@ -34,6 +33,9 @@ COPY --from=builder /app/dist ./dist
 
 # Expose port - mostly a convention, for readability
 EXPOSE 3000
+
+# Non-privileged user
+USER app
 
 # Start up command
 ENTRYPOINT ["./node_modules/.bin/serve", "dist"]
