@@ -159,6 +159,7 @@ jobs:
       - test-backend
       - test-frontend
     env:
+      PREV: test
       ZONE: prod
     environment: prod
     runs-on: ubuntu-latest
@@ -202,6 +203,7 @@ jobs:
   prod-backend:
     name: PROD Backend
     needs:
+      - test-init
       - test-database
       - test-backend
       - test-frontend
@@ -240,6 +242,7 @@ jobs:
   prod-frontend:
     name: PROD Frontend
     needs:
+      - test-init
       - test-database
       - test-backend
       - test-frontend
@@ -266,6 +269,7 @@ jobs:
   image-promotions:
     name: Promote images to PROD
     needs:
+      - prod-init
       - prod-database
       - prod-backend
       - prod-frontend
