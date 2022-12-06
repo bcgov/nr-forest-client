@@ -18,7 +18,6 @@ COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 COPY startup.sh .
 COPY InstallCert.java .
-COPY jssecacerts .
 
 RUN chmod g+x startup.sh && \
     chmod g+w /usr/java/openjdk-17/lib/security/cacerts
