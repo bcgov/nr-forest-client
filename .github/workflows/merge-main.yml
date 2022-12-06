@@ -155,6 +155,7 @@ jobs:
   prod-database:
     name: PROD Database
     needs:
+      - test-init
       - test-database
       - test-backend
       - test-frontend
@@ -181,6 +182,7 @@ jobs:
   prod-init:
     name: PROD Init
     needs:
+      - test-init
       - test-database
       - test-backend
       - test-frontend
