@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 import ca.bc.gov.app.m.ob.vo.OrgBookResponseVO;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientDoingBusinessAsEntity;
+import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 
 public interface OrgBookApiService {
 
@@ -16,5 +17,7 @@ public interface OrgBookApiService {
 	List<ClientDoingBusinessAsEntity> validateClientDoingBusinessAs();
 
 	OrgBookResponseVO findByClientName(String clientName);
+
+	List<ForestClientEntity> validateUnregisteredCompanies();
     
 }
