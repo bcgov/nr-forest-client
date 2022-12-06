@@ -1,12 +1,11 @@
 # RedHat UBI 8 with nodejs 14
 FROM registry.access.redhat.com/ubi8/ubi:8.7 as builder
-RUN dnf module install -y nodejs:14
+RUN dnf module install -y nodejs:18
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
 COPY . ./
-RUN npm ci --only=prod && \
-    npm i vue-tsc && \
+RUN npm ci --omit=dev && \
     npm run build && \
     npm i serve
 
