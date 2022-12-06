@@ -19,13 +19,13 @@ COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 COPY startup.sh .
 COPY InstallCert.java .
 
-RUN chmod -R g+w . && \
+RUN chmod g+w /app && \
     chmod g+x startup.sh && \
     chmod g+w /usr/java/openjdk-17/lib/security/cacerts
 
 EXPOSE 3000
 
 # Non-privileged user
-USER app
+# USER app
 
 ENTRYPOINT ["sh", "startup.sh"]
