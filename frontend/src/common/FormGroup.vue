@@ -10,7 +10,7 @@
           :data="row[column.fieldProps.id]"
           :schema="column"
           @updateFormValue="
-            (id, newValue) => updateFormArray(id, newValue, rowIndex)
+            (id, newValue) => updateFormArrayValue(id, newValue, rowIndex)
           "
         />
       </div>
@@ -46,10 +46,10 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["updateFormArray", "addRow", "deleteRow"]);
+const emit = defineEmits(["updateFormArrayValue", "addRow", "deleteRow"]);
 
-const updateFormArray = (id, newValue, row) => {
-  emit("updateFormArray", id, newValue, row);
+const updateFormArrayValue = (id, newValue, row) => {
+  emit("updateFormArrayValue", id, newValue, row);
 };
 const addRow = () => {
   emit("addRow");

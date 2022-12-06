@@ -79,7 +79,10 @@ import {
   contactSectionSchema,
   authorizedSectionSchema,
 } from "../NewClient";
-import type { CommonObjectType } from "../../../core/AppType";
+import type {
+  CommonObjectType,
+  FormValidationResultType,
+} from "../../../core/AppType";
 
 const props = defineProps({
   data: {
@@ -87,7 +90,11 @@ const props = defineProps({
     required: true,
     default: { begin: { client_type: "" } },
   },
+  validationResult: Object as PropType<FormValidationResultType>,
 });
+
+// todo: based on the validation result,
+// create computed section schemas to determine when to display error messages as specified in the validation result
 
 const computedCompanyType = computed(() => {
   if (
