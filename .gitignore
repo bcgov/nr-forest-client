@@ -114,3 +114,6 @@ snyk.sarif
 
 # VSCode
 .vscode
+
+# Dist
+**/dist/**
