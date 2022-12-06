@@ -24,7 +24,9 @@ import ca.bc.gov.app.core.util.CoreUtil;
 import ca.bc.gov.app.m.ob.service.OrgBookApiService;
 import ca.bc.gov.app.m.ob.vo.OrgBookResponseVO;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientDoingBusinessAsEntity;
+import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ClientDoingBusinessAsRepository;
+import ca.bc.gov.app.m.oracle.legacyclient.repository.ForestClientRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.vo.ClientPublicViewVO;
 
 @Service(OrgBookApiService.BEAN_NAME)
@@ -37,6 +39,9 @@ public class OrgBookApiServiceImpl implements OrgBookApiService {
     
     @Inject
     private ClientDoingBusinessAsRepository clientDoingBusinessAsRepository;
+    
+    @Inject
+    private ForestClientRepository forestClientRepository;
     
     @Override
     public OrgBookResponseVO findByClientName(String clientName) {
@@ -128,6 +133,54 @@ public class OrgBookApiServiceImpl implements OrgBookApiService {
 		logger.info("Started at " + startedDate);
 		logger.info("Finished at " + new Date());
 		return doingBusinessClients;
+	}
+
+	@Override
+	public List<ForestClientEntity> validateUnregisteredCompanies() {
+		Date startedDate = new Date();
+		
+		Long count = forestClientRepository.countAll();
+		List<ForestClientEntity> unregisteredCompanies = new ArrayList<>();
+		List<ClientPublicViewVO> clients = new ArrayList<>();
+		
+		int take = 10;
+	    int numberOfPages = (int) Math.ceil(count/take);
+	    
+		for (int page = 1; page <= numberOfPages; page++) {
+			unregisteredCompanies.addAll(forestClientRepository.findAllPagable(PageRequest.of(page, take)));
+		}
+		
+		for (ForestClientEntity forestClientEntity : unregisteredCompanies) {
+			OrgBookResponseVO orgBookResponseVO = this.findByClientName(forestClientEntity.getClientName());
+			
+			ClientPublicViewVO client = new ClientPublicViewVO();
+			client.clientNumber = forestClientEntity.getClientNumber();
+			client.clientName = forestClientEntity.getClientName();
+			
+			if (orgBookResponseVO.results.size() > 0) {
+				client.clientNameInOrgBook = orgBookResponseVO.results.get(0).value;
+				client.sameName = client.clientNameInOrgBook.equals(client.clientName);
+				
+				if (client.sameName) {
+					client.incorporationNumber = orgBookResponseVO.results.get(0).topic_source_id;
+				}
+			}
+			
+			clients.add(client);
+		}
+		
+		String content = coreUtil.objToJsonString(clients);
+		String path = "C:/repo/a.txt";
+		try {
+			Files.write( Paths.get(path), content.getBytes());
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		logger.info("Started at " + startedDate);
+		logger.info("Finished at " + new Date());
+		return unregisteredCompanies;
 	}
     
 }

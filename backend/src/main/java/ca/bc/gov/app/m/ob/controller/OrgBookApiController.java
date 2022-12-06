@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ca.bc.gov.app.m.ob.service.OrgBookApiService;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientDoingBusinessAsEntity;
+import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import io.swagger.annotations.Api;
 
 //NOTE: 
@@ -42,8 +43,15 @@ public class OrgBookApiController {
     //TODO: Remove it as it is for Data Analysis
   	@GetMapping("/validateClientDoingBusinessAs")
   	public List<ClientDoingBusinessAsEntity> validateClientDoingBusinessAs() {
-  		List<ClientDoingBusinessAsEntity> client = orgBookApiService.validateClientDoingBusinessAs();
-  		return client;
+  		List<ClientDoingBusinessAsEntity> clients = orgBookApiService.validateClientDoingBusinessAs();
+  		return clients;
+  	}
+  	
+    //TODO: Remove it as it is for Data Analysis
+  	@GetMapping("/validateUnregisteredCompanies")
+  	public List<ForestClientEntity> validateUnregisteredCompanies() {
+  		List<ForestClientEntity> clients = orgBookApiService.validateUnregisteredCompanies();
+  		return clients;
   	}
 
 }
