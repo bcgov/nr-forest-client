@@ -110,8 +110,8 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               volumeMounts:
-                - name: ${NAME}-${ZONE}-${COMPONENT}
-                  mountPath: "/app/dist/config.js"
+                - name: env-config
+                  mountPath: /app/dist/config.js
                   subPath: config.js
               ports:
                 - containerPort: 3000
