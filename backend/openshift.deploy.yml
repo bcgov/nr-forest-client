@@ -1,18 +1,12 @@
 apiVersion: template.openshift.io/v1
 kind: Template
-metadata:
-  name: ${NAME}
-  annotations:
-    description: "Nr-Forest-Client"
-    tags: "nrfc"
-    iconClass: icon-js
 labels:
   app: ${NAME}-${ZONE}
   app.kubernetes.io/part-of: ${NAME}-${ZONE}
 parameters:
   - name: NAME
     description: Module name
-    value: nrfc
+    value: nr-forest-client
   - name: COMPONENT
     description: Component name
     value: backend
