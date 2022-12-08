@@ -142,3 +142,4 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
+            -p VITE_NODE_ENV=openshift-dev
