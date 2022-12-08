@@ -12,7 +12,7 @@ labels:
 parameters:
   - name: NAME
     description: Module name
-    value: nrfc
+    value: nr-forest-client
   - name: COMPONENT
     description: Component name
     value: frontend
@@ -38,6 +38,12 @@ parameters:
     value: 30Mi
   - name: MEMORY_LIMIT
     value: 150Mi
+  - name: VITE_NODE_ENV
+    value: ""
+  - name: VITE_KEYCLOAK_URL
+    value: https://loginproxy.gov.bc.ca/auth
+  - name: VITE_KEYCLOAK_URL_CLIENT_ID
+    value: ""
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -64,7 +70,9 @@ objects:
     data:
       config.js:
         window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${ZONE}-backend.${DOMAIN}');
-        window.localStorage.setItem('VITE_NODE_ENV', 'openshift-dev');
+        window.localStorage.setItem('VITE_NODE_ENV', '${VITE_NODE_ENV}');
+        window.localStorage.setItem('VITE_KEYCLOAK_URL', '${VITE_KEYCLOAK_URL}');
+        window.localStorage.setItem('VITE_KEYCLOAK_CLIENT_ID', '${VITE_KEYCLOAK_CLIENT_ID}');
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
