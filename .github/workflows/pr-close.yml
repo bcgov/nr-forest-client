@@ -22,7 +22,7 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
           # Remove old build runs, build pods and deployment pods
-          oc delete all,pvc,secret -l app=${{ env.NAME }}-${{ github.event.number }}
+          oc delete all,pvc,secret,cm -l app=${{ env.NAME }}-${{ github.event.number }}
 
   # If merged into main, then handle any image promotions
   image-promotions:
