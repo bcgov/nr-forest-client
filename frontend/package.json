@@ -55,7 +55,7 @@
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",
     "@types/jsdom": "^20.0.1",
-    "@types/node": "^18.11.10",
+    "@types/node": "^18.11.12",
     "@typescript-eslint/eslint-plugin": "^5.46.0",
     "@typescript-eslint/parser": "^5.46.0",
     "@vue/eslint-config-prettier": "^7.0.0",
