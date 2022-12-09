@@ -28,7 +28,6 @@ jobs:
         with:
           commands: |
             ./mvnw test
-            npm run test
           dir: backend
           java-cache: maven
           java-distribution: temurin
