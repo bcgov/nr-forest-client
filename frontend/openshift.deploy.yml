@@ -102,7 +102,7 @@ objects:
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           volumes:
-            - name: ${NAME}-${ZONE}-${COMPONENT}-config-volume
+            - name: env-config
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}
           containers:
@@ -110,8 +110,8 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               volumeMounts:
-                - name: ${NAME}-${ZONE}-${COMPONENT}-config-volume
-                  mountPath: "/app/dist/config.js"
+                - name: env-config
+                  mountPath: /app/dist/config.js
                   subPath: config.js
               ports:
                 - containerPort: 3000
