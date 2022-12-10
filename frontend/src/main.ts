@@ -11,8 +11,6 @@ import "bootstrap-vue-3/dist/bootstrap-vue-3.css";
 
 const app = createApp(App);
 
-console.log("VITE_KEYCLOAK_URL", keycloakUrl);
-
 if (nodeEnv && nodeEnv == "openshift-dev") {
   // disable the login authentication for the deployment in the openshift dev namespace
   // cause the url in the dev namespace is not stable
