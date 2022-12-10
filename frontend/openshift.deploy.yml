@@ -44,6 +44,8 @@ parameters:
     value: https://loginproxy.gov.bc.ca/auth
   - name: VITE_KEYCLOAK_URL_CLIENT_ID
     value: ""
+  - name: VITE_KEYCLOAK_CLIENT_ID
+    value: ""
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -70,9 +72,9 @@ objects:
     data:
       config.js:
         window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${ZONE}-backend.${DOMAIN}');
-        window.localStorage.setItem('VITE_NODE_ENV', ${VITE_NODE_ENV});
-        window.localStorage.setItem('VITE_KEYCLOAK_URL', ${VITE_KEYCLOAK_URL});
-        window.localStorage.setItem('VITE_KEYCLOAK_CLIENT_ID', ${VITE_KEYCLOAK_CLIENT_ID});
+        window.localStorage.setItem('VITE_NODE_ENV', '${VITE_NODE_ENV}');
+        window.localStorage.setItem('VITE_KEYCLOAK_URL', '${VITE_KEYCLOAK_URL}');
+        window.localStorage.setItem('VITE_KEYCLOAK_CLIENT_ID', '${VITE_KEYCLOAK_CLIENT_ID}');
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
