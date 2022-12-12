@@ -61,7 +61,7 @@ jobs:
     name: Deploy Init
     needs:
       - builds
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
@@ -78,7 +78,7 @@ jobs:
     name: Deploy Database
     needs:
       - builds
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
@@ -97,7 +97,7 @@ jobs:
     name: Deploy Backend
     needs:
       - builds
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
@@ -128,7 +128,7 @@ jobs:
     name: Deploy Frontend
     needs:
       - builds
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
