@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import ca.bc.gov.app.core.configuration.PostgresPersistenceConfiguration;
 import ca.bc.gov.app.core.vo.CodeDescrVO;
 import ca.bc.gov.app.m.postgres.client.service.ClientService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 
-@Api(tags = PostgresPersistenceConfiguration.POSTGRES_API_TAG)
+@Tag(name =  PostgresPersistenceConfiguration.POSTGRES_API_TAG)
 @RestController
 @RequestMapping("app/m/client")
 public class ClientController {

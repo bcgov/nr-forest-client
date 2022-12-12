@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 //import ca.bc.gov.app.m.om.service.OpenMapsService;
-import io.swagger.annotations.Api;
 //import io.swagger.annotations.ApiOperation;
 //import ca.bc.gov.app.m.om.vo.FirstNationBandVidationVO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(tags = "Open Maps")
+@Tag(name =  "Open Maps")
 @RestController
 @RequestMapping("app/m/openmaps/")
 public class OpenMapsController {

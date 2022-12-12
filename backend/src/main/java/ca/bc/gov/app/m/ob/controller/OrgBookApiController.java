@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import ca.bc.gov.app.m.ob.service.OrgBookApiService;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 
 //NOTE: 
 //This class is for testing purposes. This will be removed. 
 
-@Api(tags = "OrgBook")
+@Tag(name =  "OrgBook")
 @RestController
 @RequestMapping("app/m/orgbook/")
 public class OrgBookApiController {
