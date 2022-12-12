@@ -24,20 +24,19 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up JDK 17 and Caching maven dependencies
-        uses: actions/setup-java@v3
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
         with:
-          distribution: "temurin"
+          commands: |
+            ./mvnw test
+          dir: backend
+          java-cache: maven
+          java-distribution: temurin
           java-version: "17"
-          cache: "maven"
-
-      - name: Tests
-        run: |
-          cd backend
-          ./mvnw test
+          sonar_args: >
+            -Dsonar.exclusions=**/coverage/**
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=forest-client-backend
+          sonar_project_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
 
   tests-frontend:
     name: Frontend Unit Tests
@@ -50,7 +49,7 @@ jobs:
             npm ci
             npm run test
           dir: frontend
-          sonar_args: |
+          sonar_args: >
             -Dsonar.exclusions=**/coverage/**,**/node_modules/**
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-frontend

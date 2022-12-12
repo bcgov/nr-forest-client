@@ -152,7 +152,7 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.ZONE }}
             -p VITE_KEYCLOAK_URL=https://test.loginproxy.gov.bc.ca/auth
-            -p VITE_KEYCLOAK_URL_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
+            -p VITE_KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
 
   prod-database:
     name: PROD Database
@@ -270,7 +270,7 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}
             -p VITE_KEYCLOAK_URL=https://loginproxy.gov.bc.ca/auth
-            -p VITE_KEYCLOAK_URL_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
+            -p VITE_KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
 
   image-promotions:
     name: Promote images to PROD

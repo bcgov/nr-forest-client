@@ -42,7 +42,7 @@ parameters:
     value: ""
   - name: VITE_KEYCLOAK_URL
     value: https://loginproxy.gov.bc.ca/auth
-  - name: VITE_KEYCLOAK_URL_CLIENT_ID
+  - name: VITE_KEYCLOAK_CLIENT_ID
     value: ""
 objects:
   - apiVersion: v1
