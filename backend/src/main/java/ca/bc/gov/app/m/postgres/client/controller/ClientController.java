@@ -4,8 +4,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +14,7 @@ import ca.bc.gov.app.core.configuration.PostgresPersistenceConfiguration;
 import ca.bc.gov.app.core.vo.CodeDescrVO;
 import ca.bc.gov.app.m.postgres.client.service.ClientService;
 import io.swagger.annotations.Api;
+import jakarta.inject.Inject;
 
 @Api(tags = PostgresPersistenceConfiguration.POSTGRES_API_TAG)
 @RestController

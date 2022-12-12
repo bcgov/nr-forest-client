@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +26,7 @@ import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ForestClientRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.vo.ClientPublicViewVO;
+import jakarta.inject.Inject;
 
 @Service(OrgBookApiService.BEAN_NAME)
 public class OrgBookApiServiceImpl implements OrgBookApiService {

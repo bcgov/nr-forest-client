@@ -74,9 +74,9 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-			<version>1</version>
+			<groupId>jakarta.inject</groupId>
+			<artifactId>jakarta.inject-api</artifactId>
+			<version>2.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>
@@ -103,11 +103,6 @@
       <artifactId>jettison</artifactId>
       <version>1.5.3</version>
     </dependency>
-		<dependency>
-			<groupId>javax.persistence</groupId>
-			<artifactId>javax.persistence-api</artifactId>
-			<version>2.2</version>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

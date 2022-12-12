@@ -4,8 +4,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.Param;
@@ -20,6 +18,7 @@ import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.service.LegacyClientService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.inject.Inject;
 
 @Api(tags = OraclePersistenceConfiguration.ORACLE_API_TAG)
 @CrossOrigin(origins = "${frontend.url}")

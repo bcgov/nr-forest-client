@@ -2,7 +2,6 @@ package ca.bc.gov.app.m.ches.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ca.bc.gov.app.m.ches.service.ChesCommonServicesService;
 import io.swagger.annotations.Api;
+import jakarta.inject.Inject;
 
 
 @Api(tags = "Ches - Common Services")
