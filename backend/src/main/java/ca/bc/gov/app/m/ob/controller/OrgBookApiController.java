@@ -24,7 +24,7 @@ import jakarta.inject.Inject;
 
 @Tag(name =  "OrgBook")
 @RestController
-@RequestMapping("app/m/orgbook/")
+@RequestMapping("/app/m/orgbook")
 public class OrgBookApiController {
 
     public static final Logger logger = LoggerFactory.getLogger(OrgBookApiController.class);

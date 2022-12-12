@@ -23,7 +23,7 @@ import jakarta.inject.Inject;
 @Tag(name =  OraclePersistenceConfiguration.ORACLE_API_TAG)
 @CrossOrigin(origins = "${frontend.url}")
 @RestController
-@RequestMapping("app/m/legacyclient/")
+@RequestMapping("/app/m/legacyclient")
 public class LegacyClientController {
 
 	public static final Logger logger = LoggerFactory.getLogger(LegacyClientController.class);

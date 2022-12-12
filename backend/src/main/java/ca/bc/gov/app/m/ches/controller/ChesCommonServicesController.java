@@ -20,7 +20,7 @@ import jakarta.inject.Inject;
 @Tag(name = "Ches - Common Services")
 @CrossOrigin(origins = "${frontend.url}")
 @RestController
-@RequestMapping("app/m/ches/")
+@RequestMapping("/app/m/ches")
 public class ChesCommonServicesController {
 
     public static final Logger logger = LoggerFactory.getLogger(ChesCommonServicesController.class);

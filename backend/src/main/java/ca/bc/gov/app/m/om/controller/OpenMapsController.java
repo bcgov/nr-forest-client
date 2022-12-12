@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name =  "Open Maps")
 @RestController
-@RequestMapping("app/m/openmaps/")
+@RequestMapping("/app/m/openmaps")
 public class OpenMapsController {
 
     public static final Logger logger = LoggerFactory.getLogger(OpenMapsController.class);

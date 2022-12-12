@@ -18,7 +18,7 @@ import jakarta.inject.Inject;
 
 @Tag(name =  PostgresPersistenceConfiguration.POSTGRES_API_TAG)
 @RestController
-@RequestMapping("app/m/client")
+@RequestMapping("/app/m/client")
 public class ClientController {
 
     public static final Logger logger = LoggerFactory.getLogger(ClientController.class);
