@@ -1,36 +1,20 @@
 package ca.bc.gov.app.core.configuration;
 
-import static springfox.documentation.builders.PathSelectors.regex;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 
 @Configuration
-@EnableSwagger2
 public class SwaggerConfiguration {
 
 	@Bean
-	public Docket applicationApi() {
-		return new Docket(DocumentationType.SWAGGER_2)
-					.apiInfo(apiInfo())
-					.select()
-					.apis(RequestHandlerSelectors.basePackage("ca.bc.gov.app"))
-					.paths(regex("/app/m/.*"))
-					.build();
+	public OpenAPI customOpenAPI() {
+		return new OpenAPI().info(apiInfo());
 	}
 
-	private ApiInfo apiInfo() {
-		return new ApiInfoBuilder()
-					.title("FSA Forest Client")
-					.description("Forest Client Application.")
-					.version("1.0")
-					.build();
+	private Info apiInfo() {
+		return new Info().title("FSA Forest Client").description("Forest Client Application").version("1.0");
 	}
 }

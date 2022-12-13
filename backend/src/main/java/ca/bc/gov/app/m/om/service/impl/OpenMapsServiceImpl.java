@@ -5,8 +5,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,6 +18,7 @@ import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientLocationEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ClientLocationRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ForestClientRepository;
+import jakarta.inject.Inject;
 import ca.bc.gov.app.m.om.vo.FirstNationBandVidationVO;
 
 @Service(OpenMapsService.BEAN_NAME)

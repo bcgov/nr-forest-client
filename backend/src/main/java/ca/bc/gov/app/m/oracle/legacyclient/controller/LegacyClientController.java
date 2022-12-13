@@ -4,8 +4,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.Param;
@@ -18,13 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import ca.bc.gov.app.core.configuration.OraclePersistenceConfiguration;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.service.LegacyClientService;
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 
-@Api(tags = OraclePersistenceConfiguration.ORACLE_API_TAG)
+@Tag(name =  OraclePersistenceConfiguration.ORACLE_API_TAG)
 @CrossOrigin(origins = "${frontend.url}")
 @RestController
-@RequestMapping("app/m/legacyclient/")
+@RequestMapping("/app/m/legacyclient")
 public class LegacyClientController {
 
 	public static final Logger logger = LoggerFactory.getLogger(LegacyClientController.class);

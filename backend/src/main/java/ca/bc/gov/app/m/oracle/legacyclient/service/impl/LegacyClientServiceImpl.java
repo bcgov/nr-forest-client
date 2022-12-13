@@ -3,8 +3,6 @@ package ca.bc.gov.app.m.oracle.legacyclient.service.impl;
 import java.util.Date;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,6 +11,7 @@ import ca.bc.gov.app.core.util.CoreUtil;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ForestClientRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.service.LegacyClientService;
+import jakarta.inject.Inject;
 
 @Service(LegacyClientService.BEAN_NAME)
 public class LegacyClientServiceImpl implements LegacyClientService {
