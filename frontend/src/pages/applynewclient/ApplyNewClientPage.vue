@@ -37,7 +37,6 @@ import SubmitFailText from "./SubmitFailText.vue";
 import SubmitSucessText from "./SubmitSucessText.vue";
 import ConfirmModal from "../../common/ConfirmModal.vue";
 import PrimarySquareButton from "../../common/buttons/PrimarySquareButton.vue";
-import { sendConfirmationEmail } from "../../services/forestClient.service";
 import {
   newClientData,
   commonRequiredFields,
