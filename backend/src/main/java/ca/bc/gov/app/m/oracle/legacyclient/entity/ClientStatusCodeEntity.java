@@ -1,18 +1,15 @@
 package ca.bc.gov.app.m.oracle.legacyclient.entity;
 
-import java.util.Date;
-
+import ca.bc.gov.app.core.configuration.OraclePersistenceConfiguration;
+import ca.bc.gov.app.core.entity.AbstractEntity;
+import ca.bc.gov.app.core.misc.scope.ScopeConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
+import java.util.Date;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import ca.bc.gov.app.core.configuration.OraclePersistenceConfiguration;
-import ca.bc.gov.app.core.entity.AbstractEntity;
-import ca.bc.gov.app.core.misc.scope.ScopeConstant;
 
 @Entity
 @Table(name = "CLIENT_STATUS_CODE", schema = OraclePersistenceConfiguration.ORACLE_ATTRIBUTE_SCHEMA)
@@ -20,99 +17,99 @@ import ca.bc.gov.app.core.misc.scope.ScopeConstant;
 @Scope(ScopeConstant.PROTOTYPE)
 public class ClientStatusCodeEntity implements AbstractEntity {
 
-	private static final long serialVersionUID = 4341025008217142732L;
+  private static final long serialVersionUID = 4341025008217142732L;
 
-	public static final String BEAN_NAME = "clientStatusCodeEntity";
-	
-	public static final String ACTIVE = "ACT";
+  public static final String BEAN_NAME = "clientStatusCodeEntity";
 
-	@Id
-	@Column(name = "CLIENT_STATUS_CODE")
-	private String clientStatusCode;
+  public static final String ACTIVE = "ACT";
 
-	@Column(name = "DESCRIPTION")
-	private String description;
+  @Id
+  @Column(name = "CLIENT_STATUS_CODE")
+  private String clientStatusCode;
 
-	@Column(name = "EFFECTIVE_DATE")
-	private Date effectiveDate;
+  @Column(name = "DESCRIPTION")
+  private String description;
 
-	@Column(name = "EXPIRY_DATE")
-	private Date expiryDate;
+  @Column(name = "EFFECTIVE_DATE")
+  private Date effectiveDate;
 
-	@Column(name = "CREATE_TIMESTAMP")
-	private Date createTimestamp;
+  @Column(name = "EXPIRY_DATE")
+  private Date expiryDate;
 
-	@Column(name = "UPDATE_TIMESTAMP")
-	private Date updateTimestamp;
+  @Column(name = "CREATE_TIMESTAMP")
+  private Date createTimestamp;
 
-	@Column(name = "CREATE_USER")
-	private String createUser;
+  @Column(name = "UPDATE_TIMESTAMP")
+  private Date updateTimestamp;
 
-	@Column(name = "UPDATE_USER")
-	private String updateUser;
+  @Column(name = "CREATE_USER")
+  private String createUser;
 
-	public String getClientStatusCode() {
-		return clientStatusCode;
-	}
+  @Column(name = "UPDATE_USER")
+  private String updateUser;
 
-	public void setClientStatusCode(String clientStatusCode) {
-		this.clientStatusCode = clientStatusCode;
-	}
+  public String getClientStatusCode() {
+    return clientStatusCode;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  public void setClientStatusCode(String clientStatusCode) {
+    this.clientStatusCode = clientStatusCode;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public Date getEffectiveDate() {
-		return effectiveDate;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public void setEffectiveDate(Date effectiveDate) {
-		this.effectiveDate = effectiveDate;
-	}
+  public Date getEffectiveDate() {
+    return effectiveDate;
+  }
 
-	public Date getExpiryDate() {
-		return expiryDate;
-	}
+  public void setEffectiveDate(Date effectiveDate) {
+    this.effectiveDate = effectiveDate;
+  }
 
-	public void setExpiryDate(Date expiryDate) {
-		this.expiryDate = expiryDate;
-	}
+  public Date getExpiryDate() {
+    return expiryDate;
+  }
 
-	public Date getCreateTimestamp() {
-		return createTimestamp;
-	}
+  public void setExpiryDate(Date expiryDate) {
+    this.expiryDate = expiryDate;
+  }
 
-	public void setCreateTimestamp(Date createTimestamp) {
-		this.createTimestamp = createTimestamp;
-	}
+  public Date getCreateTimestamp() {
+    return createTimestamp;
+  }
 
-	public Date getUpdateTimestamp() {
-		return updateTimestamp;
-	}
+  public void setCreateTimestamp(Date createTimestamp) {
+    this.createTimestamp = createTimestamp;
+  }
 
-	public void setUpdateTimestamp(Date updateTimestamp) {
-		this.updateTimestamp = updateTimestamp;
-	}
+  public Date getUpdateTimestamp() {
+    return updateTimestamp;
+  }
 
-	public String getCreateUser() {
-		return createUser;
-	}
+  public void setUpdateTimestamp(Date updateTimestamp) {
+    this.updateTimestamp = updateTimestamp;
+  }
 
-	public void setCreateUser(String createUser) {
-		this.createUser = createUser;
-	}
+  public String getCreateUser() {
+    return createUser;
+  }
 
-	public String getUpdateUser() {
-		return updateUser;
-	}
+  public void setCreateUser(String createUser) {
+    this.createUser = createUser;
+  }
 
-	public void setUpdateUser(String updateUser) {
-		this.updateUser = updateUser;
-	}
+  public String getUpdateUser() {
+    return updateUser;
+  }
+
+  public void setUpdateUser(String updateUser) {
+    this.updateUser = updateUser;
+  }
 
 }
