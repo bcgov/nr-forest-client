@@ -2,23 +2,16 @@ package ca.bc.gov.app.m.postgres.client.entity;
 
 import ca.bc.gov.app.core.configuration.PostgresPersistenceConfiguration;
 import ca.bc.gov.app.core.entity.AbstractCodeDescrEntity;
-import ca.bc.gov.app.core.misc.scope.ScopeConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 @Entity
 @Table(name = "CLIENT_TYPE_CODE", schema = PostgresPersistenceConfiguration.POSTGRES_ATTRIBUTE_SCHEMA)
-@Component(ClientTypeCodeEntity.BEAN_NAME)
-@Scope(ScopeConstant.PROTOTYPE)
 public class ClientTypeCodeEntity extends AbstractCodeDescrEntity {
 
   private static final long serialVersionUID = 8069253248355277428L;
-
-  public static final String BEAN_NAME = "clientTypeCodeEntity";
 
   public static final String INDIVIDUAL = "I";
   public static final String ASSOCIATION = "A";

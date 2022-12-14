@@ -2,24 +2,17 @@ package ca.bc.gov.app.m.oracle.legacyclient.entity;
 
 import ca.bc.gov.app.core.configuration.OraclePersistenceConfiguration;
 import ca.bc.gov.app.core.entity.AbstractEntity;
-import ca.bc.gov.app.core.misc.scope.ScopeConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.Date;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 @Entity
 @Table(name = "CLIENT_STATUS_CODE", schema = OraclePersistenceConfiguration.ORACLE_ATTRIBUTE_SCHEMA)
-@Component(ClientStatusCodeEntity.BEAN_NAME)
-@Scope(ScopeConstant.PROTOTYPE)
 public class ClientStatusCodeEntity implements AbstractEntity {
 
   private static final long serialVersionUID = 4341025008217142732L;
-
-  public static final String BEAN_NAME = "clientStatusCodeEntity";
 
   public static final String ACTIVE = "ACT";
 

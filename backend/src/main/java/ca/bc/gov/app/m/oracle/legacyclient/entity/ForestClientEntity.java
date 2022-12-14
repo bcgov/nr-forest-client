@@ -2,25 +2,18 @@ package ca.bc.gov.app.m.oracle.legacyclient.entity;
 
 import ca.bc.gov.app.core.configuration.OraclePersistenceConfiguration;
 import ca.bc.gov.app.core.entity.AbstractEntity;
-import ca.bc.gov.app.core.misc.scope.ScopeConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.Objects;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 @Entity
 @Table(name = "FOREST_CLIENT", schema = OraclePersistenceConfiguration.ORACLE_ATTRIBUTE_SCHEMA)
-@Component(ForestClientEntity.BEAN_NAME)
-@Scope(ScopeConstant.PROTOTYPE)
 public class ForestClientEntity implements AbstractEntity {
 
   private static final long serialVersionUID = 832879803987592344L;
-
-  public static final String BEAN_NAME = "forestClientEntity";
 
   @Id
   @Column(name = "CLIENT_NUMBER")
@@ -272,15 +265,15 @@ public class ForestClientEntity implements AbstractEntity {
 
   @Override
   public boolean equals(Object obj) {
-      if (this == obj) {
-          return true;
-      }
-      if (obj == null) {
-          return false;
-      }
-      if (getClass() != obj.getClass()) {
-          return false;
-      }
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
     ForestClientEntity other = (ForestClientEntity) obj;
     return Objects.equals(clientNumber, other.clientNumber);
   }

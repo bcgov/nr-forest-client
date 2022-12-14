@@ -2,7 +2,6 @@ package ca.bc.gov.app.m.postgres.client.entity;
 
 import ca.bc.gov.app.core.configuration.PostgresPersistenceConfiguration;
 import ca.bc.gov.app.core.entity.AbstractEntity;
-import ca.bc.gov.app.core.misc.scope.ScopeConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,18 +12,12 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.Objects;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 @Entity
 @Table(name = "SUBMISSION", schema = PostgresPersistenceConfiguration.POSTGRES_ATTRIBUTE_SCHEMA)
-@Component(SubmissionEntity.BEAN_NAME)
-@Scope(ScopeConstant.PROTOTYPE)
 public class SubmissionEntity implements AbstractEntity {
 
   private static final long serialVersionUID = -8966248654104607818L;
-
-  public static final String BEAN_NAME = "submissionEntity";
 
   @Id
   @GeneratedValue(generator = "SEQ_SUBMISSION")
@@ -117,15 +110,15 @@ public class SubmissionEntity implements AbstractEntity {
 
   @Override
   public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
     SubmissionEntity other = (SubmissionEntity) obj;
     return Objects.equals(submissionId, other.submissionId);
   }

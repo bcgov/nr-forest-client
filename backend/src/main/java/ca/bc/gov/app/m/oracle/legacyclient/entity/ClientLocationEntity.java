@@ -2,25 +2,18 @@ package ca.bc.gov.app.m.oracle.legacyclient.entity;
 
 import ca.bc.gov.app.core.configuration.OraclePersistenceConfiguration;
 import ca.bc.gov.app.core.entity.AbstractEntity;
-import ca.bc.gov.app.core.misc.scope.ScopeConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.Objects;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 @Entity
 @Table(name = "CLIENT_LOCATION", schema = OraclePersistenceConfiguration.ORACLE_ATTRIBUTE_SCHEMA)
-@Component(ClientLocationEntity.BEAN_NAME)
-@Scope(ScopeConstant.PROTOTYPE)
 public class ClientLocationEntity implements AbstractEntity {
 
   private static final long serialVersionUID = -1795480401567670619L;
-
-  public static final String BEAN_NAME = "clientLocationEntity";
 
   @Id
   @Column(name = "CLIENT_NUMBER")
@@ -327,15 +320,15 @@ public class ClientLocationEntity implements AbstractEntity {
 
   @Override
   public boolean equals(Object obj) {
-      if (this == obj) {
-          return true;
-      }
-      if (obj == null) {
-          return false;
-      }
-      if (getClass() != obj.getClass()) {
-          return false;
-      }
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
     ClientLocationEntity other = (ClientLocationEntity) obj;
     return Objects.equals(clientNumber, other.clientNumber);
   }

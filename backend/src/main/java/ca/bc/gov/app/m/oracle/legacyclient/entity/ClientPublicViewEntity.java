@@ -2,25 +2,17 @@ package ca.bc.gov.app.m.oracle.legacyclient.entity;
 
 import ca.bc.gov.app.core.configuration.OraclePersistenceConfiguration;
 import ca.bc.gov.app.core.entity.AbstractEntity;
-import ca.bc.gov.app.core.misc.scope.ScopeConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.Objects;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 @Entity
 @Table(name = "V_CLIENT_PUBLIC", schema = OraclePersistenceConfiguration.ORACLE_ATTRIBUTE_SCHEMA)
-@Component(ClientPublicViewEntity.BEAN_NAME)
-@Scope(ScopeConstant.PROTOTYPE)
 public class ClientPublicViewEntity implements AbstractEntity {
 
   private static final long serialVersionUID = -3060423136744818530L;
-
-  public static final String BEAN_NAME = "clientPublicViewEntity";
-
   @Id
   @Column(name = "CLIENT_NUMBER")
   private String clientNumber;
@@ -95,15 +87,15 @@ public class ClientPublicViewEntity implements AbstractEntity {
 
   @Override
   public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
     ClientPublicViewEntity other = (ClientPublicViewEntity) obj;
     return Objects.equals(clientNumber, other.clientNumber);
   }
