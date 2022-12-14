@@ -4,18 +4,18 @@ import ca.bc.gov.app.core.util.CoreUtil;
 import ca.bc.gov.app.core.vo.CodeDescrVO;
 import ca.bc.gov.app.m.postgres.client.entity.ClientTypeCodeEntity;
 import ca.bc.gov.app.m.postgres.client.repository.ClientTypeCodeRepository;
-import jakarta.inject.Inject;
 import java.util.Date;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ClientService {
 
-  @Inject
+  @Autowired
   private CoreUtil coreUtil;
 
-  @Inject
+  @Autowired
   private ClientTypeCodeRepository clientTypeCodeRepository;
 
 

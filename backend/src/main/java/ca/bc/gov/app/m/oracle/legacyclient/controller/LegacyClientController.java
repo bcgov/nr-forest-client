@@ -7,10 +7,10 @@ import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.service.LegacyClientService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.inject.Inject;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +26,7 @@ public class LegacyClientController {
 
   public static final Logger logger = LoggerFactory.getLogger(LegacyClientController.class);
 
-  @Inject
+  @Autowired
   private LegacyClientService legacyClientService;
 
   @RequestMapping(value = "/findClientByIncorporationNumberOrName", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)

@@ -7,7 +7,6 @@ import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ForestClientRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.vo.ClientPublicViewVO;
-import jakarta.inject.Inject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -20,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,13 +30,13 @@ public class OrgBookApiService {
 
   public static final Logger logger = LoggerFactory.getLogger(OrgBookApiService.class);
 
-  @Inject
+  @Autowired
   private CoreUtil coreUtil;
 
-  @Inject
+  @Autowired
   private ClientDoingBusinessAsRepository clientDoingBusinessAsRepository;
 
-  @Inject
+  @Autowired
   private ForestClientRepository forestClientRepository;
 
 

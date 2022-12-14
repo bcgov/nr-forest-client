@@ -16,7 +16,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -74,7 +73,7 @@ public class CoreUtil {
 
   public String fromStringListToCsvWithAposthrophe(String csvString) {
     List<String> tempList = fromCsvToStringList(csvString);
-    if (CollectionUtils.isEmpty(tempList)) {
+    if (tempList.isEmpty()) {
       return null;
     }
     String finalStr = null;
@@ -126,7 +125,7 @@ public class CoreUtil {
     }
   }
 
-  public boolean isSame(String value1, String value2){
+  public boolean isSame(String value1, String value2) {
     return
         StringUtils.isNotBlank(value1) &&
             StringUtils.isNotBlank(value2) &&

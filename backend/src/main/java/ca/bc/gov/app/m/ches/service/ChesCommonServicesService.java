@@ -3,13 +3,13 @@ package ca.bc.gov.app.m.ches.service;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.client.response.OAuthJSONAccessTokenResponse;
 import org.apache.oltu.oauth2.common.OAuth;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
-import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -65,13 +65,13 @@ public class ChesCommonServicesService {
 
       String url = System.getenv("CHES_API_URL") + "/email";
 
-      JSONObject request = new JSONObject();
-      request.put("bodyType", "html");
-      request.put("body", emailBody);
-      request.put("from", "FSA_donotreply@gov.bc.ca");
-      request.put("subject", "Forest Client Application Confirmation");
-      List<String> emailToList = List.of(emailTo.replaceAll("\\s", "").split(","));
-      request.put("to", emailToList);
+      Map request = Map.of(
+          "bodyType", "html",
+          "body", emailBody,
+          "from", "FSA_donotreply@gov.bc.ca",
+          "subject", "Forest Client Application Confirmation",
+          "to", List.of(emailTo.replaceAll("\\s", "").split(","))
+      );
 
       HttpEntity<String> entity = new HttpEntity<String>(request.toString(), headers);
       String response = restTemplate.postForObject(toURI(url), entity, String.class);

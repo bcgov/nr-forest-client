@@ -17,7 +17,7 @@ public class OpenMapsController {
 
   public static final Logger logger = LoggerFactory.getLogger(OpenMapsController.class);
 //
-//    @Inject
+//    @Autowired
 //    private OpenMapsService dataValidationService;
 //
 //    @ApiOperation(value = "This method is used to get the current date.", hidden = true)
