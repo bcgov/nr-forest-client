@@ -1,111 +1,103 @@
 package ca.bc.gov.app.m.oracle.legacyclient.entity;
 
-import java.util.Objects;
-
+import ca.bc.gov.app.core.configuration.OraclePersistenceConfiguration;
+import ca.bc.gov.app.core.entity.AbstractEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import ca.bc.gov.app.core.configuration.OraclePersistenceConfiguration;
-import ca.bc.gov.app.core.entity.AbstractEntity;
-import ca.bc.gov.app.core.misc.scope.ScopeConstant;
+import java.util.Objects;
 
 @Entity
 @Table(name = "V_CLIENT_PUBLIC", schema = OraclePersistenceConfiguration.ORACLE_ATTRIBUTE_SCHEMA)
-@Component(ClientPublicViewEntity.BEAN_NAME)
-@Scope(ScopeConstant.PROTOTYPE)
 public class ClientPublicViewEntity implements AbstractEntity {
 
-	private static final long serialVersionUID = -3060423136744818530L;
+  private static final long serialVersionUID = -3060423136744818530L;
+  @Id
+  @Column(name = "CLIENT_NUMBER")
+  private String clientNumber;
 
-	public static final String BEAN_NAME = "clientPublicViewEntity";
+  @Column(name = "CLIENT_NAME")
+  private String clientName;
 
-	@Id
-	@Column(name = "CLIENT_NUMBER")
-	private String clientNumber;
+  @Column(name = "LEGAL_FIRST_NAME")
+  private String legalFirstName;
 
-	@Column(name = "CLIENT_NAME")
-	private String clientName;
+  @Column(name = "LEGAL_MIDDLE_NAME")
+  private String legalMiddleName;
 
-	@Column(name = "LEGAL_FIRST_NAME")
-	private String legalFirstName;
+  @Column(name = "CLIENT_STATUS_CODE")
+  private String clientStatusCode;
 
-	@Column(name = "LEGAL_MIDDLE_NAME")
-	private String legalMiddleName;
+  @Column(name = "CLIENT_TYPE_CODE")
+  private String clientTypeCode;
 
-	@Column(name = "CLIENT_STATUS_CODE")
-	private String clientStatusCode;
+  public String getClientNumber() {
+    return clientNumber;
+  }
 
-	@Column(name = "CLIENT_TYPE_CODE")
-	private String clientTypeCode;
+  public void setClientNumber(String clientNumber) {
+    this.clientNumber = clientNumber;
+  }
 
-	public String getClientNumber() {
-		return clientNumber;
-	}
+  public String getClientName() {
+    return clientName;
+  }
 
-	public void setClientNumber(String clientNumber) {
-		this.clientNumber = clientNumber;
-	}
+  public void setClientName(String clientName) {
+    this.clientName = clientName;
+  }
 
-	public String getClientName() {
-		return clientName;
-	}
+  public String getLegalFirstName() {
+    return legalFirstName;
+  }
 
-	public void setClientName(String clientName) {
-		this.clientName = clientName;
-	}
+  public void setLegalFirstName(String legalFirstName) {
+    this.legalFirstName = legalFirstName;
+  }
 
-	public String getLegalFirstName() {
-		return legalFirstName;
-	}
+  public String getLegalMiddleName() {
+    return legalMiddleName;
+  }
 
-	public void setLegalFirstName(String legalFirstName) {
-		this.legalFirstName = legalFirstName;
-	}
+  public void setLegalMiddleName(String legalMiddleName) {
+    this.legalMiddleName = legalMiddleName;
+  }
 
-	public String getLegalMiddleName() {
-		return legalMiddleName;
-	}
+  public String getClientStatusCode() {
+    return clientStatusCode;
+  }
 
-	public void setLegalMiddleName(String legalMiddleName) {
-		this.legalMiddleName = legalMiddleName;
-	}
+  public void setClientStatusCode(String clientStatusCode) {
+    this.clientStatusCode = clientStatusCode;
+  }
 
-	public String getClientStatusCode() {
-		return clientStatusCode;
-	}
+  public String getClientTypeCode() {
+    return clientTypeCode;
+  }
 
-	public void setClientStatusCode(String clientStatusCode) {
-		this.clientStatusCode = clientStatusCode;
-	}
+  public void setClientTypeCode(String clientTypeCode) {
+    this.clientTypeCode = clientTypeCode;
+  }
 
-	public String getClientTypeCode() {
-		return clientTypeCode;
-	}
+  @Override
+  public int hashCode() {
+    return Objects.hash(clientNumber);
+  }
 
-	public void setClientTypeCode(String clientTypeCode) {
-		this.clientTypeCode = clientTypeCode;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(clientNumber);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ClientPublicViewEntity other = (ClientPublicViewEntity) obj;
-		return Objects.equals(clientNumber, other.clientNumber);
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    ClientPublicViewEntity other = (ClientPublicViewEntity) obj;
+    return Objects.equals(clientNumber, other.clientNumber);
+  }
 
 }
