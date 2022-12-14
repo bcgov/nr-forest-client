@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 public interface CodeDescr extends Serializable {
 
-	String getCode();
-	String getDescription();
-	
+  String getCode();
+
+  String getDescription();
+
 }

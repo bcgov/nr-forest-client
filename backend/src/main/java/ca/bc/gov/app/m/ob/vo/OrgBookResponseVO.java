@@ -5,18 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class OrgBookResponseVO {
-
+public record OrgBookResponseVO(
     @JsonProperty("results")
-    public List<ResultVO> results;
-    
-    public static class ResultVO implements Serializable {
-
-		private static final long serialVersionUID = 3398116613645404989L;
-		
-		public String value;
-		public String topic_source_id;
-    }
-    //TODO: Add more fields
-    
-}
+    List<ResultVO> results
+){}
