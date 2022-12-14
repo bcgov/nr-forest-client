@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <FormFieldTemplate :fieldProps="fieldProps">
     <b-card
       v-for="(row, rowIndex) in data"
       :key="row.index"
@@ -21,14 +21,16 @@
       />
     </b-card>
     <PrimarySquareButton :text="addButtonText" @click="addRow()" />
-  </div>
+  </FormFieldTemplate>
 </template>
 
 <script setup lang="ts">
 import type { PropType } from "vue";
+import FormFieldTemplate from "./FormFieldTemplate.vue";
 import FormComponentOptions from "./FormComponentOptions.vue";
 import PrimarySquareButton from "./buttons/PrimarySquareButton.vue";
 import type {
+  FormFieldTemplateType,
   FormComponentSchemaType,
   CommonObjectType,
 } from "../core/AppType";
@@ -44,6 +46,7 @@ const props = defineProps({
     type: Array as PropType<Array<CommonObjectType>>,
     required: true,
   },
+  fieldProps: Object as PropType<FormFieldTemplateType>,
 });
 
 const emit = defineEmits(["updateFormArrayValue", "addRow", "deleteRow"]);

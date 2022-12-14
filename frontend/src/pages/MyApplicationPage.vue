@@ -1,12 +1,12 @@
 <template>
   <div style="margin: 24px">
     My application list
-    <!-- <CommonComponentExamples /> -->
+    <!-- <FormJsonSchemaExample /> -->
   </div>
 </template>
 
 <script setup lang="ts">
-// import CommonComponentExamples from "../common/CommonComponentExamples.vue";
+// import FormJsonSchemaExample from "../common/examples/FormJsonSchemaExample.vue";
 </script>
 
 <script lang="ts">
