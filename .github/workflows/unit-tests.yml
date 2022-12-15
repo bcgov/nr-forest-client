@@ -50,7 +50,7 @@ jobs:
             npm run test
           dir: frontend
           sonar_args: >
-            -Dsonar.exclusions=**/coverage/**,**/node_modules/**
+            -Dsonar.exclusions=**/coverage/**,**/examples/**
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-frontend
           sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
