@@ -1,28 +1,38 @@
 package ca.bc.gov.app.m.postgres.client.service;
 
-import ca.bc.gov.app.core.util.CoreUtil;
-import ca.bc.gov.app.core.vo.CodeDescrVO;
+import ca.bc.gov.app.core.dto.CodeDescrDTO;
 import ca.bc.gov.app.m.postgres.client.entity.ClientTypeCodeEntity;
 import ca.bc.gov.app.m.postgres.client.repository.ClientTypeCodeRepository;
-import java.util.Date;
+import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ClientService {
+  private final ClientTypeCodeRepository clientTypeCodeRepository;
 
-  @Autowired
-  private CoreUtil coreUtil;
-
-  @Autowired
-  private ClientTypeCodeRepository clientTypeCodeRepository;
-
-
-  public List<CodeDescrVO> findActiveClientTypeCodes() {
-    Date currentTime = coreUtil.getCurrentTime();
-    List<ClientTypeCodeEntity> clientTypeCodes = clientTypeCodeRepository.findActiveAt(currentTime);
-    return coreUtil.toSortedCodeDescrVOs(clientTypeCodes);
+  public List<CodeDescrDTO> findActiveClientTypeCodes() {
+    return
+        clientTypeCodeRepository
+            .findActiveAt(
+                Calendar
+                    .getInstance()
+                    .getTime()
+            )
+            .stream()
+            .sorted(Comparator.comparing(ClientTypeCodeEntity::getDescription))
+            .map(entity -> new CodeDescrDTO(
+                entity.getCode(),
+                entity.getDescription(),
+                entity.getEffectiveDate(),
+                entity.getExpiryDate(),
+                null)
+            )
+            .collect(Collectors.toList());
   }
 
 }

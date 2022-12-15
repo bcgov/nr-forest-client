@@ -15,10 +15,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
     basePackages = "ca.bc.gov.app.m.oracle")
 public class OraclePersistenceConfiguration {
 
-  public final static String ORACLE_ATTRIBUTE_SCHEMA_QUALIFIER = "THE.";
-  public final static String ORACLE_ATTRIBUTE_SCHEMA = "THE";
-  public static final String ORACLE_API_TAG = "Legacy Client";
-
   @Bean(name = "oracleDataSource")
   @ConfigurationProperties(prefix = "oracle.datasource")
   public DataSource dataSource() {

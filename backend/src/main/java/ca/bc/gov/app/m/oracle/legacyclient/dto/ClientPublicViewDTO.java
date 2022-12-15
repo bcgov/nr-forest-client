@@ -1,8 +1,8 @@
-package ca.bc.gov.app.m.oracle.legacyclient.vo;
+package ca.bc.gov.app.m.oracle.legacyclient.dto;
 
 import org.apache.commons.lang3.StringUtils;
 
-public record ClientPublicViewVO(
+public record ClientPublicViewDTO(
     String clientNumber,
     String incorporationNumber,
     String clientName,

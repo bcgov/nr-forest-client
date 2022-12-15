@@ -1,8 +1,8 @@
-package ca.bc.gov.app.m.om.vo;
+package ca.bc.gov.app.m.om.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record PropertyVO(
+public record PropertyDTO(
     @JsonProperty("FIRST_NATION_FEDERAL_NAME") String firstNationFederalName,
     @JsonProperty("FIRST_NATION_FEDERAL_ID") String firstNationFederalId,
     @JsonProperty("ADDRESS_LINE1") String addressLine1,

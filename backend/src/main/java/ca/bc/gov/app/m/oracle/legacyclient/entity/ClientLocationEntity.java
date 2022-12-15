@@ -1,19 +1,25 @@
 package ca.bc.gov.app.m.oracle.legacyclient.entity;
 
-import ca.bc.gov.app.core.configuration.OraclePersistenceConfiguration;
-import ca.bc.gov.app.core.entity.AbstractEntity;
+import ca.bc.gov.app.core.CoreConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.Date;
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.With;
 
 @Entity
-@Table(name = "CLIENT_LOCATION", schema = OraclePersistenceConfiguration.ORACLE_ATTRIBUTE_SCHEMA)
-public class ClientLocationEntity implements AbstractEntity {
-
-  private static final long serialVersionUID = -1795480401567670619L;
+@Table(name = "CLIENT_LOCATION", schema = CoreConstant.ORACLE_ATTRIBUTE_SCHEMA)
+@Data
+@Builder
+@With
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClientLocationEntity {
 
   @Id
   @Column(name = "CLIENT_NUMBER")
@@ -96,241 +102,5 @@ public class ClientLocationEntity implements AbstractEntity {
 
   @Column(name = "REVISION_COUNT")
   private Long revisionCount;
-
-  public String getClientNumber() {
-    return clientNumber;
-  }
-
-  public void setClientNumber(String clientNumber) {
-    this.clientNumber = clientNumber;
-  }
-
-  public String getClientLocnCode() {
-    return clientLocnCode;
-  }
-
-  public void setClientLocnCode(String clientLocnCode) {
-    this.clientLocnCode = clientLocnCode;
-  }
-
-  public String getClientLocnName() {
-    return clientLocnName;
-  }
-
-  public void setClientLocnName(String clientLocnName) {
-    this.clientLocnName = clientLocnName;
-  }
-
-  public String getHdbsCompanyCode() {
-    return hdbsCompanyCode;
-  }
-
-  public void setHdbsCompanyCode(String hdbsCompanyCode) {
-    this.hdbsCompanyCode = hdbsCompanyCode;
-  }
-
-  public String getAddressOne() {
-    return addressOne;
-  }
-
-  public void setAddressOne(String addressOne) {
-    this.addressOne = addressOne;
-  }
-
-  public String getAddressTwo() {
-    return addressTwo;
-  }
-
-  public void setAddressTwo(String addressTwo) {
-    this.addressTwo = addressTwo;
-  }
-
-  public String getAddressThree() {
-    return addressThree;
-  }
-
-  public void setAddressThree(String addressThree) {
-    this.addressThree = addressThree;
-  }
-
-  public String getCity() {
-    return city;
-  }
-
-  public void setCity(String city) {
-    this.city = city;
-  }
-
-  public String getProvince() {
-    return province;
-  }
-
-  public void setProvince(String province) {
-    this.province = province;
-  }
-
-  public String getPostalCode() {
-    return postalCode;
-  }
-
-  public void setPostalCode(String postalCode) {
-    this.postalCode = postalCode;
-  }
-
-  public String getCountry() {
-    return country;
-  }
-
-  public void setCountry(String country) {
-    this.country = country;
-  }
-
-  public String getBusinessPhone() {
-    return businessPhone;
-  }
-
-  public void setBusinessPhone(String businessPhone) {
-    this.businessPhone = businessPhone;
-  }
-
-  public String getHomePhone() {
-    return homePhone;
-  }
-
-  public void setHomePhone(String homePhone) {
-    this.homePhone = homePhone;
-  }
-
-  public String getCellPhone() {
-    return cellPhone;
-  }
-
-  public void setCellPhone(String cellPhone) {
-    this.cellPhone = cellPhone;
-  }
-
-  public String getFaxNumber() {
-    return faxNumber;
-  }
-
-  public void setFaxNumber(String faxNumber) {
-    this.faxNumber = faxNumber;
-  }
-
-  public String getEmailAddress() {
-    return emailAddress;
-  }
-
-  public void setEmailAddress(String emailAddress) {
-    this.emailAddress = emailAddress;
-  }
-
-  public String getLocnExpiredInd() {
-    return locnExpiredInd;
-  }
-
-  public void setLocnExpiredInd(String locnExpiredInd) {
-    this.locnExpiredInd = locnExpiredInd;
-  }
-
-  public Date getReturnedMailDate() {
-    return returnedMailDate;
-  }
-
-  public void setReturnedMailDate(Date returnedMailDate) {
-    this.returnedMailDate = returnedMailDate;
-  }
-
-  public String getTrustLocationInd() {
-    return trustLocationInd;
-  }
-
-  public void setTrustLocationInd(String trustLocationInd) {
-    this.trustLocationInd = trustLocationInd;
-  }
-
-  public String getCliLocnComment() {
-    return cliLocnComment;
-  }
-
-  public void setCliLocnComment(String cliLocnComment) {
-    this.cliLocnComment = cliLocnComment;
-  }
-
-  public Date getUpdateTimestamp() {
-    return updateTimestamp;
-  }
-
-  public void setUpdateTimestamp(Date updateTimestamp) {
-    this.updateTimestamp = updateTimestamp;
-  }
-
-  public String getUpdateUserId() {
-    return updateUserId;
-  }
-
-  public void setUpdateUserId(String updateUserId) {
-    this.updateUserId = updateUserId;
-  }
-
-  public Long getUpdateOrgUnit() {
-    return updateOrgUnit;
-  }
-
-  public void setUpdateOrgUnit(Long updateOrgUnit) {
-    this.updateOrgUnit = updateOrgUnit;
-  }
-
-  public Date getAddTimestamp() {
-    return addTimestamp;
-  }
-
-  public void setAddTimestamp(Date addTimestamp) {
-    this.addTimestamp = addTimestamp;
-  }
-
-  public String getAddUserId() {
-    return addUserId;
-  }
-
-  public void setAddUserId(String addUserId) {
-    this.addUserId = addUserId;
-  }
-
-  public Long getAddOrgUnit() {
-    return addOrgUnit;
-  }
-
-  public void setAddOrgUnit(Long addOrgUnit) {
-    this.addOrgUnit = addOrgUnit;
-  }
-
-  public Long getRevisionCount() {
-    return revisionCount;
-  }
-
-  public void setRevisionCount(Long revisionCount) {
-    this.revisionCount = revisionCount;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(clientNumber);
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    ClientLocationEntity other = (ClientLocationEntity) obj;
-    return Objects.equals(clientNumber, other.clientNumber);
-  }
 
 }

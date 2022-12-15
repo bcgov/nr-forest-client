@@ -45,4 +45,12 @@ public final class CoreConstant {
   public static final String FILE_EXTENSION_PDF = "pdf";
   public static final String FILE_EXTENSION_ZIP = "zip";
 
+  public static final String ORACLE_ATTRIBUTE_SCHEMA_QUALIFIER = "THE.";
+  public static final String ORACLE_ATTRIBUTE_SCHEMA = "THE";
+  public static final String ORACLE_API_TAG = "Legacy Client";
+  public static final String POSTGRES_ATTRIBUTE_SCHEMA_QUALIFIER = "nrfc.";
+  public static final String POSTGRES_ATTRIBUTE_SCHEMA = "nrfc";
+  public static final String POSTGRES_API_TAG = "Client";
+
+  public static final String DATE_FORMAT = "yyyy-MM-dd";
 }

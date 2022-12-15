@@ -1,9 +1,9 @@
-package ca.bc.gov.app.core.vo;
+package ca.bc.gov.app.core.dto;
 
 import java.util.Date;
 
 
-public record CodeDescrVO(
+public record CodeDescrDTO(
     String code,
     String description,
     Date effectiveDate,

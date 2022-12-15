@@ -1,18 +1,24 @@
 package ca.bc.gov.app.m.oracle.legacyclient.entity;
 
-import ca.bc.gov.app.core.configuration.OraclePersistenceConfiguration;
-import ca.bc.gov.app.core.entity.AbstractEntity;
+import ca.bc.gov.app.core.CoreConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.With;
 
 @Entity
-@Table(name = "V_CLIENT_PUBLIC", schema = OraclePersistenceConfiguration.ORACLE_ATTRIBUTE_SCHEMA)
-public class ClientPublicViewEntity implements AbstractEntity {
-
-  private static final long serialVersionUID = -3060423136744818530L;
+@Table(name = "V_CLIENT_PUBLIC", schema = CoreConstant.ORACLE_ATTRIBUTE_SCHEMA)
+@Data
+@Builder
+@With
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClientPublicViewEntity {
   @Id
   @Column(name = "CLIENT_NUMBER")
   private String clientNumber;
@@ -31,73 +37,5 @@ public class ClientPublicViewEntity implements AbstractEntity {
 
   @Column(name = "CLIENT_TYPE_CODE")
   private String clientTypeCode;
-
-  public String getClientNumber() {
-    return clientNumber;
-  }
-
-  public void setClientNumber(String clientNumber) {
-    this.clientNumber = clientNumber;
-  }
-
-  public String getClientName() {
-    return clientName;
-  }
-
-  public void setClientName(String clientName) {
-    this.clientName = clientName;
-  }
-
-  public String getLegalFirstName() {
-    return legalFirstName;
-  }
-
-  public void setLegalFirstName(String legalFirstName) {
-    this.legalFirstName = legalFirstName;
-  }
-
-  public String getLegalMiddleName() {
-    return legalMiddleName;
-  }
-
-  public void setLegalMiddleName(String legalMiddleName) {
-    this.legalMiddleName = legalMiddleName;
-  }
-
-  public String getClientStatusCode() {
-    return clientStatusCode;
-  }
-
-  public void setClientStatusCode(String clientStatusCode) {
-    this.clientStatusCode = clientStatusCode;
-  }
-
-  public String getClientTypeCode() {
-    return clientTypeCode;
-  }
-
-  public void setClientTypeCode(String clientTypeCode) {
-    this.clientTypeCode = clientTypeCode;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(clientNumber);
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    ClientPublicViewEntity other = (ClientPublicViewEntity) obj;
-    return Objects.equals(clientNumber, other.clientNumber);
-  }
 
 }

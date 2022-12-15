@@ -1,10 +1,10 @@
-package ca.bc.gov.app.m.om.vo;
+package ca.bc.gov.app.m.om.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-public record OpenMapsResponseVO(
+public record OpenMapsResponseDTO(
     @JsonProperty("features")
-    List<FeatureVO> features
+    List<FeatureDTO> features
 ) {
 }

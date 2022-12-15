@@ -3,7 +3,7 @@ package ca.bc.gov.app.m.postgres.client.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
-import ca.bc.gov.app.core.vo.CodeDescrVO;
+import ca.bc.gov.app.core.dto.CodeDescrDTO;
 import ca.bc.gov.app.m.postgres.client.entity.ClientTypeCodeEntity;
 import java.util.Arrays;
 import java.util.Date;
@@ -23,7 +23,7 @@ public class ClientControllerTest {
   private ClientController clientController;
 
   private ClientTypeCodeEntity clientTypeCode;
-  private CodeDescrVO codeDescrVO;
+  private CodeDescrDTO codeDescrDTO;
 
   @BeforeEach
   public void setup() throws Exception {
@@ -36,20 +36,20 @@ public class ClientControllerTest {
     clientTypeCode.setEffectiveDate(today);
     clientTypeCode.setExpiryDate(tomorrow);
 
-    codeDescrVO = new CodeDescrVO(clientTypeCode.getCode(), clientTypeCode.getDescription(),
+    codeDescrDTO = new CodeDescrDTO(clientTypeCode.getCode(), clientTypeCode.getDescription(),
         clientTypeCode.getEffectiveDate(), clientTypeCode.getExpiryDate(), null);
   }
 
   @Test
   public void testFindActiveClientTypeCodes() {
-    List<CodeDescrVO> result = Arrays.asList(codeDescrVO);
+    List<CodeDescrDTO> result = Arrays.asList(codeDescrDTO);
 
     // given
     given(clientController.findActiveClientTypeCodes())
         .willReturn(result);
 
     // when
-    List<CodeDescrVO> activeClientTypes = clientController.findActiveClientTypeCodes();
+    List<CodeDescrDTO> activeClientTypes = clientController.findActiveClientTypeCodes();
 
     // then
     assertThat(activeClientTypes).isNotNull();

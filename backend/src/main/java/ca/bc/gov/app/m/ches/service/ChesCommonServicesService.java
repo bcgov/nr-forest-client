@@ -4,14 +4,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.client.response.OAuthJSONAccessTokenResponse;
 import org.apache.oltu.oauth2.common.OAuth;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,9 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@Slf4j
 public class ChesCommonServicesService {
-
-  public static final Logger logger = LoggerFactory.getLogger(ChesCommonServicesService.class);
 
   private URI toURI(String uri) {
     try {
@@ -48,7 +46,7 @@ public class ChesCommonServicesService {
 
       return token;
     } catch (Exception e) {
-      logger.error("Failed to get email authentication token" + e.toString());
+      log.error("Failed to get email authentication token" + e.toString());
       return "";
     }
 
@@ -79,7 +77,7 @@ public class ChesCommonServicesService {
       return ResponseEntity.ok(response);
 
     } catch (Exception e) {
-      logger.error("Failed to send email" + e.toString());
+      log.error("Failed to send email" + e.toString());
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

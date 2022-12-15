@@ -7,13 +7,10 @@ import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,15 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "OrgBook")
 @RestController
 @RequestMapping("/app/m/orgbook")
+@RequiredArgsConstructor
 public class OrgBookApiController {
 
-  public static final Logger logger = LoggerFactory.getLogger(OrgBookApiController.class);
+  private final OrgBookApiService orgBookApiService;
 
-  @Autowired
-  private OrgBookApiService orgBookApiService;
-
-  @RequestMapping(value = "/findByIncorporationNumber",
-      method = RequestMethod.GET,
+  @GetMapping(value = "/findByIncorporationNumber",
       produces = APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> findByIncorporationNumber(
       @RequestParam("incorporationNumber") String incorporationNumber) {

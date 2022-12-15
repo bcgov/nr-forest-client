@@ -1,8 +1,8 @@
 package ca.bc.gov.app.m.om.service;
 
 import ca.bc.gov.app.core.util.CoreUtil;
-import ca.bc.gov.app.m.om.vo.FirstNationBandVidationVO;
-import ca.bc.gov.app.m.om.vo.OpenMapsResponseVO;
+import ca.bc.gov.app.m.om.dto.FirstNationBandValidationDTO;
+import ca.bc.gov.app.m.om.dto.OpenMapsResponseDTO;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientLocationEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ClientLocationRepository;
@@ -11,26 +11,20 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class OpenMapsService {
 
-  @Autowired
-  private ForestClientRepository forestClientRepository;
-
-  @Autowired
-  private ClientLocationRepository clientLocationRepository;
-
-  @Autowired
-  private CoreUtil coreUtil;
-
-  public static final Logger logger = LoggerFactory.getLogger(OpenMapsService.class);
+  private final ForestClientRepository forestClientRepository;
+  private final ClientLocationRepository clientLocationRepository;
+  private final CoreUtil coreUtil;
 
   private URI toURI(String uri) {
     try {
@@ -40,7 +34,7 @@ public class OpenMapsService {
     }
   }
 
-  private OpenMapsResponseVO checkSourceFirstNationId(String firstNationId) {
+  private OpenMapsResponseDTO checkSourceFirstNationId(String firstNationId) {
 
     try {
       String url =
@@ -50,23 +44,23 @@ public class OpenMapsService {
       RestTemplate restTemplate = new RestTemplate();
       String restCallResponse = restTemplate.getForObject(toURI(url), String.class);
 
-      OpenMapsResponseVO response =
-          coreUtil.jsonStringToObj(restCallResponse, OpenMapsResponseVO.class);
+      OpenMapsResponseDTO response =
+          coreUtil.jsonStringToObj(restCallResponse, OpenMapsResponseDTO.class);
 
       return response;
 
     } catch (RuntimeException e) {
-      logger.error("Failed to get source data for " + firstNationId + e.toString());
+      log.error("Failed to get source data for " + firstNationId + e.toString());
       return null;
     }
 
   }
 
-  public List<FirstNationBandVidationVO> validateFirstNationBand() {
+  public List<FirstNationBandValidationDTO> validateFirstNationBand() {
 
     List<ForestClientEntity> clients = forestClientRepository.findAllFirstNationBandClients();
 
-    List<FirstNationBandVidationVO> firstNationBands = new ArrayList<>();
+    List<FirstNationBandValidationDTO> firstNationBands = new ArrayList<>();
     int notFound = 0;
     int match = 0;
     int partialMatch = 0;
@@ -77,14 +71,17 @@ public class OpenMapsService {
 
     for (ForestClientEntity client : clients) {
       if (client.getCorpRegnNmbr() != null) {
-        OpenMapsResponseVO response = checkSourceFirstNationId(client.getCorpRegnNmbr());
+        OpenMapsResponseDTO response = checkSourceFirstNationId(client.getCorpRegnNmbr());
         ClientLocationEntity clientLocation = clientLocationRepository
             .findByClientNumber(client.getClientNumber());
         if (!CollectionUtils.isEmpty(response.features())) {
-          FirstNationBandVidationVO firstNationBand =
-              new FirstNationBandVidationVO(client.getClientNumber(),
-                  client.getCorpRegnNmbr(), client.getClientName(),
+          FirstNationBandValidationDTO firstNationBand =
+              new FirstNationBandValidationDTO(
+                  client.getClientNumber(),
+                  client.getCorpRegnNmbr(),
+                  client.getClientName(),
                   response.features().get(0).properties().firstNationFederalName(),
+                  null,
                   clientLocation.getAddressOne(),
                   response.features().get(0).properties().addressLine1(),
                   clientLocation.getAddressTwo(),
@@ -93,46 +90,77 @@ public class OpenMapsService {
                   clientLocation.getProvince(),
                   response.features().get(0).properties().officeProvince(),
                   clientLocation.getPostalCode(),
-                  response.features().get(0).properties().officePostalCode());
+                  response.features().get(0).properties().officePostalCode(),
+                  null
+              );
 
           firstNationBands.add(firstNationBand);
-          if (firstNationBand.nameMatch && firstNationBand.addressMatch) {
+          if (firstNationBand.nameMatch() && firstNationBand.addressMatch()) {
             match += 1;
             nameMatch += 1;
             addressMatch += 1;
-          } else if (firstNationBand.nameMatch) {
+          } else if (firstNationBand.nameMatch()) {
             nameMatch += 1;
             partialMatch += 1;
-          } else if (firstNationBand.addressMatch) {
+          } else if (firstNationBand.addressMatch()) {
             addressMatch += 1;
             partialMatch += 1;
           } else {
             notMatch += 1;
           }
         } else {
-          FirstNationBandVidationVO firstNationBand = new FirstNationBandVidationVO();
-          firstNationBand.clientNumber = client.getClientNumber();
-          firstNationBand.corpRegnNmbr = client.getCorpRegnNmbr();
-          firstNationBand.clientName = client.getClientName();
+          FirstNationBandValidationDTO firstNationBand =
+              new FirstNationBandValidationDTO(
+                  client.getClientNumber(),
+                  client.getCorpRegnNmbr(),
+                  client.getClientName(),
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+              );
           notFound += 1;
           firstNationBands.add(firstNationBand);
         }
       } else {
-        FirstNationBandVidationVO firstNationBand = new FirstNationBandVidationVO();
-        firstNationBand.clientNumber = client.getClientNumber();
-        firstNationBand.corpRegnNmbr = client.getCorpRegnNmbr();
-        firstNationBand.clientName = client.getClientName();
+        FirstNationBandValidationDTO firstNationBand = new FirstNationBandValidationDTO(
+            client.getClientNumber(),
+            client.getCorpRegnNmbr(),
+            client.getClientName(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
         notFound += 1;
         firstNationBands.add(firstNationBand);
       }
     }
 
-    logger.info("not found: " + notFound);
-    logger.info("match: " + match);
-    logger.info("nameMatch: " + nameMatch);
-    logger.info("addressMatch: " + addressMatch);
-    logger.info("partialMatch: " + partialMatch);
-    logger.info("notMatch: " + notMatch);
+    log.info("not found: " + notFound);
+    log.info("match: " + match);
+    log.info("nameMatch: " + nameMatch);
+    log.info("addressMatch: " + addressMatch);
+    log.info("partialMatch: " + partialMatch);
+    log.info("notMatch: " + notMatch);
 
     return firstNationBands;
 

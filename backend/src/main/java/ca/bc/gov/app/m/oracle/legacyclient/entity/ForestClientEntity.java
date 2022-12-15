@@ -1,19 +1,25 @@
 package ca.bc.gov.app.m.oracle.legacyclient.entity;
 
-import ca.bc.gov.app.core.configuration.OraclePersistenceConfiguration;
-import ca.bc.gov.app.core.entity.AbstractEntity;
+import ca.bc.gov.app.core.CoreConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.Date;
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.With;
 
 @Entity
-@Table(name = "FOREST_CLIENT", schema = OraclePersistenceConfiguration.ORACLE_ATTRIBUTE_SCHEMA)
-public class ForestClientEntity implements AbstractEntity {
-
-  private static final long serialVersionUID = 832879803987592344L;
+@Table(name = "FOREST_CLIENT", schema = CoreConstant.ORACLE_ATTRIBUTE_SCHEMA)
+@Data
+@Builder
+@With
+@NoArgsConstructor
+@AllArgsConstructor
+public class ForestClientEntity {
 
   @Id
   @Column(name = "CLIENT_NUMBER")
@@ -81,201 +87,5 @@ public class ForestClientEntity implements AbstractEntity {
 
   @Column(name = "REVISION_COUNT")
   private Long revisionCount;
-
-  public String getClientNumber() {
-    return clientNumber;
-  }
-
-  public void setClientNumber(String clientNumber) {
-    this.clientNumber = clientNumber;
-  }
-
-  public String getClientName() {
-    return clientName;
-  }
-
-  public void setClientName(String clientName) {
-    this.clientName = clientName;
-  }
-
-  public String getLegalFirstName() {
-    return legalFirstName;
-  }
-
-  public void setLegalFirstName(String legalFirstName) {
-    this.legalFirstName = legalFirstName;
-  }
-
-  public String getLegalMiddleName() {
-    return legalMiddleName;
-  }
-
-  public void setLegalMiddleName(String legalMiddleName) {
-    this.legalMiddleName = legalMiddleName;
-  }
-
-  public String getClientStatusCode() {
-    return clientStatusCode;
-  }
-
-  public void setClientStatusCode(String clientStatusCode) {
-    this.clientStatusCode = clientStatusCode;
-  }
-
-  public String getClientTypeCode() {
-    return clientTypeCode;
-  }
-
-  public void setClientTypeCode(String clientTypeCode) {
-    this.clientTypeCode = clientTypeCode;
-  }
-
-  public Date getBirthdate() {
-    return birthdate;
-  }
-
-  public void setBirthdate(Date birthdate) {
-    this.birthdate = birthdate;
-  }
-
-  public String getClientIdTypeCode() {
-    return clientIdTypeCode;
-  }
-
-  public void setClientIdTypeCode(String clientIdTypeCode) {
-    this.clientIdTypeCode = clientIdTypeCode;
-  }
-
-  public String getClientIdentification() {
-    return clientIdentification;
-  }
-
-  public void setClientIdentification(String clientIdentification) {
-    this.clientIdentification = clientIdentification;
-  }
-
-  public String getRegistryCompanyTypeCode() {
-    return registryCompanyTypeCode;
-  }
-
-  public void setRegistryCompanyTypeCode(String registryCompanyTypeCode) {
-    this.registryCompanyTypeCode = registryCompanyTypeCode;
-  }
-
-  public String getCorpRegnNmbr() {
-    return corpRegnNmbr;
-  }
-
-  public void setCorpRegnNmbr(String corpRegnNmbr) {
-    this.corpRegnNmbr = corpRegnNmbr;
-  }
-
-  public String getClientAcronym() {
-    return clientAcronym;
-  }
-
-  public void setClientAcronym(String clientAcronym) {
-    this.clientAcronym = clientAcronym;
-  }
-
-  public String getWcbFirmNumber() {
-    return wcbFirmNumber;
-  }
-
-  public void setWcbFirmNumber(String wcbFirmNumber) {
-    this.wcbFirmNumber = wcbFirmNumber;
-  }
-
-  public String getOcgSupplierNmbr() {
-    return ocgSupplierNmbr;
-  }
-
-  public void setOcgSupplierNmbr(String ocgSupplierNmbr) {
-    this.ocgSupplierNmbr = ocgSupplierNmbr;
-  }
-
-  public String getClientComment() {
-    return clientComment;
-  }
-
-  public void setClientComment(String clientComment) {
-    this.clientComment = clientComment;
-  }
-
-  public Date getAddTimestamp() {
-    return addTimestamp;
-  }
-
-  public void setAddTimestamp(Date addTimestamp) {
-    this.addTimestamp = addTimestamp;
-  }
-
-  public String getAddUserId() {
-    return addUserId;
-  }
-
-  public void setAddUserId(String addUserId) {
-    this.addUserId = addUserId;
-  }
-
-  public Number getAddOrgUnit() {
-    return addOrgUnit;
-  }
-
-  public void setAddOrgUnit(Long addOrgUnit) {
-    this.addOrgUnit = addOrgUnit;
-  }
-
-  public Date getUpdateTimestamp() {
-    return updateTimestamp;
-  }
-
-  public void setUpdateTimestamp(Date updateTimestamp) {
-    this.updateTimestamp = updateTimestamp;
-  }
-
-  public String getUpdateUserId() {
-    return updateUserId;
-  }
-
-  public void setUpdateUserId(String updateUserId) {
-    this.updateUserId = updateUserId;
-  }
-
-  public Number getUpdateOrgUnit() {
-    return updateOrgUnit;
-  }
-
-  public void setUpdateOrgUnit(Long updateOrgUnit) {
-    this.updateOrgUnit = updateOrgUnit;
-  }
-
-  public Number getRevisionCount() {
-    return revisionCount;
-  }
-
-  public void setRevisionCount(Long revisionCount) {
-    this.revisionCount = revisionCount;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(clientNumber);
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    ForestClientEntity other = (ForestClientEntity) obj;
-    return Objects.equals(clientNumber, other.clientNumber);
-  }
 
 }

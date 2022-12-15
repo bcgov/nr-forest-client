@@ -1,4 +1,4 @@
-package ca.bc.gov.app.m.oracle.legacyclient.vo;
+package ca.bc.gov.app.m.oracle.legacyclient.dto;
 
 /**
  * @author Maria Martinez, Government of BC
@@ -6,7 +6,7 @@ package ca.bc.gov.app.m.oracle.legacyclient.vo;
  * @created 2022-11-03
  */
 
-public record ClientPublicFilterObjectVO(
+public record ClientPublicFilterObjectDTO(
     String clientName,
     String clientFirstName,
     String clientMiddleName,

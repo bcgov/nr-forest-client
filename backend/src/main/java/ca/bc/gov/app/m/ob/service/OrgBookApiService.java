@@ -1,12 +1,12 @@
 package ca.bc.gov.app.m.ob.service;
 
 import ca.bc.gov.app.core.util.CoreUtil;
-import ca.bc.gov.app.m.ob.vo.OrgBookResponseVO;
+import ca.bc.gov.app.m.ob.dto.OrgBookResponseDTO;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ForestClientRepository;
-import ca.bc.gov.app.m.oracle.legacyclient.vo.ClientPublicViewVO;
+import ca.bc.gov.app.m.oracle.legacyclient.dto.ClientPublicViewDTO;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -17,30 +17,24 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class OrgBookApiService {
 
-  public static final Logger logger = LoggerFactory.getLogger(OrgBookApiService.class);
-
-  @Autowired
-  private CoreUtil coreUtil;
-
-  @Autowired
-  private ClientDoingBusinessAsRepository clientDoingBusinessAsRepository;
-
-  @Autowired
-  private ForestClientRepository forestClientRepository;
+  private final CoreUtil coreUtil;
+  private final ClientDoingBusinessAsRepository clientDoingBusinessAsRepository;
+  private final ForestClientRepository forestClientRepository;
 
 
-  public OrgBookResponseVO findByClientName(String clientName) {
+  public OrgBookResponseDTO findByClientName(String clientName) {
     String uri;
     try {
       uri = "https://orgbook.gov.bc.ca/api/v3/search/autocomplete?q=" +
@@ -52,10 +46,10 @@ public class OrgBookApiService {
     RestTemplate restTemplate = new RestTemplate();
     String restCallResponse = restTemplate.getForObject(toURI(uri), String.class);
 
-    OrgBookResponseVO response =
-        coreUtil.jsonStringToObj(restCallResponse, OrgBookResponseVO.class);
+    OrgBookResponseDTO response =
+        coreUtil.jsonStringToObj(restCallResponse, OrgBookResponseDTO.class);
 
-    logger.info("Results: " + response.results());
+    log.info("Results: " + response.results());
 
     return response;
   }
@@ -68,11 +62,11 @@ public class OrgBookApiService {
     RestTemplate restTemplate = new RestTemplate();
     String restCallResponse = restTemplate.getForObject(toURI(url), String.class);
 
-    OrgBookResponseVO response =
-        coreUtil.jsonStringToObj(restCallResponse, OrgBookResponseVO.class);
+    OrgBookResponseDTO response =
+        coreUtil.jsonStringToObj(restCallResponse, OrgBookResponseDTO.class);
 
-    logger.info("Response: " + response.toString());
-    logger.info("Results: " + response.results());
+    log.info("Response: " + response.toString());
+    log.info("Results: " + response.results());
 
     return ResponseEntity.ok(response);
   }
@@ -92,7 +86,7 @@ public class OrgBookApiService {
 
     Long count = clientDoingBusinessAsRepository.countAll();
     List<ClientDoingBusinessAsEntity> doingBusinessClients = new ArrayList<>();
-    List<ClientPublicViewVO> clients = new ArrayList<>();
+    List<ClientPublicViewDTO> clients = new ArrayList<>();
 
     int take = 10;
     int numberOfPages = (int) Math.ceil(count / take);
@@ -103,11 +97,11 @@ public class OrgBookApiService {
     }
 
     for (ClientDoingBusinessAsEntity clientDoingBusinessAsEntity : doingBusinessClients) {
-      OrgBookResponseVO orgBookResponseVO = this.findByClientName(
+      OrgBookResponseDTO orgBookResponseDTO = this.findByClientName(
           clientDoingBusinessAsEntity.getDoingBusinessAsName());
 
       clients.add(
-          new ClientPublicViewVO(
+          new ClientPublicViewDTO(
               clientDoingBusinessAsEntity.getClientNumber(),
               null,
               clientDoingBusinessAsEntity.getDoingBusinessAsName(),
@@ -115,14 +109,14 @@ public class OrgBookApiService {
               null,
               null,
               null,
-              !orgBookResponseVO.results().isEmpty() ?
-                  orgBookResponseVO.results().get(0).value() :
+              !orgBookResponseDTO.results().isEmpty() ?
+                  orgBookResponseDTO.results().get(0).value() :
                   null
           )
       );
     }
 
-    //logger.info(coreUtil.objToJsonString(clients));
+    //log.info(coreUtil.objToJsonString(clients));
     String content = coreUtil.objToJsonString(clients);
     String path = "C:/repo/a.txt";
     try {
@@ -131,8 +125,8 @@ public class OrgBookApiService {
       e.printStackTrace();
     }
 
-    logger.info("Started at " + startedDate);
-    logger.info("Finished at " + new Date());
+    log.info("Started at " + startedDate);
+    log.info("Finished at " + new Date());
     return doingBusinessClients;
   }
 
@@ -142,7 +136,7 @@ public class OrgBookApiService {
 
     Long count = forestClientRepository.countAll();
     List<ForestClientEntity> unregisteredCompanies = new ArrayList<>();
-    List<ClientPublicViewVO> clients = new ArrayList<>();
+    List<ClientPublicViewDTO> clients = new ArrayList<>();
 
     int take = 10;
     int numberOfPages = (int) Math.ceil(count / take);
@@ -153,18 +147,18 @@ public class OrgBookApiService {
     }
 
     for (ForestClientEntity forestClientEntity : unregisteredCompanies) {
-      OrgBookResponseVO orgBookResponseVO =
+      OrgBookResponseDTO orgBookResponseDTO =
           this.findByClientName(forestClientEntity.getClientName());
 
-      String nameInOrgBook = !orgBookResponseVO.results().isEmpty() ?
-          orgBookResponseVO.results().get(0).value() :
+      String nameInOrgBook = !orgBookResponseDTO.results().isEmpty() ?
+          orgBookResponseDTO.results().get(0).value() :
           null;
 
-      clients.add(new ClientPublicViewVO(
+      clients.add(new ClientPublicViewDTO(
           forestClientEntity.getClientNumber(),
           coreUtil
               .isSame(forestClientEntity.getClientName(), nameInOrgBook) ?
-              orgBookResponseVO.results().get(0).topic_source_id() :
+              orgBookResponseDTO.results().get(0).topic_source_id() :
               null
           ,
           forestClientEntity.getClientName(),
@@ -184,8 +178,8 @@ public class OrgBookApiService {
       e.printStackTrace();
     }
 
-    logger.info("Started at " + startedDate);
-    logger.info("Finished at " + new Date());
+    log.info("Started at " + startedDate);
+    log.info("Finished at " + new Date());
     return unregisteredCompanies;
   }
 
