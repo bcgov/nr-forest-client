@@ -48,17 +48,17 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import FormInput from "./FormInput.vue";
-import FormSelect from "./FormSelect.vue";
-import FormCheckboxGroup from "./FormCheckboxGroup.vue";
-import FormRadioGroup from "./FormRadioGroup.vue";
-import CollapseCard from "./CollapseCard.vue";
+import FormInput from "../FormInput.vue";
+import FormSelect from "../FormSelect.vue";
+import FormCheckboxGroup from "../FormCheckboxGroup.vue";
+import FormRadioGroup from "../FormRadioGroup.vue";
+import CollapseCard from "../CollapseCard.vue";
 import type {
   FormFieldTemplateType,
   FromSelectOptionType,
   FormCheckBoxGroupOptionType,
   FormRadioGroupOptionType,
-} from "../core/AppType";
+} from "../../core/AppType";
 
 /* ------- form data ----------- */
 const form = ref({

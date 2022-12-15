@@ -35,7 +35,7 @@ parameters:
   - name: CPU_LIMIT
     value: 25m
   - name: MEMORY_REQUEST
-    value: 30Mi
+    value: 50Mi
   - name: MEMORY_LIMIT
     value: 150Mi
   - name: VITE_NODE_ENV
