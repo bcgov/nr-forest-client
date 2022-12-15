@@ -30,18 +30,18 @@ public class LegacyClientController {
   private LegacyClientService legacyClientService;
 
   @GetMapping(value = "/findClientByIncorporationNumberOrName", produces = APPLICATION_JSON_VALUE)
-  public List<ForestClientEntity> findClientByIncorporationOrName(
-      @Param("incorporationNumber") String incorporationNumber,
-      @Param("companyName") String companyName) {
+	public List<ForestClientEntity> findClientByIncorporationOrName(
+			@Parameter(name = "incorporationNumber") @RequestParam(required = false) String incorporationNumber,
+			@Parameter(name = "companyName") @RequestParam(required = false) String companyName) {
 
-    return legacyClientService.findClientByIncorporationOrName(incorporationNumber, companyName);
-  }
+		return legacyClientService.findClientByIncorporationOrName(incorporationNumber, companyName);
+	}
 
-  @GetMapping(value = "/findClientByNameAndBirthdate", produces = APPLICATION_JSON_VALUE)
+  @RequestMapping(value = "/findClientByNameAndBirthdate", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
   public List<ForestClientEntity> findClientByNameAndBirthdate(
       @RequestParam("firstName") String firstName,
       @RequestParam("lastName") String lastName,
-      @Parameter(name = "birthdate", description = "in the format of yyyy-mm-dd")
+      @Parameter(name = "birthdate", required = true, description = "in the format of yyyy-mm-dd")
       String birthdate) {
 
     return legacyClientService.findClientByNameAndBirthdate(firstName, lastName, birthdate);
