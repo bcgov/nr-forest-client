@@ -37,7 +37,7 @@ public class LegacyClientController {
 		return legacyClientService.findClientByIncorporationOrName(incorporationNumber, companyName);
 	}
 
-  @RequestMapping(value = "/findClientByNameAndBirthdate", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/findClientByNameAndBirthdate", produces = APPLICATION_JSON_VALUE)
   public List<ForestClientEntity> findClientByNameAndBirthdate(
       @RequestParam("firstName") String firstName,
       @RequestParam("lastName") String lastName,
