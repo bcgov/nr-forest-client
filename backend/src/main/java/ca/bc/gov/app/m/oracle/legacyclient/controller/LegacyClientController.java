@@ -11,7 +11,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,19 +29,22 @@ public class LegacyClientController {
   private LegacyClientService legacyClientService;
 
   @GetMapping(value = "/findClientByIncorporationNumberOrName", produces = APPLICATION_JSON_VALUE)
-	public List<ForestClientEntity> findClientByIncorporationOrName(
-			@Parameter(name = "incorporationNumber") @RequestParam(required = false) String incorporationNumber,
-			@Parameter(name = "companyName") @RequestParam(required = false) String companyName) {
+  public List<ForestClientEntity> findClientByIncorporationOrName(
+      @Parameter(name = "incorporationNumber") @RequestParam(required = false)
+      String incorporationNumber,
+      @Parameter(name = "companyName") @RequestParam(required = false) String companyName) {
 
-		return legacyClientService.findClientByIncorporationOrName(incorporationNumber, companyName);
-	}
+    return legacyClientService.findClientByIncorporationOrName(incorporationNumber, companyName);
+  }
 
-	@RequestMapping(value = "/findClientByNameAndBirthdate", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
-	public List<ForestClientEntity> findClientByNameAndBirthdate(@RequestParam("firstName") String firstName,
-			@RequestParam("lastName") String lastName,
-			@Parameter(name = "birthdate", description = "in the format of yyyy-mm-dd") String birthdate) {
+  @GetMapping(value = "/findClientByNameAndBirthdate", produces = APPLICATION_JSON_VALUE)
+  public List<ForestClientEntity> findClientByNameAndBirthdate(
+      @RequestParam("firstName") String firstName,
+      @RequestParam("lastName") String lastName,
+      @Parameter(name = "birthdate", description = "in the format of yyyy-mm-dd")
+      String birthdate) {
 
-		return legacyClientService.findClientByNameAndBirthdate(firstName, lastName, birthdate);
-	}
+    return legacyClientService.findClientByNameAndBirthdate(firstName, lastName, birthdate);
+  }
 
 }
