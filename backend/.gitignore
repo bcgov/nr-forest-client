@@ -220,3 +220,7 @@ buildNumber.properties
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/java,maven,eclipse,intellij+all,visualstudiocode
+
+### User related configuration
+# The below expression will prevent user specific configuration files from being added to the repository
+config/application-dev-*.yml
