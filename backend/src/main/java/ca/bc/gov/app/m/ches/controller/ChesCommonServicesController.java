@@ -3,6 +3,7 @@ package ca.bc.gov.app.m.ches.controller;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import ca.bc.gov.app.m.ches.service.ChesCommonServicesService;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +23,20 @@ public class ChesCommonServicesController {
 
   private final ChesCommonServicesService chesEmailService;
 
-  @PostMapping(value = "/sendEmail",
-      produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> sendEmail(@RequestParam("emailTo") String emailTo,
-                                          @RequestParam("emailBody") String emailBody) {
+  @PostMapping(
+      value = "/sendEmail",
+      produces = APPLICATION_JSON_VALUE
+  )
+  public ResponseEntity<Object> sendEmail(
+
+      @Parameter(name = "Email Destination", description = "Email address of the person that should receive the email")
+      @RequestParam("emailTo")
+      String emailTo,
+
+      @Parameter(name = "Email Content", description = "Email body that will be sent to the destination address")
+      @RequestParam("emailBody")
+      String emailBody
+  ) {
     return chesEmailService.sendEmail(emailTo, emailBody);
   }
 

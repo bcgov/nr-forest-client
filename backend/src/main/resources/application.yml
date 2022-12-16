@@ -1,0 +1,84 @@
+server:
+  port: 3000
+
+ca:
+  bc:
+    gov:
+      datasource:
+        oracle:
+          driverClassName: oracle.jdbc.OracleDriver
+          jdbcUrl: jdbc:oracle:thin:@tcps://${ORACLEDB_HOST}:${ORACLEDB_PORT}/${ORACLEDB_SERVICENAME}
+          url: ${ca.bc.gov.datasource.oracle.jdbcUrl}
+          username: ${ORACLEDB_USER:user}
+          password: ${ORACLEDB_PASSWORD:passwd}
+          hikari:
+            connectionTimeout: ${spring.datasource.hikari.connectionTimeout}
+            idleTimeout: ${spring.datasource.hikari.connectionTimeout}
+            maxLifetime: ${spring.datasource.hikari.connectionTimeout}
+            keepaliveTime: ${spring.datasource.hikari.connectionTimeout}
+            poolName: Oc${spring.datasource.hikari.connectionTimeout}
+            minimumIdle: ${spring.datasource.hikari.connectionTimeout}
+            maximumPoolSize: ${spring.datasource.hikari.connectionTimeout}
+        postgres:
+          jdbcUrl: jdbc:postgresql://${POSTGRESQL_HOST:localhost}:5432/${POSTGRESQL_DATABASE:fsa-forest}
+          username: ${POSTGRESQL_USER:user}
+          password: ${POSTGRESQL_PASSWORD:passwd}
+          hikari:
+            connectionTimeout: ${spring.datasource.hikari.connectionTimeout}
+            idleTimeout: ${spring.datasource.hikari.idleTimeout}
+            maxLifetime: ${spring.datasource.hikari.maxLifetime}
+            keepaliveTime: ${spring.datasource.hikari.keepaliveTime}
+            poolName: Pg${spring.datasource.hikari.poolName}
+            minimumIdle: ${spring.datasource.hikari.minimumIdle}
+            maximumPoolSize: ${spring.datasource.hikari.maximumPoolSize}
+
+spring:
+  application:
+    name: FSA Forest Client
+  main:
+    lazy-initialization: false
+    banner-mode: "off"
+    allow-bean-definition-overriding: true
+  jpa:
+    show-sql: false
+    properties:
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: ENABLE_SELECTIVE
+  datasource:
+    url: ${ca.bc.gov.datasource.postgres.url}
+    username: ${ca.bc.gov.datasource.postgres.username}
+    password: ${ca.bc.gov.datasource.postgres.password}
+    hikari:
+      connectionTimeout: 90000
+      idleTimeout: 45000
+      maxLifetime: 60000
+      keepaliveTime: 30000
+      poolName: FsaClientConPool
+      minimumIdle: 1
+      maximumPoolSize: 3
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: "*"
+  httpexchanges:
+    recording:
+      include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
+
+springdoc:
+  webjars:
+    prefix: /v3
+  api-docs:
+    groups:
+      enabled: true
+  show-actuator: false
+
+frontend:
+  url: ${FRONTEND_URL:*}
