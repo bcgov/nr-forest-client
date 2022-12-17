@@ -40,7 +40,7 @@ jobs:
   tests-backend:
     name: Backend Unit Tests
     needs: changedfiles
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft || ${{needs.changedfiles.outputs.backend}}
+    if: ${{needs.changedfiles.outputs.backend}} && (github.event_name != 'pull_request' || !github.event.pull_request.draft)
     runs-on: ubuntu-22.04
     steps:
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
@@ -60,7 +60,7 @@ jobs:
   tests-frontend:
     name: Frontend Unit Tests
     needs: changedfiles
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft || ${{needs.changedfiles.outputs.frontend}}
+    if: ${{needs.changedfiles.outputs.frontend}} && (github.event_name != 'pull_request' || !github.event.pull_request.draft)
     runs-on: ubuntu-22.04
     steps:
       - uses: bcgov-nr/action-test-and-analyse@v0.0.1
