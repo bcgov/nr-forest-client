@@ -19,28 +19,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  changedfiles:
-    runs-on: ubuntu-latest  
-    outputs:
-      backend: ${{ steps.changes.outputs.backend}}
-      frontend: ${{ steps.changes.outputs.frontend}}
-      database: ${{ steps.changes.outputs.database}}
-      documentation: ${{ steps.changes.outputs.documentation}}
-    steps:        
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Get changed files
-        id: changes        
-        run: |
-          echo "::set-output name=backend::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep backend | xargs)"
-          echo "::set-output name=frontend::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep frontend | xargs)"
-          echo "::set-output name=database::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep database | xargs)"
-          echo "::set-output name=documentation::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep docs/ | xargs)"
-
   tests-backend:
     name: Backend Unit Tests
-    needs: changedfiles
-    if: ${{needs.changedfiles.outputs.backend}} && (github.event_name != 'pull_request' || !github.event.pull_request.draft)
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
@@ -59,8 +40,7 @@ jobs:
 
   tests-frontend:
     name: Frontend Unit Tests
-    needs: changedfiles
-    if: ${{needs.changedfiles.outputs.frontend}} && (github.event_name != 'pull_request' || !github.event.pull_request.draft)
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
       - uses: bcgov-nr/action-test-and-analyse@v0.0.1
