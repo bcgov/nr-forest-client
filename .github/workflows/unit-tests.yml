@@ -59,6 +59,7 @@ jobs:
 
   tests-frontend:
     name: Frontend Unit Tests
+    needs: changedfiles
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft || ${{needs.changedfiles.outputs.frontend}}
     runs-on: ubuntu-22.04
     steps:
