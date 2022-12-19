@@ -3,7 +3,7 @@ package ca.bc.gov.app.m.postgres.client.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
-import ca.bc.gov.app.core.dto.CodeDescrDTO;
+import ca.bc.gov.app.dto.CodeDescrDTO;
 import ca.bc.gov.app.m.postgres.client.entity.ClientTypeCodeEntity;
 import java.util.Arrays;
 import java.util.Date;

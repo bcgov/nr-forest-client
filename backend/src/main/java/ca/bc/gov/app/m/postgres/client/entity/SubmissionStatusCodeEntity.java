@@ -1,6 +1,6 @@
 package ca.bc.gov.app.m.postgres.client.entity;
 
-import ca.bc.gov.app.core.CoreConstant;
+import ca.bc.gov.app.ApplicationConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 @Entity
-@Table(name = "SUBMISSION_STATUS_CODE", schema = CoreConstant.POSTGRES_ATTRIBUTE_SCHEMA)
+@Table(name = "SUBMISSION_STATUS_CODE", schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
 @Data
 @Builder
 @NoArgsConstructor

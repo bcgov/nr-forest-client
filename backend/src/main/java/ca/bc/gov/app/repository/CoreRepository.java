@@ -1,4 +1,4 @@
-package ca.bc.gov.app.core.repository;
+package ca.bc.gov.app.repository;
 
 import java.io.Serializable;
 import org.springframework.data.jpa.repository.JpaRepository;

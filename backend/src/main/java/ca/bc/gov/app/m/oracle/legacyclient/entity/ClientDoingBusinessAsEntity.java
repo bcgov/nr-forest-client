@@ -1,6 +1,6 @@
 package ca.bc.gov.app.m.oracle.legacyclient.entity;
 
-import ca.bc.gov.app.core.CoreConstant;
+import ca.bc.gov.app.ApplicationConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 @Entity
-@Table(name = "CLIENT_DOING_BUSINESS_AS", schema = CoreConstant.ORACLE_ATTRIBUTE_SCHEMA)
+@Table(name = "CLIENT_DOING_BUSINESS_AS", schema = ApplicationConstant.ORACLE_ATTRIBUTE_SCHEMA)
 @Data
 @Builder
 @With

@@ -1,8 +1,8 @@
 package ca.bc.gov.app.m.oracle.legacyclient.service;
 
-import static ca.bc.gov.app.core.CoreConstant.DATE_FORMAT;
+import static ca.bc.gov.app.ApplicationConstant.DATE_FORMAT;
 
-import ca.bc.gov.app.core.util.CoreUtil;
+import ca.bc.gov.app.util.CoreUtil;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.repository.ForestClientRepository;
 import java.util.Date;

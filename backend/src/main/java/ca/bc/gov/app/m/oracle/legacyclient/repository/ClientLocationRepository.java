@@ -1,6 +1,6 @@
 package ca.bc.gov.app.m.oracle.legacyclient.repository;
 
-import ca.bc.gov.app.core.repository.CoreRepository;
+import ca.bc.gov.app.repository.CoreRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientLocationEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

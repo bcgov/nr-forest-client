@@ -1,6 +1,6 @@
 package ca.bc.gov.app.m.postgres.client.service;
 
-import ca.bc.gov.app.core.dto.CodeDescrDTO;
+import ca.bc.gov.app.dto.CodeDescrDTO;
 import ca.bc.gov.app.m.postgres.client.entity.ClientTypeCodeEntity;
 import ca.bc.gov.app.m.postgres.client.repository.ClientTypeCodeRepository;
 import java.util.Calendar;

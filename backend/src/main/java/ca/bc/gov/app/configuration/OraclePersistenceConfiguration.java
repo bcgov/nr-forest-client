@@ -1,4 +1,4 @@
-package ca.bc.gov.app.core.configuration;
+package ca.bc.gov.app.configuration;
 
 import jakarta.persistence.EntityManagerFactory;
 import java.util.HashMap;

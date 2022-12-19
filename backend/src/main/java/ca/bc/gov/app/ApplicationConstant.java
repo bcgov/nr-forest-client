@@ -1,6 +1,6 @@
-package ca.bc.gov.app.core;
+package ca.bc.gov.app;
 
-public final class CoreConstant {
+public final class ApplicationConstant {
 
   public static final String EMPTY_STRING = "";
   public static final String IND_YES = "Y";

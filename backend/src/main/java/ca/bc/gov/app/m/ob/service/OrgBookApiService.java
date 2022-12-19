@@ -1,6 +1,6 @@
 package ca.bc.gov.app.m.ob.service;
 
-import ca.bc.gov.app.core.util.CoreUtil;
+import ca.bc.gov.app.util.CoreUtil;
 import ca.bc.gov.app.m.ob.dto.OrgBookResponseDTO;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;

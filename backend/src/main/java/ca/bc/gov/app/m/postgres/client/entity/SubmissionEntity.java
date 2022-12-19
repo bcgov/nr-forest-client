@@ -1,6 +1,6 @@
 package ca.bc.gov.app.m.postgres.client.entity;
 
-import ca.bc.gov.app.core.CoreConstant;
+import ca.bc.gov.app.ApplicationConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 @Entity
-@Table(name = "SUBMISSION", schema = CoreConstant.POSTGRES_ATTRIBUTE_SCHEMA)
+@Table(name = "SUBMISSION", schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,7 +27,7 @@ public class SubmissionEntity {
   @Id
   @GeneratedValue(generator = "SEQ_SUBMISSION")
   @SequenceGenerator(name = "SEQ_SUBMISSION",
-      sequenceName = CoreConstant.POSTGRES_ATTRIBUTE_SCHEMA_QUALIFIER +
+      sequenceName = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA_QUALIFIER +
           "SUBMISSION_ID_SEQ",
       allocationSize = 1)
   @Column(name = "SUBMISSION_ID", nullable = false, precision = 10, scale = 0)

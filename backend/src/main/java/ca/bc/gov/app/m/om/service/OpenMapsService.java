@@ -1,6 +1,6 @@
 package ca.bc.gov.app.m.om.service;
 
-import ca.bc.gov.app.core.util.CoreUtil;
+import ca.bc.gov.app.util.CoreUtil;
 import ca.bc.gov.app.m.om.dto.FirstNationBandValidationDTO;
 import ca.bc.gov.app.m.om.dto.OpenMapsResponseDTO;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientLocationEntity;
