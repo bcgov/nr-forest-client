@@ -1,6 +1,6 @@
 package ca.bc.gov.app.m.postgres.client.repository;
 
-import ca.bc.gov.app.core.repository.CoreRepository;
+import ca.bc.gov.app.repository.CoreRepository;
 import ca.bc.gov.app.m.postgres.client.entity.ClientTypeCodeEntity;
 import java.util.Date;
 import java.util.List;

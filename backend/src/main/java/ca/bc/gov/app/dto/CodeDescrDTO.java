@@ -1,4 +1,4 @@
-package ca.bc.gov.app.core.dto;
+package ca.bc.gov.app.dto;
 
 import java.util.Date;
 

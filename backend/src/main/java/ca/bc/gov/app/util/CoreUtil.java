@@ -1,4 +1,4 @@
-package ca.bc.gov.app.core.util;
+package ca.bc.gov.app.util;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

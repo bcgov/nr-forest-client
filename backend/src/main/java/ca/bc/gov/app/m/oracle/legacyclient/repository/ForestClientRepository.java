@@ -1,6 +1,6 @@
 package ca.bc.gov.app.m.oracle.legacyclient.repository;
 
-import ca.bc.gov.app.core.repository.CoreRepository;
+import ca.bc.gov.app.repository.CoreRepository;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ClientStatusCodeEntity;
 import ca.bc.gov.app.m.oracle.legacyclient.entity.ForestClientEntity;
 import ca.bc.gov.app.m.postgres.client.entity.ClientTypeCodeEntity;
