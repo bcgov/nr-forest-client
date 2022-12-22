@@ -3,12 +3,22 @@ package ca.bc.gov.app.service.ches;
 import ca.bc.gov.app.configuration.ChesConfiguration;
 import ca.bc.gov.app.dto.ches.ChesMailBodyType;
 import ca.bc.gov.app.dto.ches.ChesMailEncoding;
+import ca.bc.gov.app.dto.ches.ChesMailErrorResponse;
 import ca.bc.gov.app.dto.ches.ChesMailPriority;
 import ca.bc.gov.app.dto.ches.ChesMailRequest;
 import ca.bc.gov.app.dto.ches.ChesMailResponse;
 import ca.bc.gov.app.dto.ches.ChesRequest;
+import ca.bc.gov.app.exception.BadRequestException;
 import ca.bc.gov.app.exception.CannotExtractTokenException;
+import ca.bc.gov.app.exception.InvalidAccessTokenException;
+import ca.bc.gov.app.exception.InvalidRoleException;
+import ca.bc.gov.app.exception.UnableToProcessRequestException;
+import ca.bc.gov.app.exception.UnexpectedErrorException;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
@@ -17,8 +27,10 @@ import org.apache.oltu.oauth2.client.response.OAuthJSONAccessTokenResponse;
 import org.apache.oltu.oauth2.common.OAuth;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -28,9 +40,10 @@ import reactor.core.publisher.Mono;
 public class ChesCommonServicesService {
 
   private final ChesConfiguration configuration;
-  private final OAuthClient oauthClient = new OAuthClient(new URLConnectionClient());
   private final WebClient webClient = WebClient.builder().build();
 
+  @Setter
+  private OAuthClient oauthClient = new OAuthClient(new URLConnectionClient());
 
   public Mono<String> sendEmail(ChesRequest requestContent) {
 
@@ -56,10 +69,59 @@ public class ChesCommonServicesService {
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + getToken())
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .body(Mono.just(request), ChesMailRequest.class)
-            .exchangeToMono(response -> response.bodyToMono(ChesMailResponse.class))
-            .map(response -> response.txId().toString())
-            .doOnError(e -> log.error("Failed to send email" + e.toString()));
+            .retrieve()
+            .onStatus(httpStatusCode -> httpStatusCode.value() == 401,
+                response -> Mono.error(new InvalidAccessTokenException()))
+            .onStatus(httpStatusCode -> httpStatusCode.value() == 403,
+                response -> Mono.error(new InvalidRoleException()))
 
+            .onStatus(httpStatusCode -> httpStatusCode.value() == 400,get400ErrorMessage())
+            .onStatus(httpStatusCode -> httpStatusCode.value() == 422,get422ErrorMessage())
+            .onStatus(HttpStatusCode::isError, get500ErrorMessage())
+            .bodyToMono(ChesMailResponse.class)
+
+            .map(response -> response.txId().toString())
+            .doOnError(error -> log.error("Failed to send email",error));
+
+  }
+
+  private static Function<ClientResponse, Mono<? extends Throwable>> get500ErrorMessage() {
+    return response ->
+        response
+            .bodyToMono(ChesMailErrorResponse.class)
+            .flatMap(errorMessageDetail -> Mono.error(
+                new UnexpectedErrorException(errorMessageDetail.status(),
+                    errorMessageDetail.detail())));
+  }
+
+  private static Function<ClientResponse, Mono<? extends Throwable>> get422ErrorMessage() {
+    return response ->
+        response
+            .bodyToMono(ChesMailErrorResponse.class)
+            .map(details ->
+                Optional
+                    .ofNullable(details.errors())
+                    .map(errorList -> errorList
+                        .stream()
+                        .map(errorEntry -> String.format("%s on %s", errorEntry.message(),
+                            errorEntry.value()))
+                        .collect(Collectors.joining(","))
+                    )
+                    .map(errors -> String.join(",", errors, details.detail()))
+                    .orElse(details.detail())
+            )
+            .flatMap(errorMessageDetail -> Mono.error(
+                new UnableToProcessRequestException(errorMessageDetail)));
+  }
+
+  private static Function<ClientResponse, Mono<? extends Throwable>> get400ErrorMessage() {
+    return response ->
+        response
+            .bodyToMono(ChesMailErrorResponse.class)
+            .doOnNext(System.out::println)
+            .map(ChesMailErrorResponse::detail)
+            .flatMap(errorMessageDetail -> Mono.error(
+                new BadRequestException(errorMessageDetail)));
   }
 
   private String getToken() {
