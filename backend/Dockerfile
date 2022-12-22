@@ -1,7 +1,7 @@
 FROM openjdk:17 as build
 WORKDIR /app
 COPY . ./
-RUN chmox +x ./mvnw
+RUN chmod +x ./mvnw
 RUN ./mvnw clean package -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
