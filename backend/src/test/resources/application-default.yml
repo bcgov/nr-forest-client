@@ -1,0 +1,22 @@
+server:
+  error:
+    whitelabel:
+      enabled: false
+
+ca:
+  bc:
+    gov:
+      ches:
+        uri: http://127.0.0.1:10010/chess/uri
+        tokenUrl: http://127.0.0.1:10010/token/uri
+        clientId: clientId
+        clientSecret: secret
+        scope: scope
+
+logging:
+  level:
+    org:
+      springframework.test: OFF
+      testcontainers: OFF
+    com.github.dockerjava: OFF
+

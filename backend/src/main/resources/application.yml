@@ -1,37 +1,6 @@
 server:
   port: 3000
 
-ca:
-  bc:
-    gov:
-      datasource:
-        oracle:
-          driverClassName: oracle.jdbc.OracleDriver
-          jdbcUrl: jdbc:oracle:thin:@tcps://${ORACLEDB_HOST}:${ORACLEDB_PORT}/${ORACLEDB_SERVICENAME}
-          url: ${ca.bc.gov.datasource.oracle.jdbcUrl}
-          username: ${ORACLEDB_USER:user}
-          password: ${ORACLEDB_PASSWORD:passwd}
-          hikari:
-            connectionTimeout: ${spring.datasource.hikari.connectionTimeout}
-            idleTimeout: ${spring.datasource.hikari.connectionTimeout}
-            maxLifetime: ${spring.datasource.hikari.connectionTimeout}
-            keepaliveTime: ${spring.datasource.hikari.connectionTimeout}
-            poolName: Oc${spring.datasource.hikari.connectionTimeout}
-            minimumIdle: ${spring.datasource.hikari.connectionTimeout}
-            maximumPoolSize: ${spring.datasource.hikari.connectionTimeout}
-        postgres:
-          jdbcUrl: jdbc:postgresql://${POSTGRESQL_HOST:localhost}:5432/${POSTGRESQL_DATABASE:fsa-forest}
-          username: ${POSTGRESQL_USER:user}
-          password: ${POSTGRESQL_PASSWORD:passwd}
-          hikari:
-            connectionTimeout: ${spring.datasource.hikari.connectionTimeout}
-            idleTimeout: ${spring.datasource.hikari.idleTimeout}
-            maxLifetime: ${spring.datasource.hikari.maxLifetime}
-            keepaliveTime: ${spring.datasource.hikari.keepaliveTime}
-            poolName: Pg${spring.datasource.hikari.poolName}
-            minimumIdle: ${spring.datasource.hikari.minimumIdle}
-            maximumPoolSize: ${spring.datasource.hikari.maximumPoolSize}
-
 spring:
   application:
     name: FSA Forest Client
@@ -47,9 +16,9 @@ spring:
           sharedCache:
             mode: ENABLE_SELECTIVE
   datasource:
-    url: ${ca.bc.gov.datasource.postgres.url}
-    username: ${ca.bc.gov.datasource.postgres.username}
-    password: ${ca.bc.gov.datasource.postgres.password}
+    url: jdbc:postgresql://${ca.bc.gov.postgres.host}/${ca.bc.gov.postgres.database}
+    username: ${ca.bc.gov.postgres.username}
+    password: ${ca.bc.gov.postgres.password}
     hikari:
       connectionTimeout: 90000
       idleTimeout: 45000
@@ -82,3 +51,19 @@ springdoc:
 
 frontend:
   url: ${FRONTEND_URL:*}
+
+
+ca:
+  bc:
+    gov:
+      ches:
+        uri: http://127.0.0.1:10010/chess/uri
+        tokenUrl: http://127.0.0.1:10010/token/uri
+        clientId: clientId
+        clientSecret: secret
+        scope: scope
+      postgres:
+        database: ${POSTGRESQL_DATABASE:fsa-forest}
+        host: ${POSTGRESQL_HOST:localhost}:5432
+        username: ${POSTGRESQL_USER:user}
+        password: ${POSTGRESQL_PASSWORD:passwd}
