@@ -17,6 +17,8 @@ import ca.bc.gov.app.service.ches.ChesCommonServicesService;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.response.OAuthJSONAccessTokenResponse;
@@ -27,6 +29,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -269,8 +273,34 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
         .expectBody().equals("string");
   }
 
-  @DisplayName("Fail when no emailTo is provided")
-  void shouldFailWhenNoDestinationMail() {
+  @ParameterizedTest
+  @MethodSource("invalidBodies")
+  @DisplayName("Fail when body is invalid")
+  void shouldFailWhenInvalidBodyProvided(ChesRequest request)
+      throws OAuthProblemException, OAuthSystemException {
+
+    mockOAuthSuccess();
+
+    wireMockExtension
+        .stubFor(
+            post("/chess/uri")
+                .willReturn(
+                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
+
+
+    client
+        .post()
+        .uri("/api/mail", new HashMap<>())
+        .body(Mono.justOrEmpty(Optional.ofNullable(request)), ChesRequest.class)
+        .exchange()
+
+        .expectStatus().isBadRequest()
+        .expectBody()
+        .consumeWith(System.out::println);
+
   }
 
   @Test
@@ -318,4 +348,17 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
     service.setOauthClient(oauth);
   }
 
+
+  private static Stream<ChesRequest> invalidBodies() {
+    return
+        Stream
+            .of(
+                null,
+                new ChesRequest(null, null),
+                new ChesRequest(null, "goat"),
+                new ChesRequest(List.of(), null),
+                new ChesRequest(List.of(), "goat"),
+                new ChesRequest(List.of("jhon@mail.ca"), null)
+            );
+  }
 }
