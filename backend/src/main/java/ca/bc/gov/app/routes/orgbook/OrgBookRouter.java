@@ -12,7 +12,6 @@ import ca.bc.gov.app.dto.orgbook.OrgBookResultListResponse;
 import ca.bc.gov.app.dto.orgbook.OrgBookTopicListResponse;
 import ca.bc.gov.app.handlers.orgbook.OrgBookHandler;
 import ca.bc.gov.app.routes.BaseRouter;
-import ca.bc.gov.app.util.SwaggerUtils;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
@@ -106,17 +105,19 @@ public class OrgBookRouter extends BaseRouter {
             .beanClass(OrgBookHandler.class)
             .beanMethod("findByName")
             .operationId("findByName")
-            .response(SwaggerUtils.responseOps(
-                    "200",
-                    "Found",
-                    contentBuilder()
-                        .schema(
-                            schemaBuilder()
-                                .name("NameListResponse")
-                                .implementation(OrgBookResultListResponse.class)
-                        )
-                        .mediaType(MediaType.APPLICATION_JSON_VALUE)
-                )
+            .response(
+                responseBuilder()
+                    .responseCode("200")
+                    .description("Found")
+                    .content(
+                        contentBuilder()
+                            .schema(
+                                schemaBuilder()
+                                    .name("NameListResponse")
+                                    .implementation(OrgBookResultListResponse.class)
+                            )
+                            .mediaType(MediaType.APPLICATION_JSON_VALUE)
+                    )
             );
   }
 

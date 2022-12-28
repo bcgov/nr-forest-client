@@ -62,6 +62,8 @@ ca:
         clientId: clientId
         clientSecret: secret
         scope: scope
+      orgbook:
+        uri: https://orgbook.gov.bc.ca/api
       postgres:
         database: ${POSTGRESQL_DATABASE:fsa-forest}
         host: ${POSTGRESQL_HOST:localhost}:5432

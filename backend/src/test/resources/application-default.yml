@@ -19,4 +19,3 @@ logging:
       springframework.test: OFF
       testcontainers: OFF
     com.github.dockerjava: OFF
-
