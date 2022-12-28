@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
+@Schema(name = "MailRequest")
 public record ChesRequest(
     @NotNull
     @Min(1)

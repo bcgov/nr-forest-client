@@ -1,12 +1,17 @@
 package ca.bc.gov.app.routes.ches;
 
+import static org.springdoc.core.fn.builders.apiresponse.Builder.responseBuilder;
+import static org.springdoc.core.fn.builders.content.Builder.contentBuilder;
+import static org.springdoc.core.fn.builders.exampleobject.Builder.exampleOjectBuilder;
+import static org.springdoc.core.fn.builders.header.Builder.headerBuilder;
+import static org.springdoc.core.fn.builders.requestbody.Builder.requestBodyBuilder;
+import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
 import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
 import ca.bc.gov.app.dto.ches.ChesRequest;
 import ca.bc.gov.app.handlers.ches.ChesHandler;
 import ca.bc.gov.app.routes.BaseRouter;
-import ca.bc.gov.app.util.SwaggerUtils;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -28,12 +33,12 @@ public class ChesRouter extends BaseRouter {
   }
 
   @Override
-  protected String routeTagName() {
-    return "Ches - Common Services";
+  public String routeTagName() {
+    return "Ches";
   }
 
   @Override
-  protected String routeTagDescription() {
+  public String routeTagDescription() {
     return "A route for common services consumption";
   }
 
@@ -53,20 +58,38 @@ public class ChesRouter extends BaseRouter {
 
   private Consumer<Builder> sendEmailOps() {
 
-    return SwaggerUtils
-        .buildApi(
-            "sendEmail",
-            "Send an email to one or more email addresses",
-            routeTagName(),
-            ChesHandler.class
+    return ops -> ops
+        .tag(routeTagName())
+        .description("Send an email to one or more email addresses")
+        .beanClass(ChesHandler.class)
+        .beanMethod("sendEmail")
+        .operationId("sendEmail")
+        .requestBody(requestBodyBuilder().implementation(ChesRequest.class))
+        .response(
+            responseBuilder()
+                .responseCode("201")
+                .description("Mail was sent")
+                .content(contentBuilder())
+                .header(
+                    headerBuilder()
+                        .name("Location")
+                        .schema(
+                            schemaBuilder()
+                                .implementation(String.class)
+                                .example("/api/mail/00000000-0000-0000-0000-000000000000")
+                        )
+                )
         )
-        //TODO: Example is not showing
-        .andThen(SwaggerUtils.createdOps(
-            "/api/mail/00000000-0000-0000-0000-000000000000"))
-        //TODO: Example is not showing
-        .andThen(SwaggerUtils.badRequestOps(
-            "Destination email is required"))
-        .andThen(SwaggerUtils.requestBodyOps(ChesRequest.class));
+        .response(
+            responseBuilder()
+                .responseCode("400")
+                .description("Something went wrong, a required parameter wasn't being sent")
+                .content(
+                    contentBuilder()
+                        .example(exampleOjectBuilder().value("Destination email is required"))
+                )
+
+        );
   }
 
 }
