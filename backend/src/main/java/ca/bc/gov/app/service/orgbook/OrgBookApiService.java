@@ -20,20 +20,14 @@ import reactor.core.publisher.Mono;
 public class OrgBookApiService {
 
   private final OrgBookConfiguration configuration;
-
   private WebClient orgBookApi;
 
   @PostConstruct
   public void setUp() {
-    this.orgBookApi = WebClient
-        .builder()
-        .baseUrl(configuration.getUri().toString())
-        .defaultHeader("Accept", MediaType.APPLICATION_JSON_VALUE)
-        .build();
+    orgBookApi = WebClient.builder().baseUrl(configuration.getUri()).build();
   }
 
   public Mono<OrgBookResultListResponse> findByClientName(String clientName) {
-
     return
         orgBookApi
             .get()
@@ -43,6 +37,7 @@ public class OrgBookApiService {
                     .queryParam("q", CoreUtil.encodeString(clientName))
                     .build(new HashMap<>())
             )
+            .accept(MediaType.APPLICATION_JSON)
             .exchangeToMono(
                 clientResponse -> clientResponse.bodyToMono(OrgBookResultListResponse.class))
             .doOnNext(content -> log.info("OrgBook Name Lookup {} -> {}", clientName, content));
@@ -52,19 +47,18 @@ public class OrgBookApiService {
 
   public Mono<OrgBookTopicListResponse> findByIncorporationNumber(
       String incorporationNumber) {
-
     return
         orgBookApi
             .get()
-            .uri(uriBuilder ->
-                uriBuilder
-                    .path("/v4/search/topic")
-                    .queryParam("format", "json")
-                    .queryParam("inactive", "any")
-                    .queryParam("ordering", "-score")
-                    .queryParam("q", incorporationNumber)
-                    .build(new HashMap<>())
+            .uri(uriBuilder -> uriBuilder
+                .path("/v4/search/topic")
+                .queryParam("format", "json")
+                .queryParam("inactive", "any")
+                .queryParam("ordering", "-score")
+                .queryParam("q", incorporationNumber)
+                .build(new HashMap<>())
             )
+            .accept(MediaType.APPLICATION_JSON)
             .exchangeToMono(
                 clientResponse -> clientResponse.bodyToMono(OrgBookTopicListResponse.class))
             .doOnNext(

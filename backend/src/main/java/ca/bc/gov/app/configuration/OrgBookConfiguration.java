@@ -1,6 +1,5 @@
 package ca.bc.gov.app.configuration;
 
-import java.net.URI;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +14,5 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties("ca.bc.gov.orgbook")
 public class OrgBookConfiguration {
-  private URI uri;
+  private String uri;
 }

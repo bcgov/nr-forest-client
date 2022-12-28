@@ -1,11 +1,13 @@
 package ca.bc.gov.app.dto.orgbook;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.ZonedDateTime;
 import java.util.List;
 
 @Schema(name = "TopicResult")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record OrgBookTopicDTO(
     Integer id,
     @JsonProperty("source_id") String sourceId,

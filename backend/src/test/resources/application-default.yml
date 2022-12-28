@@ -12,6 +12,8 @@ ca:
         clientId: clientId
         clientSecret: secret
         scope: scope
+      orgbook:
+        uri: http://127.0.0.1:10020
 
 logging:
   level:

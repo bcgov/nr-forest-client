@@ -1,4 +1,4 @@
-package ca.bc.gov.app.endpoints;
+package ca.bc.gov.app.endpoints.ches;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.forbidden;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;

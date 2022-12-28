@@ -14,6 +14,7 @@ import ca.bc.gov.app.handlers.orgbook.OrgBookHandler;
 import ca.bc.gov.app.routes.BaseRouter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.fn.builders.operation.Builder;
 import org.springframework.http.MediaType;
@@ -48,13 +49,14 @@ public class OrgBookRouter extends BaseRouter {
         route()
             .GET(
                 "/incorporation/{id}",
-                accept(MediaType.TEXT_PLAIN),
+                accept(MediaType.ALL),
                 handler::findByIncorporationId,
                 incorporationOps()
             )
+
             .GET(
                 "/name/{id}",
-                accept(MediaType.TEXT_PLAIN),
+                accept(MediaType.ALL),
                 handler::findByName,
                 nameLookUpOps()
             )
@@ -69,6 +71,14 @@ public class OrgBookRouter extends BaseRouter {
         .beanClass(OrgBookHandler.class)
         .beanMethod("findByIncorporationId")
         .operationId("findByIncorporationId")
+        .parameter(
+            parameterBuilder()
+                .in(ParameterIn.PATH)
+                .name("id")
+                .description("The incorporation ID to lookup")
+                .schema(schemaBuilder().implementation(String.class))
+                .example("BC0772006")
+        )
         .requestBody(requestBodyBuilder())
         .parameter(
             parameterBuilder()
@@ -105,6 +115,14 @@ public class OrgBookRouter extends BaseRouter {
             .beanClass(OrgBookHandler.class)
             .beanMethod("findByName")
             .operationId("findByName")
+            .parameter(
+                parameterBuilder()
+                    .in(ParameterIn.PATH)
+                    .name("id")
+                    .schema(schemaBuilder().implementation(String.class))
+                    .description("The name to lookup")
+                    .example("Power Corp")
+            )
             .response(
                 responseBuilder()
                     .responseCode("200")
