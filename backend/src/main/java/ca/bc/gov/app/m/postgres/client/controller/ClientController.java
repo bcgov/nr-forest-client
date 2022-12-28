@@ -1,3 +1,4 @@
+/*
 package ca.bc.gov.app.m.postgres.client.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -26,3 +27,4 @@ public class ClientController {
   }
 
 }
+*/
