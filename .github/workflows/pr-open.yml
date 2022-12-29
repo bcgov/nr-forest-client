@@ -110,7 +110,9 @@ jobs:
 
       - name: Set permission for mvnw
         if: ${{ matrix.package == 'backend' }}
-        run: ./mvnw -B clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true --file pom.xml
+        run: | 
+          cd backend/
+          ./mvnw -B clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true --file pom.xml
 
       - uses: bcgov-nr/action-builder-ghcr@v0.0.2
         with:
