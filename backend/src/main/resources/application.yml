@@ -8,25 +8,26 @@ spring:
     lazy-initialization: false
     banner-mode: "off"
     allow-bean-definition-overriding: true
-  jpa:
-    show-sql: false
-    properties:
-      jakarta:
-        persistence:
-          sharedCache:
-            mode: ENABLE_SELECTIVE
-  datasource:
-    url: jdbc:postgresql://${ca.bc.gov.postgres.host}/${ca.bc.gov.postgres.database}
+  r2dbc:
+    url: r2dbc:postgresql://${ca.bc.gov.postgres.host}/${ca.bc.gov.postgres.database}
     username: ${ca.bc.gov.postgres.username}
     password: ${ca.bc.gov.postgres.password}
-    hikari:
-      connectionTimeout: 90000
-      idleTimeout: 45000
-      maxLifetime: 60000
-      keepaliveTime: 30000
+    pool:
+      enabled: true
+      initialSize: 1
+      minIdle: 1
+      maxSize: 3
+      maxLifeTime: 60000
+      maxIdleTime: 45000
+      maxCreateConnectionTime: 90000
       poolName: FsaClientConPool
-      minimumIdle: 1
-      maximumPoolSize: 3
+  flyway:
+    locations: classpath:db/migration
+    enabled: true
+    validate-on-migrate: true
+    user: ${ca.bc.gov.postgres.username}
+    password: ${ca.bc.gov.postgres.password}
+    url: jdbc:postgresql://${ca.bc.gov.postgres.host}/${ca.bc.gov.postgres.database}
 
 management:
   endpoint:
