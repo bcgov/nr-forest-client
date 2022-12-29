@@ -48,14 +48,14 @@ public class OrgBookRouter extends BaseRouter {
     return
         route()
             .GET(
-                "/incorporation/{id}",
+                "/incorporation/{incorporationId}",
                 accept(MediaType.ALL),
                 handler::findByIncorporationId,
                 incorporationOps()
             )
 
             .GET(
-                "/name/{id}",
+                "/name/{name}",
                 accept(MediaType.ALL),
                 handler::findByName,
                 nameLookUpOps()
@@ -71,14 +71,6 @@ public class OrgBookRouter extends BaseRouter {
         .beanClass(OrgBookHandler.class)
         .beanMethod("findByIncorporationId")
         .operationId("findByIncorporationId")
-        .parameter(
-            parameterBuilder()
-                .in(ParameterIn.PATH)
-                .name("id")
-                .description("The incorporation ID to lookup")
-                .schema(schemaBuilder().implementation(String.class))
-                .example("BC0772006")
-        )
         .requestBody(requestBodyBuilder())
         .parameter(
             parameterBuilder()
@@ -87,7 +79,7 @@ public class OrgBookRouter extends BaseRouter {
                 .example("BC0772006")
                 .schema(schemaBuilder().implementation(String.class))
                 .in(ParameterIn.PATH)
-                .name("id")
+                .name("incorporationId")
         )
         .response(
             responseBuilder()
@@ -118,7 +110,7 @@ public class OrgBookRouter extends BaseRouter {
             .parameter(
                 parameterBuilder()
                     .in(ParameterIn.PATH)
-                    .name("id")
+                    .name("name")
                     .schema(schemaBuilder().implementation(String.class))
                     .description("The name to lookup")
                     .example("Power Corp")

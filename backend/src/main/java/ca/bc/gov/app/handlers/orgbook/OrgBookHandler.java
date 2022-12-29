@@ -21,7 +21,7 @@ public class OrgBookHandler {
   public Mono<ServerResponse> findByIncorporationId(ServerRequest serverRequest) {
     return
         service
-            .findByIncorporationNumber(serverRequest.pathVariable("id"))
+            .findByIncorporationNumber(serverRequest.pathVariable("incorporationId"))
             .flatMap(
                 response -> ServerResponse.ok()
                     .body(Mono.just(response), OrgBookTopicListResponse.class)
@@ -33,7 +33,7 @@ public class OrgBookHandler {
   public Mono<ServerResponse> findByName(ServerRequest serverRequest) {
     return
         service
-            .findByClientName(serverRequest.pathVariable("id"))
+            .findByClientName(serverRequest.pathVariable("name"))
             .flatMap(
                 response -> ServerResponse.ok()
                     .body(Mono.just(response), OrgBookTopicListResponse.class)
