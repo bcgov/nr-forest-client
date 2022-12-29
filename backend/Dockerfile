@@ -1,34 +1,18 @@
-FROM openjdk:17 as build
-WORKDIR /app
-COPY . ./
-RUN chmod +x ./mvnw
-RUN ./mvnw clean package -DskipTests
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+FROM eclipse-temurin:17-jre-alpine
+LABEL maintainer="Paulo Gomes da Cruz Junior <paulo.cruz@encora.com>"
 
-FROM openjdk:17 as deploy
-
-WORKDIR /app
+WORKDIR /usr/share/service/
+RUN mkdir -p /usr/share/service/config &&\
+    mkdir -p /usr/share/service/dump &&\
+    mkdir -p /usr/share/service/public
 
 ENV LANG en_CA.UTF-8
 ENV LANGUAGE en_CA.UTF-8
 ENV LC_ALL en_CA.UTF-8
-ENV JAVA_OPS -Xms512m -Xmx512m
 
-ARG DEPENDENCY=/app/target/dependency
+COPY ./nr-forest-client-backend.jar /usr/share/service/service.jar
 
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-COPY startup.sh .
-COPY InstallCert.java .
+EXPOSE 8080
 
-RUN chmod g+w /app && \
-    chmod g+x startup.sh && \
-    chmod g+w ${JAVA_HOME}/lib/security/cacerts
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/usr/share/service/service.jar"]
 
-EXPOSE 3000
-
-# Non-privileged user
-USER app
-
-ENTRYPOINT ["sh", "startup.sh"]
