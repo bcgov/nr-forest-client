@@ -27,7 +27,7 @@ jobs:
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
         with:
           commands: |
-            ./mvnw test
+            mvn -B verify -P integration-test --file pom.xml
           dir: backend
           java-cache: maven
           java-distribution: temurin
