@@ -9,9 +9,9 @@ spring:
     banner-mode: "off"
     allow-bean-definition-overriding: true
   r2dbc:
-    url: r2dbc:postgresql://${ca.bc.gov.postgres.host}/${ca.bc.gov.postgres.database}
-    username: ${ca.bc.gov.postgres.username}
-    password: ${ca.bc.gov.postgres.password}
+    url: r2dbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
+    username: ${ca.bc.gov.nrs.postgres.username}
+    password: ${ca.bc.gov.nrs.postgres.password}
     pool:
       enabled: true
       initialSize: 1
@@ -25,9 +25,9 @@ spring:
     locations: classpath:db/migration
     enabled: true
     validate-on-migrate: true
-    user: ${ca.bc.gov.postgres.username}
-    password: ${ca.bc.gov.postgres.password}
-    url: jdbc:postgresql://${ca.bc.gov.postgres.host}/${ca.bc.gov.postgres.database}
+    user: ${ca.bc.gov.nrs.postgres.username}
+    password: ${ca.bc.gov.nrs.postgres.password}
+    url: jdbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
 
 management:
   endpoint:
@@ -57,16 +57,17 @@ frontend:
 ca:
   bc:
     gov:
-      ches:
-        uri: ${CHES_API_URL:http://127.0.0.1:10010/chess/uri}
-        tokenUrl: ${CHES_TOKEN_URL:http://127.0.0.1:10010/token/uri}
-        clientId: ${CHES_CLIENT_ID:clientId}
-        clientSecret: ${CHES_CLIENT_SECRET:secret}
-        scope: scope
-      orgbook:
-        uri: https://orgbook.gov.bc.ca/api
-      postgres:
-        database: ${POSTGRESQL_DATABASE:fsa-forest}
-        host: ${POSTGRESQL_HOST:localhost}:5432
-        username: ${POSTGRESQL_USER:user}
-        password: ${POSTGRESQL_PASSWORD:passwd}
+      nrs:
+        ches:
+          uri: ${CHES_API_URL:http://127.0.0.1:10010/chess/uri}
+          tokenUrl: ${CHES_TOKEN_URL:http://127.0.0.1:10010/token/uri}
+          clientId: ${CHES_CLIENT_ID:clientId}
+          clientSecret: ${CHES_CLIENT_SECRET:secret}
+          scope: scope
+        orgbook:
+          uri: https://orgbook.gov.bc.ca/api
+        postgres:
+          database: ${POSTGRESQL_DATABASE:fsa-forest}
+          host: ${POSTGRESQL_HOST:localhost}:5432
+          username: ${POSTGRESQL_USER:user}
+          password: ${POSTGRESQL_PASSWORD:passwd}

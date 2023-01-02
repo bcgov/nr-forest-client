@@ -31,7 +31,7 @@ public abstract class AbstractTestContainerIntegrationTest {
 
     registry
         .add(
-            "ca.bc.gov.postgres.database",
+            "ca.bc.gov.nrs.postgres.database",
             () -> database
                 .getDatabaseName()
                 .concat("?TC_INITSCRIPT=file:src/test/resources/init_pg.sql")
@@ -39,19 +39,19 @@ public abstract class AbstractTestContainerIntegrationTest {
 
     registry
         .add(
-            "ca.bc.gov.postgres.host",
+            "ca.bc.gov.nrs.postgres.host",
             () -> String.format("%s:%d", database.getHost(), database.getMappedPort(5432))
         );
 
     registry
         .add(
-            "ca.bc.gov.postgres.username",
+            "ca.bc.gov.nrs.postgres.username",
             database::getUsername
         );
 
     registry
         .add(
-            "ca.bc.gov.postgres.password",
+            "ca.bc.gov.nrs.postgres.password",
             database::getPassword
         );
 
