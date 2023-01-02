@@ -33,7 +33,6 @@ jobs:
           java-distribution: temurin
           java-version: "17"
           sonar_args: >
-            -Dsonar.exclusions=**/coverage/**
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-backend
           sonar_project_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
