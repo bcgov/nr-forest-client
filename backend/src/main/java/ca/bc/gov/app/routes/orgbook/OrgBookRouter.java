@@ -30,7 +30,7 @@ public class OrgBookRouter extends BaseRouter {
 
   @Override
   public String basePath() {
-    return "/api/orgbook";
+    return "/orgbook";
   }
 
   @Override

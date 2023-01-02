@@ -22,7 +22,7 @@ public class RouteConfiguration {
     return
         routes
             .stream()
-            .map(route -> nest(path(route.basePath()), route.routerRoute()))
+            .map(route -> nest(path(String.format("/api%s",route.basePath())), route.routerRoute()))
             .reduce(RouterFunction::and)
             .orElseThrow();
 

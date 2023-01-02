@@ -29,7 +29,7 @@ public class ChesRouter extends BaseRouter {
 
   @Override
   public String basePath() {
-    return "/api/mail";
+    return "/mail";
   }
 
   @Override

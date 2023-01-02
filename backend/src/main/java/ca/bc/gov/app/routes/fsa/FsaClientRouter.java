@@ -27,7 +27,7 @@ public class FsaClientRouter extends BaseRouter {
 
   @Override
   public String basePath() {
-    return "/api/clients";
+    return "/clients";
   }
 
   @Override
