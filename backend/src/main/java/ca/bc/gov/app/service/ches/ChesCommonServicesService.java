@@ -17,7 +17,6 @@ import ca.bc.gov.app.exception.UnexpectedErrorException;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.oltu.oauth2.client.OAuthClient;
@@ -26,6 +25,7 @@ import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.client.response.OAuthJSONAccessTokenResponse;
 import org.apache.oltu.oauth2.common.OAuth;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -36,11 +36,16 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class ChesCommonServicesService {
 
   private final ChesConfiguration configuration;
-  private final WebClient webClient = WebClient.builder().build();
+  private final WebClient webClient;
+
+  public ChesCommonServicesService(ChesConfiguration configuration,
+                                   @Qualifier("chesApi") WebClient webClient) {
+    this.configuration = configuration;
+    this.webClient = webClient;
+  }
 
   @Setter
   private OAuthClient oauthClient = new OAuthClient(new URLConnectionClient());
@@ -75,13 +80,13 @@ public class ChesCommonServicesService {
             .onStatus(httpStatusCode -> httpStatusCode.value() == 403,
                 response -> Mono.error(new InvalidRoleException()))
 
-            .onStatus(httpStatusCode -> httpStatusCode.value() == 400,get400ErrorMessage())
-            .onStatus(httpStatusCode -> httpStatusCode.value() == 422,get422ErrorMessage())
+            .onStatus(httpStatusCode -> httpStatusCode.value() == 400, get400ErrorMessage())
+            .onStatus(httpStatusCode -> httpStatusCode.value() == 422, get422ErrorMessage())
             .onStatus(HttpStatusCode::isError, get500ErrorMessage())
             .bodyToMono(ChesMailResponse.class)
 
             .map(response -> response.txId().toString())
-            .doOnError(error -> log.error("Failed to send email",error));
+            .doOnError(error -> log.error("Failed to send email", error));
 
   }
 

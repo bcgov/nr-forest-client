@@ -1,14 +1,12 @@
 package ca.bc.gov.app.service.orgbook;
 
 
-import ca.bc.gov.app.configuration.OrgBookConfiguration;
 import ca.bc.gov.app.dto.orgbook.OrgBookResultListResponse;
 import ca.bc.gov.app.dto.orgbook.OrgBookTopicListResponse;
 import ca.bc.gov.app.util.CoreUtil;
-import jakarta.annotation.PostConstruct;
 import java.util.HashMap;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -16,15 +14,12 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class OrgBookApiService {
 
-  private final OrgBookConfiguration configuration;
-  private WebClient orgBookApi;
+  private final WebClient orgBookApi;
 
-  @PostConstruct
-  public void setUp() {
-    orgBookApi = WebClient.builder().baseUrl(configuration.getUri()).build();
+  public OrgBookApiService(@Qualifier("orgBookApi") WebClient orgBookApi) {
+    this.orgBookApi = orgBookApi;
   }
 
   public Mono<OrgBookResultListResponse> findByClientName(String clientName) {
