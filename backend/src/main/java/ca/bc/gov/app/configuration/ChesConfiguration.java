@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties("ca.bc.gov.nrs.ches")
 public class ChesConfiguration {
-  private URI uri;
-  private URI tokenUrl;
+  private String uri;
+  private String tokenUrl;
   private String clientId;
   private String clientSecret;
   private String scope;

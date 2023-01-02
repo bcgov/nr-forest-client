@@ -14,7 +14,7 @@ public class GlobalServiceConfiguration {
 
   @Bean
   public WebClient chesApi(ChesConfiguration configuration) {
-    return WebClient.builder().baseUrl(configuration.getUri().toString()).build();
+    return WebClient.builder().baseUrl(configuration.getUri()).build();
   }
 
 }
