@@ -59,8 +59,7 @@ public class ErrorHandlingController extends AbstractErrorWebExceptionHandler {
         request.requestPath(),
         exception);
 
-    if (exception instanceof ResponseStatusException) {
-      ResponseStatusException responseStatusException = (ResponseStatusException) exception;
+    if (exception instanceof ResponseStatusException responseStatusException) {
       errorMessage = responseStatusException.getReason();
       errorStatus = responseStatusException.getStatusCode();
     }

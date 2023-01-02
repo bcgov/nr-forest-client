@@ -13,7 +13,7 @@ public enum ChesMailBodyType {
 
   @Getter
   private final String value;
-  private final static Map<String, ChesMailBodyType>
+  private static final Map<String, ChesMailBodyType>
       CONSTANTS = new HashMap<>();
 
   static {

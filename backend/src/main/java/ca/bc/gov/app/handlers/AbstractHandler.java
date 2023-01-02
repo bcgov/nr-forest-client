@@ -19,7 +19,7 @@ public class AbstractHandler<T, V extends Validator> {
   private final V validator;
 
 
-  protected <T> void validate(T target) {
+  protected <S> void validate(S target) {
     Errors errors = new BeanPropertyBindingResult(target, contentClass.getName());
     validator.validate(target, errors);
     if (errors.hasErrors()) {

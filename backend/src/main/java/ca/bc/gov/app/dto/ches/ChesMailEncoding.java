@@ -14,7 +14,7 @@ public enum ChesMailEncoding {
   UTF_8("utf-8");
   @Getter
   private final String value;
-  private final static Map<String, ChesMailEncoding>
+  private static final Map<String, ChesMailEncoding>
       CONSTANTS = new HashMap<>();
 
   static {

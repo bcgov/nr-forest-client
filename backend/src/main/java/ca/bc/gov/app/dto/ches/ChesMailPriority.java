@@ -14,7 +14,7 @@ public enum ChesMailPriority {
 
   @Getter
   private final String value;
-  private final static Map<String, ChesMailPriority>
+  private static final Map<String, ChesMailPriority>
       CONSTANTS = new HashMap<>();
 
   static {

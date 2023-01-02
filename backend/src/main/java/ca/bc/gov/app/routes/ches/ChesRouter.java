@@ -23,7 +23,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Component
 @RequiredArgsConstructor
-public class ChesRouter extends BaseRouter {
+public class ChesRouter implements BaseRouter {
 
   private final ChesHandler handler;
 

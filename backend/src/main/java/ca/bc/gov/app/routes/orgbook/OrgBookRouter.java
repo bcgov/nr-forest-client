@@ -24,7 +24,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Component
 @RequiredArgsConstructor
-public class OrgBookRouter extends BaseRouter {
+public class OrgBookRouter implements BaseRouter {
 
   private final OrgBookHandler handler;
 

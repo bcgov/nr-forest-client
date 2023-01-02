@@ -21,7 +21,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Component
 @RequiredArgsConstructor
-public class FsaClientRouter extends BaseRouter {
+public class FsaClientRouter implements BaseRouter {
 
   private final FsaClientHandler clientHandler;
 

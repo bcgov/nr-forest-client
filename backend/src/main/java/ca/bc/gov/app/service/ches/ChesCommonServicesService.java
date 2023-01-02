@@ -123,7 +123,6 @@ public class ChesCommonServicesService {
     return response ->
         response
             .bodyToMono(ChesMailErrorResponse.class)
-            .doOnNext(System.out::println)
             .map(ChesMailErrorResponse::detail)
             .flatMap(errorMessageDetail -> Mono.error(
                 new BadRequestException(errorMessageDetail)));
