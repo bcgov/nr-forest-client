@@ -6,14 +6,15 @@ server:
 ca:
   bc:
     gov:
-      ches:
-        uri: http://127.0.0.1:10010/chess/uri
-        tokenUrl: http://127.0.0.1:10010/token/uri
-        clientId: clientId
-        clientSecret: secret
-        scope: scope
-      orgbook:
-        uri: http://127.0.0.1:10020
+      nrs:
+        ches:
+          uri: http://127.0.0.1:10010/chess/uri
+          tokenUrl: http://127.0.0.1:10010/token/uri
+          clientId: clientId
+          clientSecret: secret
+          scope: scope
+        orgbook:
+          uri: http://127.0.0.1:10020
 
 logging:
   level:

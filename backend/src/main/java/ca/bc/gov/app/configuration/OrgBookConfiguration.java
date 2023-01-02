@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
-@ConfigurationProperties("ca.bc.gov.orgbook")
+@ConfigurationProperties("ca.bc.gov.nrs.orgbook")
 public class OrgBookConfiguration {
   private String uri;
 }

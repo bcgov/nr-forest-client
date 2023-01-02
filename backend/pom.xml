@@ -10,7 +10,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>ca.bc.gov</groupId>
+    <groupId>ca.bc.gov.nrs</groupId>
     <artifactId>nr-forest-client-backend</artifactId>
     <version>0.0.1</version>
     <name>nr-forest-client-backend</name>

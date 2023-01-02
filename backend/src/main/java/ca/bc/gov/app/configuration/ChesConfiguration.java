@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
-@ConfigurationProperties("ca.bc.gov.ches")
+@ConfigurationProperties("ca.bc.gov.nrs.ches")
 public class ChesConfiguration {
   private URI uri;
   private URI tokenUrl;
