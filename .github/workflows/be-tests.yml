@@ -231,7 +231,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Qualitygate
-        run: mvn -B clean verify -P all-tests package sonar:sonar -Dsonar.projectKey=forest-client-backend -Dsonar.coverage.jacoco.xmlReportPaths=${{ github.workspace }}/backend/target/coverage-reports/merged-test-report/jacoco.xml --file pom.xml
+        run: mvn -B clean checkstyle:checkstyle verify -P all-tests package sonar:sonar -Dcheckstyle.skip=false  --file pom.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}

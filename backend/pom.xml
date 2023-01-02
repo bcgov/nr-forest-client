@@ -45,6 +45,19 @@
 
         <sonar.organization>bcgov-sonarcloud</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.projectKey>forest-client-backend</sonar.projectKey>
+        <sonar.coverage.jacoco.xmlReportPaths>target/coverage-reports/merged-test-report/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.exclusions>
+            **/configuration/**,
+            **/exception/**,
+            **/dto/**,
+            **/entity/**,
+            **/repository/**,
+            **/*$*Builder*,
+            **/BootApplication*
+        </sonar.coverage.exclusions>
+        <sonar.java.checkstyle.reportPaths>target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
 
         <testcontainers.version>1.17.6</testcontainers.version>
 
@@ -240,13 +253,8 @@
                         <exclude>**/dto/**</exclude>
                         <exclude>**/entity/**</exclude>
                         <exclude>**/repository/**</exclude>
-                        <exclude>**/validator/**</exclude>
                         <exclude>**/*$*Builder*</exclude>
                         <exclude>**/BootApplication*</exclude>
-                        <exclude>**/test/**</exclude>
-                        <exclude>**/bdd/**</exclude>
-                        <exclude>**/extensions/**</exclude>
-                        <exclude>**/*Test*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
