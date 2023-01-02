@@ -58,10 +58,10 @@ ca:
   bc:
     gov:
       ches:
-        uri: http://127.0.0.1:10010/chess/uri
-        tokenUrl: http://127.0.0.1:10010/token/uri
-        clientId: clientId
-        clientSecret: secret
+        uri: ${CHES_API_URL:http://127.0.0.1:10010/chess/uri}
+        tokenUrl: ${CHES_TOKEN_URL:http://127.0.0.1:10010/token/uri}
+        clientId: ${CHES_CLIENT_ID:clientId}
+        clientSecret: ${CHES_CLIENT_SECRET:secret}
         scope: scope
       orgbook:
         uri: https://orgbook.gov.bc.ca/api
