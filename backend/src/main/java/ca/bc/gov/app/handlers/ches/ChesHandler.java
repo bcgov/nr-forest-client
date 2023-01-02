@@ -29,7 +29,9 @@ public class ChesHandler extends AbstractHandler<ChesRequest, ChesRequestValidat
     return
         request
             .bodyToMono(ChesRequest.class)
-            .switchIfEmpty(Mono.error(new InvalidRequestObjectException("no request body was provided")))
+            .switchIfEmpty(
+                Mono.error(new InvalidRequestObjectException("no request body was provided"))
+            )
             .doOnNext(this::validate)
             .doOnNext(requestBody -> log.info("Requesting an email to be sent {}", requestBody))
             .flatMap(service::sendEmail)

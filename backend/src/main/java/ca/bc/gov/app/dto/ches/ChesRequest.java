@@ -12,10 +12,14 @@ public record ChesRequest(
     @NotNull
     @Min(1)
     @Email
-    @Schema(name = "emailTo", description = "An array of recipients email addresses", example = "foo@bar.com")
+    @Schema(name = "emailTo",
+        description = "An array of recipients email addresses",
+        example = "foo@bar.com")
     List<String> emailTo,
     @NotNull
-    @Schema(name = "emailBody", description = "The body of the message as an Unicode HTML string", example = "<p>Hello</p>")
+    @Schema(name = "emailBody",
+        description = "The body of the message as an Unicode HTML string",
+        example = "<p>Hello</p>")
     String emailBody
 ) {
 }

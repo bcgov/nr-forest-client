@@ -7,6 +7,6 @@ import org.springframework.web.server.ResponseStatusException;
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
 public class InvalidAccessTokenException extends ResponseStatusException {
   public InvalidAccessTokenException() {
-    super(HttpStatus.UNAUTHORIZED,"Provided access token is missing or invalid");
+    super(HttpStatus.UNAUTHORIZED, "Provided access token is missing or invalid");
   }
 }

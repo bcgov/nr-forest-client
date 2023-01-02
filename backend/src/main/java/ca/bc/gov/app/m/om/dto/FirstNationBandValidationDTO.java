@@ -20,10 +20,10 @@ public record FirstNationBandValidationDTO(
 ) {
   public FirstNationBandValidationDTO {
     nameMatch = clientName.equalsIgnoreCase(sourceClientName);
-    addressMatch = ((addressOne != null && sourceAddressOne != null &&
-        addressOne.equalsIgnoreCase(sourceAddressOne.replace(".", "")))
-        || (addressTwo != null && sourceAddressTwo != null &&
-        addressTwo.equalsIgnoreCase(sourceAddressTwo.replace(".", ""))))
+    addressMatch = ((addressOne != null && sourceAddressOne != null
+        && addressOne.equalsIgnoreCase(sourceAddressOne.replace(".", "")))
+        || (addressTwo != null && sourceAddressTwo != null
+        && addressTwo.equalsIgnoreCase(sourceAddressTwo.replace(".", ""))))
         && (city != null && city.equalsIgnoreCase(sourceCity))
         &&
         (postalCode != null && postalCode.equalsIgnoreCase(sourcePostalCode.replaceAll("\\s", "")));

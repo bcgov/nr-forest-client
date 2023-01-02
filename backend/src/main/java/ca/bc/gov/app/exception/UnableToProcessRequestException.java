@@ -12,6 +12,6 @@ public class UnableToProcessRequestException extends ResponseStatusException {
   }
 
   public UnableToProcessRequestException(List<String> messages) {
-    super(HttpStatus.UNPROCESSABLE_ENTITY, String.join(",",messages));
+    super(HttpStatus.UNPROCESSABLE_ENTITY, String.join(",", messages));
   }
 }
