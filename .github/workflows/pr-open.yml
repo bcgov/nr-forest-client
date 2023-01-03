@@ -167,6 +167,7 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: true
+          health_url: /health
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}
