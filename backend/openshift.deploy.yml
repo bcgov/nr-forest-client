@@ -172,7 +172,7 @@ objects:
                 successThreshold: 1
                 failureThreshold: 12
                 httpGet:
-                  path: /
+                  path: /health
                   port: 3000
                   scheme: HTTP
                 initialDelaySeconds: 180
