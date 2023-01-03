@@ -96,7 +96,8 @@ public class OpenMapsRouter implements BaseRouter {
                                 .implementation(String.class)
 
                         )
-                        .example(exampleOjectBuilder().value("No first nation found with federal id 99999"))
+                        .example(exampleOjectBuilder()
+                            .value("No first nation found with federal id 99999"))
                         .mediaType(MediaType.APPLICATION_JSON_VALUE)
                 )
         );

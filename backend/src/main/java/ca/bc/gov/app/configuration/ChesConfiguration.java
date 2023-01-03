@@ -1,6 +1,5 @@
 package ca.bc.gov.app.configuration;
 
-import java.net.URI;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
