@@ -2,31 +2,58 @@ The nr-forest-client backend provides the internal apis that support the fronten
 
 ## Setup local development
 
+
+    For a better developer experience, use IntelliJ IDEA and configure google style as the default style.
+
+In order to run the application, you will need an instance of postgres running, it can be local, 
+can be docker or even a remote server. Just make sure you have access to the server.
+
+
+Each developer can have its own set of parameters for testing and development. For this, create a file inside the 
+[config folder](config) with the name **application-dev-< YOUR NAME >.yml** or 
+**application-dev-< YOUR NAME >.properties** and replace the **< YOUR NAME >** with your username, 
+machine name or something unique that identifies you, for example **application-dev-jsmith.yml**.
+
+We recommend **yml** files as they tend to be less repetitive, but it's up to you which file to use. 
+
+Also, make sure to run the application using your profile, if it's through command line, remember to pass a 
+**--spring.profiles.active=dev-jsmith** argument, or if using IntelliJ, create a run configuration (more on that later).
+
+## Configuring your yml/properties file
+
+When creating your own configuration file, you can overwrite any of the entries contained on the main 
+[configuration file](src/main/resources/application.yml) as you wish, but the most optimal way of using it is by 
+setting just the parameters inside the `ca.bc.gov.nrs` context, as the rest of the parameters are already defined.
+
+Below is an example of the database configuration:
+
+```yml
+ca:
+  bc:
+    gov:
+      nrs:
+        postgres:
+          database: fsa
+          host: 127.0.0.1:5432
+          username: fsa
+          password: thisisnotapassword
 ```
-- Export env variables for database credentials:
 
-```
 
-export ORACLEDB_HOST=[]
-export ORACLEDB_PORT=[]
-export ORACLEDB_SERVICENAME=[]
-export ORACLEDB_USER=[]
-export ORACLEDB_PASSWORD=[]
+## Configuring IntelliJ Code Style
 
-export POSTGRESQL_HOST=[]
-export POSTGRESQL_DATABASE=[]
-export POSTGRESQL_USER=[]
-export POSTGRESQL_PASSWORD=[]
+You will find a copy of the [google code style](docs/google_checks.xml) inside our [docs](docs) folder.
 
-export FRONTEND_URL="http://localhost:8080"
+On the settings screen, add the checks as the following image:
 
-export EMAIL_USERNAME=[CHES_EMAIL_USERNAME]
-export EMAIL_PASSWORD=[CHES_EMAIL_PASSWORD]
-export EMAIL_TOKEN_URL=[URL_TO_GET_CHES_EMAIL_TOKEN]
-export EMAIL_API_URL=[CHES_EMAIL_API]
+[![intellij code style](docs/intellij-code-style.png)](docs/intellij-code-style.png)
 
-```
-- Start the application: `./mvnw spring-boot:run`
-- Rebuild the application if need: `./mvnw clean package`
-- Run test: `./mvnw test`
-```
+
+## Configuring IntelliJ Run Configuration
+
+To set your profile on IntelliJ, just run the 
+[application main class](src/main/java/ca/bc/gov/app/BootApplication.java) 
+and edit the configuration as the following image.
+
+[![intellij run configuration](docs/intellij-run-config.png)](docs/intellij-run-config.png)
+
