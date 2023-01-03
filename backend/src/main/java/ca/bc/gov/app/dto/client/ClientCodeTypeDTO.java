@@ -1,4 +1,4 @@
-package ca.bc.gov.app.dto.fsa;
+package ca.bc.gov.app.dto.client;
 
 import java.time.LocalDate;
 

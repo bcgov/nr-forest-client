@@ -1,6 +1,6 @@
-package ca.bc.gov.app.repository.fsa;
+package ca.bc.gov.app.repository.client;
 
-import ca.bc.gov.app.entity.fsa.ClientTypeCodeEntity;
+import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
 import java.time.LocalDate;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;

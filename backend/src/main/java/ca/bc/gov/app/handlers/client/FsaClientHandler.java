@@ -1,6 +1,6 @@
-package ca.bc.gov.app.handlers.fsa;
+package ca.bc.gov.app.handlers.client;
 
-import ca.bc.gov.app.service.fsa.FsaClientService;
+import ca.bc.gov.app.service.client.FsaClientService;
 import ca.bc.gov.app.util.HandlerUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package ca.bc.gov.app.entity.fsa;
+package ca.bc.gov.app.entity.client;
 
 import ca.bc.gov.app.ApplicationConstant;
 import jakarta.validation.constraints.NotNull;

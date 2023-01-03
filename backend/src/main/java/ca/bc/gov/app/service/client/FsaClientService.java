@@ -1,8 +1,8 @@
-package ca.bc.gov.app.service.fsa;
+package ca.bc.gov.app.service.client;
 
-import ca.bc.gov.app.dto.fsa.ClientCodeTypeDTO;
-import ca.bc.gov.app.entity.fsa.ClientTypeCodeEntity;
-import ca.bc.gov.app.repository.fsa.ClientTypeCodeRepository;
+import ca.bc.gov.app.dto.client.ClientCodeTypeDTO;
+import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
+import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;

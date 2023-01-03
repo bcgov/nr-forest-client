@@ -1,4 +1,4 @@
-package ca.bc.gov.app.routes.fsa;
+package ca.bc.gov.app.routes.client;
 
 import static org.springdoc.core.fn.builders.apiresponse.Builder.responseBuilder;
 import static org.springdoc.core.fn.builders.arrayschema.Builder.arraySchemaBuilder;
@@ -8,8 +8,8 @@ import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
 import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
-import ca.bc.gov.app.dto.fsa.ClientCodeTypeDTO;
-import ca.bc.gov.app.handlers.fsa.FsaClientHandler;
+import ca.bc.gov.app.dto.client.ClientCodeTypeDTO;
+import ca.bc.gov.app.handlers.client.FsaClientHandler;
 import ca.bc.gov.app.routes.BaseRouter;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
