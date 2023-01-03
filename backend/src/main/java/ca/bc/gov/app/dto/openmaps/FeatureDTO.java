@@ -1,4 +1,4 @@
-package ca.bc.gov.app.m.om.dto;
+package ca.bc.gov.app.dto.openmaps;
 
 public record FeatureDTO(PropertyDTO properties) {
 }

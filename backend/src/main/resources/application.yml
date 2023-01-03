@@ -66,6 +66,8 @@ ca:
           scope: scope
         orgbook:
           uri: https://orgbook.gov.bc.ca/api
+        openmaps:
+          uri: https://openmaps.gov.bc.ca/geo/pub/ows
         postgres:
           database: ${POSTGRESQL_DATABASE:fsa-forest}
           host: ${POSTGRESQL_HOST:localhost}:5432

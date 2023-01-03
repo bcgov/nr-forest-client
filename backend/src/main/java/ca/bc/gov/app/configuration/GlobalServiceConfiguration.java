@@ -17,4 +17,9 @@ public class GlobalServiceConfiguration {
     return WebClient.builder().baseUrl(configuration.getUri()).build();
   }
 
+  @Bean
+  public WebClient openMapsApi(OpenMapsConfiguration configuration) {
+    return WebClient.builder().baseUrl(configuration.getUri()).build();
+  }
+
 }

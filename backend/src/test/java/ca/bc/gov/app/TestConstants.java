@@ -363,4 +363,88 @@ public class TestConstants {
       }
       """;
 
+  public static final String OPENMAPS_OK = """
+      {
+        "type": "FeatureCollection",
+        "features": [{
+          "type": "Feature",
+          "id": "WHSE_HUMAN_CULTURAL_ECONOMIC.FN_COMMUNITY_LOCATIONS_SP.129",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              1190868.482,
+              384526.713
+            ]
+          },
+          "geometry_name": "SHAPE",
+          "properties": {
+            "COMMUNITY_LOCATION_ID": 129,
+            "FIRST_NATION_BC_NAME": "Songhees First Nation",
+            "FIRST_NATION_FEDERAL_NAME": "Songhees Nation",
+            "FIRST_NATION_FEDERAL_ID": 656,
+            "URL_TO_BC_WEBSITE": "http://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/consulting-with-first-nations/first-nations-negotiations/first-nations-a-z-listing/songhees-nation",
+            "URL_TO_FEDERAL_WEBSITE": "http://fnp-ppn.aadnc-aandc.gc.ca/fnp/Main/Search/FNMain.aspx?BAND_NUMBER=656&lang=eng",
+            "URL_TO_FIRST_NATION_WEBSITE": "http://songheesnation.ca/",
+            "MEMBER_ORGANIZATION_NAMES": "Te'mexw Treaty Association",
+            "LANGUAGE_GROUP": "SENĆOŦEN / Malchosen / Lkwungen / Semiahmoo / T’Sou-ke",
+            "BC_REGIONAL_OFFICE": "West Coast (Nanaimo)",
+            "MAPSHEET_NUMBER": "92B",
+            "PREFERRED_NAME": "Songhees Nation",
+            "ALTERNATIVE_NAME_1": "formerly Songhees First Nation, SONGHEES (variation SONGHISH); includes SWENGWHUNG TRIBE, WHYOMILTH TRIBE,TEECHAMITSA TRIBE, CHE-KO-NEIN TRIBE and CHILCOWITCH TRIBE (all part of Douglas Treaty (1850))",
+            "ALTERNATIVE_NAME_2": " ",
+            "ADDRESS_LINE1": "1100 Admirals Road",
+            "ADDRESS_LINE2": " ",
+            "OFFICE_CITY": "VICTORIA",
+            "OFFICE_PROVINCE": "BC",
+            "OFFICE_POSTAL_CODE": "V9A 2P6",
+            "LOCATION_DESCRIPTION": "ESQUIMALT DISTRICT SECTION 2A FRONTING ON ESQUIMALT HARBOUR AND EAST OF AND ADJOINING LOT 25",
+            "SITE_NAME": "New Songhess No. 1A",
+            "SITE_NUMBER": "06839",
+            "COMMENTS": " ",
+            "OBJECTID": 643,
+            "SE_ANNO_CAD_DATA": null
+          }
+        }],
+        "totalFeatures": 1,
+        "numberMatched": 1,
+        "numberReturned": 1,
+        "timeStamp": "2023-01-03T18:55:48.913Z",
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:EPSG::3005"
+          }
+        }
+      }
+      """;
+
+
+  public static final String OPENMAPS_EMPTY = """
+      {
+        "type": "FeatureCollection",
+        "features": [],
+        "totalFeatures": 0,
+        "numberMatched": 0,
+        "numberReturned": 0,
+        "timeStamp": "2023-01-03T18:55:48.913Z",
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:EPSG::3005"
+          }
+        }
+      }
+      """;
+
+  public static final String OPENMAPS_OK_RESPONSE = """
+      {        
+        "FIRST_NATION_FEDERAL_NAME": "Songhees Nation",
+        "FIRST_NATION_FEDERAL_ID": 656,        
+        "ADDRESS_LINE1": "1100 Admirals Road",
+        "ADDRESS_LINE2": " ",
+        "OFFICE_CITY": "VICTORIA",
+        "OFFICE_PROVINCE": "BC",
+        "OFFICE_POSTAL_CODE": "V9A 2P6"
+      }
+      """;
 }
