@@ -2,6 +2,7 @@ package ca.bc.gov.app.handlers.client;
 
 import ca.bc.gov.app.service.client.FsaClientService;
 import ca.bc.gov.app.util.HandlerUtils;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ public class FsaClientHandler {
   public Mono<ServerResponse> findActiveClientTypeCodes(ServerRequest serverRequest) {
     return
         fsaClientService
-            .findActiveClientTypeCodes()
+            .findActiveClientTypeCodes(LocalDate.now())
             .flatMap(
                 response -> ServerResponse.ok()
                     .body(Mono.just(response), List.class)

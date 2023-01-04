@@ -15,11 +15,11 @@ import reactor.core.publisher.Mono;
 public class FsaClientService {
   private final ClientTypeCodeRepository clientTypeCodeRepository;
 
-  public Mono<List<ClientCodeTypeDTO>> findActiveClientTypeCodes() {
+  public Mono<List<ClientCodeTypeDTO>> findActiveClientTypeCodes(LocalDate targetDate) {
 
     return
         clientTypeCodeRepository
-            .findActiveAt(LocalDate.now())
+            .findActiveAt(targetDate)
             .sort(Comparator.comparing(ClientTypeCodeEntity::getDescription))
             .map(entity -> new ClientCodeTypeDTO(
                 entity.getCode(),

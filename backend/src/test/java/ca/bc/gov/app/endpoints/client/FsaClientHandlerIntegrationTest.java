@@ -1,4 +1,4 @@
-package ca.bc.gov.app.endpoints.fsa;
+package ca.bc.gov.app.endpoints.client;
 
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import lombok.extern.slf4j.Slf4j;
