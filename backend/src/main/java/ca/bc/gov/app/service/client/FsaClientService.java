@@ -1,10 +1,8 @@
 package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.dto.client.ClientCodeTypeDTO;
-import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +18,6 @@ public class FsaClientService {
     return
         clientTypeCodeRepository
             .findActiveAt(targetDate)
-            .sort(Comparator.comparing(ClientTypeCodeEntity::getDescription))
             .map(entity -> new ClientCodeTypeDTO(
                 entity.getCode(),
                 entity.getDescription(),

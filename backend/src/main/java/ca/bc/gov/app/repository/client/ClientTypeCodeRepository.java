@@ -11,9 +11,15 @@ import reactor.core.publisher.Flux;
 public interface ClientTypeCodeRepository
     extends ReactiveCrudRepository<ClientTypeCodeEntity, String> {
 
-  @Query("SELECT * FROM nrfc.client_type_code WHERE "
-      + "(expiry_date is null or expiry_date > :activeDate) and "
-      + "effective_date <= :activeDate")
+  @Query("""
+      SELECT * FROM
+        nrfc.client_type_code 
+      WHERE 
+        (expiry_date is null or expiry_date > :activeDate)
+        and effective_date <= :activeDate
+      ORDER BY 
+        description
+      """)
   Flux<ClientTypeCodeEntity> findActiveAt(LocalDate activeDate);
 
 }
