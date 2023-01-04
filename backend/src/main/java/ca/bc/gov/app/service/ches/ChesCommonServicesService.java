@@ -134,7 +134,7 @@ public class ChesCommonServicesService {
 
       OAuthClientRequest request =
           OAuthClientRequest
-              .tokenLocation(configuration.getTokenUrl().toString())
+              .tokenLocation(configuration.getTokenUrl())
               .setGrantType(GrantType.CLIENT_CREDENTIALS)
               .setClientId(configuration.getClientId())
               .setClientSecret(configuration.getClientSecret())

@@ -4,12 +4,12 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 public interface BaseRouter {
-  public abstract String basePath();
+  String basePath();
 
-  public abstract RouterFunction<ServerResponse> routerRoute();
+  RouterFunction<ServerResponse> routerRoute();
 
-  public abstract String routeTagName();
+  String routeTagName();
 
-  public abstract String routeTagDescription();
+  String routeTagDescription();
 
 }
