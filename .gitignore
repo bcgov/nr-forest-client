@@ -117,3 +117,229 @@ snyk.sarif
 
 # Dist
 **/dist/**
+
+
+### Eclipse ###
+backend/.metadata
+backend/bin/
+backend/tmp/
+backend/*.tmp
+backend/*.bak
+backend/*.swp
+backend/*~.nib
+backend/local.properties
+backend/.settings/
+backend/.loadpath
+backend/.recommenders
+
+# External tool builders
+backend/.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+backend/*.launch
+
+# PyDev specific (Python IDE for Eclipse)
+backend/*.pydevproject
+
+# CDT-specific (C/C++ Development Tooling)
+backend/.cproject
+
+# CDT- autotools
+backend/.autotools
+
+# Java annotation processor (APT)
+backend/.factorypath
+
+# PDT-specific (PHP Development Tools)
+backend/.buildpath
+
+# sbteclipse plugin
+backend/.target
+
+# Tern plugin
+backend/.tern-project
+
+# TeXlipse plugin
+backend/.texlipse
+
+# STS (Spring Tool Suite)
+backend/.springBeans
+
+# Code Recommenders
+backend/.recommenders/
+
+# Annotation Processing
+backend/.apt_generated/
+backend/.apt_generated_test/
+
+# Scala IDE specific (Scala & Java development for Eclipse)
+backend/.cache-main
+backend/.scala_dependencies
+backend/.worksheet
+
+# Uncomment this line if you wish to ignore the project description file.
+# Typically, this file would be tracked if it contains build/dependency configurations:
+#.project
+
+
+### Eclipse Patch ###
+# Spring Boot Tooling
+backend/.sts4-cache/
+
+### Intellij+all ###
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+# User-specific stuff
+backend/.idea/**/workspace.xml
+backend/.idea/**/tasks.xml
+backend/.idea/**/usage.statistics.xml
+backend/.idea/**/dictionaries
+backend/.idea/**/shelf
+
+# AWS User-specific
+backend/.idea/**/aws.xml
+
+# Generated files
+backend/.idea/**/contentModel.xml
+
+# Sensitive or high-churn files
+backend/.idea/**/dataSources/
+backend/.idea/**/dataSources.ids
+backend/.idea/**/dataSources.local.xml
+backend/.idea/**/sqlDataSources.xml
+backend/.idea/**/dynamic.xml
+backend/.idea/**/uiDesigner.xml
+backend/.idea/**/dbnavigator.xml
+
+# Gradle
+backend/.idea/**/gradle.xml
+backend/.idea/**/libraries
+
+# Gradle and Maven with auto-import
+# When using Gradle or Maven with auto-import, you should exclude module files,
+# since they will be recreated, and may cause churn.  Uncomment if using
+# auto-import.
+# .idea/artifacts
+# .idea/compiler.xml
+# .idea/jarRepositories.xml
+# .idea/modules.xml
+# .idea/*.iml
+# .idea/modules
+# *.iml
+# *.ipr
+
+# CMake
+backend/cmake-build-*/
+
+# Mongo Explorer plugin
+backend/.idea/**/mongoSettings.xml
+
+# File-based project format
+backend/*.iws
+
+# IntelliJ
+backend/out/
+
+# mpeltonen/sbt-idea plugin
+backend/.idea_modules/
+
+# JIRA plugin
+backend/atlassian-ide-plugin.xml
+
+# Cursive Clojure plugin
+backend/.idea/replstate.xml
+
+# SonarLint plugin
+backend/.idea/sonarlint/
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+backend/com_crashlytics_export_strings.xml
+backend/crashlytics.properties
+backend/crashlytics-build.properties
+backend/fabric.properties
+
+# Editor-based Rest Client
+backend/.idea/httpRequests
+
+# Android studio 3.1+ serialized cache file
+.idea/caches/build_file_checksums.ser
+
+### Intellij+all Patch ###
+# Ignore everything but code style settings and run configurations
+# that are supposed to be shared within teams.
+
+backend/.idea/*
+
+!backend/.idea/codeStyles
+!backend/.idea/runConfigurations
+
+### Java ###
+# Compiled class file
+backend/*.class
+
+# Log file
+backend/*.log
+
+# BlueJ files
+backend/*.ctxt
+
+# Mobile Tools for Java (J2ME)
+backend/.mtj.tmp/
+
+# Package Files #
+backend/*.jar
+backend/*.war
+backend/*.nar
+backend/*.ear
+backend/*.zip
+backend/*.tar.gz
+backend/*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+backend/hs_err_pid*
+backend/replay_pid*
+
+### Maven ###
+backend/target/
+backend/pom.xml.tag
+backend/pom.xml.releaseBackup
+backend/pom.xml.versionsBackup
+backend/pom.xml.next
+backend/release.properties
+backend/dependency-reduced-pom.xml
+backend/buildNumber.properties
+backend/.mvn/timing.properties
+# https://github.com/takari/maven-wrapper#usage-without-binary-jar
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Eclipse m2e generated files
+# Eclipse Core
+backend/.project
+# JDT-specific (Eclipse Java Development Tools)
+backend/.classpath
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+.ionide
+
+# End of https://www.toptal.com/developers/gitignore/api/java,maven,eclipse,intellij+all,visualstudiocode
+
+### User related configuration
+# The below expression will prevent user specific configuration files from being added to the repository
+backend/config/application-dev-*.yml
