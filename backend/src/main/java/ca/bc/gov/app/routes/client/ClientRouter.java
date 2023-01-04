@@ -8,8 +8,8 @@ import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
 import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
-import ca.bc.gov.app.dto.client.ClientCodeTypeDTO;
-import ca.bc.gov.app.handlers.client.FsaClientHandler;
+import ca.bc.gov.app.dto.client.ClientCodeTypeDto;
+import ca.bc.gov.app.handlers.client.ClientHandler;
 import ca.bc.gov.app.routes.BaseRouter;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +21,9 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Component
 @RequiredArgsConstructor
-public class FsaClientRouter implements BaseRouter {
+public class ClientRouter implements BaseRouter {
 
-  private final FsaClientHandler clientHandler;
+  private final ClientHandler clientHandler;
 
   @Override
   public String basePath() {
@@ -56,7 +56,7 @@ public class FsaClientRouter implements BaseRouter {
     return ops -> ops
         .tag(routeTagName())
         .description("List active clients with their type codes")
-        .beanClass(FsaClientHandler.class)
+        .beanClass(ClientHandler.class)
         .beanMethod("findActiveClientTypeCodes")
         .operationId("findActiveClientTypeCodes")
         .requestBody(requestBodyBuilder())
@@ -71,7 +71,7 @@ public class FsaClientRouter implements BaseRouter {
                                 .schema(
                                     schemaBuilder()
                                         .name("ClientCodeType")
-                                        .implementation(ClientCodeTypeDTO.class)
+                                        .implementation(ClientCodeTypeDto.class)
                                 )
                         )
                         .mediaType(MediaType.APPLICATION_JSON_VALUE)

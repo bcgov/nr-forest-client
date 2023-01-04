@@ -4,7 +4,7 @@ import ca.bc.gov.app.dto.ches.ChesRequest;
 import ca.bc.gov.app.exception.InvalidRequestObjectException;
 import ca.bc.gov.app.handlers.AbstractHandler;
 import ca.bc.gov.app.service.ches.ChesCommonServicesService;
-import ca.bc.gov.app.util.HandlerUtils;
+import ca.bc.gov.app.util.HandlerUtil;
 import ca.bc.gov.app.validator.ches.ChesRequestValidator;
 import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +43,8 @@ public class ChesHandler extends AbstractHandler<ChesRequest, ChesRequestValidat
                         )
                         .build()
             )
-            .doOnError(ResponseStatusException.class, HandlerUtils.handleStatusResponse())
-            .doOnError(HandlerUtils.handleError());
+            .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())
+            .doOnError(HandlerUtil.handleError());
 
   }
 

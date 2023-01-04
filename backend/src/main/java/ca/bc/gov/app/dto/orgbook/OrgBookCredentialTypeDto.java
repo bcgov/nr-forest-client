@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(name = "CredentialType")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record OrgBookCredentialTypeDTO(
+public record OrgBookCredentialTypeDto(
     Integer id
 ) {
 }

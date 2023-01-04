@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(name = "TopicName")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record OrgBookTopicNameDTO(
+public record OrgBookTopicNameDto(
     Integer id,
     String text,
     String language,

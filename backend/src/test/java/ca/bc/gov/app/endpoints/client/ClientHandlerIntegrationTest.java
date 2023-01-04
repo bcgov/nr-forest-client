@@ -9,7 +9,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 @Slf4j
 @DisplayName("Integrated Test | FSA Client Controller")
-class FsaClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
+class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Autowired
   protected WebTestClient client;

@@ -7,7 +7,7 @@ import java.time.ZonedDateTime;
 
 @Schema(name = "CredentialSet")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record OrgBookCredentialSetDTO(
+public record OrgBookCredentialSetDto(
     Integer id,
     @JsonProperty("create_timestamp") ZonedDateTime createdAt,
     @JsonProperty("update_timestamp") ZonedDateTime updatedAt,

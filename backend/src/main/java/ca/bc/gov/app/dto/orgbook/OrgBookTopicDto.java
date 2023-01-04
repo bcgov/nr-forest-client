@@ -8,16 +8,16 @@ import java.util.List;
 
 @Schema(name = "TopicResult")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record OrgBookTopicDTO(
+public record OrgBookTopicDto(
     Integer id,
     @JsonProperty("source_id") String sourceId,
     @JsonProperty("type") String topicType,
-    List<OrgBookTopicNameDTO> names,
-    List<OrgBookTopicAddressDTO> addresses,
-    List<OrgBookTopicAttributeDTO> attributes,
+    List<OrgBookTopicNameDto> names,
+    List<OrgBookTopicAddressDto> addresses,
+    List<OrgBookTopicAttributeDto> attributes,
 
-    @JsonProperty("credential_set") OrgBookCredentialSetDTO credentialSet,
-    @JsonProperty("credentialType") OrgBookCredentialTypeDTO credentialType,
+    @JsonProperty("credential_set") OrgBookCredentialSetDto credentialSet,
+    @JsonProperty("credentialType") OrgBookCredentialTypeDto credentialType,
     Boolean inactive,
     Boolean revoked,
     @JsonProperty("effective_date") ZonedDateTime effectiveAt,

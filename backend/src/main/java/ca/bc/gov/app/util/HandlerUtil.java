@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class HandlerUtils {
+public class HandlerUtil {
 
 
   public static Consumer<ResponseStatusException> handleStatusResponse() {

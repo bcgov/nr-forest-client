@@ -13,6 +13,6 @@ public record OrgBookResultListResponse(
     Integer page,
 
     @Schema(description = "The list of named results")
-    List<OrgBookNameDTO> results
+    List<OrgBookNameDto> results
 ) {
 }

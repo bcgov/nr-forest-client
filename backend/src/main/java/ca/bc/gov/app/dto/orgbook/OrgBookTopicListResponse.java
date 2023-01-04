@@ -18,6 +18,6 @@ public record OrgBookTopicListResponse(
     Integer pageSize,
 
     @Schema(description = "The list of topic results")
-    List<OrgBookTopicDTO> results
+    List<OrgBookTopicDto> results
 ) {
 }

@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(name = "NamedResult")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record OrgBookNameDTO(
+public record OrgBookNameDto(
     @Schema(
         name = "value",
         title = "Name of the entity being searched",

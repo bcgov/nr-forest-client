@@ -3,7 +3,7 @@ package ca.bc.gov.app.dto.client;
 import java.time.LocalDate;
 
 
-public record ClientCodeTypeDTO(
+public record ClientCodeTypeDto(
     String code,
     String description,
     LocalDate effectiveDate,

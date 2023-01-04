@@ -2,7 +2,7 @@ package ca.bc.gov.app.handlers.orgbook;
 
 import ca.bc.gov.app.dto.orgbook.OrgBookTopicListResponse;
 import ca.bc.gov.app.service.orgbook.OrgBookApiService;
-import ca.bc.gov.app.util.HandlerUtils;
+import ca.bc.gov.app.util.HandlerUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -26,8 +26,8 @@ public class OrgBookHandler {
                 response -> ServerResponse.ok()
                     .body(Mono.just(response), OrgBookTopicListResponse.class)
             )
-            .doOnError(ResponseStatusException.class, HandlerUtils.handleStatusResponse())
-            .doOnError(HandlerUtils.handleError());
+            .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())
+            .doOnError(HandlerUtil.handleError());
   }
 
   public Mono<ServerResponse> findByName(ServerRequest serverRequest) {
@@ -38,7 +38,7 @@ public class OrgBookHandler {
                 response -> ServerResponse.ok()
                     .body(Mono.just(response), OrgBookTopicListResponse.class)
             )
-            .doOnError(ResponseStatusException.class, HandlerUtils.handleStatusResponse())
-            .doOnError(HandlerUtils.handleError());
+            .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())
+            .doOnError(HandlerUtil.handleError());
   }
 }

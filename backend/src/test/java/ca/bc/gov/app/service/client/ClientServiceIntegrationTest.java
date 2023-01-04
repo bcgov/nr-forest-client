@@ -14,10 +14,10 @@ import reactor.test.StepVerifier;
 
 @Slf4j
 @DisplayName("Integrated Test | FSA Client Service")
-class FsaClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
+class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Autowired
-  private FsaClientService service;
+  private ClientService service;
 
   @ParameterizedTest
   @MethodSource("date")

@@ -1,7 +1,7 @@
 package ca.bc.gov.app.handlers.client;
 
-import ca.bc.gov.app.service.client.FsaClientService;
-import ca.bc.gov.app.util.HandlerUtils;
+import ca.bc.gov.app.service.client.ClientService;
+import ca.bc.gov.app.util.HandlerUtil;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -15,20 +15,20 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class FsaClientHandler {
+public class ClientHandler {
 
-  private final FsaClientService fsaClientService;
+  private final ClientService clientService;
 
   public Mono<ServerResponse> findActiveClientTypeCodes(ServerRequest serverRequest) {
     return
-        fsaClientService
+        clientService
             .findActiveClientTypeCodes(LocalDate.now())
             .flatMap(
                 response -> ServerResponse.ok()
                     .body(Mono.just(response), List.class)
             )
-            .doOnError(ResponseStatusException.class, HandlerUtils.handleStatusResponse())
-            .doOnError(HandlerUtils.handleError());
+            .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())
+            .doOnError(HandlerUtil.handleError());
   }
 
 }
