@@ -11,15 +11,24 @@ services:
     hostname: database
     image: postgres:12
     restart: always
+    ports:
+      - "5432:5432"
     volumes:
+      - ./database/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
       - /pgdata
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "db_prod" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "3"
 
   backend:
     container_name: backend
-    entrypoint:
-      - "sh"
-      - "-c"
-      - "npm i && npm run start"
     environment:
       NODE_ENV: development
       POSTGRESQL_HOST: database
@@ -27,28 +36,25 @@ services:
       POSTGRESQL_PASSWORD: default
       POSTGRESQL_DATABASE: default
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 1m30s
       timeout: 10s
       retries: 3
       start_period: 40s
     hostname: backend
-    image: node:18
+    image: ghcr.io/bcgov/nr-forest-client/backend
     links:
       - database
     ports:
-      - "3001:3000"
-    volumes:
-      - ./backend:/app:z
-      - /app/node_modules
-    working_dir: "/app"
+      - "3000:3000"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "3"
 
   frontend:
     container_name: frontend
-    entrypoint:
-      - "sh"
-      - "-c"
-      - "npm i && npm run start"
     environment:
       NODE_ENV: development
       VITE_BACKEND_URL: backend
@@ -59,12 +65,13 @@ services:
       retries: 3
       start_period: 40s
     hostname: frontend
-    image: node:18
+    image: ghcr.io/bcgov/nr-forest-client/frontend
     links:
       - backend
     ports:
       - "8080:8080"
-    volumes:
-      - ./frontend:/app:z
-      - /app/node_modules
-    working_dir: "/app"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "3"
