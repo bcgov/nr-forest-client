@@ -343,3 +343,5 @@ backend/.classpath
 ### User related configuration
 # The below expression will prevent user specific configuration files from being added to the repository
 backend/config/application-dev-*.yml
+.checkstyle
+backend/.checkstyle
