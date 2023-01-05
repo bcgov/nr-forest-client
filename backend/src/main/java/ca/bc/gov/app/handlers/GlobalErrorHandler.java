@@ -29,9 +29,9 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Component
 @Order(-2)
-public class ErrorHandlingController extends AbstractErrorWebExceptionHandler {
+public class GlobalErrorHandler extends AbstractErrorWebExceptionHandler {
 
-  public ErrorHandlingController(
+  public GlobalErrorHandler(
       ErrorAttributes errorAttributes,
       WebProperties webProperties,
       ApplicationContext applicationContext,
