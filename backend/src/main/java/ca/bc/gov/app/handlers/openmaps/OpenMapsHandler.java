@@ -2,7 +2,7 @@ package ca.bc.gov.app.handlers.openmaps;
 
 import ca.bc.gov.app.dto.openmaps.PropertyDTO;
 import ca.bc.gov.app.service.openmaps.OpenMapsService;
-import ca.bc.gov.app.util.HandlerUtils;
+import ca.bc.gov.app.util.HandlerUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ public class OpenMapsHandler {
                     ServerResponse.ok()
                         .body(Mono.just(companyId), PropertyDTO.class)
             )
-            .doOnError(ResponseStatusException.class, HandlerUtils.handleStatusResponse())
-            .doOnError(HandlerUtils.handleError());
+            .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())
+            .doOnError(HandlerUtil.handleError());
   }
 }
