@@ -9,7 +9,7 @@ import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
 import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
-import ca.bc.gov.app.dto.openmaps.PropertyDTO;
+import ca.bc.gov.app.dto.openmaps.PropertyDto;
 import ca.bc.gov.app.handlers.openmaps.OpenMapsHandler;
 import ca.bc.gov.app.routes.BaseRouter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -80,7 +80,7 @@ public class OpenMapsRouter implements BaseRouter {
                         .schema(
                             schemaBuilder()
                                 .name("FirstNationResponse")
-                                .implementation(PropertyDTO.class)
+                                .implementation(PropertyDto.class)
                         )
                         .mediaType(MediaType.APPLICATION_JSON_VALUE)
                 )

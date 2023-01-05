@@ -2,7 +2,7 @@ package ca.bc.gov.app.dto.openmaps;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record PropertyDTO(
+public record PropertyDto(
     @JsonProperty("FIRST_NATION_FEDERAL_NAME") String firstNationFederalName,
     @JsonProperty("FIRST_NATION_FEDERAL_ID") Integer firstNationFederalId,
     @JsonProperty("ADDRESS_LINE1") String addressLine1,

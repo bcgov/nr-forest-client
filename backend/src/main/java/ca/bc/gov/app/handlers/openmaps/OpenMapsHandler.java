@@ -1,6 +1,6 @@
 package ca.bc.gov.app.handlers.openmaps;
 
-import ca.bc.gov.app.dto.openmaps.PropertyDTO;
+import ca.bc.gov.app.dto.openmaps.PropertyDto;
 import ca.bc.gov.app.service.openmaps.OpenMapsService;
 import ca.bc.gov.app.util.HandlerUtil;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class OpenMapsHandler {
             .flatMap(
                 companyId ->
                     ServerResponse.ok()
-                        .body(Mono.just(companyId), PropertyDTO.class)
+                        .body(Mono.just(companyId), PropertyDto.class)
             )
             .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())
             .doOnError(HandlerUtil.handleError());

@@ -2,8 +2,8 @@ package ca.bc.gov.app.service.openmaps;
 
 import static java.util.function.Predicate.not;
 
-import ca.bc.gov.app.dto.openmaps.OpenMapsResponseDTO;
-import ca.bc.gov.app.dto.openmaps.PropertyDTO;
+import ca.bc.gov.app.dto.openmaps.OpenMapsResponseDto;
+import ca.bc.gov.app.dto.openmaps.PropertyDto;
 import ca.bc.gov.app.exception.NoFirstNationException;
 import java.util.HashMap;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class OpenMapsService {
     this.openMapsApi = openMapsApi;
   }
 
-  public Mono<PropertyDTO> getFirstNation(String firstNationId) {
+  public Mono<PropertyDto> getFirstNation(String firstNationId) {
 
     return
         openMapsApi
@@ -42,9 +42,9 @@ public class OpenMapsService {
                     .build(new HashMap<>())
             )
             .accept(MediaType.APPLICATION_JSON)
-            .exchangeToMono(clientResponse -> clientResponse.bodyToMono(OpenMapsResponseDTO.class))
-            .filter(not(OpenMapsResponseDTO::empty))
-            .map(OpenMapsResponseDTO::features)
+            .exchangeToMono(clientResponse -> clientResponse.bodyToMono(OpenMapsResponseDto.class))
+            .filter(not(OpenMapsResponseDto::empty))
+            .map(OpenMapsResponseDto::features)
             .map(feature -> feature.get(0).properties())
             .switchIfEmpty(Mono.error(new NoFirstNationException(firstNationId)));
 
