@@ -75,5 +75,20 @@ and edit the configuration as the following images.
 
 [![eclipse run configuration main](docs/eclipse-run-config1.png)](docs/eclipse-run-config1.png)
 
-[![eclipse run configuration main](docs/eclipse-run-config2.png)](docs/eclipse-run-config2.png)
+[![eclipse run configuration params](docs/eclipse-run-config2.png)](docs/eclipse-run-config2.png)
 
+
+## Setting up Lombok on Eclipse
+
+If you're running eclipse, you will need to manually install lombok in order for it to work. 
+The easiest way of doing that is by running any mavem command that would trigger the download of the lib, such as
+`mvn clean compile`.
+
+Once it's done, navigate to your repository folder (its usually inside your user folder, called *.m2/repository*) 
+and look the latest version of lombok (inside org/projectlombok/lombok/) and run the lombok jar, 
+like `java -jar lombok-X.Y.Z.jar`.
+
+[![eclipse lombok install](docs/eclipse-lombok.png)](docs/eclipse-lombok.png)
+
+A screen will pop up, listing all the possible IDEs, select yours and install/update it. Once it's done, 
+restart eclipse.
