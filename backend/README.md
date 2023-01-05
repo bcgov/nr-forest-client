@@ -57,3 +57,23 @@ and edit the configuration as the following image.
 
 [![intellij run configuration](docs/intellij-run-config.png)](docs/intellij-run-config.png)
 
+## Configuring Eclipse Code Style
+
+You will find a copy of the [google code style](docs/eclipse-java-google-style.xml) inside our [docs](docs) folder.
+
+On the window > preferences screen, go to Java > Code Style > Formatter, 
+import the xml file and keep **GoogleStyle** selected as the following image:
+
+[![eclipse code style](docs/eclipse-code-style.png)](docs/eclipse-code-style.png)
+
+
+## Configuring Eclipse Run Configuration
+
+To set your profile on Eclipse, just run the
+[application main class](src/main/java/ca/bc/gov/app/BootApplication.java)
+and edit the configuration as the following images.
+
+[![eclipse run configuration main](docs/eclipse-run-config1.png)](docs/eclipse-run-config1.png)
+
+[![eclipse run configuration main](docs/eclipse-run-config2.png)](docs/eclipse-run-config2.png)
+
