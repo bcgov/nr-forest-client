@@ -45,7 +45,7 @@
     "core-js": "^3.27.1",
     "dotenv": "^16.0.0",
     "serve": "^14.1.2",
-    "unplugin-icons": "^0.14.14",
+    "unplugin-icons": "^0.15.0",
     "unplugin-vue-components": "^0.22.11",
     "vite": "^2.8.6",
     "vue": "^3.2.31",
