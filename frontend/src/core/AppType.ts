@@ -23,14 +23,6 @@ export interface FormRadioGroupOptionType {
   text: string;
 }
 
-export interface FormUploadFileType {
-  content: string;
-  contentType: string;
-  encoding: string;
-  filename: string;
-  filesize: number;
-}
-
 export interface CommonObjectType {
   [key: string]: any;
 }
@@ -60,8 +52,12 @@ export interface FormComponentSchemaType {
     fieldId: string;
     value: string | number | boolean;
   };
-  options?: Array<CommonObjectType>; // for select, checkbox group, radio group
+  options?:
+    | Array<FromSelectOptionType>
+    | Array<FormCheckBoxGroupOptionType>
+    | Array<FormRadioGroupOptionType>; // for select, checkbox group, radio group
   addButtonText?: string; // for table
+  deleteButtonText?: string; // for group
   columns?: Array<CommonObjectType>; // for table and group
 }
 

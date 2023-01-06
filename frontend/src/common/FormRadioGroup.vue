@@ -24,18 +24,15 @@ import type {
 } from "../core/AppType";
 
 const props = defineProps({
-  // form field template props (optional): label, required, tooltip, note, id
+  // form field template props (optional): label, required, tooltip, note, id, errorMsg
   fieldProps: {
     type: Object as PropType<FormFieldTemplateType>,
-    default: {
-      label: "Hello",
-    },
+    default: { id: "form-radio-group" },
   },
-  value: Array as PropType<Array<string>>,
+  value: { type: Array as PropType<Array<string>>, required: true },
   options: {
     type: Array as PropType<Array<FormRadioGroupOptionType>> | undefined,
     required: true,
-    default: [{ code: 1, text: "Option 1" }],
   },
   disabled: { type: Boolean, default: false },
   state: { type: Boolean, default: null },

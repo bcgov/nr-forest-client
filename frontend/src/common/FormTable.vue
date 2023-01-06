@@ -60,13 +60,13 @@ const props = defineProps({
 
 const emit = defineEmits(["updateFormArrayValue", "addRow", "deleteRow"]);
 
-const updateFormArrayValue = (id, newValue, row) => {
+const updateFormArrayValue = (id: string, newValue: any, row: number) => {
   emit("updateFormArrayValue", id, newValue, row);
 };
 const addRow = () => {
   emit("addRow");
 };
-const deleteRow = (row) => {
+const deleteRow = (row: number) => {
   emit("deleteRow", row);
 };
 </script>
