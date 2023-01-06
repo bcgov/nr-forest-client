@@ -27,6 +27,7 @@ jobs:
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
         with:
           commands: |
+            chmod +x ./mvnw
             ./mvnw test
           dir: backend
           java-cache: maven
