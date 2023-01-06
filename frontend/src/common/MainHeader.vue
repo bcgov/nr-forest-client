@@ -3,7 +3,7 @@
     <div class="banner">
       <a href="https://gov.bc.ca">
         <img
-          src="/bc_for_logo.png"
+          src="/img/bc_for_logo.png"
           alt="Go to the Government of British Columbia website"
         />
       </a>
