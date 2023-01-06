@@ -63,7 +63,7 @@
     "@vue/test-utils": "^2.2.7",
     "c8": "^7.11.0",
     "cypress": "^12.3.0",
-    "eslint": "^8.30.0",
+    "eslint": "^8.31.0",
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-vue": "^8.5.0",
     "jsdom": "^20.0.3",
