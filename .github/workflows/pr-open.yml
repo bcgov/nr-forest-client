@@ -42,10 +42,10 @@ jobs:
         id: changelog
         with:
           github-token: ${{ github.token }}
-          output-file: 'CHANGELOG.md'
-          skip-version-file: 'true'
-          skip-commit: 'true'
-          git-push: 'false'
+          output-file: "CHANGELOG.md"
+          skip-version-file: "true"
+          skip-commit: "true"
+          git-push: "false"
           git-branch: refs/heads/${{ github.head_ref }}
 
       - name: Checkout pr
@@ -60,9 +60,9 @@ jobs:
         with:
           message: |
             # Current changelog
-            
+
             ${{ steps.changelog.outputs.clean_changelog }}
-          comment_includes: '# Current changelog'
+          comment_includes: "# Current changelog"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   pr-greeting:
@@ -88,7 +88,6 @@ jobs:
 
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
-
 
   builds:
     name: Builds
@@ -124,7 +123,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -141,7 +140,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -160,14 +159,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v0.2.0-rc1
+        uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: true
-          health_url: health
+          verification_path: health
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}
@@ -187,7 +186,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
