@@ -63,7 +63,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -83,7 +83,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -105,7 +105,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v0.2.0-rc1
+        uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -136,7 +136,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -165,7 +165,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -191,7 +191,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -215,7 +215,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -250,7 +250,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v0.1.0
+        uses: bcgov-nr/action-deployer-openshift@v1.0.0
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
