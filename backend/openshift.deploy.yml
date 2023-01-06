@@ -42,21 +42,6 @@ parameters:
   - name: CHES_API_URL
     description: CHES service api url
     required: true
-  - name: ORACLEDB_USER
-    description: Oracle database user name
-    required: true
-  - name: ORACLEDB_PASSWORD
-    description: Oracle database password
-    required: true
-  - name: ORACLEDB_DATABASE
-    description: Oracle database database name
-    required: true
-  - name: ORACLEDB_HOST
-    description: Oracle database host
-    required: true
-  - name: ORACLEDB_SERVICENAME
-    description: Oracle database service name
-    required: true
   - name: NODE_ENV
     description: environment mode
     required: true
@@ -79,11 +64,6 @@ objects:
       x-api-key: "${X_API_KEY}"
       ches-client-id: "${CHES_CLIENT_ID}"
       ches-client-secret: "${CHES_CLIENT_SECRET}"
-      oracle-user: "${ORACLEDB_USER}"
-      oracle-password: "${ORACLEDB_PASSWORD}"
-      oracle-database: "${ORACLEDB_DATABASE}"
-      oracle-host: "${ORACLEDB_HOST}"
-      oracle-service: "${ORACLEDB_SERVICENAME}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -160,11 +140,6 @@ objects:
                   value: ${CHES_TOKEN_URL}
                 - name: CHES_API_URL
                   value: ${CHES_API_URL}
-                - name: ORACLEDB_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: oracle-user
                 - name: POSTGRESQL_HOST
                   value: ${NAME}-${ZONE}-database
                 - name: POSTGRESQL_DATABASE
@@ -182,28 +157,6 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-database
                       key: database-user
-                - name: ORACLEDB_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: oracle-password
-                - name: ORACLEDB_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: oracle-database
-                - name: ORACLEDB_HOST
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: oracle-host
-                - name: ORACLEDB_SERVICENAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: oracle-service
-                - name: ORACLEDB_PORT
-                  value: "1543"
 
               ports:
                 - containerPort: 3000
@@ -219,7 +172,7 @@ objects:
                 successThreshold: 1
                 failureThreshold: 12
                 httpGet:
-                  path: /
+                  path: /health
                   port: 3000
                   scheme: HTTP
                 initialDelaySeconds: 180

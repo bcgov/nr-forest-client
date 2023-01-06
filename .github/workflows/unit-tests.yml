@@ -27,13 +27,12 @@ jobs:
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
         with:
           commands: |
-            ./mvnw test
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
           dir: backend
           java-cache: maven
           java-distribution: temurin
           java-version: "17"
           sonar_args: >
-            -Dsonar.exclusions=**/coverage/**
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-backend
           sonar_project_token: ${{ secrets.SONAR_TOKEN_BACKEND }}

@@ -1,0 +1,26 @@
+server:
+  error:
+    whitelabel:
+      enabled: false
+
+ca:
+  bc:
+    gov:
+      nrs:
+        ches:
+          uri: 'http://127.0.0.1:10010/chess/uri'
+          tokenUrl: 'http://127.0.0.1:10010/token/uri'
+          clientId: clientId
+          clientSecret: secret
+          scope: scope
+        orgbook:
+          uri: 'http://127.0.0.1:10020'
+        openmaps:
+          uri: 'http://127.0.0.1:10030/geo/pub/ows'
+
+logging:
+  level:
+    org:
+      springframework.test: OFF
+      testcontainers: OFF
+    com.github.dockerjava: OFF

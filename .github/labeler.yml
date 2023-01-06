@@ -1,0 +1,63 @@
+github_actions:
+  - .github/*
+
+tests:
+  - backend/src/test/**/*.java
+  - frontend/cypress/**/*
+  - frontend/src/tests/**/*.spec.ts
+
+source:
+  - backend/src/main/**/*.java
+  - frontend/src/**/*.ts
+
+docker:
+  - any: ['Dockerfile','dockerfile-entrypoint.sh']
+
+controller:
+  - backend/src/main/**/controller/*.java
+
+dto:
+  - backend/src/main/**/dto/*.java
+
+entity:
+  - backend/src/main/**/entity/*.java
+
+repository:
+  - backend/src/main/**/repository/*.java
+
+configuration:
+  - backend/src/main/**/configuration/*.java
+  - backend/src/main/resources/**/*
+  - backend/config/**/*
+  - frontend/tsconfig*
+  - frontend/vite*
+  - frontend/*.json
+
+service:
+  - backend/src/main/**/service/*.java
+
+frontend:
+  - frontend/**/*
+
+backend:
+  - backend/**/*
+
+database:
+  - database/**/*
+
+dependencies:
+  - any: ['backend/pom.xml','frontend/package.json','package-lock.json']
+
+documentation:
+  - backend/docs/**/*
+  - frontend/docs/**/*
+  - docs/**/*
+
+java:
+  - backend/**/*
+
+javascript:
+  - frontend/**/*
+
+openshift:
+  - '**/openshift.*.yml'
