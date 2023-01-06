@@ -1,6 +1,6 @@
 /* -------------- form component type ----------------- */
 export interface FormFieldTemplateType {
-  label: string;
+  label?: string;
   required?: boolean;
   id: string; // id is required when using tooltip, and need to be unique
   note?: string;
@@ -59,6 +59,12 @@ export interface FormComponentSchemaType {
   addButtonText?: string; // for table
   deleteButtonText?: string; // for group
   columns?: Array<CommonObjectType>; // for table and group
+}
+
+export interface FormValidationRequiredField {
+  containerId: string;
+  fieldId: string;
+  columnId?: string;
 }
 
 export interface FormValidationResultType {

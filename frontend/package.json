@@ -1,10 +1,10 @@
 {
   "name": "forest-client-frontend",
   "version": "0.0.1",
-  "description": "Frontend for old growth project",
+  "description": "Frontend for forest client project",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bcgov/nr-old-growth-integration.git"
+    "url": "git+https://github.com/bcgov/nr-forest-client.git"
   },
   "keywords": [
     "openshift",
@@ -17,9 +17,9 @@
   "author": "Catherine Meng, Maria Martinez",
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/bcgov/nr-old-growth-integration/issues"
+    "url": "https://github.com/bcgov/nr-forest-client/issues"
   },
-  "homepage": "https://github.com/bcgov/nr-old-growth-integration",
+  "homepage": "https://github.com/bcgov/nr-forest-client",
   "private": true,
   "scripts": {
     "start": "vite --host",

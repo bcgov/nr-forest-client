@@ -1,4 +1,11 @@
-const formApplyReason = [
+import type {
+  FormSectionSchemaType,
+  FormComponentSchemaType,
+  FormRadioGroupOptionType,
+  FormValidationRequiredField,
+} from "../../core/AppType";
+
+const formApplyReason: Array<FormRadioGroupOptionType> = [
   { code: "never_had", text: "I've never had a client number" },
   {
     code: "need_new",
@@ -7,7 +14,7 @@ const formApplyReason = [
   { code: "joint_venture", text: "I'm entering into a joint venture" },
 ];
 
-const formTenureType = [
+const formTenureType: Array<FormRadioGroupOptionType> = [
   { code: "forest", text: "Forest" },
   { code: "range", text: "Range" },
   { code: "oilgas", text: "Oil & gas" },
@@ -56,7 +63,7 @@ export const newClientData = {
 };
 
 // each id is aligned with the newClientData
-export const beginSectionSchema = {
+export const beginSectionSchema: FormSectionSchemaType = {
   container: { title: "Let's begin", id: "begin" }, // property for CollapseCard when use it
   content: [
     // form content for each CollapseCard
@@ -85,7 +92,7 @@ export const beginSectionSchema = {
   ],
 };
 
-const informationSectionCommonSchema = [
+const informationSectionCommonSchema: Array<FormComponentSchemaType> = [
   {
     fieldProps: { label: "First name", required: true, id: "first_name" },
     type: "input",
@@ -104,7 +111,11 @@ const informationSectionCommonSchema = [
   },
 ];
 
-export const informationSectionSchema = {
+export const informationSectionSchema: {
+  individual: FormSectionSchemaType;
+  soleProprietorship: FormSectionSchemaType;
+  company: FormSectionSchemaType;
+} = {
   individual: {
     container: { title: "Individual information", id: "information" },
     content: informationSectionCommonSchema,
@@ -126,11 +137,14 @@ export const informationSectionSchema = {
       },
       {
         fieldProps: {
-          label: "Are you 'doing business as'?",
+          label: "Doing business as",
           id: "doing_business_as",
         },
         type: "input",
-        request: "doing_business_as_check",
+        depend: {
+          fieldId: "doing_business_as_check",
+          value: true,
+        },
       },
     ],
   },
@@ -184,7 +198,7 @@ export const informationSectionSchema = {
   },
 };
 
-export const contactSectionSchema = {
+export const contactSectionSchema: FormSectionSchemaType = {
   container: { title: "Contact Information", id: "contact" },
   content: [
     {
@@ -240,7 +254,7 @@ export const contactSectionSchema = {
   ],
 };
 
-export const authorizedSectionSchema = {
+export const authorizedSectionSchema: FormSectionSchemaType = {
   container: { title: "Add authorized individuals", id: "authorized" },
   content: [
     {
@@ -289,7 +303,7 @@ export const authorizedSectionSchema = {
 };
 
 /* --------------- Required Fields --------------------- */
-export const commonRequiredFields = [
+export const commonRequiredFields: Array<FormValidationRequiredField> = [
   { containerId: "begin", fieldId: "client_type" },
   { containerId: "contact", fieldId: "address", columnId: "stree_address" },
   { containerId: "contact", fieldId: "address", columnId: "country" },
@@ -298,12 +312,12 @@ export const commonRequiredFields = [
   { containerId: "contact", fieldId: "address", columnId: "postal_code" },
 ];
 
-export const businessRequiredFields = [
+export const businessRequiredFields: Array<FormValidationRequiredField> = [
   { containerId: "information", fieldId: "business_name" },
   { containerId: "information", fieldId: "registration_number" },
 ];
 
-export const individualRequiredFields = [
+export const individualRequiredFields: Array<FormValidationRequiredField> = [
   { containerId: "information", fieldId: "first_name" },
   { containerId: "information", fieldId: "birthdate" },
 ];
