@@ -15,12 +15,17 @@
         />
       </div>
       <PrimarySquareButton
+        id="groupDeleteButton"
         v-if="data.length > 1"
         :text="deleteButtonText"
         @click="deleteRow(rowIndex)"
       />
     </b-card>
-    <PrimarySquareButton :text="addButtonText" @click="addRow()" />
+    <PrimarySquareButton
+      id="groupAddButton"
+      :text="addButtonText"
+      @click="addRow()"
+    />
   </FormFieldTemplate>
 </template>
 

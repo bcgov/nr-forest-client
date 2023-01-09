@@ -65,10 +65,11 @@ describe("FormSelect", () => {
     // assert the emitted event has been performed
     expect(wrapper.emitted()).toHaveProperty("updateValue");
 
-    const updateValueEvent = wrapper.emitted("updateValue");
+    let updateValueEvent = wrapper.emitted("updateValue");
     // updateValue has been called once when doing the input.setValue
     expect(updateValueEvent).toHaveLength(1);
     // test the given parameters
+    updateValueEvent = updateValueEvent || [];
     expect(updateValueEvent[0]).toEqual(["test-form-select-id", "2"]);
   });
 
