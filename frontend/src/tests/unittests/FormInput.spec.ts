@@ -4,6 +4,8 @@ import { mount } from "@vue/test-utils";
 import FormInput from "../../common/FormInput.vue";
 import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 
+import type { FormFieldTemplateType } from "../../core/AppType";
+
 describe("FormInput", () => {
   it("component defined", () => {
     const wrapper = mount(FormInput);
@@ -13,7 +15,10 @@ describe("FormInput", () => {
 
   it("renders props fieldProps successfully", () => {
     const wrapper = mount(FormInput, {
-      props: { fieldProps: { label: "Test Form Input Title" } },
+      props: {
+        fieldProps: { label: "Test Form Input Title" } as FormFieldTemplateType,
+        value: "",
+      },
     });
     expect(wrapper.findComponent(FormFieldTemplate).exists()).toBe(true);
     expect(wrapper.text()).toContain("Test Form Input Title");
@@ -21,7 +26,10 @@ describe("FormInput", () => {
 
   it("renders props value, emit function successfully", async () => {
     const wrapper = mount(FormInput, {
-      props: { fieldProps: { id: "test-form-input-id" }, value: "hello" },
+      props: {
+        fieldProps: { id: "test-form-input-id" } as FormFieldTemplateType,
+        value: "hello",
+      },
     });
 
     const input = wrapper.find("input");
@@ -40,7 +48,7 @@ describe("FormInput", () => {
 
   it("renders props disabled successfully", async () => {
     const wrapper = mount(FormInput, {
-      props: { disabled: true },
+      props: { disabled: true, value: "" },
     });
 
     const input = wrapper.find("input");

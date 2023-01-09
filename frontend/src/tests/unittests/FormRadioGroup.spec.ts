@@ -4,10 +4,12 @@ import { mount } from "@vue/test-utils";
 import FormRadioGroup from "../../common/FormRadioGroup.vue";
 import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 
+import type { FormFieldTemplateType } from "../../core/AppType";
+
 describe("FormRadioGroup", () => {
   it("component defined", () => {
     const wrapper = mount(FormRadioGroup, {
-      props: { options: [] },
+      props: { value: [], options: [] },
     });
     expect(wrapper).toBeDefined();
   });
@@ -15,7 +17,10 @@ describe("FormRadioGroup", () => {
   it("renders props fieldProps successfully", () => {
     const wrapper = mount(FormRadioGroup, {
       props: {
-        fieldProps: { label: "Test Form Radio Group Title" },
+        fieldProps: {
+          label: "Test Form Radio Group Title",
+        } as FormFieldTemplateType,
+        value: [],
         options: [],
       },
     });
@@ -26,6 +31,7 @@ describe("FormRadioGroup", () => {
   it("renders props options successfully", () => {
     const wrapper = mount(FormRadioGroup, {
       props: {
+        value: [],
         options: [
           { code: "1", text: "Option 1" },
           { code: "2", text: "Option 2" },
@@ -66,6 +72,7 @@ describe("FormRadioGroup", () => {
     const wrapper = mount(FormRadioGroup, {
       props: {
         disabled: true,
+        value: [],
         options: [
           { code: "1", text: "Option 1" },
           { code: "2", text: "Option 2" },

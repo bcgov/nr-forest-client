@@ -58,7 +58,7 @@ export interface FormComponentSchemaType {
     | Array<FormRadioGroupOptionType>; // for select, checkbox group, radio group
   addButtonText?: string; // for table
   deleteButtonText?: string; // for group
-  columns?: Array<CommonObjectType>; // for table and group
+  columns?: Array<FormComponentSchemaType>; // for table and group
 }
 
 export interface FormValidationRequiredField {

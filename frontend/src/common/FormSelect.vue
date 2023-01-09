@@ -32,6 +32,7 @@ const props = defineProps({
   state: { type: Boolean, default: null },
   options: {
     type: Array as PropType<Array<FromSelectOptionType>>,
+    required: true,
     default: [],
   },
 });
