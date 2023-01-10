@@ -4,6 +4,8 @@ import { mount } from "@vue/test-utils";
 import FormCheckbox from "../../common/FormCheckbox.vue";
 import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 
+import type { FormFieldTemplateType } from "../../core/AppType";
+
 describe("FormCheckbox", () => {
   it("component defined", () => {
     const wrapper = mount(FormCheckbox);
@@ -12,7 +14,12 @@ describe("FormCheckbox", () => {
 
   it("renders props fieldProps successfully", () => {
     const wrapper = mount(FormCheckbox, {
-      props: { fieldProps: { label: "Test Form Checkbox Title" } },
+      props: {
+        fieldProps: {
+          label: "Test Form Checkbox Title",
+        } as FormFieldTemplateType,
+        value: false,
+      },
     });
     expect(wrapper.findComponent(FormFieldTemplate).exists()).toBe(true);
     expect(wrapper.text()).toContain("Test Form Checkbox Title");
@@ -52,6 +59,7 @@ describe("FormCheckbox", () => {
     const wrapper = mount(FormCheckbox, {
       props: {
         disabled: true,
+        value: false,
       },
     });
 

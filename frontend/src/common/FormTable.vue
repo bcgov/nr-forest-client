@@ -20,13 +20,18 @@
           </b-td>
           <b-td>
             <bi-x-circle
+              id="tableDeleteButton"
               v-if="data.length > 1"
               style="font-size: 16px; color: red; margin-top: 36px"
               @click="deleteRow(rowIndex)"
             />
           </b-td>
         </b-tr>
-        <PrimarySquareButton :text="addButtonText" @click="addRow()" />
+        <PrimarySquareButton
+          id="tableAddButton"
+          :text="addButtonText"
+          @click="addRow()"
+        />
       </b-tbody>
     </b-table-simple>
   </FormFieldTemplate>
@@ -60,13 +65,13 @@ const props = defineProps({
 
 const emit = defineEmits(["updateFormArrayValue", "addRow", "deleteRow"]);
 
-const updateFormArrayValue = (id, newValue, row) => {
+const updateFormArrayValue = (id: string, newValue: any, row: number) => {
   emit("updateFormArrayValue", id, newValue, row);
 };
 const addRow = () => {
   emit("addRow");
 };
-const deleteRow = (row) => {
+const deleteRow = (row: number) => {
   emit("deleteRow", row);
 };
 </script>

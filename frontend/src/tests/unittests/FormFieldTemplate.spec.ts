@@ -4,6 +4,8 @@ import { mount, shallowMount } from "@vue/test-utils";
 import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 import FormFieldTitle from "../../common/FormFieldTitle.vue";
 
+import type { FormFieldTemplateType } from "../../core/AppType";
+
 describe("FormFieldTemplate", () => {
   it("component defined", () => {
     const wrapper = shallowMount(FormFieldTemplate);
@@ -21,7 +23,9 @@ describe("FormFieldTemplate", () => {
     // only render FormFieldTitle component when label is not null
     const wrapper = mount(FormFieldTemplate, {
       props: {
-        fieldProps: { label: "Test Form Field Template Title" },
+        fieldProps: {
+          label: "Test Form Field Template Title",
+        } as FormFieldTemplateType,
       },
     });
     expect(wrapper.findComponent(FormFieldTitle).exists()).toBe(true);
@@ -31,7 +35,10 @@ describe("FormFieldTemplate", () => {
   it("renders props required successfully", () => {
     const wrapper = mount(FormFieldTemplate, {
       props: {
-        fieldProps: { label: "Test Form Field Template Title", required: true },
+        fieldProps: {
+          label: "Test Form Field Template Title",
+          required: true,
+        } as FormFieldTemplateType,
       },
     });
     expect(wrapper.find("svg").exists()).toBe(true);
@@ -43,7 +50,7 @@ describe("FormFieldTemplate", () => {
         fieldProps: {
           label: "Test Form Field Template Title",
           tooltip: "Test Tooltip",
-        },
+        } as FormFieldTemplateType,
       },
     });
     expect(wrapper.text()).not.toContain("Test Tooltip");
@@ -58,7 +65,7 @@ describe("FormFieldTemplate", () => {
   it("renders props note successfully", async () => {
     const wrapper = shallowMount(FormFieldTemplate, {
       props: {
-        fieldProps: { note: "Test Tooltip" },
+        fieldProps: { note: "Test Tooltip" } as FormFieldTemplateType,
       },
     });
     expect(wrapper.find(".form-field-note").exists()).toBe(true);

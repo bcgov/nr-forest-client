@@ -1,10 +1,10 @@
 <template>
   <CollapseCard
-    :title="containerProps.container.title"
+    :title="sectionProps.container.title"
     defaultOpen
-    :id="containerProps.container.id"
+    :id="sectionProps.container.id"
   >
-    <div v-for="(row, rowIndex) in containerProps.content" :key="rowIndex">
+    <div v-for="(row, rowIndex) in sectionProps.content" :key="rowIndex">
       <FormComponentOptions
         v-if="!row.depend || data[row.depend.fieldId] == row.depend.value"
         :data="data[row.fieldProps.id]"
@@ -22,13 +22,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import type { PropType } from "vue";
 import CollapseCard from "../../../common/CollapseCard.vue";
 import FormComponentOptions from "../../../common/FormComponentOptions.vue";
 import type {
   CommonObjectType,
-  FormSectionContainerType,
+  FormSectionSchemaType,
 } from "../../../core/AppType";
 
 const props = defineProps({
@@ -36,8 +35,8 @@ const props = defineProps({
     type: Object as PropType<CommonObjectType>,
     required: true,
   },
-  containerProps: {
-    type: Object as PropType<FormSectionContainerType>,
+  sectionProps: {
+    type: Object as PropType<FormSectionSchemaType>,
     required: true,
   },
 });
@@ -49,16 +48,21 @@ const emit = defineEmits([
   "deleteRow",
 ]);
 
-const updateFormValue = (id, newValue) => {
-  emit("updateFormValue", id, newValue);
+const updateFormValue = (fieldId: string, newValue: any) => {
+  emit("updateFormValue", fieldId, newValue);
 };
-const updateFormArrayValue = (fieldId, id, value, rowIndex) => {
-  emit("updateFormArrayValue", fieldId, id, value, rowIndex);
+const updateFormArrayValue = (
+  fieldId: string,
+  columnId: string,
+  newValue: any,
+  rowIndex: number
+) => {
+  emit("updateFormArrayValue", fieldId, columnId, newValue, rowIndex);
 };
-const addRow = (fieldId) => {
+const addRow = (fieldId: string) => {
   emit("addRow", fieldId);
 };
-const deleteRow = (fieldId, rowIndex) => {
+const deleteRow = (fieldId: string, rowIndex: number) => {
   emit("deleteRow", fieldId, rowIndex);
 };
 </script>

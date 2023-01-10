@@ -15,12 +15,17 @@
         />
       </div>
       <PrimarySquareButton
+        id="groupDeleteButton"
         v-if="data.length > 1"
         :text="deleteButtonText"
         @click="deleteRow(rowIndex)"
       />
     </b-card>
-    <PrimarySquareButton :text="addButtonText" @click="addRow()" />
+    <PrimarySquareButton
+      id="groupAddButton"
+      :text="addButtonText"
+      @click="addRow()"
+    />
   </FormFieldTemplate>
 </template>
 
@@ -51,13 +56,13 @@ const props = defineProps({
 
 const emit = defineEmits(["updateFormArrayValue", "addRow", "deleteRow"]);
 
-const updateFormArrayValue = (id, newValue, row) => {
+const updateFormArrayValue = (id: string, newValue: any, row: number) => {
   emit("updateFormArrayValue", id, newValue, row);
 };
 const addRow = () => {
   emit("addRow");
 };
-const deleteRow = (row) => {
+const deleteRow = (row: number) => {
   emit("deleteRow", row);
 };
 </script>

@@ -13,14 +13,12 @@ import FormFieldTemplate from "./FormFieldTemplate.vue";
 import type { FormFieldTemplateType } from "../core/AppType";
 
 const props = defineProps({
-  // form field template props (optional): label, required, tooltip, note, id
+  // form field template props (optional): label, required, tooltip, note, id, errorMsg
   fieldProps: {
     type: Object as PropType<FormFieldTemplateType>,
-    default: {
-      label: "Hello",
-    },
+    default: { id: "form-checkbox" },
   },
-  value: Boolean,
+  value: { type: Boolean, required: true },
   disabled: { type: Boolean, default: false },
   state: { type: Boolean, default: null },
 });

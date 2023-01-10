@@ -156,20 +156,27 @@ const defaultFormData = {
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData)));
 
 /* --------------- update form data functions --------------------- */
-const updateFormValue = (fieldId, value) => {
+const updateFormValue = (fieldId: string, value: any) => {
   formData.value[fieldId] = value;
 };
-const updateFormArrayValue = (fieldId, columnId, value, rowIndex) => {
+const updateFormArrayValue = (
+  fieldId: string,
+  columnId: string,
+  value: any,
+  rowIndex: number
+) => {
   formData.value[fieldId][rowIndex][columnId] = value;
 };
-const addRow = (fieldId) => {
-  const defaultNew = JSON.parse(JSON.stringify(defaultFormData[fieldId][0]));
+const addRow = (fieldId: string) => {
+  const defaultNew = JSON.parse(
+    JSON.stringify(defaultFormData[fieldId as keyof typeof defaultFormData][0])
+  );
   formData.value[fieldId].push({
     ...defaultNew,
     index: Math.floor(Math.random() * 10000000),
   });
 };
-const deleteRow = (fieldId, rowIndex) => {
+const deleteRow = (fieldId: string, rowIndex: number) => {
   formData.value[fieldId].splice(rowIndex, 1);
 };
 </script>

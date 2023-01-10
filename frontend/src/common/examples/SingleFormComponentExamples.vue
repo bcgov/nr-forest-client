@@ -67,8 +67,8 @@ const form = ref({
   exampleCheckBoxGroup: ["2"],
   exampleRadioGroup: ["3"],
 });
-const updateFormValue = (id, value) => {
-  form.value[id] = value;
+const updateFormValue = (id: string, value: any) => {
+  form.value[id as keyof typeof form.value] = value;
   console.log("form data", form.value, value);
 };
 

@@ -43,40 +43,57 @@ import {
   businessRequiredFields,
   individualRequiredFields,
 } from "./NewClient";
+import { primary } from "../../utils/color";
+import type { FormValidationRequiredField } from "../../core/AppType";
 
 const data = ref(JSON.parse(JSON.stringify(newClientData)));
 
 /* --------------- update form value functions --------------------- */
-const updateFormValue = (containerId, fieldId, value) => {
-  console.log("containerId", containerId, "fieldId", fieldId, "value", value);
-  data.value[containerId][fieldId] = value;
+const updateFormValue = (
+  containerId: string,
+  fieldId: string,
+  newValue: any
+) => {
+  console.log(
+    "containerId",
+    containerId,
+    "fieldId",
+    fieldId,
+    "newValue",
+    newValue
+  );
+  data.value[containerId][fieldId] = newValue;
   console.log("data", data.value);
   // todo: this is where to check if each field meets its validation rules
 };
 const updateFormArrayValue = (
-  containerId,
-  fieldId,
-  columnId,
-  value,
-  rowIndex
+  containerId: string,
+  fieldId: string,
+  columnId: string,
+  newValue: any,
+  rowIndex: number
 ) => {
-  data.value[containerId][fieldId][rowIndex][columnId] = value;
+  data.value[containerId][fieldId][rowIndex][columnId] = newValue;
 };
-const addRow = (containerId, fieldId) => {
+const addRow = (containerId: string, fieldId: string) => {
+  const newContainer = newClientData[containerId as keyof typeof newClientData];
   const defaultNew = JSON.parse(
-    JSON.stringify(newClientData[containerId][fieldId][0])
+    JSON.stringify(newContainer[fieldId as keyof typeof newContainer][0])
   );
   data.value[containerId][fieldId].push({
     ...defaultNew,
     index: Math.floor(Math.random() * 10000000),
   });
 };
-const deleteRow = (containerId, fieldId, rowIndex) => {
+const deleteRow = (containerId: string, fieldId: string, rowIndex: number) => {
   data.value[containerId][fieldId].splice(rowIndex, 1);
 };
 
 /* -------------- check when to enable submit button ------------------- */
-const checkMissingRequireField = (requireList, formData) => {
+const checkMissingRequireField = (
+  requireList: Array<FormValidationRequiredField>,
+  formData: any
+) => {
   let missingRequire = false;
   for (let i = 0; i < requireList.length; i++) {
     const require = requireList[i];
