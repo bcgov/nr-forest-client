@@ -68,9 +68,8 @@ export interface FormValidationRequiredField {
 }
 
 export interface FormValidationResultType {
-  [key: string]: Array<{
-    fieldId: string;
-    columnId?: string;
-    errorMsg: string;
-  }>;
-} // {container_id: [{fieldId, columnId, errorMsg}]}
+  containerId: string;
+  fieldId: string;
+  columnId?: string;
+  errorMsg: string;
+}

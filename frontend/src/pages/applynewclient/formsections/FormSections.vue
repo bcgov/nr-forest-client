@@ -3,7 +3,7 @@
     <!------ begin section ------->
     <FormSectionTemplate
       :data="data.begin"
-      :sectionProps="beginSectionSchema"
+      :sectionProps="computedBeginSchema"
       @updateFormValue="
         (id, newValue) => updateFormValue('begin', id, newValue)
       "
@@ -70,9 +70,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch, reactive } from "vue";
 import type { PropType } from "vue";
 import FormSectionTemplate from "./FormSectionTemplate.vue";
+import { validationResult } from "../../../helpers/AppState";
 import {
   beginSectionSchema,
   informationSectionSchema,
@@ -81,7 +82,7 @@ import {
 } from "../NewClient";
 import type {
   CommonObjectType,
-  // FormValidationResultType,
+  FormComponentSchemaType,
 } from "../../../core/AppType";
 
 const props = defineProps({
@@ -90,11 +91,31 @@ const props = defineProps({
     required: true,
     default: { begin: { client_type: "" } },
   },
-  // validationResult: Object as PropType<FormValidationResultType>,
 });
 
 // todo: based on the validation result,
 // create computed section schemas to determine when to display error messages as specified in the validation result
+
+const computedBeginSchema = computed(() => {
+  const beginSectionSchemaCopy = JSON.parse(JSON.stringify(beginSectionSchema));
+  if (validationResult.value && validationResult.value.length > 0) {
+    validationResult.value.forEach((each) => {
+      if (each.containerId == "begin") {
+        const targetField = each.fieldId;
+        beginSectionSchemaCopy.content.forEach(
+          (field: FormComponentSchemaType) => {
+            if (field.fieldProps.id == targetField) {
+              field.fieldProps.errorMsg = each.errorMsg;
+            }
+          }
+        );
+      }
+    });
+  }
+  return beginSectionSchemaCopy;
+});
+
+// todo: do the same for other sections
 
 const computedCompanyType = computed(() => {
   if (
