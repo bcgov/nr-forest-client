@@ -9,6 +9,7 @@
 
     <FormSections
       :data="data"
+      :validationResult="validationResult"
       @updateFormValue="updateFormValue"
       @updateFormArrayValue="updateFormArrayValue"
       @addRow="addRow"
@@ -37,6 +38,7 @@ import SubmitFailText from "./SubmitFailText.vue";
 import SubmitSucessText from "./SubmitSucessText.vue";
 import ConfirmModal from "../../common/ConfirmModal.vue";
 import PrimarySquareButton from "../../common/buttons/PrimarySquareButton.vue";
+import { validationResult } from "../../helpers/AppState";
 import {
   newClientData,
   commonRequiredFields,
@@ -65,15 +67,20 @@ const updateFormValue = (
   data.value[containerId][fieldId] = newValue;
   console.log("data", data.value);
   // todo: this is where to check if each field meets its validation rules
+
+  // an example to remove hardcode validation error
+  if (data.value.begin.client_type == "individual")
+    validationResult.setValue([]);
 };
 const updateFormArrayValue = (
   containerId: string,
   fieldId: string,
-  columnId: string,
+  subFieldId: string,
   newValue: any,
   rowIndex: number
 ) => {
-  data.value[containerId][fieldId][rowIndex][columnId] = newValue;
+  data.value[containerId][fieldId][rowIndex][subFieldId] = newValue;
+  // todo: this is where to check if each sub field meets its validation rules
 };
 const addRow = (containerId: string, fieldId: string) => {
   const newContainer = newClientData[containerId as keyof typeof newClientData];
@@ -97,7 +104,7 @@ const checkMissingRequireField = (
   let missingRequire = false;
   for (let i = 0; i < requireList.length; i++) {
     const require = requireList[i];
-    if (!require.columnId) {
+    if (!require.subFieldId) {
       if (formData[require.containerId][require.fieldId] == "") {
         missingRequire = true;
         break;
@@ -110,7 +117,7 @@ const checkMissingRequireField = (
         j++
       ) {
         const row = formData[require.containerId][require.fieldId][j];
-        if (row[require.columnId] == "") {
+        if (row[require.subFieldId] == "") {
           missingRequire = true;
           break;
         }
@@ -151,6 +158,11 @@ const openModal = () => {
 const onModalOkay = () => {
   modalShow.value = false;
   // todo: call the data validatio api and receive the result from backend and pass it to form sections
+
+  // a hardcode example to pass validationResult
+  validationResult.setValue([
+    { containerId: "begin", fieldId: "client_type", errorMsg: "WrongType" },
+  ]);
 };
 const onModalCancel = () => {
   modalShow.value = false;

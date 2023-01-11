@@ -208,7 +208,7 @@ export const contactSectionSchema: FormSectionSchemaType = {
       type: "group",
       addButtonText: "+ Add another address",
       deleteButtonText: "- Remove this address",
-      columns: [
+      subfields: [
         {
           fieldProps: {
             label: "Street address",
@@ -263,7 +263,7 @@ export const authorizedSectionSchema: FormSectionSchemaType = {
       },
       type: "table",
       addButtonText: "+ Add another authorized person",
-      columns: [
+      subfields: [
         {
           fieldProps: { label: "Contact Type", id: "contact_type" },
           type: "select",
@@ -305,11 +305,11 @@ export const authorizedSectionSchema: FormSectionSchemaType = {
 /* --------------- Required Fields --------------------- */
 export const commonRequiredFields: Array<FormValidationRequiredField> = [
   { containerId: "begin", fieldId: "client_type" },
-  { containerId: "contact", fieldId: "address", columnId: "stree_address" },
-  { containerId: "contact", fieldId: "address", columnId: "country" },
-  { containerId: "contact", fieldId: "address", columnId: "province" },
-  { containerId: "contact", fieldId: "address", columnId: "city" },
-  { containerId: "contact", fieldId: "address", columnId: "postal_code" },
+  { containerId: "contact", fieldId: "address", subFieldId: "stree_address" },
+  { containerId: "contact", fieldId: "address", subFieldId: "country" },
+  { containerId: "contact", fieldId: "address", subFieldId: "province" },
+  { containerId: "contact", fieldId: "address", subFieldId: "city" },
+  { containerId: "contact", fieldId: "address", subFieldId: "postal_code" },
 ];
 
 export const businessRequiredFields: Array<FormValidationRequiredField> = [

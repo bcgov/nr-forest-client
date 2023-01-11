@@ -58,19 +58,18 @@ export interface FormComponentSchemaType {
     | Array<FormRadioGroupOptionType>; // for select, checkbox group, radio group
   addButtonText?: string; // for table
   deleteButtonText?: string; // for group
-  columns?: Array<FormComponentSchemaType>; // for table and group
+  subfields?: Array<FormComponentSchemaType>; // for table and group
 }
 
 export interface FormValidationRequiredField {
   containerId: string;
   fieldId: string;
-  columnId?: string;
+  subFieldId?: string;
 }
 
 export interface FormValidationResultType {
-  [key: string]: Array<{
-    fieldId: string;
-    columnId?: string;
-    errorMsg: string;
-  }>;
-} // {container_id: [{fieldId, columnId, errorMsg}]}
+  containerId: string;
+  fieldId: string;
+  subFieldId?: string;
+  errorMsg: string;
+}

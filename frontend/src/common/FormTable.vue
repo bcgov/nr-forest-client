@@ -7,7 +7,7 @@
         <!-- https://stackoverflow.com/questions/69890148/element-deleted-from-the-array-but-v-for-doesnt-update-vuejs -->
         <b-tr v-for="(row, rowIndex) in data" :key="row.index">
           <b-td
-            v-for="(column, columnIndex) in columns"
+            v-for="(column, columnIndex) in subfields"
             :key="'col-' + columnIndex"
           >
             <FormComponentOptions
@@ -51,7 +51,7 @@ import type {
 } from "../core/AppType";
 
 const props = defineProps({
-  columns: {
+  subfields: {
     type: Array as PropType<Array<FormComponentSchemaType>>,
     required: true,
   },
