@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, reactive } from "vue";
+import { computed } from "vue";
 import type { PropType } from "vue";
 import FormSectionTemplate from "./FormSectionTemplate.vue";
 import { validationResult } from "../../../helpers/AppState";

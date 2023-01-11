@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive } from "vue";
+import { ref, computed } from "vue";
 import FormSections from "./formsections/FormSections.vue";
 import SubmitFailText from "./SubmitFailText.vue";
 import SubmitSucessText from "./SubmitSucessText.vue";
