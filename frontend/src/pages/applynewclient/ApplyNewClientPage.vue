@@ -9,7 +9,6 @@
 
     <FormSections
       :data="data"
-      :validationReust="validationResult"
       @updateFormValue="updateFormValue"
       @updateFormArrayValue="updateFormArrayValue"
       @addRow="addRow"
