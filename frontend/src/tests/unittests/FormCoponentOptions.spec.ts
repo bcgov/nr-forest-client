@@ -192,7 +192,7 @@ describe("FormCoponentOptions", () => {
       type: "group",
       addButtonText: "+ Add another",
       deleteButtonText: "- Remove this",
-      columns: [
+      subfields: [
         {
           fieldProps: {
             label: "Link",
@@ -269,7 +269,7 @@ describe("FormCoponentOptions", () => {
       },
       type: "table",
       addButtonText: "+ Add another",
-      columns: [
+      subfields: [
         {
           fieldProps: {
             label: "Name",

@@ -62,7 +62,7 @@ Press "option+shift+f" and select prettier as the formatter
   "container_id": {
     "field_id": "value",
     "field_id": [{
-      "column_id": "value",
+      "subfield_id": "value",
       ...
     }],
     ...
@@ -71,7 +71,7 @@ Press "option+shift+f" and select prettier as the formatter
 }
 ```
 
-where **container_id** is whatever we'd like to use for each form section, **field_id** is for the form content in this section, for example: input, select, radio, checkbox, table, etc. **column_id** is for the fields inside a table or a group
+where **container_id** is whatever we'd like to use for each form section, **field_id** is for the form content in this section, for example: input, select, radio, checkbox, table, etc. **subfield_id** is for the fields inside a table or a group
 
 #### **Form json schema**:
 
@@ -103,7 +103,7 @@ where **container_id** is whatever we'd like to use for each form section, **fie
     };
     options?: Array<CommonObjectType>; // for select, checkbox group, radio group
     addButtonText?: string; // for table
-    columns?: Array<CommonObjectType>; // for table and group
+    subfields?: Array<CommonObjectType>; // for table and group
   },
   ...
   ]

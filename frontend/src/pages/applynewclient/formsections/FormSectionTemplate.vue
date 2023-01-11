@@ -53,11 +53,11 @@ const updateFormValue = (fieldId: string, newValue: any) => {
 };
 const updateFormArrayValue = (
   fieldId: string,
-  columnId: string,
+  subFieldId: string,
   newValue: any,
   rowIndex: number
 ) => {
-  emit("updateFormArrayValue", fieldId, columnId, newValue, rowIndex);
+  emit("updateFormArrayValue", fieldId, subFieldId, newValue, rowIndex);
 };
 const addRow = (fieldId: string) => {
   emit("addRow", fieldId);

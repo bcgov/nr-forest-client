@@ -75,11 +75,11 @@ const updateFormValue = (
 const updateFormArrayValue = (
   containerId: string,
   fieldId: string,
-  columnId: string,
+  subFieldId: string,
   newValue: any,
   rowIndex: number
 ) => {
-  data.value[containerId][fieldId][rowIndex][columnId] = newValue;
+  data.value[containerId][fieldId][rowIndex][subFieldId] = newValue;
   // todo: this is where to check if each sub field meets its validation rules
 };
 const addRow = (containerId: string, fieldId: string) => {
@@ -104,7 +104,7 @@ const checkMissingRequireField = (
   let missingRequire = false;
   for (let i = 0; i < requireList.length; i++) {
     const require = requireList[i];
-    if (!require.columnId) {
+    if (!require.subFieldId) {
       if (formData[require.containerId][require.fieldId] == "") {
         missingRequire = true;
         break;
@@ -117,7 +117,7 @@ const checkMissingRequireField = (
         j++
       ) {
         const row = formData[require.containerId][require.fieldId][j];
-        if (row[require.columnId] == "") {
+        if (row[require.subFieldId] == "") {
           missingRequire = true;
           break;
         }

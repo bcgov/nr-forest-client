@@ -151,7 +151,7 @@ const updateFormValue = (
 const updateFormArrayValue = (
   containerId: string,
   fieldId: string,
-  columnId: string,
+  subFieldId: string,
   newValue: any,
   rowIndex: number
 ) => {
@@ -159,7 +159,7 @@ const updateFormArrayValue = (
     "updateFormArrayValue",
     containerId,
     fieldId,
-    columnId,
+    subFieldId,
     newValue,
     rowIndex
   );

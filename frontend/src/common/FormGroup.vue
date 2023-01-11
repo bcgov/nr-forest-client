@@ -5,7 +5,10 @@
       :key="row.index"
       style="margin-bottom: 12px"
     >
-      <div v-for="(column, columnIndex) in columns" :key="'col-' + columnIndex">
+      <div
+        v-for="(column, columnIndex) in subfields"
+        :key="'col-' + columnIndex"
+      >
         <FormComponentOptions
           :data="row[column.fieldProps.id]"
           :schema="column"
@@ -41,7 +44,7 @@ import type {
 } from "../core/AppType";
 
 const props = defineProps({
-  columns: {
+  subfields: {
     type: Array as PropType<Array<FormComponentSchemaType>>,
     required: true,
   },
