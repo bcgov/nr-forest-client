@@ -86,7 +86,7 @@ const containerProps = {
       },
       type: "table",
       addButtonText: "+ Add another friend",
-      columns: [
+      subfields: [
         {
           fieldProps: {
             label: "Name",
@@ -111,7 +111,7 @@ const containerProps = {
       type: "group",
       addButtonText: "+ Add another like",
       deleteButtonText: "- Remove this like",
-      columns: [
+      subfields: [
         {
           fieldProps: {
             label: "Link",
@@ -161,11 +161,11 @@ const updateFormValue = (fieldId: string, value: any) => {
 };
 const updateFormArrayValue = (
   fieldId: string,
-  columnId: string,
+  subFieldId: string,
   value: any,
   rowIndex: number
 ) => {
-  formData.value[fieldId][rowIndex][columnId] = value;
+  formData.value[fieldId][rowIndex][subFieldId] = value;
 };
 const addRow = (fieldId: string) => {
   const defaultNew = JSON.parse(
