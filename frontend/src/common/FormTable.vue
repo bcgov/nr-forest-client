@@ -7,7 +7,7 @@
         <!-- https://stackoverflow.com/questions/69890148/element-deleted-from-the-array-but-v-for-doesnt-update-vuejs -->
         <b-tr v-for="(row, rowIndex) in data" :key="row.index">
           <b-td
-            v-for="(column, columnIndex) in columns"
+            v-for="(column, columnIndex) in subfields"
             :key="'col-' + columnIndex"
           >
             <FormComponentOptions
@@ -20,13 +20,18 @@
           </b-td>
           <b-td>
             <bi-x-circle
+              id="tableDeleteButton"
               v-if="data.length > 1"
               style="font-size: 16px; color: red; margin-top: 36px"
               @click="deleteRow(rowIndex)"
             />
           </b-td>
         </b-tr>
-        <PrimarySquareButton :text="addButtonText" @click="addRow()" />
+        <PrimarySquareButton
+          id="tableAddButton"
+          :text="addButtonText"
+          @click="addRow()"
+        />
       </b-tbody>
     </b-table-simple>
   </FormFieldTemplate>
@@ -46,7 +51,7 @@ import type {
 } from "../core/AppType";
 
 const props = defineProps({
-  columns: {
+  subfields: {
     type: Array as PropType<Array<FormComponentSchemaType>>,
     required: true,
   },
@@ -60,13 +65,13 @@ const props = defineProps({
 
 const emit = defineEmits(["updateFormArrayValue", "addRow", "deleteRow"]);
 
-const updateFormArrayValue = (id, newValue, row) => {
+const updateFormArrayValue = (id: string, newValue: any, row: number) => {
   emit("updateFormArrayValue", id, newValue, row);
 };
 const addRow = () => {
   emit("addRow");
 };
-const deleteRow = (row) => {
+const deleteRow = (row: number) => {
   emit("deleteRow", row);
 };
 </script>

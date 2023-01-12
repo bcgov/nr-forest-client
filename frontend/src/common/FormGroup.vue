@@ -5,7 +5,10 @@
       :key="row.index"
       style="margin-bottom: 12px"
     >
-      <div v-for="(column, columnIndex) in columns" :key="'col-' + columnIndex">
+      <div
+        v-for="(column, columnIndex) in subfields"
+        :key="'col-' + columnIndex"
+      >
         <FormComponentOptions
           :data="row[column.fieldProps.id]"
           :schema="column"
@@ -15,12 +18,17 @@
         />
       </div>
       <PrimarySquareButton
+        id="groupDeleteButton"
         v-if="data.length > 1"
         :text="deleteButtonText"
         @click="deleteRow(rowIndex)"
       />
     </b-card>
-    <PrimarySquareButton :text="addButtonText" @click="addRow()" />
+    <PrimarySquareButton
+      id="groupAddButton"
+      :text="addButtonText"
+      @click="addRow()"
+    />
   </FormFieldTemplate>
 </template>
 
@@ -36,7 +44,7 @@ import type {
 } from "../core/AppType";
 
 const props = defineProps({
-  columns: {
+  subfields: {
     type: Array as PropType<Array<FormComponentSchemaType>>,
     required: true,
   },
@@ -51,13 +59,13 @@ const props = defineProps({
 
 const emit = defineEmits(["updateFormArrayValue", "addRow", "deleteRow"]);
 
-const updateFormArrayValue = (id, newValue, row) => {
+const updateFormArrayValue = (id: string, newValue: any, row: number) => {
   emit("updateFormArrayValue", id, newValue, row);
 };
 const addRow = () => {
   emit("addRow");
 };
-const deleteRow = (row) => {
+const deleteRow = (row: number) => {
   emit("deleteRow", row);
 };
 </script>

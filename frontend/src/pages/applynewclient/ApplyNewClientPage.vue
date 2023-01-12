@@ -37,50 +37,73 @@ import SubmitFailText from "./SubmitFailText.vue";
 import SubmitSucessText from "./SubmitSucessText.vue";
 import ConfirmModal from "../../common/ConfirmModal.vue";
 import PrimarySquareButton from "../../common/buttons/PrimarySquareButton.vue";
+import { validationResult } from "../../helpers/AppState";
 import {
   newClientData,
   commonRequiredFields,
   businessRequiredFields,
   individualRequiredFields,
 } from "./NewClient";
+import { primary } from "../../utils/color";
+import type { FormValidationRequiredField } from "../../core/AppType";
 
 const data = ref(JSON.parse(JSON.stringify(newClientData)));
 
 /* --------------- update form value functions --------------------- */
-const updateFormValue = (containerId, fieldId, value) => {
-  console.log("containerId", containerId, "fieldId", fieldId, "value", value);
-  data.value[containerId][fieldId] = value;
+const updateFormValue = (
+  containerId: string,
+  fieldId: string,
+  newValue: any
+) => {
+  console.log(
+    "containerId",
+    containerId,
+    "fieldId",
+    fieldId,
+    "newValue",
+    newValue
+  );
+  data.value[containerId][fieldId] = newValue;
   console.log("data", data.value);
   // todo: this is where to check if each field meets its validation rules
+
+  // an example to remove hardcode validation error
+  if (data.value.begin.client_type == "individual")
+    validationResult.setValue([]);
 };
 const updateFormArrayValue = (
-  containerId,
-  fieldId,
-  columnId,
-  value,
-  rowIndex
+  containerId: string,
+  fieldId: string,
+  subFieldId: string,
+  newValue: any,
+  rowIndex: number
 ) => {
-  data.value[containerId][fieldId][rowIndex][columnId] = value;
+  data.value[containerId][fieldId][rowIndex][subFieldId] = newValue;
+  // todo: this is where to check if each sub field meets its validation rules
 };
-const addRow = (containerId, fieldId) => {
+const addRow = (containerId: string, fieldId: string) => {
+  const newContainer = newClientData[containerId as keyof typeof newClientData];
   const defaultNew = JSON.parse(
-    JSON.stringify(newClientData[containerId][fieldId][0])
+    JSON.stringify(newContainer[fieldId as keyof typeof newContainer][0])
   );
   data.value[containerId][fieldId].push({
     ...defaultNew,
     index: Math.floor(Math.random() * 10000000),
   });
 };
-const deleteRow = (containerId, fieldId, rowIndex) => {
+const deleteRow = (containerId: string, fieldId: string, rowIndex: number) => {
   data.value[containerId][fieldId].splice(rowIndex, 1);
 };
 
 /* -------------- check when to enable submit button ------------------- */
-const checkMissingRequireField = (requireList, formData) => {
+const checkMissingRequireField = (
+  requireList: Array<FormValidationRequiredField>,
+  formData: any
+) => {
   let missingRequire = false;
   for (let i = 0; i < requireList.length; i++) {
     const require = requireList[i];
-    if (!require.columnId) {
+    if (!require.subFieldId) {
       if (formData[require.containerId][require.fieldId] == "") {
         missingRequire = true;
         break;
@@ -93,7 +116,7 @@ const checkMissingRequireField = (requireList, formData) => {
         j++
       ) {
         const row = formData[require.containerId][require.fieldId][j];
-        if (row[require.columnId] == "") {
+        if (row[require.subFieldId] == "") {
           missingRequire = true;
           break;
         }
@@ -134,6 +157,11 @@ const openModal = () => {
 const onModalOkay = () => {
   modalShow.value = false;
   // todo: call the data validatio api and receive the result from backend and pass it to form sections
+
+  // a hardcode example to pass validationResult
+  validationResult.setValue([
+    { containerId: "begin", fieldId: "client_type", errorMsg: "WrongType" },
+  ]);
 };
 const onModalCancel = () => {
   modalShow.value = false;

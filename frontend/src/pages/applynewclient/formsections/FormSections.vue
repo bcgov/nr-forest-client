@@ -3,7 +3,7 @@
     <!------ begin section ------->
     <FormSectionTemplate
       :data="data.begin"
-      :containerProps="beginSectionSchema"
+      :sectionProps="computedBeginSchema"
       @updateFormValue="
         (id, newValue) => updateFormValue('begin', id, newValue)
       "
@@ -19,7 +19,7 @@
     <FormSectionTemplate
       v-if="computedCompanyType"
       :data="data.information"
-      :containerProps="informationSectionSchema[computedCompanyType]"
+      :sectionProps="informationSectionSchema[computedCompanyType]"
       @updateFormValue="
         (id, newValue) => updateFormValue('information', id, newValue)
       "
@@ -36,7 +36,7 @@
     <!------ contact information section ------->
     <FormSectionTemplate
       :data="data.contact"
-      :containerProps="contactSectionSchema"
+      :sectionProps="contactSectionSchema"
       @updateFormValue="
         (id, newValue) => updateFormValue('contact', id, newValue)
       "
@@ -53,7 +53,7 @@
     <!------ add authorized individual section ------->
     <FormSectionTemplate
       :data="data.authorized"
-      :containerProps="authorizedSectionSchema"
+      :sectionProps="authorizedSectionSchema"
       @updateFormValue="
         (id, newValue) => updateFormValue('authorized', id, newValue)
       "
@@ -73,6 +73,7 @@
 import { computed } from "vue";
 import type { PropType } from "vue";
 import FormSectionTemplate from "./FormSectionTemplate.vue";
+import { validationResult } from "../../../helpers/AppState";
 import {
   beginSectionSchema,
   informationSectionSchema,
@@ -81,7 +82,7 @@ import {
 } from "../NewClient";
 import type {
   CommonObjectType,
-  FormValidationResultType,
+  FormComponentSchemaType,
 } from "../../../core/AppType";
 
 const props = defineProps({
@@ -90,11 +91,31 @@ const props = defineProps({
     required: true,
     default: { begin: { client_type: "" } },
   },
-  validationResult: Object as PropType<FormValidationResultType>,
 });
 
 // todo: based on the validation result,
 // create computed section schemas to determine when to display error messages as specified in the validation result
+
+const computedBeginSchema = computed(() => {
+  const beginSectionSchemaCopy = JSON.parse(JSON.stringify(beginSectionSchema));
+  if (validationResult.value && validationResult.value.length > 0) {
+    validationResult.value.forEach((each) => {
+      if (each.containerId == "begin") {
+        const targetField = each.fieldId;
+        beginSectionSchemaCopy.content.forEach(
+          (field: FormComponentSchemaType) => {
+            if (field.fieldProps.id == targetField) {
+              field.fieldProps.errorMsg = each.errorMsg;
+            }
+          }
+        );
+      }
+    });
+  }
+  return beginSectionSchemaCopy;
+});
+
+// todo: do the same for other sections
 
 const computedCompanyType = computed(() => {
   if (
@@ -120,22 +141,33 @@ const emit = defineEmits([
   "deleteRow",
 ]);
 
-const updateFormValue = (containerId, fieldId, newValue) => {
+const updateFormValue = (
+  containerId: string,
+  fieldId: string,
+  newValue: any
+) => {
   emit("updateFormValue", containerId, fieldId, newValue);
 };
 const updateFormArrayValue = (
-  containerId,
-  fieldId,
-  columnId,
-  value,
-  rowIndex
+  containerId: string,
+  fieldId: string,
+  subFieldId: string,
+  newValue: any,
+  rowIndex: number
 ) => {
-  emit("updateFormArrayValue", containerId, fieldId, columnId, value, rowIndex);
+  emit(
+    "updateFormArrayValue",
+    containerId,
+    fieldId,
+    subFieldId,
+    newValue,
+    rowIndex
+  );
 };
-const addRow = (containerId, fieldId) => {
+const addRow = (containerId: string, fieldId: string) => {
   emit("addRow", containerId, fieldId);
 };
-const deleteRow = (containerId, fieldId, rowIndex) => {
+const deleteRow = (containerId: string, fieldId: string, rowIndex: number) => {
   emit("deleteRow", containerId, fieldId, rowIndex);
 };
 </script>

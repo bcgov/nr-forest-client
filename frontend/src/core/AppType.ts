@@ -1,6 +1,6 @@
 /* -------------- form component type ----------------- */
 export interface FormFieldTemplateType {
-  label: string;
+  label?: string;
   required?: boolean;
   id: string; // id is required when using tooltip, and need to be unique
   note?: string;
@@ -21,14 +21,6 @@ export interface FormCheckBoxGroupOptionType {
 export interface FormRadioGroupOptionType {
   code: string;
   text: string;
-}
-
-export interface FormUploadFileType {
-  content: string;
-  contentType: string;
-  encoding: string;
-  filename: string;
-  filesize: number;
 }
 
 export interface CommonObjectType {
@@ -60,15 +52,24 @@ export interface FormComponentSchemaType {
     fieldId: string;
     value: string | number | boolean;
   };
-  options?: Array<CommonObjectType>; // for select, checkbox group, radio group
+  options?:
+    | Array<FromSelectOptionType>
+    | Array<FormCheckBoxGroupOptionType>
+    | Array<FormRadioGroupOptionType>; // for select, checkbox group, radio group
   addButtonText?: string; // for table
-  columns?: Array<CommonObjectType>; // for table and group
+  deleteButtonText?: string; // for group
+  subfields?: Array<FormComponentSchemaType>; // for table and group
+}
+
+export interface FormValidationRequiredField {
+  containerId: string;
+  fieldId: string;
+  subFieldId?: string;
 }
 
 export interface FormValidationResultType {
-  [key: string]: Array<{
-    fieldId: string;
-    columnId?: string;
-    errorMsg: string;
-  }>;
-} // {container_id: [{fieldId, columnId, errorMsg}]}
+  containerId: string;
+  fieldId: string;
+  subFieldId?: string;
+  errorMsg: string;
+}

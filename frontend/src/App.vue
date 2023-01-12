@@ -27,7 +27,7 @@ import type { KeycloakInstance } from "keycloak-js";
 import { navBlue, navSelectBlue } from "./utils/color";
 
 const keycloak: KeycloakInstance = inject("keycloak");
-let tabs: Ref<Array<{ title: String; content: DefineComponent }>> = ref([]);
+let tabs: Ref<Array<{ title: string; content: DefineComponent }>> = ref([]);
 
 if (
   keycloak &&
