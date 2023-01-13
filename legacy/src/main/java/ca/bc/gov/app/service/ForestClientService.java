@@ -1,5 +1,7 @@
 package ca.bc.gov.app.service;
 
+import static java.util.function.Predicate.not;
+
 import ca.bc.gov.app.dto.ClientPublicViewDto;
 import ca.bc.gov.app.dto.FirstNationBandVidationDto;
 import ca.bc.gov.app.dto.OrgBookResultListResponse;
@@ -48,6 +50,7 @@ public class ForestClientService {
             .findAll()
             .flatMap(entity ->
                 findByClientName(entity.getDoingBusinessAsName())
+                    .filter(not(OrgBookResultListResponse::empty))
                     .map(orgBookResponse ->
                         new ClientPublicViewDto(
                             entity.getClientNumber(),
@@ -58,7 +61,47 @@ public class ForestClientService {
                             null,
                             null,
                             orgBookResponse.results().get(0).value()
-                            //TODO: This need to be validated
+                        )
+                    )
+                    .switchIfEmpty(
+                        Mono
+                            .just(
+                                new ClientPublicViewDto(
+                                    entity.getClientNumber(),
+                                    null,
+                                    entity.getDoingBusinessAsName(),
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null
+                                )
+                            )
+                    )
+            );
+  }
+
+  public Flux<ClientPublicViewDto> getUnregisteredCompanies() {
+    return
+        forestClientRepository
+            .findAll()
+            .flatMap(entity ->
+                findByClientName(entity.getClientName())
+                    .filter(not(OrgBookResultListResponse::empty))
+                    .map(orgBookResponse ->
+                        new ClientPublicViewDto(
+                            entity.getClientNumber(),
+                            StringUtils
+                                .equals(
+                                    orgBookResponse.results().get(0).value(),
+                                    entity.getClientName()
+                                ) ? orgBookResponse.results().get(0).topicSourceId() : null,
+                            entity.getClientName(),
+                            null,
+                            null,
+                            null,
+                            null,
+                            orgBookResponse.results().get(0).value()
                         )
                     )
             );

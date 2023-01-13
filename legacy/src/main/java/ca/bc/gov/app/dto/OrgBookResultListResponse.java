@@ -15,4 +15,7 @@ public record OrgBookResultListResponse(
     @Schema(description = "The list of named results")
     List<OrgBookNameDto> results
 ) {
+    public boolean empty(){
+        return results == null || results.isEmpty();
+    }
 }
