@@ -32,20 +32,20 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import ConfirmModal from "../../common/ConfirmModal.vue";
+import PrimarySquareButton from "../../common/buttons/PrimarySquareButton.vue";
 import FormSections from "./formsections/FormSections.vue";
 import SubmitFailText from "./SubmitFailText.vue";
 import SubmitSucessText from "./SubmitSucessText.vue";
-import ConfirmModal from "../../common/ConfirmModal.vue";
-import PrimarySquareButton from "../../common/buttons/PrimarySquareButton.vue";
-import { validationResult } from "../../helpers/AppState";
+import { checkMissingRequireField } from "../../helpers/formvalidation/MissingFieldCheck";
+import { newClientData } from "./formdata/NewClientData";
 import {
-  newClientData,
   commonRequiredFields,
   businessRequiredFields,
   individualRequiredFields,
-} from "./NewClient";
+} from "./formvalidation/RequiredFields";
+import { validationResult } from "../../helpers/AppState";
 import { primary } from "../../utils/color";
-import type { FormValidationRequiredField } from "../../core/AppType";
 
 const data = ref(JSON.parse(JSON.stringify(newClientData)));
 
@@ -96,35 +96,6 @@ const deleteRow = (containerId: string, fieldId: string, rowIndex: number) => {
 };
 
 /* -------------- check when to enable submit button ------------------- */
-const checkMissingRequireField = (
-  requireList: Array<FormValidationRequiredField>,
-  formData: any
-) => {
-  let missingRequire = false;
-  for (let i = 0; i < requireList.length; i++) {
-    const require = requireList[i];
-    if (!require.subFieldId) {
-      if (formData[require.containerId][require.fieldId] == "") {
-        missingRequire = true;
-        break;
-      }
-    } else {
-      // check table and group, to see if each row got all required fields
-      for (
-        let j = 0;
-        j < formData[require.containerId][require.fieldId].length;
-        j++
-      ) {
-        const row = formData[require.containerId][require.fieldId][j];
-        if (row[require.subFieldId] == "") {
-          missingRequire = true;
-          break;
-        }
-      }
-    }
-  }
-  return missingRequire;
-};
 const computedButtonDisable = computed(() => {
   // check when to enable the submit button
   // enable the submit button when got all required fields
@@ -143,8 +114,6 @@ const computedButtonDisable = computed(() => {
   );
 });
 
-/* -------------------- data validation check --------------------------- */
-
 /* ---------- modal placehoder to confirm submit ----------- */
 const success = ref(false);
 const error = ref(false);
@@ -157,6 +126,7 @@ const openModal = () => {
 const onModalOkay = () => {
   modalShow.value = false;
   // todo: call the data validatio api and receive the result from backend and pass it to form sections
+  /* -------------------- data validation check --------------------------- */
 
   // a hardcode example to pass validationResult
   validationResult.setValue([

@@ -74,12 +74,10 @@ import { computed } from "vue";
 import type { PropType } from "vue";
 import FormSectionTemplate from "./FormSectionTemplate.vue";
 import { validationResult } from "../../../helpers/AppState";
-import {
-  beginSectionSchema,
-  informationSectionSchema,
-  contactSectionSchema,
-  authorizedSectionSchema,
-} from "../NewClient";
+import { beginSectionSchema } from "../formsectionschemas/BeginSectionSchema";
+import { informationSectionSchema } from "../formsectionschemas/InformationSectionSchema";
+import { contactSectionSchema } from "../formsectionschemas/ContactSectionSchema";
+import { authorizedSectionSchema } from "../formsectionschemas/AuthorizedSectionSchema";
 import type {
   CommonObjectType,
   FormComponentSchemaType,
