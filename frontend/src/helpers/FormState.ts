@@ -1,7 +1,11 @@
 import { reactive } from "vue";
-import type { CommonObjectType } from "../core/AppType";
+import type {
+  CommonObjectType,
+  FormValidationResultType,
+} from "../core/AppType";
 
 // global state
+// the change of a global state can be detected by all the components are using the value
 export const formData = reactive({
   data: {
     begin: {
@@ -48,7 +52,7 @@ export const formData = reactive({
   },
   updateFormValue(containerId: string, fieldId: string, newValue: any) {
     this.data[containerId][fieldId] = newValue;
-    // todo: this is where to check if each field meets its validation rules
+    this.cleanErrorMsg();
   },
   updateFormArrayValue(
     containerId: string,
@@ -58,7 +62,7 @@ export const formData = reactive({
     rowIndex: number
   ) {
     this.data[containerId][fieldId][rowIndex][subFieldId] = newValue;
-    // todo: this is where to check if each sub field meets its validation rules
+    this.cleanErrorMsg();
   },
   addRow(containerId: string, fieldId: string) {
     const newContainer = this.data[containerId as keyof typeof this.data];
@@ -72,5 +76,18 @@ export const formData = reactive({
   },
   deleteRow(containerId: string, fieldId: string, rowIndex: number) {
     this.data[containerId][fieldId].splice(rowIndex, 1);
+  },
+  cleanErrorMsg() {
+    // todo: this is the function to check every feild if meet the validation rules, remove the error message if met
+    // a hard code example
+    if (this.data.begin.client_type == "individual")
+      validationResult.setValue([]);
+  },
+});
+
+export const validationResult = reactive({
+  value: {} as FormValidationResultType,
+  setValue(result: FormValidationResultType) {
+    this.value = result;
   },
 });

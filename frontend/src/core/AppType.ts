@@ -62,15 +62,18 @@ export interface FormComponentSchemaType {
 }
 
 /* ---------------- form validation type -------------- */
-export interface FormValidationRequiredField {
+export interface FormFieldValidationRequiredFieldType {
   containerId: string;
   fieldId: string;
   subFieldId?: string;
 }
 
-export interface FormValidationResultType {
-  containerId: string;
+export interface FormFieldValidationResultType {
   fieldId: string;
   subFieldId?: string;
   errorMsg: string;
+}
+
+export interface FormValidationResultType {
+  [key: string]: Array<FormFieldValidationResultType>;
 }

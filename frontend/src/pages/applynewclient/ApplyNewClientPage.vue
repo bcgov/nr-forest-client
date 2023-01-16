@@ -36,16 +36,15 @@ import {
   commonRequiredFields,
   businessRequiredFields,
   individualRequiredFields,
-} from "./formvalidation/RequiredFields";
-import { validationResult } from "../../helpers/AppState";
-import { formData } from "../../helpers/FormState";
+} from "./formvalidationrules/RequiredFields";
+import { formData, validationResult } from "../../helpers/FormState";
 import { primary } from "../../utils/color";
 
 /* -------------- check when to enable submit button ------------------- */
 const computedButtonDisable = computed(() => {
   // check when to enable the submit button
   // enable the submit button when got all required fields
-  // create required lists, and then check the data for those required ones
+  // checkMissingRequireField returns true if has a missing field
   if (
     formData.data.begin["client_type"] == "individual" ||
     formData.data.begin["client_type"] == "soleProprietorship"
@@ -58,6 +57,7 @@ const computedButtonDisable = computed(() => {
     checkMissingRequireField(commonRequiredFields, formData.data) ||
     checkMissingRequireField(businessRequiredFields, formData.data)
   );
+  // return false;
 });
 
 /* ---------- modal placehoder to confirm submit ----------- */
@@ -72,13 +72,17 @@ const openModal = () => {
 };
 const onModalOkay = () => {
   modalShow.value = false;
-  // todo: call the data validatio api and receive the result from backend and pass it to form sections
   /* -------------------- data validation check --------------------------- */
-
+  // todo: call the data validation api from backend and assign the result to the validationResult state
+  console.log("123");
   // a hardcode example to pass validationResult
-  validationResult.setValue([
-    { containerId: "begin", fieldId: "client_type", errorMsg: "WrongType" },
-  ]);
+  validationResult.setValue({
+    begin: [{ fieldId: "client_type", errorMsg: "WrongType" }],
+  });
+
+  /* ------------ return confirmation Id -------------- */
+  // todo: if all validation rules pass, call backend api to write form data into tables, and return a confirmation id
+  // set success to be true, and display success text message to the user
 };
 const onModalCancel = () => {
   modalShow.value = false;
