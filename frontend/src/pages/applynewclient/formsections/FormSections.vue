@@ -2,68 +2,100 @@
   <div>
     <!------ begin section ------->
     <FormSectionTemplate
-      :data="data.begin"
+      :data="formData.data.begin"
       :sectionProps="computedBeginSchema"
       @updateFormValue="
-        (id, newValue) => updateFormValue('begin', id, newValue)
+        (fieldId, newValue) =>
+          formData.updateFormValue('begin', fieldId, newValue)
       "
       @updateFormArrayValue="
-        (fieldId, id, newValue, rowIndex) =>
-          updateFormArrayValue('begin', fieldId, id, newValue, rowIndex)
+        (fieldId, subFieldId, newValue, rowIndex) =>
+          formData.updateFormArrayValue(
+            'begin',
+            fieldId,
+            subFieldId,
+            newValue,
+            rowIndex
+          )
       "
-      @addRow="(fieldId) => addRow('begin', fieldId)"
-      @deleteRow="(fieldId, rowIndex) => deleteRow('begin', fieldId, rowIndex)"
+      @addRow="(fieldId) => formData.addRow('begin', fieldId)"
+      @deleteRow="
+        (fieldId, rowIndex) => formData.deleteRow('begin', fieldId, rowIndex)
+      "
     />
 
     <!------ company/individual information section ------->
     <FormSectionTemplate
       v-if="computedCompanyType"
-      :data="data.information"
+      :data="formData.data.information"
       :sectionProps="informationSectionSchema[computedCompanyType]"
       @updateFormValue="
-        (id, newValue) => updateFormValue('information', id, newValue)
+        (fieldId, newValue) =>
+          formData.updateFormValue('information', fieldId, newValue)
       "
       @updateFormArrayValue="
-        (fieldId, id, newValue, rowIndex) =>
-          updateFormArrayValue('information', fieldId, id, newValue, rowIndex)
+        (fieldId, subFieldId, newValue, rowIndex) =>
+          formData.updateFormArrayValue(
+            'information',
+            fieldId,
+            subFieldId,
+            newValue,
+            rowIndex
+          )
       "
-      @addRow="(fieldId) => addRow('information', fieldId)"
+      @addRow="(fieldId) => formData.addRow('information', fieldId)"
       @deleteRow="
-        (fieldId, rowIndex) => deleteRow('information', fieldId, rowIndex)
+        (fieldId, rowIndex) =>
+          formData.deleteRow('information', fieldId, rowIndex)
       "
     />
 
     <!------ contact information section ------->
     <FormSectionTemplate
-      :data="data.contact"
+      :data="formData.data.contact"
       :sectionProps="contactSectionSchema"
       @updateFormValue="
-        (id, newValue) => updateFormValue('contact', id, newValue)
+        (fieldId, newValue) =>
+          formData.updateFormValue('contact', fieldId, newValue)
       "
       @updateFormArrayValue="
-        (fieldId, id, newValue, rowIndex) =>
-          updateFormArrayValue('contact', fieldId, id, newValue, rowIndex)
+        (fieldId, subFieldId, newValue, rowIndex) =>
+          formData.updateFormArrayValue(
+            'contact',
+            fieldId,
+            subFieldId,
+            newValue,
+            rowIndex
+          )
       "
-      @addRow="(fieldId) => addRow('contact', fieldId)"
+      @addRow="(fieldId) => formData.addRow('contact', fieldId)"
       @deleteRow="
-        (fieldId, rowIndex) => deleteRow('contact', fieldId, rowIndex)
+        (fieldId, rowIndex) => formData.deleteRow('contact', fieldId, rowIndex)
       "
     />
 
     <!------ add authorized individual section ------->
     <FormSectionTemplate
-      :data="data.authorized"
+      :data="formData.data.authorized"
       :sectionProps="authorizedSectionSchema"
       @updateFormValue="
-        (id, newValue) => updateFormValue('authorized', id, newValue)
+        (fieldId, newValue) =>
+          formData.updateFormValue('authorized', fieldId, newValue)
       "
       @updateFormArrayValue="
-        (fieldId, id, newValue, rowIndex) =>
-          updateFormArrayValue('authorized', fieldId, id, newValue, rowIndex)
+        (fieldId, subFieldId, newValue, rowIndex) =>
+          formData.updateFormArrayValue(
+            'authorized',
+            fieldId,
+            subFieldId,
+            newValue,
+            rowIndex
+          )
       "
-      @addRow="(fieldId) => addRow('authorized', fieldId)"
+      @addRow="(fieldId) => formData.addRow('authorized', fieldId)"
       @deleteRow="
-        (fieldId, rowIndex) => deleteRow('authorized', fieldId, rowIndex)
+        (fieldId, rowIndex) =>
+          formData.deleteRow('authorized', fieldId, rowIndex)
       "
     />
   </div>
@@ -71,25 +103,14 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { PropType } from "vue";
 import FormSectionTemplate from "./FormSectionTemplate.vue";
-import { validationResult } from "../../../helpers/AppState";
 import { beginSectionSchema } from "../formsectionschemas/BeginSectionSchema";
 import { informationSectionSchema } from "../formsectionschemas/InformationSectionSchema";
 import { contactSectionSchema } from "../formsectionschemas/ContactSectionSchema";
 import { authorizedSectionSchema } from "../formsectionschemas/AuthorizedSectionSchema";
-import type {
-  CommonObjectType,
-  FormComponentSchemaType,
-} from "../../../core/AppType";
-
-const props = defineProps({
-  data: {
-    type: Object as PropType<CommonObjectType>,
-    required: true,
-    default: { begin: { client_type: "" } },
-  },
-});
+import { validationResult } from "../../../helpers/AppState";
+import { formData } from "../../../helpers/FormState";
+import type { FormComponentSchemaType } from "../../../core/AppType";
 
 // todo: based on the validation result,
 // create computed section schemas to determine when to display error messages as specified in the validation result
@@ -115,59 +136,23 @@ const computedBeginSchema = computed(() => {
 
 // todo: do the same for other sections
 
+// return different form content for information section based on the client type
 const computedCompanyType = computed(() => {
   if (
-    props.data.begin &&
-    props.data.begin.client_type &&
-    props.data.begin.client_type !== ""
+    formData.data.begin &&
+    formData.data.begin.client_type &&
+    formData.data.begin.client_type !== ""
   ) {
     if (
-      props.data.begin.client_type != "individual" &&
-      props.data.begin.client_type != "soleProprietorship"
+      formData.data.begin.client_type != "individual" &&
+      formData.data.begin.client_type != "soleProprietorship"
     ) {
       return "company";
     }
-    return props.data.begin.client_type;
+    return formData.data.begin.client_type;
   }
   return null;
 });
-
-const emit = defineEmits([
-  "updateFormValue",
-  "updateFormArrayValue",
-  "addRow",
-  "deleteRow",
-]);
-
-const updateFormValue = (
-  containerId: string,
-  fieldId: string,
-  newValue: any
-) => {
-  emit("updateFormValue", containerId, fieldId, newValue);
-};
-const updateFormArrayValue = (
-  containerId: string,
-  fieldId: string,
-  subFieldId: string,
-  newValue: any,
-  rowIndex: number
-) => {
-  emit(
-    "updateFormArrayValue",
-    containerId,
-    fieldId,
-    subFieldId,
-    newValue,
-    rowIndex
-  );
-};
-const addRow = (containerId: string, fieldId: string) => {
-  emit("addRow", containerId, fieldId);
-};
-const deleteRow = (containerId: string, fieldId: string, rowIndex: number) => {
-  emit("deleteRow", containerId, fieldId, rowIndex);
-};
 </script>
 
 <script lang="ts">

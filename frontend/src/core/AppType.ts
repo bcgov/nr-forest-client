@@ -61,6 +61,7 @@ export interface FormComponentSchemaType {
   subfields?: Array<FormComponentSchemaType>; // for table and group
 }
 
+/* ---------------- form validation type -------------- */
 export interface FormValidationRequiredField {
   containerId: string;
   fieldId: string;

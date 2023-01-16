@@ -7,13 +7,7 @@
     <SubmitSucessText v-if="success" confirmationId="A123456" />
     <SubmitFailText v-if="error" />
 
-    <FormSections
-      :data="data"
-      @updateFormValue="updateFormValue"
-      @updateFormArrayValue="updateFormArrayValue"
-      @addRow="addRow"
-      @deleteRow="deleteRow"
-    />
+    <FormSections />
 
     <PrimarySquareButton
       @click="openModal()"
@@ -38,62 +32,14 @@ import FormSections from "./formsections/FormSections.vue";
 import SubmitFailText from "./SubmitFailText.vue";
 import SubmitSucessText from "./SubmitSucessText.vue";
 import { checkMissingRequireField } from "../../helpers/formvalidation/MissingFieldCheck";
-import { newClientData } from "./formdata/NewClientData";
 import {
   commonRequiredFields,
   businessRequiredFields,
   individualRequiredFields,
 } from "./formvalidation/RequiredFields";
 import { validationResult } from "../../helpers/AppState";
+import { formData } from "../../helpers/FormState";
 import { primary } from "../../utils/color";
-
-const data = ref(JSON.parse(JSON.stringify(newClientData)));
-
-/* --------------- update form value functions --------------------- */
-const updateFormValue = (
-  containerId: string,
-  fieldId: string,
-  newValue: any
-) => {
-  console.log(
-    "containerId",
-    containerId,
-    "fieldId",
-    fieldId,
-    "newValue",
-    newValue
-  );
-  data.value[containerId][fieldId] = newValue;
-  console.log("data", data.value);
-  // todo: this is where to check if each field meets its validation rules
-
-  // an example to remove hardcode validation error
-  if (data.value.begin.client_type == "individual")
-    validationResult.setValue([]);
-};
-const updateFormArrayValue = (
-  containerId: string,
-  fieldId: string,
-  subFieldId: string,
-  newValue: any,
-  rowIndex: number
-) => {
-  data.value[containerId][fieldId][rowIndex][subFieldId] = newValue;
-  // todo: this is where to check if each sub field meets its validation rules
-};
-const addRow = (containerId: string, fieldId: string) => {
-  const newContainer = newClientData[containerId as keyof typeof newClientData];
-  const defaultNew = JSON.parse(
-    JSON.stringify(newContainer[fieldId as keyof typeof newContainer][0])
-  );
-  data.value[containerId][fieldId].push({
-    ...defaultNew,
-    index: Math.floor(Math.random() * 10000000),
-  });
-};
-const deleteRow = (containerId: string, fieldId: string, rowIndex: number) => {
-  data.value[containerId][fieldId].splice(rowIndex, 1);
-};
 
 /* -------------- check when to enable submit button ------------------- */
 const computedButtonDisable = computed(() => {
@@ -101,16 +47,16 @@ const computedButtonDisable = computed(() => {
   // enable the submit button when got all required fields
   // create required lists, and then check the data for those required ones
   if (
-    data.value.begin["client_type"] == "individual" ||
-    data.value.begin["client_type"] == "soleProprietorship"
+    formData.data.begin["client_type"] == "individual" ||
+    formData.data.begin["client_type"] == "soleProprietorship"
   )
     return (
-      checkMissingRequireField(commonRequiredFields, data.value) ||
-      checkMissingRequireField(individualRequiredFields, data.value)
+      checkMissingRequireField(commonRequiredFields, formData.data) ||
+      checkMissingRequireField(individualRequiredFields, formData.data)
     );
   return (
-    checkMissingRequireField(commonRequiredFields, data.value) ||
-    checkMissingRequireField(businessRequiredFields, data.value)
+    checkMissingRequireField(commonRequiredFields, formData.data) ||
+    checkMissingRequireField(businessRequiredFields, formData.data)
   );
 });
 
@@ -122,6 +68,7 @@ const loading = ref(false);
 const modalShow = ref(false);
 const openModal = () => {
   modalShow.value = true;
+  console.log("formdata", formData.data);
 };
 const onModalOkay = () => {
   modalShow.value = false;
