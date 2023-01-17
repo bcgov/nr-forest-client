@@ -178,7 +178,7 @@ const deleteRow = (fieldId: string, rowIndex: number) => {
 <script lang="ts">
 import { defineComponent } from "vue";
 export default defineComponent({
-  name: "CompositionComponentTemplate",
+  name: "FormJsonSchemaExample",
 });
 </script>
 

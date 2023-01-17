@@ -127,7 +127,7 @@ const radioGroupOptions: Array<FormRadioGroupOptionType> = [
 <script lang="ts">
 import { defineComponent } from "vue";
 export default defineComponent({
-  name: "CompositionComponentTemplate",
+  name: "SingleFormComponentExample",
 });
 </script>
 
