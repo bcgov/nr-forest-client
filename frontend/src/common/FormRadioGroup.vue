@@ -21,7 +21,7 @@ import FormFieldTemplate from "./FormFieldTemplate.vue";
 import type {
   FormFieldTemplateType,
   FormRadioGroupOptionType,
-} from "../core/AppType";
+} from "../core/FormType";
 
 const props = defineProps({
   // form field template props (optional): label, required, tooltip, note, id, errorMsg

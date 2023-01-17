@@ -4,7 +4,7 @@ import { mount } from "@vue/test-utils";
 import FormRadioGroup from "../../common/FormRadioGroup.vue";
 import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 
-import type { FormFieldTemplateType } from "../../core/AppType";
+import type { FormFieldTemplateType } from "../../core/FormType";
 
 describe("FormRadioGroup", () => {
   it("component defined", () => {

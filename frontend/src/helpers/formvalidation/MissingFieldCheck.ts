@@ -1,7 +1,7 @@
-import type { FormFieldValidationRequiredFieldType } from "../../core/AppType";
+import type { FormValidationRequiredFieldType } from "../../core/FormType";
 
 export const checkMissingRequireField = (
-  requireList: Array<FormFieldValidationRequiredFieldType>,
+  requireList: Array<FormValidationRequiredFieldType>,
   formData: any
 ) => {
   let missingRequire = false;

@@ -71,7 +71,7 @@ import FormCheckboxGroup from "./FormCheckboxGroup.vue";
 import FormRadioGroup from "./FormRadioGroup.vue";
 import FormGroup from "./FormGroup.vue";
 import FormTable from "./FormTable.vue";
-import type { FormComponentSchemaType } from "../core/AppType";
+import type { FormComponentSchemaType } from "../core/FormType";
 
 const props = defineProps({
   schema: {

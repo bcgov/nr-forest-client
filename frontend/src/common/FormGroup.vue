@@ -41,7 +41,7 @@ import type {
   FormFieldTemplateType,
   FormComponentSchemaType,
   CommonObjectType,
-} from "../core/AppType";
+} from "../core/FormType";
 
 const props = defineProps({
   subfields: {

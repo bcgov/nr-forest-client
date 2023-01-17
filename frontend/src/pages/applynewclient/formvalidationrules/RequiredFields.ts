@@ -1,7 +1,7 @@
-import type { FormValidationRequiredField } from "../../../core/AppType";
+import type { FormValidationRequiredFieldType } from "../../../core/FormType";
 
 /* --------------- Required Fields --------------------- */
-export const commonRequiredFields: Array<FormValidationRequiredField> = [
+export const commonRequiredFields: Array<FormValidationRequiredFieldType> = [
   { containerId: "begin", fieldId: "client_type" },
   { containerId: "contact", fieldId: "address", subFieldId: "stree_address" },
   { containerId: "contact", fieldId: "address", subFieldId: "country" },
@@ -10,12 +10,13 @@ export const commonRequiredFields: Array<FormValidationRequiredField> = [
   { containerId: "contact", fieldId: "address", subFieldId: "postal_code" },
 ];
 
-export const businessRequiredFields: Array<FormValidationRequiredField> = [
+export const businessRequiredFields: Array<FormValidationRequiredFieldType> = [
   { containerId: "information", fieldId: "business_name" },
   { containerId: "information", fieldId: "registration_number" },
 ];
 
-export const individualRequiredFields: Array<FormValidationRequiredField> = [
-  { containerId: "information", fieldId: "first_name" },
-  { containerId: "information", fieldId: "birthdate" },
-];
+export const individualRequiredFields: Array<FormValidationRequiredFieldType> =
+  [
+    { containerId: "information", fieldId: "first_name" },
+    { containerId: "information", fieldId: "birthdate" },
+  ];

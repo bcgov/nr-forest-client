@@ -4,7 +4,7 @@ import { mount } from "@vue/test-utils";
 import FormSelect from "../../common/FormSelect.vue";
 import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 
-import type { FormFieldTemplateType } from "../../core/AppType";
+import type { FormFieldTemplateType } from "../../core/FormType";
 
 describe("FormSelect", () => {
   it("component defined", () => {

@@ -32,7 +32,7 @@ import type {
   FromSelectOptionType,
   FormCheckBoxGroupOptionType,
   FormRadioGroupOptionType,
-} from "../../core/AppType";
+} from "../../core/FormType";
 
 /* ------- container props ----------*/
 const containerProps = {

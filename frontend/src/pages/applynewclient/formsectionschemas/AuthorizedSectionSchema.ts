@@ -1,4 +1,4 @@
-import type { FormSectionSchemaType } from "../../../core/AppType";
+import type { FormSectionSchemaType } from "../../../core/FormType";
 
 export const authorizedSectionSchema: FormSectionSchemaType = {
   container: { title: "Add authorized individuals", id: "authorized" },

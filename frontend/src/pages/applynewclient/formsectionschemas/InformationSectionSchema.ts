@@ -1,7 +1,7 @@
 import type {
   FormSectionSchemaType,
   FormComponentSchemaType,
-} from "../../../core/AppType";
+} from "../../../core/FormType";
 
 const informationSectionCommonSchema: Array<FormComponentSchemaType> = [
   {

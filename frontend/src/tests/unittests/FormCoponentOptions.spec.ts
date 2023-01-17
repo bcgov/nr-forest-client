@@ -14,7 +14,7 @@ import FormTable from "../../common/FormTable.vue";
 import type {
   FormComponentSchemaType,
   CommonObjectType,
-} from "../../core/AppType";
+} from "../../core/FormType";
 
 describe("FormCoponentOptions", () => {
   it("component defined", () => {

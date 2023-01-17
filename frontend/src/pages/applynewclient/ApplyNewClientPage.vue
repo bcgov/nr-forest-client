@@ -45,19 +45,19 @@ const computedButtonDisable = computed(() => {
   // check when to enable the submit button
   // enable the submit button when got all required fields
   // checkMissingRequireField returns true if has a missing field
-  if (
-    formData.data.begin["client_type"] == "individual" ||
-    formData.data.begin["client_type"] == "soleProprietorship"
-  )
-    return (
-      checkMissingRequireField(commonRequiredFields, formData.data) ||
-      checkMissingRequireField(individualRequiredFields, formData.data)
-    );
-  return (
-    checkMissingRequireField(commonRequiredFields, formData.data) ||
-    checkMissingRequireField(businessRequiredFields, formData.data)
-  );
-  // return false;
+  // if (
+  //   formData.state.begin["client_type"] == "individual" ||
+  //   formData.state.begin["client_type"] == "soleProprietorship"
+  // )
+  //   return (
+  //     checkMissingRequireField(commonRequiredFields, formData.state) ||
+  //     checkMissingRequireField(individualRequiredFields, formData.state)
+  //   );
+  // return (
+  //   checkMissingRequireField(commonRequiredFields, formData.state) ||
+  //   checkMissingRequireField(businessRequiredFields, formData.state)
+  // );
+  return false;
 });
 
 /* ---------- modal placehoder to confirm submit ----------- */
@@ -68,16 +68,32 @@ const loading = ref(false);
 const modalShow = ref(false);
 const openModal = () => {
   modalShow.value = true;
-  console.log("formdata", formData.data);
+  console.log("formdata", formData.state);
 };
 const onModalOkay = () => {
   modalShow.value = false;
   /* -------------------- data validation check --------------------------- */
   // todo: call the data validation api from backend and assign the result to the validationResult state
-  console.log("123");
   // a hardcode example to pass validationResult
-  validationResult.setValue({
+  validationResult.mutations.setValidationResult({
     begin: [{ fieldId: "client_type", errorMsg: "WrongType" }],
+    information: [{ fieldId: "first_name", errorMsg: "WrongName" }],
+    contact: [
+      {
+        fieldId: "address",
+        subFieldId: "country",
+        rowIndex: 0,
+        errorMsg: "Must be Canada",
+      },
+    ],
+    authorized: [
+      {
+        fieldId: "individuals",
+        subFieldId: "phone",
+        rowIndex: 0,
+        errorMsg: "Can not be empty",
+      },
+    ],
   });
 
   /* ------------ return confirmation Id -------------- */

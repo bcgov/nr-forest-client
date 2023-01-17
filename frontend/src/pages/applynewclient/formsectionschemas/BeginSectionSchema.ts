@@ -1,7 +1,7 @@
 import type {
   FormSectionSchemaType,
   FormRadioGroupOptionType,
-} from "../../../core/AppType";
+} from "../../../core/FormType";
 
 const formApplyReason: Array<FormRadioGroupOptionType> = [
   { code: "never_had", text: "I've never had a client number" },

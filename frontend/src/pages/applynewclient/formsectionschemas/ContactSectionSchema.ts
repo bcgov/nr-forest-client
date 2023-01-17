@@ -1,4 +1,4 @@
-import type { FormSectionSchemaType } from "../../../core/AppType";
+import type { FormSectionSchemaType } from "../../../core/FormType";
 
 export const contactSectionSchema: FormSectionSchemaType = {
   container: { title: "Contact Information", id: "contact" },

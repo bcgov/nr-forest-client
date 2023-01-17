@@ -28,7 +28,7 @@ import FormComponentOptions from "../../../common/FormComponentOptions.vue";
 import type {
   CommonObjectType,
   FormSectionSchemaType,
-} from "../../../core/AppType";
+} from "../../../core/FormType";
 
 const props = defineProps({
   data: {

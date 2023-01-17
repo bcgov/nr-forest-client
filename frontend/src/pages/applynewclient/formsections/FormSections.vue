@@ -2,15 +2,15 @@
   <div>
     <!------ begin section ------->
     <FormSectionTemplate
-      :data="formData.data.begin"
+      :data="formData.state.begin"
       :sectionProps="computedBeginSchema"
       @updateFormValue="
         (fieldId, newValue) =>
-          formData.updateFormValue('begin', fieldId, newValue)
+          formData.mutations.updateFormValue('begin', fieldId, newValue)
       "
       @updateFormArrayValue="
         (fieldId, subFieldId, newValue, rowIndex) =>
-          formData.updateFormArrayValue(
+          formData.mutations.updateFormArrayValue(
             'begin',
             fieldId,
             subFieldId,
@@ -18,24 +18,25 @@
             rowIndex
           )
       "
-      @addRow="(fieldId) => formData.addRow('begin', fieldId)"
+      @addRow="(fieldId) => formData.mutations.addRow('begin', fieldId)"
       @deleteRow="
-        (fieldId, rowIndex) => formData.deleteRow('begin', fieldId, rowIndex)
+        (fieldId, rowIndex) =>
+          formData.mutations.deleteRow('begin', fieldId, rowIndex)
       "
     />
 
     <!------ company/individual information section ------->
     <FormSectionTemplate
-      v-if="computedCompanyType !== ''"
-      :data="formData.data.information"
-      :sectionProps="computedInformationSchema[computedCompanyType]"
+      v-if="computedInformationSchemaType !== ''"
+      :data="formData.state.information"
+      :sectionProps="computedInformationSchema[computedInformationSchemaType]"
       @updateFormValue="
         (fieldId, newValue) =>
-          formData.updateFormValue('information', fieldId, newValue)
+          formData.mutations.updateFormValue('information', fieldId, newValue)
       "
       @updateFormArrayValue="
         (fieldId, subFieldId, newValue, rowIndex) =>
-          formData.updateFormArrayValue(
+          formData.mutations.updateFormArrayValue(
             'information',
             fieldId,
             subFieldId,
@@ -43,24 +44,24 @@
             rowIndex
           )
       "
-      @addRow="(fieldId) => formData.addRow('information', fieldId)"
+      @addRow="(fieldId) => formData.mutations.addRow('information', fieldId)"
       @deleteRow="
         (fieldId, rowIndex) =>
-          formData.deleteRow('information', fieldId, rowIndex)
+          formData.mutations.deleteRow('information', fieldId, rowIndex)
       "
     />
 
     <!------ contact information section ------->
     <FormSectionTemplate
-      :data="formData.data.contact"
-      :sectionProps="contactSectionSchema"
+      :data="formData.state.contact"
+      :sectionProps="computedContactSectionSchema"
       @updateFormValue="
         (fieldId, newValue) =>
-          formData.updateFormValue('contact', fieldId, newValue)
+          formData.mutations.updateFormValue('contact', fieldId, newValue)
       "
       @updateFormArrayValue="
         (fieldId, subFieldId, newValue, rowIndex) =>
-          formData.updateFormArrayValue(
+          formData.mutations.updateFormArrayValue(
             'contact',
             fieldId,
             subFieldId,
@@ -68,23 +69,24 @@
             rowIndex
           )
       "
-      @addRow="(fieldId) => formData.addRow('contact', fieldId)"
+      @addRow="(fieldId) => formData.mutations.addRow('contact', fieldId)"
       @deleteRow="
-        (fieldId, rowIndex) => formData.deleteRow('contact', fieldId, rowIndex)
+        (fieldId, rowIndex) =>
+          formData.mutations.deleteRow('contact', fieldId, rowIndex)
       "
     />
 
     <!------ add authorized individual section ------->
     <FormSectionTemplate
-      :data="formData.data.authorized"
-      :sectionProps="authorizedSectionSchema"
+      :data="formData.state.authorized"
+      :sectionProps="computedAuthorizedSectionSchema"
       @updateFormValue="
         (fieldId, newValue) =>
-          formData.updateFormValue('authorized', fieldId, newValue)
+          formData.mutations.updateFormValue('authorized', fieldId, newValue)
       "
       @updateFormArrayValue="
         (fieldId, subFieldId, newValue, rowIndex) =>
-          formData.updateFormArrayValue(
+          formData.mutations.updateFormArrayValue(
             'authorized',
             fieldId,
             subFieldId,
@@ -92,10 +94,10 @@
             rowIndex
           )
       "
-      @addRow="(fieldId) => formData.addRow('authorized', fieldId)"
+      @addRow="(fieldId) => formData.mutations.addRow('authorized', fieldId)"
       @deleteRow="
         (fieldId, rowIndex) =>
-          formData.deleteRow('authorized', fieldId, rowIndex)
+          formData.mutations.deleteRow('authorized', fieldId, rowIndex)
       "
     />
   </div>
@@ -109,71 +111,40 @@ import { beginSectionSchema } from "../formsectionschemas/BeginSectionSchema";
 import { informationSectionSchema } from "../formsectionschemas/InformationSectionSchema";
 import { contactSectionSchema } from "../formsectionschemas/ContactSectionSchema";
 import { authorizedSectionSchema } from "../formsectionschemas/AuthorizedSectionSchema";
-import { formData, validationResult } from "../../../helpers/FormState";
+import { formData } from "../../../helpers/FormState";
 import { addErrMsgToSchema } from "../../../helpers/formvalidation/AddErrorToSchema";
 
 // create computed section schemas to determine when to display error messages as specified in the validation result
 const computedBeginSchema = computed(() => {
-  let beginSectionSchemaCopy = JSON.parse(JSON.stringify(beginSectionSchema));
-  if (
-    _.has(validationResult, ["value", "begin"]) &&
-    validationResult.value.begin.length > 0
-  ) {
-    validationResult.value.begin.forEach((eachRow) => {
-      beginSectionSchemaCopy = {
-        ...beginSectionSchemaCopy,
-        content: addErrMsgToSchema(beginSectionSchemaCopy.content, eachRow),
-      };
-    });
-  }
-  return beginSectionSchemaCopy;
+  return addErrMsgToSchema(beginSectionSchema, "begin");
 });
-
 const computedInformationSchema = computed(() => {
-  let informationSectionSchemaCopy = JSON.parse(
-    JSON.stringify(informationSectionSchema)
-  );
-  if (
-    _.has(validationResult, ["value", "information"]) &&
-    validationResult.value.information.length > 0 &&
-    formData.data.begin.client_type !== ""
-  ) {
-    const type = getInformationSchemaType();
-    validationResult.value.information.forEach((eachRow) => {
-      informationSectionSchemaCopy[type] = {
-        ...informationSectionSchemaCopy[type],
-        content: addErrMsgToSchema(
-          informationSectionSchemaCopy[type].content,
-          eachRow
-        ),
-      };
-    });
-  }
-  return informationSectionSchemaCopy;
+  return addErrMsgToSchema(informationSectionSchema, "information");
+});
+const computedContactSectionSchema = computed(() => {
+  return addErrMsgToSchema(contactSectionSchema, "contact");
+});
+const computedAuthorizedSectionSchema = computed(() => {
+  return addErrMsgToSchema(authorizedSectionSchema, "authorized");
 });
 
-// todo: do the same for other sections
-
-// return different form content for information section based on the client type
-const computedCompanyType = computed(() => {
+// based on client type, show different schema contenct for the information section
+const computedInformationSchemaType = computed(() => {
   if (
-    _.has(formData, ["dadta", "begin", "client_type"]) &&
-    formData.data.begin.client_type !== ""
+    _.has(formData, ["state", "begin", "client_type"]) &&
+    formData.state.begin.client_type !== ""
   ) {
-    return getInformationSchemaType();
+    if (
+      formData.state.begin.client_type != "individual" &&
+      formData.state.begin.client_type != "soleProprietorship"
+    ) {
+      return "company";
+    }
+    // other types share the same schema as company
+    return formData.state.begin.client_type;
   }
   return "";
 });
-
-const getInformationSchemaType = () => {
-  if (
-    formData.data.begin.client_type != "individual" &&
-    formData.data.begin.client_type != "soleProprietorship"
-  ) {
-    return "company";
-  }
-  return formData.data.begin.client_type;
-};
 </script>
 
 <script lang="ts">

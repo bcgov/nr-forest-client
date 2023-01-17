@@ -4,7 +4,7 @@ import { mount, shallowMount } from "@vue/test-utils";
 import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 import FormFieldTitle from "../../common/FormFieldTitle.vue";
 
-import type { FormFieldTemplateType } from "../../core/AppType";
+import type { FormFieldTemplateType } from "../../core/FormType";
 
 describe("FormFieldTemplate", () => {
   it("component defined", () => {
