@@ -37,7 +37,8 @@ import {
   businessRequiredFields,
   individualRequiredFields,
 } from "./formvalidationrules/RequiredFields";
-import { formData, validationResult } from "../../helpers/FormState";
+import { formData } from "../../store/newclientform/FormData";
+import { validationResult } from "../../store/newclientform/FormValidation";
 import { primary } from "../../utils/color";
 
 /* -------------- check when to enable submit button ------------------- */
@@ -45,19 +46,18 @@ const computedButtonDisable = computed(() => {
   // check when to enable the submit button
   // enable the submit button when got all required fields
   // checkMissingRequireField returns true if has a missing field
-  // if (
-  //   formData.state.begin["client_type"] == "individual" ||
-  //   formData.state.begin["client_type"] == "soleProprietorship"
-  // )
-  //   return (
-  //     checkMissingRequireField(commonRequiredFields, formData.state) ||
-  //     checkMissingRequireField(individualRequiredFields, formData.state)
-  //   );
-  // return (
-  //   checkMissingRequireField(commonRequiredFields, formData.state) ||
-  //   checkMissingRequireField(businessRequiredFields, formData.state)
-  // );
-  return false;
+  if (
+    formData.state.begin["client_type"] == "individual" ||
+    formData.state.begin["client_type"] == "soleProprietorship"
+  )
+    return (
+      checkMissingRequireField(commonRequiredFields, formData.state) ||
+      checkMissingRequireField(individualRequiredFields, formData.state)
+    );
+  return (
+    checkMissingRequireField(commonRequiredFields, formData.state) ||
+    checkMissingRequireField(businessRequiredFields, formData.state)
+  );
 });
 
 /* ---------- modal placehoder to confirm submit ----------- */
@@ -82,7 +82,7 @@ const onModalOkay = () => {
       {
         fieldId: "address",
         subFieldId: "country",
-        rowIndex: 0,
+        rowIndex: 1,
         errorMsg: "Must be Canada",
       },
     ],

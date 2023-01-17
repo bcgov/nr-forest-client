@@ -12,6 +12,7 @@
         <FormComponentOptions
           :data="row[column.fieldProps.id]"
           :schema="column"
+          :error="computedError(column.fieldProps.id, rowIndex)"
           @updateFormValue="
             (id, newValue) => updateFormArrayValue(id, newValue, rowIndex)
           "
@@ -33,6 +34,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import type { PropType } from "vue";
 import FormFieldTemplate from "./FormFieldTemplate.vue";
 import FormComponentOptions from "./FormComponentOptions.vue";
@@ -41,6 +43,7 @@ import type {
   FormFieldTemplateType,
   FormComponentSchemaType,
   CommonObjectType,
+  FormFieldValidationResultType,
 } from "../core/FormType";
 
 const props = defineProps({
@@ -55,6 +58,17 @@ const props = defineProps({
     required: true,
   },
   fieldProps: Object as PropType<FormFieldTemplateType>,
+  error: {
+    type: Array<FormFieldValidationResultType>,
+    default: [],
+  },
+});
+
+const computedError = computed(() => {
+  return (subFieldId: string, rowIndex: number) =>
+    props.error.filter(
+      (each) => each.subFieldId == subFieldId && each.rowIndex == rowIndex
+    );
 });
 
 const emit = defineEmits(["updateFormArrayValue", "addRow", "deleteRow"]);

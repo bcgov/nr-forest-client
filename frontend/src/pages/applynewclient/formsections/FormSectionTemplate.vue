@@ -8,23 +8,54 @@
       <FormComponentOptions
         v-if="!row.depend || data[row.depend.fieldId] == row.depend.value"
         :data="data[row.fieldProps.id]"
+        :error="computedErrorMsg(row.fieldProps.id)"
         :schema="row"
-        @updateFormValue="(id, newValue) => updateFormValue(id, newValue)"
-        @updateFormArrayValue="
-          (id, newValue, rowIndex) =>
-            updateFormArrayValue(row.fieldProps.id, id, newValue, rowIndex)
+        @updateFormValue="
+          (fieldId, newValue) =>
+            formData.mutations.updateFormValue(
+              sectionProps.container.id,
+              fieldId,
+              newValue
+            )
         "
-        @addRow="() => addRow(row.fieldProps.id)"
-        @deleteRow="(rowIndex) => deleteRow(row.fieldProps.id, rowIndex)"
+        @updateFormArrayValue="
+          (subFieldId, newValue, rowIndex) =>
+            formData.mutations.updateFormArrayValue(
+              sectionProps.container.id, // container id
+              row.fieldProps.id, // field id
+              subFieldId,
+              newValue,
+              rowIndex
+            )
+        "
+        @addRow="
+          () =>
+            formData.mutations.addRow(
+              sectionProps.container.id,
+              row.fieldProps.id
+            )
+        "
+        @deleteRow="
+          (rowIndex) =>
+            formData.mutations.deleteRow(
+              sectionProps.container.id,
+              row.fieldProps.id,
+              rowIndex
+            )
+        "
       />
     </div>
   </CollapseCard>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+import _ from "lodash";
 import type { PropType } from "vue";
 import CollapseCard from "../../../common/CollapseCard.vue";
 import FormComponentOptions from "../../../common/FormComponentOptions.vue";
+import { formData } from "../../../store/newclientform/FormData";
+import { validationResult } from "../../../store/newclientform/FormValidation";
 import type {
   CommonObjectType,
   FormSectionSchemaType,
@@ -41,30 +72,15 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits([
-  "updateFormValue",
-  "updateFormArrayValue",
-  "addRow",
-  "deleteRow",
-]);
-
-const updateFormValue = (fieldId: string, newValue: any) => {
-  emit("updateFormValue", fieldId, newValue);
-};
-const updateFormArrayValue = (
-  fieldId: string,
-  subFieldId: string,
-  newValue: any,
-  rowIndex: number
-) => {
-  emit("updateFormArrayValue", fieldId, subFieldId, newValue, rowIndex);
-};
-const addRow = (fieldId: string) => {
-  emit("addRow", fieldId);
-};
-const deleteRow = (fieldId: string, rowIndex: number) => {
-  emit("deleteRow", fieldId, rowIndex);
-};
+const computedErrorMsg = computed(() => {
+  return (fieldId: string) => {
+    if (_.has(validationResult.state, [props.sectionProps.container.id]))
+      return validationResult.state[props.sectionProps.container.id].filter(
+        (each) => each.fieldId == fieldId
+      );
+    return [];
+  };
+});
 </script>
 
 <script lang="ts">
