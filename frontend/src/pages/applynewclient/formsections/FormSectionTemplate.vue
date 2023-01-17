@@ -12,7 +12,7 @@
         :schema="row"
         @updateFormValue="
           (fieldId, newValue) =>
-            formData.mutations.updateFormValue(
+            formData.actions.updateFormValue(
               sectionProps.container.id,
               fieldId,
               newValue
@@ -20,7 +20,7 @@
         "
         @updateFormArrayValue="
           (subFieldId, newValue, rowIndex) =>
-            formData.mutations.updateFormArrayValue(
+            formData.actions.updateFormArrayValue(
               sectionProps.container.id, // container id
               row.fieldProps.id, // field id
               subFieldId,
@@ -30,14 +30,14 @@
         "
         @addRow="
           () =>
-            formData.mutations.addRow(
+            formData.actions.addRow(
               sectionProps.container.id,
               row.fieldProps.id
             )
         "
         @deleteRow="
           (rowIndex) =>
-            formData.mutations.deleteRow(
+            formData.actions.deleteRow(
               sectionProps.container.id,
               row.fieldProps.id,
               rowIndex

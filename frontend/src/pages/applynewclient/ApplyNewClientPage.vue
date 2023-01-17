@@ -75,9 +75,14 @@ const onModalOkay = () => {
   /* -------------------- data validation check --------------------------- */
   // todo: call the data validation api from backend and assign the result to the validationResult state
   // a hardcode example to pass validationResult
-  validationResult.mutations.setValidationResult({
-    begin: [{ fieldId: "client_type", errorMsg: "WrongType" }],
-    information: [{ fieldId: "first_name", errorMsg: "WrongName" }],
+  validationResult.actions.setValidationResult({
+    begin: [
+      {
+        fieldId: "client_type",
+        errorMsg: "WrongType, select inidividual to get rid of this error",
+      },
+    ],
+    information: [{ fieldId: "first_name", errorMsg: "Can not be empty" }],
     contact: [
       {
         fieldId: "address",

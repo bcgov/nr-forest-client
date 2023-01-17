@@ -62,11 +62,10 @@ export const formData = {
       return formData.state;
     },
   },
-  // This section will manage the changes into the state
+  // This section will manage the changes into the state, can be only called by actions
   mutations: {
     updateFormValue(containerId: string, fieldId: string, newValue: any) {
       formData.state[containerId][fieldId] = newValue;
-      formData.actions.cleanErrorMsg();
     },
     updateFormArrayValue(
       containerId: string,
@@ -76,16 +75,10 @@ export const formData = {
       rowIndex: number
     ) {
       formData.state[containerId][fieldId][rowIndex][subFieldId] = newValue;
-      formData.actions.cleanErrorMsg();
     },
-    addRow(containerId: string, fieldId: string) {
-      const newContainer =
-        initialFormData[containerId as keyof typeof initialFormData];
-      const defaultNew = JSON.parse(
-        JSON.stringify(newContainer[fieldId as keyof typeof newContainer][0])
-      );
+    addRow(containerId: string, fieldId: string, newRow: CommonObjectType) {
       formData.state[containerId][fieldId].push({
-        ...defaultNew,
+        ...newRow,
         index: Math.floor(Math.random() * 10000000),
       });
     },
@@ -95,6 +88,37 @@ export const formData = {
   },
   // This section will manage the actions needed for our store
   actions: {
+    updateFormValue(containerId: string, fieldId: string, newValue: any) {
+      formData.mutations.updateFormValue(containerId, fieldId, newValue);
+      formData.actions.cleanErrorMsg();
+    },
+    updateFormArrayValue(
+      containerId: string,
+      fieldId: string,
+      subFieldId: string,
+      newValue: any,
+      rowIndex: number
+    ) {
+      formData.mutations.updateFormArrayValue(
+        containerId,
+        fieldId,
+        subFieldId,
+        newValue,
+        rowIndex
+      );
+      formData.actions.cleanErrorMsg();
+    },
+    addRow(containerId: string, fieldId: string) {
+      const newContainer =
+        initialFormData[containerId as keyof typeof initialFormData];
+      const defaultNew = JSON.parse(
+        JSON.stringify(newContainer[fieldId as keyof typeof newContainer][0])
+      );
+      formData.mutations.addRow(containerId, fieldId, defaultNew);
+    },
+    deleteRow(containerId: string, fieldId: string, rowIndex: number) {
+      formData.mutations.deleteRow(containerId, fieldId, rowIndex);
+    },
     cleanErrorMsg() {
       // todo: this is the function to check every feild if meet the validation rules, remove the error message if met
       // some hard code examples to remove validationError after user makes the correctness

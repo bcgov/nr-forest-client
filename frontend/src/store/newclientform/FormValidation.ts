@@ -1,6 +1,9 @@
 import { reactive } from "vue";
 import _ from "lodash";
-import type { FormValidationResultType } from "../../core/FormType";
+import type {
+  FormValidationResultType,
+  FormFieldValidationResultType,
+} from "../../core/FormType";
 
 export const validationResult = {
   state: reactive({
@@ -22,8 +25,17 @@ export const validationResult = {
       validationResult.state.contact = result.contact || [];
       validationResult.state.authorized = result.authorized || [];
     },
+    setValidationResultForSection(
+      containerId: string,
+      sectionResult: Array<FormFieldValidationResultType>
+    ) {
+      validationResult.state[containerId] = sectionResult;
+    },
   },
   actions: {
+    setValidationResult(result: FormValidationResultType) {
+      validationResult.mutations.setValidationResult(result);
+    },
     removeValidationError(
       containerId: string,
       fieldId: string,
@@ -34,27 +46,28 @@ export const validationResult = {
         validationResult.state[containerId] &&
         validationResult.state[containerId].length > 0
       ) {
-        validationResult.state[containerId] = validationResult.state[
-          containerId
-        ].filter((eachRow) => {
-          let notMatch = false;
-          if (eachRow.fieldId !== fieldId) notMatch = true;
-          if (
-            (subFieldId && !eachRow.subFieldId) ||
-            (!subFieldId && eachRow.subFieldId) ||
-            (subFieldId &&
-              eachRow.subFieldId &&
-              eachRow.subFieldId != subFieldId)
-          )
-            notMatch = true;
-          if (
-            (rowIndex && !eachRow.rowIndex) ||
-            (!rowIndex && eachRow.rowIndex) ||
-            (rowIndex && eachRow.rowIndex && eachRow.rowIndex != rowIndex)
-          )
-            notMatch = true;
-          return notMatch;
-        });
+        validationResult.mutations.setValidationResultForSection(
+          containerId,
+          validationResult.state[containerId].filter((eachRow) => {
+            let notMatch = false;
+            if (eachRow.fieldId !== fieldId) notMatch = true;
+            if (
+              (subFieldId && !eachRow.subFieldId) ||
+              (!subFieldId && eachRow.subFieldId) ||
+              (subFieldId &&
+                eachRow.subFieldId &&
+                eachRow.subFieldId != subFieldId)
+            )
+              notMatch = true;
+            if (
+              (rowIndex && !eachRow.rowIndex) ||
+              (!rowIndex && eachRow.rowIndex) ||
+              (rowIndex && eachRow.rowIndex && eachRow.rowIndex != rowIndex)
+            )
+              notMatch = true;
+            return notMatch;
+          })
+        );
       }
     },
   },
