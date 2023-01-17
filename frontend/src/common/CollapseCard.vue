@@ -37,7 +37,7 @@
         <slot />
         <PrimarySquareButton
           v-if="nextId"
-          @onClick="openNext"
+          @click="openNext()"
           :text="nextText"
         />
       </b-card-body>
@@ -46,11 +46,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import PrimarySquareButton from "./buttons/PrimarySquareButton.vue";
 import BiArrowUpShort from "~icons/bi/arrow-up-short";
 import BiArrowDownShort from "~icons/bi/arrow-down-short";
-import { primary } from "../utils/color";
 
 const props = defineProps({
   title: String,

@@ -42,6 +42,7 @@ export const validationResult = {
       subFieldId?: string,
       rowIndex?: number
     ) {
+      // todo: this is an example to cleanup the validation error for a specific field, if the depth of the field increase, need to specify the whole path
       if (
         validationResult.state[containerId] &&
         validationResult.state[containerId].length > 0
