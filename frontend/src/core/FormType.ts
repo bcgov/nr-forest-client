@@ -69,9 +69,7 @@ export interface FormValidationRequiredFieldType {
 }
 
 export interface FormFieldValidationResultType {
-  fieldId: string;
-  subFieldId?: string;
-  rowIndex?: number;
+  path: string;
   errorMsg: string;
 }
 

@@ -73,7 +73,7 @@ const computedErrorMsg = computed(() => {
   return (fieldId: string) => {
     if (_.has(validationResult.state, [props.sectionProps.container.id]))
       return validationResult.state[props.sectionProps.container.id].filter(
-        (each) => each.fieldId == fieldId
+        (each) => _.includes(each.path, fieldId)
       );
     return [];
   };

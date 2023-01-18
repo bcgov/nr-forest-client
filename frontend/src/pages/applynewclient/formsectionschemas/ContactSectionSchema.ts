@@ -14,7 +14,7 @@ export const contactSectionSchema: FormSectionSchemaType = {
         {
           fieldProps: {
             label: "Street address",
-            id: "stree_address",
+            id: "street_address",
             required: true,
           },
           type: "group",

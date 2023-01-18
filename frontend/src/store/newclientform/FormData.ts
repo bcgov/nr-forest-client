@@ -25,7 +25,7 @@ const initialFormData = {
   contact: {
     address: [
       {
-        stree_address: [{ address_line: "1", index: 0 }],
+        street_address: [{ address_line: "", index: 0 }],
         country: "",
         province: "",
         city: "",
@@ -103,37 +103,45 @@ export const formData = {
         if (formData.state.begin.client_type == "individual")
           validationResult.actions.removeValidationError(
             "begin",
-            "client_type"
+            "begin.client_type"
           );
         if (formData.state.information.first_name == "test")
           validationResult.actions.removeValidationError(
             "information",
-            "first_name"
+            "information.first_name"
           );
+        if (formData.state.information.first_name == "test")
+          validationResult.actions.removeValidationError(
+            "information",
+            "information.first_name"
+          );
+        // an example to check all array data for form group
         formData.state.contact.address.forEach(
           (e: CommonObjectType, index: number) => {
             if (e.country == "Canada") {
               validationResult.actions.removeValidationError(
                 "contact",
-                "address",
-                "country",
-                index
+                `contact.address.${index}.country`
               );
             }
+            e.street_address.forEach(
+              (addressLine: CommonObjectType, lineIndex: number) => {
+                if (addressLine.address_line != "") {
+                  validationResult.actions.removeValidationError(
+                    "contact",
+                    `contact.address.${index}.street_address.${lineIndex}.address_line`
+                  );
+                }
+              }
+            );
           }
         );
-        formData.state.authorized.individuals.forEach(
-          (e: CommonObjectType, index: number) => {
-            if (e.phone != "") {
-              validationResult.actions.removeValidationError(
-                "authorized",
-                "individuals",
-                "phone",
-                index
-              );
-            }
-          }
-        );
+
+        if (formData.state.authorized.individuals[0].phone != "")
+          validationResult.actions.removeValidationError(
+            "authorized",
+            "authorized.individuals.0.phone"
+          );
       }
     },
   },

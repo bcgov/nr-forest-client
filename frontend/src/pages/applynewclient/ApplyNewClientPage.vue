@@ -46,18 +46,19 @@ const computedButtonDisable = computed(() => {
   // check when to enable the submit button
   // enable the submit button when got all required fields
   // checkMissingRequireField returns true if has a missing field
-  if (
-    formData.state.begin["client_type"] == "individual" ||
-    formData.state.begin["client_type"] == "soleProprietorship"
-  )
-    return (
-      checkMissingRequireField(commonRequiredFields, formData.state) ||
-      checkMissingRequireField(individualRequiredFields, formData.state)
-    );
-  return (
-    checkMissingRequireField(commonRequiredFields, formData.state) ||
-    checkMissingRequireField(businessRequiredFields, formData.state)
-  );
+  // if (
+  //   formData.state.begin["client_type"] == "individual" ||
+  //   formData.state.begin["client_type"] == "soleProprietorship"
+  // )
+  //   return (
+  //     checkMissingRequireField(commonRequiredFields, formData.state) ||
+  //     checkMissingRequireField(individualRequiredFields, formData.state)
+  //   );
+  // return (
+  //   checkMissingRequireField(commonRequiredFields, formData.state) ||
+  //   checkMissingRequireField(businessRequiredFields, formData.state)
+  // );
+  return false;
 });
 
 /* ---------- modal placehoder to confirm submit ----------- */
@@ -73,29 +74,32 @@ const openModal = () => {
 const onModalOkay = () => {
   modalShow.value = false;
   /* -------------------- data validation check --------------------------- */
-  // todo: call the data validation api from backend and assign the result to the validationResult state
-  // a hardcode example to pass validationResult
   validationResult.actions.setValidationResult({
     begin: [
       {
-        fieldId: "client_type",
+        path: "begin.client_type",
         errorMsg: "WrongType, select inidividual to get rid of this error",
       },
     ],
-    information: [{ fieldId: "first_name", errorMsg: "Can not be empty" }],
+    information: [
+      {
+        path: "information.first_name",
+        errorMsg: "Can not be empty",
+      },
+    ],
     contact: [
       {
-        fieldId: "address",
-        subFieldId: "country",
-        rowIndex: 1,
+        path: "contact.address.1.country",
         errorMsg: "Must be Canada",
+      },
+      {
+        path: "contact.address.0.street_address.0.address_line",
+        errorMsg: "Can not be empty",
       },
     ],
     authorized: [
       {
-        fieldId: "individuals",
-        subFieldId: "phone",
-        rowIndex: 0,
+        path: "authorized.individuals.0.phone",
         errorMsg: "Can not be empty",
       },
     ],

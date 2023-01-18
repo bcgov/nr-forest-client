@@ -60,6 +60,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import _ from "lodash";
 import type { PropType } from "vue";
 import FormFieldTemplate from "./FormFieldTemplate.vue";
 import FormComponentOptions from "./FormComponentOptions.vue";
@@ -90,12 +91,11 @@ const props = defineProps({
 });
 
 const computedError = computed(() => {
-  return (subFieldId: string, rowIndex: number) =>
-    props.error.filter(
-      (each) => each.subFieldId == subFieldId && each.rowIndex == rowIndex
-    );
+  return (subFieldId: string, rowIndex: number) => {
+    const key = `${rowIndex}.${subFieldId}`;
+    return props.error.filter((each) => _.includes(each.path, key));
+  };
 });
-
 const emit = defineEmits(["updateFormArrayValue", "addRow", "deleteRow"]);
 
 const updateFormArrayValue = (newValue: any, path: Array<string>) => {

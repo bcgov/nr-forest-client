@@ -36,38 +36,16 @@ export const validationResult = {
     setValidationResult(result: FormValidationResultType) {
       validationResult.mutations.setValidationResult(result);
     },
-    removeValidationError(
-      containerId: string,
-      fieldId: string,
-      subFieldId?: string,
-      rowIndex?: number
-    ) {
-      // todo: this is an example to cleanup the validation error for a specific field, if the depth of the field increase, need to specify the whole path
+    removeValidationError(containerId: string, path: string) {
       if (
         validationResult.state[containerId] &&
         validationResult.state[containerId].length > 0
       ) {
         validationResult.mutations.setValidationResultForSection(
           containerId,
-          validationResult.state[containerId].filter((eachRow) => {
-            let notMatch = false;
-            if (eachRow.fieldId !== fieldId) notMatch = true;
-            if (
-              (subFieldId && !eachRow.subFieldId) ||
-              (!subFieldId && eachRow.subFieldId) ||
-              (subFieldId &&
-                eachRow.subFieldId &&
-                eachRow.subFieldId != subFieldId)
-            )
-              notMatch = true;
-            if (
-              (rowIndex && !eachRow.rowIndex) ||
-              (!rowIndex && eachRow.rowIndex) ||
-              (rowIndex && eachRow.rowIndex && eachRow.rowIndex != rowIndex)
-            )
-              notMatch = true;
-            return notMatch;
-          })
+          validationResult.state[containerId].filter(
+            (eachRow) => eachRow.path !== path
+          )
         );
       }
     },
