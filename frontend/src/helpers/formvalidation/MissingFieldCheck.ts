@@ -1,28 +1,52 @@
-import type { FormValidationRequiredFieldType } from "../../core/FormType";
+import _ from "lodash";
+import type {
+  FormValidationRequiredFieldType,
+  CommonObjectType,
+} from "../../core/FormType";
 
 export const checkMissingRequireField = (
   requireList: Array<FormValidationRequiredFieldType>,
-  formData: any
+  formData: CommonObjectType
 ) => {
+  // todo: so far it supports at most 2 level in-depth array, if the depth increase, need to redesign the structure
+
   let missingRequire = false;
+
   for (let i = 0; i < requireList.length; i++) {
     const require = requireList[i];
     if (!require.subFieldId) {
-      if (formData[require.containerId][require.fieldId] == "") {
+      if (_.get(formData, require.path) == "") {
         missingRequire = true;
         break;
       }
-    } else {
+    } else if (_.get(formData, require.path)) {
       // check table and group, to see if each row got all required fields
-      for (
-        let j = 0;
-        j < formData[require.containerId][require.fieldId].length;
-        j++
-      ) {
-        const row = formData[require.containerId][require.fieldId][j];
-        if (row[require.subFieldId] == "") {
-          missingRequire = true;
-          break;
+      for (let j = 0; j < _.get(formData, require.path).length; j++) {
+        if (!require.subPath) {
+          if (
+            _.get(formData, `${require.path}.${j}.${require.subFieldId}`) == ""
+          ) {
+            missingRequire = true;
+            break;
+          }
+        } else {
+          const subArray = _.get(
+            formData,
+            `${require.path}.${j}.${require.subPath}`
+          );
+          if (Array.isArray(subArray)) {
+            for (let k = 0; k < subArray.length; k++) {
+              if (
+                _.get(
+                  formData,
+                  `${require.path}.${j}.${require.subPath}.${k}.${require.subFieldId}`
+                ) == ""
+              ) {
+                missingRequire = true;
+                break;
+              }
+            }
+          }
         }
       }
     }

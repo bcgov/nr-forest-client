@@ -25,6 +25,7 @@ export const contactSectionSchema: FormSectionSchemaType = {
               fieldProps: {
                 label: "Address Line",
                 id: "address_line",
+                required: true,
               },
               type: "input",
             },

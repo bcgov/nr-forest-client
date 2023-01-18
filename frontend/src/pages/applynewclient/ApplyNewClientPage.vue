@@ -46,19 +46,18 @@ const computedButtonDisable = computed(() => {
   // check when to enable the submit button
   // enable the submit button when got all required fields
   // checkMissingRequireField returns true if has a missing field
-  // if (
-  //   formData.state.begin["client_type"] == "individual" ||
-  //   formData.state.begin["client_type"] == "soleProprietorship"
-  // )
-  //   return (
-  //     checkMissingRequireField(commonRequiredFields, formData.state) ||
-  //     checkMissingRequireField(individualRequiredFields, formData.state)
-  //   );
-  // return (
-  //   checkMissingRequireField(commonRequiredFields, formData.state) ||
-  //   checkMissingRequireField(businessRequiredFields, formData.state)
-  // );
-  return false;
+  if (
+    formData.state.begin["client_type"] == "individual" ||
+    formData.state.begin["client_type"] == "soleProprietorship"
+  )
+    return (
+      checkMissingRequireField(commonRequiredFields, formData.state) ||
+      checkMissingRequireField(individualRequiredFields, formData.state)
+    );
+  return (
+    checkMissingRequireField(commonRequiredFields, formData.state) ||
+    checkMissingRequireField(businessRequiredFields, formData.state)
+  );
 });
 
 /* ---------- modal placehoder to confirm submit ----------- */
