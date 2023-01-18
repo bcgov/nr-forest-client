@@ -111,17 +111,17 @@ const emit = defineEmits([
   "deleteRow",
 ]);
 
-const updateFormValue = (id: string, newValue: any) => {
-  emit("updateFormValue", id, newValue);
+const updateFormValue = (newValue: any, path: Array<string>) => {
+  emit("updateFormValue", newValue, path);
 };
-const updateFormArrayValue = (id: string, newValue: any, row: number) => {
-  emit("updateFormArrayValue", id, newValue, row);
+const updateFormArrayValue = (newValue: any, path: Array<string>) => {
+  emit("updateFormArrayValue", newValue, path);
 };
-const addRow = () => {
-  emit("addRow");
+const addRow = (path = [] as Array<string>) => {
+  emit("addRow", path);
 };
-const deleteRow = (row: number) => {
-  emit("deleteRow", row);
+const deleteRow = (index: number, path = [] as Array<string>) => {
+  emit("deleteRow", index, path);
 };
 </script>
 

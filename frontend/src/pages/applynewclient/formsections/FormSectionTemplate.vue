@@ -11,37 +11,34 @@
         :error="computedErrorMsg(row.fieldProps.id)"
         :schema="row"
         @updateFormValue="
-          (fieldId, newValue) =>
-            formData.actions.updateFormValue(
+          (newValue, path = []) =>
+            formData.actions.updateFormValue(newValue, [
               sectionProps.container.id,
-              fieldId,
-              newValue
-            )
+              ...path,
+            ])
         "
         @updateFormArrayValue="
-          (subFieldId, newValue, rowIndex) =>
-            formData.actions.updateFormArrayValue(
-              sectionProps.container.id, // container id
-              row.fieldProps.id, // field id
-              subFieldId,
+          (newValue, path = []) =>
+            formData.actions.updateFormValue(
               newValue,
-              rowIndex
+              [sectionProps.container.id, row.fieldProps.id, ...path] // [container_id,field_id,path to the array]
             )
         "
         @addRow="
-          () =>
-            formData.actions.addRow(
-              sectionProps.container.id,
-              row.fieldProps.id
-            )
-        "
-        @deleteRow="
-          (rowIndex) =>
-            formData.actions.deleteRow(
+          (path = []) =>
+            formData.actions.addRow([
               sectionProps.container.id,
               row.fieldProps.id,
-              rowIndex
-            )
+              ...path,
+            ])
+        "
+        @deleteRow="
+          (rowIndex, path = []) =>
+            formData.actions.deleteRow(rowIndex, [
+              sectionProps.container.id,
+              row.fieldProps.id,
+              ...path,
+            ])
         "
       />
     </div>

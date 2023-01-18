@@ -70,7 +70,7 @@ describe("FormSelect", () => {
     expect(updateValueEvent).toHaveLength(1);
     // test the given parameters
     updateValueEvent = updateValueEvent || [];
-    expect(updateValueEvent[0]).toEqual(["test-form-select-id", "2"]);
+    expect(updateValueEvent[0]).toEqual(["2", ["test-form-select-id"]]);
   });
 
   it("renders props disabled successfully", async () => {

@@ -55,7 +55,7 @@ describe("FormCoponentOptions", () => {
     expect(updateFormValueEvent).toHaveLength(1);
     updateFormValueEvent = updateFormValueEvent || [];
     // test the given parameters
-    expect(updateFormValueEvent[0]).toEqual(["testInput", "Test"]);
+    expect(updateFormValueEvent[0]).toEqual(["Test", ["testInput"]]);
   });
 
   it("renders select successfully", async () => {
@@ -93,7 +93,7 @@ describe("FormCoponentOptions", () => {
     expect(updateFormValueEvent).toHaveLength(1);
     updateFormValueEvent = updateFormValueEvent || [];
     // test the given parameters
-    expect(updateFormValueEvent[0]).toEqual(["testSelect", "2"]);
+    expect(updateFormValueEvent[0]).toEqual(["2", ["testSelect"]]);
   });
 
   it("renders checkbox successfully", async () => {
@@ -258,7 +258,7 @@ describe("FormCoponentOptions", () => {
     let updateFormArrayValueEvent = wrapper.emitted("updateFormArrayValue");
     expect(updateFormArrayValueEvent).toHaveLength(1);
     updateFormArrayValueEvent = updateFormArrayValueEvent || [];
-    expect(updateFormArrayValueEvent[0]).toEqual(["groupInput", "Test", 0]);
+    expect(updateFormArrayValueEvent[0]).toEqual(["Test", [0, "groupInput"]]);
   });
 
   it("renders table successfully", async () => {
@@ -334,6 +334,6 @@ describe("FormCoponentOptions", () => {
     let updateFormArrayValueEvent = wrapper.emitted("updateFormArrayValue");
     expect(updateFormArrayValueEvent).toHaveLength(1);
     updateFormArrayValueEvent = updateFormArrayValueEvent || [];
-    expect(updateFormArrayValueEvent[0]).toEqual(["tableInput", "Test", 0]);
+    expect(updateFormArrayValueEvent[0]).toEqual(["Test", [0, "tableInput"]]);
   });
 });

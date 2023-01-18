@@ -25,7 +25,7 @@ const initialFormData = {
   contact: {
     address: [
       {
-        stree_address: "",
+        stree_address: [{ address_line: "1", index: 0 }],
         country: "",
         province: "",
         city: "",
@@ -64,87 +64,37 @@ export const formData = {
   },
   // This section will manage the changes into the state, can be only called by actions
   mutations: {
-    updateFormValue(containerId: string, fieldId: string, newValue: any) {
-      formData.state[containerId][fieldId] = newValue;
+    updateFormValue(newValue: any, dataPath: Array<string>) {
+      _.set(formData.state, dataPath, newValue);
     },
-    updateFormArrayValue(
-      containerId: string,
-      fieldId: string,
-      subFieldId: string,
-      newValue: any,
-      rowIndex: number
-    ) {
-      formData.state[containerId][fieldId][rowIndex][subFieldId] = newValue;
-
-      // // if the formdata depth increase, for example has repeatble session inside another repeatable session
-      // // could update to use the following, so it will automatically detect the path to the key, and update the value based on the path
-
-      // const objectKeys = [] as Array<string>;
-      // function getObjectKeys(obj: CommonObjectType, previousPath = "") {
-      //   Object.keys(obj).forEach((key) => {
-      //     let currentPath = "";
-      //     if (key.match(/^-?\d+$/)) currentPath = previousPath || "";
-      //     else currentPath = previousPath ? `${previousPath}.${key}` : key;
-
-      //     if (typeof obj[key] !== "object") {
-      //       objectKeys.push(currentPath);
-      //     } else {
-      //       objectKeys.push(currentPath);
-      //       getObjectKeys(obj[key], currentPath);
-      //     }
-      //   });
-      // }
-      // getObjectKeys(formData.state);
-      // const fieldFullPath = objectKeys.filter((keyPath) =>
-      //   keyPath.includes(subFieldId)
-      // )[0];
-      // const fieldParentPath = fieldFullPath.split(".").slice(0, -1).join(".");
-      // const arrayValue = _.get(formData.state, fieldParentPath);
-      // arrayValue[rowIndex][subFieldId] = newValue;
-      // _.set(formData.state, fieldParentPath, arrayValue);
-    },
-    addRow(containerId: string, fieldId: string, newRow: CommonObjectType) {
-      formData.state[containerId][fieldId].push({
+    addRow(newRow: CommonObjectType, dataPath: Array<string>) {
+      const arrayValue = _.get(formData.state, dataPath);
+      arrayValue.push({
         ...newRow,
         index: Math.floor(Math.random() * 10000000),
       });
+      _.set(formData.state, dataPath, arrayValue);
     },
-    deleteRow(containerId: string, fieldId: string, rowIndex: number) {
-      formData.state[containerId][fieldId].splice(rowIndex, 1);
+    deleteRow(rowIndex: number, dataPath: Array<string>) {
+      const arrayValue = _.get(formData.state, dataPath);
+      arrayValue.splice(rowIndex, 1);
+      _.set(formData.state, dataPath, arrayValue);
     },
   },
   // This section will manage the actions needed for our store
   actions: {
-    updateFormValue(containerId: string, fieldId: string, newValue: any) {
-      formData.mutations.updateFormValue(containerId, fieldId, newValue);
+    updateFormValue(newValue: any, dataPath: Array<string>) {
+      formData.mutations.updateFormValue(newValue, dataPath);
       formData.actions.cleanErrorMsg();
     },
-    updateFormArrayValue(
-      containerId: string,
-      fieldId: string,
-      subFieldId: string,
-      newValue: any,
-      rowIndex: number
-    ) {
-      formData.mutations.updateFormArrayValue(
-        containerId,
-        fieldId,
-        subFieldId,
-        newValue,
-        rowIndex
-      );
-      formData.actions.cleanErrorMsg();
-    },
-    addRow(containerId: string, fieldId: string) {
-      const newContainer =
-        initialFormData[containerId as keyof typeof initialFormData];
+    addRow(dataPath: Array<string>) {
       const defaultNew = JSON.parse(
-        JSON.stringify(newContainer[fieldId as keyof typeof newContainer][0])
+        JSON.stringify(_.get(initialFormData, dataPath)[0])
       );
-      formData.mutations.addRow(containerId, fieldId, defaultNew);
+      formData.mutations.addRow(defaultNew, dataPath);
     },
-    deleteRow(containerId: string, fieldId: string, rowIndex: number) {
-      formData.mutations.deleteRow(containerId, fieldId, rowIndex);
+    deleteRow(rowIndex: number, dataPath: Array<string>) {
+      formData.mutations.deleteRow(rowIndex, dataPath);
     },
     cleanErrorMsg() {
       // todo: this is the function to check every feild if meet the validation rules, remove the error message if met

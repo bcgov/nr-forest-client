@@ -14,7 +14,23 @@
           :schema="column"
           :error="computedError(column.fieldProps.id, rowIndex)"
           @updateFormValue="
-            (id, newValue) => updateFormArrayValue(id, newValue, rowIndex)
+            (newValue, path) =>
+              updateFormArrayValue(newValue, [rowIndex, ...path])
+          "
+          @updateFormArrayValue="
+            (newValue, path) =>
+              updateFormArrayValue(newValue, [
+                rowIndex,
+                column.fieldProps.id,
+                ...path,
+              ])
+          "
+          @addRow="
+            (path = []) => addRow([rowIndex, column.fieldProps.id, ...path])
+          "
+          @deleteRow="
+            (subRowIndex, path = []) =>
+              deleteRow(subRowIndex, [rowIndex, column.fieldProps.id, ...path])
           "
         />
       </div>
@@ -73,14 +89,14 @@ const computedError = computed(() => {
 
 const emit = defineEmits(["updateFormArrayValue", "addRow", "deleteRow"]);
 
-const updateFormArrayValue = (id: string, newValue: any, row: number) => {
-  emit("updateFormArrayValue", id, newValue, row);
+const updateFormArrayValue = (newValue: any, path: Array<string>) => {
+  emit("updateFormArrayValue", newValue, path);
 };
-const addRow = () => {
-  emit("addRow");
+const addRow = (path = [] as Array<string>) => {
+  emit("addRow", path);
 };
-const deleteRow = (row: number) => {
-  emit("deleteRow", row);
+const deleteRow = (index: number, path = [] as Array<string>) => {
+  emit("deleteRow", index, path);
 };
 </script>
 

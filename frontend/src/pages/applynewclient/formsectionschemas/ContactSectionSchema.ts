@@ -17,7 +17,18 @@ export const contactSectionSchema: FormSectionSchemaType = {
             id: "stree_address",
             required: true,
           },
-          type: "input",
+          type: "group",
+          addButtonText: "+ Add another line",
+          deleteButtonText: "- Remove this line",
+          subfields: [
+            {
+              fieldProps: {
+                label: "Address Line",
+                id: "address_line",
+              },
+              type: "input",
+            },
+          ],
         },
         {
           fieldProps: {
