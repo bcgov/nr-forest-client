@@ -1,6 +1,6 @@
-CREATE SCHEMA IF NOT EXISTS nrfc;
+create schema if not exists nrfc;
 
-CREATE TABLE IF NOT EXISTS nrfc.client_type_code (
+create TABLE if not exists nrfc.client_type_code (
     client_type_code            varchar(1)      not null,
     description                 varchar(100)    not null,
     effective_date              date            not null,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS nrfc.client_type_code (
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
     update_user                 varchar(60)		null,
-    CONSTRAINT client_type_code_pk PRIMARY KEY (client_type_code)
+    constraint client_type_code_pk primary key (client_type_code)
 );
 
 create table nrfc.submission_status_code (
@@ -21,10 +21,10 @@ create table nrfc.submission_status_code (
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
     update_user                 varchar(60)		null,
-    CONSTRAINT submission_status_code_pk PRIMARY KEY (submission_status_code)
+    constraint submission_status_code_pk primary key (submission_status_code)
 );
 
-CREATE TABLE IF NOT EXISTS nrfc.submission(
+create TABLE if not exists nrfc.submission(
     submission_id             	serial4 		not null,
     submitter_user_guid        	varchar(50) 	null,
     submission_status_code		varchar(5)      null,
@@ -32,11 +32,11 @@ CREATE TABLE IF NOT EXISTS nrfc.submission(
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
     update_user                 varchar(60)		null,
-    CONSTRAINT submission_pk PRIMARY KEY (submission_id),
-    CONSTRAINT submission_submission_status_code_fk FOREIGN KEY (submission_status_code) REFERENCES nrfc.submission_status_code(submission_status_code)
+    constraint submission_pk primary key (submission_id),
+    constraint submission_submission_status_code_fk foreign key (submission_status_code) references nrfc.submission_status_code(submission_status_code)
 );
 
-CREATE TABLE IF NOT EXISTS nrfc.submission_detail (
+create TABLE if not exists nrfc.submission_detail (
     submission_detail_id        serial4			not null,
 	submission_id				integer			not null,
 	incorporation_number		varchar(50)    	null,
@@ -47,7 +47,37 @@ CREATE TABLE IF NOT EXISTS nrfc.submission_detail (
 	client_type_code          	varchar(1)    	not null,
 	date_of_birth				date 			null,
 	client_comment				varchar(5000)	null,
-	CONSTRAINT submission_detail_id_pk PRIMARY KEY (submission_detail_id),
-	CONSTRAINT submission_detail_client_type_code_fk FOREIGN KEY (client_type_code) REFERENCES nrfc.client_type_code(client_type_code),
-    CONSTRAINT submission_detail_submission_id_fk FOREIGN KEY (submission_id) REFERENCES nrfc.submission(submission_id)
+	constraint submission_detail_id_pk primary key (submission_detail_id),
+	constraint submission_detail_client_type_code_fk foreign key (client_type_code) references nrfc.client_type_code(client_type_code),
+    constraint submission_detail_submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id)
 );
+
+-- 
+-- SEQUENCES
+--
+
+create sequence nrfc.submission_id_seq start 1;
+create sequence nrfc.submission_detail_id_seq start 1;
+
+-- 
+-- INSERT STATIC DATA
+--
+
+insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('P', 'In Progress', current_timestamp, 'mariamar');
+insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('A', 'Approved', current_timestamp, 'mariamar');
+insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('R', 'Rejected', current_timestamp, 'mariamar');
+insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('D', 'Deleted', current_timestamp, 'mariamar');
+insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('S', 'Submitted', current_timestamp, 'mariamar');
+
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('A', 'Association', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('B', 'First Nation Band', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('C', 'Corporation', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('F', 'Ministry of Forests and Range', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('G', 'Government', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('I', 'Individual', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('L', 'Limited Partnership', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('P', 'General Partnership', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('R', 'First Nation Group', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('S', 'Society', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('T', 'First Nation Tribal Council', current_timestamp, 'mariamar');
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('U', 'Unregistered Company', current_timestamp, 'mariamar');
