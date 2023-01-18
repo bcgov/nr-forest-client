@@ -75,6 +75,33 @@ export const formData = {
       rowIndex: number
     ) {
       formData.state[containerId][fieldId][rowIndex][subFieldId] = newValue;
+
+      // // if the formdata depth increase, for example has repeatble session inside another repeatable session
+      // // could update to use the following, so it will automatically detect the path to the key, and update the value based on the path
+
+      // const objectKeys = [] as Array<string>;
+      // function getObjectKeys(obj: CommonObjectType, previousPath = "") {
+      //   Object.keys(obj).forEach((key) => {
+      //     let currentPath = "";
+      //     if (key.match(/^-?\d+$/)) currentPath = previousPath || "";
+      //     else currentPath = previousPath ? `${previousPath}.${key}` : key;
+
+      //     if (typeof obj[key] !== "object") {
+      //       objectKeys.push(currentPath);
+      //     } else {
+      //       objectKeys.push(currentPath);
+      //       getObjectKeys(obj[key], currentPath);
+      //     }
+      //   });
+      // }
+      // getObjectKeys(formData.state);
+      // const fieldFullPath = objectKeys.filter((keyPath) =>
+      //   keyPath.includes(subFieldId)
+      // )[0];
+      // const fieldParentPath = fieldFullPath.split(".").slice(0, -1).join(".");
+      // const arrayValue = _.get(formData.state, fieldParentPath);
+      // arrayValue[rowIndex][subFieldId] = newValue;
+      // _.set(formData.state, fieldParentPath, arrayValue);
     },
     addRow(containerId: string, fieldId: string, newRow: CommonObjectType) {
       formData.state[containerId][fieldId].push({
