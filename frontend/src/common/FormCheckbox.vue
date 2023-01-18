@@ -30,7 +30,7 @@ const computedValue = computed({
     return props.value;
   },
   set(newValue: Boolean) {
-    emit("updateValue", newValue, [props.fieldProps.id]);
+    emit("updateValue", newValue, props.fieldProps.id);
   },
 });
 </script>

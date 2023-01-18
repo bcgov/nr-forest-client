@@ -4,7 +4,7 @@
       v-if="schema.type == 'input'"
       :fieldProps="computedFieldPropsForSingleComponent(schema.fieldProps)"
       :value="data"
-      :disabled="schema.disabled ? true : false"
+      :disabled="computedDisableForSingleComponent"
       @updateValue="updateFormValue"
     />
     <FormSelect
@@ -12,14 +12,14 @@
       :fieldProps="computedFieldPropsForSingleComponent(schema.fieldProps)"
       :value="data"
       :options="schema.options"
-      :disabled="schema.disabled ? true : false"
+      :disabled="computedDisableForSingleComponent"
       @updateValue="updateFormValue"
     />
     <FormCheckbox
       v-if="schema.type == 'checkbox'"
       :fieldProps="computedFieldPropsForSingleComponent(schema.fieldProps)"
       :value="data"
-      :disabled="schema.disabled ? true : false"
+      :disabled="computedDisableForSingleComponent"
       @updateValue="updateFormValue"
     />
     <FormCheckboxGroup
@@ -27,7 +27,7 @@
       :fieldProps="computedFieldPropsForSingleComponent(schema.fieldProps)"
       :value="data"
       :options="schema.options"
-      :disabled="schema.disabled ? true : false"
+      :disabled="computedDisableForSingleComponent"
       @updateValue="updateFormValue"
     />
     <FormRadioGroup
@@ -35,7 +35,7 @@
       :fieldProps="computedFieldPropsForSingleComponent(schema.fieldProps)"
       :value="data"
       :options="schema.options"
-      :disabled="schema.disabled ? true : false"
+      :disabled="computedDisableForSingleComponent"
       @updateValue="updateFormValue"
     />
     <FormGroup
@@ -45,6 +45,8 @@
       :deleteButtonText="schema.deleteButtonText"
       :subfields="schema.subfields"
       :error="error"
+      :disabledFields="disabledFields"
+      :disableAll="disableAll"
       :fieldProps="schema.fieldProps"
       @updateFormArrayValue="updateFormArrayValue"
       @addRow="addRow"
@@ -56,6 +58,8 @@
       :addButtonText="schema.addButtonText"
       :subfields="schema.subfields"
       :error="error"
+      :disabledFields="disabledFields"
+      :disableAll="disableAll"
       :fieldProps="schema.fieldProps"
       @updateFormArrayValue="updateFormArrayValue"
       @addRow="addRow"
@@ -93,6 +97,14 @@ const props = defineProps({
     type: Array<FormFieldValidationResultType>,
     default: [],
   },
+  disabledFields: {
+    type: Array<string>,
+    default: [],
+  },
+  disableAll: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const computedFieldPropsForSingleComponent = computed(() => {
@@ -104,6 +116,11 @@ const computedFieldPropsForSingleComponent = computed(() => {
   };
 });
 
+const computedDisableForSingleComponent = computed(() => {
+  if (props.disableAll || props.disabledFields.length > 0) return true;
+  return false;
+});
+
 const emit = defineEmits([
   "updateFormValue",
   "updateFormArrayValue",
@@ -111,16 +128,16 @@ const emit = defineEmits([
   "deleteRow",
 ]);
 
-const updateFormValue = (newValue: any, path: Array<string>) => {
+const updateFormValue = (newValue: any, path: string) => {
   emit("updateFormValue", newValue, path);
 };
-const updateFormArrayValue = (newValue: any, path: Array<string>) => {
+const updateFormArrayValue = (newValue: any, path: string) => {
   emit("updateFormArrayValue", newValue, path);
 };
-const addRow = (path = [] as Array<string>) => {
+const addRow = (path = "" as string) => {
   emit("addRow", path);
 };
-const deleteRow = (index: number, path = [] as Array<string>) => {
+const deleteRow = (index: number, path = "" as string) => {
   emit("deleteRow", index, path);
 };
 </script>

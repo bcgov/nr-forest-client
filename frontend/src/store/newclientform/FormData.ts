@@ -1,6 +1,7 @@
 import { reactive } from "vue";
 import _ from "lodash";
 import { validationResult } from "./FormValidation";
+import { disabledFields } from "./FormDisable";
 import type { CommonObjectType } from "../../core/FormType";
 
 // global state
@@ -61,13 +62,16 @@ export const formData = {
     getFormData() {
       return formData.state;
     },
+    getFormDataByPath(path: string) {
+      return _.get(formData.state, path);
+    },
   },
   // This section will manage the changes into the state, can be only called by actions
   mutations: {
-    updateFormValue(newValue: any, dataPath: Array<string>) {
+    updateFormValue(newValue: any, dataPath: string) {
       _.set(formData.state, dataPath, newValue);
     },
-    addRow(newRow: CommonObjectType, dataPath: Array<string>) {
+    addRow(newRow: CommonObjectType, dataPath: string) {
       const arrayValue = _.get(formData.state, dataPath);
       arrayValue.push({
         ...newRow,
@@ -75,7 +79,7 @@ export const formData = {
       });
       _.set(formData.state, dataPath, arrayValue);
     },
-    deleteRow(rowIndex: number, dataPath: Array<string>) {
+    deleteRow(rowIndex: number, dataPath: string) {
       const arrayValue = _.get(formData.state, dataPath);
       arrayValue.splice(rowIndex, 1);
       _.set(formData.state, dataPath, arrayValue);
@@ -83,17 +87,26 @@ export const formData = {
   },
   // This section will manage the actions needed for our store
   actions: {
-    updateFormValue(newValue: any, dataPath: Array<string>) {
+    updateFormValue(newValue: any, dataPath: string) {
       formData.mutations.updateFormValue(newValue, dataPath);
       formData.actions.cleanErrorMsg();
+      // an example to disable a field
+      if (
+        dataPath == "begin.client_type" &&
+        formData.getters.getFormDataByPath(dataPath) == "individual"
+      ) {
+        disabledFields.actions.setDisabledFieldsForSection("information", [
+          "information.last_name",
+        ]);
+      }
     },
-    addRow(dataPath: Array<string>) {
+    addRow(dataPath: string) {
       const defaultNew = JSON.parse(
         JSON.stringify(_.get(initialFormData, dataPath)[0])
       );
       formData.mutations.addRow(defaultNew, dataPath);
     },
-    deleteRow(rowIndex: number, dataPath: Array<string>) {
+    deleteRow(rowIndex: number, dataPath: string) {
       formData.mutations.deleteRow(rowIndex, dataPath);
     },
     cleanErrorMsg() {

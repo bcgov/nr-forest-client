@@ -44,7 +44,7 @@ const computedValue = computed({
     return props.value;
   },
   set(newValue: CommonObjectType | string) {
-    emit("updateValue", newValue, [props.fieldProps.id]);
+    emit("updateValue", newValue, props.fieldProps.id);
   },
 });
 </script>

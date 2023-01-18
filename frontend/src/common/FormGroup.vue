@@ -13,24 +13,42 @@
           :data="row[column.fieldProps.id]"
           :schema="column"
           :error="computedError(column.fieldProps.id, rowIndex)"
+          :disabledFields="
+            computedDisabledFields(column.fieldProps.id, rowIndex)
+          "
+          :disableAll="disableAll"
           @updateFormValue="
             (newValue, path) =>
-              updateFormArrayValue(newValue, [rowIndex, ...path])
+              updateFormArrayValue(
+                newValue,
+                path != '' ? `${rowIndex}.${path}` : `${rowIndex}`
+              )
           "
           @updateFormArrayValue="
             (newValue, path) =>
-              updateFormArrayValue(newValue, [
-                rowIndex,
-                column.fieldProps.id,
-                ...path,
-              ])
+              updateFormArrayValue(
+                newValue,
+                path != ''
+                  ? `${rowIndex}.${column.fieldProps.id}.${path}`
+                  : `${rowIndex}.${column.fieldProps.id}`
+              )
           "
           @addRow="
-            (path = []) => addRow([rowIndex, column.fieldProps.id, ...path])
+            (path = '') =>
+              addRow(
+                path != ''
+                  ? `${rowIndex}.${column.fieldProps.id}.${path}`
+                  : `${rowIndex}.${column.fieldProps.id}`
+              )
           "
           @deleteRow="
-            (subRowIndex, path = []) =>
-              deleteRow(subRowIndex, [rowIndex, column.fieldProps.id, ...path])
+            (subRowIndex, path = '') =>
+              deleteRow(
+                subRowIndex,
+                path != ''
+                  ? `${rowIndex}.${column.fieldProps.id}.${path}`
+                  : `${rowIndex}.${column.fieldProps.id}`
+              )
           "
         />
       </div>
@@ -79,6 +97,14 @@ const props = defineProps({
     type: Array<FormFieldValidationResultType>,
     default: [],
   },
+  disabledFields: {
+    type: Array<string>,
+    default: [],
+  },
+  disableAll: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const computedError = computed(() => {
@@ -88,15 +114,22 @@ const computedError = computed(() => {
   };
 });
 
+const computedDisabledFields = computed(() => {
+  return (subFieldId: string, rowIndex: number) => {
+    const key = `${rowIndex}.${subFieldId}`;
+    return props.disabledFields.filter((each) => _.includes(each, key));
+  };
+});
+
 const emit = defineEmits(["updateFormArrayValue", "addRow", "deleteRow"]);
 
-const updateFormArrayValue = (newValue: any, path: Array<string>) => {
+const updateFormArrayValue = (newValue: any, path: string) => {
   emit("updateFormArrayValue", newValue, path);
 };
-const addRow = (path = [] as Array<string>) => {
+const addRow = (path = "" as string) => {
   emit("addRow", path);
 };
-const deleteRow = (index: number, path = [] as Array<string>) => {
+const deleteRow = (index: number, path = "" as string) => {
   emit("deleteRow", index, path);
 };
 </script>

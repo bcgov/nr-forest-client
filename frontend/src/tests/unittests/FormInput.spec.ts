@@ -44,7 +44,7 @@ describe("FormInput", () => {
     expect(updateValueEvent).toHaveLength(1);
     // test the given parameters
     updateValueEvent = updateValueEvent || [];
-    expect(updateValueEvent[0]).toEqual(["Test", ["test-form-input-id"]]);
+    expect(updateValueEvent[0]).toEqual(["Test", "test-form-input-id"]);
   });
 
   it("renders props disabled successfully", async () => {

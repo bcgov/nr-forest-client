@@ -46,7 +46,6 @@ export interface FormSectionSchemaType {
 export interface FormComponentSchemaType {
   fieldProps: FormFieldTemplateType;
   type: string;
-  disabled?: boolean;
   state?: boolean;
   depend?: {
     fieldId: string;
@@ -75,4 +74,8 @@ export interface FormFieldValidationResultType {
 
 export interface FormValidationResultType {
   [key: string]: Array<FormFieldValidationResultType>;
+}
+
+export interface FormDisableType {
+  [key: string]: Array<string>;
 }

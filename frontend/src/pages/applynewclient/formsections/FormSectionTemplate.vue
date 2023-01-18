@@ -9,36 +9,43 @@
         v-if="!row.depend || data[row.depend.fieldId] == row.depend.value"
         :data="data[row.fieldProps.id]"
         :error="computedErrorMsg(row.fieldProps.id)"
+        :disabledFields="computedDisabledFields(row.fieldProps.id)"
+        :disableAll="disableAllFields.state.value"
         :schema="row"
         @updateFormValue="
-          (newValue, path = []) =>
-            formData.actions.updateFormValue(newValue, [
-              sectionProps.container.id,
-              ...path,
-            ])
-        "
-        @updateFormArrayValue="
-          (newValue, path = []) =>
+          (newValue, path = '') =>
             formData.actions.updateFormValue(
               newValue,
-              [sectionProps.container.id, row.fieldProps.id, ...path] // [container_id,field_id,path to the array]
+              path != ''
+                ? `${sectionProps.container.id}.${path}`
+                : `${sectionProps.container.id}`
+            )
+        "
+        @updateFormArrayValue="
+          (newValue, path = '') =>
+            formData.actions.updateFormValue(
+              newValue,
+              path != ''
+                ? `${sectionProps.container.id}.${row.fieldProps.id}.${path}`
+                : `${sectionProps.container.id}.${row.fieldProps.id}`
             )
         "
         @addRow="
-          (path = []) =>
-            formData.actions.addRow([
-              sectionProps.container.id,
-              row.fieldProps.id,
-              ...path,
-            ])
+          (path = '') =>
+            formData.actions.addRow(
+              path != ''
+                ? `${sectionProps.container.id}.${row.fieldProps.id}.${path}`
+                : `${sectionProps.container.id}.${row.fieldProps.id}`
+            )
         "
         @deleteRow="
-          (rowIndex, path = []) =>
-            formData.actions.deleteRow(rowIndex, [
-              sectionProps.container.id,
-              row.fieldProps.id,
-              ...path,
-            ])
+          (rowIndex, path = '') =>
+            formData.actions.deleteRow(
+              rowIndex,
+              path != ''
+                ? `${sectionProps.container.id}.${row.fieldProps.id}.${path}`
+                : `${sectionProps.container.id}.${row.fieldProps.id}`
+            )
         "
       />
     </div>
@@ -53,6 +60,10 @@ import CollapseCard from "../../../common/CollapseCard.vue";
 import FormComponentOptions from "../../../common/FormComponentOptions.vue";
 import { formData } from "../../../store/newclientform/FormData";
 import { validationResult } from "../../../store/newclientform/FormValidation";
+import {
+  disabledFields,
+  disableAllFields,
+} from "../../../store/newclientform/FormDisable";
 import type {
   CommonObjectType,
   FormSectionSchemaType,
@@ -74,6 +85,16 @@ const computedErrorMsg = computed(() => {
     if (_.has(validationResult.state, [props.sectionProps.container.id]))
       return validationResult.state[props.sectionProps.container.id].filter(
         (each) => _.includes(each.path, fieldId)
+      );
+    return [];
+  };
+});
+
+const computedDisabledFields = computed(() => {
+  return (fieldId: string) => {
+    if (_.has(disabledFields.state, [props.sectionProps.container.id]))
+      return disabledFields.state[props.sectionProps.container.id].filter(
+        (each) => _.includes(each, fieldId)
       );
     return [];
   };
