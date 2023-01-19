@@ -118,12 +118,7 @@ export const formData = {
             "begin",
             "begin.client_type"
           );
-        if (formData.state.information.first_name == "test")
-          validationResult.actions.removeValidationError(
-            "information",
-            "information.first_name"
-          );
-        if (formData.state.information.first_name == "test")
+        if (formData.state.information.first_name != "")
           validationResult.actions.removeValidationError(
             "information",
             "information.first_name"

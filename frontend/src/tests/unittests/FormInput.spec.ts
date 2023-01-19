@@ -8,7 +8,7 @@ import type { FormFieldTemplateType } from "../../core/FormType";
 
 describe("FormInput", () => {
   it("component defined", () => {
-    const wrapper = mount(FormInput);
+    const wrapper = mount(FormInput, { props: { value: "" } });
     expect(wrapper).toBeDefined();
     expect(wrapper.find("input").exists()).toBe(true);
   });

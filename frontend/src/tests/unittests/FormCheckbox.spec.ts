@@ -8,7 +8,7 @@ import type { FormFieldTemplateType } from "../../core/FormType";
 
 describe("FormCheckbox", () => {
   it("component defined", () => {
-    const wrapper = mount(FormCheckbox);
+    const wrapper = mount(FormCheckbox, { props: { value: false } });
     expect(wrapper).toBeDefined();
   });
 
