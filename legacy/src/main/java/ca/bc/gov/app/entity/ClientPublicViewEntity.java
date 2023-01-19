@@ -1,6 +1,5 @@
 package ca.bc.gov.app.entity;
 
-import ca.bc.gov.app.ApplicationConstants;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +14,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @Builder
 @With
-@Table(name = "V_CLIENT_PUBLIC", schema = ApplicationConstants.ORACLE_ATTRIBUTE_SCHEMA)
+@Table(name = "V_CLIENT_PUBLIC", schema = "${ca.bc.gov.nrs.oracle.schema}")
 public class ClientPublicViewEntity {
 
   @Id

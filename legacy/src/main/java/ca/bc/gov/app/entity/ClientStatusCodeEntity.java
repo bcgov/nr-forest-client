@@ -1,6 +1,5 @@
 package ca.bc.gov.app.entity;
 
-import ca.bc.gov.app.ApplicationConstants;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +15,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @Builder
 @With
-@Table(name = "CLIENT_STATUS_CODE", schema = ApplicationConstants.ORACLE_ATTRIBUTE_SCHEMA)
+@Table(name = "CLIENT_STATUS_CODE", schema = "${ca.bc.gov.nrs.oracle.schema}")
 public class ClientStatusCodeEntity {
 
   public static final String ACTIVE = "ACT"; //TODO: move to enum
