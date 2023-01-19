@@ -1,11 +1,14 @@
 package ca.bc.gov.app.service;
 
 import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.repository.ForestClientRepository;
+import ca.bc.gov.app.util.MonoUtil;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -20,9 +23,14 @@ public class ClientSearchService {
       String incorporationNumber,
       String companyName
   ) {
+
+    if(StringUtils.isAllBlank(incorporationNumber,companyName))
+      throw new MissingRequiredParameterException("incorporationNumber or companyName");
+
     return
         forestClientRepository
             .findClientByIncorporationOrName(incorporationNumber, companyName)
+            .doOnNext(MonoUtil.logContent(log))
             .map(entity ->
                 new ForestClientDto(
                     entity.getClientNumber(),
@@ -41,7 +49,8 @@ public class ClientSearchService {
                     entity.getOcgSupplierNmbr(),
                     entity.getClientComment()
                 )
-            );
+            )
+            .doOnNext(MonoUtil.logContent(log));
   }
 
   public Flux<ForestClientDto> findByNameAndBirth(
@@ -53,7 +62,7 @@ public class ClientSearchService {
         .findClientByNameAndBirthdate(
             firstName,
             lastName,
-            LocalDate.parse(birthDate, DateTimeFormatter.BASIC_ISO_DATE)
+            LocalDate.parse(birthDate, DateTimeFormatter.ISO_LOCAL_DATE)
         )
         .map(entity ->
             new ForestClientDto(

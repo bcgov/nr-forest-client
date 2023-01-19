@@ -32,6 +32,7 @@ public class ClientSearchIncorporationHandler implements BaseHandler {
     return
         ServerResponse
             .ok()
+            .contentType(serverRequest.headers().contentType().orElse(MediaType.APPLICATION_JSON))
             .body(
                 service
                     .findByIncorporationOrName(
@@ -84,6 +85,22 @@ public class ClientSearchIncorporationHandler implements BaseHandler {
                                         .implementation(ForestClientDto.class)
                                 )
                         )
+                        .mediaType(MediaType.APPLICATION_JSON_VALUE)
+                )
+        )
+        .response(
+            responseBuilder()
+                .responseCode("412")
+                .description("Missing value for parameter incorporationNumber or companyName")
+                .content(
+                    contentBuilder()
+                        .schema(
+                            schemaBuilder()
+                                .implementation(String.class)
+                                .example(
+                                    "Missing value for parameter incorporationNumber or companyName")
+                        )
+
                         .mediaType(MediaType.APPLICATION_JSON_VALUE)
                 )
         );

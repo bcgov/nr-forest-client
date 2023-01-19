@@ -41,14 +41,14 @@ public class ClientSearchRouter implements BaseRouter {
             .GET(
                 "/incorporationOrName",
                 accept(MediaType.ALL)
-                    .and(contentType(MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON)),
+                    .and(contentType(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM)),
                 incorporationHandler::handle,
                 incorporationHandler.documentation(routeTagName())
             )
             .GET(
                 "/nameAndBirth",
                 accept(MediaType.ALL)
-                    .and(contentType(MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON)),
+                    .and(contentType(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM)),
                 nameBirthHandler::handle,
                 nameBirthHandler.documentation(routeTagName())
             )
