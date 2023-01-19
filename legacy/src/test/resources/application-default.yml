@@ -18,6 +18,8 @@ ca:
       nrs:
         forest:
           uri: 'http://127.0.0.1:10000'
+        oracle:
+          schema: LEGACY
 
 logging:
   level:
