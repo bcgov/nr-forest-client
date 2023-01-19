@@ -1,5 +1,6 @@
 package ca.bc.gov.app.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.StringUtils;
 
 public record FirstNationBandVidationDto(
@@ -18,10 +19,12 @@ public record FirstNationBandVidationDto(
     String postalCode,
     String sourcePostalCode
 ) {
+  @JsonProperty
   public boolean nameMatch() {
     return StringUtils.equalsIgnoreCase(clientName, sourceClientName);
   }
 
+  @JsonProperty
   public boolean addressMatch() {
 
     return

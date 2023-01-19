@@ -1,5 +1,6 @@
 package ca.bc.gov.app.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.StringUtils;
 
 public record ClientPublicViewDto(
@@ -13,6 +14,8 @@ public record ClientPublicViewDto(
     String clientNameInOrgBook
 
 ) {
+
+  @JsonProperty
   public boolean sameName() {
     return StringUtils.equalsIgnoreCase(clientNameInOrgBook, clientName);
   }
