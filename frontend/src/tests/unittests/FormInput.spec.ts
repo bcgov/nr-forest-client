@@ -4,11 +4,11 @@ import { mount } from "@vue/test-utils";
 import FormInput from "../../common/FormInput.vue";
 import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 
-import type { FormFieldTemplateType } from "../../core/AppType";
+import type { FormFieldTemplateType } from "../../core/FormType";
 
 describe("FormInput", () => {
   it("component defined", () => {
-    const wrapper = mount(FormInput);
+    const wrapper = mount(FormInput, { props: { value: "" } });
     expect(wrapper).toBeDefined();
     expect(wrapper.find("input").exists()).toBe(true);
   });
@@ -44,7 +44,7 @@ describe("FormInput", () => {
     expect(updateValueEvent).toHaveLength(1);
     // test the given parameters
     updateValueEvent = updateValueEvent || [];
-    expect(updateValueEvent[0]).toEqual(["test-form-input-id", "Test"]);
+    expect(updateValueEvent[0]).toEqual(["Test", "test-form-input-id"]);
   });
 
   it("renders props disabled successfully", async () => {

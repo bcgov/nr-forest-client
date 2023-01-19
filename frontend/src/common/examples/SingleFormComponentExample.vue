@@ -58,7 +58,7 @@ import type {
   FromSelectOptionType,
   FormCheckBoxGroupOptionType,
   FormRadioGroupOptionType,
-} from "../../core/AppType";
+} from "../../core/FormType";
 
 /* ------- form data ----------- */
 const form = ref({

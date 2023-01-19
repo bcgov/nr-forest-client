@@ -12,8 +12,43 @@
         <FormComponentOptions
           :data="row[column.fieldProps.id]"
           :schema="column"
+          :error="computedError(column.fieldProps.id, rowIndex)"
+          :disabledFields="
+            computedDisabledFields(column.fieldProps.id, rowIndex)
+          "
+          :disableAll="disableAll"
           @updateFormValue="
-            (id, newValue) => updateFormArrayValue(id, newValue, rowIndex)
+            (newValue, path) =>
+              updateFormArrayValue(
+                newValue,
+                path != '' ? `${rowIndex}.${path}` : `${rowIndex}`
+              )
+          "
+          @updateFormArrayValue="
+            (newValue, path) =>
+              updateFormArrayValue(
+                newValue,
+                path != ''
+                  ? `${rowIndex}.${column.fieldProps.id}.${path}`
+                  : `${rowIndex}.${column.fieldProps.id}`
+              )
+          "
+          @addRow="
+            (path = '') =>
+              addRow(
+                path != ''
+                  ? `${rowIndex}.${column.fieldProps.id}.${path}`
+                  : `${rowIndex}.${column.fieldProps.id}`
+              )
+          "
+          @deleteRow="
+            (subRowIndex, path = '') =>
+              deleteRow(
+                subRowIndex,
+                path != ''
+                  ? `${rowIndex}.${column.fieldProps.id}.${path}`
+                  : `${rowIndex}.${column.fieldProps.id}`
+              )
           "
         />
       </div>
@@ -33,6 +68,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+import _ from "lodash";
 import type { PropType } from "vue";
 import FormFieldTemplate from "./FormFieldTemplate.vue";
 import FormComponentOptions from "./FormComponentOptions.vue";
@@ -41,7 +78,8 @@ import type {
   FormFieldTemplateType,
   FormComponentSchemaType,
   CommonObjectType,
-} from "../core/AppType";
+  FormFieldValidationResultType,
+} from "../core/FormType";
 
 const props = defineProps({
   subfields: {
@@ -55,18 +93,44 @@ const props = defineProps({
     required: true,
   },
   fieldProps: Object as PropType<FormFieldTemplateType>,
+  error: {
+    type: Array<FormFieldValidationResultType>,
+    default: [],
+  },
+  disabledFields: {
+    type: Array<string>,
+    default: [],
+  },
+  disableAll: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const computedError = computed(() => {
+  return (subFieldId: string, rowIndex: number) => {
+    const key = `${rowIndex}.${subFieldId}`;
+    return props.error.filter((each) => _.includes(each.path, key));
+  };
+});
+
+const computedDisabledFields = computed(() => {
+  return (subFieldId: string, rowIndex: number) => {
+    const key = `${rowIndex}.${subFieldId}`;
+    return props.disabledFields.filter((each) => _.includes(each, key));
+  };
 });
 
 const emit = defineEmits(["updateFormArrayValue", "addRow", "deleteRow"]);
 
-const updateFormArrayValue = (id: string, newValue: any, row: number) => {
-  emit("updateFormArrayValue", id, newValue, row);
+const updateFormArrayValue = (newValue: any, path: string) => {
+  emit("updateFormArrayValue", newValue, path);
 };
-const addRow = () => {
-  emit("addRow");
+const addRow = (path = "" as string) => {
+  emit("addRow", path);
 };
-const deleteRow = (row: number) => {
-  emit("deleteRow", row);
+const deleteRow = (index: number, path = "" as string) => {
+  emit("deleteRow", index, path);
 };
 </script>
 

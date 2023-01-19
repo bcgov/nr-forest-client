@@ -10,11 +10,12 @@ import FormRadioGroup from "../../common/FormRadioGroup.vue";
 import FormGroup from "../../common/FormGroup.vue";
 import FormSelect from "../../common/FormSelect.vue";
 import FormTable from "../../common/FormTable.vue";
+import { testGroup, testTable } from "./TestConstant";
 
 import type {
   FormComponentSchemaType,
   CommonObjectType,
-} from "../../core/AppType";
+} from "../../core/FormType";
 
 describe("FormCoponentOptions", () => {
   it("component defined", () => {
@@ -55,7 +56,7 @@ describe("FormCoponentOptions", () => {
     expect(updateFormValueEvent).toHaveLength(1);
     updateFormValueEvent = updateFormValueEvent || [];
     // test the given parameters
-    expect(updateFormValueEvent[0]).toEqual(["testInput", "Test"]);
+    expect(updateFormValueEvent[0]).toEqual(["Test", "testInput"]);
   });
 
   it("renders select successfully", async () => {
@@ -93,7 +94,7 @@ describe("FormCoponentOptions", () => {
     expect(updateFormValueEvent).toHaveLength(1);
     updateFormValueEvent = updateFormValueEvent || [];
     // test the given parameters
-    expect(updateFormValueEvent[0]).toEqual(["testSelect", "2"]);
+    expect(updateFormValueEvent[0]).toEqual(["2", "testSelect"]);
   });
 
   it("renders checkbox successfully", async () => {
@@ -184,45 +185,8 @@ describe("FormCoponentOptions", () => {
   });
 
   it("renders group successfully", async () => {
-    const schema: FormComponentSchemaType = {
-      fieldProps: {
-        label: "Title",
-        id: "exampleGroup",
-      },
-      type: "group",
-      addButtonText: "+ Add another",
-      deleteButtonText: "- Remove this",
-      subfields: [
-        {
-          fieldProps: {
-            label: "Link",
-            id: "groupInput",
-          },
-          type: "input",
-        },
-        {
-          fieldProps: { label: "Hobby", id: "groupCheckBoxGroup" },
-          type: "checkboxgroup",
-          options: [
-            { code: "swim", text: "Swim" },
-            { code: "dance", text: "Dance" },
-            { code: "sing", text: "Sing" },
-          ],
-        },
-      ],
-    };
-    const data: Array<CommonObjectType> = [
-      {
-        groupInput: "",
-        groupCheckBoxGroup: [],
-      },
-      {
-        groupInput: "",
-        groupCheckBoxGroup: [],
-      },
-    ];
     const wrapper = mount(FormComponentOptions, {
-      props: { schema, data },
+      props: { schema: testGroup.schema, data: testGroup.data },
     });
 
     expect(wrapper.findComponent(FormFieldTemplate).exists()).toBe(true);
@@ -258,47 +222,12 @@ describe("FormCoponentOptions", () => {
     let updateFormArrayValueEvent = wrapper.emitted("updateFormArrayValue");
     expect(updateFormArrayValueEvent).toHaveLength(1);
     updateFormArrayValueEvent = updateFormArrayValueEvent || [];
-    expect(updateFormArrayValueEvent[0]).toEqual(["groupInput", "Test", 0]);
+    expect(updateFormArrayValueEvent[0]).toEqual(["Test", "0.groupInput"]);
   });
 
   it("renders table successfully", async () => {
-    const schema: FormComponentSchemaType = {
-      fieldProps: {
-        label: "Title",
-        id: "exampleTable",
-      },
-      type: "table",
-      addButtonText: "+ Add another",
-      subfields: [
-        {
-          fieldProps: {
-            label: "Name",
-            id: "tableInput",
-          },
-          type: "input",
-        },
-        {
-          fieldProps: { label: "Color", id: "tableSelect" },
-          type: "select",
-          options: [
-            { value: "red", text: "Red" },
-            { value: "green", text: "green" },
-          ],
-        },
-      ],
-    };
-    const data: Array<CommonObjectType> = [
-      {
-        tableInput: "",
-        tableSelect: "",
-      },
-      {
-        tableInput: "",
-        tableSelect: "",
-      },
-    ];
     const wrapper = mount(FormComponentOptions, {
-      props: { schema, data },
+      props: { schema: testTable.schema, data: testTable.data },
     });
 
     expect(wrapper.findComponent(FormFieldTemplate).exists()).toBe(true);
@@ -334,6 +263,141 @@ describe("FormCoponentOptions", () => {
     let updateFormArrayValueEvent = wrapper.emitted("updateFormArrayValue");
     expect(updateFormArrayValueEvent).toHaveLength(1);
     updateFormArrayValueEvent = updateFormArrayValueEvent || [];
-    expect(updateFormArrayValueEvent[0]).toEqual(["tableInput", "Test", 0]);
+    expect(updateFormArrayValueEvent[0]).toEqual(["Test", "0.tableInput"]);
+  });
+
+  it("renders disableAll of single field successfully", async () => {
+    const schema: FormComponentSchemaType = {
+      fieldProps: { label: "Title", id: "testInput" },
+      type: "input",
+    };
+    const data: string = "";
+    const wrapper = mount(FormComponentOptions, {
+      props: { schema, data, disableAll: true },
+    });
+    expect(wrapper.findComponent(FormInput).exists()).toBe(true);
+
+    const input = wrapper.find("input");
+    expect(input.attributes().disabled).toBeDefined();
+  });
+
+  it("renders disabledFields of single field successfully", async () => {
+    const schema: FormComponentSchemaType = {
+      fieldProps: { label: "Title", id: "testInput" },
+      type: "input",
+    };
+    const data: string = "";
+    const wrapper = mount(FormComponentOptions, {
+      props: { schema, data, disabledFields: ["testInput"] },
+    });
+    expect(wrapper.findComponent(FormInput).exists()).toBe(true);
+
+    const input = wrapper.find("input");
+    expect(input.attributes().disabled).toBeDefined();
+  });
+
+  it("renders disableAll of table fields successfully", async () => {
+    const wrapper = mount(FormComponentOptions, {
+      props: {
+        schema: testTable.schema,
+        data: testTable.data,
+        disableAll: true,
+      },
+    });
+    expect(wrapper.findComponent(FormTable).exists()).toBe(true);
+    expect(wrapper.findComponent(FormComponentOptions).exists()).toBe(true);
+    expect(wrapper.findComponent(FormInput).exists()).toBe(true);
+    expect(wrapper.findComponent(FormSelect).exists()).toBe(true);
+
+    const input = wrapper.find("input");
+    expect(input.attributes().disabled).toBeDefined();
+    const selects = wrapper.findAll("select");
+    expect(selects[0].attributes().disabled).toBeDefined();
+    expect(selects[1].attributes().disabled).toBeDefined();
+  });
+
+  it("renders disabledFields of group fields successfully", async () => {
+    const wrapper = mount(FormComponentOptions, {
+      props: {
+        schema: testGroup.schema,
+        data: testGroup.data,
+        disabledFields: ["exampleGroup.0.groupInput"],
+      },
+    });
+    expect(wrapper.findComponent(FormGroup).exists()).toBe(true);
+    expect(wrapper.findComponent(FormComponentOptions).exists()).toBe(true);
+    expect(wrapper.findComponent(FormInput).exists()).toBe(true);
+    expect(wrapper.findComponent(FormCheckboxGroup).exists()).toBe(true);
+
+    const input = wrapper.find("input[type='text']");
+    expect(input.attributes().disabled).toBeDefined();
+
+    const checkboxes = wrapper.findAll("input[type='checkbox']");
+    expect(checkboxes[1].attributes().disabled).not.toBeDefined();
+    expect(checkboxes[2].attributes().disabled).not.toBeDefined();
+
+    await wrapper.setProps({
+      disabledFields: [
+        "exampleGroup.0.groupInput",
+        "exampleGroup.0.groupCheckBoxGroup",
+      ],
+    });
+    expect(checkboxes[1].attributes().disabled).toBeDefined();
+    expect(checkboxes[2].attributes().disabled).toBeDefined();
+  });
+
+  it("renders error of single field successfully", async () => {
+    const schema: FormComponentSchemaType = {
+      fieldProps: { label: "Title", id: "testInput" },
+      type: "input",
+    };
+    const data: string = "";
+    const wrapper = mount(FormComponentOptions, {
+      props: {
+        schema,
+        data,
+        error: [{ path: "testInput", errorMsg: "input test error" }],
+      },
+    });
+    expect(wrapper.findComponent(FormInput).exists()).toBe(true);
+    expect(wrapper.text()).toContain("input test error");
+  });
+
+  it("renders error of group fields successfully", async () => {
+    const wrapper = mount(FormComponentOptions, {
+      props: {
+        schema: testGroup.schema,
+        data: testGroup.data,
+        error: [
+          {
+            path: "exampleGroup.0.groupInput",
+            errorMsg: "group input test error",
+          },
+          {
+            path: "testpath",
+            errorMsg: "test no show error",
+          },
+        ],
+      },
+    });
+    expect(wrapper.findComponent(FormGroup).exists()).toBe(true);
+    expect(wrapper.findComponent(FormComponentOptions).exists()).toBe(true);
+    expect(wrapper.findComponent(FormInput).exists()).toBe(true);
+    expect(wrapper.findComponent(FormCheckboxGroup).exists()).toBe(true);
+
+    expect(wrapper.text()).toContain("group input test error");
+    expect(wrapper.text()).not.toContain("test not show error");
+
+    await wrapper.setProps({
+      error: [
+        {
+          path: "exampleGroup.0.groupCheckBoxGroup",
+          errorMsg: "group checkboxgroup test error",
+        },
+      ],
+    });
+
+    expect(wrapper.text()).not.toContain("group input test error");
+    expect(wrapper.text()).toContain("group checkboxgroup test error");
   });
 });

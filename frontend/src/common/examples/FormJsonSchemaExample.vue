@@ -27,12 +27,6 @@
 import { ref } from "vue";
 import FormComponentOptions from "../FormComponentOptions.vue";
 import CollapseCard from "../CollapseCard.vue";
-import type {
-  FormFieldTemplateType,
-  FromSelectOptionType,
-  FormCheckBoxGroupOptionType,
-  FormRadioGroupOptionType,
-} from "../../core/AppType";
 
 /* ------- container props ----------*/
 const containerProps = {
