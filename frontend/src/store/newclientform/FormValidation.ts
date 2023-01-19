@@ -9,8 +9,7 @@ export const validationResult = {
   state: reactive({
     begin: [],
     information: [],
-    contact: [],
-    authorized: [],
+    location: [],
   } as FormValidationResultType), // has to initialize them, and update each key-value later, so it can detect the object change
   getters: {
     getValidationResult() {
@@ -22,8 +21,7 @@ export const validationResult = {
       // need to update for each one, otherwise won't detect whole object reassign
       validationResult.state.begin = result.begin || [];
       validationResult.state.information = result.information || [];
-      validationResult.state.contact = result.contact || [];
-      validationResult.state.authorized = result.authorized || [];
+      validationResult.state.location = result.location || [];
     },
     setValidationResultForSection(
       containerId: string,

@@ -5,14 +5,13 @@ import type { FormValidationRequiredFieldType } from "../../../core/FormType";
 export const commonRequiredFields: Array<FormValidationRequiredFieldType> = [
   { path: "begin.client_type" },
   {
-    path: "contact.address",
-    subPath: "street_address",
-    subFieldId: "address_line",
+    path: "location.address",
+    subFieldId: "street_address",
   },
-  { path: "contact.address", subFieldId: "country" },
-  { path: "contact.address", subFieldId: "province" },
-  { path: "contact.address", subFieldId: "city" },
-  { path: "contact.address", subFieldId: "postal_code" },
+  { path: "location.address", subFieldId: "country" },
+  { path: "location.address", subFieldId: "province" },
+  { path: "location.address", subFieldId: "city" },
+  { path: "location.address", subFieldId: "postal_code" },
 ];
 
 export const businessRequiredFields: Array<FormValidationRequiredFieldType> = [

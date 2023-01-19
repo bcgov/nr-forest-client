@@ -80,25 +80,13 @@ const onModalOkay = () => {
         errorMsg: "WrongType, select inidividual to get rid of this error",
       },
     ],
-    information: [
+    location: [
       {
-        path: "information.first_name",
-        errorMsg: "Can not be empty",
-      },
-    ],
-    contact: [
-      {
-        path: "contact.address.1.country",
+        path: "location.address.0.country",
         errorMsg: "Must be Canada",
       },
       {
-        path: "contact.address.0.street_address.0.address_line",
-        errorMsg: "Can not be empty",
-      },
-    ],
-    authorized: [
-      {
-        path: "authorized.individuals.0.phone",
+        path: "location.address.0.contact.0.cell_phone",
         errorMsg: "Can not be empty",
       },
     ],

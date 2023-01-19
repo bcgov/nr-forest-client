@@ -13,16 +13,10 @@
       :sectionProps="informationSectionSchema[computedInformationSchemaType]"
     />
 
-    <!------ contact information section ------->
+    <!------ location information section ------->
     <FormSectionTemplate
-      :data="formData.state.contact"
-      :sectionProps="contactSectionSchema"
-    />
-
-    <!------ add authorized individual section ------->
-    <FormSectionTemplate
-      :data="formData.state.authorized"
-      :sectionProps="authorizedSectionSchema"
+      :data="formData.state.location"
+      :sectionProps="locationSectionSchema"
     />
   </div>
 </template>
@@ -33,8 +27,7 @@ import _ from "lodash";
 import FormSectionTemplate from "./FormSectionTemplate.vue";
 import { beginSectionSchema } from "../formsectionschemas/BeginSectionSchema";
 import { informationSectionSchema } from "../formsectionschemas/InformationSectionSchema";
-import { contactSectionSchema } from "../formsectionschemas/ContactSectionSchema";
-import { authorizedSectionSchema } from "../formsectionschemas/AuthorizedSectionSchema";
+import { locationSectionSchema } from "../formsectionschemas/LocationSectionSchema";
 import { formData } from "../../../store/newclientform/FormData";
 
 // based on client type, show different schema contenct for the information section

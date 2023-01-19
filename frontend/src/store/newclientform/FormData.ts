@@ -23,27 +23,26 @@ const initialFormData = {
     business_name: "",
     worksafebc_number: "",
   },
-  contact: {
+  location: {
     address: [
       {
-        street_address: [{ address_line: "", index: 0 }],
+        street_address: "",
         country: "",
         province: "",
         city: "",
         postal_code: "",
         index: 0, // any array data need to have this index, as an auto generated random number to be as unique identity
-      },
-    ],
-  },
-  authorized: {
-    individuals: [
-      {
-        contact_type: "",
-        firsname_or_company: "",
-        last_name: "",
-        phone: "",
-        email: "",
-        index: 0, // need use this index to be unique identity when display data in form tables
+        contact: [
+          {
+            contact_type: "",
+            name: "",
+            cell_phone: "",
+            business_phone: "",
+            fax_number: "",
+            email: "",
+            index: 0, // need use this index to be unique identity when display data in form tables
+          },
+        ],
       },
     ],
   },
@@ -84,20 +83,58 @@ export const formData = {
       arrayValue.splice(rowIndex, 1);
       _.set(formData.state, dataPath, arrayValue);
     },
+    setPrepopulateFieldsForIndividual(
+      firstName: string,
+      lastName: string,
+      birthdate: string
+    ) {
+      _.set(formData.state, "information.first_name", firstName);
+      _.set(formData.state, "information.last_name", lastName);
+      _.set(formData.state, "information.birthdate", birthdate);
+    },
+    setPrepopulateFieldsForBusiness(
+      businessName: string,
+      registryNumber: string
+    ) {
+      _.set(formData.state, "information.business_name", businessName);
+      _.set(formData.state, "information.registration_number", registryNumber);
+    },
   },
+
   // This section will manage the actions needed for our store
   actions: {
     updateFormValue(newValue: any, dataPath: string) {
       formData.mutations.updateFormValue(newValue, dataPath);
       formData.actions.cleanErrorMsg();
-      // an example to disable a field
+      // set value for prepopulate fields, and disabled prepoplated fields
       if (
         dataPath == "begin.client_type" &&
         formData.getters.getFormDataByPath(dataPath) == "individual"
       ) {
         disabledFields.actions.setDisabledFieldsForSection("information", [
+          "information.first_name",
           "information.last_name",
+          "information.birthdate",
         ]);
+        // todo: put hardcode data here, should be the information get from login
+        formData.mutations.setPrepopulateFieldsForIndividual(
+          "prepopulated firstname",
+          "prepolulated lastname",
+          "1990-01-01"
+        );
+      } else if (
+        dataPath == "begin.client_type" &&
+        formData.getters.getFormDataByPath(dataPath) != "soleProprietorship"
+      ) {
+        disabledFields.actions.setDisabledFieldsForSection("information", [
+          "information.business_name",
+          "information.registration_number",
+        ]);
+        // todo: put hardcode data here, should be the information get from login and bc registry
+        formData.mutations.setPrepopulateFieldsForBusiness(
+          "prepopulated business name",
+          "prepolulated number"
+        );
       }
     },
     addRow(dataPath: string) {
@@ -118,38 +155,29 @@ export const formData = {
             "begin",
             "begin.client_type"
           );
-        if (formData.state.information.first_name != "")
-          validationResult.actions.removeValidationError(
-            "information",
-            "information.first_name"
-          );
+
         // an example to check all array data for form group
-        formData.state.contact.address.forEach(
+        formData.state.location.address.forEach(
           (e: CommonObjectType, index: number) => {
             if (e.country == "Canada") {
               validationResult.actions.removeValidationError(
-                "contact",
-                `contact.address.${index}.country`
+                "location",
+                `location.address.${index}.country`
               );
             }
-            e.street_address.forEach(
-              (addressLine: CommonObjectType, lineIndex: number) => {
-                if (addressLine.address_line != "") {
+            // an example to check the array data inside an array, could remove this once get the idea
+            e.contact.forEach(
+              (contact: CommonObjectType, contactIndex: number) => {
+                if (contact.cell_phone != "") {
                   validationResult.actions.removeValidationError(
-                    "contact",
-                    `contact.address.${index}.street_address.${lineIndex}.address_line`
+                    "location",
+                    `location.address.${index}.contact.${contactIndex}.cell_phone`
                   );
                 }
               }
             );
           }
         );
-
-        if (formData.state.authorized.individuals[0].phone != "")
-          validationResult.actions.removeValidationError(
-            "authorized",
-            "authorized.individuals.0.phone"
-          );
       }
     },
   },

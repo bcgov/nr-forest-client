@@ -6,8 +6,7 @@ export const disabledFields = {
   state: reactive({
     begin: [],
     information: [],
-    contact: [],
-    authorized: [],
+    location: [],
   } as FormDisableType), // has to initialize them, and update each key-value later, so it can detect the object change
   getters: {
     getDisabledFields() {
@@ -19,8 +18,7 @@ export const disabledFields = {
       // need to update for each one, otherwise won't detect whole object reassign
       disabledFields.state.begin = fieldsToBeDisabled.begin || [];
       disabledFields.state.information = fieldsToBeDisabled.information || [];
-      disabledFields.state.contact = fieldsToBeDisabled.contact || [];
-      disabledFields.state.authorized = fieldsToBeDisabled.authorized || [];
+      disabledFields.state.location = fieldsToBeDisabled.location || [];
     },
     setDisabledFieldsForSection(
       containerId: string,
