@@ -21,7 +21,7 @@ public abstract class AbstractTestContainerIntegrationTest {
   static {
     database = new OracleContainer("gvenzl/oracle-xe:21-slim-faststart")
         .withDatabaseName("legacyfsa")
-        .withUsername("legacyfsa")
+        .withUsername("legacy")
         .withPassword(UUID.randomUUID().toString().substring(24));
     database.start();
   }
@@ -34,19 +34,29 @@ public abstract class AbstractTestContainerIntegrationTest {
             "ca.bc.gov.nrs.oracle.database",
             database::getDatabaseName
         );
+    registry
+        .add(
+            "ca.bc.gov.nrs.oracle.service",
+            database::getDatabaseName
+        );
 
     registry
         .add(
             "ca.bc.gov.nrs.oracle.host",
             () -> String.format("%s:%d",
                 database.getHost(),
-                database.getMappedPort(1543)
+                database.getMappedPort(1521)
             )
         );
 
     registry
         .add(
             "ca.bc.gov.nrs.oracle.username",
+            database::getUsername
+        );
+    registry
+        .add(
+            "ca.bc.gov.nrs.oracle.schema",
             database::getUsername
         );
 
