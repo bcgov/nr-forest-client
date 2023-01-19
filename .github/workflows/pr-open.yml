@@ -171,9 +171,6 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}
-            -p NODE_ENV='development'
-            -p API_URL='https://nrfc-api-test.api.gov.bc.ca'
-            -p X_API_KEY=${{ secrets.GWA_X_API_KEY }}
             -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p CHES_TOKEN_URL='https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'

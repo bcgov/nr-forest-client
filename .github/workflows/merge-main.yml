@@ -117,9 +117,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/backend:${{ env.ZONE }}
-            -p NODE_ENV='development'
-            -p API_URL='https://nrfc-api-test.api.gov.bc.ca'
-            -p X_API_KEY=${{ secrets.GWA_X_API_KEY }}
             -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p CHES_TOKEN_URL='https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
@@ -227,9 +224,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/backend:${{ env.PREV }}
-            -p NODE_ENV='production'
-            -p API_URL='https://nrfc-api-prod.api.gov.bc.ca'
-            -p X_API_KEY=${{ secrets.GWA_X_API_KEY }}
             -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
