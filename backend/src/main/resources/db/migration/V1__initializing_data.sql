@@ -65,7 +65,7 @@ create table if not exists nrfc.province_code (
 );
 
 create table if not exists nrfc.contact_type_code (
-    contact_type_code            varchar(1)      not null,
+    contact_type_code           varchar(2)      not null,
     description                 varchar(100)    not null,
     effective_date              date            not null,
     expiry_date                 date            default to_date('99991231','YYYYMMDD') not null,
@@ -155,3 +155,27 @@ insert into nrfc.client_type_code (client_type_code, description, effective_date
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('S', 'Society', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('T', 'First Nation Tribal Council', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('U', 'Unregistered Company', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
+
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('AP', 'Accounts Payable', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('AR', 'Accounts Receivable', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('BA', 'First Nations Administrator', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('BC', 'First Nations Council Member', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('BL', 'Billing', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('BM', 'First Nations Manager', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('BN', 'First Nations Treaty Negotiator', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('CH', 'Chief', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('CL', 'Collections', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('DI', 'Director', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('EX', 'Export', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('GP', 'General Partner', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('IL', 'Interior Log Cost Reporting', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('LB', 'Log Broker', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('LP', 'Limited Partner', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('RC', 'Recreation Agreement Holder', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('SI', 'Scale Site Contact', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('SP', 'SPAR System Contact', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('SR', 'Stumpage Rates', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('SS', 'Scaling Software Vendor Contact', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('TC', 'BCTS Contractor', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('TN', 'Tenure Administration', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
+insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('TP', 'EDI Trading Partner', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
