@@ -41,10 +41,7 @@ parameters:
     required: true
   - name: CHES_API_URL
     description: CHES service api url
-    required: true
-  - name: NODE_ENV
-    description: environment mode
-    required: true
+    required: true  
   - name: CPU_REQUEST
     value: 75m
   - name: CPU_LIMIT
