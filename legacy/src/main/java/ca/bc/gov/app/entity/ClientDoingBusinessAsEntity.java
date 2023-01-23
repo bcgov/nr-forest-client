@@ -1,5 +1,7 @@
 package ca.bc.gov.app.entity;
 
+import static ca.bc.gov.app.ApplicationConstants.ORACLE_ATTRIBUTE_SCHEMA;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +16,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @Builder
 @With
-@Table(name = "CLIENT_DOING_BUSINESS_AS", schema = "${ca.bc.gov.nrs.oracle.schema}")
+@Table(name = "CLIENT_DOING_BUSINESS_AS", schema = ORACLE_ATTRIBUTE_SCHEMA)
 public class ClientDoingBusinessAsEntity {
 
   @Id

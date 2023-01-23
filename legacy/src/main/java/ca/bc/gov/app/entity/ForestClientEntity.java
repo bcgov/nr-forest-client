@@ -1,6 +1,8 @@
 package ca.bc.gov.app.entity;
 
 
+import static ca.bc.gov.app.ApplicationConstants.ORACLE_ATTRIBUTE_SCHEMA;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -17,7 +19,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @Builder
 @With
-@Table(name = "FOREST_CLIENT", schema = "${ca.bc.gov.nrs.oracle.schema}")
+@Table(name = "FOREST_CLIENT", schema = ORACLE_ATTRIBUTE_SCHEMA)
 public class ForestClientEntity {
 
   @Id

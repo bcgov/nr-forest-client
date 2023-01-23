@@ -21,7 +21,7 @@ public abstract class AbstractTestContainerIntegrationTest {
   static {
     database = new OracleContainer("gvenzl/oracle-xe:21-slim-faststart")
         .withDatabaseName("legacyfsa")
-        .withUsername("legacy")
+        .withUsername("THE")
         .withPassword(UUID.randomUUID().toString().substring(24));
     database.start();
   }

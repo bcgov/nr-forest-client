@@ -1,6 +1,8 @@
 package ca.bc.gov.app.entity;
 
 
+import static ca.bc.gov.app.ApplicationConstants.ORACLE_ATTRIBUTE_SCHEMA;
+
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +18,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @Builder
 @With
-@Table(name = "CLIENT_LOCATION", schema = "${ca.bc.gov.nrs.oracle.schema}")
+@Table(name = "CLIENT_LOCATION", schema = ORACLE_ATTRIBUTE_SCHEMA)
 public class ClientLocationEntity {
 
   @Id
