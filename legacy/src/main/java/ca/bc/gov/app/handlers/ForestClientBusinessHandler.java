@@ -34,6 +34,7 @@ public class ForestClientBusinessHandler implements BaseHandler {
   public Mono<ServerResponse> handle(ServerRequest serverRequest) {
     return ServerResponse
         .ok()
+        .contentType(serverRequest.headers().contentType().orElse(MediaType.APPLICATION_JSON))
         .body(service.getClientDoingBusiness(), ClientPublicViewDto.class)
         .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())
         .doOnError(HandlerUtil.handleError());

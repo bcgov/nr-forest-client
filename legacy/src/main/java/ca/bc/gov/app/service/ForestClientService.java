@@ -38,6 +38,11 @@ public class ForestClientService {
             .flatMap(entity ->
                 Mono
                     .just(entity)
+                    .doOnNext(
+                        current -> log.info("Checking data for {} CorpRegnNmbr {}",
+                            current.getClientName(),
+                            current.getCorpRegnNmbr())
+                    )
                     .filter(current -> StringUtils.isNotBlank(current.getCorpRegnNmbr()))
                     .flatMap(getBandInfoFromMap())
                     .switchIfEmpty(getEmptyBandValidation(entity))
@@ -116,7 +121,8 @@ public class ForestClientService {
   }
 
   private static Mono<FirstNationBandVidationDto> getEmptyBandValidation(
-      ForestClientEntity entity) {
+      ForestClientEntity entity
+  ) {
     return Mono.just(new FirstNationBandVidationDto(
             entity.getClientNumber(),
             entity.getCorpRegnNmbr(),
@@ -143,9 +149,21 @@ public class ForestClientService {
             .uri("/api/maps/firstNation/{id}", currentEntity.getCorpRegnNmbr())
             .accept(MediaType.APPLICATION_JSON)
             .exchangeToMono(response -> response.bodyToMono(PropertyDto.class))
+            .doOnNext(response ->
+                log.info(
+                    """
+                        Information about first nation band with id {} and client number {} found.
+                        Looking up for location details from band {}
+                        """,
+                    currentEntity.getCorpRegnNmbr(),
+                    currentEntity.getClientNumber(),
+                    response
+                )
+            )
             .flatMap(response ->
                 clientLocationRepository
                     .findById(currentEntity.getClientNumber())
+                    .doOnNext(clientLocation -> log.info("Location found as {}", clientLocation))
                     .map(clientLocation ->
                         new FirstNationBandVidationDto(
                             currentEntity.getClientNumber(),
@@ -165,6 +183,7 @@ public class ForestClientService {
                         )
                     )
             )
+            .doOnNext(bandValidation -> log.info("Band validation completed for {} addr mt{} nm mt {}",bandValidation,bandValidation.addressMatch(),bandValidation.nameMatch()))
             .onErrorResume(t -> getEmptyBandValidation(currentEntity)
             );
   }
