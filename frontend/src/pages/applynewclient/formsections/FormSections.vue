@@ -2,142 +2,51 @@
   <div>
     <!------ begin section ------->
     <FormSectionTemplate
-      :data="data.begin"
-      :containerProps="beginSectionSchema"
-      @updateFormValue="
-        (id, newValue) => updateFormValue('begin', id, newValue)
-      "
-      @updateFormArrayValue="
-        (fieldId, id, newValue, rowIndex) =>
-          updateFormArrayValue('begin', fieldId, id, newValue, rowIndex)
-      "
-      @addRow="(fieldId) => addRow('begin', fieldId)"
-      @deleteRow="(fieldId, rowIndex) => deleteRow('begin', fieldId, rowIndex)"
+      :data="formData.state.begin"
+      :sectionProps="beginSectionSchema"
     />
 
     <!------ company/individual information section ------->
     <FormSectionTemplate
-      v-if="computedCompanyType"
-      :data="data.information"
-      :containerProps="informationSectionSchema[computedCompanyType]"
-      @updateFormValue="
-        (id, newValue) => updateFormValue('information', id, newValue)
-      "
-      @updateFormArrayValue="
-        (fieldId, id, newValue, rowIndex) =>
-          updateFormArrayValue('information', fieldId, id, newValue, rowIndex)
-      "
-      @addRow="(fieldId) => addRow('information', fieldId)"
-      @deleteRow="
-        (fieldId, rowIndex) => deleteRow('information', fieldId, rowIndex)
-      "
+      v-if="computedInformationSchemaType !== ''"
+      :data="formData.state.information"
+      :sectionProps="informationSectionSchema[computedInformationSchemaType]"
     />
 
-    <!------ contact information section ------->
+    <!------ location information section ------->
     <FormSectionTemplate
-      :data="data.contact"
-      :containerProps="contactSectionSchema"
-      @updateFormValue="
-        (id, newValue) => updateFormValue('contact', id, newValue)
-      "
-      @updateFormArrayValue="
-        (fieldId, id, newValue, rowIndex) =>
-          updateFormArrayValue('contact', fieldId, id, newValue, rowIndex)
-      "
-      @addRow="(fieldId) => addRow('contact', fieldId)"
-      @deleteRow="
-        (fieldId, rowIndex) => deleteRow('contact', fieldId, rowIndex)
-      "
-    />
-
-    <!------ add authorized individual section ------->
-    <FormSectionTemplate
-      :data="data.authorized"
-      :containerProps="authorizedSectionSchema"
-      @updateFormValue="
-        (id, newValue) => updateFormValue('authorized', id, newValue)
-      "
-      @updateFormArrayValue="
-        (fieldId, id, newValue, rowIndex) =>
-          updateFormArrayValue('authorized', fieldId, id, newValue, rowIndex)
-      "
-      @addRow="(fieldId) => addRow('authorized', fieldId)"
-      @deleteRow="
-        (fieldId, rowIndex) => deleteRow('authorized', fieldId, rowIndex)
-      "
+      :data="formData.state.location"
+      :sectionProps="locationSectionSchema"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { PropType } from "vue";
+import _ from "lodash";
 import FormSectionTemplate from "./FormSectionTemplate.vue";
-import {
-  beginSectionSchema,
-  informationSectionSchema,
-  contactSectionSchema,
-  authorizedSectionSchema,
-} from "../NewClient";
-import type {
-  CommonObjectType,
-  FormValidationResultType,
-} from "../../../core/AppType";
+import { beginSectionSchema } from "../formsectionschemas/BeginSectionSchema";
+import { informationSectionSchema } from "../formsectionschemas/InformationSectionSchema";
+import { locationSectionSchema } from "../formsectionschemas/LocationSectionSchema";
+import { formData } from "../../../store/newclientform/FormData";
 
-const props = defineProps({
-  data: {
-    type: Object as PropType<CommonObjectType>,
-    required: true,
-    default: { begin: { client_type: "" } },
-  },
-  validationResult: Object as PropType<FormValidationResultType>,
-});
-
-// todo: based on the validation result,
-// create computed section schemas to determine when to display error messages as specified in the validation result
-
-const computedCompanyType = computed(() => {
+// based on client type, show different schema contenct for the information section
+const computedInformationSchemaType = computed(() => {
   if (
-    props.data.begin &&
-    props.data.begin.client_type &&
-    props.data.begin.client_type !== ""
+    _.has(formData, ["state", "begin", "client_type"]) &&
+    formData.state.begin.client_type !== ""
   ) {
     if (
-      props.data.begin.client_type != "individual" &&
-      props.data.begin.client_type != "soleProprietorship"
+      formData.state.begin.client_type != "individual" &&
+      formData.state.begin.client_type != "soleProprietorship"
     ) {
       return "company";
     }
-    return props.data.begin.client_type;
+    // other types share the same schema as company
+    return formData.state.begin.client_type;
   }
-  return null;
+  return "";
 });
-
-const emit = defineEmits([
-  "updateFormValue",
-  "updateFormArrayValue",
-  "addRow",
-  "deleteRow",
-]);
-
-const updateFormValue = (containerId, fieldId, newValue) => {
-  emit("updateFormValue", containerId, fieldId, newValue);
-};
-const updateFormArrayValue = (
-  containerId,
-  fieldId,
-  columnId,
-  value,
-  rowIndex
-) => {
-  emit("updateFormArrayValue", containerId, fieldId, columnId, value, rowIndex);
-};
-const addRow = (containerId, fieldId) => {
-  emit("addRow", containerId, fieldId);
-};
-const deleteRow = (containerId, fieldId, rowIndex) => {
-  emit("deleteRow", containerId, fieldId, rowIndex);
-};
 </script>
 
 <script lang="ts">

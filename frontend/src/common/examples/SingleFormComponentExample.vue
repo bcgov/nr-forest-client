@@ -58,7 +58,7 @@ import type {
   FromSelectOptionType,
   FormCheckBoxGroupOptionType,
   FormRadioGroupOptionType,
-} from "../../core/AppType";
+} from "../../core/FormType";
 
 /* ------- form data ----------- */
 const form = ref({
@@ -67,8 +67,8 @@ const form = ref({
   exampleCheckBoxGroup: ["2"],
   exampleRadioGroup: ["3"],
 });
-const updateFormValue = (id, value) => {
-  form.value[id] = value;
+const updateFormValue = (id: string, value: any) => {
+  form.value[id as keyof typeof form.value] = value;
   console.log("form data", form.value, value);
 };
 
@@ -127,7 +127,7 @@ const radioGroupOptions: Array<FormRadioGroupOptionType> = [
 <script lang="ts">
 import { defineComponent } from "vue";
 export default defineComponent({
-  name: "CompositionComponentTemplate",
+  name: "SingleFormComponentExample",
 });
 </script>
 

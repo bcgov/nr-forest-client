@@ -21,17 +21,15 @@ import FormFieldTemplate from "./FormFieldTemplate.vue";
 import type {
   FormFieldTemplateType,
   FormCheckBoxGroupOptionType,
-} from "../core/AppType";
+} from "../core/FormType";
 
 const props = defineProps({
-  // form field template props (optional): label, required, tooltip, note, id
+  // form field template props (optional): label, required, tooltip, note, id, errorMsg
   fieldProps: {
     type: Object as PropType<FormFieldTemplateType>,
-    default: {
-      label: "Hello",
-    },
+    default: { id: "form-checkboxgroup" },
   },
-  value: Array as PropType<Array<string>>,
+  value: { type: Array as PropType<Array<string>>, required: true },
   options: {
     type: Array as PropType<Array<FormCheckBoxGroupOptionType>> | undefined,
     required: true,
@@ -48,7 +46,7 @@ const computedValue = computed({
     return props.value;
   },
   set(newValue: Array<string>) {
-    emit("updateValue", props.fieldProps.id, newValue);
+    emit("updateValue", newValue, props.fieldProps.id);
   },
 });
 </script>

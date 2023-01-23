@@ -2,40 +2,40 @@
   <div>
     <FormInput
       v-if="schema.type == 'input'"
-      :fieldProps="schema.fieldProps"
+      :fieldProps="computedFieldPropsForSingleComponent(schema.fieldProps)"
       :value="data"
-      :disabled="schema.disabled ? true : false"
+      :disabled="computedDisableForSingleComponent"
       @updateValue="updateFormValue"
     />
     <FormSelect
       v-if="schema.type == 'select'"
-      :fieldProps="schema.fieldProps"
+      :fieldProps="computedFieldPropsForSingleComponent(schema.fieldProps)"
       :value="data"
       :options="schema.options"
-      :disabled="schema.disabled ? true : false"
+      :disabled="computedDisableForSingleComponent"
       @updateValue="updateFormValue"
     />
     <FormCheckbox
       v-if="schema.type == 'checkbox'"
-      :fieldProps="schema.fieldProps"
+      :fieldProps="computedFieldPropsForSingleComponent(schema.fieldProps)"
       :value="data"
-      :disabled="schema.disabled ? true : false"
+      :disabled="computedDisableForSingleComponent"
       @updateValue="updateFormValue"
     />
     <FormCheckboxGroup
       v-if="schema.type == 'checkboxgroup'"
-      :fieldProps="schema.fieldProps"
+      :fieldProps="computedFieldPropsForSingleComponent(schema.fieldProps)"
       :value="data"
       :options="schema.options"
-      :disabled="schema.disabled ? true : false"
+      :disabled="computedDisableForSingleComponent"
       @updateValue="updateFormValue"
     />
     <FormRadioGroup
       v-if="schema.type == 'radiogroup'"
-      :fieldProps="schema.fieldProps"
+      :fieldProps="computedFieldPropsForSingleComponent(schema.fieldProps)"
       :value="data"
       :options="schema.options"
-      :disabled="schema.disabled ? true : false"
+      :disabled="computedDisableForSingleComponent"
       @updateValue="updateFormValue"
     />
     <FormGroup
@@ -43,7 +43,10 @@
       :data="data"
       :addButtonText="schema.addButtonText"
       :deleteButtonText="schema.deleteButtonText"
-      :columns="schema.columns"
+      :subfields="schema.subfields"
+      :error="error"
+      :disabledFields="disabledFields"
+      :disableAll="disableAll"
       :fieldProps="schema.fieldProps"
       @updateFormArrayValue="updateFormArrayValue"
       @addRow="addRow"
@@ -53,7 +56,10 @@
       v-if="schema.type == 'table'"
       :data="data"
       :addButtonText="schema.addButtonText"
-      :columns="schema.columns"
+      :subfields="schema.subfields"
+      :error="error"
+      :disabledFields="disabledFields"
+      :disableAll="disableAll"
       :fieldProps="schema.fieldProps"
       @updateFormArrayValue="updateFormArrayValue"
       @addRow="addRow"
@@ -63,6 +69,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import type { PropType } from "vue";
 import FormInput from "./FormInput.vue";
 import FormSelect from "./FormSelect.vue";
@@ -71,7 +78,11 @@ import FormCheckboxGroup from "./FormCheckboxGroup.vue";
 import FormRadioGroup from "./FormRadioGroup.vue";
 import FormGroup from "./FormGroup.vue";
 import FormTable from "./FormTable.vue";
-import type { FormComponentSchemaType } from "../core/AppType";
+import type {
+  FormComponentSchemaType,
+  FormFieldValidationResultType,
+  FormFieldTemplateType,
+} from "../core/FormType";
 
 const props = defineProps({
   schema: {
@@ -82,6 +93,32 @@ const props = defineProps({
     type: [String, Object, Number, Array, Boolean],
     required: true,
   },
+  error: {
+    type: Array<FormFieldValidationResultType>,
+    default: [],
+  },
+  disabledFields: {
+    type: Array<string>,
+    default: [],
+  },
+  disableAll: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const computedFieldPropsForSingleComponent = computed(() => {
+  return (fieldProps: FormFieldTemplateType) => {
+    if (props.error.length > 0) {
+      return { ...fieldProps, errorMsg: props.error[0].errorMsg };
+    }
+    return fieldProps;
+  };
+});
+
+const computedDisableForSingleComponent = computed(() => {
+  if (props.disableAll || props.disabledFields.length > 0) return true;
+  return false;
 });
 
 const emit = defineEmits([
@@ -91,17 +128,17 @@ const emit = defineEmits([
   "deleteRow",
 ]);
 
-const updateFormValue = (id, newValue) => {
-  emit("updateFormValue", id, newValue);
+const updateFormValue = (newValue: any, path: string) => {
+  emit("updateFormValue", newValue, path);
 };
-const updateFormArrayValue = (id, value, row) => {
-  emit("updateFormArrayValue", id, value, row);
+const updateFormArrayValue = (newValue: any, path: string) => {
+  emit("updateFormArrayValue", newValue, path);
 };
-const addRow = () => {
-  emit("addRow");
+const addRow = (path = "" as string) => {
+  emit("addRow", path);
 };
-const deleteRow = (row) => {
-  emit("deleteRow", row);
+const deleteRow = (index: number, path = "" as string) => {
+  emit("deleteRow", index, path);
 };
 </script>
 

@@ -4,10 +4,12 @@ import { mount } from "@vue/test-utils";
 import FormCheckboxGroup from "../../common/FormCheckboxGroup.vue";
 import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 
+import type { FormFieldTemplateType } from "../../core/FormType";
+
 describe("FormCheckboxGroup", () => {
   it("component defined", () => {
     const wrapper = mount(FormCheckboxGroup, {
-      props: { options: [] },
+      props: { value: [], options: [] },
     });
     expect(wrapper).toBeDefined();
   });
@@ -15,7 +17,10 @@ describe("FormCheckboxGroup", () => {
   it("renders props fieldProps successfully", () => {
     const wrapper = mount(FormCheckboxGroup, {
       props: {
-        fieldProps: { label: "Test Form Checkbox Group Title" },
+        fieldProps: {
+          label: "Test Form Checkbox Group Title",
+        } as FormFieldTemplateType,
+        value: [],
         options: [],
       },
     });
@@ -26,6 +31,7 @@ describe("FormCheckboxGroup", () => {
   it("renders props options successfully", () => {
     const wrapper = mount(FormCheckboxGroup, {
       props: {
+        value: [],
         options: [
           { code: "1", text: "Option 1" },
           { code: "2", text: "Option 2" },
@@ -79,6 +85,7 @@ describe("FormCheckboxGroup", () => {
     const wrapper = mount(FormCheckboxGroup, {
       props: {
         disabled: true,
+        value: [],
         options: [
           { code: "1", text: "Option 1" },
           { code: "2", text: "Option 2" },

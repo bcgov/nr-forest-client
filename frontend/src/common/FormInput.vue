@@ -9,14 +9,15 @@
 import { computed } from "vue";
 import type { PropType } from "vue";
 import FormFieldTemplate from "./FormFieldTemplate.vue";
-import type { FormFieldTemplateType } from "../core/AppType";
+import type { FormFieldTemplateType } from "../core/FormType";
 
 const props = defineProps({
-  // form field template props (optional): label, required, tooltip, note, id
+  // form field template props (optional): label, required, tooltip, note, id, errorMsg
   fieldProps: {
     type: Object as PropType<FormFieldTemplateType>,
+    default: { id: "form-input" },
   },
-  value: [String, Number],
+  value: { type: [String, Number], required: true },
   disabled: { type: Boolean, default: false },
   state: { type: Boolean, default: null },
 });
@@ -28,7 +29,7 @@ const computedValue = computed({
     return props.value;
   },
   set(newValue: string | number) {
-    emit("updateValue", props.fieldProps.id, newValue);
+    emit("updateValue", newValue, props.fieldProps.id);
   },
 });
 </script>

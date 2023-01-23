@@ -18,16 +18,14 @@
 <script setup lang="ts">
 import { inject, ref } from "vue";
 import MainHeader from "./common/MainHeader.vue";
-import HomePage from "./pages/HomePage.vue";
 import ReviewApplicationPage from "./pages/ReviewApplicationPage.vue";
-import MyApplicationPage from "./pages/MyApplicationPage.vue";
 import ApplyNewClientPage from "./pages/applynewclient/ApplyNewClientPage.vue";
 import type { Ref, DefineComponent } from "vue";
 import type { KeycloakInstance } from "keycloak-js";
 import { navBlue, navSelectBlue } from "./utils/color";
 
 const keycloak: KeycloakInstance = inject("keycloak");
-let tabs: Ref<Array<{ title: String; content: DefineComponent }>> = ref([]);
+let tabs: Ref<Array<{ title: string; content: DefineComponent }>> = ref([]);
 
 if (
   keycloak &&
@@ -35,16 +33,9 @@ if (
   keycloak.tokenParsed.identity_provider &&
   keycloak.tokenParsed.identity_provider == "idir"
 ) {
-  tabs = [
-    { title: "Home", content: HomePage },
-    { title: "Review Applications", content: ReviewApplicationPage },
-  ];
+  tabs = [{ title: "Review Applications", content: ReviewApplicationPage }];
 } else {
-  tabs = [
-    { title: "Home", content: HomePage },
-    { title: "My Application", content: MyApplicationPage },
-    { title: "Apply a New Client", content: ApplyNewClientPage },
-  ];
+  tabs = [{ title: "Apply a New Client", content: ApplyNewClientPage }];
 }
 </script>
 

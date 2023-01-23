@@ -27,12 +27,6 @@
 import { ref } from "vue";
 import FormComponentOptions from "../FormComponentOptions.vue";
 import CollapseCard from "../CollapseCard.vue";
-import type {
-  FormFieldTemplateType,
-  FromSelectOptionType,
-  FormCheckBoxGroupOptionType,
-  FormRadioGroupOptionType,
-} from "../../core/AppType";
 
 /* ------- container props ----------*/
 const containerProps = {
@@ -86,7 +80,7 @@ const containerProps = {
       },
       type: "table",
       addButtonText: "+ Add another friend",
-      columns: [
+      subfields: [
         {
           fieldProps: {
             label: "Name",
@@ -111,7 +105,7 @@ const containerProps = {
       type: "group",
       addButtonText: "+ Add another like",
       deleteButtonText: "- Remove this like",
-      columns: [
+      subfields: [
         {
           fieldProps: {
             label: "Link",
@@ -156,20 +150,27 @@ const defaultFormData = {
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData)));
 
 /* --------------- update form data functions --------------------- */
-const updateFormValue = (fieldId, value) => {
+const updateFormValue = (fieldId: string, value: any) => {
   formData.value[fieldId] = value;
 };
-const updateFormArrayValue = (fieldId, columnId, value, rowIndex) => {
-  formData.value[fieldId][rowIndex][columnId] = value;
+const updateFormArrayValue = (
+  fieldId: string,
+  subFieldId: string,
+  value: any,
+  rowIndex: number
+) => {
+  formData.value[fieldId][rowIndex][subFieldId] = value;
 };
-const addRow = (fieldId) => {
-  const defaultNew = JSON.parse(JSON.stringify(defaultFormData[fieldId][0]));
+const addRow = (fieldId: string) => {
+  const defaultNew = JSON.parse(
+    JSON.stringify(defaultFormData[fieldId as keyof typeof defaultFormData][0])
+  );
   formData.value[fieldId].push({
     ...defaultNew,
     index: Math.floor(Math.random() * 10000000),
   });
 };
-const deleteRow = (fieldId, rowIndex) => {
+const deleteRow = (fieldId: string, rowIndex: number) => {
   formData.value[fieldId].splice(rowIndex, 1);
 };
 </script>
@@ -177,7 +178,7 @@ const deleteRow = (fieldId, rowIndex) => {
 <script lang="ts">
 import { defineComponent } from "vue";
 export default defineComponent({
-  name: "CompositionComponentTemplate",
+  name: "FormJsonSchemaExample",
 });
 </script>
 

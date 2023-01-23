@@ -16,7 +16,7 @@
 import { ref, computed } from "vue";
 
 const props = defineProps({
-  show: Boolean,
+  show: { type: Boolean, default: false },
   okayText: { type: String, default: "ok" },
 });
 
