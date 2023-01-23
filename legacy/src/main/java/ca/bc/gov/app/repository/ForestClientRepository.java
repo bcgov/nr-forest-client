@@ -1,15 +1,16 @@
 package ca.bc.gov.app.repository;
 
 import ca.bc.gov.app.entity.ForestClientEntity;
-import java.time.LocalDate;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
 @Repository
-public interface ForestClientRepository extends ReactiveCrudRepository<ForestClientEntity, String> {
+public interface ForestClientRepository extends ReactiveCrudRepository<ForestClientEntity, String>,
+    ReactiveQueryByExampleExecutor<ForestClientEntity> {
 
   @Query("""
       select * from FOREST_CLIENT x
@@ -26,14 +27,4 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       @Param("companyName") String companyName
   );
 
-  @Query("""
-      select * from FOREST_CLIENT x
-       where lower(x.LEGAL_FIRST_NAME) = lower(:firstName)
-       and lower(x.CLIENT_NAME) = lower(:lastName)
-       and x.BIRTHDATE = :birthdate""")
-  Flux<ForestClientEntity> findClientByNameAndBirthdate(
-      @Param("firstName") String firstName,
-      @Param("lastName") String lastName,
-      @Param("birthdate") LocalDate birthdate
-  );
 }

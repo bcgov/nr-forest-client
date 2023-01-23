@@ -43,21 +43,21 @@ public class ForestClientRouter implements BaseRouter {
         .GET(
             "/bands",
             accept(MediaType.ALL)
-                .and(contentType(MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON)),
+                .and(contentType(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM)),
             bandsHandler::handle,
             bandsHandler.documentation(routeTagName())
         )
         .GET(
             "/business",
             accept(MediaType.ALL)
-                .and(contentType(MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON)),
+                .and(contentType(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM)),
             businessHandler::handle,
             businessHandler.documentation(routeTagName())
         )
         .GET(
             "/unregistered",
             accept(MediaType.ALL)
-                .and(contentType(MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON)),
+                .and(contentType(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM)),
             unregisteredHandler::handle,
             unregisteredHandler.documentation(routeTagName())
         )

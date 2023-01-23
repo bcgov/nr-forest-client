@@ -8,7 +8,6 @@ import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
 
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ForestClientDto;
-import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.service.ClientSearchService;
 import ca.bc.gov.app.util.HandlerUtil;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -28,7 +27,6 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class ClientSearchNameBirthHandler implements BaseHandler {
 
-  public static final String CLIENT_SEARCH_BIRTHDATE = "birthdate";
   private final ClientSearchService service;
 
   @Override
@@ -36,22 +34,16 @@ public class ClientSearchNameBirthHandler implements BaseHandler {
     return
         ServerResponse
             .ok()
+            .contentType(serverRequest.headers().contentType().orElse(MediaType.APPLICATION_JSON))
             .body(
                 service
                     .findByNameAndBirth(
                         serverRequest
-                            .queryParam(ApplicationConstants.CLIENT_SEARCH_FIRST_NAME)
-                            .orElseThrow(() -> new MissingRequiredParameterException(
-                                ApplicationConstants.CLIENT_SEARCH_FIRST_NAME)
-                            ),
+                            .queryParam(ApplicationConstants.CLIENT_SEARCH_FIRST_NAME),
                         serverRequest
-                            .queryParam(ApplicationConstants.CLIENT_SEARCH_LAST_NAME)
-                            .orElseThrow(() -> new MissingRequiredParameterException(
-                                ApplicationConstants.CLIENT_SEARCH_LAST_NAME)),
+                            .queryParam(ApplicationConstants.CLIENT_SEARCH_LAST_NAME),
                         serverRequest
-                            .queryParam(CLIENT_SEARCH_BIRTHDATE)
-                            .orElseThrow(() -> new MissingRequiredParameterException(
-                                CLIENT_SEARCH_BIRTHDATE))
+                            .queryParam(ApplicationConstants.CLIENT_SEARCH_BIRTHDATE)
                     ),
                 ForestClientDto.class)
             .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())
@@ -68,8 +60,8 @@ public class ClientSearchNameBirthHandler implements BaseHandler {
         .operationId("handle")
         .parameter(
             parameterBuilder()
-                .description("First name to lookup")
-                .allowEmptyValue(false)
+                .description("First name to lookup. For companies, you can pass an empty value")
+                .allowEmptyValue(true)
                 .example("Jhon")
                 .schema(schemaBuilder().implementation(String.class))
                 .in(ParameterIn.QUERY)
@@ -77,7 +69,7 @@ public class ClientSearchNameBirthHandler implements BaseHandler {
         )
         .parameter(
             parameterBuilder()
-                .description("Last name to lookup")
+                .description("Last name to lookup. For companies, this will be the company name")
                 .allowEmptyValue(false)
                 .example("Doh")
                 .schema(schemaBuilder().implementation(String.class))
@@ -86,12 +78,15 @@ public class ClientSearchNameBirthHandler implements BaseHandler {
         )
         .parameter(
             parameterBuilder()
-                .description("Date of birth to lookup in a YYYY-MM-dd format")
-                .allowEmptyValue(false)
+                .description("""                        
+                    Date of birth to lookup in an ISO Local Date format, 
+                    such as YYYY-MM-dd.<br> 
+                    For companies, you can pass an empty value""")
+                .allowEmptyValue(true)
                 .example("1955-05-09")
                 .schema(schemaBuilder().implementation(String.class))
                 .in(ParameterIn.QUERY)
-                .name(CLIENT_SEARCH_BIRTHDATE)
+                .name(ApplicationConstants.CLIENT_SEARCH_BIRTHDATE)
         )
         .response(
             responseBuilder()
