@@ -19,7 +19,7 @@ import type {
   CommonObjectType,
   FormFieldTemplateType,
   FromSelectOptionType,
-} from "../core/AppType";
+} from "../core/FormType";
 
 const props = defineProps({
   // form field template props (optional): label, required, tooltip, note, id, errorMsg
@@ -44,7 +44,7 @@ const computedValue = computed({
     return props.value;
   },
   set(newValue: CommonObjectType | string) {
-    emit("updateValue", props.fieldProps.id, newValue);
+    emit("updateValue", newValue, props.fieldProps.id);
   },
 });
 </script>

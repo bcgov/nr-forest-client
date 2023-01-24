@@ -46,7 +46,6 @@ export interface FormSectionSchemaType {
 export interface FormComponentSchemaType {
   fieldProps: FormFieldTemplateType;
   type: string;
-  disabled?: boolean;
   state?: boolean;
   depend?: {
     fieldId: string;
@@ -61,15 +60,22 @@ export interface FormComponentSchemaType {
   subfields?: Array<FormComponentSchemaType>; // for table and group
 }
 
-export interface FormValidationRequiredField {
-  containerId: string;
-  fieldId: string;
+/* ---------------- form validation type -------------- */
+export interface FormValidationRequiredFieldType {
+  path: string;
+  subPath?: string;
   subFieldId?: string;
 }
 
-export interface FormValidationResultType {
-  containerId: string;
-  fieldId: string;
-  subFieldId?: string;
+export interface FormFieldValidationResultType {
+  path: string;
   errorMsg: string;
+}
+
+export interface FormValidationResultType {
+  [key: string]: Array<FormFieldValidationResultType>;
+}
+
+export interface FormDisableType {
+  [key: string]: Array<string>;
 }

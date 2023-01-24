@@ -4,11 +4,11 @@ import { mount } from "@vue/test-utils";
 import FormCheckbox from "../../common/FormCheckbox.vue";
 import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 
-import type { FormFieldTemplateType } from "../../core/AppType";
+import type { FormFieldTemplateType } from "../../core/FormType";
 
 describe("FormCheckbox", () => {
   it("component defined", () => {
-    const wrapper = mount(FormCheckbox);
+    const wrapper = mount(FormCheckbox, { props: { value: false } });
     expect(wrapper).toBeDefined();
   });
 

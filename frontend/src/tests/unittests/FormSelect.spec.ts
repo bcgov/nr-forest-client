@@ -4,7 +4,7 @@ import { mount } from "@vue/test-utils";
 import FormSelect from "../../common/FormSelect.vue";
 import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 
-import type { FormFieldTemplateType } from "../../core/AppType";
+import type { FormFieldTemplateType } from "../../core/FormType";
 
 describe("FormSelect", () => {
   it("component defined", () => {
@@ -70,7 +70,7 @@ describe("FormSelect", () => {
     expect(updateValueEvent).toHaveLength(1);
     // test the given parameters
     updateValueEvent = updateValueEvent || [];
-    expect(updateValueEvent[0]).toEqual(["test-form-select-id", "2"]);
+    expect(updateValueEvent[0]).toEqual(["2", "test-form-select-id"]);
   });
 
   it("renders props disabled successfully", async () => {

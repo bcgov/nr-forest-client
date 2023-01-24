@@ -10,7 +10,7 @@
 import { computed } from "vue";
 import type { PropType } from "vue";
 import FormFieldTemplate from "./FormFieldTemplate.vue";
-import type { FormFieldTemplateType } from "../core/AppType";
+import type { FormFieldTemplateType } from "../core/FormType";
 
 const props = defineProps({
   // form field template props (optional): label, required, tooltip, note, id, errorMsg
@@ -30,7 +30,7 @@ const computedValue = computed({
     return props.value;
   },
   set(newValue: Boolean) {
-    emit("updateValue", props.fieldProps.id, newValue);
+    emit("updateValue", newValue, props.fieldProps.id);
   },
 });
 </script>

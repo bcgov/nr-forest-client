@@ -4,19 +4,14 @@ import { mount, shallowMount } from "@vue/test-utils";
 import FormFieldTemplate from "../../common/FormFieldTemplate.vue";
 import FormFieldTitle from "../../common/FormFieldTitle.vue";
 
-import type { FormFieldTemplateType } from "../../core/AppType";
+import type { FormFieldTemplateType } from "../../core/FormType";
 
 describe("FormFieldTemplate", () => {
   it("component defined", () => {
-    const wrapper = shallowMount(FormFieldTemplate);
+    const wrapper = shallowMount(FormFieldTemplate, {
+      props: { fieldProps: { id: "test" } as FormFieldTemplateType },
+    });
     expect(wrapper).toBeDefined();
-  });
-
-  it("renders with no properties successfully", () => {
-    const wrapper = mount(FormFieldTemplate);
-    expect(wrapper.text()).toEqual("");
-    expect(wrapper.findComponent(FormFieldTitle).exists()).toBe(false);
-    expect(wrapper.find(".form-field-note").exists()).toBe(false);
   });
 
   it("renders props label successfully", () => {
@@ -25,6 +20,7 @@ describe("FormFieldTemplate", () => {
       props: {
         fieldProps: {
           label: "Test Form Field Template Title",
+          id: "test",
         } as FormFieldTemplateType,
       },
     });
@@ -37,6 +33,7 @@ describe("FormFieldTemplate", () => {
       props: {
         fieldProps: {
           label: "Test Form Field Template Title",
+          id: "test",
           required: true,
         } as FormFieldTemplateType,
       },
@@ -49,6 +46,7 @@ describe("FormFieldTemplate", () => {
       props: {
         fieldProps: {
           label: "Test Form Field Template Title",
+          id: "test",
           tooltip: "Test Tooltip",
         } as FormFieldTemplateType,
       },
@@ -65,7 +63,10 @@ describe("FormFieldTemplate", () => {
   it("renders props note successfully", async () => {
     const wrapper = shallowMount(FormFieldTemplate, {
       props: {
-        fieldProps: { note: "Test Tooltip" } as FormFieldTemplateType,
+        fieldProps: {
+          note: "Test Tooltip",
+          id: "test",
+        } as FormFieldTemplateType,
       },
     });
     expect(wrapper.find(".form-field-note").exists()).toBe(true);

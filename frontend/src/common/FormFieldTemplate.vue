@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import type { PropType } from "vue";
 import FormFieldTitle from "./FormFieldTitle.vue";
-import type { FormFieldTemplateType } from "../core/AppType";
+import type { FormFieldTemplateType } from "../core/FormType";
 
 // composition api
 const props = defineProps({
