@@ -5,12 +5,14 @@ import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
 @Repository
 public interface ForestClientRepository extends ReactiveCrudRepository<ForestClientEntity, String>,
-    ReactiveQueryByExampleExecutor<ForestClientEntity> {
+    ReactiveQueryByExampleExecutor<ForestClientEntity>,
+    ReactiveSortingRepository<ForestClientEntity, String> {
 
   @Query("""
       select * from FOREST_CLIENT x

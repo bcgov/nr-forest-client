@@ -10,10 +10,12 @@ import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.repository.ClientLocationRepository;
 import ca.bc.gov.app.repository.ForestClientRepository;
+import java.util.List;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -52,7 +54,7 @@ public class ForestClientService {
   public Flux<ClientPublicViewDto> getClientDoingBusiness() {
     return
         clientDoingBusinessAsRepository
-            .findAll()
+            .findAll(Sort.by("doingBusinessAsName"))
             .flatMap(entity ->
                 findByClientName(entity.getDoingBusinessAsName())
                     .filter(not(OrgBookResultListResponse::empty))
@@ -89,7 +91,7 @@ public class ForestClientService {
   public Flux<ClientPublicViewDto> getUnregisteredCompanies() {
     return
         forestClientRepository
-            .findAll()
+            .findAll(Sort.by("clientName"))
             .flatMap(entity ->
                 findByClientName(entity.getClientName())
                     .filter(not(OrgBookResultListResponse::empty))
@@ -109,6 +111,18 @@ public class ForestClientService {
                             orgBookResponse.results().get(0).value()
                         )
                     )
+                    .switchIfEmpty(Mono.just(
+                        new ClientPublicViewDto(
+                            entity.getClientNumber(),
+                            null,
+                            entity.getClientName(),
+                            null,
+                            null,
+                            null,
+                            null,
+                            null
+                        )
+                    ))
             );
   }
 
@@ -162,8 +176,7 @@ public class ForestClientService {
             )
             .flatMap(response ->
                 clientLocationRepository
-                    .findById(currentEntity.getClientNumber())
-                    .doOnNext(clientLocation -> log.info("Location found as {}", clientLocation))
+                    .findAllById(List.of(currentEntity.getClientNumber()))
                     .map(clientLocation ->
                         new FirstNationBandVidationDto(
                             currentEntity.getClientNumber(),
@@ -182,8 +195,10 @@ public class ForestClientService {
                             response.officePostalCode()
                         )
                     )
+                    .filter(FirstNationBandVidationDto::nameMatch)
+                    .next()
             )
-            .doOnNext(bandValidation -> log.info("Band validation completed for {} addr mt{} nm mt {}",bandValidation,bandValidation.addressMatch(),bandValidation.nameMatch()))
+            .doOnNext(bandValidation -> log.info("Band validation completed for {} {}",bandValidation.clientNumber(),bandValidation.clientName()))
             .onErrorResume(t -> getEmptyBandValidation(currentEntity)
             );
   }

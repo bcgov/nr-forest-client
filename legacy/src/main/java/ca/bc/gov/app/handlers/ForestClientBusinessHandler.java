@@ -3,15 +3,11 @@ package ca.bc.gov.app.handlers;
 import static org.springdoc.core.fn.builders.apiresponse.Builder.responseBuilder;
 import static org.springdoc.core.fn.builders.arrayschema.Builder.arraySchemaBuilder;
 import static org.springdoc.core.fn.builders.content.Builder.contentBuilder;
-import static org.springdoc.core.fn.builders.parameter.Builder.parameterBuilder;
 import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
 
-import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ClientPublicViewDto;
-import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.service.ForestClientService;
 import ca.bc.gov.app.util.HandlerUtil;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
