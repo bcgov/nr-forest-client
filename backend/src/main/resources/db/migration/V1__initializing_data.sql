@@ -123,7 +123,7 @@ create table if not exists nrfc.submission_location (
 create table if not exists nrfc.submission_contact (
     submission_contact_id       integer			not null,
 	submission_id               integer			not null
-    //TODO
+    --TODO: Complete accordingly to the UX design which is currently pending
 );
 
 -- 
