@@ -6,7 +6,7 @@ labels:
 parameters:
   - name: NAME
     description: Module name
-    value: nr-forest-client-legacy
+    value: nr-forest-client
   - name: COMPONENT
     description: Component name
     value: legacy
@@ -23,7 +23,7 @@ parameters:
     value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
-    value: bcgov/nr-forest-client-legacy:prod-backend
+    value: bcgov/nr-old-growth:prod-backend
   - name: FOREST_API_URL
     description: Forest Client service api url
     required: true
@@ -112,27 +112,13 @@ objects:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
-              env:
-                - name: NODE_ENV
-                  value: ${NODE_ENV}
+              env:                
                 - name: FRONTEND_URL
                   value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: LEGACY_URL
-                  value: https://${NAME}-${ZONE}-legacy.${DOMAIN}
-                - name: X_API_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: x-api-key
-                - name: API_URL
-                  value: ${API_URL}
-                - name: CHES_CLIENT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: ches-client-id
+                  value: https://${NAME}-${ZONE}-legacy.${DOMAIN}                                
                 - name: FOREST_API_URL
                   value: ${FOREST_API_URL}
                 - name: ORACLEDB_PASSWORD
