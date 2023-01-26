@@ -43,6 +43,11 @@ jobs:
           cd backend
           ./mvnw clean package
 
+      - name: Build for Java
+        run: |
+          cd legacy
+          ./mvnw clean package
+
       - name: Build for Node
         run: |
           cd frontend
@@ -122,6 +127,45 @@ jobs:
             -p CHES_TOKEN_URL='https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1'
 
+  test-legacy:
+    name: TEST Legacy
+    needs:
+      - codeql
+    env:
+      ZONE: test
+    environment: test
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2.4.3
+        with:
+          url: https://vault-iit.apps.silver.devops.gov.bc.ca
+          token: ${{ secrets.VAULT_TOKEN }}
+          exportEnv: 'false'
+          secrets: |
+            apps/data/test/client/app-client/db_proxy_read_only db_username | VAULT_DB_USER;
+            apps/data/test/client/app-client/db_proxy_read_only db_password | VAULT_DB_PASS;
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        with:
+          file: legacy/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          verification_path: health
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
+            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
+            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+
   test-frontend:
     name: TEST Frontend
     needs:
@@ -154,6 +198,7 @@ jobs:
       - test-database
       - test-backend
       - test-frontend
+      - test-legacy
     env:
       PREV: test
       ZONE: prod
@@ -181,6 +226,7 @@ jobs:
       - test-database
       - test-backend
       - test-frontend
+      - test-legacy
     env:
       ZONE: prod
     environment: prod
@@ -204,6 +250,7 @@ jobs:
       - test-database
       - test-backend
       - test-frontend
+      - test-legacy
     env:
       PREV: test
       ZONE: prod
@@ -229,6 +276,50 @@ jobs:
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
 
+  prod-legacy:
+    name: PROD Backend
+    needs:
+      - test-init
+      - test-database
+      - test-backend
+      - test-frontend
+      - test-legacy
+    env:
+      PREV: test
+      ZONE: prod
+    environment: prod
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2.4.3
+        with:
+          url: https://vault-iit.apps.silver.devops.gov.bc.ca
+          token: ${{ secrets.VAULT_TOKEN }}
+          exportEnv: 'false'
+          secrets: |
+            apps/data/prod/client/app-client/db_proxy_read_only db_username | VAULT_DB_USER;
+            apps/data/prod/client/app-client/db_proxy_read_only db_password | VAULT_DB_PASS;
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        with:
+          file: backend/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          verification_path: health
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/backend:${{ env.PREV }}
+            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
+            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+
   prod-frontend:
     name: PROD Frontend
     needs:
@@ -236,6 +327,7 @@ jobs:
       - test-database
       - test-backend
       - test-frontend
+      - test-legacy
     env:
       PREV: test
       ZONE: prod
@@ -265,10 +357,11 @@ jobs:
       - prod-database
       - prod-backend
       - prod-frontend
+      - prod-legacy
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [backend, frontend]
+        component: [backend, frontend, legacy]
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
         with:

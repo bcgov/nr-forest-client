@@ -37,6 +37,24 @@ jobs:
             -Dsonar.projectKey=forest-client-backend
           sonar_project_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
 
+  tests-legacy:
+    name: Legacy Unit Tests
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+        with:
+          commands: |
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: legacy
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=forest-client-legacy
+          sonar_project_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
+
   tests-frontend:
     name: Frontend Unit Tests
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
@@ -54,8 +72,7 @@ jobs:
             -Dsonar.projectKey=forest-client-frontend
             -Dsonar.tests=src/tests
           sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
-
-  # https://github.com/marketplace/actions/aqua-security-trivy
+  
   trivy:
     name: Repository Report
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
