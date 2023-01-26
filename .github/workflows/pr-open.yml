@@ -217,7 +217,7 @@ jobs:
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
             -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
-            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ github.event.number }}-backend.${{ env.DOMAIN }}
+            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ github.event.number }}-backend.apps.silver.devops.gov.bc.ca
 
   deploy-frontend:
     name: Deploy Frontend

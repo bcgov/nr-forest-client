@@ -158,7 +158,7 @@ objects:
                 successThreshold: 1
                 failureThreshold: 30
                 httpGet:
-                  path: /health
+                  path: /
                   port: 9000
                   scheme: HTTP
                 initialDelaySeconds: 60
