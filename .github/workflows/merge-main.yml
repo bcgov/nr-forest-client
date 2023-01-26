@@ -133,6 +133,7 @@ jobs:
       - codeql
     env:
       ZONE: test
+      DOMAIN: apps.silver.devops.gov.bc.ca
     environment: test
     runs-on: ubuntu-22.04
     steps:
@@ -165,7 +166,7 @@ jobs:
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
             -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
-            -p FOREST_API_URL=https://${{ env.PREFIX }}-backend.${{ env.DOMAIN }}
+            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}
 
   test-frontend:
     name: TEST Frontend
@@ -288,6 +289,7 @@ jobs:
     env:
       PREV: test
       ZONE: prod
+      DOMAIN: apps.silver.devops.gov.bc.ca
     environment: prod
     runs-on: ubuntu-22.04
     steps:
@@ -314,13 +316,13 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/backend:${{ env.PREV }}
+            -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
             -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
             -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
             -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
-            -p FOREST_API_URL=https://${{ env.PREFIX }}-backend.${{ env.DOMAIN }}
+            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}
 
   prod-frontend:
     name: PROD Frontend
