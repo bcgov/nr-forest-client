@@ -3,25 +3,28 @@ WORKDIR /app
 COPY . ./
 RUN chmod +x ./mvnw
 RUN ./mvnw clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
-RUN echo
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jdk-alpine
 LABEL maintainer="Paulo Gomes da Cruz Junior <paulo.cruz@encora.com>"
 
-WORKDIR /usr/share/service/
-RUN mkdir -p /usr/share/service/config &&\
-    mkdir -p /usr/share/service/dump &&\
-    mkdir -p /usr/share/service/public
+WORKDIR /app
 
 ENV LANG en_CA.UTF-8
 ENV LANGUAGE en_CA.UTF-8
 ENV LC_ALL en_CA.UTF-8
+ENV JAVA_OPS -Xms512m -Xmx512m
 
-COPY --from=build /app/target/nr-forest-client-legacy.jar /usr/share/service/service.jar
+COPY --from=build /app/target/nr-forest-client-api.jar /app/service.jar
+COPY startup.sh .
+COPY InstallCert.java .
 
-EXPOSE 8080
+RUN chmod g+w /app && \
+    chmod g+x startup.sh && \
+    chmod g+w ${JAVA_HOME}/lib/security/cacerts
+
+EXPOSE 3001
 
 # Non-privileged user
-USER service
+USER app
 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/usr/share/service/service.jar"]
+ENTRYPOINT ["sh", "startup.sh"]

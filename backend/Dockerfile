@@ -2,7 +2,7 @@ FROM openjdk:17 as build
 WORKDIR /app
 COPY . ./
 RUN chmod +x ./mvnw
-RUN ./mvnw clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
+RUN ./mvnw clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true -q
 RUN echo
 
 FROM eclipse-temurin:17-jre-alpine
