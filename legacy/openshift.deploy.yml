@@ -24,12 +24,6 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-forest-client-legacy:prod-backend
-  - name: API_URL
-    description: URL for the forest client api
-    required: true
-  - name: X_API_KEY
-    description: Key to access to the forest client api
-    required: true
   - name: FOREST_API_URL
     description: Forest Client service api url
     required: true
@@ -47,10 +41,7 @@ parameters:
     required: true
   - name: ORACLEDB_SERVICENAME
     description: Oracle database service name
-    required: true
-  - name: NODE_ENV
-    description: environment mode
-    required: true
+    required: true  
   - name: CPU_REQUEST
     value: 75m
   - name: CPU_LIMIT
