@@ -2,7 +2,8 @@
 export interface FormFieldTemplateType {
   label?: string;
   required?: boolean;
-  id: string; // id is required when using tooltip, and need to be unique
+  id: string; // id is required when using tooltip, and need to be unique;
+  modelName: string;
   note?: string;
   tooltip?: string;
   errorMsg?: string;
