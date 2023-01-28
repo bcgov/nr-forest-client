@@ -4,10 +4,7 @@ import type { FormValidationRequiredFieldType } from "../../../core/FormType";
 // todo: so far it supports at most 2 level in-depth array, if the depth increase, need to redesign the structure
 export const commonRequiredFields: Array<FormValidationRequiredFieldType> = [
   { path: "begin.client_type" },
-  {
-    path: "location.address",
-    subFieldId: "street_address",
-  },
+  { path: "location.address", subFieldId: "street_address" },
   { path: "location.address", subFieldId: "country" },
   { path: "location.address", subFieldId: "province" },
   { path: "location.address", subFieldId: "city" },

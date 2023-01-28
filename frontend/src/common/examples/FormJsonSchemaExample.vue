@@ -8,15 +8,15 @@
       <div v-for="(row, rowIndex) in containerProps.content" :key="rowIndex">
         <FormComponentOptions
           v-if="!row.depend || formData[row.depend.fieldId] == row.depend.value"
-          :data="formData[row.fieldProps.id]"
+          :data="formData[row.fieldProps.modelName]"
           :schema="row"
           @updateFormValue="(id, newValue) => updateFormValue(id, newValue)"
           @updateFormArrayValue="
             (id, newValue, rowIndex) =>
-              updateFormArrayValue(row.fieldProps.id, id, newValue, rowIndex)
+              updateFormArrayValue(row.fieldProps.modelName, id, newValue, rowIndex)
           "
-          @addRow="() => addRow(row.fieldProps.id)"
-          @deleteRow="(rowIndex) => deleteRow(row.fieldProps.id, rowIndex)"
+          @addRow="() => addRow(row.fieldProps.modelName)"
+          @deleteRow="(rowIndex) => deleteRow(row.fieldProps.modelName, rowIndex)"
         />
       </div>
     </CollapseCard>

@@ -345,3 +345,4 @@ backend/.classpath
 backend/config/application-dev-*.yml
 .checkstyle
 backend/.checkstyle
+backend/src/main/resources/application-dev-mariamar.properties

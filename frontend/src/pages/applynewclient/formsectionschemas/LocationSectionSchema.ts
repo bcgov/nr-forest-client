@@ -1,11 +1,15 @@
 import type { FormSectionSchemaType } from "../../../core/FormType";
 
 export const locationSectionSchema: FormSectionSchemaType = {
-  container: { title: "Contact Information", id: "location" },
+  container: {
+    title: "Contact Information",
+    id: "location",
+  },
   content: [
     {
       fieldProps: {
-        id: "address",
+        id: "addressId",
+        modelName: "address",
       },
       type: "group",
       addButtonText: "+ Add another address",
@@ -14,7 +18,8 @@ export const locationSectionSchema: FormSectionSchemaType = {
         {
           fieldProps: {
             label: "Street address",
-            id: "street_address",
+            id: "streetAddressId",
+            modelName: "street_address",
             required: true,
           },
           type: "input",
@@ -22,7 +27,8 @@ export const locationSectionSchema: FormSectionSchemaType = {
         {
           fieldProps: {
             label: "Country",
-            id: "country",
+            id: "countryId",
+            modelName: "country",
             required: true,
           },
           type: "input",
@@ -30,7 +36,8 @@ export const locationSectionSchema: FormSectionSchemaType = {
         {
           fieldProps: {
             label: "Province",
-            id: "province",
+            id: "provinceId",
+            modelName: "province",
             required: true,
           },
           type: "input",
@@ -38,7 +45,8 @@ export const locationSectionSchema: FormSectionSchemaType = {
         {
           fieldProps: {
             label: "City",
-            id: "city",
+            id: "cityId",
+            modelName: "city",
             required: true,
           },
           type: "input",
@@ -46,7 +54,8 @@ export const locationSectionSchema: FormSectionSchemaType = {
         {
           fieldProps: {
             label: "Postal code",
-            id: "postal_code",
+            id: "postalCodeId",
+            modelName: "postal_code",
             required: true,
           },
           type: "input",
@@ -54,49 +63,59 @@ export const locationSectionSchema: FormSectionSchemaType = {
         {
           fieldProps: {
             label: "Contact",
-            id: "contact",
+            id: "contactId",
+            modelName: "contact",
           },
           type: "group",
           addButtonText: "+ Add another contact",
           deleteButtonText: "- Remove this contact",
           subfields: [
             {
-              fieldProps: { label: "Contact Type", id: "contact_type" },
+              fieldProps: {
+                label: "Contact Type",
+                id: "contactTypeId",
+                modelName: "contact_type",
+              },
               type: "select",
               options: [],
             },
             {
               fieldProps: {
                 label: "Name",
-                id: "name",
+                id: "nameId",
+                modelName: "name",
               },
               type: "input",
             },
             {
               fieldProps: {
                 label: "Cell Phone",
-                id: "cell_phone",
+                id: "cellPhoneId",
+                modelName: "cell_phone",
               },
               type: "input",
             },
             {
               fieldProps: {
                 label: "Business Phone",
-                id: "business_phone",
+                id: "businessPhoneId",
+                modelName: "business_phone",
               },
               type: "input",
             },
             {
               fieldProps: {
                 label: "Fax Number",
-                id: "fax_number",
+                id: "faxNumberId",
+                modelName: "fax_number",
               },
               type: "input",
             },
             {
               fieldProps: {
                 label: "Email",
-                id: "email",
+                id: "emailId",
+                modelName: "email",
               },
               type: "input",
             },

@@ -21,7 +21,7 @@ const initialFormData = {
     doing_business_as_check: false,
     doing_business_as: "",
     business_name: "",
-    worksafebc_number: "",
+    work_safe_bc_number: "",
   },
   location: {
     address: [
