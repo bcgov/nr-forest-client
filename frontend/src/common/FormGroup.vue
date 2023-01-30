@@ -108,15 +108,15 @@ const props = defineProps({
 });
 
 const computedError = computed(() => {
-  return (subFieldId: string, rowIndex: number) => {
-    const key = `${rowIndex}.${subFieldId}`;
+  return (subFieldModelName: string, rowIndex: number) => {
+    const key = `${rowIndex}.${subFieldModelName}`;
     return props.error.filter((each) => _.includes(each.path, key));
   };
 });
 
 const computedDisabledFields = computed(() => {
-  return (subFieldId: string, rowIndex: number) => {
-    const key = `${rowIndex}.${subFieldId}`;
+  return (subFieldModelName: string, rowIndex: number) => {
+    const key = `${rowIndex}.${subFieldModelName}`;
     return props.disabledFields.filter((each) => _.includes(each, key));
   };
 });

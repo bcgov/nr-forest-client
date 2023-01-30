@@ -49,7 +49,7 @@ export interface FormComponentSchemaType {
   type: string;
   state?: boolean;
   depend?: {
-    fieldId: string;
+    fieldModelName: string;
     value: string | number | boolean;
   };
   options?:
@@ -65,7 +65,7 @@ export interface FormComponentSchemaType {
 export interface FormValidationRequiredFieldType {
   path: string;
   subPath?: string;
-  subFieldId?: string;
+  subFieldModelName?: string;
 }
 
 export interface FormFieldValidationResultType {

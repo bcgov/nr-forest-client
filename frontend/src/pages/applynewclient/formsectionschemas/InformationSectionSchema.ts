@@ -69,7 +69,7 @@ export const informationSectionSchema: {
         },
         type: "input",
         depend: {
-          fieldId: "doing_business_as_check",
+          fieldModelName: "doing_business_as_check",
           value: true,
         },
       },
@@ -125,7 +125,7 @@ export const informationSectionSchema: {
         },
         type: "input",
         depend: {
-          fieldId: "doing_business_as_check",
+          fieldModelName: "doing_business_as_check",
           value: true,
         },
       },

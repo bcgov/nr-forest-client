@@ -7,7 +7,7 @@
     >
       <div v-for="(row, rowIndex) in containerProps.content" :key="rowIndex">
         <FormComponentOptions
-          v-if="!row.depend || formData[row.depend.fieldId] == row.depend.value"
+          v-if="!row.depend || formData[row.depend.fieldModelName] == row.depend.value"
           :data="formData[row.fieldProps.modelName]"
           :schema="row"
           @updateFormValue="(id, newValue) => updateFormValue(id, newValue)"
@@ -61,7 +61,7 @@ const containerProps = {
         { code: "milk", text: "Milk" },
       ],
       depend: {
-        fieldId: "exampleSelect",
+        fieldModelName: "exampleSelect",
         value: "red",
       },
     },
@@ -150,28 +150,28 @@ const defaultFormData = {
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData)));
 
 /* --------------- update form data functions --------------------- */
-const updateFormValue = (fieldId: string, value: any) => {
-  formData.value[fieldId] = value;
+const updateFormValue = (fieldModelName: string, value: any) => {
+  formData.value[fieldModelName] = value;
 };
 const updateFormArrayValue = (
-  fieldId: string,
-  subFieldId: string,
+  fieldModelName: string,
+  subFieldModelName: string,
   value: any,
   rowIndex: number
 ) => {
-  formData.value[fieldId][rowIndex][subFieldId] = value;
+  formData.value[fieldModelName][rowIndex][subFieldModelName] = value;
 };
-const addRow = (fieldId: string) => {
+const addRow = (fieldModelName: string) => {
   const defaultNew = JSON.parse(
-    JSON.stringify(defaultFormData[fieldId as keyof typeof defaultFormData][0])
+    JSON.stringify(defaultFormData[fieldModelName as keyof typeof defaultFormData][0])
   );
-  formData.value[fieldId].push({
+  formData.value[fieldModelName].push({
     ...defaultNew,
     index: Math.floor(Math.random() * 10000000),
   });
 };
-const deleteRow = (fieldId: string, rowIndex: number) => {
-  formData.value[fieldId].splice(rowIndex, 1);
+const deleteRow = (fieldModelName: string, rowIndex: number) => {
+  formData.value[fieldModelName].splice(rowIndex, 1);
 };
 </script>
 

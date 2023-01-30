@@ -6,7 +6,7 @@
   >
     <div v-for="(row, rowIndex) in sectionProps.content" :key="rowIndex">
       <FormComponentOptions
-        v-if="!row.depend || data[row.depend.fieldId] == row.depend.value"
+        v-if="!row.depend || data[row.depend.fieldModelName] == row.depend.value"
         :data="data[row.fieldProps.modelName]"
         :error="computedErrorMsg(row.fieldProps.modelName)"
         :disabledFields="computedDisabledFields(row.fieldProps.modelName)"
@@ -81,20 +81,20 @@ const props = defineProps({
 });
 
 const computedErrorMsg = computed(() => {
-  return (fieldId: string) => {
+  return (fieldModelName: string) => {
     if (_.has(validationResult.state, [props.sectionProps.container.id]))
       return validationResult.state[props.sectionProps.container.id].filter(
-        (each) => _.includes(each.path, fieldId)
+        (each) => _.includes(each.path, fieldModelName)
       );
     return [];
   };
 });
 
 const computedDisabledFields = computed(() => {
-  return (fieldId: string) => {
+  return (fieldModelName: string) => {
     if (_.has(disabledFields.state, [props.sectionProps.container.id]))
       return disabledFields.state[props.sectionProps.container.id].filter(
-        (each) => _.includes(each, fieldId)
+        (each) => _.includes(each, fieldModelName)
       );
     return [];
   };
