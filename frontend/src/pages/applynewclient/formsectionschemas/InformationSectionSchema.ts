@@ -9,7 +9,7 @@ const informationSectionCommonSchema: Array<FormComponentSchemaType> = [
       label: "First name",
       required: true,
       id: "firstNameId",
-      modelName: "first_name",
+      modelName: "firstName",
     },
     type: "input",
   },
@@ -17,7 +17,7 @@ const informationSectionCommonSchema: Array<FormComponentSchemaType> = [
     fieldProps: {
       label: "Last name",
       id: "lastNameId",
-      modelName: "last_name",
+      modelName: "lastName",
     },
     type: "input",
   },
@@ -49,15 +49,15 @@ export const informationSectionSchema: {
         fieldProps: {
           label: "Registration number",
           id: "registrationNumberId",
-          modelName: "registration_number",
+          modelName: "registrationNumber",
         },
         type: "input",
       },
       {
         fieldProps: {
           label: "Are you 'doing business as'?",
-          id: "doingBusinessAsCheckId",
-          modelName: "doing_business_as_check",
+          id: "doingBusinessAsIndId",
+          modelName: "doingBusinessAsInd",
         },
         type: "checkbox",
       },
@@ -65,11 +65,11 @@ export const informationSectionSchema: {
         fieldProps: {
           label: "Doing business as",
           id: "doingBusinessAsId",
-          modelName: "doing_business_as",
+          modelName: "doingBusinessAsName",
         },
         type: "input",
         depend: {
-          fieldModelName: "doing_business_as_check",
+          fieldModelName: "doingBusinessAsInd",
           value: true,
         },
       },
@@ -85,7 +85,7 @@ export const informationSectionSchema: {
         fieldProps: {
           label: "Registered business name",
           id: "businessNameId",
-          modelName: "business_name",
+          modelName: "businessName",
           required: true,
           note: "Start typing to search BC registered businesses database",
         },
@@ -95,7 +95,7 @@ export const informationSectionSchema: {
         fieldProps: {
           label: "Incorporation or registration number",
           id: "registrationNumberId",
-          modelName: "registration_number",
+          modelName: "registrationNumber",
           required: true,
         },
         type: "input",
@@ -104,15 +104,15 @@ export const informationSectionSchema: {
         fieldProps: {
           label: "WorkSafe BC number",
           id: "workSafeBcNumberId",
-          modelName: "work_safe_bc_number",
+          modelName: "workSafeBcNumber",
         },
         type: "input",
       },
       {
         fieldProps: {
           label: "Are you 'doing business as'?",
-          id: "doingBusinessAsCheckId",
-          modelName: "doing_business_as_check",
+          id: "doingBusinessAsIndId",
+          modelName: "doingBusinessAsInd",
           required: true,
         },
         type: "checkbox",
@@ -121,11 +121,11 @@ export const informationSectionSchema: {
         fieldProps: {
           label: "Doing business as",
           id: "doingBusinessAsId",
-          modelName: "doing_business_as",
+          modelName: "doingBusinessAsName",
         },
         type: "input",
         depend: {
-          fieldModelName: "doing_business_as_check",
+          fieldModelName: "doingBusinessAsInd",
           value: true,
         },
       },

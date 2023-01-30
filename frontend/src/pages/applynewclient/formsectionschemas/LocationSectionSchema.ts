@@ -19,7 +19,7 @@ export const locationSectionSchema: FormSectionSchemaType = {
           fieldProps: {
             label: "Street address",
             id: "streetAddressId",
-            modelName: "street_address",
+            modelName: "streetAddress",
             required: true,
           },
           type: "input",
@@ -55,7 +55,7 @@ export const locationSectionSchema: FormSectionSchemaType = {
           fieldProps: {
             label: "Postal code",
             id: "postalCodeId",
-            modelName: "postal_code",
+            modelName: "postalCode",
             required: true,
           },
           type: "input",
@@ -74,7 +74,7 @@ export const locationSectionSchema: FormSectionSchemaType = {
               fieldProps: {
                 label: "Contact Type",
                 id: "contactTypeId",
-                modelName: "contact_type",
+                modelName: "contactType",
               },
               type: "select",
               options: [],
@@ -91,7 +91,7 @@ export const locationSectionSchema: FormSectionSchemaType = {
               fieldProps: {
                 label: "Cell Phone",
                 id: "cellPhoneId",
-                modelName: "cell_phone",
+                modelName: "cellPhone",
               },
               type: "input",
             },
@@ -99,7 +99,7 @@ export const locationSectionSchema: FormSectionSchemaType = {
               fieldProps: {
                 label: "Business Phone",
                 id: "businessPhoneId",
-                modelName: "business_phone",
+                modelName: "businessPhone",
               },
               type: "input",
             },
@@ -107,7 +107,7 @@ export const locationSectionSchema: FormSectionSchemaType = {
               fieldProps: {
                 label: "Fax Number",
                 id: "faxNumberId",
-                modelName: "fax_number",
+                modelName: "faxNumber",
               },
               type: "input",
             },

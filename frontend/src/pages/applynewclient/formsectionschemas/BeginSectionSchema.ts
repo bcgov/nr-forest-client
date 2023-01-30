@@ -54,7 +54,7 @@ export const beginSectionSchema: FormSectionSchemaType = {
       fieldProps: {
         label: "Select your tenure type",
         id: "tenureTypeId",
-        modelName: "tenure_type",
+        modelName: "tenureType",
       },
       type: "radiogroup",
       options: formTenureType,
@@ -64,7 +64,7 @@ export const beginSectionSchema: FormSectionSchemaType = {
         label: "What type of business are you?",
         required: true,
         id: "clientTypeId",
-        modelName: "client_type",
+        modelName: "clientType",
       },
       type: "select",
       options: [

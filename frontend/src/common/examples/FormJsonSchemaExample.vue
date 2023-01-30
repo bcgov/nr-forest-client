@@ -30,11 +30,18 @@ import CollapseCard from "../CollapseCard.vue";
 
 /* ------- container props ----------*/
 const containerProps = {
-  container: { title: "Sample Form section", id: "sample" }, // property for CollapseCard when use it
+  container: { 
+    title: "Sample Form section", 
+    id: "sample" 
+  }, // property for CollapseCard when use it
   content: [
     // form content for each CollapseCard
     {
-      fieldProps: { label: "Name", id: "exampleInput" },
+      fieldProps: { 
+        label: "Name", 
+        id: "exampleInput",
+        modelName: "exampleInput" 
+      },
       type: "input",
     },
     {
@@ -42,6 +49,7 @@ const containerProps = {
         label: "Which color you like",
         required: true,
         id: "exampleSelect",
+        modelName: "exampleSelect",
         note: "Example of dropdown select",
         tooltip: "tooltip placeholder",
         errorMsg: "This field is required",
@@ -53,7 +61,11 @@ const containerProps = {
       ],
     },
     {
-      fieldProps: { label: "Which drink you like", id: "exampleCheckBoxGroup" },
+      fieldProps: { 
+        label: "Which drink you like", 
+        id: "exampleCheckBoxGroup",
+        modelName: "exampleCheckBoxGroup"
+      },
       type: "checkboxgroup",
       options: [
         { code: "coffee", text: "Coffee" },
@@ -66,7 +78,11 @@ const containerProps = {
       },
     },
     {
-      fieldProps: { label: "Which food you like", id: "exampleRadioGroup" },
+      fieldProps: { 
+        label: "Which food you like", 
+        id: "exampleRadioGroup",
+        modelName: "exampleRadioGroup"
+      },
       type: "radiogroup",
       options: [
         { code: "rice", text: "Rice" },
@@ -77,6 +93,7 @@ const containerProps = {
       fieldProps: {
         label: "Example Table",
         id: "exampleTable",
+        modelName: "exampleTable"
       },
       type: "table",
       addButtonText: "+ Add another friend",
@@ -85,11 +102,16 @@ const containerProps = {
           fieldProps: {
             label: "Name",
             id: "tableInput",
+            modelName: "tableInput"
           },
           type: "input",
         },
         {
-          fieldProps: { label: "Color", id: "tableSelect" },
+          fieldProps: { 
+            label: "Color", 
+            id: "tableSelect",
+            modelName: "tableSelect"
+          },
           type: "select",
           options: [
             { value: "red", text: "Red" },
@@ -101,6 +123,7 @@ const containerProps = {
     {
       fieldProps: {
         id: "exampleGroup",
+        modelName: "exampleGroup"
       },
       type: "group",
       addButtonText: "+ Add another like",
@@ -110,11 +133,16 @@ const containerProps = {
           fieldProps: {
             label: "Link",
             id: "groupInput",
+            modelName: "groupInput"
           },
           type: "input",
         },
         {
-          fieldProps: { label: "Hobby", id: "groupCheckBoxGroup" },
+          fieldProps: { 
+            label: "Hobby", 
+            id: "groupCheckBoxGroup",
+            modelName: "groupCheckBoxGroup"
+          },
           type: "checkboxgroup",
           options: [
             { code: "swim", text: "Swim" },
@@ -155,11 +183,11 @@ const updateFormValue = (fieldModelName: string, value: any) => {
 };
 const updateFormArrayValue = (
   fieldModelName: string,
-  subFieldModelName: string,
+  subFieldId: string,
   value: any,
   rowIndex: number
 ) => {
-  formData.value[fieldModelName][rowIndex][subFieldModelName] = value;
+  formData.value[fieldModelName][rowIndex][subFieldId] = value;
 };
 const addRow = (fieldModelName: string) => {
   const defaultNew = JSON.parse(
