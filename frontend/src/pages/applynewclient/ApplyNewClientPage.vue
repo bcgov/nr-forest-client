@@ -47,8 +47,8 @@ const computedButtonDisable = computed(() => {
   // enable the submit button when got all required fields
   // checkMissingRequireField returns true if has a missing field
   if (
-    formData.state.begin["client_type"] == "individual" ||
-    formData.state.begin["client_type"] == "soleProprietorship"
+    formData.state.begin["clientType"] == "individual" ||
+    formData.state.begin["clientType"] == "soleProprietorship"
   )
     return (
       checkMissingRequireField(commonRequiredFields, formData.state) ||
@@ -67,8 +67,8 @@ const loading = ref(false);
 
 const modalShow = ref(false);
 const openModal = () => {
+  console.log("formdata", JSON.stringify(formData.state));
   modalShow.value = true;
-  console.log("formdata", formData.state);
 };
 const onModalOkay = () => {
   modalShow.value = false;
@@ -76,7 +76,7 @@ const onModalOkay = () => {
   validationResult.actions.setValidationResult({
     begin: [
       {
-        path: "begin.client_type",
+        path: "begin.clientType",
         errorMsg: "WrongType, select inidividual to get rid of this error",
       },
     ],
@@ -86,7 +86,7 @@ const onModalOkay = () => {
         errorMsg: "Must be Canada",
       },
       {
-        path: "location.address.0.contact.0.cell_phone",
+        path: "location.address.0.contact.0.cellPhone",
         errorMsg: "Can not be empty",
       },
     ],

@@ -6,10 +6,10 @@
   >
     <div v-for="(row, rowIndex) in sectionProps.content" :key="rowIndex">
       <FormComponentOptions
-        v-if="!row.depend || data[row.depend.fieldId] == row.depend.value"
-        :data="data[row.fieldProps.id]"
-        :error="computedErrorMsg(row.fieldProps.id)"
-        :disabledFields="computedDisabledFields(row.fieldProps.id)"
+        v-if="!row.depend || data[row.depend.fieldModelName] == row.depend.value"
+        :data="data[row.fieldProps.modelName]"
+        :error="computedErrorMsg(row.fieldProps.modelName)"
+        :disabledFields="computedDisabledFields(row.fieldProps.modelName)"
         :disableAll="disableAllFields.state.value"
         :schema="row"
         @updateFormValue="
@@ -26,16 +26,16 @@
             formData.actions.updateFormValue(
               newValue,
               path != ''
-                ? `${sectionProps.container.id}.${row.fieldProps.id}.${path}`
-                : `${sectionProps.container.id}.${row.fieldProps.id}`
+                ? `${sectionProps.container.id}.${row.fieldProps.modelName}.${path}`
+                : `${sectionProps.container.id}.${row.fieldProps.modelName}`
             )
         "
         @addRow="
           (path = '') =>
             formData.actions.addRow(
               path != ''
-                ? `${sectionProps.container.id}.${row.fieldProps.id}.${path}`
-                : `${sectionProps.container.id}.${row.fieldProps.id}`
+                ? `${sectionProps.container.id}.${row.fieldProps.modelName}.${path}`
+                : `${sectionProps.container.id}.${row.fieldProps.modelName}`
             )
         "
         @deleteRow="
@@ -43,8 +43,8 @@
             formData.actions.deleteRow(
               rowIndex,
               path != ''
-                ? `${sectionProps.container.id}.${row.fieldProps.id}.${path}`
-                : `${sectionProps.container.id}.${row.fieldProps.id}`
+                ? `${sectionProps.container.id}.${row.fieldProps.modelName}.${path}`
+                : `${sectionProps.container.id}.${row.fieldProps.modelName}`
             )
         "
       />
@@ -81,20 +81,20 @@ const props = defineProps({
 });
 
 const computedErrorMsg = computed(() => {
-  return (fieldId: string) => {
+  return (fieldModelName: string) => {
     if (_.has(validationResult.state, [props.sectionProps.container.id]))
       return validationResult.state[props.sectionProps.container.id].filter(
-        (each) => _.includes(each.path, fieldId)
+        (each) => _.includes(each.path, fieldModelName)
       );
     return [];
   };
 });
 
 const computedDisabledFields = computed(() => {
-  return (fieldId: string) => {
+  return (fieldModelName: string) => {
     if (_.has(disabledFields.state, [props.sectionProps.container.id]))
       return disabledFields.state[props.sectionProps.container.id].filter(
-        (each) => _.includes(each, fieldId)
+        (each) => _.includes(each, fieldModelName)
       );
     return [];
   };

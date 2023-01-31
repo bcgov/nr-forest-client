@@ -7,16 +7,16 @@
     >
       <div v-for="(row, rowIndex) in containerProps.content" :key="rowIndex">
         <FormComponentOptions
-          v-if="!row.depend || formData[row.depend.fieldId] == row.depend.value"
-          :data="formData[row.fieldProps.id]"
+          v-if="!row.depend || formData[row.depend.fieldModelName] == row.depend.value"
+          :data="formData[row.fieldProps.modelName]"
           :schema="row"
           @updateFormValue="(id, newValue) => updateFormValue(id, newValue)"
           @updateFormArrayValue="
             (id, newValue, rowIndex) =>
-              updateFormArrayValue(row.fieldProps.id, id, newValue, rowIndex)
+              updateFormArrayValue(row.fieldProps.modelName, id, newValue, rowIndex)
           "
-          @addRow="() => addRow(row.fieldProps.id)"
-          @deleteRow="(rowIndex) => deleteRow(row.fieldProps.id, rowIndex)"
+          @addRow="() => addRow(row.fieldProps.modelName)"
+          @deleteRow="(rowIndex) => deleteRow(row.fieldProps.modelName, rowIndex)"
         />
       </div>
     </CollapseCard>
@@ -30,11 +30,18 @@ import CollapseCard from "../CollapseCard.vue";
 
 /* ------- container props ----------*/
 const containerProps = {
-  container: { title: "Sample Form section", id: "sample" }, // property for CollapseCard when use it
+  container: { 
+    title: "Sample Form section", 
+    id: "sample" 
+  }, // property for CollapseCard when use it
   content: [
     // form content for each CollapseCard
     {
-      fieldProps: { label: "Name", id: "exampleInput" },
+      fieldProps: { 
+        label: "Name", 
+        id: "exampleInput",
+        modelName: "exampleInput" 
+      },
       type: "input",
     },
     {
@@ -42,6 +49,7 @@ const containerProps = {
         label: "Which color you like",
         required: true,
         id: "exampleSelect",
+        modelName: "exampleSelect",
         note: "Example of dropdown select",
         tooltip: "tooltip placeholder",
         errorMsg: "This field is required",
@@ -53,7 +61,11 @@ const containerProps = {
       ],
     },
     {
-      fieldProps: { label: "Which drink you like", id: "exampleCheckBoxGroup" },
+      fieldProps: { 
+        label: "Which drink you like", 
+        id: "exampleCheckBoxGroup",
+        modelName: "exampleCheckBoxGroup"
+      },
       type: "checkboxgroup",
       options: [
         { code: "coffee", text: "Coffee" },
@@ -61,12 +73,16 @@ const containerProps = {
         { code: "milk", text: "Milk" },
       ],
       depend: {
-        fieldId: "exampleSelect",
+        fieldModelName: "exampleSelect",
         value: "red",
       },
     },
     {
-      fieldProps: { label: "Which food you like", id: "exampleRadioGroup" },
+      fieldProps: { 
+        label: "Which food you like", 
+        id: "exampleRadioGroup",
+        modelName: "exampleRadioGroup"
+      },
       type: "radiogroup",
       options: [
         { code: "rice", text: "Rice" },
@@ -77,6 +93,7 @@ const containerProps = {
       fieldProps: {
         label: "Example Table",
         id: "exampleTable",
+        modelName: "exampleTable"
       },
       type: "table",
       addButtonText: "+ Add another friend",
@@ -85,11 +102,16 @@ const containerProps = {
           fieldProps: {
             label: "Name",
             id: "tableInput",
+            modelName: "tableInput"
           },
           type: "input",
         },
         {
-          fieldProps: { label: "Color", id: "tableSelect" },
+          fieldProps: { 
+            label: "Color", 
+            id: "tableSelect",
+            modelName: "tableSelect"
+          },
           type: "select",
           options: [
             { value: "red", text: "Red" },
@@ -101,6 +123,7 @@ const containerProps = {
     {
       fieldProps: {
         id: "exampleGroup",
+        modelName: "exampleGroup"
       },
       type: "group",
       addButtonText: "+ Add another like",
@@ -110,11 +133,16 @@ const containerProps = {
           fieldProps: {
             label: "Link",
             id: "groupInput",
+            modelName: "groupInput"
           },
           type: "input",
         },
         {
-          fieldProps: { label: "Hobby", id: "groupCheckBoxGroup" },
+          fieldProps: { 
+            label: "Hobby", 
+            id: "groupCheckBoxGroup",
+            modelName: "groupCheckBoxGroup"
+          },
           type: "checkboxgroup",
           options: [
             { code: "swim", text: "Swim" },
@@ -150,28 +178,28 @@ const defaultFormData = {
 const formData = ref(JSON.parse(JSON.stringify(defaultFormData)));
 
 /* --------------- update form data functions --------------------- */
-const updateFormValue = (fieldId: string, value: any) => {
-  formData.value[fieldId] = value;
+const updateFormValue = (fieldModelName: string, value: any) => {
+  formData.value[fieldModelName] = value;
 };
 const updateFormArrayValue = (
-  fieldId: string,
+  fieldModelName: string,
   subFieldId: string,
   value: any,
   rowIndex: number
 ) => {
-  formData.value[fieldId][rowIndex][subFieldId] = value;
+  formData.value[fieldModelName][rowIndex][subFieldId] = value;
 };
-const addRow = (fieldId: string) => {
+const addRow = (fieldModelName: string) => {
   const defaultNew = JSON.parse(
-    JSON.stringify(defaultFormData[fieldId as keyof typeof defaultFormData][0])
+    JSON.stringify(defaultFormData[fieldModelName as keyof typeof defaultFormData][0])
   );
-  formData.value[fieldId].push({
+  formData.value[fieldModelName].push({
     ...defaultNew,
     index: Math.floor(Math.random() * 10000000),
   });
 };
-const deleteRow = (fieldId: string, rowIndex: number) => {
-  formData.value[fieldId].splice(rowIndex, 1);
+const deleteRow = (fieldModelName: string, rowIndex: number) => {
+  formData.value[fieldModelName].splice(rowIndex, 1);
 };
 </script>
 

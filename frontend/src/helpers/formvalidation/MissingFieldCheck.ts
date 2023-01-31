@@ -14,7 +14,7 @@ export const checkMissingRequireField = (
 
   for (let i = 0; i < requireList.length; i++) {
     const require = requireList[i];
-    if (!require.subFieldId) {
+    if (!require.subFieldModelName) {
       if (_.get(formData, require.path) == "") {
         missingRequire = true;
         break;
@@ -24,7 +24,7 @@ export const checkMissingRequireField = (
       for (let j = 0; j < _.get(formData, require.path).length; j++) {
         if (!require.subPath) {
           if (
-            _.get(formData, `${require.path}.${j}.${require.subFieldId}`) == ""
+            _.get(formData, `${require.path}.${j}.${require.subFieldModelName}`) == ""
           ) {
             missingRequire = true;
             break;
@@ -39,7 +39,7 @@ export const checkMissingRequireField = (
               if (
                 _.get(
                   formData,
-                  `${require.path}.${j}.${require.subPath}.${k}.${require.subFieldId}`
+                  `${require.path}.${j}.${require.subPath}.${k}.${require.subFieldModelName}`
                 ) == ""
               ) {
                 missingRequire = true;

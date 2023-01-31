@@ -10,11 +10,11 @@
         :key="'col-' + columnIndex"
       >
         <FormComponentOptions
-          :data="row[column.fieldProps.id]"
+          :data="row[column.fieldProps.modelName]"
           :schema="column"
-          :error="computedError(column.fieldProps.id, rowIndex)"
+          :error="computedError(column.fieldProps.modelName, rowIndex)"
           :disabledFields="
-            computedDisabledFields(column.fieldProps.id, rowIndex)
+            computedDisabledFields(column.fieldProps.modelName, rowIndex)
           "
           :disableAll="disableAll"
           @updateFormValue="
@@ -29,16 +29,16 @@
               updateFormArrayValue(
                 newValue,
                 path != ''
-                  ? `${rowIndex}.${column.fieldProps.id}.${path}`
-                  : `${rowIndex}.${column.fieldProps.id}`
+                  ? `${rowIndex}.${column.fieldProps.modelName}.${path}`
+                  : `${rowIndex}.${column.fieldProps.modelName}`
               )
           "
           @addRow="
             (path = '') =>
               addRow(
                 path != ''
-                  ? `${rowIndex}.${column.fieldProps.id}.${path}`
-                  : `${rowIndex}.${column.fieldProps.id}`
+                  ? `${rowIndex}.${column.fieldProps.modelName}.${path}`
+                  : `${rowIndex}.${column.fieldProps.modelName}`
               )
           "
           @deleteRow="
@@ -46,8 +46,8 @@
               deleteRow(
                 subRowIndex,
                 path != ''
-                  ? `${rowIndex}.${column.fieldProps.id}.${path}`
-                  : `${rowIndex}.${column.fieldProps.id}`
+                  ? `${rowIndex}.${column.fieldProps.modelName}.${path}`
+                  : `${rowIndex}.${column.fieldProps.modelName}`
               )
           "
         />
@@ -108,15 +108,15 @@ const props = defineProps({
 });
 
 const computedError = computed(() => {
-  return (subFieldId: string, rowIndex: number) => {
-    const key = `${rowIndex}.${subFieldId}`;
+  return (subFieldModelName: string, rowIndex: number) => {
+    const key = `${rowIndex}.${subFieldModelName}`;
     return props.error.filter((each) => _.includes(each.path, key));
   };
 });
 
 const computedDisabledFields = computed(() => {
-  return (subFieldId: string, rowIndex: number) => {
-    const key = `${rowIndex}.${subFieldId}`;
+  return (subFieldModelName: string, rowIndex: number) => {
+    const key = `${rowIndex}.${subFieldModelName}`;
     return props.disabledFields.filter((each) => _.includes(each, key));
   };
 });

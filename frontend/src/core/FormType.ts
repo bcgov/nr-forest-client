@@ -2,7 +2,8 @@
 export interface FormFieldTemplateType {
   label?: string;
   required?: boolean;
-  id: string; // id is required when using tooltip, and need to be unique
+  id: string; // id is required when using tooltip, and need to be unique;
+  modelName: string;
   note?: string;
   tooltip?: string;
   errorMsg?: string;
@@ -48,7 +49,7 @@ export interface FormComponentSchemaType {
   type: string;
   state?: boolean;
   depend?: {
-    fieldId: string;
+    fieldModelName: string;
     value: string | number | boolean;
   };
   options?:
@@ -64,7 +65,7 @@ export interface FormComponentSchemaType {
 export interface FormValidationRequiredFieldType {
   path: string;
   subPath?: string;
-  subFieldId?: string;
+  subFieldModelName?: string;
 }
 
 export interface FormFieldValidationResultType {
