@@ -46,7 +46,7 @@ const computedValue = computed({
     return props.value;
   },
   set(newValue: Array<string>) {
-    emit("updateValue", newValue, props.fieldProps.id);
+    emit("updateValue", newValue, props.fieldProps.modelName);
   },
 });
 </script>

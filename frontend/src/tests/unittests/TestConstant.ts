@@ -3,6 +3,7 @@ export const testGroup = {
     fieldProps: {
       label: "Title",
       id: "exampleGroup",
+      modelName: "exampleGroup",
     },
     type: "group",
     addButtonText: "+ Add another",
@@ -12,11 +13,16 @@ export const testGroup = {
         fieldProps: {
           label: "Link",
           id: "groupInput",
+          modelName: "groupInput"
         },
         type: "input",
       },
       {
-        fieldProps: { label: "Hobby", id: "groupCheckBoxGroup" },
+        fieldProps: { 
+          label: "Hobby", 
+          id: "groupCheckBoxGroup",
+          modelName: "groupCheckBoxGroup"
+        },
         type: "checkboxgroup",
         options: [
           { code: "swim", text: "Swim" },
@@ -43,6 +49,7 @@ export const testTable = {
     fieldProps: {
       label: "Title",
       id: "exampleTable",
+      modelName: "exampleTable",
     },
     type: "table",
     addButtonText: "+ Add another",
@@ -51,11 +58,16 @@ export const testTable = {
         fieldProps: {
           label: "Name",
           id: "tableInput",
+          modelName: "tableInput",
         },
         type: "input",
       },
       {
-        fieldProps: { label: "Color", id: "tableSelect" },
+        fieldProps: { 
+          label: "Color", 
+          id: "tableSelect",
+          modelName: "tableSelect",
+        },
         type: "select",
         options: [
           { value: "red", text: "Red" },

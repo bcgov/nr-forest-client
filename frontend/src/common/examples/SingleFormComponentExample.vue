@@ -67,8 +67,8 @@ const form = ref({
   exampleCheckBoxGroup: ["2"],
   exampleRadioGroup: ["3"],
 });
-const updateFormValue = (value: any, id: string) => {
-  form.value[id as keyof typeof form.value] = value;
+const updateFormValue = (value: any, modelName: string) => {
+  form.value[modelName as keyof typeof form.value] = value;
   console.log("form data", form.value, value);
 };
 
@@ -77,7 +77,8 @@ const inputDisabled = ref(false);
 const inputState = ref(false);
 const inputFieldProps: FormFieldTemplateType = {
   label: "Example Input",
-  id: "exampleInput",
+  id: "exampleInputId",
+  modelName: "exampleInput",
   note: "Example of note text",
   errorMsg: "Example of error message",
 };
@@ -87,7 +88,8 @@ const selectDisabled = ref(false);
 const selectState = ref(null);
 const selectFieldProps: FormFieldTemplateType = {
   label: "Example Select",
-  id: "exampleSelect",
+  id: "exampleSelectId",
+  modelName: "exampleSelect",
   required: true,
   note: "Example of note text",
   tooltip: "tooltip placeholder",
@@ -102,7 +104,8 @@ const checkBoxGroupDisabled = ref(false);
 const checkBoxGroupState = ref(null);
 const checkBoxGroupFieldProps: FormFieldTemplateType = {
   label: "Example Check Box Group",
-  id: "exampleCheckBoxGroup",
+  id: "exampleCheckBoxGroupId",
+  modelName: "exampleCheckBoxGroup",
 };
 const checkBoxGroupOptions: Array<FormCheckBoxGroupOptionType> = [
   { code: "1", text: "Option 1" },
@@ -115,7 +118,8 @@ const radioGroupDisabled = ref(false);
 const radioGroupState = ref(null);
 const radioGroupFieldProps: FormFieldTemplateType = {
   label: "Example Radio Group",
-  id: "exampleRadioGroup",
+  id: "exampleRadioGroupId",
+  modelName: "exampleRadioGroup",
 };
 const radioGroupOptions: Array<FormRadioGroupOptionType> = [
   { code: "1", text: "Option 1" },

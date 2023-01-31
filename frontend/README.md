@@ -60,9 +60,9 @@ Press "option+shift+f" and select prettier as the formatter
 ```
 {
   "container_id": {
-    "field_id": "value",
-    "field_id": [{
-      "subfield_id": "value",
+    "model_name": "value",
+    "model_name": [{
+      "model_name": "value",
       ...
     }],
     ...
@@ -71,7 +71,7 @@ Press "option+shift+f" and select prettier as the formatter
 }
 ```
 
-where **container_id** is whatever we'd like to use for each form section, **field_id** is for the form content in this section, for example: input, select, radio, checkbox, table, etc. **subfield_id** is for the fields inside a table or a group
+where **container_id** is whatever we'd like to use for each form section, **model_name** is for the form content in this section, for example: input, select, radio, checkbox, table, etc. **model_name** is for the fields inside a table or a group
 
 #### **Form json schema**:
 
@@ -89,7 +89,8 @@ where **container_id** is whatever we'd like to use for each form section, **fie
     fieldProps: {
         label: string;
         required?: boolean;
-        id: string; // unique id is required, need to be aligned with the field_id in formData
+        id: string; 
+        modelName: string; // It is required and need to be aligned with the field name in formData
         note?: string;
         tooltip?: string;
         errorMsg?: string;
@@ -98,7 +99,7 @@ where **container_id** is whatever we'd like to use for each form section, **fie
     disabled?: boolean;
     state?: boolean;
     depend?: {
-      fieldId: string;
+      fieldModelName: string;
       value: string | number | boolean;
     };
     options?: Array<CommonObjectType>; // for select, checkbox group, radio group

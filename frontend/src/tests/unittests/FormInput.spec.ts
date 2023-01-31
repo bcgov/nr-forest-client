@@ -27,7 +27,10 @@ describe("FormInput", () => {
   it("renders props value, emit function successfully", async () => {
     const wrapper = mount(FormInput, {
       props: {
-        fieldProps: { id: "test-form-input-id" } as FormFieldTemplateType,
+        fieldProps: { 
+          id: "test-form-input-id",
+          modelName: "test-form-input-value"
+        } as FormFieldTemplateType,
         value: "hello",
       },
     });
@@ -44,7 +47,7 @@ describe("FormInput", () => {
     expect(updateValueEvent).toHaveLength(1);
     // test the given parameters
     updateValueEvent = updateValueEvent || [];
-    expect(updateValueEvent[0]).toEqual(["Test", "test-form-input-id"]);
+    expect(updateValueEvent[0]).toEqual(["Test", "test-form-input-value"]);
   });
 
   it("renders props disabled successfully", async () => {
