@@ -22,7 +22,10 @@ describe("FormCoponentOptions", () => {
     const wrapper = mount(FormComponentOptions, {
       props: {
         schema: {
-          fieldProps: { id: "test" },
+          fieldProps: { 
+            id: "test",
+            modelName: "test"
+          },
           type: "input",
         },
         data: "",
@@ -33,7 +36,11 @@ describe("FormCoponentOptions", () => {
 
   it("renders input successfully", async () => {
     const schema: FormComponentSchemaType = {
-      fieldProps: { label: "Title", id: "testInput" },
+      fieldProps: { 
+        label: "Title", 
+        id: "testInputId",
+        modelName: "testInput"
+      },
       type: "input",
     };
     const data: string = "";
@@ -61,7 +68,11 @@ describe("FormCoponentOptions", () => {
 
   it("renders select successfully", async () => {
     const schema: FormComponentSchemaType = {
-      fieldProps: { label: "Title", id: "testSelect" },
+      fieldProps: { 
+        label: "Title", 
+        id: "testSelectId",
+        modelName: "testSelect"
+      },
       type: "select",
       options: [
         { value: "1", text: "a" },
@@ -99,7 +110,11 @@ describe("FormCoponentOptions", () => {
 
   it("renders checkbox successfully", async () => {
     const schema: FormComponentSchemaType = {
-      fieldProps: { label: "Title", id: "testCheckbox" },
+      fieldProps: { 
+        label: "Title", 
+        id: "testCheckboxId",
+        modelName: "testCheckbox",
+      },
       type: "checkbox",
     };
     const data: boolean = false;
@@ -118,7 +133,11 @@ describe("FormCoponentOptions", () => {
 
   it("renders checkboxgroup successfully", async () => {
     const schema: FormComponentSchemaType = {
-      fieldProps: { label: "Title", id: "testCheckBoxGroup" },
+      fieldProps: { 
+        label: "Title", 
+        id: "testCheckBoxGroupId",
+        modelName: "testCheckBoxGroup",
+      },
       type: "checkboxgroup",
       options: [
         { code: "1", text: "Option 1" },
@@ -148,7 +167,11 @@ describe("FormCoponentOptions", () => {
 
   it("renders radiogroup successfully", async () => {
     const schema: FormComponentSchemaType = {
-      fieldProps: { label: "Title", id: "testRadioGroup" },
+      fieldProps: { 
+        label: "Title", 
+        id: "testRadioGroupId",
+        modelName: "testRadioGroup",
+      },
       type: "radiogroup",
       options: [
         { code: "1", text: "Option 1" },
@@ -268,7 +291,11 @@ describe("FormCoponentOptions", () => {
 
   it("renders disableAll of single field successfully", async () => {
     const schema: FormComponentSchemaType = {
-      fieldProps: { label: "Title", id: "testInput" },
+      fieldProps: { 
+        label: "Title", 
+        id: "testInputId",
+        modelName: "testInput",
+      },
       type: "input",
     };
     const data: string = "";
@@ -283,7 +310,11 @@ describe("FormCoponentOptions", () => {
 
   it("renders disabledFields of single field successfully", async () => {
     const schema: FormComponentSchemaType = {
-      fieldProps: { label: "Title", id: "testInput" },
+      fieldProps: { 
+        label: "Title", 
+        id: "testInputId",
+        modelName: "testInput",
+      },
       type: "input",
     };
     const data: string = "";
@@ -348,7 +379,11 @@ describe("FormCoponentOptions", () => {
 
   it("renders error of single field successfully", async () => {
     const schema: FormComponentSchemaType = {
-      fieldProps: { label: "Title", id: "testInput" },
+      fieldProps: { 
+        label: "Title", 
+        id: "testInputId",
+        modelName: "testInput"
+      },
       type: "input",
     };
     const data: string = "";
