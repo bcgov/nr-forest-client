@@ -20,7 +20,7 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     client
         .get()
-        .uri("/api/clients/active")
+        .uri("/api/clients/activeClientTypeCodes")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
