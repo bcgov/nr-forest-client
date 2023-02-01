@@ -44,7 +44,7 @@ public class ClientRouter implements BaseRouter {
   public RouterFunction<ServerResponse> routerRoute() {
     return route()
         .GET(
-            "/active",
+            "/activeClientTypeCodes",
             accept(MediaType.ALL),
             clientHandler::findActiveClientTypeCodes,
             activeClientTypeCodesOps()
