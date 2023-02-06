@@ -10,35 +10,35 @@ import type { CommonObjectType } from "../../core/FormType";
 const initialFormData = {
   begin: {
     reason: [""],
-    tenure_type: [""],
-    client_type: "",
+    tenureType: [""],
+    clientType: "",
   },
   information: {
-    first_name: "",
-    last_name: "",
+    firstName: "",
+    lastName: "",
     birthdate: "",
-    registration_number: "",
-    doing_business_as_check: false,
-    doing_business_as: "",
-    business_name: "",
-    worksafebc_number: "",
+    registrationNumber: "",
+    doingBusinessAsInd: false,
+    doingBusinessAsName: "",
+    businessName: "",
+    workSafeBcNumber: "",
   },
   location: {
     address: [
       {
-        street_address: "",
+        streetAddress: "",
         country: "",
         province: "",
         city: "",
-        postal_code: "",
+        postalCode: "",
         index: 0, // any array data need to have this index, as an auto generated random number to be as unique identity
         contact: [
           {
-            contact_type: "",
+            contactType: "",
             name: "",
-            cell_phone: "",
-            business_phone: "",
-            fax_number: "",
+            cellPhone: "",
+            businessPhone: "",
+            faxNumber: "",
             email: "",
             index: 0, // need use this index to be unique identity when display data in form tables
           },
@@ -88,16 +88,16 @@ export const formData = {
       lastName: string,
       birthdate: string
     ) {
-      _.set(formData.state, "information.first_name", firstName);
-      _.set(formData.state, "information.last_name", lastName);
+      _.set(formData.state, "information.firstName", firstName);
+      _.set(formData.state, "information.lastName", lastName);
       _.set(formData.state, "information.birthdate", birthdate);
     },
     setPrepopulateFieldsForBusiness(
       businessName: string,
       registryNumber: string
     ) {
-      _.set(formData.state, "information.business_name", businessName);
-      _.set(formData.state, "information.registration_number", registryNumber);
+      _.set(formData.state, "information.businessName", businessName);
+      _.set(formData.state, "information.registrationNumber", registryNumber);
     },
   },
 
@@ -108,12 +108,12 @@ export const formData = {
       formData.actions.cleanErrorMsg();
       // set value for prepopulate fields, and disabled prepoplated fields
       if (
-        dataPath == "begin.client_type" &&
+        dataPath == "begin.clientType" &&
         formData.getters.getFormDataByPath(dataPath) == "individual"
       ) {
         disabledFields.actions.setDisabledFieldsForSection("information", [
-          "information.first_name",
-          "information.last_name",
+          "information.firstName",
+          "information.lastName",
           "information.birthdate",
         ]);
         // todo: put hardcode data here, should be the information get from login
@@ -123,12 +123,12 @@ export const formData = {
           "1990-01-01"
         );
       } else if (
-        dataPath == "begin.client_type" &&
+        dataPath == "begin.clientType" &&
         formData.getters.getFormDataByPath(dataPath) != "soleProprietorship"
       ) {
         disabledFields.actions.setDisabledFieldsForSection("information", [
-          "information.business_name",
-          "information.registration_number",
+          "information.businessName",
+          "information.registrationNumber",
         ]);
         // todo: put hardcode data here, should be the information get from login and bc registry
         formData.mutations.setPrepopulateFieldsForBusiness(
@@ -150,10 +150,10 @@ export const formData = {
       // todo: this is the function to check every feild if meet the validation rules, remove the error message if met
       // some hard code examples to remove validationError after user makes the correctness
       if (!_.isEmpty(validationResult)) {
-        if (formData.state.begin.client_type == "individual")
+        if (formData.state.begin.clientType == "individual")
           validationResult.actions.removeValidationError(
             "begin",
-            "begin.client_type"
+            "begin.clientType"
           );
 
         // an example to check all array data for form group
@@ -168,10 +168,10 @@ export const formData = {
             // an example to check the array data inside an array, could remove this once get the idea
             e.contact.forEach(
               (contact: CommonObjectType, contactIndex: number) => {
-                if (contact.cell_phone != "") {
+                if (contact.cellPhone != "") {
                   validationResult.actions.removeValidationError(
                     "location",
-                    `location.address.${index}.contact.${contactIndex}.cell_phone`
+                    `location.address.${index}.contact.${contactIndex}.cellPhone`
                   );
                 }
               }

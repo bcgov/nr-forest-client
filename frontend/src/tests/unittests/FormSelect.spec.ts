@@ -49,7 +49,10 @@ describe("FormSelect", () => {
   it("renders props value, emit function successfully", async () => {
     const wrapper = mount(FormSelect, {
       props: {
-        fieldProps: { id: "test-form-select-id" },
+        fieldProps: { 
+          id: "test-form-select-id",
+          modelName: "test-form-select-value"
+        },
         value: "1",
         options: [
           { value: "1", text: "a" },
@@ -70,7 +73,7 @@ describe("FormSelect", () => {
     expect(updateValueEvent).toHaveLength(1);
     // test the given parameters
     updateValueEvent = updateValueEvent || [];
-    expect(updateValueEvent[0]).toEqual(["2", "test-form-select-id"]);
+    expect(updateValueEvent[0]).toEqual(["2", "test-form-select-value"]);
   });
 
   it("renders props disabled successfully", async () => {

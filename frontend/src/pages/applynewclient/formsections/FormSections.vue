@@ -33,17 +33,17 @@ import { formData } from "../../../store/newclientform/FormData";
 // based on client type, show different schema contenct for the information section
 const computedInformationSchemaType = computed(() => {
   if (
-    _.has(formData, ["state", "begin", "client_type"]) &&
-    formData.state.begin.client_type !== ""
+    _.has(formData, ["state", "begin", "clientType"]) &&
+    formData.state.begin.clientType !== ""
   ) {
     if (
-      formData.state.begin.client_type != "individual" &&
-      formData.state.begin.client_type != "soleProprietorship"
+      formData.state.begin.clientType != "individual" &&
+      formData.state.begin.clientType != "soleProprietorship"
     ) {
       return "company";
     }
     // other types share the same schema as company
-    return formData.state.begin.client_type;
+    return formData.state.begin.clientType;
   }
   return "";
 });

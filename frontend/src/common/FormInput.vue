@@ -29,7 +29,7 @@ const computedValue = computed({
     return props.value;
   },
   set(newValue: string | number) {
-    emit("updateValue", newValue, props.fieldProps.id);
+    emit("updateValue", newValue, props.fieldProps.modelName);
   },
 });
 </script>
