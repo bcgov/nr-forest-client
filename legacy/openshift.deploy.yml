@@ -121,6 +121,11 @@ objects:
                   value: https://${NAME}-${ZONE}-legacy.${DOMAIN}                                
                 - name: FOREST_API_URL
                   value: ${FOREST_API_URL}
+                - name: ORACLEDB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-user
                 - name: ORACLEDB_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -143,7 +148,6 @@ objects:
                       key: oracle-service
                 - name: ORACLEDB_PORT
                   value: "1543"
-
               ports:
                 - containerPort: 9000
                   protocol: TCP
