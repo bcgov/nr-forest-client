@@ -1,15 +1,14 @@
-package ca.bc.gov.app.handlers.openmaps;
+package ca.bc.gov.app.handlers.orgbook;
 
 import static org.springdoc.core.fn.builders.apiresponse.Builder.responseBuilder;
 import static org.springdoc.core.fn.builders.content.Builder.contentBuilder;
-import static org.springdoc.core.fn.builders.exampleobject.Builder.exampleOjectBuilder;
 import static org.springdoc.core.fn.builders.parameter.Builder.parameterBuilder;
 import static org.springdoc.core.fn.builders.requestbody.Builder.requestBodyBuilder;
 import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
 
-import ca.bc.gov.app.dto.openmaps.PropertyDto;
+import ca.bc.gov.app.dto.orgbook.OrgBookTopicListResponse;
 import ca.bc.gov.app.handlers.BaseHandler;
-import ca.bc.gov.app.service.openmaps.OpenMapsService;
+import ca.bc.gov.app.service.orgbook.OrgBookApiService;
 import ca.bc.gov.app.util.HandlerUtil;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import java.util.function.Consumer;
@@ -26,9 +25,9 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class OpenMapsHandler implements BaseHandler {
+public class OrgBookIncorporationHandler implements BaseHandler {
 
-  private final OpenMapsService openMapsService;
+  private final OrgBookApiService service;
 
   @Override
   public Mono<ServerResponse> handle(ServerRequest serverRequest) {
@@ -36,9 +35,9 @@ public class OpenMapsHandler implements BaseHandler {
         ServerResponse
             .ok()
             .body(
-                openMapsService
-                    .getFirstNation(serverRequest.pathVariable("id")),
-                PropertyDto.class
+                service
+                    .findByIncorporationNumber(serverRequest.pathVariable("incorporationId")),
+                OrgBookTopicListResponse.class
             )
             .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())
             .doOnError(HandlerUtil.handleError());
@@ -48,49 +47,34 @@ public class OpenMapsHandler implements BaseHandler {
   public Consumer<Builder> documentation(String tag) {
     return ops -> ops
         .tag(tag)
-        .description("Get First Nation data by ID")
-        .beanClass(OpenMapsHandler.class)
+        .description("Search the OrgBook based on the incorporation id")
+        .beanClass(OrgBookIncorporationHandler.class)
         .beanMethod("handle")
         .operationId("handle")
         .requestBody(requestBodyBuilder())
         .parameter(
             parameterBuilder()
-                .description("The first nation federal ID to lookup")
+                .description("The incorporation ID to lookup")
                 .allowEmptyValue(false)
-                .example("656")
+                .example("BC0772006")
                 .schema(schemaBuilder().implementation(String.class))
                 .in(ParameterIn.PATH)
-                .name("id")
+                .name("incorporationId")
         )
         .response(
             responseBuilder()
                 .responseCode("200")
-                .description("OK - Data was found based on the provided id")
+                .description("OK - Data was found based on the provided incorporation")
                 .content(
                     contentBuilder()
                         .schema(
                             schemaBuilder()
-                                .name("FirstNationResponse")
-                                .implementation(PropertyDto.class)
+                                .name("TopicListResponse")
+                                .implementation(OrgBookTopicListResponse.class)
                         )
                         .mediaType(MediaType.APPLICATION_JSON_VALUE)
                 )
-        )
-        .response(
-            responseBuilder()
-                .responseCode("400")
-                .description("No first nation found with provided federal id ")
-                .content(
-                    contentBuilder()
-                        .schema(
-                            schemaBuilder()
-                                .implementation(String.class)
 
-                        )
-                        .example(exampleOjectBuilder()
-                            .value("No first nation found with federal id 99999"))
-                        .mediaType(MediaType.APPLICATION_JSON_VALUE)
-                )
         );
   }
 }
