@@ -42,7 +42,6 @@ springdoc:
   swagger-ui:
     path: /
 
-
 ca:
   bc:
     gov:

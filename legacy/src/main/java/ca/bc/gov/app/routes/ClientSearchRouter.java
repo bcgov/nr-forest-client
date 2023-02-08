@@ -2,7 +2,6 @@ package ca.bc.gov.app.routes;
 
 import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
-import static org.springframework.web.reactive.function.server.RequestPredicates.contentType;
 
 import ca.bc.gov.app.handlers.ClientSearchIncorporationHandler;
 import ca.bc.gov.app.handlers.ClientSearchNameBirthHandler;
@@ -40,15 +39,13 @@ public class ClientSearchRouter implements BaseRouter {
         route()
             .GET(
                 "/incorporationOrName",
-                accept(MediaType.ALL)
-                    .and(contentType(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM)),
+                accept(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM),
                 incorporationHandler::handle,
                 incorporationHandler.documentation(routeTagName())
             )
             .GET(
                 "/nameAndBirth",
-                accept(MediaType.ALL)
-                    .and(contentType(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM)),
+                accept(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM),
                 nameBirthHandler::handle,
                 nameBirthHandler.documentation(routeTagName())
             )

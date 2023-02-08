@@ -2,7 +2,6 @@ package ca.bc.gov.app.routes;
 
 import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
-import static org.springframework.web.reactive.function.server.RequestPredicates.contentType;
 
 import ca.bc.gov.app.handlers.ForestClientBandsHandler;
 import ca.bc.gov.app.handlers.ForestClientBusinessHandler;
@@ -42,22 +41,19 @@ public class ForestClientRouter implements BaseRouter {
     return route()
         .GET(
             "/bands",
-            accept(MediaType.ALL)
-                .and(contentType(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM)),
+            accept(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM),
             bandsHandler::handle,
             bandsHandler.documentation(routeTagName())
         )
         .GET(
             "/business",
-            accept(MediaType.ALL)
-                .and(contentType(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM)),
+            accept(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM),
             businessHandler::handle,
             businessHandler.documentation(routeTagName())
         )
         .GET(
             "/unregistered",
-            accept(MediaType.ALL)
-                .and(contentType(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM)),
+            accept(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM),
             unregisteredHandler::handle,
             unregisteredHandler.documentation(routeTagName())
         )
