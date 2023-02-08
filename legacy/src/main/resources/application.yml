@@ -48,7 +48,7 @@ ca:
     gov:
       nrs:
         forest:
-          uri: ${FOREST_API_URI:http://127.0.0.1:3000}
+          uri: ${FOREST_API_URL:http://127.0.0.1:3000}
         oracle:
           service: ${ORACLEDB_SERVICENAME:fsa-forest}
           database: ${ORACLEDB_DATABASE:fsa-forest}
