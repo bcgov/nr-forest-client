@@ -7,7 +7,7 @@ import type {
 
 export const validationResult = {
   state: reactive({
-    begin: [],
+    businessType: [],
     information: [],
     location: [],
   } as FormValidationResultType), // has to initialize them, and update each key-value later, so it can detect the object change
@@ -19,7 +19,7 @@ export const validationResult = {
   mutations: {
     setValidationResult(result: FormValidationResultType) {
       // need to update for each one, otherwise won't detect whole object reassign
-      validationResult.state.begin = result.begin || [];
+      validationResult.state.businessType = result.businessType || [];
       validationResult.state.information = result.information || [];
       validationResult.state.location = result.location || [];
     },

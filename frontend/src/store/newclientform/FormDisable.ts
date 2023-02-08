@@ -4,7 +4,7 @@ import type { FormDisableType } from "../../core/FormType";
 
 export const disabledFields = {
   state: reactive({
-    begin: [],
+    businessType: [],
     information: [],
     location: [],
   } as FormDisableType), // has to initialize them, and update each key-value later, so it can detect the object change
@@ -16,7 +16,7 @@ export const disabledFields = {
   mutations: {
     setDisabledFields(fieldsToBeDisabled: FormDisableType) {
       // need to update for each one, otherwise won't detect whole object reassign
-      disabledFields.state.begin = fieldsToBeDisabled.begin || [];
+      disabledFields.state.businessType = fieldsToBeDisabled.businessType || [];
       disabledFields.state.information = fieldsToBeDisabled.information || [];
       disabledFields.state.location = fieldsToBeDisabled.location || [];
     },

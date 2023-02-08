@@ -47,8 +47,8 @@ const computedButtonDisable = computed(() => {
   // enable the submit button when got all required fields
   // checkMissingRequireField returns true if has a missing field
   if (
-    formData.state.begin["clientType"] == "individual" ||
-    formData.state.begin["clientType"] == "soleProprietorship"
+    formData.state.businessType["clientType"] == "individual" ||
+    formData.state.businessType["clientType"] == "soleProprietorship"
   )
     return (
       checkMissingRequireField(commonRequiredFields, formData.state) ||
@@ -74,9 +74,9 @@ const onModalOkay = () => {
   modalShow.value = false;
   /* -------------------- data validation check --------------------------- */
   validationResult.actions.setValidationResult({
-    begin: [
+    businessType: [
       {
-        path: "begin.clientType",
+        path: "businessType.clientType",
         errorMsg: "WrongType, select inidividual to get rid of this error",
       },
     ],
