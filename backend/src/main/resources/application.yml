@@ -75,3 +75,5 @@ ca:
           host: ${POSTGRESQL_HOST:localhost}:5432
           username: ${POSTGRESQL_USER:user}
           password: ${POSTGRESQL_PASSWORD:passwd}
+        frontend:
+          url: ${FRONTEND_URL:*}
