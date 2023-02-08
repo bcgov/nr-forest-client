@@ -22,7 +22,9 @@ RUN chmod g+w /app && \
     chmod g+x startup.sh && \
     chmod g+w ${JAVA_HOME}/lib/security/cacerts
 
-EXPOSE 3001
+EXPOSE 9000
+
+HEALTHCHECK --interval=35s --timeout=4s CMD wget --spider -S http://127.0.0.1:9000/health || exit 1
 
 # Non-privileged user
 USER app
