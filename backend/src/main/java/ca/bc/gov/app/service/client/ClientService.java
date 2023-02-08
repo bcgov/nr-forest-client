@@ -3,17 +3,16 @@ package ca.bc.gov.app.service.client;
 import ca.bc.gov.app.dto.client.ClientCodeTypeDto;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 @Service
 @RequiredArgsConstructor
 public class ClientService {
   private final ClientTypeCodeRepository clientTypeCodeRepository;
 
-  public Mono<List<ClientCodeTypeDto>> findActiveClientTypeCodes(LocalDate targetDate) {
+  public Flux<ClientCodeTypeDto> findActiveClientTypeCodes(LocalDate targetDate) {
 
     return
         clientTypeCodeRepository
@@ -24,8 +23,7 @@ public class ClientService {
                 entity.getEffectiveAt(),
                 entity.getExpiredAt(),
                 null)
-            )
-            .collectList();
+            );
   }
 
 }

@@ -1,21 +1,12 @@
 package ca.bc.gov.app.routes.orgbook;
 
-import static org.springdoc.core.fn.builders.apiresponse.Builder.responseBuilder;
-import static org.springdoc.core.fn.builders.content.Builder.contentBuilder;
-import static org.springdoc.core.fn.builders.parameter.Builder.parameterBuilder;
-import static org.springdoc.core.fn.builders.requestbody.Builder.requestBodyBuilder;
-import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
 import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
-import ca.bc.gov.app.dto.orgbook.OrgBookResultListResponse;
-import ca.bc.gov.app.dto.orgbook.OrgBookTopicListResponse;
-import ca.bc.gov.app.handlers.orgbook.OrgBookHandler;
+import ca.bc.gov.app.handlers.orgbook.OrgBookIncorporationHandler;
+import ca.bc.gov.app.handlers.orgbook.OrgBookNameHandler;
 import ca.bc.gov.app.routes.BaseRouter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.fn.builders.operation.Builder;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -25,7 +16,8 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @RequiredArgsConstructor
 public class OrgBookRouter implements BaseRouter {
 
-  private final OrgBookHandler handler;
+  private final OrgBookIncorporationHandler handler;
+  private final OrgBookNameHandler nameHandler;
 
   @Override
   public String basePath() {
@@ -49,85 +41,17 @@ public class OrgBookRouter implements BaseRouter {
             .GET(
                 "/incorporation/{incorporationId}",
                 accept(MediaType.ALL),
-                handler::findByIncorporationId,
-                incorporationOps()
+                handler::handle,
+                handler.documentation(routeTagName())
             )
 
             .GET(
                 "/name/{name}",
                 accept(MediaType.ALL),
-                handler::findByName,
-                nameLookUpOps()
+                nameHandler::handle,
+                nameHandler.documentation(routeTagName())
             )
             .build();
-  }
-
-  private Consumer<Builder> incorporationOps() {
-
-    return ops -> ops
-        .tag(routeTagName())
-        .description("Search the OrgBook based on the incorporation id")
-        .beanClass(OrgBookHandler.class)
-        .beanMethod("findByIncorporationId")
-        .operationId("findByIncorporationId")
-        .requestBody(requestBodyBuilder())
-        .parameter(
-            parameterBuilder()
-                .description("The incorporation ID to lookup")
-                .allowEmptyValue(false)
-                .example("BC0772006")
-                .schema(schemaBuilder().implementation(String.class))
-                .in(ParameterIn.PATH)
-                .name("incorporationId")
-        )
-        .response(
-            responseBuilder()
-                .responseCode("200")
-                .description("OK - Data was found based on the provided incorporation")
-                .content(
-                    contentBuilder()
-                        .schema(
-                            schemaBuilder()
-                                .name("TopicListResponse")
-                                .implementation(OrgBookTopicListResponse.class)
-                        )
-                        .mediaType(MediaType.APPLICATION_JSON_VALUE)
-                )
-
-        );
-  }
-
-
-  private Consumer<Builder> nameLookUpOps() {
-    return
-        ops -> ops
-            .tag(routeTagName())
-            .description("Search the OrgBook based on the name")
-            .beanClass(OrgBookHandler.class)
-            .beanMethod("findByName")
-            .operationId("findByName")
-            .parameter(
-                parameterBuilder()
-                    .in(ParameterIn.PATH)
-                    .name("name")
-                    .schema(schemaBuilder().implementation(String.class))
-                    .description("The name to lookup")
-                    .example("Power Corp")
-            )
-            .response(
-                responseBuilder()
-                    .responseCode("200")
-                    .description("Found")
-                    .content(
-                        contentBuilder()
-                            .schema(
-                                schemaBuilder()
-                                    .name("NameListResponse")
-                                    .implementation(OrgBookResultListResponse.class)
-                            )
-                            .mediaType(MediaType.APPLICATION_JSON_VALUE)
-                    )
-            );
   }
 
 }

@@ -30,11 +30,14 @@ services:
   backend:
     container_name: backend
     environment:
-      NODE_ENV: development
       POSTGRESQL_HOST: database
       POSTGRESQL_USER: default
       POSTGRESQL_PASSWORD: default
       POSTGRESQL_DATABASE: default
+      CHES_CLIENT_ID: id    
+      CHES_CLIENT_SECRET: secret
+      CHES_TOKEN_URL: url
+      CHES_API_URL: url
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 1m30s
@@ -70,6 +73,29 @@ services:
       - backend
     ports:
       - "8080:8080"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  legacydb:
+    container_name: legacydb
+    environment:
+      APP_USER_PASSWORD: legacy
+      APP_USER: THE
+      ORACLE_PASSWORD: legacy
+      ORACLE_DATABASE: legacy
+    hostname: legacydb
+    image: gvenzl/oracle-xe:21-slim-faststart
+    restart: always
+    ports:
+      - "1521:1521"    
+    healthcheck:
+      test: [ "CMD-SHELL", "healthcheck.sh" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
     logging:
       driver: "json-file"
       options:
