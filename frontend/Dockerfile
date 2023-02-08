@@ -32,7 +32,10 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
 # Expose port - mostly a convention, for readability
-EXPOSE 3000
+EXPOSE 8080
+
+HEALTHCHECK --interval=35s --timeout=4s CMD curl -f http://localhost:8080/ || exit 1
+ 
 
 # Non-privileged user
 USER app

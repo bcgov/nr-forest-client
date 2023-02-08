@@ -49,6 +49,8 @@ springdoc:
     groups:
       enabled: true
   show-actuator: false
+  swagger-ui:
+    path: /
 
 frontend:
   url: ${FRONTEND_URL:*}

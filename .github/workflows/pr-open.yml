@@ -86,6 +86,7 @@ jobs:
             Any successful deployments (not always required) will be available below.
             [Backend](https://${{ env.PREFIX }}-backend.${{ env.DOMAIN }}/) available
             [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/) available
+            [Legacy](https://${{ env.PREFIX }}-legacy.${{ env.DOMAIN }}/) available
 
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
@@ -97,7 +98,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend, database, frontend]
+        package: [backend, database, frontend,legacy]
         include:
           - package: backend
             triggers: ('backend/')
@@ -105,6 +106,8 @@ jobs:
             triggers: ('database/')
           - package: frontend
             triggers: ('frontend/')
+          - package: legacy
+            triggers: ('legacy/')
     steps:
       - uses: actions/checkout@v3
 
@@ -178,6 +181,56 @@ jobs:
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p CHES_TOKEN_URL='https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches-dev.api.gov.bc.ca/api/v1'
+  
+  deploy-legacy:
+    name: Deploy Legacy
+    needs:
+      - builds
+    environment: dev
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
+      VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Broker
+        id: broker
+        uses: bcgov-nr/action-vault-broker-approle@v0.0.4
+        with:
+          broker_jwt: ${{ secrets.BROKER_JWT }}
+          provision_role_id: ${{ secrets.PROVISION_ROLE_ID }}
+          project_name: client
+          app_name: app-client
+          environment: development
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2.5.0
+        with:
+          url: https://vault-iit.apps.silver.devops.gov.bc.ca
+          token: ${{ steps.broker.outputs.vault_token }}
+          exportEnv: 'false'
+          secrets: |
+            apps/data/dev/client/app-client/db_proxy_read_only db_username | VAULT_DB_USER;
+            apps/data/dev/client/app-client/db_proxy_read_only db_password | VAULT_DB_PASS;
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        with:
+          file: legacy/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          verification_path: health
+          parameters:
+            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
+            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
+            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ github.event.number }}-backend.apps.silver.devops.gov.bc.ca
 
   deploy-frontend:
     name: Deploy Frontend

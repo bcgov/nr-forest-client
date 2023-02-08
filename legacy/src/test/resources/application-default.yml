@@ -1,0 +1,32 @@
+server:
+  error:
+    whitelabel:
+      enabled: false
+
+spring:
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    user: ${ca.bc.gov.nrs.oracle.username}
+    password: ${ca.bc.gov.nrs.oracle.password}
+    url: jdbc:oracle:thin:@${ca.bc.gov.nrs.oracle.host}/${ca.bc.gov.nrs.oracle.service}
+
+
+ca:
+  bc:
+    gov:
+      nrs:
+        forest:
+          uri: 'http://127.0.0.1:10000'
+        oracle:
+          schema: LEGACY
+
+logging:
+  level:
+    org:
+      springframework.test: OFF
+      testcontainers: OFF
+    com.github.dockerjava: OFF
+    org.springframework.r2dbc: DEBUG
+    io.r2dbc.postgresql.QUERY: DEBUG
+    io.r2dbc.postgresql.PARAM: DEBUG
