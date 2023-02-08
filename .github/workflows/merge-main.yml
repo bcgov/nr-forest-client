@@ -38,17 +38,17 @@ jobs:
           java-version: "17"
           cache: "maven"
 
-      - name: Build for Java
+      - name: Build Backend
         run: |
           cd backend
           ./mvnw clean package
 
-      - name: Build for Java
+      - name: Build Legacy
         run: |
           cd legacy
           ./mvnw clean package
 
-      - name: Build for Node
+      - name: Build Frontend
         run: |
           cd frontend
           npm ci
@@ -80,7 +80,7 @@ jobs:
   test-database:
     name: TEST Database
     needs:
-      - codeql
+      - test-init
     env:
       ZONE: test
     environment: test
@@ -99,10 +99,11 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
+  
   test-backend:
     name: TEST Backend
     needs:
-      - codeql
+      - test-database
     env:
       ZONE: test
     environment: test
@@ -130,7 +131,7 @@ jobs:
   test-legacy:
     name: TEST Legacy
     needs:
-      - codeql
+      - test-init
     env:
       ZONE: test
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -180,7 +181,7 @@ jobs:
   test-frontend:
     name: TEST Frontend
     needs:
-      - codeql
+      - test-init
     env:
       ZONE: test
     environment: test
@@ -202,14 +203,33 @@ jobs:
             -p VITE_KEYCLOAK_URL=https://test.loginproxy.gov.bc.ca/auth
             -p VITE_KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
 
-  prod-database:
-    name: PROD Database
-    needs:
-      - test-init
-      - test-database
+  
+  prod-init:
+    name: PROD Init
+    needs:      
       - test-backend
       - test-frontend
       - test-legacy
+    env:
+      ZONE: prod
+    environment: prod
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        with:
+          file: common/openshift.init.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          parameters: -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+
+  prod-database:
+    name: PROD Database
+    needs:
+      - prod-init
     env:
       PREV: test
       ZONE: prod
@@ -230,38 +250,10 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
 
-  prod-init:
-    name: PROD Init
-    needs:
-      - test-init
-      - test-database
-      - test-backend
-      - test-frontend
-      - test-legacy
-    env:
-      ZONE: prod
-    environment: prod
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.1
-        with:
-          file: common/openshift.init.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          parameters: -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-
   prod-backend:
     name: PROD Backend
-    needs:
-      - test-init
-      - test-database
-      - test-backend
-      - test-frontend
-      - test-legacy
+    needs:      
+      - prod-database
     env:
       PREV: test
       ZONE: prod
@@ -290,11 +282,7 @@ jobs:
   prod-legacy:
     name: PROD Backend
     needs:
-      - test-init
-      - test-database
-      - test-backend
-      - test-frontend
-      - test-legacy
+      - prod-init
     env:
       PREV: test
       ZONE: prod
@@ -345,11 +333,7 @@ jobs:
   prod-frontend:
     name: PROD Frontend
     needs:
-      - test-init
-      - test-database
-      - test-backend
-      - test-frontend
-      - test-legacy
+      - prod-init
     env:
       PREV: test
       ZONE: prod
@@ -374,9 +358,7 @@ jobs:
 
   image-promotions:
     name: Promote images to PROD
-    needs:
-      - prod-init
-      - prod-database
+    needs:      
       - prod-backend
       - prod-frontend
       - prod-legacy
