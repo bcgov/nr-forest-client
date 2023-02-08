@@ -117,6 +117,8 @@ create table if not exists nrfc.submission_location (
     country_code                varchar(2)      not null,
     province_code               varchar(2)      not null,
     postal_code                 varchar(10)     not null,
+    business_phone_number       varchar(20)     not null,
+    email_address               varchar(100)    not null,
     main_address_ind            varchar(1)      not null default 'N',
     constraint submission_location_id_pk primary key (submission_location_id),
     constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
