@@ -2,7 +2,7 @@ import type { FormSectionSchemaType } from "../../../core/FormType";
 
 export const locationSectionSchema: FormSectionSchemaType = {
   container: {
-    title: "Contact Information",
+    title: "Business Information",
     id: "location",
   },
   content: [
