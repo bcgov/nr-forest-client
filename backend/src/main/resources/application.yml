@@ -77,3 +77,19 @@ ca:
           password: ${POSTGRESQL_PASSWORD:passwd}
         frontend:
           url: ${FRONTEND_URL:*}
+          cors:
+            headers:
+              - x-requested-with
+              - authorization
+              - Content-Type
+              - Authorization
+              - credential
+              - X-XSRF-TOKEN
+              - access-control-allow-origin
+            methods:
+              - OPTIONS
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            age: 5m
