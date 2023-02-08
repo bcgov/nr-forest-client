@@ -1,9 +1,9 @@
 <template>
   <div>
-    <!------ begin section ------->
+    <!------ businessType section ------->
     <FormSectionTemplate
-      :data="formData.state.begin"
-      :sectionProps="beginSectionSchema"
+      :data="formData.state.businessType"
+      :sectionProps="businessTypeSectionSchema"
     />
 
     <!------ company/individual information section ------->
@@ -25,7 +25,7 @@
 import { computed } from "vue";
 import _ from "lodash";
 import FormSectionTemplate from "./FormSectionTemplate.vue";
-import { beginSectionSchema } from "../formsectionschemas/BeginSectionSchema";
+import { businessTypeSectionSchema } from "../formsectionschemas/BusinessTypeSectionSchema";
 import { informationSectionSchema } from "../formsectionschemas/InformationSectionSchema";
 import { locationSectionSchema } from "../formsectionschemas/LocationSectionSchema";
 import { formData } from "../../../store/newclientform/FormData";
@@ -33,17 +33,17 @@ import { formData } from "../../../store/newclientform/FormData";
 // based on client type, show different schema contenct for the information section
 const computedInformationSchemaType = computed(() => {
   if (
-    _.has(formData, ["state", "begin", "clientType"]) &&
-    formData.state.begin.clientType !== ""
+    _.has(formData, ["state", "businessType", "clientType"]) &&
+    formData.state.businessType.clientType !== ""
   ) {
     if (
-      formData.state.begin.clientType != "individual" &&
-      formData.state.begin.clientType != "soleProprietorship"
+      formData.state.businessType.clientType != "individual" &&
+      formData.state.businessType.clientType != "soleProprietorship"
     ) {
       return "company";
     }
     // other types share the same schema as company
-    return formData.state.begin.clientType;
+    return formData.state.businessType.clientType;
   }
   return "";
 });
