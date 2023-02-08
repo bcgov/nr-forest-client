@@ -33,7 +33,7 @@ class OrgBookHandlerIntegrationTest extends AbstractTestContainerIntegrationTest
       .newInstance()
       .options(
           wireMockConfig()
-              .port(10020)
+              .port(10030)
               .notifier(new WiremockLogNotifier())
               .asynchronousResponseEnabled(true)
               .stubRequestLoggingDisabled(false)
@@ -48,7 +48,7 @@ class OrgBookHandlerIntegrationTest extends AbstractTestContainerIntegrationTest
 
     wireMockExtension
         .stubFor(
-            get(urlPathEqualTo("/v4/search/topic"))
+            get(urlPathEqualTo("/geo/pub/ows/v4/search/topic"))
                 .withQueryParam("format", equalTo("json"))
                 .withQueryParam("inactive", equalTo("any"))
                 .withQueryParam("ordering", equalTo("-score"))
@@ -72,7 +72,7 @@ class OrgBookHandlerIntegrationTest extends AbstractTestContainerIntegrationTest
 
     wireMockExtension
         .stubFor(
-            get(urlPathEqualTo("/v4/search/topic"))
+            get(urlPathEqualTo("/geo/pub/ows/v4/search/topic"))
                 .withQueryParam("format", equalTo("json"))
                 .withQueryParam("inactive", equalTo("any"))
                 .withQueryParam("ordering", equalTo("-score"))
@@ -96,7 +96,7 @@ class OrgBookHandlerIntegrationTest extends AbstractTestContainerIntegrationTest
 
     wireMockExtension
         .stubFor(
-            get(urlPathEqualTo("/v3/search/autocomplete"))
+            get(urlPathEqualTo("/geo/pub/ows/v3/search/autocomplete"))
                 .withQueryParam("q", equalTo(CoreUtil.encodeString("Power")))
                 .willReturn(okJson(TestConstants.ORGBOOK_NAMELOOKUP_OK))
         );
@@ -116,7 +116,7 @@ class OrgBookHandlerIntegrationTest extends AbstractTestContainerIntegrationTest
 
     wireMockExtension
         .stubFor(
-            get(urlPathEqualTo("/v3/search/autocomplete"))
+            get(urlPathEqualTo("/geo/pub/ows/v3/search/autocomplete"))
                 .withQueryParam("q", equalTo(CoreUtil.encodeString("Jhon")))
                 .willReturn(okJson(TestConstants.ORGBOOK_NAMELOOKUP_EMPTY))
         );

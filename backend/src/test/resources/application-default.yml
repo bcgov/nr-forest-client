@@ -14,7 +14,7 @@ ca:
           clientSecret: secret
           scope: scope
         orgbook:
-          uri: 'http://127.0.0.1:10020'
+          uri: 'http://127.0.0.1:10030'
         openmaps:
           uri: 'http://127.0.0.1:10030/geo/pub/ows'
 
