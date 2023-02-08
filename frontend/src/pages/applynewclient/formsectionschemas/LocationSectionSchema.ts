@@ -17,18 +17,18 @@ export const locationSectionSchema: FormSectionSchemaType = {
       subfields: [
         {
           fieldProps: {
-            label: "Street address",
-            id: "streetAddressId",
-            modelName: "streetAddress",
+            label: "Country",
+            id: "countryId",
+            modelName: "country",
             required: true,
           },
           type: "input",
         },
         {
           fieldProps: {
-            label: "Country",
-            id: "countryId",
-            modelName: "country",
+            label: "Street address",
+            id: "streetAddressId",
+            modelName: "streetAddress",
             required: true,
           },
           type: "input",
@@ -62,6 +62,22 @@ export const locationSectionSchema: FormSectionSchemaType = {
         },
         {
           fieldProps: {
+            label: "Business Phone",
+            id: "businessPhoneId",
+            modelName: "businessPhone",
+          },
+          type: "input",
+        },
+        {
+          fieldProps: {
+            label: "Email",
+            id: "emailId",
+            modelName: "email",
+          },
+          type: "input",
+        },
+        {
+          fieldProps: {
             label: "Contact",
             id: "contactId",
             modelName: "contact",
@@ -72,50 +88,38 @@ export const locationSectionSchema: FormSectionSchemaType = {
           subfields: [
             {
               fieldProps: {
-                label: "Contact Type",
+                label: "Person or department name",
+                id: "nameId",
+                modelName: "name",
+                required: true,
+              },
+              type: "input",
+            },
+            {
+              fieldProps: {
+                label: "Contact type",
                 id: "contactTypeId",
                 modelName: "contactType",
+                required: true,
               },
               type: "select",
               options: [],
-            },
+            },            
             {
               fieldProps: {
-                label: "Name",
-                id: "nameId",
-                modelName: "name",
-              },
-              type: "input",
-            },
-            {
-              fieldProps: {
-                label: "Cell Phone",
-                id: "cellPhoneId",
-                modelName: "cellPhone",
-              },
-              type: "input",
-            },
-            {
-              fieldProps: {
-                label: "Business Phone",
+                label: "Daytime phone number",
                 id: "businessPhoneId",
                 modelName: "businessPhone",
+                required: true,
               },
               type: "input",
             },
             {
               fieldProps: {
-                label: "Fax Number",
-                id: "faxNumberId",
-                modelName: "faxNumber",
-              },
-              type: "input",
-            },
-            {
-              fieldProps: {
-                label: "Email",
+                label: "Email address",
                 id: "emailId",
                 modelName: "email",
+                required: true,
               },
               type: "input",
             },

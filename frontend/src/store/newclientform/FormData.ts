@@ -27,6 +27,8 @@ const initialFormData = {
         province: "",
         city: "",
         postalCode: "",
+        businessPhone: "",
+        email: "",
         index: 0, // any array data need to have this index, as an auto generated random number to be as unique identity
         contact: [
           {
