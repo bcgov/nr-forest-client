@@ -48,16 +48,7 @@ export const businessTypeSectionSchema: FormSectionSchemaType = {
         modelName: "clientType",
       },
       type: "select",
-      options: [
-        {
-          value: "company",
-          text: "Company",
-        },
-        {
-          value: "soleProprietorship",
-          text: "Sole Proprietorship"
-        }
-      ],
+      options: [],
     },
   ],
 };
