@@ -8,6 +8,7 @@ import reactor.core.publisher.Mono;
 
 public interface BaseHandler {
   Mono<ServerResponse> handle(ServerRequest serverRequest);
+
   Consumer<Builder> documentation(String tag);
 
 }

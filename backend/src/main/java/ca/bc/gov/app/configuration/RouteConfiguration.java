@@ -6,7 +6,6 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.n
 import ca.bc.gov.app.routes.BaseRouter;
 import io.swagger.v3.oas.models.examples.Example;
 import io.swagger.v3.oas.models.media.StringSchema;
-import io.swagger.v3.oas.models.parameters.HeaderParameter;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.tags.Tag;
 import java.util.List;
@@ -21,6 +20,11 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Configuration
 @Slf4j
+/**
+ * <p><b>Base Router Class</b></p>
+ * This configuration class is responsible for configuring the routing for webflux.
+ * It also configures the OpenAPI part of the code with some default data.
+ */
 public class RouteConfiguration {
 
   @Bean
