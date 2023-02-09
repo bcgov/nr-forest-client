@@ -1,11 +1,19 @@
 package ca.bc.gov.app.endpoints.client;
 
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.function.Function;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.util.UriBuilder;
 
 @Slf4j
 @DisplayName("Integrated Test | FSA Client Controller")
@@ -30,6 +38,55 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         .jsonPath("$[11].code").isNotEmpty()
         .jsonPath("$[11].code").isEqualTo("U");
 
+  }
+
+
+
+  @ParameterizedTest(name = "{2} - {3} is the first on page {0} with size {1}")
+  @MethodSource("countryCode")
+  @DisplayName("List countries by")
+  void shouldListCountryData(Integer page, Integer size,String code, String name) {
+
+    //This is to allow parameter to be ommitted during test
+    Function<UriBuilder, URI> uri = uriBuilder -> {
+
+      UriBuilder localBuilder = uriBuilder
+          .path("/api/clients/country");
+
+      if (page != null) {
+        localBuilder = localBuilder.queryParam("page", page);
+      }
+      if (size != null) {
+        localBuilder = localBuilder.queryParam("size", size);
+      }
+
+      return localBuilder.build(new HashMap<>());
+    };
+
+    client
+        .get()
+        .uri(uri)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$[0].code").isNotEmpty()
+        .jsonPath("$[0].code").isEqualTo(code)
+        .jsonPath("$[0].name").isNotEmpty()
+        .jsonPath("$[0].name").isEqualTo(name);
+  }
+
+
+  private static Stream<Arguments> countryCode() {
+    return
+        Stream.of(
+            Arguments.of(null,null,"CA","Canada"),
+            Arguments.of(0,1,"CA","Canada"),
+            Arguments.of(1,1,"US","United States of America"),
+            Arguments.of(7,null,"BN","Brunei Darussalam"),
+            Arguments.of(3,10,"BA","Bosnia and Herzegovina"),
+            Arguments.of(33,1,"BR","Brazil"),
+            Arguments.of(49,1,"CO","Colombia")
+        );
   }
 
 
