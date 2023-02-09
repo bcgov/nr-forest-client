@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class ClientHandler implements BaseHandler {
+public class ClientTypeCodeHandler implements BaseHandler {
 
   private final ClientService clientService;
 
@@ -48,7 +48,7 @@ public class ClientHandler implements BaseHandler {
     return ops -> ops
         .tag(tag)
         .description("List active clients with their type codes")
-        .beanClass(ClientHandler.class)
+        .beanClass(ClientTypeCodeHandler.class)
         .beanMethod("handle")
         .operationId("handle")
         .requestBody(requestBodyBuilder())
