@@ -1,8 +1,7 @@
 package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.dto.client.ClientCodeTypeDto;
-import ca.bc.gov.app.dto.client.ProvinceCodeDto;
-import ca.bc.gov.app.dto.client.CountryCodeDto;
+import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
@@ -39,12 +38,12 @@ public class ClientService {
    * List countries by page with a defined size. The list will be sorted by order and country name.
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
-   * @return A list of {@link CountryCodeDto} entries.
+   * @return A list of {@link ClientNameCodeDto} entries.
    */
-  public Flux<CountryCodeDto> listCountries(int page, int size) {
+  public Flux<ClientNameCodeDto> listCountries(int page, int size) {
     return countryCodeRepository
         .findBy(PageRequest.of(page, size, Sort.by("order","description")))
-        .map(entity -> new CountryCodeDto(entity.getCountryCode(), entity.getDescription()));
+        .map(entity -> new ClientNameCodeDto(entity.getCountryCode(), entity.getDescription()));
   }
 
   /**
@@ -54,12 +53,12 @@ public class ClientService {
    * @param countryCode The code of the country to list provinces from.
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
-   * @return A list of {@link ProvinceCodeDto} entries.
+   * @return A list of {@link ClientNameCodeDto} entries.
    */
-  public Flux<ProvinceCodeDto> listProvinces(String countryCode, int page, int size){
+  public Flux<ClientNameCodeDto> listProvinces(String countryCode, int page, int size){
     return provinceCodeRepository
         .findByCountryCode(countryCode,PageRequest.of(page, size, Sort.by("description")))
-        .map(entity -> new ProvinceCodeDto(entity.getProvinceCode(), entity.getDescription()));
+        .map(entity -> new ClientNameCodeDto(entity.getProvinceCode(), entity.getDescription()));
   }
 
 

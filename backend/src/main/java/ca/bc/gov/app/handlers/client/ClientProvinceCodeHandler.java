@@ -7,7 +7,7 @@ import static org.springdoc.core.fn.builders.parameter.Builder.parameterBuilder;
 import static org.springdoc.core.fn.builders.requestbody.Builder.requestBodyBuilder;
 import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
 
-import ca.bc.gov.app.dto.client.ProvinceCodeDto;
+import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.handlers.BaseHandler;
 import ca.bc.gov.app.service.client.ClientService;
 import ca.bc.gov.app.util.HandlerUtil;
@@ -49,7 +49,7 @@ public class ClientProvinceCodeHandler implements BaseHandler {
                             .map(Integer::parseInt)
                             .orElse(5)
                     ),
-                ProvinceCodeDto.class
+                ClientNameCodeDto.class
             )
             .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())
             .doOnError(HandlerUtil.handleError());
@@ -106,8 +106,8 @@ public class ClientProvinceCodeHandler implements BaseHandler {
                             arraySchemaBuilder()
                                 .schema(
                                     schemaBuilder()
-                                        .name("ProvinceData")
-                                        .implementation(ProvinceCodeDto.class)
+                                        .name("NameCode")
+                                        .implementation(ClientNameCodeDto.class)
                                 )
                         )
                         .mediaType(MediaType.APPLICATION_JSON_VALUE)
