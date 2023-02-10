@@ -73,10 +73,10 @@ const computedInformationSchemaType = computed(() => {
     formData.state.businessType.clientType !== ""
   ) {
     if (
-      formData.state.businessType.clientType != "individual" &&
-      formData.state.businessType.clientType != "soleProprietorship"
+      formData.state.businessType.clientType != "I" &&
+      formData.state.businessType.clientType != "Z"
     ) {
-      return "company";
+      return "C";
     }
     // other types share the same schema as company
     return formData.state.businessType.clientType;
@@ -87,7 +87,7 @@ const computedInformationSchemaType = computed(() => {
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { FormSelectOptionType } from "../../../core/FormType";
+import type { FormSelectOptionType } from "@/core/FormType";
 export default defineComponent({
   name: "ApplyNewClientPage",
 });

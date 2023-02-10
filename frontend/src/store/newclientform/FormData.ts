@@ -100,7 +100,7 @@ export const formData = {
       // set value for prepopulate fields, and disabled prepoplated fields
       if (
         dataPath == "businessType.clientType" &&
-        formData.getters.getFormDataByPath(dataPath) == "individual"
+        formData.getters.getFormDataByPath(dataPath) == "I"
       ) {
         disabledFields.actions.setDisabledFieldsForSection("information", [
           "information.firstName",
@@ -128,7 +128,7 @@ export const formData = {
       // todo: this is the function to check every feild if meet the validation rules, remove the error message if met
       // some hard code examples to remove validationError after user makes the correctness
       if (!_.isEmpty(validationResult)) {
-        if (formData.state.businessType.clientType == "individual")
+        if (formData.state.businessType.clientType == "I")
           validationResult.actions.removeValidationError(
             "businessType",
             "businessType.clientType"

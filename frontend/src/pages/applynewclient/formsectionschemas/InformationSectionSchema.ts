@@ -33,15 +33,15 @@ const informationSectionCommonSchema: Array<FormComponentSchemaType> = [
 ];
 
 export const informationSectionSchema: {
-  individual: FormSectionSchemaType;
-  soleProprietorship: FormSectionSchemaType;
-  company: FormSectionSchemaType;
+  I: FormSectionSchemaType;
+  Z: FormSectionSchemaType;
+  C: FormSectionSchemaType;
 } = {
-  individual: {
+  I: {
     container: { title: "Individual information", id: "information" },
     content: informationSectionCommonSchema,
   },
-  soleProprietorship: {
+  Z: {
     container: { title: "Sole proprietor name", id: "information" },
     content: [
       {
@@ -63,7 +63,7 @@ export const informationSectionSchema: {
       },
     ],
   },
-  company: {
+  C: {
     container: {
       title: "Registered business name",
       id: "information",

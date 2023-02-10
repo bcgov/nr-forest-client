@@ -47,8 +47,8 @@ const computedButtonDisable = computed(() => {
   // enable the submit button when got all required fields
   // checkMissingRequireField returns true if has a missing field
   if (
-    formData.state.businessType["clientType"] == "individual" ||
-    formData.state.businessType["clientType"] == "soleProprietorship"
+    formData.state.businessType["clientType"] == "I" ||
+    formData.state.businessType["clientType"] == "Z"
   )
     return (
       checkMissingRequireField(commonRequiredFields, formData.state) ||
