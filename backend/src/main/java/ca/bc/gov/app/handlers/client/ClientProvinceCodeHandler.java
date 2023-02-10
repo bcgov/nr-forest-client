@@ -26,7 +26,7 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class ClientCountryCodeHandler implements BaseHandler {
+public class ClientProvinceCodeHandler implements BaseHandler {
 
   private final ClientService clientService;
 
@@ -37,7 +37,9 @@ public class ClientCountryCodeHandler implements BaseHandler {
             .ok()
             .body(
                 clientService
-                    .listCountries(
+                    .listProvinces(
+                        serverRequest
+                            .pathVariable("countryCode"),
                         serverRequest
                             .queryParam("page")
                             .map(Integer::parseInt)
@@ -58,10 +60,21 @@ public class ClientCountryCodeHandler implements BaseHandler {
     return ops -> ops
         .tag(tag)
         .description("List countries")
-        .beanClass(ClientCountryCodeHandler.class)
+        .beanClass(ClientProvinceCodeHandler.class)
         .beanMethod("handle")
         .operationId("handle")
         .requestBody(requestBodyBuilder())
+        .parameter(
+            parameterBuilder()
+                .in(ParameterIn.PATH)
+                .name("countryCode")
+                .description("""
+                    The code of the country.
+                     The code can be obtained through <b>/api/client/country<b> endpoint""")
+                .allowEmptyValue(true)
+                .schema(schemaBuilder().implementation(String.class))
+                .example("CA")
+        )
         .parameter(
             parameterBuilder()
                 .in(ParameterIn.QUERY)
@@ -86,7 +99,7 @@ public class ClientCountryCodeHandler implements BaseHandler {
         .response(
             responseBuilder()
                 .responseCode("200")
-                .description("OK - List a page of countries with name and code")
+                .description("OK - List a page of provinces with name and code")
                 .content(
                     contentBuilder()
                         .array(

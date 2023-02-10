@@ -17,6 +17,11 @@ import reactor.core.publisher.Mono;
 
 @Configuration
 @Slf4j
+/**
+ * <p><b>Global Service Configuration</b></p>
+ * This class is responsible for configuring basic beans to be used by the services.
+ * It creates and holds the external API webclients and the cors filter.
+ */
 public class GlobalServiceConfiguration {
 
   @Bean
@@ -35,6 +40,13 @@ public class GlobalServiceConfiguration {
   }
 
   @Bean
+  /**
+   * <p><b>CORS Filter</b></p>
+   * Creates the CORS (Cross-Origin Resource Sharing) filter to enable external requests from
+   * the frontend application.
+   * It consumes from the configuration file, AKA <b>application.yml</b> file and add as a default
+   * filter when receiving a CORS request.
+   */
   public WebFilter corsFilter(ForestClientConfiguration configuration) {
     return (ServerWebExchange ctx, WebFilterChain chain) -> {
 

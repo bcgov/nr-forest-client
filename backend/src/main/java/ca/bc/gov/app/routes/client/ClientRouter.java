@@ -3,6 +3,7 @@ package ca.bc.gov.app.routes.client;
 import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
+import ca.bc.gov.app.handlers.client.ClientProvinceCodeHandler;
 import ca.bc.gov.app.handlers.client.ClientCountryCodeHandler;
 import ca.bc.gov.app.handlers.client.ClientTypeCodeHandler;
 import ca.bc.gov.app.routes.BaseRouter;
@@ -16,6 +17,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @RequiredArgsConstructor
 public class ClientRouter implements BaseRouter {
 
+  private final ClientProvinceCodeHandler provinceCodeHandler;
   private final ClientTypeCodeHandler clientHandler;
   private final ClientCountryCodeHandler countryCodeHandler;
 
@@ -48,6 +50,12 @@ public class ClientRouter implements BaseRouter {
             accept(MediaType.ALL),
             countryCodeHandler::handle,
             countryCodeHandler.documentation(routeTagName())
+        )
+        .GET(
+            "/country/{countryCode}",
+            accept(MediaType.ALL),
+            provinceCodeHandler::handle,
+            provinceCodeHandler.documentation(routeTagName())
         )
         .build();
   }

@@ -12,21 +12,23 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table(name = "country_code", schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
+@Table(name = "province_code", schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @With
-public class CountryCodeEntity extends BaseEntity {
+public class ProvinceCodeEntity extends BaseEntity {
+
   @Id
+  @Column("province_code")
+  @NotNull
+  @Size(min = 2, max = 2)
+  private String provinceCode;
+
   @Column("country_code")
   @NotNull
   @Size(min = 2, max = 2)
   private String countryCode;
-
-  @Column("display_order")
-  @NotNull
-  private Integer order;
 
 }

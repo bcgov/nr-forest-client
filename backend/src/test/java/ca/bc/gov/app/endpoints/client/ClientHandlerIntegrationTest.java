@@ -3,6 +3,7 @@ package ca.bc.gov.app.endpoints.client;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +41,6 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
 
   }
 
-
-
   @ParameterizedTest(name = "{2} - {3} is the first on page {0} with size {1}")
   @MethodSource("countryCode")
   @DisplayName("List countries by")
@@ -76,6 +75,39 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
   }
 
 
+  @ParameterizedTest(name = "{3} - {4} is the first on page {1} with size {2} for country {0}")
+  @MethodSource("provinceCode")
+  @DisplayName("List provinces by")
+  void shouldListProvinceData(String countryCode,Integer page, Integer size,String code, String name) {
+
+    //This is to allow parameter to be ommitted during test
+    Function<UriBuilder, URI> uri = uriBuilder -> {
+
+      UriBuilder localBuilder = uriBuilder
+          .path("/api/clients/country/{countryCode}");
+
+      if (page != null) {
+        localBuilder = localBuilder.queryParam("page", page);
+      }
+      if (size != null) {
+        localBuilder = localBuilder.queryParam("size", size);
+      }
+
+      return localBuilder.build(Map.of("countryCode",countryCode));
+    };
+
+    client
+        .get()
+        .uri(uri)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$[0].code").isNotEmpty()
+        .jsonPath("$[0].code").isEqualTo(code)
+        .jsonPath("$[0].name").isNotEmpty()
+        .jsonPath("$[0].name").isEqualTo(name);
+  }
+
   private static Stream<Arguments> countryCode() {
     return
         Stream.of(
@@ -89,5 +121,12 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         );
   }
 
-
+  private static Stream<Arguments> provinceCode() {
+    return
+        Stream.of(
+            Arguments.of("CA",null,null,"AB","Alberta"),
+            Arguments.of("CA",0,1,"AB","Alberta"),
+            Arguments.of("US",1,1,"AK","Alaska")
+        );
+  }
 }
