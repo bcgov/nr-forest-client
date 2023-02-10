@@ -34,11 +34,11 @@ import axios from "axios";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 
-const clientTypeOptions = ref([]);
+const clientTypeCodeOptions = ref([]);
 
 onMounted(async () => {
   const activeClientTypeCodes: FormSelectOptionType[] = [];
-  const response = await axios.get(`${backendUrl}/api/clients/activeClientTypeCodes`, {});
+  let response = await axios.get(`${backendUrl}/api/clients/activeClientTypeCodes`, {});
   if (Object.keys(response.data).length) {
       response.data.forEach((code: any) => {
           let clientTypeCode = {
@@ -48,7 +48,7 @@ onMounted(async () => {
           activeClientTypeCodes.push(clientTypeCode);
       });
   }
-  clientTypeOptions.value = activeClientTypeCodes;
+  clientTypeCodeOptions.value = activeClientTypeCodes;
 });
     
 const computedBusinessTypeSectionSchema = computed(() => {
@@ -57,7 +57,7 @@ const computedBusinessTypeSectionSchema = computed(() => {
                         .map(p => p.fieldProps.modelName == "clientType" ? 
                               {
                                 ...p,
-                                options: clientTypeOptions.value
+                                options: clientTypeCodeOptions.value
                               } 
                             : p);
 
