@@ -3,7 +3,7 @@
     <!------ businessType section ------->
     <FormSectionTemplate
       :data="formData.state.businessType"
-      :sectionProps="businessTypeSectionSchema"
+      :sectionProps="computedBusinessTypeSectionSchema"
     />
 
     <!------ company/individual information section ------->
@@ -22,15 +22,51 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 import _ from "lodash";
 import FormSectionTemplate from "./FormSectionTemplate.vue";
 import { businessTypeSectionSchema } from "../formsectionschemas/BusinessTypeSectionSchema";
 import { informationSectionSchema } from "../formsectionschemas/InformationSectionSchema";
 import { locationSectionSchema } from "../formsectionschemas/LocationSectionSchema";
 import { formData } from "../../../store/newclientform/FormData";
+import axios from "axios";
 
-// based on client type, show different schema contenct for the information section
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+
+const clientTypeOptions = ref([]);
+
+onMounted(async () => {
+  const activeClientTypeCodes: FormSelectOptionType[] = [];
+  const response = await axios.get(`${backendUrl}/api/clients/activeClientTypeCodes`, {});
+  if (Object.keys(response.data).length) {
+      response.data.forEach((code: any) => {
+          let clientTypeCode = {
+              value: code.code,
+              text: code.description
+          };
+          activeClientTypeCodes.push(clientTypeCode);
+      });
+  }
+  clientTypeOptions.value = activeClientTypeCodes;
+});
+    
+const computedBusinessTypeSectionSchema = computed(() => {
+  const schemaCopy = businessTypeSectionSchema
+                        .content
+                        .map(p => p.fieldProps.modelName == "clientType" ? 
+                              {
+                                ...p,
+                                options: clientTypeOptions.value
+                              } 
+                            : p);
+
+  return {
+    ...businessTypeSectionSchema,
+    content: schemaCopy
+  };
+}); 
+
 const computedInformationSchemaType = computed(() => {
   if (
     _.has(formData, ["state", "businessType", "clientType"]) &&
@@ -51,6 +87,7 @@ const computedInformationSchemaType = computed(() => {
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { FormSelectOptionType } from "../../../core/FormType";
 export default defineComponent({
   name: "ApplyNewClientPage",
 });

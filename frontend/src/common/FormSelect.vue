@@ -18,7 +18,7 @@ import FormFieldTemplate from "./FormFieldTemplate.vue";
 import type {
   CommonObjectType,
   FormFieldTemplateType,
-  FromSelectOptionType,
+  FormSelectOptionType,
 } from "../core/FormType";
 
 const props = defineProps({
@@ -31,7 +31,7 @@ const props = defineProps({
   disabled: { type: Boolean, default: false },
   state: { type: Boolean, default: null },
   options: {
-    type: Array as PropType<Array<FromSelectOptionType>>,
+    type: Array as PropType<Array<FormSelectOptionType>>,
     required: true,
     default: [],
   },

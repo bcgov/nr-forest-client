@@ -9,7 +9,7 @@ export interface FormFieldTemplateType {
   errorMsg?: string;
 }
 
-export interface FromSelectOptionType {
+export interface FormSelectOptionType {
   value: CommonObjectType | string;
   text: string;
 }
@@ -53,7 +53,7 @@ export interface FormComponentSchemaType {
     value: string | number | boolean;
   };
   options?:
-    | Array<FromSelectOptionType>
+    | Array<FormSelectOptionType>
     | Array<FormCheckBoxGroupOptionType>
     | Array<FormRadioGroupOptionType>; // for select, checkbox group, radio group
   addButtonText?: string; // for table
