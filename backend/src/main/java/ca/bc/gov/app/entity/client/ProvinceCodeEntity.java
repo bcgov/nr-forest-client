@@ -1,11 +1,8 @@
 package ca.bc.gov.app.entity.client;
 
 import ca.bc.gov.app.ApplicationConstant;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +18,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @With
-public class ProvinceCodeEntity {
+public class ProvinceCodeEntity extends BaseEntity {
 
   @Id
   @Column("province_code")
@@ -34,30 +31,4 @@ public class ProvinceCodeEntity {
   @Size(min = 2, max = 2)
   private String countryCode;
 
-  @NotNull
-  @Max(100)
-  private String description;
-
-  @Column("effective_date")
-  @NotNull
-  private LocalDate effectiveDate;
-
-  @Column("expiry_date")
-  @NotNull
-  private LocalDate expiryDate;
-
-  @Column("create_timestamp")
-  @NotNull
-  private LocalDateTime createdAt;
-
-  @Column("update_timestamp")
-  @NotNull
-  private LocalDateTime updatedAt;
-
-  @Column("create_user")
-  @NotNull
-  private String createdBy;
-
-  @Column("update_user")
-  private String updatedBy;
 }
