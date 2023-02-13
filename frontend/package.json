@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@dsb-norge/vue-keycloak-js": "^2.2.0",
-    "@iconify-json/bi": "^1.1.14",
+    "@iconify-json/bi": "^1.1.15",
     "@popperjs/core": "^2.11.4",
     "@vitejs/plugin-vue": "^2.2.2",
     "@vitest/coverage-c8": "^0.28.4",
