@@ -34,6 +34,7 @@ public class OrgBookIncorporationHandler implements BaseHandler {
     return
         ServerResponse
             .ok()
+            .contentType(serverRequest.headers().contentType().orElse(MediaType.APPLICATION_JSON))
             .body(
                 service
                     .findByIncorporationNumber(serverRequest.pathVariable("incorporationId")),

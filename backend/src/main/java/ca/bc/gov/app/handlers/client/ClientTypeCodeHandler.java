@@ -34,6 +34,7 @@ public class ClientTypeCodeHandler implements BaseHandler {
     return
         ServerResponse
             .ok()
+            .contentType(serverRequest.headers().contentType().orElse(MediaType.APPLICATION_JSON))
             .body(
                 clientService
                     .findActiveClientTypeCodes(LocalDate.now()),
