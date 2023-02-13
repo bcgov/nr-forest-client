@@ -73,11 +73,12 @@ export const informationSectionSchema: {
         fieldProps: {
           label: "Start typing to search for your B.C. registered business",
           id: "businessNameId",
+          dataListId: "businessNameListId",
           modelName: "businessName",
           required: true,
           note: "The name must be the same as it is in BC Registries",
         },
-        type: "input",
+        type: "autocomplete",
       },
       {
         fieldProps: {
