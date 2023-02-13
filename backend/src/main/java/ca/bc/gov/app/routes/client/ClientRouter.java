@@ -61,7 +61,7 @@ public class ClientRouter implements BaseRouter {
             provinceCodeHandler.documentation(routeTagName())
         )
         .GET(
-            "contact-type-codes",
+            "/activeContactTypeCodes",
             accept(MediaType.ALL),
             contactTypeCodeHandler::handle,
             clientHandler.documentation(routeTagName())

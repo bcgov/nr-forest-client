@@ -94,7 +94,7 @@ public class ContactTypeCodeHandler implements BaseHandler {
                             arraySchemaBuilder()
                                 .schema(
                                     schemaBuilder()
-                                        .name("ContactTypeCode")
+                                        .name("NameCode")
                                         .implementation(ClientNameCodeDto.class)
                                 )
                         )

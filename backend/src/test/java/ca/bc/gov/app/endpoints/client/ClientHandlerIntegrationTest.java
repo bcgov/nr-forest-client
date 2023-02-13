@@ -109,27 +109,6 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         .jsonPath("$[0].name").isEqualTo(name);
   }
 
-  private static Stream<Arguments> countryCode() {
-    return
-        Stream.of(
-            Arguments.of(null, null, "CA", "Canada"),
-            Arguments.of(0, 1, "CA", "Canada"),
-            Arguments.of(1, 1, "US", "United States of America"),
-            Arguments.of(7, null, "BN", "Brunei Darussalam"),
-            Arguments.of(3, 10, "BA", "Bosnia and Herzegovina"),
-            Arguments.of(33, 1, "BR", "Brazil"),
-            Arguments.of(49, 1, "CO", "Colombia")
-        );
-  }
-
-  private static Stream<Arguments> provinceCode() {
-    return
-        Stream.of(
-            Arguments.of("CA", null, null, "AB", "Alberta"),
-            Arguments.of("CA", 0, 1, "AB", "Alberta"),
-            Arguments.of("US", 1, 1, "AK", "Alaska"));
-  }
-
   @ParameterizedTest(name = "{2} - {3} is the first on page {0} with size {1}")
   @MethodSource("contactTypeCodes")
   @DisplayName("List contact type codes")
@@ -137,7 +116,7 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
     Function<UriBuilder, URI> uri = uriBuilder -> {
 
       UriBuilder localBuilder = uriBuilder
-          .path("/api/clients/contact-type-codes");
+          .path("/api/clients/activeContactTypeCodes");
 
       if (page != null) {
         localBuilder = localBuilder.queryParam("page", page);
@@ -159,6 +138,27 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         .jsonPath("$[0].code").isEqualTo(code)
         .jsonPath("$[0].name").isNotEmpty()
         .jsonPath("$[0].name").isEqualTo(description);
+  }
+
+  private static Stream<Arguments> countryCode() {
+    return
+        Stream.of(
+            Arguments.of(null, null, "CA", "Canada"),
+            Arguments.of(0, 1, "CA", "Canada"),
+            Arguments.of(1, 1, "US", "United States of America"),
+            Arguments.of(7, null, "BN", "Brunei Darussalam"),
+            Arguments.of(3, 10, "BA", "Bosnia and Herzegovina"),
+            Arguments.of(33, 1, "BR", "Brazil"),
+            Arguments.of(49, 1, "CO", "Colombia")
+        );
+  }
+
+  private static Stream<Arguments> provinceCode() {
+    return
+        Stream.of(
+            Arguments.of("CA", null, null, "AB", "Alberta"),
+            Arguments.of("CA", 0, 1, "AB", "Alberta"),
+            Arguments.of("US", 1, 1, "AK", "Alaska"));
   }
 
   private static Stream<Arguments> contactTypeCodes() {
