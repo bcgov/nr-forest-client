@@ -1,6 +1,5 @@
 package ca.bc.gov.app.service.client;
 
-import ca.bc.gov.app.dto.client.ClientCodeTypeDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
@@ -29,32 +28,27 @@ public class ClientService {
    * <p>The order is by description.</p>
    *
    * @param targetDate The date to be used as reference.
-   * @return A list of {@link ClientCodeTypeDto}
+   * @return A list of {@link ClientNameCodeDto}
    */
 
 
-  public Flux<ClientCodeTypeDto> findActiveClientTypeCodes(LocalDate targetDate) {
+  public Flux<ClientNameCodeDto> findActiveClientTypeCodes(LocalDate targetDate) {
 
     return
         clientTypeCodeRepository
             .findActiveAt(targetDate)
-            .map(entity -> new ClientCodeTypeDto(
+            .map(entity -> new ClientNameCodeDto(
                 entity.getCode(),
-                entity.getDescription(),
-                entity.getEffectiveAt(),
-                entity.getExpiredAt(),
-                null)
+                entity.getDescription()
+                )
             );
   }
 
   /**
    * <p><b>List countries</b></p>
-   * <<<<<<< HEAD
    * <p>List countries by page with a defined size.
    * The list will be sorted by order and country name.</p>
-   * =======
    * List countries by page with a defined size. The list will be sorted by order and country name.
-   * >>>>>>> ff164a4 (feat: list contact type codes)
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
