@@ -64,7 +64,7 @@ public class ClientRouter implements BaseRouter {
             "/activeContactTypeCodes",
             accept(MediaType.ALL),
             contactTypeCodeHandler::handle,
-            clientHandler.documentation(routeTagName())
+            contactTypeCodeHandler.documentation(routeTagName())
         )
         .build();
   }
