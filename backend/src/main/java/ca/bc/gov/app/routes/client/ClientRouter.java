@@ -49,13 +49,13 @@ public class ClientRouter implements BaseRouter {
             clientHandler.documentation(routeTagName())
         )
         .GET(
-            "/country",
+            "/activeCountryCode",
             accept(MediaType.ALL),
             countryCodeHandler::handle,
             countryCodeHandler.documentation(routeTagName())
         )
         .GET(
-            "/country/{countryCode}",
+            "/activeCountryCode/{countryCode}",
             accept(MediaType.ALL),
             provinceCodeHandler::handle,
             provinceCodeHandler.documentation(routeTagName())

@@ -17,6 +17,7 @@ import java.net.URI;
 import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.fn.builders.operation.Builder;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -48,10 +49,12 @@ public class ChesHandler extends AbstractHandler<ChesRequest, ChesRequestValidat
             .flatMap(service::sendEmail)
             .flatMap(
                 companyId ->
-                    ServerResponse.created(
+                    ServerResponse
+                        .created(
                             URI
                                 .create(String.format("/api/mail/%s", companyId))
                         )
+                        .contentType(request.headers().contentType().orElse(MediaType.APPLICATION_JSON))
                         .build()
             )
             .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())
