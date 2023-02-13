@@ -16,7 +16,7 @@
     <!------ location information section ------->
     <FormSectionTemplate
       :data="formData.state.location"
-      :sectionProps="locationSectionSchema"
+      :sectionProps="computedLocationSectionSchema"
     />
   </div>
 </template>
@@ -32,40 +32,57 @@ import { formData } from "../../../store/newclientform/FormData";
 import axios from "axios";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
 
 const clientTypeCodeOptions = ref([]);
+const countryCodeOptions = ref([]);
 
 onMounted(async () => {
   const activeClientTypeCodes: FormSelectOptionType[] = [];
-  let response = await axios.get(`${backendUrl}/api/clients/activeClientTypeCodes`, {});
+  let response = await axios.get(
+    `${backendUrl}/api/clients/activeClientTypeCodes`,
+    {}
+  );
   if (Object.keys(response.data).length) {
-      response.data.forEach((code: any) => {
-          let clientTypeCode = {
-              value: code.code,
-              text: code.description
-          };
-          activeClientTypeCodes.push(clientTypeCode);
-      });
+    response.data.forEach((code: any) => {
+      let clientTypeCode = {
+        value: code.code,
+        text: code.description,
+      };
+      activeClientTypeCodes.push(clientTypeCode);
+    });
   }
   clientTypeCodeOptions.value = activeClientTypeCodes;
+
+  const activeCountryCodes: FormSelectOptionType[] = [];
+  response = await axios.get(`${backendUrl}/api/clients/country`, {});
+  if (Object.keys(response.data).length) {
+    response.data.forEach((code: any) => {
+      let countryCode = {
+        value: code.code,
+        text: code.name,
+      };
+      activeCountryCodes.push(countryCode);
+    });
+  }
+  countryCodeOptions.value = activeCountryCodes;
 });
-    
+
 const computedBusinessTypeSectionSchema = computed(() => {
-  const schemaCopy = businessTypeSectionSchema
-                        .content
-                        .map(p => p.fieldProps.modelName == "clientType" ? 
-                              {
-                                ...p,
-                                options: clientTypeCodeOptions.value
-                              } 
-                            : p);
+  const schemaCopy = businessTypeSectionSchema.content.map((p) =>
+    p.fieldProps.modelName == "clientType"
+      ? {
+          ...p,
+          options: clientTypeCodeOptions.value,
+        }
+      : p
+  );
 
   return {
     ...businessTypeSectionSchema,
-    content: schemaCopy
+    content: schemaCopy,
   };
-}); 
+});
 
 const computedInformationSchemaType = computed(() => {
   if (
@@ -82,6 +99,35 @@ const computedInformationSchemaType = computed(() => {
     return formData.state.businessType.clientType;
   }
   return "";
+});
+
+const computedLocationSectionSchema = computed(() => {
+  const subFields = {};
+
+  locationSectionSchema.content.forEach((p) => {
+    if (p.subfields) subFields[p.fieldProps.modelName] = p.subfields;
+  });
+
+  Object.keys(subFields).forEach((subKey) => {
+    const subfields = subFields[subKey];
+    const newsubfields = subfields.map((p) =>
+      p.fieldProps.modelName == "country"
+        ? { ...p, options: countryCodeOptions.value }
+        : p
+    );
+    subFields[subKey] = newsubfields;
+  });
+
+  const newSchema = locationSectionSchema.content.map((p) =>
+    p.fieldProps.modelName in subFields
+      ? { ...p, subfields: subFields[p.fieldProps.modelName] }
+      : p
+  );
+
+  return {
+    ...locationSectionSchema,
+    content: newSchema,
+  };
 });
 </script>
 
