@@ -1,4 +1,53 @@
-// import axios from "axios";
+import { ref } from "vue";
+import axios from "axios";
+
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+const forestClientBase = import.meta.env.VITE_BACKEND_URL;
+
+/**
+ * Fetch data from external resource
+ * @param url resource URI
+ * @param config axios configuration
+ * @returns the data fetched
+ */
+export const useFetch = (url: string, config: any = {}) => {
+
+  const data: any = ref(config.initialData || {});
+  const info = useFetchTo(url, data, config);
+
+  return { ...info, data }
+}
+
+
+export const useFetchTo = (url: string, data: any, config: any = {}) => {
+
+  const response: any = ref({});
+  const error: any = ref({});
+  const loading: any = ref(false);
+
+  const fetch = async () => {
+    loading.value = true;
+    try {
+      const result = await axios.request({
+        url,
+        baseURL: forestClientBase,
+        ...config
+      });
+      Object.assign(response, result);
+      data.value = result.data;
+    } catch (ex) {
+      Object.assign(error, ex);
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  !config.skip && fetch();
+
+  return { response, error, data, loading, fetch }
+}
+
+
 // import { backendUrl } from "../core/CoreConstants";
 
 // export const sendConfirmationEmail = (emailTo: String, emailBody: String) => {
