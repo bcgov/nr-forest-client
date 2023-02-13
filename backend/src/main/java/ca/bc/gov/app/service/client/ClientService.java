@@ -2,7 +2,9 @@ package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.dto.client.ClientCodeTypeDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
+import ca.bc.gov.app.dto.client.ContactTypeCodeDto;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
+import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import java.time.LocalDate;
@@ -18,6 +20,7 @@ public class ClientService {
   private final ClientTypeCodeRepository clientTypeCodeRepository;
   private final CountryCodeRepository countryCodeRepository;
   private final ProvinceCodeRepository provinceCodeRepository;
+  private final ContactTypeCodeRepository contactTypeCodeRepository;
 
   /**
    * <p><b>Find Active Client Type Codes</b></p>
@@ -29,6 +32,8 @@ public class ClientService {
    * @param targetDate The date to be used as reference.
    * @return A list of {@link ClientCodeTypeDto}
    */
+
+
   public Flux<ClientCodeTypeDto> findActiveClientTypeCodes(LocalDate targetDate) {
 
     return
@@ -45,8 +50,12 @@ public class ClientService {
 
   /**
    * <p><b>List countries</b></p>
+<<<<<<< HEAD
    * <p>List countries by page with a defined size.
    * The list will be sorted by order and country name.</p>
+=======
+   * List countries by page with a defined size. The list will be sorted by order and country name.
+>>>>>>> ff164a4 (feat: list contact type codes)
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
@@ -74,5 +83,21 @@ public class ClientService {
         .map(entity -> new ClientNameCodeDto(entity.getProvinceCode(), entity.getDescription()));
   }
 
-
+  /**
+   * <p><b>List contact types</b></p>
+   * List contact type codes by page with a defined size.
+   *
+   * @param page The page number, it is a 0-index base.
+   * @param size The amount of entries per page.
+   * @return A list of {@link ContactTypeCodeDto} entries.
+   */
+  public Flux<ContactTypeCodeDto> listClientContactTypeCodes(int page, int size) {
+    return contactTypeCodeRepository
+        .findBy(PageRequest.of(page, size))
+        .map(entity -> new ContactTypeCodeDto(
+            entity.getContactTypeCode(),
+            entity.getDescription(),
+            entity.getEffectiveAt(),
+            entity.getExpiredAt()));
+  }
 }

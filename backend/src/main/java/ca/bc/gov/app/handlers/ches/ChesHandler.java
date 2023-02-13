@@ -2,7 +2,6 @@ package ca.bc.gov.app.handlers.ches;
 
 import static org.springdoc.core.fn.builders.apiresponse.Builder.responseBuilder;
 import static org.springdoc.core.fn.builders.content.Builder.contentBuilder;
-import static org.springdoc.core.fn.builders.exampleobject.Builder.exampleOjectBuilder;
 import static org.springdoc.core.fn.builders.header.Builder.headerBuilder;
 import static org.springdoc.core.fn.builders.requestbody.Builder.requestBodyBuilder;
 import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;

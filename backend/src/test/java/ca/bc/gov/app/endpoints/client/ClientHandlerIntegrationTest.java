@@ -44,7 +44,7 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
   @ParameterizedTest(name = "{2} - {3} is the first on page {0} with size {1}")
   @MethodSource("countryCode")
   @DisplayName("List countries by")
-  void shouldListCountryData(Integer page, Integer size,String code, String name) {
+  void shouldListCountryData(Integer page, Integer size, String code, String name) {
 
     //This is to allow parameter to be ommitted during test
     Function<UriBuilder, URI> uri = uriBuilder -> {
@@ -78,7 +78,8 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
   @ParameterizedTest(name = "{3} - {4} is the first on page {1} with size {2} for country {0}")
   @MethodSource("provinceCode")
   @DisplayName("List provinces by")
-  void shouldListProvinceData(String countryCode,Integer page, Integer size,String code, String name) {
+  void shouldListProvinceData(String countryCode, Integer page, Integer size, String code,
+                              String name) {
 
     //This is to allow parameter to be ommitted during test
     Function<UriBuilder, URI> uri = uriBuilder -> {
@@ -93,7 +94,7 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         localBuilder = localBuilder.queryParam("size", size);
       }
 
-      return localBuilder.build(Map.of("countryCode",countryCode));
+      return localBuilder.build(Map.of("countryCode", countryCode));
     };
 
     client
@@ -111,22 +112,63 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
   private static Stream<Arguments> countryCode() {
     return
         Stream.of(
-            Arguments.of(null,null,"CA","Canada"),
-            Arguments.of(0,1,"CA","Canada"),
-            Arguments.of(1,1,"US","United States of America"),
-            Arguments.of(7,null,"BN","Brunei Darussalam"),
-            Arguments.of(3,10,"BA","Bosnia and Herzegovina"),
-            Arguments.of(33,1,"BR","Brazil"),
-            Arguments.of(49,1,"CO","Colombia")
+            Arguments.of(null, null, "CA", "Canada"),
+            Arguments.of(0, 1, "CA", "Canada"),
+            Arguments.of(1, 1, "US", "United States of America"),
+            Arguments.of(7, null, "BN", "Brunei Darussalam"),
+            Arguments.of(3, 10, "BA", "Bosnia and Herzegovina"),
+            Arguments.of(33, 1, "BR", "Brazil"),
+            Arguments.of(49, 1, "CO", "Colombia")
         );
   }
 
   private static Stream<Arguments> provinceCode() {
     return
         Stream.of(
-            Arguments.of("CA",null,null,"AB","Alberta"),
-            Arguments.of("CA",0,1,"AB","Alberta"),
-            Arguments.of("US",1,1,"AK","Alaska")
+            Arguments.of("CA", null, null, "AB", "Alberta"),
+            Arguments.of("CA", 0, 1, "AB", "Alberta"),
+            Arguments.of("US", 1, 1, "AK", "Alaska"));
+  }
+
+  @ParameterizedTest(name = "{2} - {3} is the first on page {0} with size {1}")
+  @MethodSource("contactTypeCodes")
+  @DisplayName("List contact type codes")
+  void shouldListContactTypes(Integer page, Integer size, String code, String description) {
+    Function<UriBuilder, URI> uri = uriBuilder -> {
+
+      UriBuilder localBuilder = uriBuilder
+          .path("/api/clients/contact-type-codes");
+
+      if (page != null) {
+        localBuilder = localBuilder.queryParam("page", page);
+      }
+      if (size != null) {
+        localBuilder = localBuilder.queryParam("size", size);
+      }
+
+      return localBuilder.build(new HashMap<>());
+    };
+
+    client
+        .get()
+        .uri(uri)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$[0].code").isNotEmpty()
+        .jsonPath("$[0].code").isEqualTo(code)
+        .jsonPath("$[0].code").isNotEmpty()
+        .jsonPath("$[0].code").isEqualTo(description);
+  }
+
+  private static Stream<Arguments> contactTypeCodes() {
+    return
+        Stream.of(
+            Arguments.of(null, null, "AP", "Accounts Payable"),
+            Arguments.of(0, 1, "AP", "Accounts Payable"),
+            Arguments.of(1, 1, "AR", "Accounts Receivable"),
+            Arguments.of(11, 1, "GP", "General Partner"),
+            Arguments.of(22, 1, "TP", "EDI Trading Partner")
         );
   }
 }
