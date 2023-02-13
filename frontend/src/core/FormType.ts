@@ -9,6 +9,17 @@ export interface FormFieldTemplateType {
   errorMsg?: string;
 }
 
+export interface FormFieldAutoCompleteTemplateType {
+  label?: string;
+  required?: boolean;
+  id: string; // id is required when using tooltip, and need to be unique;
+  dataListId?: string; // id is required when using datalist, and need to be unique, otherwise not needed;
+  modelName: string;
+  note?: string;
+  tooltip?: string;
+  errorMsg?: string;
+}
+
 export interface FormSelectOptionType {
   value: CommonObjectType | string;
   text: string;
@@ -45,7 +56,7 @@ export interface FormSectionSchemaType {
 }
 
 export interface FormComponentSchemaType {
-  fieldProps: FormFieldTemplateType;
+  fieldProps: FormFieldAutoCompleteTemplateType;
   type: string;
   state?: boolean;
   depend?: {
@@ -53,9 +64,9 @@ export interface FormComponentSchemaType {
     value: string | number | boolean;
   };
   options?:
-    | Array<FormSelectOptionType>
-    | Array<FormCheckBoxGroupOptionType>
-    | Array<FormRadioGroupOptionType>; // for select, checkbox group, radio group
+  | Array<FormSelectOptionType>
+  | Array<FormCheckBoxGroupOptionType>
+  | Array<FormRadioGroupOptionType>; // for select, checkbox group, radio group
   addButtonText?: string; // for table
   deleteButtonText?: string; // for group
   subfields?: Array<FormComponentSchemaType>; // for table and group

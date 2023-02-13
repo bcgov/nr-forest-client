@@ -26,7 +26,7 @@ public class GlobalServiceConfiguration {
 
   @Bean
   public WebClient orgBookApi(ForestClientConfiguration configuration) {
-    return WebClient.builder().baseUrl(configuration.getOpenmaps().getUri()).build();
+    return WebClient.builder().baseUrl(configuration.getOrgbook().getUri()).build();
   }
 
   @Bean

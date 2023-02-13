@@ -35,6 +35,7 @@ public class OpenMapsHandler implements BaseHandler {
     return
         ServerResponse
             .ok()
+            .contentType(serverRequest.headers().contentType().orElse(MediaType.APPLICATION_JSON))
             .body(
                 openMapsService
                     .getFirstNation(serverRequest.pathVariable("id")),

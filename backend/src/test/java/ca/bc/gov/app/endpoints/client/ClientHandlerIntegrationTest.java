@@ -50,7 +50,7 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
     Function<UriBuilder, URI> uri = uriBuilder -> {
 
       UriBuilder localBuilder = uriBuilder
-          .path("/api/clients/country");
+          .path("/api/clients/activeCountryCode");
 
       if (page != null) {
         localBuilder = localBuilder.queryParam("page", page);
@@ -84,7 +84,7 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
     Function<UriBuilder, URI> uri = uriBuilder -> {
 
       UriBuilder localBuilder = uriBuilder
-          .path("/api/clients/country/{countryCode}");
+          .path("/api/clients/activeCountryCode/{countryCode}");
 
       if (page != null) {
         localBuilder = localBuilder.queryParam("page", page);

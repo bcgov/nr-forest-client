@@ -22,42 +22,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import _ from "lodash";
 import FormSectionTemplate from "./FormSectionTemplate.vue";
 import { businessTypeSectionSchema } from "../formsectionschemas/BusinessTypeSectionSchema";
 import { informationSectionSchema } from "../formsectionschemas/InformationSectionSchema";
 import { locationSectionSchema } from "../formsectionschemas/LocationSectionSchema";
 import { formData } from "../../../store/newclientform/FormData";
-import axios from "axios";
+import { useFetch } from "../../../services/forestClient.service";
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
-axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+const conversionFn = (code: any) => {return {value: code.code, text: code.description}};
+const { data } = useFetch('/api/clients/activeClientTypeCodes',{method:'get',initialData:[]});
 
-const clientTypeOptions = ref([]);
-
-onMounted(async () => {
-  const activeClientTypeCodes: FormSelectOptionType[] = [];
-  const response = await axios.get(`${backendUrl}/api/clients/activeClientTypeCodes`, {});
-  if (Object.keys(response.data).length) {
-      response.data.forEach((code: any) => {
-          let clientTypeCode = {
-              value: code.code,
-              text: code.description
-          };
-          activeClientTypeCodes.push(clientTypeCode);
-      });
-  }
-  clientTypeOptions.value = activeClientTypeCodes;
-});
-    
 const computedBusinessTypeSectionSchema = computed(() => {
   const schemaCopy = businessTypeSectionSchema
                         .content
                         .map(p => p.fieldProps.modelName == "clientType" ? 
                               {
                                 ...p,
-                                options: clientTypeOptions.value
+                                options: data.value.map(conversionFn)
                               } 
                             : p);
 
