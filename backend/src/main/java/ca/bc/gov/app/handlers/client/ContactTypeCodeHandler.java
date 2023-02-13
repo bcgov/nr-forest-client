@@ -7,7 +7,7 @@ import static org.springdoc.core.fn.builders.parameter.Builder.parameterBuilder;
 import static org.springdoc.core.fn.builders.requestbody.Builder.requestBodyBuilder;
 import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
 
-import ca.bc.gov.app.dto.client.ContactTypeCodeDto;
+import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.handlers.BaseHandler;
 import ca.bc.gov.app.service.client.ClientService;
 import ca.bc.gov.app.util.HandlerUtil;
@@ -95,7 +95,7 @@ public class ContactTypeCodeHandler implements BaseHandler {
                                 .schema(
                                     schemaBuilder()
                                         .name("ContactTypeCode")
-                                        .implementation(ContactTypeCodeDto.class)
+                                        .implementation(ClientNameCodeDto.class)
                                 )
                         )
                         .mediaType(MediaType.APPLICATION_JSON_VALUE)

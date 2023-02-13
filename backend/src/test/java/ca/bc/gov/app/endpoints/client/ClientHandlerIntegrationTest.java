@@ -157,8 +157,8 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         .expectBody()
         .jsonPath("$[0].code").isNotEmpty()
         .jsonPath("$[0].code").isEqualTo(code)
-        .jsonPath("$[0].description").isNotEmpty()
-        .jsonPath("$[0].description").isEqualTo(description);
+        .jsonPath("$[0].name").isNotEmpty()
+        .jsonPath("$[0].name").isEqualTo(description);
   }
 
   private static Stream<Arguments> contactTypeCodes() {

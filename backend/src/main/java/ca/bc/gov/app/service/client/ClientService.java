@@ -2,7 +2,6 @@ package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.dto.client.ClientCodeTypeDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
-import ca.bc.gov.app.dto.client.ContactTypeCodeDto;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
@@ -50,12 +49,12 @@ public class ClientService {
 
   /**
    * <p><b>List countries</b></p>
-<<<<<<< HEAD
+   * <<<<<<< HEAD
    * <p>List countries by page with a defined size.
    * The list will be sorted by order and country name.</p>
-=======
+   * =======
    * List countries by page with a defined size. The list will be sorted by order and country name.
->>>>>>> ff164a4 (feat: list contact type codes)
+   * >>>>>>> ff164a4 (feat: list contact type codes)
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
@@ -89,15 +88,13 @@ public class ClientService {
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
-   * @return A list of {@link ContactTypeCodeDto} entries.
+   * @return A list of {@link ClientNameCodeDto} entries.
    */
-  public Flux<ContactTypeCodeDto> listClientContactTypeCodes(int page, int size) {
+  public Flux<ClientNameCodeDto> listClientContactTypeCodes(int page, int size) {
     return contactTypeCodeRepository
         .findBy(PageRequest.of(page, size))
-        .map(entity -> new ContactTypeCodeDto(
+        .map(entity -> new ClientNameCodeDto(
             entity.getContactTypeCode(),
-            entity.getDescription(),
-            entity.getEffectiveAt(),
-            entity.getExpiredAt()));
+            entity.getDescription()));
   }
 }
