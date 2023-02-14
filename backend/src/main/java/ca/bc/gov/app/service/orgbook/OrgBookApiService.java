@@ -32,14 +32,20 @@ public class OrgBookApiService {
                 uriBuilder
                     .path("/v3/search/autocomplete")
                     .queryParam("q", CoreUtil.encodeString(clientName))
+                    .queryParam("inactive", "false")
+                    .queryParam("revoked", "false")
                     .build(new HashMap<>())
             )
             .accept(MediaType.APPLICATION_JSON)
             .exchangeToMono(
                 clientResponse -> clientResponse.bodyToMono(OrgBookResultListResponse.class)
             )
-            .flatMapMany(orgBookResultListResponse -> Flux.fromIterable(orgBookResultListResponse.results()))
-            .map(orgBookNameDto -> new ClientNameCodeDto(orgBookNameDto.topicSourceId(),orgBookNameDto.value()))
+            .log()
+            .flatMapMany(
+                orgBookResultListResponse -> Flux.fromIterable(orgBookResultListResponse.results()))
+            .filter(orgBookNameDto -> orgBookNameDto.subType().equalsIgnoreCase("entity_name"))
+            .map(orgBookNameDto -> new ClientNameCodeDto(orgBookNameDto.topicSourceId(),
+                orgBookNameDto.value()))
             .doOnNext(content -> log.info("OrgBook Name Lookup {} -> {}", clientName, content));
 
   }
