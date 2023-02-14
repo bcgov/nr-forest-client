@@ -1,8 +1,8 @@
 package ca.bc.gov.app.service.client;
 
-import ca.bc.gov.app.dto.client.ClientCodeTypeDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
+import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import java.time.LocalDate;
@@ -18,6 +18,7 @@ public class ClientService {
   private final ClientTypeCodeRepository clientTypeCodeRepository;
   private final CountryCodeRepository countryCodeRepository;
   private final ProvinceCodeRepository provinceCodeRepository;
+  private final ContactTypeCodeRepository contactTypeCodeRepository;
 
   /**
    * <p><b>Find Active Client Type Codes</b></p>
@@ -27,19 +28,19 @@ public class ClientService {
    * <p>The order is by description.</p>
    *
    * @param targetDate The date to be used as reference.
-   * @return A list of {@link ClientCodeTypeDto}
+   * @return A list of {@link ClientNameCodeDto}
    */
-  public Flux<ClientCodeTypeDto> findActiveClientTypeCodes(LocalDate targetDate) {
+
+
+  public Flux<ClientNameCodeDto> findActiveClientTypeCodes(LocalDate targetDate) {
 
     return
         clientTypeCodeRepository
             .findActiveAt(targetDate)
-            .map(entity -> new ClientCodeTypeDto(
+            .map(entity -> new ClientNameCodeDto(
                 entity.getCode(),
-                entity.getDescription(),
-                entity.getEffectiveAt(),
-                entity.getExpiredAt(),
-                null)
+                entity.getDescription()
+                )
             );
   }
 
@@ -47,6 +48,7 @@ public class ClientService {
    * <p><b>List countries</b></p>
    * <p>List countries by page with a defined size.
    * The list will be sorted by order and country name.</p>
+   * List countries by page with a defined size. The list will be sorted by order and country name.
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
@@ -74,5 +76,19 @@ public class ClientService {
         .map(entity -> new ClientNameCodeDto(entity.getProvinceCode(), entity.getDescription()));
   }
 
-
+  /**
+   * <p><b>List contact types</b></p>
+   * List contact type codes by page with a defined size.
+   *
+   * @param page The page number, it is a 0-index base.
+   * @param size The amount of entries per page.
+   * @return A list of {@link ClientNameCodeDto} entries.
+   */
+  public Flux<ClientNameCodeDto> listClientContactTypeCodes(int page, int size) {
+    return contactTypeCodeRepository
+        .findBy(PageRequest.of(page, size))
+        .map(entity -> new ClientNameCodeDto(
+            entity.getContactTypeCode(),
+            entity.getDescription()));
+  }
 }

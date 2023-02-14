@@ -88,31 +88,22 @@ public class TestConstants {
       """;
 
   public static final String ORGBOOK_NAMELOOKUP_OK_RESPONSE = """
-      {
-        "total": 10,        
-        "results": [
+      [
           {
-            "value": "U3 POWER CORP",
-            "topic_source_id": "BC0772006"
+            "name": "U3 POWER CORP",
+            "code": "BC0772006"
           },
           {
-            "value": "STOTHERT POWER CORP",
-            "topic_source_id": "BC0070832"
+            "name": "STOTHERT POWER CORP",
+            "code": "BC0070832"
           },
           {
-            "value": "UNIVERSAL POWER CORP",
-            "topic_source_id": "BC0334496"
+            "name": "UNIVERSAL POWER CORP",
+            "code": "BC0334496"
           }
-        ]
-      }
-      """;
+        ]""";
 
-  public static final String ORGBOOK_NAMELOOKUP_EMPTY = """
-      {
-        "total": 0,        
-        "results": []
-      }
-      """;
+  public static final String ORGBOOK_NAMELOOKUP_EMPTY = "[]";
 
   public static final String ORGBOOK_INCORP_EMPTY = """
       {

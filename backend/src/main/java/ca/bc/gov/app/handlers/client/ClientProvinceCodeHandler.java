@@ -35,6 +35,7 @@ public class ClientProvinceCodeHandler implements BaseHandler {
     return
         ServerResponse
             .ok()
+            .contentType(serverRequest.headers().contentType().orElse(MediaType.APPLICATION_JSON))
             .body(
                 clientService
                     .listProvinces(

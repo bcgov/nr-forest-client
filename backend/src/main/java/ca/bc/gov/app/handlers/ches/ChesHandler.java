@@ -2,7 +2,6 @@ package ca.bc.gov.app.handlers.ches;
 
 import static org.springdoc.core.fn.builders.apiresponse.Builder.responseBuilder;
 import static org.springdoc.core.fn.builders.content.Builder.contentBuilder;
-import static org.springdoc.core.fn.builders.exampleobject.Builder.exampleOjectBuilder;
 import static org.springdoc.core.fn.builders.header.Builder.headerBuilder;
 import static org.springdoc.core.fn.builders.requestbody.Builder.requestBodyBuilder;
 import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
@@ -18,6 +17,7 @@ import java.net.URI;
 import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.fn.builders.operation.Builder;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -49,10 +49,12 @@ public class ChesHandler extends AbstractHandler<ChesRequest, ChesRequestValidat
             .flatMap(service::sendEmail)
             .flatMap(
                 companyId ->
-                    ServerResponse.created(
+                    ServerResponse
+                        .created(
                             URI
                                 .create(String.format("/api/mail/%s", companyId))
                         )
+                        .contentType(request.headers().contentType().orElse(MediaType.APPLICATION_JSON))
                         .build()
             )
             .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())

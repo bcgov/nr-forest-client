@@ -1,12 +1,12 @@
 package ca.bc.gov.app.handlers.orgbook;
 
 import static org.springdoc.core.fn.builders.apiresponse.Builder.responseBuilder;
+import static org.springdoc.core.fn.builders.arrayschema.Builder.arraySchemaBuilder;
 import static org.springdoc.core.fn.builders.content.Builder.contentBuilder;
 import static org.springdoc.core.fn.builders.parameter.Builder.parameterBuilder;
 import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
 
-import ca.bc.gov.app.dto.orgbook.OrgBookResultListResponse;
-import ca.bc.gov.app.dto.orgbook.OrgBookTopicListResponse;
+import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.handlers.BaseHandler;
 import ca.bc.gov.app.service.orgbook.OrgBookApiService;
 import ca.bc.gov.app.util.HandlerUtil;
@@ -34,10 +34,11 @@ public class OrgBookNameHandler implements BaseHandler {
     return
         ServerResponse
             .ok()
+            .contentType(serverRequest.headers().contentType().orElse(MediaType.APPLICATION_JSON))
             .body(
                 service
                     .findByClientName(serverRequest.pathVariable("name")),
-                OrgBookTopicListResponse.class
+                ClientNameCodeDto.class
             )
             .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())
             .doOnError(HandlerUtil.handleError());
@@ -66,10 +67,13 @@ public class OrgBookNameHandler implements BaseHandler {
                     .description("Found")
                     .content(
                         contentBuilder()
-                            .schema(
-                                schemaBuilder()
-                                    .name("NameListResponse")
-                                    .implementation(OrgBookResultListResponse.class)
+                            .array(
+                                arraySchemaBuilder()
+                                    .schema(
+                                        schemaBuilder()
+                                            .name("NameCode")
+                                            .implementation(ClientNameCodeDto.class)
+                                    )
                             )
                             .mediaType(MediaType.APPLICATION_JSON_VALUE)
                     )
