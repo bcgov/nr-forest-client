@@ -22,7 +22,8 @@ export const locationSectionSchema: FormSectionSchemaType = {
             modelName: "country",
             required: true,
           },
-          type: "input",
+          type: "select",
+          options: [],
         },
         {
           fieldProps: {

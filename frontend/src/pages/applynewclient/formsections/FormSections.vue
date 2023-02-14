@@ -16,7 +16,7 @@
     <!------ location information section ------->
     <FormSectionTemplate
       :data="formData.state.location"
-      :sectionProps="locationSectionSchema"
+      :sectionProps="computedLocationSectionSchema"
     />
   </div>
 </template>
@@ -29,10 +29,11 @@ import { businessTypeSectionSchema } from "../formsectionschemas/BusinessTypeSec
 import { informationSectionSchema } from "../formsectionschemas/InformationSectionSchema";
 import { locationSectionSchema } from "../formsectionschemas/LocationSectionSchema";
 import { formData } from "../../../store/newclientform/FormData";
-import { useFetch } from "../../../services/forestClient.service";
+import { useFetch, useFetchTo } from "../../../services/forestClient.service";
 
-const conversionFn = (code: any) => {return {value: code.code, text: code.description}};
-const { data } = useFetch('/api/clients/activeClientTypeCodes',{method:'get',initialData:[]});
+const conversionFn = (code: any) => {return {value: code.code, text: code.name}};
+const { data: activeClientTypeCodes } = useFetch('/api/clients/activeClientTypeCodes', { method:'get', initialData:[] });
+const { data: countryCodes } = useFetch('/api/clients/activeCountryCode?page=0&size=250', { method:'get', initialData:[] }); //TODO: Change to autocomplete
 
 const computedBusinessTypeSectionSchema = computed(() => {
   const schemaCopy = businessTypeSectionSchema
@@ -40,7 +41,7 @@ const computedBusinessTypeSectionSchema = computed(() => {
                         .map(p => p.fieldProps.modelName == "clientType" ? 
                               {
                                 ...p,
-                                options: data.value.map(conversionFn)
+                                options: activeClientTypeCodes.value.map(conversionFn)
                               } 
                             : p);
 
@@ -65,6 +66,35 @@ const computedInformationSchemaType = computed(() => {
     return formData.state.businessType.clientType;
   }
   return "";
+});
+
+const computedLocationSectionSchema = computed(() => {
+  const subFields = {};
+
+  locationSectionSchema.content.forEach((p) => {
+    if (p.subfields) subFields[p.fieldProps.modelName] = p.subfields;
+  });
+
+  Object.keys(subFields).forEach((subKey) => {
+    const subfields = subFields[subKey];
+    const newsubfields = subfields.map((p) =>
+      p.fieldProps.modelName == "country"
+        ? { ...p, options: countryCodes.value.map(conversionFn) }
+        : p
+    );
+    subFields[subKey] = newsubfields;
+  });
+
+  const newSchema = locationSectionSchema.content.map((p) =>
+    p.fieldProps.modelName in subFields
+      ? { ...p, subfields: subFields[p.fieldProps.modelName] }
+      : p
+  );
+
+  return {
+    ...locationSectionSchema,
+    content: newSchema,
+  };
 });
 </script>
 
