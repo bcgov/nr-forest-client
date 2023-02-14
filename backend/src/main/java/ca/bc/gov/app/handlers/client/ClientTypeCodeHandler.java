@@ -7,6 +7,7 @@ import static org.springdoc.core.fn.builders.requestbody.Builder.requestBodyBuil
 import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
 
 import ca.bc.gov.app.dto.client.ClientCodeTypeDto;
+import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.handlers.BaseHandler;
 import ca.bc.gov.app.service.client.ClientService;
 import ca.bc.gov.app.util.HandlerUtil;
@@ -38,7 +39,7 @@ public class ClientTypeCodeHandler implements BaseHandler {
             .body(
                 clientService
                     .findActiveClientTypeCodes(LocalDate.now()),
-                ClientCodeTypeDto.class
+                ClientNameCodeDto.class
             )
             .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())
             .doOnError(HandlerUtil.handleError());
@@ -63,8 +64,8 @@ public class ClientTypeCodeHandler implements BaseHandler {
                             arraySchemaBuilder()
                                 .schema(
                                     schemaBuilder()
-                                        .name("ClientCodeType")
-                                        .implementation(ClientCodeTypeDto.class)
+                                        .name("NameCode")
+                                        .implementation(ClientNameCodeDto.class)
                                 )
                         )
                         .mediaType(MediaType.APPLICATION_JSON_VALUE)

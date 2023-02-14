@@ -14,9 +14,64 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  tests-backend:
+    name: Backend Unit Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+        with:
+          commands: |
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: backend
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=forest-client-backend
+          sonar_project_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
+
+  tests-legacy:
+    name: Legacy Unit Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+        with:
+          commands: |
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: legacy
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=forest-client-legacy
+          sonar_project_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
+
+  tests-frontend:
+    name: Frontend Unit Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: bcgov-nr/action-test-and-analyse@v0.0.1
+        with:
+          commands: |
+            npm ci
+            npm run test
+          dir: frontend
+          sonar_args: >
+            -Dsonar.exclusions=**/coverage/**,**/examples/**,**/pages/**
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=forest-client-frontend
+            -Dsonar.tests=src/tests
+          sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+
   codeql:
     name: Semantic Code Analysis
     runs-on: ubuntu-22.04
+    needs:
+      - tests-backend
+      - tests-legacy
+      - tests-frontend
     permissions:
       actions: read
       contents: read
