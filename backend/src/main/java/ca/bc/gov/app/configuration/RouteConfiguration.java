@@ -64,9 +64,9 @@ public class RouteConfiguration {
                           .required(true)
                           .examples(
                               Map.of(
-                                  "json",
+                                  MediaType.APPLICATION_JSON_VALUE,
                                   new Example().value(MediaType.APPLICATION_JSON_VALUE),
-                                  "eventstream",
+                                  MediaType.TEXT_EVENT_STREAM_VALUE,
                                   new Example().value(MediaType.TEXT_EVENT_STREAM_VALUE)
                               )
                           )
@@ -79,9 +79,9 @@ public class RouteConfiguration {
                           .required(true)
                           .examples(
                               Map.of(
-                                  "json",
+                                  MediaType.APPLICATION_JSON_VALUE,
                                   new Example().value(MediaType.APPLICATION_JSON_VALUE),
-                                  "eventstream",
+                                  MediaType.TEXT_EVENT_STREAM_VALUE,
                                   new Example().value(MediaType.TEXT_EVENT_STREAM_VALUE)
                               )
                           )
