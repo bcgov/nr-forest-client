@@ -1,9 +1,8 @@
 # These owners will be the default owners for everything in the repo
 # unless a later match takes precedence, and will be requested for
 # review when someone opens a pull request.
-*       @paulushcgcj @mamartinezmejia
-
-# Backend changes requires review from backend developers
-/backend/       @paulushcgcj @brunoMarchiEncora
-
+*       @paulushcgcj @mamartinezmejia @brunoMarchiEncora
+/backend/       @paulushcgcj @brunoMarchiEncora @mamartinezmejia
+/frontend/       @paulushcgcj @mamartinezmejia
+/legacy/       @paulushcgcj @brunoMarchiEncora @mamartinezmejia
 /.github/workflows/       @paulushcgcj @DerekRoberts
