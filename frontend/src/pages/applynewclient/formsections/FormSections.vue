@@ -33,7 +33,7 @@ import { useFetch, useFetchTo } from "../../../services/forestClient.service";
 
 const conversionFn = (code: any) => {return {value: code.code, text: code.name}};
 const { data: activeClientTypeCodes } = useFetch('/api/clients/activeClientTypeCodes', { method:'get', initialData:[] });
-const { data: countryCodes } = useFetch('/api/clients/activeCountryCode?page=0&size=250', { method:'get', initialData:[] }); //TODO: Change to autocomplete
+const { data: countryCodes } = useFetch('/api/clients/activeCountryCodes?page=0&size=250', { method:'get', initialData:[] }); //TODO: Change to autocomplete
 
 const computedBusinessTypeSectionSchema = computed(() => {
   const schemaCopy = businessTypeSectionSchema
