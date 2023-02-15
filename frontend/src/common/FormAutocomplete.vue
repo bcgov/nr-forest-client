@@ -15,8 +15,8 @@
 <script setup lang="ts">
 import { computed, watch, ref } from "vue";
 import type { PropType } from "vue";
-import FormFieldTemplate from "./FormFieldTemplate.vue";
-import type { FormFieldAutoCompleteTemplateType } from "../core/FormType";
+import FormFieldTemplate from "@/common/FormFieldTemplate.vue";
+import type { FormFieldAutoCompleteTemplateType } from "@/core/FormType";
 
 //This is the event bus used to update the data and do the autocomplete
 import EventBus from "@/services/EventBus";
@@ -27,7 +27,7 @@ const props = defineProps({
   // form field template props (optional): label, required, tooltip, note, id, errorMsg
   fieldProps: {
     type: Object as PropType<FormFieldAutoCompleteTemplateType>,
-    default: { id: "form-input",dataListId: "form-input-datalist" },
+    default: { id: "form-input", dataListId: "form-input-datalist", minSizeSearch:3 },
   },
   value: { type: [String, Number], required: true },
   disabled: { type: Boolean, default: false },
@@ -56,7 +56,7 @@ EventBus.addEventListener(props.fieldProps.dataListId!, (ev: any) => {
 //We watch the text data being changed
 watch(computedValue,(curr,_) =>{
   //When the text data is bigger than the expected size
-  if(curr.toString().length >= 3){
+  if(curr.toString().length >= props.fieldProps.minSizeSearch!){
     //We emmit an event to notify that the data changed
     EventBus.emit(props.fieldProps.id,curr);    
   }

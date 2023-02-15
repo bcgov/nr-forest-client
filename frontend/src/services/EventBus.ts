@@ -16,7 +16,6 @@ class EventBus extends EventTarget {
   }
 
   public emit(type: string, data?: any): void {
-    console.log('dispatching event', type, data);
     this.dispatchEvent(new EventBusEvent({ type, data }));
   }
 }
