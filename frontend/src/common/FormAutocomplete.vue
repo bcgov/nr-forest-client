@@ -4,10 +4,9 @@
     </b-form-input>
     <datalist :id="fieldProps.dataListId">
       <option 
-        v-for="entry in searchData"
-        :key="entry.code"
-        :value="entry.name">
-        {{entry.name}}
+        v-for="entry in searchData"        
+        :value="entry.value">
+        {{entry.text}}
       </option>      
     </datalist>    
   </FormFieldTemplate>
@@ -18,7 +17,9 @@ import { computed, reactive, watch, ref } from "vue";
 import type { PropType } from "vue";
 import FormFieldTemplate from "./FormFieldTemplate.vue";
 import type { FormFieldAutoCompleteTemplateType } from "../core/FormType";
-import { useFetchTo } from "../services/forestClient.service";
+import {FormSelectOptionType} from "@/core/FormType";
+//This is the event bus used to update the data and do the autocomplete
+import EventBus from "@/services/EventBus";
 
 const emit = defineEmits(["updateValue"]);
 
@@ -42,11 +43,24 @@ const computedValue = computed({
   },
 });
 
-let searchData = ref([]);
+let datalistSelection:FormSelectOptionType[] = [];
 
+//The property associated to the datalist
+let searchData = ref(datalistSelection);
+
+//We wire the response of the event to the update of the datalist
+EventBus.addEventListener(props.fieldProps.dataListId!, (ev: any) => {
+  //We update the searchData with the event data  
+  //The data should be previously converted
+  searchData.value = ev.data;
+});
+
+//We watch the text data being changed
 watch(computedValue,(curr,_) =>{
+  //When the text data is bigger than the expected size
   if(curr.toString().length >= 3){
-    useFetchTo(`/api/orgbook/name/${curr}`,searchData,{method: 'get'});
+    //We emmit an event to notify that the data changed
+    EventBus.emit(props.fieldProps.id,curr);    
   }
 });
 </script>

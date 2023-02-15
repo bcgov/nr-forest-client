@@ -22,18 +22,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed } from "vue";
 import _ from "lodash";
 import FormSectionTemplate from "./FormSectionTemplate.vue";
-import { businessTypeSectionSchema } from "../formsectionschemas/BusinessTypeSectionSchema";
-import { informationSectionSchema } from "../formsectionschemas/InformationSectionSchema";
-import { locationSectionSchema } from "../formsectionschemas/LocationSectionSchema";
-import { formData } from "../../../store/newclientform/FormData";
-import { useFetch, useFetchTo } from "../../../services/forestClient.service";
+import { businessTypeSectionSchema } from "@/pages/applynewclient/formsectionschemas/BusinessTypeSectionSchema";
+import { informationSectionSchema } from "@/pages/applynewclient/formsectionschemas/InformationSectionSchema";
+import { locationSectionSchema } from "@/pages/applynewclient/formsectionschemas/LocationSectionSchema";
+import { formData } from "@/store/newclientform/FormData";
+import { useFetch } from "@/services/forestClient.service";
+import { useBusinessNameIdAutoComplete, useCountryIdAutoComplete, conversionFn } from "@/services/FetchService";
 
-const conversionFn = (code: any) => {return {value: code.code, text: code.name}};
+
+//We call it here to enable autocomplete
+useBusinessNameIdAutoComplete();
+//We will update the provinces based on the province update
+const { data: provinceCodes } = useCountryIdAutoComplete();
+
 const { data: activeClientTypeCodes } = useFetch('/api/clients/activeClientTypeCodes', { method:'get', initialData:[] });
-const { data: countryCodes } = useFetch('/api/clients/activeCountryCode?page=0&size=250', { method:'get', initialData:[] }); //TODO: Change to autocomplete
+const { data: countryCodes } = useFetch('/api/clients/activeCountryCodes?page=0&size=250', { method:'get', initialData:[] });
 
 const computedBusinessTypeSectionSchema = computed(() => {
   const schemaCopy = businessTypeSectionSchema
@@ -77,9 +83,18 @@ const computedLocationSectionSchema = computed(() => {
 
   Object.keys(subFields).forEach((subKey) => {
     const subfields = subFields[subKey];
+
+    console.log( subfields );
+
+
     const newsubfields = subfields.map((p) =>
       p.fieldProps.modelName == "country"
         ? { ...p, options: countryCodes.value.map(conversionFn) }
+        : p
+    )
+    .map((p) =>
+      p.fieldProps.modelName == "province"
+        ? { ...p, options: provinceCodes.value.map(conversionFn) }
         : p
     );
     subFields[subKey] = newsubfields;
