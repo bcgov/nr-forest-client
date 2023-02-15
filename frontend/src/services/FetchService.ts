@@ -19,7 +19,9 @@ export const useBusinessNameIdAutoComplete = () => {
   });
   //We watch for changes on the data to emit back to the datalist
   watch(data, (dataFetched, _) => {
-    EventBus.emit("businessNameListId", data.value.map(conversionFn));
+    EventBus.emit("businessNameListId", data.value.map((code: any) => {
+      return { value: code.name, text: code.name }
+    }));
   });
 };
 
