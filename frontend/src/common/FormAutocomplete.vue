@@ -13,11 +13,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, watch, ref } from "vue";
+import { computed, watch, ref } from "vue";
 import type { PropType } from "vue";
 import FormFieldTemplate from "./FormFieldTemplate.vue";
 import type { FormFieldAutoCompleteTemplateType } from "../core/FormType";
-import {FormSelectOptionType} from "@/core/FormType";
+
 //This is the event bus used to update the data and do the autocomplete
 import EventBus from "@/services/EventBus";
 
@@ -43,10 +43,8 @@ const computedValue = computed({
   },
 });
 
-let datalistSelection:FormSelectOptionType[] = [];
-
 //The property associated to the datalist
-let searchData = ref(datalistSelection);
+let searchData = ref([]);
 
 //We wire the response of the event to the update of the datalist
 EventBus.addEventListener(props.fieldProps.dataListId!, (ev: any) => {

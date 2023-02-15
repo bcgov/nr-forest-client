@@ -24,13 +24,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import _ from "lodash";
-import FormSectionTemplate from "./FormSectionTemplate.vue";
+import FormSectionTemplate from "@/pages/applynewclient/formsections/FormSectionTemplate.vue";
 import { businessTypeSectionSchema } from "@/pages/applynewclient/formsectionschemas/BusinessTypeSectionSchema";
 import { informationSectionSchema } from "@/pages/applynewclient/formsectionschemas/InformationSectionSchema";
 import { locationSectionSchema } from "@/pages/applynewclient/formsectionschemas/LocationSectionSchema";
 import { formData } from "@/store/newclientform/FormData";
 import { useFetch } from "@/services/forestClient.service";
-import { useBusinessNameIdAutoComplete, useCountryIdAutoComplete, conversionFn } from "@/services/FetchService";
+import { useBusinessNameIdAutoComplete, useCountryIdAutoComplete, conversionFn } from "@/services/FetchService.ts";
 
 
 //We call it here to enable autocomplete
@@ -84,9 +84,6 @@ const computedLocationSectionSchema = computed(() => {
   Object.keys(subFields).forEach((subKey) => {
     const subfields = subFields[subKey];
 
-    console.log( subfields );
-
-
     const newsubfields = subfields.map((p) =>
       p.fieldProps.modelName == "country"
         ? { ...p, options: countryCodes.value.map(conversionFn) }
@@ -115,7 +112,6 @@ const computedLocationSectionSchema = computed(() => {
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { FormSelectOptionType } from "../../../core/FormType";
 export default defineComponent({
   name: "ApplyNewClientPage",
 });
