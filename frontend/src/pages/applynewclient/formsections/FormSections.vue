@@ -40,6 +40,7 @@ const { data: provinceCodes } = useCountryIdAutoComplete();
 
 const { data: activeClientTypeCodes } = useFetch('/api/clients/activeClientTypeCodes', { method:'get', initialData:[] });
 const { data: countryCodes } = useFetch('/api/clients/activeCountryCodes?page=0&size=250', { method:'get', initialData:[] });
+const { data: contactTypeCodes } = useFetch('/api/clients/activeContactTypeCodes', { method:'get', initialData:[] });
 
 const computedBusinessTypeSectionSchema = computed(() => {
   const schemaCopy = businessTypeSectionSchema
@@ -75,38 +76,37 @@ const computedInformationSchemaType = computed(() => {
 });
 
 const computedLocationSectionSchema = computed(() => {
-  const subFields = {};
 
-  locationSectionSchema.content.forEach((p) => {
-    if (p.subfields) subFields[p.fieldProps.modelName] = p.subfields;
-  });
-
-  Object.keys(subFields).forEach((subKey) => {
-    const subfields = subFields[subKey];
-
-    const newsubfields = subfields.map((p) =>
-      p.fieldProps.modelName == "country"
-        ? { ...p, options: countryCodes.value.map(conversionFn) }
-        : p
-    )
-    .map((p) =>
-      p.fieldProps.modelName == "province"
-        ? { ...p, options: provinceCodes.value.map(conversionFn) }
-        : p
-    );
-    subFields[subKey] = newsubfields;
-  });
-
-  const newSchema = locationSectionSchema.content.map((p) =>
-    p.fieldProps.modelName in subFields
-      ? { ...p, subfields: subFields[p.fieldProps.modelName] }
-      : p
-  );
-
-  return {
-    ...locationSectionSchema,
-    content: newSchema,
+  const updatedOptions = (field: any, modelName: string, options: any) => {
+    if (field.fieldProps && field.fieldProps.modelName == modelName) {
+      return { ...field, options: options.value.map(conversionFn) }
+    }
+    else {
+      return field;
+    }                      
   };
+
+  const deepSearch = (target) => {
+    if (typeof target === 'object') {
+      for (let key in target) {
+            
+        if (typeof target[key] === 'object') {
+          if (key === 'subfields') {        
+            const newsubfields = target[key]
+                                  .map((p) => updatedOptions(p, "country", countryCodes))
+                                  .map((p) => updatedOptions(p, "province", provinceCodes))
+                                  .map((p) => updatedOptions(p, "contactType", contactTypeCodes));
+            target[key] = newsubfields;     
+          }
+          deepSearch(target[key]);
+        }       
+      }
+    }
+    return target;
+  }
+
+  const newSchema = deepSearch(locationSectionSchema);
+  return { ...locationSectionSchema, newSchema};
 });
 </script>
 
