@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.orgbook;
 
 
+import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.orgbook.OrgBookResultListResponse;
 import ca.bc.gov.app.dto.orgbook.OrgBookTopicListResponse;
 import ca.bc.gov.app.util.CoreUtil;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -22,7 +24,7 @@ public class OrgBookApiService {
     this.orgBookApi = orgBookApi;
   }
 
-  public Mono<OrgBookResultListResponse> findByClientName(String clientName) {
+  public Flux<ClientNameCodeDto> findByClientName(String clientName) {
     return
         orgBookApi
             .get()
@@ -30,11 +32,20 @@ public class OrgBookApiService {
                 uriBuilder
                     .path("/v3/search/autocomplete")
                     .queryParam("q", CoreUtil.encodeString(clientName))
+                    .queryParam("inactive", "false")
+                    .queryParam("revoked", "false")
                     .build(new HashMap<>())
             )
             .accept(MediaType.APPLICATION_JSON)
             .exchangeToMono(
-                clientResponse -> clientResponse.bodyToMono(OrgBookResultListResponse.class))
+                clientResponse -> clientResponse.bodyToMono(OrgBookResultListResponse.class)
+            )
+            .log()
+            .flatMapMany(
+                orgBookResultListResponse -> Flux.fromIterable(orgBookResultListResponse.results()))
+            .filter(orgBookNameDto -> orgBookNameDto.subType().equalsIgnoreCase("entity_name"))
+            .map(orgBookNameDto -> new ClientNameCodeDto(orgBookNameDto.topicSourceId(),
+                orgBookNameDto.value()))
             .doOnNext(content -> log.info("OrgBook Name Lookup {} -> {}", clientName, content));
 
   }

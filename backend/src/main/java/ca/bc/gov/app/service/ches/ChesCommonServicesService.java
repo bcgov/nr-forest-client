@@ -1,6 +1,6 @@
 package ca.bc.gov.app.service.ches;
 
-import ca.bc.gov.app.configuration.ChesConfiguration;
+import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.ches.ChesMailBodyType;
 import ca.bc.gov.app.dto.ches.ChesMailEncoding;
 import ca.bc.gov.app.dto.ches.ChesMailErrorResponse;
@@ -38,10 +38,10 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class ChesCommonServicesService {
 
-  private final ChesConfiguration configuration;
+  private final ForestClientConfiguration configuration;
   private final WebClient webClient;
 
-  public ChesCommonServicesService(ChesConfiguration configuration,
+  public ChesCommonServicesService(ForestClientConfiguration configuration,
                                    @Qualifier("chesApi") WebClient webClient) {
     this.configuration = configuration;
     this.webClient = webClient;
@@ -70,7 +70,7 @@ public class ChesCommonServicesService {
     return
         webClient
             .post()
-            .uri(configuration.getUri())
+            .uri(configuration.getChes().getUri())
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + getToken())
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .body(Mono.just(request), ChesMailRequest.class)
@@ -134,11 +134,11 @@ public class ChesCommonServicesService {
 
       OAuthClientRequest request =
           OAuthClientRequest
-              .tokenLocation(configuration.getTokenUrl())
+              .tokenLocation(configuration.getChes().getTokenUrl())
               .setGrantType(GrantType.CLIENT_CREDENTIALS)
-              .setClientId(configuration.getClientId())
-              .setClientSecret(configuration.getClientSecret())
-              .setScope(configuration.getScope())
+              .setClientId(configuration.getChes().getClientId())
+              .setClientSecret(configuration.getChes().getClientSecret())
+              .setScope(configuration.getChes().getScope())
               .buildBodyMessage();
 
       return oauthClient

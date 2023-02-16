@@ -12,11 +12,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
-@ConfigurationProperties("ca.bc.gov.nrs.ches")
-public class ChesConfiguration {
+@ConfigurationProperties("ca.bc.gov.nrs.forest")
+public class ForestConfiguration {
   private String uri;
-  private String tokenUrl;
-  private String clientId;
-  private String clientSecret;
-  private String scope;
 }

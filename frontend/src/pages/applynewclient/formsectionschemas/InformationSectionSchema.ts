@@ -42,24 +42,16 @@ export const informationSectionSchema: {
     content: informationSectionCommonSchema,
   },
   soleProprietorship: {
-    container: { title: "Individual information", id: "information" },
+    container: { title: "Sole proprietor name", id: "information" },
     content: [
-      ...informationSectionCommonSchema,
       {
         fieldProps: {
-          label: "Registration number",
-          id: "registrationNumberId",
-          modelName: "registrationNumber",
+          label: "Business Name",
+          id: "businessNameId",
+          modelName: "businessName",
+          required: true,
         },
         type: "input",
-      },
-      {
-        fieldProps: {
-          label: "Are you 'doing business as'?",
-          id: "doingBusinessAsIndId",
-          modelName: "doingBusinessAsInd",
-        },
-        type: "checkbox",
       },
       {
         fieldProps: {
@@ -67,55 +59,26 @@ export const informationSectionSchema: {
           id: "doingBusinessAsId",
           modelName: "doingBusinessAsName",
         },
-        type: "input",
-        depend: {
-          fieldModelName: "doingBusinessAsInd",
-          value: true,
-        },
+        type: "input"
       },
     ],
   },
   company: {
     container: {
-      title: "Company information",
+      title: "Registered business name",
       id: "information",
     },
     content: [
       {
         fieldProps: {
-          label: "Registered business name",
+          label: "Start typing to search for your B.C. registered business",
           id: "businessNameId",
+          dataListId: "businessNameListId",
           modelName: "businessName",
           required: true,
-          note: "Start typing to search BC registered businesses database",
+          note: "The name must be the same as it is in BC Registries",
         },
-        type: "input",
-      },
-      {
-        fieldProps: {
-          label: "Incorporation or registration number",
-          id: "registrationNumberId",
-          modelName: "registrationNumber",
-          required: true,
-        },
-        type: "input",
-      },
-      {
-        fieldProps: {
-          label: "WorkSafe BC number",
-          id: "workSafeBcNumberId",
-          modelName: "workSafeBcNumber",
-        },
-        type: "input",
-      },
-      {
-        fieldProps: {
-          label: "Are you 'doing business as'?",
-          id: "doingBusinessAsIndId",
-          modelName: "doingBusinessAsInd",
-          required: true,
-        },
-        type: "checkbox",
+        type: "autocomplete",
       },
       {
         fieldProps: {
@@ -123,11 +86,7 @@ export const informationSectionSchema: {
           id: "doingBusinessAsId",
           modelName: "doingBusinessAsName",
         },
-        type: "input",
-        depend: {
-          fieldModelName: "doingBusinessAsInd",
-          value: true,
-        },
+        type: "input"
       },
     ],
   },

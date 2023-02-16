@@ -49,6 +49,8 @@ springdoc:
     groups:
       enabled: true
   show-actuator: false
+  swagger-ui:
+    path: /
 
 frontend:
   url: ${FRONTEND_URL:*}
@@ -73,3 +75,21 @@ ca:
           host: ${POSTGRESQL_HOST:localhost}:5432
           username: ${POSTGRESQL_USER:user}
           password: ${POSTGRESQL_PASSWORD:passwd}
+        frontend:
+          url: ${FRONTEND_URL:*}
+          cors:
+            headers:
+              - x-requested-with
+              - authorization
+              - Content-Type
+              - Authorization
+              - credential
+              - X-XSRF-TOKEN
+              - access-control-allow-origin
+            methods:
+              - OPTIONS
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            age: 5m

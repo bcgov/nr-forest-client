@@ -1,9 +1,9 @@
 <template>
   <div>
-    <!------ begin section ------->
+    <!------ businessType section ------->
     <FormSectionTemplate
-      :data="formData.state.begin"
-      :sectionProps="beginSectionSchema"
+      :data="formData.state.businessType"
+      :sectionProps="computedBusinessTypeSectionSchema"
     />
 
     <!------ company/individual information section ------->
@@ -16,41 +16,91 @@
     <!------ location information section ------->
     <FormSectionTemplate
       :data="formData.state.location"
-      :sectionProps="locationSectionSchema"
+      :sectionProps="computedLocationSectionSchema"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import _ from "lodash";
 import FormSectionTemplate from "./FormSectionTemplate.vue";
-import { beginSectionSchema } from "../formsectionschemas/BeginSectionSchema";
+import { businessTypeSectionSchema } from "../formsectionschemas/BusinessTypeSectionSchema";
 import { informationSectionSchema } from "../formsectionschemas/InformationSectionSchema";
 import { locationSectionSchema } from "../formsectionschemas/LocationSectionSchema";
 import { formData } from "../../../store/newclientform/FormData";
+import { useFetch, useFetchTo } from "../../../services/forestClient.service";
 
-// based on client type, show different schema contenct for the information section
+const conversionFn = (code: any) => {return {value: code.code, text: code.name}};
+const { data: activeClientTypeCodes } = useFetch('/api/clients/activeClientTypeCodes', { method:'get', initialData:[] });
+const { data: countryCodes } = useFetch('/api/clients/activeCountryCodes?page=0&size=250', { method:'get', initialData:[] }); //TODO: Change to autocomplete
+
+const computedBusinessTypeSectionSchema = computed(() => {
+  const schemaCopy = businessTypeSectionSchema
+                        .content
+                        .map(p => p.fieldProps.modelName == "clientType" ? 
+                              {
+                                ...p,
+                                options: activeClientTypeCodes.value.map(conversionFn)
+                              } 
+                            : p);
+
+  return {
+    ...businessTypeSectionSchema,
+    content: schemaCopy
+  };
+}); 
+
 const computedInformationSchemaType = computed(() => {
   if (
-    _.has(formData, ["state", "begin", "clientType"]) &&
-    formData.state.begin.clientType !== ""
+    _.has(formData, ["state", "businessType", "clientType"]) &&
+    formData.state.businessType.clientType !== ""
   ) {
     if (
-      formData.state.begin.clientType != "individual" &&
-      formData.state.begin.clientType != "soleProprietorship"
+      formData.state.businessType.clientType != "individual" &&
+      formData.state.businessType.clientType != "soleProprietorship"
     ) {
       return "company";
     }
     // other types share the same schema as company
-    return formData.state.begin.clientType;
+    return formData.state.businessType.clientType;
   }
   return "";
+});
+
+const computedLocationSectionSchema = computed(() => {
+  const subFields = {};
+
+  locationSectionSchema.content.forEach((p) => {
+    if (p.subfields) subFields[p.fieldProps.modelName] = p.subfields;
+  });
+
+  Object.keys(subFields).forEach((subKey) => {
+    const subfields = subFields[subKey];
+    const newsubfields = subfields.map((p) =>
+      p.fieldProps.modelName == "country"
+        ? { ...p, options: countryCodes.value.map(conversionFn) }
+        : p
+    );
+    subFields[subKey] = newsubfields;
+  });
+
+  const newSchema = locationSectionSchema.content.map((p) =>
+    p.fieldProps.modelName in subFields
+      ? { ...p, subfields: subFields[p.fieldProps.modelName] }
+      : p
+  );
+
+  return {
+    ...locationSectionSchema,
+    content: newSchema,
+  };
 });
 </script>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { FormSelectOptionType } from "../../../core/FormType";
 export default defineComponent({
   name: "ApplyNewClientPage",
 });

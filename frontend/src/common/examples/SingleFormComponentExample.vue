@@ -55,7 +55,7 @@ import FormRadioGroup from "../FormRadioGroup.vue";
 import CollapseCard from "../CollapseCard.vue";
 import type {
   FormFieldTemplateType,
-  FromSelectOptionType,
+  FormSelectOptionType,
   FormCheckBoxGroupOptionType,
   FormRadioGroupOptionType,
 } from "../../core/FormType";
@@ -94,7 +94,7 @@ const selectFieldProps: FormFieldTemplateType = {
   note: "Example of note text",
   tooltip: "tooltip placeholder",
 };
-const selectOptions: Array<FromSelectOptionType> = [
+const selectOptions: Array<FormSelectOptionType> = [
   { value: "1", text: "a" },
   { value: "2", text: "b" },
 ];

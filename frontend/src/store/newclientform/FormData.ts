@@ -8,9 +8,7 @@ import type { CommonObjectType } from "../../core/FormType";
 // the change of a global state can be detected by all the components are using the value
 
 const initialFormData = {
-  begin: {
-    reason: [""],
-    tenureType: [""],
+  businessType: {
     clientType: "",
   },
   information: {
@@ -18,10 +16,8 @@ const initialFormData = {
     lastName: "",
     birthdate: "",
     registrationNumber: "",
-    doingBusinessAsInd: false,
     doingBusinessAsName: "",
     businessName: "",
-    workSafeBcNumber: "",
   },
   location: {
     address: [
@@ -31,6 +27,8 @@ const initialFormData = {
         province: "",
         city: "",
         postalCode: "",
+        businessPhone: "",
+        email: "",
         index: 0, // any array data need to have this index, as an auto generated random number to be as unique identity
         contact: [
           {
@@ -92,13 +90,6 @@ export const formData = {
       _.set(formData.state, "information.lastName", lastName);
       _.set(formData.state, "information.birthdate", birthdate);
     },
-    setPrepopulateFieldsForBusiness(
-      businessName: string,
-      registryNumber: string
-    ) {
-      _.set(formData.state, "information.businessName", businessName);
-      _.set(formData.state, "information.registrationNumber", registryNumber);
-    },
   },
 
   // This section will manage the actions needed for our store
@@ -108,7 +99,7 @@ export const formData = {
       formData.actions.cleanErrorMsg();
       // set value for prepopulate fields, and disabled prepoplated fields
       if (
-        dataPath == "begin.clientType" &&
+        dataPath == "businessType.clientType" &&
         formData.getters.getFormDataByPath(dataPath) == "individual"
       ) {
         disabledFields.actions.setDisabledFieldsForSection("information", [
@@ -121,19 +112,6 @@ export const formData = {
           "prepopulated firstname",
           "prepolulated lastname",
           "1990-01-01"
-        );
-      } else if (
-        dataPath == "begin.clientType" &&
-        formData.getters.getFormDataByPath(dataPath) != "soleProprietorship"
-      ) {
-        disabledFields.actions.setDisabledFieldsForSection("information", [
-          "information.businessName",
-          "information.registrationNumber",
-        ]);
-        // todo: put hardcode data here, should be the information get from login and bc registry
-        formData.mutations.setPrepopulateFieldsForBusiness(
-          "prepopulated business name",
-          "prepolulated number"
         );
       }
     },
@@ -150,10 +128,10 @@ export const formData = {
       // todo: this is the function to check every feild if meet the validation rules, remove the error message if met
       // some hard code examples to remove validationError after user makes the correctness
       if (!_.isEmpty(validationResult)) {
-        if (formData.state.begin.clientType == "individual")
+        if (formData.state.businessType.clientType == "individual")
           validationResult.actions.removeValidationError(
-            "begin",
-            "begin.clientType"
+            "businessType",
+            "businessType.clientType"
           );
 
         // an example to check all array data for form group

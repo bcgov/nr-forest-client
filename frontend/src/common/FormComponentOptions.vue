@@ -1,5 +1,12 @@
 <template>
   <div>
+    <FormAutocomplete
+      v-if="schema.type == 'autocomplete'"
+      :fieldProps="computedFieldPropsForSingleComponent(schema.fieldProps)"
+      :value="data"
+      :disabled="computedDisableForSingleComponent"
+      @updateValue="updateFormValue"
+    />
     <FormInput
       v-if="schema.type == 'input'"
       :fieldProps="computedFieldPropsForSingleComponent(schema.fieldProps)"
@@ -78,6 +85,7 @@ import FormCheckboxGroup from "./FormCheckboxGroup.vue";
 import FormRadioGroup from "./FormRadioGroup.vue";
 import FormGroup from "./FormGroup.vue";
 import FormTable from "./FormTable.vue";
+import FormAutocomplete from "./FormAutocomplete.vue"
 import type {
   FormComponentSchemaType,
   FormFieldValidationResultType,

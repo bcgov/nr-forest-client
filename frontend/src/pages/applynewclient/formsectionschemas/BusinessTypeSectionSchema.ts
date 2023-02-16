@@ -33,32 +33,13 @@ const formTenureType: Array<FormRadioGroupOptionType> = [
   },
 ];
 
-// each id is aligned with the object key in the newClientData
-export const beginSectionSchema: FormSectionSchemaType = {
+export const businessTypeSectionSchema: FormSectionSchemaType = {
   container: {
-    title: "Let's begin",
-    id: "begin",
+    title: "Business Type",
+    id: "businessType",
   }, // property for CollapseCard when use it
   content: [
     // form content for each CollapseCard
-    {
-      fieldProps: {
-        label: "Why are you applying?",
-        id: "reasonId",
-        modelName: "reason",
-      },
-      type: "radiogroup",
-      options: formApplyReason,
-    },
-    {
-      fieldProps: {
-        label: "Select your tenure type",
-        id: "tenureTypeId",
-        modelName: "tenureType",
-      },
-      type: "radiogroup",
-      options: formTenureType,
-    },
     {
       fieldProps: {
         label: "What type of business are you?",
@@ -67,13 +48,7 @@ export const beginSectionSchema: FormSectionSchemaType = {
         modelName: "clientType",
       },
       type: "select",
-      options: [
-        {
-          value: "individual",
-          text: "Individual",
-        },
-        { value: "company", text: "Company" },
-      ],
+      options: [],
     },
   ],
 };

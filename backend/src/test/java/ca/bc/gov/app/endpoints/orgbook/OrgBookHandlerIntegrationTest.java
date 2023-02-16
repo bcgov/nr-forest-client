@@ -118,7 +118,7 @@ class OrgBookHandlerIntegrationTest extends AbstractTestContainerIntegrationTest
         .stubFor(
             get(urlPathEqualTo("/v3/search/autocomplete"))
                 .withQueryParam("q", equalTo(CoreUtil.encodeString("Jhon")))
-                .willReturn(okJson(TestConstants.ORGBOOK_NAMELOOKUP_EMPTY))
+                .willReturn(okJson(TestConstants.ORGBOOK_INCORP_EMPTY))
         );
 
     client
