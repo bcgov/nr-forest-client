@@ -14,7 +14,7 @@
     <artifactId>nr-forest-client-backend</artifactId>
     <version>0.0.1</version>
     <name>nr-forest-client-backend</name>
-    <description>Starting NR Forest Client Backend</description>
+    <description>Starting NR Forest Client</description>
 
     <licenses>
         <license>
@@ -437,7 +437,7 @@
             <plugin>
                 <groupId>org.cyclonedx</groupId>
                 <artifactId>cyclonedx-maven-plugin</artifactId>
-                <version>2.7.4</version>
+                <version>2.7.5</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
