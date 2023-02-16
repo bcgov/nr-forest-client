@@ -116,6 +116,7 @@ create table if not exists nrfc.submission_location (
     street_address              varchar(50)    	not null,    
     country_code                varchar(2)      not null,
     province_code               varchar(2)      not null,
+    city_name                   varchar(100)    not null,
     postal_code                 varchar(10)     not null,
     business_phone_number       varchar(20)     not null,
     email_address               varchar(100)    not null,
