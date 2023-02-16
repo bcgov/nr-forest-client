@@ -15,7 +15,7 @@ const initialFormData = {
     firstName: "",
     lastName: "",
     birthdate: "",
-    registrationNumber: "",
+    incorporationNumber: "",
     doingBusinessAsName: "",
     businessName: "",
   },
@@ -34,9 +34,7 @@ const initialFormData = {
           {
             contactType: "",
             name: "",
-            cellPhone: "",
             businessPhone: "",
-            faxNumber: "",
             email: "",
             index: 0, // need use this index to be unique identity when display data in form tables
           },
