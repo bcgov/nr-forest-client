@@ -76,7 +76,7 @@ export const informationSectionSchema: {
           dataListId: "businessNameListId",
           modelName: "businessName",
           required: true,
-          note: "The name must be the same as it is in BC Registries",
+          note: "The name must be the same as it is in BC Registries"
         },
         type: "autocomplete",
       },
