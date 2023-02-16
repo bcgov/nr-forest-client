@@ -14,7 +14,7 @@
     <artifactId>nr-forest-client-backend</artifactId>
     <version>0.0.1</version>
     <name>nr-forest-client-backend</name>
-    <description>Starting NR Forest Client Backend</description>
+    <description>Starting NR Forest Client</description>
 
     <licenses>
         <license>
