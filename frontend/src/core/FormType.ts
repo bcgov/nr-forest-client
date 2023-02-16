@@ -18,6 +18,7 @@ export interface FormFieldAutoCompleteTemplateType {
   note?: string;
   tooltip?: string;
   errorMsg?: string;
+  minSizeSearch?: number;
 }
 
 export interface FormSelectOptionType {
