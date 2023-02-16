@@ -41,7 +41,8 @@ export const locationSectionSchema: FormSectionSchemaType = {
             modelName: "province",
             required: true,
           },
-          type: "input",
+          type: "select",
+          options: [],
         },
         {
           fieldProps: {
@@ -105,7 +106,7 @@ export const locationSectionSchema: FormSectionSchemaType = {
               },
               type: "select",
               options: [],
-            },            
+            },
             {
               fieldProps: {
                 label: "Daytime phone number",

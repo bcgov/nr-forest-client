@@ -20,6 +20,7 @@ import type {
   FormFieldTemplateType,
   FormSelectOptionType,
 } from "../core/FormType";
+import EventBus from "@/services/EventBus";
 
 const props = defineProps({
   // form field template props (optional): label, required, tooltip, note, id, errorMsg
@@ -45,6 +46,7 @@ const computedValue = computed({
   },
   set(newValue: CommonObjectType | string) {
     emit("updateValue", newValue, props.fieldProps.modelName);
+    EventBus.emit(props.fieldProps.id,newValue);
   },
 });
 </script>
