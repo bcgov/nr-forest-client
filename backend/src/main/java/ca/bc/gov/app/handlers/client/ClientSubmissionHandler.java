@@ -1,12 +1,8 @@
 package ca.bc.gov.app.handlers.client;
 
 import static org.springdoc.core.fn.builders.apiresponse.Builder.responseBuilder;
-import static org.springdoc.core.fn.builders.arrayschema.Builder.arraySchemaBuilder;
-import static org.springdoc.core.fn.builders.content.Builder.contentBuilder;
 import static org.springdoc.core.fn.builders.requestbody.Builder.requestBodyBuilder;
-import static org.springdoc.core.fn.builders.schema.Builder.schemaBuilder;
 
-import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.handlers.BaseHandler;
 import ca.bc.gov.app.service.client.ClientService;
