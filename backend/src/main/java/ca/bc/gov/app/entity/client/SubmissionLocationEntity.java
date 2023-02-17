@@ -19,10 +19,10 @@ import org.springframework.data.relational.core.mapping.Table;
 public class SubmissionLocationEntity {
   @Id
   @Column("submission_location_id")
-  private int submissionLocationId;
+  private Integer submissionLocationId;
 
   @Column("submission_id")
-  private int submissionId;
+  private Integer submissionId;
 
   @Column("street_address")
   private String streetAddress;

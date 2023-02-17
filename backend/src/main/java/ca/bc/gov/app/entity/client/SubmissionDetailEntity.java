@@ -21,10 +21,10 @@ public class SubmissionDetailEntity {
 
   @Id
   @Column("submission_detail_id")
-  private int submissionDetailId;
+  private Integer submissionDetailId;
 
   @Column("submission_id")
-  private int submissionId;
+  private Integer submissionId;
 
   @Column("incorporation_number")
   private String incorporationNumber;

@@ -22,7 +22,7 @@ import org.springframework.data.relational.core.mapping.Table;
 public class SubmissionEntity {
   @Id
   @Column("submission_id")
-  private int submissionId;
+  private Integer submissionId;
 
   @Column("submitter_user_guid")
   private String submitterUserId;
