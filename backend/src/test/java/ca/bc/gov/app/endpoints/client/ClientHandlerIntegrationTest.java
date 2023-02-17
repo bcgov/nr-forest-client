@@ -208,7 +208,7 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         );
     client
         .post()
-        .uri("/api/clients/activeContactTypeCodes")
+        .uri("/api/clients/submit")
         .body(Mono.just(clientSubmissionDto), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isOk();
