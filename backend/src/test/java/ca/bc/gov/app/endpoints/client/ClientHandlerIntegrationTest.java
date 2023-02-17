@@ -180,6 +180,7 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         );
   }
 
+  @Test
   @DisplayName("Submit client data")
   void shouldSubmitClientData() {
     ClientSubmissionDto clientSubmissionDto =
