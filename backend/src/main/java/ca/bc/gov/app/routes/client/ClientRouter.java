@@ -5,6 +5,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 
 import ca.bc.gov.app.handlers.client.ClientCountryCodeHandler;
 import ca.bc.gov.app.handlers.client.ClientProvinceCodeHandler;
+import ca.bc.gov.app.handlers.client.ClientSubmissionHandler;
 import ca.bc.gov.app.handlers.client.ClientTypeCodeHandler;
 import ca.bc.gov.app.handlers.client.ContactTypeCodeHandler;
 import ca.bc.gov.app.routes.BaseRouter;
@@ -21,8 +22,8 @@ public class ClientRouter implements BaseRouter {
   private final ClientProvinceCodeHandler provinceCodeHandler;
   private final ClientTypeCodeHandler clientHandler;
   private final ClientCountryCodeHandler countryCodeHandler;
-
   private final ContactTypeCodeHandler contactTypeCodeHandler;
+  private final ClientSubmissionHandler clientSubmissionHandler;
 
   @Override
   public String basePath() {
@@ -36,7 +37,7 @@ public class ClientRouter implements BaseRouter {
 
   @Override
   public String routeTagDescription() {
-    return "The FSA Client endpoint, responsible for returning client data";
+    return "The FSA Client endpoint, responsible for handling client data";
   }
 
   @Override
@@ -65,6 +66,12 @@ public class ClientRouter implements BaseRouter {
             accept(MediaType.ALL),
             contactTypeCodeHandler::handle,
             contactTypeCodeHandler.documentation(routeTagName())
+        )
+        .POST(
+            "/submit",
+            accept(MediaType.ALL),
+            clientSubmissionHandler::handle,
+            clientSubmissionHandler.documentation(routeTagName())
         )
         .build();
   }

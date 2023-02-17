@@ -1,16 +1,31 @@
 package ca.bc.gov.app.service.client;
 
+import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
+import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationContactEntity;
+import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationEntity;
+
+import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
+import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.entity.client.SubmissionEntity;
+import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
+import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
+import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
+import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
+import ca.bc.gov.app.repository.client.SubmissionRepository;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +34,10 @@ public class ClientService {
   private final CountryCodeRepository countryCodeRepository;
   private final ProvinceCodeRepository provinceCodeRepository;
   private final ContactTypeCodeRepository contactTypeCodeRepository;
+  private final SubmissionRepository submissionRepository;
+  private final SubmissionDetailRepository submissionDetailRepository;
+  private final SubmissionLocationRepository submissionLocationRepository;
+  private final SubmissionLocationContactRepository submissionLocationContactRepository;
 
   /**
    * <p><b>Find Active Client Type Codes</b></p>
@@ -90,5 +109,52 @@ public class ClientService {
         .map(entity -> new ClientNameCodeDto(
             entity.getContactTypeCode(),
             entity.getDescription()));
+  }
+
+  public Mono<Void> submit(ClientSubmissionDto clientSubmissionDto) {
+    String userId = "TEMPORARY_USER_ID";
+    SubmissionEntity submissionEntity =
+        new SubmissionEntity()
+            .withSubmitterUserId(userId)
+            .withSubmissionStatus(SubmissionStatusEnum.S)
+            .withSubmissionDate(LocalDateTime.now());
+
+    return submissionRepository.save(submissionEntity)
+        .map(submission ->
+            mapToSubmissionDetailEntity(
+                submission.getSubmissionId(),
+                clientSubmissionDto))
+        .flatMap(submissionDetailRepository::save)
+        .flatMap(submissionDetail ->
+            submitLocations(
+                clientSubmissionDto.clientLocationDto(),
+                submissionDetail.getSubmissionId())
+        );
+  }
+
+  private Mono<Void> submitLocations(ClientLocationDto clientLocationDto, Integer submissionId) {
+    return Flux.fromIterable(clientLocationDto
+        .clientAddressDto())
+        .flatMap(addressDto ->
+            submissionLocationRepository
+                .save(mapToSubmissionLocationEntity(submissionId, addressDto))
+                .flatMap(location ->
+                    submitLocationContacts(addressDto, location.getSubmissionLocationId())
+                )
+        )
+        .then();
+  }
+
+  private Mono<Void> submitLocationContacts(ClientAddressDto addressDto, Integer submissionLocationId) {
+    return Flux
+        .fromIterable(addressDto.clientContactDtoList())
+        .flatMap(contactDto ->
+            submissionLocationContactRepository.save(
+                mapToSubmissionLocationContactEntity(
+                    submissionLocationId,
+                    contactDto)
+            )
+        )
+        .then();
   }
 }
