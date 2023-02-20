@@ -123,7 +123,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -143,7 +143,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -166,7 +166,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -214,7 +214,7 @@ jobs:
             apps/data/test/client/app-client/db_proxy_read_only db_username | VAULT_DB_USER;
             apps/data/test/client/app-client/db_proxy_read_only db_password | VAULT_DB_PASS;
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -244,7 +244,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -272,7 +272,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -293,7 +293,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -317,7 +317,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -366,7 +366,7 @@ jobs:
             apps/data/prod/client/app-client/db_proxy_read_only db_username | VAULT_DB_USER;
             apps/data/prod/client/app-client/db_proxy_read_only db_password | VAULT_DB_PASS;
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -397,7 +397,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.1
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
