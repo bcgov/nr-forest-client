@@ -208,9 +208,12 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         );
     client
         .post()
-        .uri("/api/clients/submit")
+        .uri("/api/clients/submissions")
         .body(Mono.just(clientSubmissionDto), ClientSubmissionDto.class)
         .exchange()
-        .expectStatus().isOk();
+        .expectStatus().isCreated()
+        .expectHeader().location("/api/clients/submissions/1")
+        .expectHeader().valueEquals("x-sub-id",1)
+        .expectBody().isEmpty();
   }
 }

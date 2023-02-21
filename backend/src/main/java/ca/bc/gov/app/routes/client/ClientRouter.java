@@ -68,7 +68,7 @@ public class ClientRouter implements BaseRouter {
             contactTypeCodeHandler.documentation(routeTagName())
         )
         .POST(
-            "/submit",
+            "/submissions",
             accept(MediaType.ALL),
             clientSubmissionHandler::handle,
             clientSubmissionHandler.documentation(routeTagName())

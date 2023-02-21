@@ -58,8 +58,8 @@ public class ClientService {
         clientTypeCodeRepository
             .findActiveAt(targetDate)
             .map(entity -> new ClientNameCodeDto(
-                entity.getCode(),
-                entity.getDescription()
+                    entity.getCode(),
+                    entity.getDescription()
                 )
             );
   }
@@ -112,7 +112,7 @@ public class ClientService {
             entity.getDescription()));
   }
 
-  public Mono<Void> submit(ClientSubmissionDto clientSubmissionDto) {
+  public Mono<Integer> submit(ClientSubmissionDto clientSubmissionDto) {
     SubmissionEntity submissionEntity =
         SubmissionEntity
             .builder()
@@ -127,18 +127,21 @@ public class ClientService {
         .map(submission ->
             mapToSubmissionDetailEntity(
                 submission.getSubmissionId(),
-                clientSubmissionDto))
+                clientSubmissionDto)
+        )
         .flatMap(submissionDetailRepository::save)
         .flatMap(submissionDetail ->
             submitLocations(
                 clientSubmissionDto.clientLocationDto(),
-                submissionDetail.getSubmissionId())
+                submissionDetail.getSubmissionId()
+            )
+                .thenReturn(submissionDetail.getSubmissionId())
         );
   }
 
   private Mono<Void> submitLocations(ClientLocationDto clientLocationDto, Integer submissionId) {
     return Flux.fromIterable(clientLocationDto
-        .clientAddressDto())
+            .clientAddressDto())
         .flatMap(addressDto ->
             submissionLocationRepository
                 .save(mapToSubmissionLocationEntity(submissionId, addressDto))
@@ -149,7 +152,8 @@ public class ClientService {
         .then();
   }
 
-  private Mono<Void> submitLocationContacts(ClientAddressDto addressDto, Integer submissionLocationId) {
+  private Mono<Void> submitLocationContacts(ClientAddressDto addressDto,
+                                            Integer submissionLocationId) {
     return Flux
         .fromIterable(addressDto.clientContactDtoList())
         .flatMap(contactDto ->
