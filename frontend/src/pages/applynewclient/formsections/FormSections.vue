@@ -34,7 +34,7 @@ import { useBusinessNameIdAutoComplete, useCountryIdAutoComplete, conversionFn }
 
 
 //We call it here to enable autocomplete
-useBusinessNameIdAutoComplete();
+const { dataSelection: businessInfo } = useBusinessNameIdAutoComplete();
 //We will update the provinces based on the province update
 const { data: provinceCodes } = useCountryIdAutoComplete();
 
@@ -69,6 +69,9 @@ const computedInformationSchemaType = computed(() => {
     ) {
       return "company";
     }
+    //Force an update based on the businessInfo change during autocompletr
+    formData.state.information.incorporationNumber = businessInfo.value.code;
+
     // other types share the same schema as company
     return formData.state.businessType.clientType;
   }

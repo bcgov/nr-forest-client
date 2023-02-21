@@ -25,6 +25,7 @@ public class OrgBookApiService {
   }
 
   public Flux<ClientNameCodeDto> findByClientName(String clientName) {
+    log.info("Looking up on OrgBook for {}",clientName);
     return
         orgBookApi
             .get()
@@ -40,7 +41,6 @@ public class OrgBookApiService {
             .exchangeToMono(
                 clientResponse -> clientResponse.bodyToMono(OrgBookResultListResponse.class)
             )
-            .log()
             .flatMapMany(
                 orgBookResultListResponse -> Flux.fromIterable(orgBookResultListResponse.results()))
             .filter(orgBookNameDto -> orgBookNameDto.subType().equalsIgnoreCase("entity_name"))
