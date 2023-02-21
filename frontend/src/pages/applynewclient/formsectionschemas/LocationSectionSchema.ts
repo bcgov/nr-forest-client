@@ -2,7 +2,7 @@ import type { FormSectionSchemaType } from "../../../core/FormType";
 
 export const locationSectionSchema: FormSectionSchemaType = {
   container: {
-    title: "Location Information",
+    title: "Mailing address",
     id: "location",
   },
   content: [
@@ -10,10 +10,11 @@ export const locationSectionSchema: FormSectionSchemaType = {
       fieldProps: {
         id: "addressId",
         modelName: "address",
+        note: "This information is from BC Registries. If it's incorrect, go to BC Registries to update it before continuing"
       },
       type: "group",
-      addButtonText: "+ Add another address",
-      deleteButtonText: "- Remove this address",
+      addButtonText: "+ Add another address or location",
+      deleteButtonText: "- Remove this address or location",
       subfields: [
         {
           fieldProps: {
@@ -80,14 +81,24 @@ export const locationSectionSchema: FormSectionSchemaType = {
         },
         {
           fieldProps: {
-            label: "Contact",
+            label: "Business Contacts",
             id: "contactId",
             modelName: "contact",
           },
-          type: "group",
-          addButtonText: "+ Add another contact",
-          deleteButtonText: "- Remove this contact",
+          type: "table",
+          addButtonText: "+ Add another person for this address or location",
+          deleteButtonText: "- Remove person for this address or location",
           subfields: [
+            {
+              fieldProps: {
+                label: "Role",
+                id: "contactTypeId",
+                modelName: "contactType",
+                required: true,
+              },
+              type: "select",
+              options: [],
+            },
             {
               fieldProps: {
                 label: "Person or department name",
@@ -99,17 +110,7 @@ export const locationSectionSchema: FormSectionSchemaType = {
             },
             {
               fieldProps: {
-                label: "Contact type",
-                id: "contactTypeId",
-                modelName: "contactType",
-                required: true,
-              },
-              type: "select",
-              options: [],
-            },
-            {
-              fieldProps: {
-                label: "Daytime phone number",
+                label: "Phone number",
                 id: "businessPhoneId",
                 modelName: "businessPhone",
                 required: true,
