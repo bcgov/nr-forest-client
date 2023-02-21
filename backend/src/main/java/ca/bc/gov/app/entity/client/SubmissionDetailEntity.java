@@ -11,7 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table(name = "submission", schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
+@Table(name = "submission_detail", schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
 @Data
 @Builder
 @NoArgsConstructor
@@ -50,7 +50,7 @@ public class SubmissionDetailEntity {
   @Column("doing_business_as_ind")
   private String doingBusinessAsInd;
 
-  @Column("doingBusinessAsName")
+  @Column("doing_business_as_name")
   private String doingBusinessAsName;
 
   @Column("has_additional_location_ind")

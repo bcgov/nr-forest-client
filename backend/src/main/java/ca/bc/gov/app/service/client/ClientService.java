@@ -20,6 +20,7 @@ import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -112,12 +113,15 @@ public class ClientService {
   }
 
   public Mono<Void> submit(ClientSubmissionDto clientSubmissionDto) {
-    String userId = "TEMPORARY_USER_ID";
     SubmissionEntity submissionEntity =
-        new SubmissionEntity()
-            .withSubmitterUserId(userId)
-            .withSubmissionStatus(SubmissionStatusEnum.S)
-            .withSubmissionDate(LocalDateTime.now());
+        SubmissionEntity
+            .builder()
+            .createdBy(UUID.randomUUID().toString()) //TODO: receive user id
+            .submissionDate(LocalDateTime.now())
+            .submitterUserId(UUID.randomUUID().toString()) //TODO: set the correct user
+            .submissionStatus(SubmissionStatusEnum.S)
+            .submissionDate(LocalDateTime.now())
+            .build();
 
     return submissionRepository.save(submissionEntity)
         .map(submission ->

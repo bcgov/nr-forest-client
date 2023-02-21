@@ -144,7 +144,16 @@ create table if not exists nrfc.submission_location_contact (
 --
 
 create sequence if not exists nrfc.submission_id_seq start 1;
+alter table nrfc.submission alter column submission_id set default nextval('nrfc.submission_id_seq');
+
 create sequence if not exists nrfc.submission_detail_id_seq start 1;
+alter table nrfc.submission_detail alter column submission_detail_id set default nextval('nrfc.submission_detail_id_seq');
+
+create sequence if not exists nrfc.submission_location_seq start 1;
+alter table nrfc.submission_location alter column submission_location_id set default nextval('nrfc.submission_location_seq');
+
+create sequence if not exists nrfc.submission_location_contact_seq start 1;
+alter table nrfc.submission_location_contact alter column submission_location_contact_id set default nextval('nrfc.submission_location_contact_seq');
 
 -- 
 -- INSERT STATIC DATA

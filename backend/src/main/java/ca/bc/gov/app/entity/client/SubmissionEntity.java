@@ -2,24 +2,28 @@ package ca.bc.gov.app.entity.client;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.With;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table(name = "submission", schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
 @Data
-@Builder
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @With
-public class SubmissionEntity {
+public class SubmissionEntity extends BaseEntity {
   @Id
   @Column("submission_id")
   private Integer submissionId;
@@ -31,15 +35,7 @@ public class SubmissionEntity {
   private SubmissionStatusEnum submissionStatus;
 
   @Column("submission_date")
-  private LocalDateTime submissionDate;
+  @Builder.Default
+  private LocalDateTime submissionDate = LocalDateTime.now();
 
-  @Column("update_timestamp")
-  private LocalDateTime updateTimestamp;
-
-  @NotNull
-  @Column("create_user")
-  private String createUser;
-
-  @Column("update_user")
-  private String updateUser;
 }
