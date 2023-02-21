@@ -187,7 +187,7 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         new ClientSubmissionDto(
             new ClientBusinessTypeDto("A"),
             new ClientInformationDto(
-                "James", "Bond", "2007/07/07",
+                "James", "Bond", "2007-07-07",
                 "12345", "MI6", "Espionage"),
             new ClientLocationDto(
                 List.of(
