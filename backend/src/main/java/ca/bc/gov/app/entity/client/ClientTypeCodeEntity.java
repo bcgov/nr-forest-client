@@ -21,7 +21,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @With
-public class ClientTypeCodeEntity extends BaseEntity {
+public class ClientTypeCodeEntity extends ExpirableBaseEntity {
 
   @Id
   @Column("client_type_code")
