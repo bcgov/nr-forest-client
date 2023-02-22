@@ -1,8 +1,15 @@
 package ca.bc.gov.app.endpoints.client;
 
+import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientBusinessTypeDto;
+import ca.bc.gov.app.dto.client.ClientContactDto;
+import ca.bc.gov.app.dto.client.ClientInformationDto;
+import ca.bc.gov.app.dto.client.ClientLocationDto;
+import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -15,6 +22,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriBuilder;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @DisplayName("Integrated Test | FSA Client Controller")
@@ -170,5 +178,42 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
             Arguments.of(11, 1, "GP", "General Partner"),
             Arguments.of(22, 1, "TP", "EDI Trading Partner")
         );
+  }
+
+  @Test
+  @DisplayName("Submit client data")
+  void shouldSubmitClientData() {
+    ClientSubmissionDto clientSubmissionDto =
+        new ClientSubmissionDto(
+            new ClientBusinessTypeDto("A"),
+            new ClientInformationDto(
+                "James", "Bond", "2007-07-07",
+                "12345", "MI6", "Espionage"),
+            new ClientLocationDto(
+                List.of(
+                    new ClientAddressDto(
+                        "3570 S Las Vegas Blvd",
+                        "US",
+                        "NV",
+                        "Las Vegas",
+                        "89109",
+                        "007",
+                        "bond_james_bond@007.com",
+                        0,
+                        List.of(
+                            new ClientContactDto(
+                                "LP", "James", "007",
+                                "bond_james_bond@007.com", 0))
+                    )))
+        );
+    client
+        .post()
+        .uri("/api/clients/submissions")
+        .body(Mono.just(clientSubmissionDto), ClientSubmissionDto.class)
+        .exchange()
+        .expectStatus().isCreated()
+        .expectHeader().location("/api/clients/submissions/1")
+        .expectHeader().valueEquals("x-sub-id",1)
+        .expectBody().isEmpty();
   }
 }
