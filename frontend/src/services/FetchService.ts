@@ -5,7 +5,7 @@ import { ref, watch } from "vue";
 import { useFetchTo } from "@/services/forestClient.service";
 import EventBus, { EventBusEvent } from "@/services/EventBus";
 
-export const conversionFn = (code: any) => { return { value: code.code, text: code.name } };
+export const conversionFn = (code: any) => { return { value: {value: code.code, text: code.name}, text: code.name } };
 
 /**
  * Autocomplete function for the business name

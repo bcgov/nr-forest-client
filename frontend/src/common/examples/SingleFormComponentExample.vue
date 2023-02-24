@@ -52,7 +52,7 @@ import FormInput from "../FormInput.vue";
 import FormSelect from "../FormSelect.vue";
 import FormCheckboxGroup from "../FormCheckboxGroup.vue";
 import FormRadioGroup from "../FormRadioGroup.vue";
-import CollapseCard from "../CollapseCard.vue";
+import CollapseCard from "../CollapseCardComponent.vue";
 import type {
   FormFieldTemplateType,
   FormSelectOptionType,

@@ -20,6 +20,8 @@ import { inject, ref } from "vue";
 import MainHeader from "./common/MainHeader.vue";
 import ReviewApplicationPage from "./pages/ReviewApplicationPage.vue";
 import ApplyNewClientPage from "./pages/applynewclient/ApplyNewClientPage.vue";
+import ApplyClientNumber from "./pages/applyclientnumber/ApplyClientNumber.vue";
+import SingleFormComponentExample from "./common/examples/SingleFormComponentExample.vue";
 import type { Ref, DefineComponent } from "vue";
 import type { KeycloakInstance } from "keycloak-js";
 import { navBlue, navSelectBlue } from "./utils/color";
@@ -35,7 +37,8 @@ if (
 ) {
   tabs = [{ title: "Review Applications", content: ReviewApplicationPage }];
 } else {
-  tabs = [{ title: "Apply a New Client", content: ApplyNewClientPage }];
+  tabs = [{ title: "Apply a New Client", content: ApplyClientNumber },
+          { title: "Apply a New Client (JSON schema)", content: ApplyNewClientPage }];
 }
 </script>
 

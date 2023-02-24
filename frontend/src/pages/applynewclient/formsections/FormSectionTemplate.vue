@@ -56,7 +56,7 @@
 import { computed } from "vue";
 import _ from "lodash";
 import type { PropType } from "vue";
-import CollapseCard from "../../../common/CollapseCard.vue";
+import CollapseCard from "../../../common/CollapseCardComponent.vue";
 import FormComponentOptions from "../../../common/FormComponentOptions.vue";
 import { formData } from "../../../store/newclientform/FormData";
 import { validationResult } from "../../../store/newclientform/FormValidation";

@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import FormComponentOptions from "../FormComponentOptions.vue";
-import CollapseCard from "../CollapseCard.vue";
+import CollapseCard from "../CollapseCardComponent.vue";
 
 /* ------- container props ----------*/
 const containerProps = {
