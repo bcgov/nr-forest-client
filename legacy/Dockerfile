@@ -4,7 +4,7 @@ COPY . ./
 RUN chmod +x ./mvnw
 RUN ./mvnw clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
 
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:17.0.6_10-jdk-alpine@sha256:b99f9457ad5cabdfa02935d1048082dd79d318685cfa0ca79a8f623c052c406a
 LABEL maintainer="Paulo Gomes da Cruz Junior <paulo.cruz@encora.com>"
 
 WORKDIR /app
