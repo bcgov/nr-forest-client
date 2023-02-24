@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: default
       POSTGRES_DB: default
     hostname: database
-    image: postgres:12
+    image: postgres:12@sha256:43b752e182ad5fd6b12d468f369853257fc88b3ab3494a55bacb60dc7af00c6d
     restart: always
     ports:
       - "5432:5432"
@@ -85,7 +85,7 @@ services:
       ORACLE_PASSWORD: legacy
       ORACLE_DATABASE: legacy
     hostname: legacydb
-    image: gvenzl/oracle-xe:21-slim-faststart
+    image: gvenzl/oracle-xe:21-slim-faststart@sha256:ddd814078ed25fd05f7c343b796923609300bf438115b342329a2dd19a91b9d6
     restart: always
     ports:
       - "1521:1521"    
