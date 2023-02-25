@@ -29,16 +29,14 @@ import { navBlue, navSelectBlue } from "./utils/color";
 const keycloak: KeycloakInstance = inject("keycloak");
 let tabs: Ref<Array<{ title: string; content: DefineComponent }>> = ref([]);
 
-if (
-  keycloak &&
-  keycloak.tokenParsed &&
-  keycloak.tokenParsed.identity_provider &&
-  keycloak.tokenParsed.identity_provider == "idir"
-) {
+if (keycloak &&
+    keycloak.tokenParsed &&
+    keycloak.tokenParsed.identity_provider &&
+    keycloak.tokenParsed.identity_provider == "idir") {
   tabs = [{ title: "Review Applications", content: ReviewApplicationPage }];
-} else {
-  tabs = [{ title: "Apply a New Client", content: ApplyClientNumber },
-          { title: "Apply a New Client (JSON schema)", content: ApplyNewClientPage }];
+} 
+else {
+  tabs = [{ title: "Apply a New Client", content: ApplyClientNumber }];
 }
 </script>
 
@@ -62,6 +60,15 @@ export default defineComponent({
   color: rgba(0, 0, 0, 0.87);
 }
 
+.card-header {
+  /*padding: 0.5rem 0.5rem 0.5rem 0.5rem !important;*/
+}
+
+.row {
+  padding: 0px 0px 0px 0px !important;
+  margin: 0px 0px 0px 0px !important;
+}
+
 .row > * {
   padding: 0px 0px 0px 0px !important;
   margin: 0px 0px 0px 0px !important;
@@ -79,9 +86,8 @@ export default defineComponent({
   max-width: 100% !important;
 }
 
-.col {
-  padding: 0px 0px 0px 0px;
-  margin: 0px 0px 0px 0px;
+.col-3 {
+  padding-right: 1rem !important;
 }
 
 /* ------------ nav bar ------------------- */

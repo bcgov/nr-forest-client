@@ -8,11 +8,13 @@
 
             <Label label="What type of business are you?" 
                    :required="true" />
-            <b-form-select id="businessTypeId"
-                           v-model="formData.businessType.clientType" 
-                           :options="clientTypeCodes" />        
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+                <b-form-select id="businessTypeId"
+                               v-model="formData.businessType.clientType" 
+                               :options="clientTypeCodes" />        
+            </div>
             <ValidationMessages fieldId = 'businessTypeId'
-                                :validationMessages="getValidationMessages"  />
+                                :validationMessages="validationMessages"  />
         </CollapseCard>
 
         <CollapseCard title="Registered business" 
@@ -21,9 +23,63 @@
                       defaultOpen>
             <Label label="Start typing to search for your B.C. registered business" 
                    :required="true" />
+            
+            <!-- TODO: Change to Autocomplete -->
+            <b-form-input id="businessNameId"
+                          v-model="formData.businessInformation.businessName" />
             <Note note="The name must be the same as it is in BC Registries" />
         </CollapseCard>
 
+        <CollapseCard title="Mailing address" 
+                      id="mailingAddressId"
+                      :display="displayCommonSections"
+                      defaultOpen>
+
+            <label>
+                <strong>This information is from BC Registries. If it's incorrect, go to BC Registries to update it before continuing.</strong>
+            </label>
+        </CollapseCard>
+
+        <CollapseCard title="Form submitter information" 
+                      id="submitterInformationId"
+                      :display="displayCommonSections"
+                      defaultOpen>
+
+            <label>
+                <strong>This information is from your BCeID. If it's incorrect, go to BCeID login page to update it before submitting your form.</strong>
+            </label>
+
+            <br /><br />
+            <b-row>
+                <b-col cols="3">
+                    <Label label="First name" 
+                           :required="true" />
+                    <b-form-input v-model="formData.submitterInformation.firstName" />
+                    <ValidationMessages fieldId = 'submitterFirstNameId'
+                                        :validationMessages="validationMessages"  />
+                </b-col>
+                <b-col cols="3">
+                    <Label label="Last name" 
+                           :required="true" />
+                    <b-form-input v-model="formData.submitterInformation.lastName" />
+                    <ValidationMessages fieldId = 'submitterLastNameId'
+                                        :validationMessages="validationMessages"  />
+                </b-col>
+                <b-col cols="3">
+                    <Label label="Phone number" 
+                           :required="true" />
+                    <b-form-input v-model="formData.submitterInformation.phoneNumber" />
+                    <ValidationMessages fieldId = 'submitterPhoneNumberId'
+                                        :validationMessages="validationMessages"  />
+                </b-col>
+                <b-col cols="3">
+                    <Label label="Email address" 
+                           :required="true" />
+                    <b-form-input v-model="formData.submitterInformation.email" />
+                </b-col>
+            </b-row>
+
+        </CollapseCard>
     </div>
 </template>
 
@@ -44,7 +100,26 @@ const clientTypeCodes = computed(() => {
 
 const displayBusinessInformation = computed(() => {
     return null != formData.value.businessType.clientType && 
-            "I" != formData.value.businessType.clientType.value;
+            "I" != formData.value.businessType.clientType.value &&
+            "Z" != formData.value.businessType.clientType.value;
+});
+
+const displayCommonSections = computed(() => {
+    if (null != formData.value.businessType.clientType && 
+            "I" == formData.value.businessType.clientType.value) {
+        //TODO
+        return true;
+    }
+    else { 
+        if (null != formData.value.businessType.clientType && 
+            null != formData.value.businessInformation && 
+            formData.value.businessInformation.businessName.trim().length > 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 });
 
 //---- Functions ----//
@@ -52,11 +127,18 @@ const submit = () => {
   console.log("formdata = ", JSON.stringify(formData));
 };
 
-const getValidationMessages = computed(() => {
+const validationMessages = computed(() => {
     //TODO: Get this from BE. This is an example.
-    /*const validationMessages = [{ 
-        fieldId: "businessTypeId", 
-        errorMsg: "What type of business are you? is required"}];*/
+    /*const validationMessages = [
+        { 
+            fieldId: "businessTypeId", 
+            errorMsg: "What type of business are you? is required"
+        },
+        { 
+            fieldId: "submitterFirstNameId", 
+            errorMsg: "First Name is required"
+        }
+    ];*/
     
     const validationMessages = null;
     return validationMessages;

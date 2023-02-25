@@ -21,7 +21,7 @@ export const formDataDto = {
         businessPhone: "",
         email: "",
         index: 0, // any array data need to have this index, as an auto generated random number to be as unique identity
-        contact: [
+        contacts: [
           {
             contactType: "",
             name: "",
@@ -32,5 +32,11 @@ export const formDataDto = {
         ],
       },
     ],
+  },
+  submitterInformation: {
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    email: "",
   },
 };

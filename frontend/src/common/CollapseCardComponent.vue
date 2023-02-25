@@ -14,20 +14,20 @@
           :aria-controls="id"
           style="
             width: 100%;
-            margin-top: 8px;
-            margin-bottom: 8px;
+            margin-top: 0.3rem;
+            margin-bottom: 0.3rem;
             font-weight: bold;
             display: flex;
           "
         >
           <div v-if="!alwaysOpen">
-            <bi-arrow-up-short
+            <bi-chevron-up
               v-if="visible"
-              style="margin-bottom: 2px; margin-right: 2px"
+              style="margin-right: 0.5rem; margin-top: -0.5rem; width: 0.9rem; height: 0.9rem;"
             />
-            <bi-arrow-down-short
+            <bi-chevron-down
               v-else
-              style="margin-bottom: 2px; margin-right: 2px"
+              style="margin-right: 0.5rem; margin-top: -0.5rem; width: 0.9rem; height: 0.9rem;"
             />
           </div>
           {{ title }}
@@ -50,8 +50,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import PrimarySquareButton from "./buttons/PrimarySquareButton.vue";
-import BiArrowUpShort from "~icons/bi/arrow-up-short";
-import BiArrowDownShort from "~icons/bi/arrow-down-short";
+import BiChevronUp from "~icons/bi/chevron-up";
+import BiChevronDown from "~icons/bi/chevron-down";
 
 const props = defineProps({
   title: String,
