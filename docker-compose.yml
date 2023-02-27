@@ -47,9 +47,7 @@ services:
     hostname: backend
     image: ghcr.io/bcgov/nr-forest-client/backend
     links:
-      - database
-    ports:
-      - "3000:3000"
+      - database    
     logging:
       driver: "json-file"
       options:
