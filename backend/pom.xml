@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.1</version>
+        <version>3.0.3</version>
         <relativePath/>
     </parent>
 
@@ -373,7 +373,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <id>default-cli</id>
@@ -382,7 +382,7 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <dependencyCovergence/>
+                                <dependencyConvergence/>
                                 <requireMavenVersion>
                                     <version>[3.2,)</version>
                                     <message>Invalid Maven version. It should be at least 3.2</message>

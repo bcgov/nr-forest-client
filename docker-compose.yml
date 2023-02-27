@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: default
       POSTGRES_DB: default
     hostname: database
-    image: postgres:12
+    image: postgres:13@sha256:0876afe95f304506a42c6fcd5b3b272340c394389086dcd33fe4c1ac999ff118
     restart: always
     ports:
       - "5432:5432"
@@ -47,9 +47,7 @@ services:
     hostname: backend
     image: ghcr.io/bcgov/nr-forest-client/backend
     links:
-      - database
-    ports:
-      - "3000:3000"
+      - database    
     logging:
       driver: "json-file"
       options:
@@ -87,7 +85,7 @@ services:
       ORACLE_PASSWORD: legacy
       ORACLE_DATABASE: legacy
     hostname: legacydb
-    image: gvenzl/oracle-xe:21-slim-faststart
+    image: gvenzl/oracle-xe:21-slim-faststart@sha256:ddd814078ed25fd05f7c343b796923609300bf438115b342329a2dd19a91b9d6
     restart: always
     ports:
       - "1521:1521"    
