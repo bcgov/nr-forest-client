@@ -4,7 +4,10 @@
 
 <script setup lang="ts">
 const props = defineProps({
-  note: String
+  note: { 
+    type: [String, Number], 
+    required: true 
+  },
 });
 </script>
 <script lang="ts">

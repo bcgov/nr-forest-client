@@ -23,12 +23,13 @@
                       defaultOpen>
             <Label label="Start typing to search for your B.C. registered business" 
                    :required="true" />
-            
-            <!-- TODO: Change to Autocomplete -->
        
+            <!-- TODO: Value should be an object. It displays the name, but on the back, this should contain:
+            the code, the name, the id, and the address (for BC registry) -->
             <Autocomplete id="businessNameId"
                           :value="formData.businessInformation.businessName"
                           :searchData="businessNames"
+                          datalistId="businessNameListId"
                           @updateValue="formData.businessInformation.businessName = $event" />
             <Note note="The name must be the same as it is in BC Registries" />
         </CollapseCard>
@@ -102,7 +103,7 @@ const clientTypeCodes = computed(() => {
     return activeClientTypeCodes.value.map(conversionFn);
 });
 
-//TODO: Hardcoded for now
+//TODO: Hardcoded for now. Use API.
 const businessNames = [
   {
     "code": "FM0234310",
@@ -127,9 +128,10 @@ const displayCommonSections = computed(() => {
         return true;
     }
     else { 
+        //TODO: Change businessName as Object
         if (null != formData.value.businessType.clientType && 
             null != formData.value.businessInformation && 
-            formData.value.businessInformation.businessName.trim().length > 0) {
+            null != formData.value.businessInformation.businessName) {
             return true;
         }
         else {

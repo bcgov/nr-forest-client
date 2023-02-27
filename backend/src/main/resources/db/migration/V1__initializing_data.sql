@@ -1,9 +1,16 @@
 -- 
--- DROPPING TABLES IF EXIST AS THIS IS THE INIT FILE TO CREATE THE DB
+-- DROPPING TABLES AND SEQUENCES IF EXIST AS THIS IS THE INIT FILE TO CREATE THE DB
 --
+drop sequence if exists nrfc.submission_id_seq;
+drop sequence if exists nrfc.submission_detail_id_seq;
+drop sequence if exists nrfc.submission_location_seq;
+drop sequence if exists nrfc.submission_location_contact_seq;
+drop sequence if exists nrfc.submission_submitter_seq;
+
 drop table if exists nrfc.submission_detail;
 drop table if exists nrfc.submission_location_contact;
 drop table if exists nrfc.submission_location;
+drop table if exists nrfc.submission_submitter;
 drop table if exists nrfc.submission_contact;
 drop table if exists nrfc.submission;
 drop table if exists nrfc.client_type_code;
@@ -139,6 +146,17 @@ create table if not exists nrfc.submission_location_contact (
     constraint submission_location_contact_contact_type_code_fk foreign key (contact_type_code) references nrfc.contact_type_code(contact_type_code)
 );
 
+create table if not exists nrfc.submission_submitter (
+    submission_submitter_id     integer			not null,
+	submission_id               integer			not null,
+    first_name                  varchar(100)    null,
+	last_name                 	varchar(100)    null,
+    phone_number       			varchar(20)     not null,
+    email_address               varchar(100)    not null,
+    constraint submission_submitter_id_pk primary key (submission_submitter_id),
+    constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id)
+);
+
 -- 
 -- SEQUENCES
 --
@@ -155,8 +173,12 @@ alter table nrfc.submission_location alter column submission_location_id set def
 create sequence if not exists nrfc.submission_location_contact_seq start 1;
 alter table nrfc.submission_location_contact alter column submission_location_contact_id set default nextval('nrfc.submission_location_contact_seq');
 
+create sequence if not exists nrfc.submission_submitter_seq start 1;
+alter table nrfc.submission_submitter alter column submission_submitter_id set default nextval('nrfc.submission_submitter_seq');
+
 -- 
 -- INSERT STATIC DATA
+-- Note: We have created draft scripts for the onboarding flow, but these are subject to change pending feedback from the UX team. Once we receive their confirmation, we can finalize the scripts and move forward with the final version.
 --
 
 insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('P', 'In Progress', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
@@ -177,6 +199,9 @@ insert into nrfc.client_type_code (client_type_code, description, effective_date
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('S', 'Society', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('T', 'First Nation Tribal Council', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('U', 'Unregistered Company', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('Z', 'Sole Proprietorship', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
+
+update nrfc.client_type_code set expiry_date =  current_timestamp where client_type_code not in ('C', 'Z');
 
 insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('AP', 'Accounts Payable', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
 insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('AR', 'Accounts Receivable', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;

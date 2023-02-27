@@ -11,8 +11,15 @@
   import BiQuestionCircleFill from "~icons/bi/question-circle-fill";
   
   const props = defineProps({
-    fieldId: String,
-    validationMessages: { type: Array, default: null },
+    fieldId: { 
+      type: String, 
+      required: true 
+    },
+    validationMessages: { 
+      type: Array, 
+      required: true,
+      default: null 
+    },
   });
 
   const getErrorMessage = (fieldId: string) => {

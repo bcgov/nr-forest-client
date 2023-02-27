@@ -8,7 +8,7 @@ export const formDataDto = {
     birthdate: "",
     incorporationNumber: "",
     doingBusinessAsName: "",
-    businessName: "",
+    businessName: null,
   },
   location: {
     addresses: [

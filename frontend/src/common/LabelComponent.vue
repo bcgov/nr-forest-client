@@ -19,7 +19,10 @@ import BiAsterisk from "~icons/bi/asterisk";
 import BiQuestionCircleFill from "~icons/bi/question-circle-fill";
 
 const props = defineProps({
-  label: String,
+  label: { 
+    type: String, 
+    required: true 
+  },
   required: {
     type: Boolean,
     default: false,
