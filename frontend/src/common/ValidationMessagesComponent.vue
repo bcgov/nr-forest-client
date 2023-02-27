@@ -6,7 +6,7 @@
     </div>
 </template>
   
-  <script setup lang="ts">
+<script setup lang="ts">
   import BiAsterisk from "~icons/bi/asterisk";
   import BiQuestionCircleFill from "~icons/bi/question-circle-fill";
   
@@ -22,19 +22,19 @@
                                 .map(p => p.errorMsg);
     return errorMsg.toString();
   };
-  </script>
-  <script lang="ts">
+</script>
+
+<script lang="ts">
   import { defineComponent } from "vue";
   export default defineComponent({
     name: "ValidationMessageComponent",
   });
-  </script>
+</script>
   
-  <style scoped>
+<style scoped>
 .err-msg {
   color: #de4b50;
   font-size: 12px;
   margin-top: 2px;
 }
-  </style>
-  
+</style>  

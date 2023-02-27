@@ -19,9 +19,7 @@
 import { inject, ref } from "vue";
 import MainHeader from "./common/MainHeader.vue";
 import ReviewApplicationPage from "./pages/ReviewApplicationPage.vue";
-import ApplyNewClientPage from "./pages/applynewclient/ApplyNewClientPage.vue";
 import ApplyClientNumber from "./pages/applyclientnumber/ApplyClientNumber.vue";
-import SingleFormComponentExample from "./common/examples/SingleFormComponentExample.vue";
 import type { Ref, DefineComponent } from "vue";
 import type { KeycloakInstance } from "keycloak-js";
 import { navBlue, navSelectBlue } from "./utils/color";

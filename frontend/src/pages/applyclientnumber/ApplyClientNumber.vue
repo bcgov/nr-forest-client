@@ -25,8 +25,11 @@
                    :required="true" />
             
             <!-- TODO: Change to Autocomplete -->
-            <b-form-input id="businessNameId"
-                          v-model="formData.businessInformation.businessName" />
+       
+            <Autocomplete id="businessNameId"
+                          :value="formData.businessInformation.businessName"
+                          :searchData="businessNames"
+                          @updateValue="formData.businessInformation.businessName = $event" />
             <Note note="The name must be the same as it is in BC Registries" />
         </CollapseCard>
 
@@ -88,6 +91,7 @@ import { formDataDto } from "../../dto/ApplyClientNumberDto";
 import CollapseCard from "../../common/CollapseCardComponent.vue";
 import Label from "../../common/LabelComponent.vue";
 import Note from "../../common/NoteComponent.vue";
+import Autocomplete from "../../common/AutocompleteComponent.vue";
 import ValidationMessages from "../../common/ValidationMessagesComponent.vue";
 
 //---- Form Data ----//
@@ -97,6 +101,18 @@ const { data: activeClientTypeCodes } = useFetch('/api/clients/activeClientTypeC
 const clientTypeCodes = computed(() => {
     return activeClientTypeCodes.value.map(conversionFn);
 });
+
+//TODO: Hardcoded for now
+const businessNames = [
+  {
+    "code": "FM0234310",
+    "name": "PACIFIC GEOTECH SYSTEMS"
+  },
+  {
+    "code": "BC0605515",
+    "name": "PACIFIC GEOTECH SYSTEMS LTD."
+  }
+];
 
 const displayBusinessInformation = computed(() => {
     return null != formData.value.businessType.clientType && 
