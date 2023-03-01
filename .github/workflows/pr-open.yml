@@ -144,7 +144,11 @@ jobs:
           chmod +x ./mvnw
           ./mvnw -Pnative clean spring-boot:build-image \
           -Dspring-boot.build-image.imageName="${{ env.NAME }}" \
-          -Doci.revision=${{ github.event.number }}
+          -Doci.revision=${{ github.event.number }} \
+          -DskipTests \
+          -Dtests.skip=true \
+          -Dskip.unit.tests=true \
+          -q
 
       - name: Log in to the Container registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9

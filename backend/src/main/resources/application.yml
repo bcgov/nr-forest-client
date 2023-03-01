@@ -43,6 +43,7 @@ management:
       include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
 
 springdoc:
+  enable-native-support: true
   webjars:
     prefix: /v3
   api-docs:
@@ -51,10 +52,6 @@ springdoc:
   show-actuator: false
   swagger-ui:
     path: /
-
-frontend:
-  url: ${FRONTEND_URL:*}
-
 
 ca:
   bc:
