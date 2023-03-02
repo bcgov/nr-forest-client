@@ -23,18 +23,21 @@ import { computed, ref } from 'vue';
 
 const props = defineProps({
   value: { 
-    type: [String, Number], 
+    type: String, 
     required: true 
   },
   id: { 
-    type: [String, Number], 
+    type: String, 
     required: true 
   },
   datalistId: { 
-    type: [String, Number], 
+    type: String, 
     required: true 
   },
-  searchData: Object,
+  searchData: {
+    type: Object,
+    required: true
+  }
 });
 
 const emit = defineEmits(["updateValue"]);

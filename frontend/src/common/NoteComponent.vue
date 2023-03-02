@@ -5,7 +5,7 @@
 <script setup lang="ts">
 const props = defineProps({
   note: { 
-    type: [String, Number], 
+    type: String, 
     required: true 
   },
 });

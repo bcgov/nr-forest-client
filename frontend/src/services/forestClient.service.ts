@@ -1,5 +1,7 @@
 import { ref } from "vue";
 import axios from "axios";
+import type { Address } from "../dto/ApplyClientNumberDto";
+import type { CodeDescrType } from "@/core/CommonTypes";
 
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 const forestClientBase = import.meta.env.VITE_BACKEND_URL;
@@ -47,6 +49,27 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
   return { response, error, data, loading, fetch }
 }
 
+export const addNewAddress = (addresses: Address[]) => {
+  const blankAddress: Address = {
+    streetAddress: "",
+    country: {value: "", text:""} as CodeDescrType,
+    province: {value: "", text:""} as CodeDescrType,
+    city: "",
+    postalCode: "",
+    businessPhone: "",
+    email: "",
+    contacts: [
+      {
+        contactType: {value: "", text:""} as CodeDescrType,
+        name: "",
+        businessPhone: "",
+        email: "",
+      },
+    ],
+  };
+  let newAddresses = addresses.push(blankAddress);
+  return newAddresses;
+}
 
 // import { backendUrl } from "../core/CoreConstants";
 

@@ -32,6 +32,7 @@
                           datalistId="businessNameListId"
                           @updateValue="formData.businessInformation.businessName = $event" />
             <Note note="The name must be the same as it is in BC Registries" />
+            <!-- TODO: Add validation component -->
         </CollapseCard>
 
         <CollapseCard title="Mailing address" 
@@ -40,8 +41,14 @@
                       defaultOpen>
 
             <label>
-                <strong>This information is from BC Registries. If it's incorrect, go to BC Registries to update it before continuing.</strong>
+                <strong>This information is from 
+                        <a href="https://www.bcregistry.ca/business/auth/home/decide-business">BC Registries</a>. 
+                        If it's incorrect, go to BC Registries to update it before continuing.</strong>
             </label>
+
+            <br /><br />
+            <AddressSection id="addressListId" 
+                            :addresses="formData.location.addresses" />
         </CollapseCard>
 
         <CollapseCard title="Form submitter information" 
@@ -94,9 +101,14 @@ import Label from "../../common/LabelComponent.vue";
 import Note from "../../common/NoteComponent.vue";
 import Autocomplete from "../../common/AutocompleteComponent.vue";
 import ValidationMessages from "../../common/ValidationMessagesComponent.vue";
+import AddressSection from "./AddressSectionComponent.vue";
 
 //---- Form Data ----//
 let formData = ref(formDataDto);
+
+//--- Initializing the Addresses array ---//
+addNewAddress(formDataDto.location.addresses);
+
 
 const { data: activeClientTypeCodes } = useFetch('/api/clients/activeClientTypeCodes', { method:'get', initialData:[] });
 const clientTypeCodes = computed(() => {
@@ -116,9 +128,10 @@ const businessNames = [
 ];
 
 const displayBusinessInformation = computed(() => {
-    return null != formData.value.businessType.clientType && 
-            "I" != formData.value.businessType.clientType.value &&
-            "Z" != formData.value.businessType.clientType.value;
+    return null !== formData.value.businessType.clientType && 
+            formData.value.businessType.clientType.value.length > 0 &&
+            "I" !== formData.value.businessType.clientType.value &&
+            "Z" !== formData.value.businessType.clientType.value;
 });
 
 const displayCommonSections = computed(() => {
@@ -165,7 +178,7 @@ const validationMessages = computed(() => {
 
 <script lang="ts">
 import { computed, defineComponent, reactive, ref } from "vue";
-import { useFetch } from "@/services/forestClient.service";
+import { addNewAddress, useFetch } from "@/services/forestClient.service";
 import { conversionFn } from "@/services/FetchService";
 
 export default defineComponent({

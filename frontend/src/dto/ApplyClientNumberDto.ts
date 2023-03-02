@@ -1,6 +1,8 @@
+import type { CodeDescrType } from "@/core/CommonTypes";
+
 export const formDataDto = {
   businessType: {
-    clientType: null,
+    clientType: {value: "", text:""} as CodeDescrType,
   },
   businessInformation: {
     firstName: "",
@@ -11,27 +13,7 @@ export const formDataDto = {
     businessName: null,
   },
   location: {
-    addresses: [
-      {
-        streetAddress: "",
-        country: "",
-        province: "",
-        city: "",
-        postalCode: "",
-        businessPhone: "",
-        email: "",
-        index: 0, // any array data need to have this index, as an auto generated random number to be as unique identity
-        contacts: [
-          {
-            contactType: "",
-            name: "",
-            businessPhone: "",
-            email: "",
-            index: 0, // need use this index to be unique identity when display data in form tables
-          },
-        ],
-      },
-    ],
+    addresses: [] as Address[],
   },
   submitterInformation: {
     firstName: "",
@@ -39,4 +21,20 @@ export const formDataDto = {
     phoneNumber: "",
     email: "",
   },
+};
+
+export interface Address {
+  streetAddress: string,
+  country?: CodeDescrType,
+  province?: CodeDescrType,
+  city: string,
+  postalCode: string,
+  businessPhone: string,
+  email: string,
+  contacts: {
+    contactType?: CodeDescrType,
+    name: string,
+    businessPhone: string,
+    email: string,
+  }[],
 };
