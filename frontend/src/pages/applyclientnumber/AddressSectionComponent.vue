@@ -11,10 +11,13 @@
                   :required="true" />
           </div>
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <b-form-select id="countryId"
+            <b-form-select :id="'countryId' + itemIndex"
                            v-model="item.country" 
                            :options="countryCodes"
                            @change="updateProvinceCodes($event, itemIndex)" />
+            <!-- <b-form-select id="countryId"
+                           v-model="item.country" 
+                           :options="countryCodes" /> -->
           </div>
         </b-row>
         <b-row class="rowSpace">
@@ -50,8 +53,12 @@
           </div>
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <b-form-select :id="'provinceId' + itemIndex"
-                           v-model="item.province"
-                           :options="provinceCodes" />
+                           v-model="item.province">
+              <option v-for="option in provinceCodes[itemIndex]" 
+                      :value="option">
+                {{ option.name }}
+              </option>
+            </b-form-select>
           </div>
         </b-row>
         <b-row class="rowSpace"> 
@@ -103,9 +110,12 @@
   import BiXCircle from "~icons/bi/x-circle";
   import BiPlusLg from "~icons/bi/plus-lg";
   import type { Address } from '../../dto/ApplyClientNumberDto';
-  import type { CodeDescrType } from '@/core/CommonTypes';
+  import { CodeDescrType } from '@/core/CommonTypes';
   import axios from 'axios';
   
+  axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+  const forestClientBase = import.meta.env.VITE_BACKEND_URL;
+
   const props = defineProps({
     addresses: { 
       type: Array<Address>, 
@@ -122,42 +132,13 @@
     return activeCountryCodes.value.map(conversionFn);
   });
 
-  let provinceCodes = ref([] as CodeDescrType[]);
+  let provinceCodes = ref<CodeDescrType[]>([]);
   async function updateProvinceCodes(event: CodeDescrType, index: number) {
-      // Clear the dependent select
-      //provinceCodes.value = [{value:"PU", text:"Peee"}];
       const countryCode = event.value;
-      const response = await axios.get('http://localhost:3000/api/clients/activeCountryCodes/' + countryCode + '?page=0&size=250');
-      console.log("response = " + JSON.stringify(response));
-      provinceCodes.value = response.data.map(conversionFn);
-      //return provinceCodes;
+      const response = await axios.get(forestClientBase + '/api/clients/activeCountryCodes/' + countryCode + '?page=0&size=250');
+      provinceCodes.value[index] = response.data;
+      return provinceCodes;
   }
-  
-  /*const provinceCodes = computed(() => {
-    return async (index: number) => {
-        const countryCode = props.addresses[index].country?.value;
-        const response = await axios.get('http://localhost:3000/api/clients/activeCountryCodes/' + countryCode + '?page=0&size=250');
-
-        if (props.addresses[index].country?.value && response) {
-          console.log(JSON.stringify(response.data.map(conversionFn)));
-          //result.value = response.data.map(conversionFn);
-          return response.data.map(conversionFn);
-        }
-        else {
-          return null;
-        }
-      }
-  });*/
-
-  /*const emit = defineEmits(["updateValue"]);
-  const computedValue = computed({
-    get() {
-          return props.addresses
-    },
-    set(newValue) {
-      emit('updateValue', newValue)
-    }
-  });*/
 
   const deleteAddress = (index: number) => {
     props.addresses.splice(index, 1);
