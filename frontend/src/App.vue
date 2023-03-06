@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { inject, ref } from "vue";
-import MainHeader from "./common/MainHeader.vue";
+import MainHeader from "./common/MainHeaderComponent.vue";
 import ReviewApplicationPage from "./pages/ReviewApplicationPage.vue";
 import ApplyClientNumber from "./pages/applyclientnumber/ApplyClientNumber.vue";
 import type { Ref, DefineComponent } from "vue";

@@ -15,9 +15,6 @@
                            v-model="item.country" 
                            :options="countryCodes"
                            @change="updateProvinceCodes($event, itemIndex)" />
-            <!-- <b-form-select id="countryId"
-                           v-model="item.country" 
-                           :options="countryCodes" /> -->
           </div>
         </b-row>
         <b-row class="rowSpace">
@@ -78,6 +75,8 @@
           </div>
         </b-row>
       </b-col>
+
+      <!-- TODO: Contact component -->
 
       <b-col xs="2" sm="2" md="1" lg="1" 
              style="border-top: 1px solid lightgray;

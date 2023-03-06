@@ -30,7 +30,8 @@
                           :value="formData.businessInformation.businessName"
                           :searchData="businessNames"
                           datalistId="businessNameListId"
-                          @updateValue="formData.businessInformation.businessName = $event" />
+                          @updateValue="formData.businessInformation.businessName = $event;
+                                        populateBusinessList($event)" />
             <Note note="The name must be the same as it is in BC Registries" />
             <!-- TODO: Add validation component -->
         </CollapseCard>
@@ -40,11 +41,11 @@
                       :display="displayCommonSections"
                       defaultOpen>
 
-            <label>
+            <span>
                 <strong>This information is from 
                         <a href="https://www.bcregistry.ca/business/auth/home/decide-business">BC Registries</a>. 
                         If it's incorrect, go to BC Registries to update it before continuing.</strong>
-            </label>
+            </span>
 
             <br /><br />
             <AddressSection id="addressListId" 
@@ -56,9 +57,9 @@
                       :display="displayCommonSections"
                       defaultOpen>
 
-            <label>
+            <span>
                 <strong>This information is from your BCeID. If it's incorrect, go to BCeID login page to update it before submitting your form.</strong>
-            </label>
+            </span>>
 
             <br /><br />
             <b-row>
@@ -103,29 +104,26 @@ import Autocomplete from "../../common/AutocompleteComponent.vue";
 import ValidationMessages from "../../common/ValidationMessagesComponent.vue";
 import AddressSection from "./AddressSectionComponent.vue";
 
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+const forestClientBase = import.meta.env.VITE_BACKEND_URL;
+
 //---- Form Data ----//
 let formData = ref(formDataDto);
 
 //--- Initializing the Addresses array ---//
 addNewAddress(formDataDto.location.addresses);
 
-
 const { data: activeClientTypeCodes } = useFetch('/api/clients/activeClientTypeCodes', { method:'get', initialData:[] });
 const clientTypeCodes = computed(() => {
     return activeClientTypeCodes.value.map(conversionFn);
 });
 
-//TODO: Hardcoded for now. Use API.
-const businessNames = [
-  {
-    "code": "FM0234310",
-    "name": "PACIFIC GEOTECH SYSTEMS"
-  },
-  {
-    "code": "BC0605515",
-    "name": "PACIFIC GEOTECH SYSTEMS LTD."
-  }
-];
+let businessNames = Array<CodeDescrType[]>([]);
+async function populateBusinessList(event: any) {
+    const encodedBusinessName = encodeURIComponent(event);
+    const response = await axios.get(forestClientBase + '/api/orgbook/name/' + encodedBusinessName);
+    businessNames = response.data;
+};
 
 const displayBusinessInformation = computed(() => {
     return null !== formData.value.businessType.clientType && 
@@ -177,9 +175,11 @@ const validationMessages = computed(() => {
 </script>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref } from "vue";
+import { computed, defineComponent, reactive, ref, watch } from "vue";
 import { addNewAddress, useFetch } from "@/services/forestClient.service";
 import { conversionFn } from "@/services/FetchService";
+import axios from "axios";
+import type { CodeDescrType } from "@/core/CommonTypes";
 
 export default defineComponent({
     name: "ApplyClientNumber"
