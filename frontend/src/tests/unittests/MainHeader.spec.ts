@@ -11,6 +11,6 @@ describe("MainHeader", () => {
 
   it("renders find expected text successfully", () => {
     const wrapper = shallowMount(MainHeader);
-    expect(wrapper.text()).toContain("FSA - Forest Client");
+    expect(wrapper.text()).toContain("Client Management System");
   });
 });
