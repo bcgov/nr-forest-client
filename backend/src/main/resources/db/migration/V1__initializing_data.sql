@@ -1,12 +1,6 @@
 -- 
 -- DROPPING TABLES AND SEQUENCES IF EXIST AS THIS IS THE INIT FILE TO CREATE THE DB
 --
-drop sequence if exists nrfc.submission_id_seq;
-drop sequence if exists nrfc.submission_detail_id_seq;
-drop sequence if exists nrfc.submission_location_seq;
-drop sequence if exists nrfc.submission_location_contact_seq;
-drop sequence if exists nrfc.submission_submitter_seq;
-
 drop table if exists nrfc.submission_detail;
 drop table if exists nrfc.submission_location_contact;
 drop table if exists nrfc.submission_location;
@@ -18,6 +12,12 @@ drop table if exists nrfc.submission_status_code;
 drop table if exists nrfc.province_code;
 drop table if exists nrfc.country_code;
 drop table if exists nrfc.contact_type_code;
+
+drop sequence if exists nrfc.submission_id_seq;
+drop sequence if exists nrfc.submission_detail_id_seq;
+drop sequence if exists nrfc.submission_location_seq;
+drop sequence if exists nrfc.submission_location_contact_seq;
+drop sequence if exists nrfc.submission_submitter_seq;
 ---
 
 create schema if not exists nrfc;
