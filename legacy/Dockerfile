@@ -1,10 +1,10 @@
-FROM openjdk:17 as build
+FROM openjdk:17.0.2@sha256:528707081fdb9562eb819128a9f85ae7fe000e2fbaeaf9f87662e7b3f38cb7d8 as build
 WORKDIR /app
 COPY . ./
 RUN chmod +x ./mvnw
 RUN ./mvnw clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
 
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:17.0.6_10-jdk-alpine@sha256:b99f9457ad5cabdfa02935d1048082dd79d318685cfa0ca79a8f623c052c406a
 LABEL maintainer="Paulo Gomes da Cruz Junior <paulo.cruz@encora.com>"
 
 WORKDIR /app
