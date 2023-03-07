@@ -136,6 +136,7 @@
   import { computed, ref, Suspense } from 'vue';
   import Label from "../../common/LabelComponent.vue";
   import CollapseCard from "../../common/CollapseCardComponent.vue";
+  import ValidationMessages from "../../common/ValidationMessagesComponent.vue";
   import ContactSection from "./ContactSectionComponent.vue";
   import BiXCircle from "~icons/bi/x-circle";
   import BiPlusLg from "~icons/bi/plus-lg";

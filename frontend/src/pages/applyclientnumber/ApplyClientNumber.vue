@@ -178,6 +178,10 @@ const validationMessages = computed(() => {
             fieldId: "countryId0", 
             errorMsg: "Country is required"
         },
+        {
+            fieldId: "contactTypeId0",
+            errorMsg: "Role is required"
+        }
     ];
     
     //const validationMessages = null;

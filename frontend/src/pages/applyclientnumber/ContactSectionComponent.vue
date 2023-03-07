@@ -69,8 +69,7 @@
     import { conversionFn } from '@/services/FetchService';
     import { addNewContact, useFetch } from '@/services/forestClient.service';
     import { computed, ref, Suspense } from 'vue';
-    import Label from "../../common/LabelComponent.vue";
-    import CollapseCard from "../../common/CollapseCardComponent.vue";
+    import ValidationMessages from "../../common/ValidationMessagesComponent.vue";
     import BiXCircle from "~icons/bi/x-circle";
     import BiPlusLg from "~icons/bi/plus-lg";
     import type { Contact } from '../../dto/ApplyClientNumberDto';
