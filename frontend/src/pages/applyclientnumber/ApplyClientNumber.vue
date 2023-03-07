@@ -165,7 +165,7 @@ const displayCommonSections = computed(() => {
 //let validationMessages = ref(Array<CodeDescrType[]>([]));
 const validationMessages = computed(() => {
     //TODO: Get this from BE. This is an example.
-    const validationMessages = [
+    /*const validationMessages = [
         { 
             fieldId: "businessTypeId", 
             errorMsg: "What type of business are you? is required"
@@ -182,9 +182,9 @@ const validationMessages = computed(() => {
             fieldId: "contactTypeId0",
             errorMsg: "Role is required"
         }
-    ];
+    ];*/
     
-    //const validationMessages = null;
+    const validationMessages = null;
     return validationMessages;
 });
 
