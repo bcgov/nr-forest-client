@@ -15,6 +15,8 @@
                            v-model="item.country" 
                            :options="countryCodes"
                            @change="updateProvinceCodes($event, itemIndex)" />
+            <ValidationMessages :fieldId = "'countryId' + itemIndex"
+                                :validationMessages="validationMessages"  />
           </div>
         </b-row>
         <b-row class="rowSpace">
@@ -23,8 +25,11 @@
                   :required="true" />
           </div>
           <div>
-            <b-form-input v-model="item.streetAddress">
+            <b-form-input :id="'streetAddressId' + itemIndex"
+                          v-model="item.streetAddress">
             </b-form-input>
+            <ValidationMessages :fieldId = "'streetAddressId' + itemIndex"
+                                :validationMessages="validationMessages"  />
           </div>
         </b-row>
         <b-row class="rowSpace">
@@ -33,8 +38,11 @@
                   :required="true" />
           </div>
           <div>
-            <b-form-input v-model="item.city">
+            <b-form-input :id="'cityId' + itemIndex"
+                          v-model="item.city">
             </b-form-input>
+            <ValidationMessages :fieldId = "'cityId' + itemIndex"
+                                :validationMessages="validationMessages"  />
           </div>
         </b-row>
         <b-row class="rowSpace"> 
@@ -56,6 +64,8 @@
                 {{ option.name }}
               </option>
             </b-form-select>
+            <ValidationMessages :fieldId = "'provinceId' + itemIndex"
+                                :validationMessages="validationMessages"  />
           </div>
         </b-row>
         <b-row class="rowSpace"> 
@@ -70,14 +80,33 @@
             </span>
           </div>
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <b-form-input v-model="item.postalCode">
+            <b-form-input :id="'postalCodeId' + itemIndex"
+                          v-model="item.postalCode">
             </b-form-input>
+            <ValidationMessages :fieldId = "'postalCode' + itemIndex"
+                                :validationMessages="validationMessages"  />
+          </div>
+        </b-row>
+        <br />
+        <b-row class="rowSpace"> 
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <CollapseCard title="Business contacts" 
+                          id="contactsId"
+                          defaultOpen>
+
+              <span>
+                  <strong>Enter an authorized person you want to add for this address</strong>
+              </span>
+
+              <br /><br />
+              <ContactSection id="contactListId" 
+                              :contacts="item.contacts"
+                              :validationMessages="validationMessages" />
+            </CollapseCard>
           </div>
         </b-row>
       </b-col>
-
-      <!-- TODO: Contact component -->
-
+      
       <b-col xs="2" sm="2" md="1" lg="1" 
              style="border-top: 1px solid lightgray;
                     border-right: 1px solid lightgray;
@@ -106,10 +135,12 @@
   import { addNewAddress, useFetch } from '@/services/forestClient.service';
   import { computed, ref, Suspense } from 'vue';
   import Label from "../../common/LabelComponent.vue";
+  import CollapseCard from "../../common/CollapseCardComponent.vue";
+  import ContactSection from "./ContactSectionComponent.vue";
   import BiXCircle from "~icons/bi/x-circle";
   import BiPlusLg from "~icons/bi/plus-lg";
   import type { Address } from '../../dto/ApplyClientNumberDto';
-  import { CodeDescrType } from '@/core/CommonTypes';
+  import { CodeDescrType, type ValidationMessageType } from '@/core/CommonTypes';
   import axios from 'axios';
   
   axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
@@ -123,6 +154,10 @@
     id: { 
       type: String, 
       required: true 
+    },
+    validationMessages: {
+      type: Array<ValidationMessageType>, 
+      required: true
     }
   });
   

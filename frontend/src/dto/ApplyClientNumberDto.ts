@@ -25,16 +25,17 @@ export const formDataDto = {
 
 export interface Address {
   streetAddress: string,
-  country?: CodeDescrType,
-  province?: CodeDescrType,
+  country: CodeDescrType,
+  province: CodeDescrType,
   city: string,
   postalCode: string,
-  businessPhone: string,
-  email: string,
-  contacts: {
-    contactType?: CodeDescrType,
-    name: string,
-    businessPhone: string,
-    email: string,
-  }[],
+  contacts: Contact[],
+};
+
+export interface Contact {
+  contactType: CodeDescrType,
+  firstName: string,
+  lastName: string,
+  phoneNumber: string,
+  emailAddress: string,
 };

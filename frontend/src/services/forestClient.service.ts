@@ -1,6 +1,6 @@
 import { ref } from "vue";
 import axios from "axios";
-import type { Address } from "../dto/ApplyClientNumberDto";
+import type { Address, Contact } from "../dto/ApplyClientNumberDto";
 import type { CodeDescrType } from "@/core/CommonTypes";
 
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
@@ -56,19 +56,32 @@ export const addNewAddress = (addresses: Address[]) => {
     province: {value: "", text:""} as CodeDescrType,
     city: "",
     postalCode: "",
-    businessPhone: "",
-    email: "",
     contacts: [
       {
-        contactType: {value: "", text:""} as CodeDescrType,
-        name: "",
-        businessPhone: "",
-        email: "",
-      },
-    ],
+        contactType: { value: "", text: "" } as CodeDescrType,
+        firstName: "",
+        lastName: "",
+        phoneNumber: "",
+        emailAddress: "",
+      }
+    ] as Contact[],
   };
+  
   let newAddresses = addresses.push(blankAddress);
   return newAddresses;
+}
+
+export const addNewContact = (contacts: Contact[]) => {
+  const blankContact: Contact = {
+    contactType: { value: "", text: "" } as CodeDescrType,
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    emailAddress: "",
+  };
+  
+  let newContacts = contacts.push(blankContact);
+  return newContacts;
 }
 
 // import { backendUrl } from "../core/CoreConstants";

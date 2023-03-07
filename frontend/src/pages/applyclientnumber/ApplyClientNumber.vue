@@ -33,7 +33,8 @@
                           @updateValue="formData.businessInformation.businessName = $event;
                                         populateBusinessList($event)" />
             <Note note="The name must be the same as it is in BC Registries" />
-            <!-- TODO: Add validation component -->
+            <ValidationMessages fieldId = 'businessNameId'
+                                :validationMessages="validationMessages"  />
         </CollapseCard>
 
         <CollapseCard title="Mailing address" 
@@ -49,7 +50,8 @@
 
             <br /><br />
             <AddressSection id="addressListId" 
-                            :addresses="formData.location.addresses" />
+                            :addresses="formData.location.addresses"
+                            :validationMessages="validationMessages" />
         </CollapseCard>
 
         <CollapseCard title="Form submitter information" 
@@ -88,10 +90,17 @@
                     <Label label="Email address" 
                            :required="true" />
                     <b-form-input v-model="formData.submitterInformation.email" />
+                    <ValidationMessages fieldId = 'submitterEmailId'
+                                        :validationMessages="validationMessages"  />
                 </b-col>
             </b-row>
 
         </CollapseCard>
+
+        <b-button class="chefsBlue"
+                  @click="submit()">
+            Submit
+        </b-button>
     </div>
 </template>
 
@@ -120,9 +129,11 @@ const clientTypeCodes = computed(() => {
 
 let businessNames = Array<CodeDescrType[]>([]);
 async function populateBusinessList(event: any) {
-    const encodedBusinessName = encodeURIComponent(event);
-    const response = await axios.get(forestClientBase + '/api/orgbook/name/' + encodedBusinessName);
-    businessNames = response.data;
+    if (event.length >= 3) {
+        const encodedBusinessName = encodeURIComponent(event);
+        const response = await axios.get(forestClientBase + '/api/orgbook/name/' + encodedBusinessName);
+        businessNames = response.data;
+    }
 };
 
 const displayBusinessInformation = computed(() => {
@@ -139,7 +150,6 @@ const displayCommonSections = computed(() => {
         return true;
     }
     else { 
-        //TODO: Change businessName as Object
         if (null != formData.value.businessType.clientType && 
             null != formData.value.businessInformation && 
             null != formData.value.businessInformation.businessName) {
@@ -152,26 +162,34 @@ const displayCommonSections = computed(() => {
 });
 
 //---- Functions ----//
-const submit = () => {
-  console.log("formdata = ", JSON.stringify(formData));
-};
-
+//let validationMessages = ref(Array<CodeDescrType[]>([]));
 const validationMessages = computed(() => {
     //TODO: Get this from BE. This is an example.
-    /*const validationMessages = [
+    const validationMessages = [
         { 
             fieldId: "businessTypeId", 
             errorMsg: "What type of business are you? is required"
         },
         { 
-            fieldId: "submitterFirstNameId", 
-            errorMsg: "First Name is required"
-        }
-    ];*/
+            fieldId: "businessNameId", 
+            errorMsg: "Business name is required"
+        },
+        { 
+            fieldId: "countryId0", 
+            errorMsg: "Country is required"
+        },
+    ];
     
-    const validationMessages = null;
+    //const validationMessages = null;
     return validationMessages;
 });
+
+const submit = () => {
+    //TODO: Call API to persist data
+
+    console.log("formdata = ", JSON.stringify(formData));
+};
+
 </script>
 
 <script lang="ts">
@@ -179,11 +197,15 @@ import { computed, defineComponent, reactive, ref, watch } from "vue";
 import { addNewAddress, useFetch } from "@/services/forestClient.service";
 import { conversionFn } from "@/services/FetchService";
 import axios from "axios";
-import type { CodeDescrType } from "@/core/CommonTypes";
+import type { CodeDescrType, ValidationMessageType } from "@/core/CommonTypes";
 
 export default defineComponent({
     name: "ApplyClientNumber"
 });
 </script>
   
-<style scoped></style>
+<style scoped>
+  .chefsBlue {
+    background: #003366;
+  }
+</style>

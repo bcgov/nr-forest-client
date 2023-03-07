@@ -1,6 +1,4 @@
 <template>
-
-  <!-- TODO: Complete Autocomplete -->
   <b-form-input :id="id" 
                 v-model="computedValue"
                 :list="datalistId"

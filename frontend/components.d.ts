@@ -22,6 +22,7 @@ declare module '@vue/runtime-core' {
     BRow: typeof import('bootstrap-vue-3')['BRow']
     BSpinner: typeof import('bootstrap-vue-3')['BSpinner']
     BTab: typeof import('bootstrap-vue-3')['BTab']
+    BTable: typeof import('bootstrap-vue-3')['BTable']
     BTableSimple: typeof import('bootstrap-vue-3')['BTableSimple']
     BTabs: typeof import('bootstrap-vue-3')['BTabs']
     BTbody: typeof import('bootstrap-vue-3')['BTbody']

@@ -1,8 +1,8 @@
 <template>
   <div class="form-field-label">
     <label>{{ label }}</label>
-    <bi-asterisk v-if="required" 
-                 style="font-size: 8px; color: red; margin-top: 2px; margin-right: 6px" />
+    <!-- <bi-asterisk v-if="required" 
+                 style="font-size: 8px; color: red; margin-top: 2px; margin-right: 6px" /> -->
     <bi-question-circle-fill :id="'form-field-label-' + id" 
                               v-if="tooltip" 
                               style="font-size: 12px; color: #6c757d" />

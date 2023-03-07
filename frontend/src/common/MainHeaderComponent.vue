@@ -7,7 +7,7 @@
           alt="Go to the Government of British Columbia website"
         />
       </a>
-      <h1>FSA - Forest Client</h1>
+      <h1>Client Management System</h1>
     </div>
     <b-button
       v-if="$keycloak"
