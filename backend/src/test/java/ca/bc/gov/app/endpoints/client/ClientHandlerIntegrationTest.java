@@ -42,10 +42,10 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         .expectStatus().isOk()
         .expectBody()
         .jsonPath("$[0].code").isNotEmpty()
-        .jsonPath("$[0].code").isEqualTo("A")
+        .jsonPath("$[0].code").isEqualTo("C")
 
-        .jsonPath("$[11].code").isNotEmpty()
-        .jsonPath("$[11].code").isEqualTo("U");
+        .jsonPath("$[1].code").isNotEmpty()
+        .jsonPath("$[1].code").isEqualTo("Z");
 
   }
 

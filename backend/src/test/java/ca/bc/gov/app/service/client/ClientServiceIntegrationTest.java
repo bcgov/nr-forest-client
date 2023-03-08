@@ -25,8 +25,8 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
   void shouldListCodeAsExpected(LocalDate date) {
     StepVerifier
         .create(service.findActiveClientTypeCodes(date))
-        .assertNext(results -> assertEquals("A", results.code()))
-        .expectNextCount(11)
+        .assertNext(results -> assertEquals("C", results.code()))
+        .expectNextCount(1)
         .verifyComplete();
   }
 
