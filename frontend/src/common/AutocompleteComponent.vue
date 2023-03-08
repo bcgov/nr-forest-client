@@ -10,8 +10,8 @@
   <datalist :id="datalistId">
     <option v-for="(item, index) in searchData" 
             :key="index"       
-            :value="item.name">
-      {{item.name}}
+            :value="item.text">
+      {{item.text}}
     </option>      
   </datalist>
 </template>
