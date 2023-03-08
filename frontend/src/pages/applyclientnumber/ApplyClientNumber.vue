@@ -101,6 +101,7 @@
                   @click="submit()">
             Submit
         </b-button>
+
     </div>
 </template>
 
@@ -127,7 +128,7 @@ const clientTypeCodes = computed(() => {
     return activeClientTypeCodes.value.map(conversionFn);
 });
 
-let businessNames = Array<CodeDescrType[]>([]);
+let businessNames = Array<CodeDescrType>();
 async function populateBusinessList(event: any) {
     if (event.length >= 3) {
         const encodedBusinessName = encodeURIComponent(event);
@@ -162,46 +163,43 @@ const displayCommonSections = computed(() => {
 });
 
 //---- Functions ----//
-//let validationMessages = ref(Array<CodeDescrType[]>([]));
-const validationMessages = computed(() => {
-    //TODO: Get this from BE. This is an example.
-    /*const validationMessages = [
-        { 
-            fieldId: "businessTypeId", 
-            errorMsg: "What type of business are you? is required"
-        },
-        { 
-            fieldId: "businessNameId", 
-            errorMsg: "Business name is required"
-        },
-        { 
-            fieldId: "countryId0", 
-            errorMsg: "Country is required"
-        },
-        {
-            fieldId: "contactTypeId0",
-            errorMsg: "Role is required"
-        }
-    ];*/
-    
-    const validationMessages = null;
-    return validationMessages;
-});
+let validationMessages = ref([] as ValidationMessageType[]);
 
-const submit = () => {
-    //TODO: Call API to persist data
+//TODO: Get this from BE. This is an example.
+const validationMessages2 = [
+    { 
+        fieldId: "businessTypeId", 
+        errorMsg: "What type of business are you? is required"
+    },
+    { 
+        fieldId: "businessNameId", 
+        errorMsg: "Business name is required"
+    },
+    { 
+        fieldId: "countryId0", 
+        errorMsg: "Country is required"
+    },
+    {
+        fieldId: "contactTypeId0",
+        errorMsg: "Role is required"
+    }
+] as ValidationMessageType[];
 
-    console.log("formdata = ", JSON.stringify(formData));
-};
+function submit(): void {
+  //TODO: Call API to persist data and get validation messages
+  validationMessages.value = validationMessages2;
+  console.log("validationMessages = ", JSON.stringify(validationMessages));
+  console.log("formData = ", JSON.stringify(formData.value));
+}
 
 </script>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, watch } from "vue";
-import { addNewAddress, useFetch } from "@/services/forestClient.service";
-import { conversionFn } from "@/services/FetchService";
+import { computed, defineComponent, ref } from "vue";
+import { addNewAddress, useFetch } from "../../services/forestClient.service";
+import { conversionFn } from "../../services/FetchService";
 import axios from "axios";
-import type { CodeDescrType, ValidationMessageType } from "@/core/CommonTypes";
+import type { CodeDescrType, ValidationMessageType } from "../../core/CommonTypes";
 
 export default defineComponent({
     name: "ApplyClientNumber"

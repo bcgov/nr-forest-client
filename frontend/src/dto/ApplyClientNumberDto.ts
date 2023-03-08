@@ -1,8 +1,48 @@
 import type { CodeDescrType } from "@/core/CommonTypes";
 
-export const formDataDto = {
+export interface FormDataDto {
   businessType: {
-    clientType: {value: "", text:""} as CodeDescrType,
+    clientType: CodeDescrType;
+  };
+  businessInformation: {
+    firstName: string;
+    lastName: string;
+    birthdate: string;
+    incorporationNumber: string;
+    doingBusinessAsName: string;
+    businessName: null | string;
+  };
+  location: {
+    addresses: Address[];
+  };
+  submitterInformation: {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    email: string;
+  };
+}
+
+export interface Address {
+  streetAddress: string;
+  country: CodeDescrType;
+  province: CodeDescrType;
+  city: string;
+  postalCode: string;
+  contacts: Contact[];
+}
+
+export interface Contact {
+  contactType: CodeDescrType;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  emailAddress: string;
+}
+
+export const formDataDto: FormDataDto = {
+  businessType: {
+    clientType: { value: "", text: "" },
   },
   businessInformation: {
     firstName: "",
@@ -13,7 +53,7 @@ export const formDataDto = {
     businessName: null,
   },
   location: {
-    addresses: [] as Address[],
+    addresses: [],
   },
   submitterInformation: {
     firstName: "",
@@ -21,21 +61,4 @@ export const formDataDto = {
     phoneNumber: "",
     email: "",
   },
-};
-
-export interface Address {
-  streetAddress: string,
-  country: CodeDescrType,
-  province: CodeDescrType,
-  city: string,
-  postalCode: string,
-  contacts: Contact[],
-};
-
-export interface Contact {
-  contactType: CodeDescrType,
-  firstName: string,
-  lastName: string,
-  phoneNumber: string,
-  emailAddress: string,
 };

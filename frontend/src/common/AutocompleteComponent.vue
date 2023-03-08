@@ -8,21 +8,21 @@
   <!-- TODO: Value should be an object. It displays the name, but on the back, this should contain:
   the code, the name, the id, and the address (for BC registry) -->
   <datalist :id="datalistId">
-    <option v-for="entry in searchData"        
-            :value="entry.name">
-      {{entry.name}}
+    <option v-for="(item, index) in searchData" 
+            :key="index"       
+            :value="item.name">
+      {{item.name}}
     </option>      
   </datalist>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-
+import { computed } from 'vue';
 
 const props = defineProps({
   value: { 
     type: String, 
-    required: true 
+    required: true
   },
   id: { 
     type: String, 
@@ -48,6 +48,13 @@ const computedValue = computed({
   }
 });
 
+</script>
+
+<script lang="ts">
+  import { defineComponent } from "vue";
+  export default defineComponent({
+    name: "AutocompleteComponent",
+  });
 </script>
 
 <style scoped>

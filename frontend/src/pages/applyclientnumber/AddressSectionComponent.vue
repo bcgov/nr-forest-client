@@ -131,9 +131,9 @@
 </template>
   
 <script setup lang="ts">
-  import { conversionFn } from '@/services/FetchService';
-  import { addNewAddress, useFetch } from '@/services/forestClient.service';
-  import { computed, ref, Suspense } from 'vue';
+  import { conversionFn } from '../../services/FetchService';
+  import { addNewAddress, useFetch } from '../../services/forestClient.service';
+  import { computed, ref } from 'vue';
   import Label from "../../common/LabelComponent.vue";
   import CollapseCard from "../../common/CollapseCardComponent.vue";
   import ValidationMessages from "../../common/ValidationMessagesComponent.vue";
@@ -141,7 +141,7 @@
   import BiXCircle from "~icons/bi/x-circle";
   import BiPlusLg from "~icons/bi/plus-lg";
   import type { Address } from '../../dto/ApplyClientNumberDto';
-  import { CodeDescrType, type ValidationMessageType } from '@/core/CommonTypes';
+  import type { CodeDescrType, ValidationMessageType } from '../../core/CommonTypes';
   import axios from 'axios';
   
   axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
@@ -183,6 +183,13 @@
     return addNewAddress(props.addresses);
   };
   
+</script>
+
+<script lang="ts">
+  import { defineComponent } from "vue";
+  export default defineComponent({
+    name: "AddressSectionComponent",
+  });
 </script>
   
 <style scoped>

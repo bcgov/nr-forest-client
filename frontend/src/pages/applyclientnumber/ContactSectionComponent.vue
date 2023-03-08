@@ -66,14 +66,13 @@
   </template>
     
   <script setup lang="ts">
-    import { conversionFn } from '@/services/FetchService';
-    import { addNewContact, useFetch } from '@/services/forestClient.service';
-    import { computed, ref, Suspense } from 'vue';
+    import { conversionFn } from '../../services/FetchService';
+    import { addNewContact, useFetch } from '../../services/forestClient.service';
+    import { computed } from 'vue';
     import ValidationMessages from "../../common/ValidationMessagesComponent.vue";
     import BiXCircle from "~icons/bi/x-circle";
     import BiPlusLg from "~icons/bi/plus-lg";
     import type { Contact } from '../../dto/ApplyClientNumberDto';
-    import { CodeDescrType, type ValidationMessageType } from '@/core/CommonTypes';
     import axios from 'axios';
     
     axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
@@ -107,8 +106,16 @@
       return addNewContact(props.contacts);
     };
     
-  </script>
-    
+</script>
+  
+<script lang="ts">
+  import { defineComponent } from "vue";
+  import type { ValidationMessageType } from '../../core/CommonTypes';
+  export default defineComponent({
+    name: "ContactSectionComponent",
+  });
+</script>
+
   <style scoped>
   .chefsBlue {
     background: #003366;

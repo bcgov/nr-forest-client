@@ -1,9 +1,9 @@
 <template>
-    <div v-if="validationMessages != null" class="err-msg">
-      <span v-if="getErrorMessage(fieldId).length > 0">
-        {{ getErrorMessage(fieldId) }}
-      </span>
-    </div>
+  <div v-if="validationMessages != null" class="err-msg">
+    <span v-if="getErrorMessage(fieldId).length > 0">
+      {{ getErrorMessage(fieldId) }}
+    </span>
+  </div>
 </template>
   
 <script setup lang="ts">
@@ -16,14 +16,13 @@
       required: true 
     },
     validationMessages: { 
-      type: Array, 
+      type: Array<ValidationMessageType>, 
       required: true,
       default: null 
     },
   });
 
   const getErrorMessage = (fieldId: string) => {
-    console.log(fieldId);
     let errorMsg = props.validationMessages
                                 .filter(p => p.fieldId == fieldId)
                                 .map(p => p.errorMsg);
@@ -33,6 +32,7 @@
 
 <script lang="ts">
   import { defineComponent } from "vue";
+  import type { ValidationMessageType } from "@/core/CommonTypes";
   export default defineComponent({
     name: "ValidationMessageComponent",
   });
