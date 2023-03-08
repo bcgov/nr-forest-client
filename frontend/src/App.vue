@@ -19,22 +19,21 @@
 import { inject, ref } from "vue";
 import MainHeader from "./common/MainHeaderComponent.vue";
 import ReviewApplicationPage from "./pages/ReviewApplicationPage.vue";
-import ApplyClientNumber from "./pages/applyclientnumber/ApplyClientNumber.vue";
+import ApplyClientNumber from "./pages/applyclientnumber/ApplyClientNumberPage.vue";
 import type { Ref, DefineComponent } from "vue";
 import type { KeycloakInstance } from "keycloak-js";
 import { navBlue, navSelectBlue } from "./utils/color";
 
-const keycloak: KeycloakInstance = inject("keycloak");
+const keycloak: KeycloakInstance | undefined = inject("keycloak");
 let tabs: Ref<Array<{ title: string; content: DefineComponent }>> = ref([]);
 
-if (keycloak &&
-    keycloak.tokenParsed &&
-    keycloak.tokenParsed.identity_provider &&
-    keycloak.tokenParsed.identity_provider == "idir") {
-  tabs = [{ title: "Review Applications", content: ReviewApplicationPage }];
+if (keycloak && 
+    keycloak.tokenParsed && 
+    keycloak.tokenParsed.identity_provider === "idir") {
+  tabs.value = [{ title: "Review Applications", content: ReviewApplicationPage }];
 } 
 else {
-  tabs = [{ title: "Apply a New Client", content: ApplyClientNumber }];
+  tabs.value = [{ title: "Apply a New Client", content: ApplyClientNumber }];
 }
 </script>
 

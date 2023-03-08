@@ -59,10 +59,10 @@ export const addNewAddress = (addresses: Address[]) => {
     contacts: [
       {
         contactType: { value: "", text: "" } as CodeDescrType,
-        firstName: "",
-        lastName: "",
-        phoneNumber: "",
-        emailAddress: "",
+        contactFirstName: "",
+        contactLastName: "",
+        contactPhoneNumber: "",
+        contactEmail: "",
       }
     ] as Contact[],
   };
@@ -74,10 +74,10 @@ export const addNewAddress = (addresses: Address[]) => {
 export const addNewContact = (contacts: Contact[]) => {
   const blankContact: Contact = {
     contactType: { value: "", text: "" } as CodeDescrType,
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    emailAddress: "",
+    contactFirstName: "",
+    contactLastName: "",
+    contactPhoneNumber: "",
+    contactEmail: "",
   };
   
   let newContacts = contacts.push(blankContact);

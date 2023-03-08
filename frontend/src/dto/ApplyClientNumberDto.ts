@@ -16,10 +16,10 @@ export interface FormDataDto {
     addresses: Address[];
   };
   submitterInformation: {
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
-    email: string;
+    submitterFirstName: string;
+    submitterLastName: string;
+    submitterPhoneNumber: string;
+    submitterEmail: string;
   };
 }
 
@@ -34,10 +34,10 @@ export interface Address {
 
 export interface Contact {
   contactType: CodeDescrType;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  emailAddress: string;
+  contactFirstName: string;
+  contactLastName: string;
+  contactPhoneNumber: string;
+  contactEmail: string;
 }
 
 export const formDataDto: FormDataDto = {
@@ -50,15 +50,15 @@ export const formDataDto: FormDataDto = {
     birthdate: "",
     incorporationNumber: "",
     doingBusinessAsName: "",
-    businessName: null,
+    businessName: "",
   },
   location: {
     addresses: [],
   },
   submitterInformation: {
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    email: "",
+    submitterFirstName: "",
+    submitterLastName: "",
+    submitterPhoneNumber: "",
+    submitterEmail: "",
   },
 };

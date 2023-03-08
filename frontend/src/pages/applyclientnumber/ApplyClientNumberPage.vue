@@ -68,28 +68,28 @@
                 <b-col cols="3">
                     <Label label="First name" 
                            :required="true" />
-                    <b-form-input v-model="formData.submitterInformation.firstName" />
+                    <b-form-input v-model="formData.submitterInformation.submitterFirstName" />
                     <ValidationMessages fieldId = 'submitterFirstNameId'
                                         :validationMessages="validationMessages"  />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Last name" 
                            :required="true" />
-                    <b-form-input v-model="formData.submitterInformation.lastName" />
+                    <b-form-input v-model="formData.submitterInformation.submitterLastName" />
                     <ValidationMessages fieldId = 'submitterLastNameId'
                                         :validationMessages="validationMessages"  />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Phone number" 
                            :required="true" />
-                    <b-form-input v-model="formData.submitterInformation.phoneNumber" />
+                    <b-form-input v-model="formData.submitterInformation.submitterPhoneNumber" />
                     <ValidationMessages fieldId = 'submitterPhoneNumberId'
                                         :validationMessages="validationMessages"  />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Email address" 
                            :required="true" />
-                    <b-form-input v-model="formData.submitterInformation.email" />
+                    <b-form-input v-model="formData.submitterInformation.submitterEmail" />
                     <ValidationMessages fieldId = 'submitterEmailId'
                                         :validationMessages="validationMessages"  />
                 </b-col>
@@ -133,7 +133,7 @@ async function populateBusinessList(event: any) {
     if (event.length >= 3) {
         const encodedBusinessName = encodeURIComponent(event);
         const response = await axios.get(forestClientBase + '/api/orgbook/name/' + encodedBusinessName);
-        businessNames = response.data;
+        businessNames = response.data.map(conversionFn);
     }
 };
 
@@ -145,15 +145,16 @@ const displayBusinessInformation = computed(() => {
 });
 
 const displayCommonSections = computed(() => {
-    if (null != formData.value.businessType.clientType && 
-            "I" == formData.value.businessType.clientType.value) {
+    if (null !== formData.value.businessType.clientType && 
+            "I" === formData.value.businessType.clientType.value) {
         //TODO
         return true;
     }
     else { 
-        if (null != formData.value.businessType.clientType && 
-            null != formData.value.businessInformation && 
-            null != formData.value.businessInformation.businessName) {
+        if (null !== formData.value.businessType.clientType && 
+            null !== formData.value.businessInformation && 
+            null !== formData.value.businessInformation.businessName &&
+            "" !== formData.value.businessInformation.businessName) {
             return true;
         }
         else {

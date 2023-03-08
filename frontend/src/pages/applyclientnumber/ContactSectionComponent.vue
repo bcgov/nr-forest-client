@@ -22,28 +22,28 @@
                 </td>
                 <td>
                     <b-form-input :id="'contactFirstNameId' + itemIndex"
-                                  v-model="item.firstName">
+                                  v-model="item.contactFirstName">
                     </b-form-input>
                     <ValidationMessages :fieldId = "'contactFirstNameId' + itemIndex"
                                         :validationMessages="validationMessages"  />
                 </td>
                 <td>
                     <b-form-input :id="'contactLastNameId' + itemIndex"
-                                  v-model="item.lastName">
+                                  v-model="item.contactLastName">
                     </b-form-input>
                     <ValidationMessages :fieldId = "'contactLastNameId' + itemIndex"
                                         :validationMessages="validationMessages"  />
                 </td>
                 <td>
                     <b-form-input :id="'contactPhoneNumberId' + itemIndex"
-                                v-model="item.phoneNumber">
+                                v-model="item.contactPhoneNumber">
                     </b-form-input>
                     <ValidationMessages :fieldId = "'contactPhoneNumberId' + itemIndex"
                                         :validationMessages="validationMessages"  />
                 </td>
                 <td>
                     <b-form-input :id="'contactEmailAddressId' + itemIndex"
-                                  v-model="item.emailAddress">
+                                  v-model="item.contactEmail">
                     </b-form-input>
                     <ValidationMessages :fieldId = "'contactEmailAddressId' + itemIndex"
                                         :validationMessages="validationMessages"  />
