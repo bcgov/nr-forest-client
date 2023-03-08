@@ -196,7 +196,7 @@ function submit(): void {
 
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
-import { addNewAddress, useFetch } from "../../services/forestClient.service";
+import { addNewAddress, useFetch } from "../../services/ForestClientService";
 import { conversionFn } from "../../services/FetchService";
 import axios from "axios";
 import type { CodeDescrType, ValidationMessageType } from "../../core/CommonTypes";

@@ -2,7 +2,7 @@
  * This file will have control over fetching of everything
  */
 import { ref, watch } from "vue";
-import { useFetchTo } from "@/services/forestClient.service";
+import { useFetchTo } from "@/services/ForestClientService";
 import EventBus, { EventBusEvent } from "@/services/EventBus";
 
 export const conversionFn = (code: any) => { return { value: {value: code.code, text: code.name}, text: code.name } };

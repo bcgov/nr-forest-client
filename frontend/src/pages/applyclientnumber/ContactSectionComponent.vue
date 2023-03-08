@@ -67,7 +67,7 @@
     
   <script setup lang="ts">
     import { conversionFn } from '../../services/FetchService';
-    import { addNewContact, useFetch } from '../../services/forestClient.service';
+    import { addNewContact, useFetch } from '../../services/ForestClientService';
     import { computed } from 'vue';
     import ValidationMessages from "../../common/ValidationMessagesComponent.vue";
     import BiXCircle from "~icons/bi/x-circle";

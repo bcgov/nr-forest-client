@@ -35,12 +35,7 @@
       </b-card-header>
       <b-collapse :id="id" role="tabpanel" v-model="visible">
         <b-card-body style="margin: 16px 10px 16px 10px">
-          <slot />
-          <PrimarySquareButton
-            v-if="nextId"
-            @click="openNext()"
-            :text="nextText"
-          />
+          <slot />  
         </b-card-body>
       </b-collapse>
     </b-card>
@@ -49,7 +44,6 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import PrimarySquareButton from "./buttons/PrimarySquareButton.vue";
 import BiChevronUp from "~icons/bi/chevron-up";
 import BiChevronDown from "~icons/bi/chevron-down";
 

@@ -132,7 +132,7 @@
   
 <script setup lang="ts">
   import { conversionFn } from '../../services/FetchService';
-  import { addNewAddress, useFetch } from '../../services/forestClient.service';
+  import { addNewAddress, useFetch } from '../../services/ForestClientService';
   import { computed, ref } from 'vue';
   import Label from "../../common/LabelComponent.vue";
   import CollapseCard from "../../common/CollapseCardComponent.vue";
