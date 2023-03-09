@@ -11,7 +11,7 @@
             <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
                 <b-form-select id="businessTypeId"
                                v-model="formData.businessType.clientType" 
-                               :options="clientTypeCodes" />        
+                               :options="clientTypeCodes" />  
             </div>
             <ValidationMessages fieldId = 'businessTypeId'
                                 :validationMessages="validationMessages"  />
@@ -31,10 +31,11 @@
                           :searchData="businessNames"
                           datalistId="businessNameListId"
                           @updateValue="formData.businessInformation.businessName = $event;
-                                        populateBusinessList($event)" />
+                                        populateBusinessList($event);
+                                        filterSearchData($event)" />
             <Note note="The name must be the same as it is in BC Registries" />
             <ValidationMessages fieldId = 'businessNameId'
-                                :validationMessages="validationMessages"  />
+                                :validationMessages="validationMessages" />
         </CollapseCard>
 
         <CollapseCard title="Mailing address" 
@@ -162,6 +163,15 @@ const displayCommonSections = computed(() => {
         }
     }
 });
+
+function filterSearchData(event: any) {
+    const filterValue = event.toLowerCase();
+    const filteredSearchData = businessNames.filter(p => p.text.toLowerCase().includes(filterValue));
+    if (filteredSearchData.length === 1) {
+        formData.value.businessInformation.incorporationNumber = filteredSearchData[0].value.value;
+    }
+    return filteredSearchData;
+}
 
 //---- Functions ----//
 let validationMessages = ref([] as ValidationMessageType[]);
