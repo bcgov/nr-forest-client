@@ -3,7 +3,7 @@
     <div style="margin: 24px">
         
         <CollapseCard title="Business Type"
-                      id="businessTypeId"
+                      id="clientTypeId"
                       defaultOpen>
 
             <Label label="What type of business are you?" 
@@ -179,7 +179,7 @@ let validationMessages = ref([] as ValidationMessageType[]);
 //TODO: Get this from BE. This is an example.
 const validationMessages2 = [
     { 
-        fieldId: "businessTypeId", 
+        fieldId: "clientTypeId", 
         errorMsg: "What type of business are you? is required"
     },
     { 

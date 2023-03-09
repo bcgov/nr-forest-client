@@ -83,7 +83,7 @@
             <b-form-input :id="'postalCodeId' + itemIndex"
                           v-model="item.postalCode">
             </b-form-input>
-            <ValidationMessages :fieldId = "'postalCode' + itemIndex"
+            <ValidationMessages :fieldId = "'postalCodeId' + itemIndex"
                                 :validationMessages="validationMessages"  />
           </div>
         </b-row>

@@ -42,10 +42,10 @@
                                         :validationMessages="validationMessages"  />
                 </td>
                 <td>
-                    <b-form-input :id="'contactEmailAddressId' + itemIndex"
+                    <b-form-input :id="'contactEmailId' + itemIndex"
                                   v-model="item.contactEmail">
                     </b-form-input>
-                    <ValidationMessages :fieldId = "'contactEmailAddressId' + itemIndex"
+                    <ValidationMessages :fieldId = "'contactEmailId' + itemIndex"
                                         :validationMessages="validationMessages"  />
                 </td>
                 <td>
