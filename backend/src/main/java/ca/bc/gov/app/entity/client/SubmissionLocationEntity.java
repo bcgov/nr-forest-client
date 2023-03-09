@@ -39,9 +39,6 @@ public class SubmissionLocationEntity {
   @Column("postal_code")
   private String postalCode;
 
-  @Column("business_phone_number")
-  private String businessPhoneNumber;
-
   @Column("email_address")
   private String emailAddress;
 

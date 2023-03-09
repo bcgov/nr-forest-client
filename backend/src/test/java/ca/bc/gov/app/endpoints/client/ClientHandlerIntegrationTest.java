@@ -202,8 +202,12 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
                         0,
                         List.of(
                             new ClientContactDto(
-                                "LP", "James", "007",
-                                "bond_james_bond@007.com", 0))
+                                "LP", 
+                                "James", 
+                                "Doe",
+                                "007",
+                                "bond_james_bond@007.com", 
+                                0))
                     )))
         );
     client
