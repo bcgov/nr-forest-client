@@ -36,7 +36,8 @@
                 </td>
                 <td>
                     <b-form-input :id="'contactPhoneNumberId' + itemIndex"
-                                v-model="item.contactPhoneNumber">
+                                  v-model="item.contactPhoneNumber"
+                                  v-mask="'(###) ###-####'">
                     </b-form-input>
                     <ValidationMessages :fieldId = "'contactPhoneNumberId' + itemIndex"
                                         :validationMessages="validationMessages"  />
