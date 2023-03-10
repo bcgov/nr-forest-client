@@ -17,25 +17,23 @@
 
 <script setup lang="ts">
 import { inject, ref } from "vue";
-import MainHeader from "./common/MainHeader.vue";
+import MainHeader from "./common/MainHeaderComponent.vue";
 import ReviewApplicationPage from "./pages/ReviewApplicationPage.vue";
-import ApplyNewClientPage from "./pages/applynewclient/ApplyNewClientPage.vue";
+import ApplyClientNumber from "./pages/applyclientnumber/ApplyClientNumberPage.vue";
 import type { Ref, DefineComponent } from "vue";
 import type { KeycloakInstance } from "keycloak-js";
 import { navBlue, navSelectBlue } from "./utils/color";
 
-const keycloak: KeycloakInstance = inject("keycloak");
+const keycloak: KeycloakInstance | undefined = inject("keycloak");
 let tabs: Ref<Array<{ title: string; content: DefineComponent }>> = ref([]);
 
-if (
-  keycloak &&
-  keycloak.tokenParsed &&
-  keycloak.tokenParsed.identity_provider &&
-  keycloak.tokenParsed.identity_provider == "idir"
-) {
-  tabs = [{ title: "Review Applications", content: ReviewApplicationPage }];
-} else {
-  tabs = [{ title: "Apply a New Client", content: ApplyNewClientPage }];
+if (keycloak && 
+    keycloak.tokenParsed && 
+    keycloak.tokenParsed.identity_provider === "idir") {
+  tabs.value = [{ title: "Review Applications", content: ReviewApplicationPage }];
+} 
+else {
+  tabs.value = [{ title: "Apply a New Client", content: ApplyClientNumber }];
 }
 </script>
 
@@ -59,6 +57,15 @@ export default defineComponent({
   color: rgba(0, 0, 0, 0.87);
 }
 
+.card-header {
+  /*padding: 0.5rem 0.5rem 0.5rem 0.5rem !important;*/
+}
+
+.row {
+  padding: 0px 0px 0px 0px !important;
+  margin: 0px 0px 0px 0px !important;
+}
+
 .row > * {
   padding: 0px 0px 0px 0px !important;
   margin: 0px 0px 0px 0px !important;
@@ -76,9 +83,8 @@ export default defineComponent({
   max-width: 100% !important;
 }
 
-.col {
-  padding: 0px 0px 0px 0px;
-  margin: 0px 0px 0px 0px;
+.col-3 {
+  padding-right: 1rem !important;
 }
 
 /* ------------ nav bar ------------------- */

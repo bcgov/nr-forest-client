@@ -24,8 +24,11 @@ public class SubmissionLocationContactEntity {
   @Column("submission_location_id")
   private Integer submissionLocationId;
 
-  @Column("name_department")
-  private String nameDepartment;
+  @Column("first_name")
+  private String firstName;
+  
+  @Column("last_name")
+  private String lastName;
 
   @Column("contact_type_code")
   private String contactTypeCode;

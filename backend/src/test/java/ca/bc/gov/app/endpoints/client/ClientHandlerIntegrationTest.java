@@ -42,10 +42,10 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         .expectStatus().isOk()
         .expectBody()
         .jsonPath("$[0].code").isNotEmpty()
-        .jsonPath("$[0].code").isEqualTo("A")
+        .jsonPath("$[0].code").isEqualTo("C")
 
-        .jsonPath("$[11].code").isNotEmpty()
-        .jsonPath("$[11].code").isEqualTo("U");
+        .jsonPath("$[1].code").isNotEmpty()
+        .jsonPath("$[1].code").isEqualTo("Z");
 
   }
 
@@ -202,8 +202,12 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
                         0,
                         List.of(
                             new ClientContactDto(
-                                "LP", "James", "007",
-                                "bond_james_bond@007.com", 0))
+                                "LP", 
+                                "James", 
+                                "Doe",
+                                "007",
+                                "bond_james_bond@007.com", 
+                                0))
                     )))
         );
     client

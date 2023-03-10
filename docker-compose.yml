@@ -3,16 +3,16 @@ version: "3.8"
 
 services:
   database:
-    container_name: database
+    container_name: postgres
     environment:
       POSTGRES_USER: default
       POSTGRES_PASSWORD: default
       POSTGRES_DB: default
     hostname: database
-    image: postgres:13@sha256:0876afe95f304506a42c6fcd5b3b272340c394389086dcd33fe4c1ac999ff118
-    restart: always
+    image: postgres:13
     ports:
       - "5432:5432"
+    restart: always    
     volumes:
       - ./database/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
       - /pgdata
@@ -36,16 +36,20 @@ services:
       POSTGRESQL_DATABASE: default
       CHES_CLIENT_ID: id    
       CHES_CLIENT_SECRET: secret
-      CHES_TOKEN_URL: url
-      CHES_API_URL: url
+      CHES_TOKEN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token
+      CHES_API_URL: https://ches-dev.api.gov.bc.ca/api/v1
+    ports:
+      - 3000:3000
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 1m30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 10s
     hostname: backend
-    image: ghcr.io/bcgov/nr-forest-client/backend
+    image: ghcr.io/bcgov/nr-forest-client/backend:0
+    depends_on:
+      - database
     links:
       - database    
     logging:
@@ -66,7 +70,7 @@ services:
       retries: 3
       start_period: 40s
     hostname: frontend
-    image: ghcr.io/bcgov/nr-forest-client/frontend
+    image: ghcr.io/bcgov/nr-forest-client/frontend:396
     links:
       - backend
     ports:
@@ -78,17 +82,18 @@ services:
         max-file: "3"
 
   legacydb:
-    container_name: legacydb
+    container_name: oracle
     environment:
-      APP_USER_PASSWORD: legacy
+      APP_USER_PASSWORD: default
       APP_USER: THE
-      ORACLE_PASSWORD: legacy
-      ORACLE_DATABASE: legacy
+      ORACLE_RANDOM_PASSWORD: yes
     hostname: legacydb
-    image: gvenzl/oracle-xe:21-slim-faststart@sha256:ddd814078ed25fd05f7c343b796923609300bf438115b342329a2dd19a91b9d6
-    restart: always
+    image: gvenzl/oracle-xe:21.3.0-slim-faststart
     ports:
-      - "1521:1521"    
+      - 1521:1521
+    restart: always
+    volumes:
+      - oracle:/opt/oracle/oradata gvenzl/oracle-xe
     healthcheck:
       test: [ "CMD-SHELL", "healthcheck.sh" ]
       interval: 5s
@@ -99,3 +104,6 @@ services:
       options:
         max-size: 10m
         max-file: "3"
+
+volumes:
+  oracle: {}
