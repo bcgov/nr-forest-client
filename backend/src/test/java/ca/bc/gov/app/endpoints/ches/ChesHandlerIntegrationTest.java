@@ -55,7 +55,7 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
       .build();
 
   @Test
-  @DisplayName("Send email when authorized")
+  @DisplayName("Send contactEmail when authorized")
   void shouldSendMailWhenAuth() throws OAuthProblemException, OAuthSystemException {
 
     mockOAuthSuccess();
@@ -137,7 +137,7 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
 
 
   @Test
-  @DisplayName("Send an email with an HTML body")
+  @DisplayName("Send an contactEmail with an HTML body")
   void shouldSendMailWithHTMLBody() throws OAuthProblemException, OAuthSystemException {
 
     mockOAuthSuccess();
@@ -165,7 +165,7 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
   }
 
   @Test
-  @DisplayName("Send an email with text body")
+  @DisplayName("Send an contactEmail with text body")
   void shouldSendMailWithTextBody() throws OAuthProblemException, OAuthSystemException {
 
     mockOAuthSuccess();
@@ -184,7 +184,7 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
         .post()
         .uri("/api/mail", new HashMap<>())
         .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon")), ChesRequest.class)
+            "Thanks for your contactEmail\nYou will hear from us soon")), ChesRequest.class)
         .exchange()
 
         .expectStatus().isCreated()
@@ -212,7 +212,7 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
         .post()
         .uri("/api/mail", new HashMap<>())
         .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon")), ChesRequest.class)
+            "Thanks for your contactEmail\nYou will hear from us soon")), ChesRequest.class)
         .exchange()
 
         .expectStatus().isEqualTo(HttpStatusCode.valueOf(422))
@@ -239,7 +239,7 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
         .post()
         .uri("/api/mail", new HashMap<>())
         .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon")), ChesRequest.class)
+            "Thanks for your contactEmail\nYou will hear from us soon")), ChesRequest.class)
         .exchange()
 
         .expectStatus().isBadRequest()
@@ -266,7 +266,7 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
         .post()
         .uri("/api/mail", new HashMap<>())
         .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon")), ChesRequest.class)
+            "Thanks for your contactEmail\nYou will hear from us soon")), ChesRequest.class)
         .exchange()
 
         .expectStatus().isEqualTo(HttpStatusCode.valueOf(500))
@@ -304,7 +304,7 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
   }
 
   @Test
-  @DisplayName("Send an email with more than one emailTo provided")
+  @DisplayName("Send an contactEmail with more than one emailTo provided")
   void shouldSendMailMultipleDestination() throws OAuthProblemException, OAuthSystemException {
 
     mockOAuthSuccess();

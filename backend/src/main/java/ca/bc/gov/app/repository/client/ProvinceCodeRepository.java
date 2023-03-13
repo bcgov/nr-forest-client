@@ -9,5 +9,5 @@ import reactor.core.publisher.Flux;
 public interface ProvinceCodeRepository extends ReactiveCrudRepository<ProvinceCodeEntity, String>,
     ReactiveSortingRepository<ProvinceCodeEntity, String> {
 
-  Flux<ProvinceCodeEntity> findByCountryCode(String countryCode,Pageable pageable);
+  Flux<ProvinceCodeEntity> findByCountryCode(String countryCode, Pageable pageable);
 }

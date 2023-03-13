@@ -91,7 +91,7 @@ class OrgBookHandlerIntegrationTest extends AbstractTestContainerIntegrationTest
   }
 
   @Test
-  @DisplayName("Look for name 'Power Corp'")
+  @DisplayName("Look for contactFirstName 'Power Corp'")
   void shouldGetDataFromNameLookup() {
 
     wireMockExtension
@@ -103,7 +103,7 @@ class OrgBookHandlerIntegrationTest extends AbstractTestContainerIntegrationTest
 
     client
         .get()
-        .uri("/api/orgbook/name/Power")
+        .uri("/api/orgbook/contactFirstName/Power")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
@@ -111,7 +111,7 @@ class OrgBookHandlerIntegrationTest extends AbstractTestContainerIntegrationTest
   }
 
   @Test
-  @DisplayName("Look for name 'Jhon'")
+  @DisplayName("Look for contactFirstName 'Jhon'")
   void shouldGetNoDataFromNameLookup() {
 
     wireMockExtension
@@ -123,7 +123,7 @@ class OrgBookHandlerIntegrationTest extends AbstractTestContainerIntegrationTest
 
     client
         .get()
-        .uri("/api/orgbook/name/Jhon")
+        .uri("/api/orgbook/contactFirstName/Jhon")
         .exchange()
         .expectStatus().isOk()
         .expectBody()

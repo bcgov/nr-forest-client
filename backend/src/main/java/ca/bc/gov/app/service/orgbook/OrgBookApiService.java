@@ -25,7 +25,7 @@ public class OrgBookApiService {
   }
 
   public Flux<ClientNameCodeDto> findByClientName(String clientName) {
-    log.info("Looking up on OrgBook for {}",clientName);
+    log.info("Looking up on OrgBook for {}", clientName);
     return
         orgBookApi
             .get()
@@ -49,7 +49,6 @@ public class OrgBookApiService {
             .doOnNext(content -> log.info("OrgBook Name Lookup {} -> {}", clientName, content));
 
   }
-
 
   public Mono<OrgBookTopicListResponse> findByIncorporationNumber(
       String incorporationNumber) {

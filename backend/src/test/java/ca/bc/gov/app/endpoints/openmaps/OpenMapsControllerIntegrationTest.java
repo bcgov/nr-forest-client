@@ -22,7 +22,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @Slf4j
 @DisplayName("Integrated Test | OpenMaps Controller")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class OpenMapsHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
+class OpenMapsControllerIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Autowired
   protected WebTestClient client;

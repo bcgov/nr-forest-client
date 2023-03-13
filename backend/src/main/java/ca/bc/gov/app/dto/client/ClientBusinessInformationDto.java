@@ -1,6 +1,6 @@
 package ca.bc.gov.app.dto.client;
 
-public record ClientInformationDto(
+public record ClientBusinessInformationDto(
     String firstName,
     String lastName,
     String birthdate,

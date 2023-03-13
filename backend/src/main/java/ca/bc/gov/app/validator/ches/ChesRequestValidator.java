@@ -1,14 +1,12 @@
 package ca.bc.gov.app.validator.ches;
 
 import ca.bc.gov.app.dto.ches.ChesRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Component
-@Slf4j
 public class ChesRequestValidator implements Validator {
   @Override
   public boolean supports(Class<?> clazz) {

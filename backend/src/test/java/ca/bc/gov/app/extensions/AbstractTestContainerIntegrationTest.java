@@ -37,11 +37,14 @@ public abstract class AbstractTestContainerIntegrationTest {
                 .concat("?TC_INITSCRIPT=file:src/test/resources/init_pg.sql")
         );
 
+    System.out.println(String.format("%s:%d", database.getHost(), database.getMappedPort(5432)));
+
     registry
         .add(
             "ca.bc.gov.nrs.postgres.host",
             () -> String.format("%s:%d", database.getHost(), database.getMappedPort(5432))
         );
+
 
     registry
         .add(

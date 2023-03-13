@@ -1,11 +1,13 @@
 package ca.bc.gov.app.endpoints.client;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientBusinessTypeDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
-import ca.bc.gov.app.dto.client.ClientInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
+import ca.bc.gov.app.dto.client.ClientTypeDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.net.URI;
 import java.util.HashMap;
@@ -78,8 +80,8 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         .expectBody()
         .jsonPath("$[0].code").isNotEmpty()
         .jsonPath("$[0].code").isEqualTo(code)
-        .jsonPath("$[0].name").isNotEmpty()
-        .jsonPath("$[0].name").isEqualTo(name);
+        .jsonPath("$[0].contactFirstName").isNotEmpty()
+        .jsonPath("$[0].contactFirstName").isEqualTo(name);
   }
 
 
@@ -113,8 +115,8 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         .expectBody()
         .jsonPath("$[0].code").isNotEmpty()
         .jsonPath("$[0].code").isEqualTo(code)
-        .jsonPath("$[0].name").isNotEmpty()
-        .jsonPath("$[0].name").isEqualTo(name);
+        .jsonPath("$[0].contactFirstName").isNotEmpty()
+        .jsonPath("$[0].contactFirstName").isEqualTo(name);
   }
 
   @ParameterizedTest(name = "{2} - {3} is the first on page {0} with size {1}")
@@ -144,8 +146,8 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         .expectBody()
         .jsonPath("$[0].code").isNotEmpty()
         .jsonPath("$[0].code").isEqualTo(code)
-        .jsonPath("$[0].name").isNotEmpty()
-        .jsonPath("$[0].name").isEqualTo(description);
+        .jsonPath("$[0].contactFirstName").isNotEmpty()
+        .jsonPath("$[0].contactFirstName").isEqualTo(description);
   }
 
   private static Stream<Arguments> countryCode() {
@@ -185,26 +187,23 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
   void shouldSubmitClientData() {
     ClientSubmissionDto clientSubmissionDto =
         new ClientSubmissionDto(
-            new ClientBusinessTypeDto("A"),
-            new ClientInformationDto(
-                "James", "Bond", "2007-07-07",
-                "12345", "MI6", "Espionage"),
+            new ClientBusinessTypeDto(new ClientTypeDto("A", "Association")),
+            new ClientBusinessInformationDto(
+                "Auric", "Goldfinger", "07/07/1964",
+                "1234", "test", "Auric Enterprises"),
             new ClientLocationDto(
                 List.of(
                     new ClientAddressDto(
-                        "3570 S Las Vegas Blvd",
-                        "US",
-                        "NV",
-                        "Las Vegas",
-                        "89109",
-                        "007",
-                        "bond_james_bond@007.com",
-                        0,
+                        "3570 S Las Vegas Blvd", "US", "NV",
+                        "Las Vegas", "89109", 0,
                         List.of(
                             new ClientContactDto(
                                 "LP", "James", "007",
-                                "bond_james_bond@007.com", 0))
-                    )))
+                                "987654321", "bond_james_bond@007.com",
+                                0))))),
+            new ClientSubmitterInformationDto(
+                "James", "Bond", "1234567890",
+                "james_bond@MI6.com")
         );
     client
         .post()
@@ -213,7 +212,7 @@ class ClientHandlerIntegrationTest extends AbstractTestContainerIntegrationTest 
         .exchange()
         .expectStatus().isCreated()
         .expectHeader().location("/api/clients/submissions/1")
-        .expectHeader().valueEquals("x-sub-id",1)
+        .expectHeader().valueEquals("x-sub-id", 1)
         .expectBody().isEmpty();
   }
 }

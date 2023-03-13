@@ -1,4 +1,4 @@
-package ca.bc.gov.app.handlers;
+package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.exception.InvalidRequestObjectException;
 import java.util.function.Function;

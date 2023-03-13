@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @OpenAPIDefinition(info = @Info(
-    title = "${info.app.name}",
+    title = "${info.app.contactFirstName}",
     version = "${info.app.version}",
     description = "${info.app.description}")
 )

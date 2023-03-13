@@ -3,6 +3,7 @@ package ca.bc.gov.app.service.client;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationContactEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationEntity;
+import static ca.bc.gov.app.util.ClientMapper.mapToSubmitterEntity;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
@@ -18,6 +19,7 @@ import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
+import ca.bc.gov.app.repository.client.SubmitterRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -36,6 +38,8 @@ public class ClientService {
   private final ProvinceCodeRepository provinceCodeRepository;
   private final ContactTypeCodeRepository contactTypeCodeRepository;
   private final SubmissionRepository submissionRepository;
+
+  private final SubmitterRepository submitterRepository;
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionLocationRepository submissionLocationRepository;
   private final SubmissionLocationContactRepository submissionLocationContactRepository;
@@ -53,7 +57,6 @@ public class ClientService {
 
 
   public Flux<ClientNameCodeDto> findActiveClientTypeCodes(LocalDate targetDate) {
-
     return
         clientTypeCodeRepository
             .findActiveAt(targetDate)
@@ -67,8 +70,8 @@ public class ClientService {
   /**
    * <p><b>List countries</b></p>
    * <p>List countries by page with a defined size.
-   * The list will be sorted by order and country name.</p>
-   * List countries by page with a defined size. The list will be sorted by order and country name.
+   * The list will be sorted by order and country contactFirstName.</p>
+   * List countries by page with a defined size. The list will be sorted by order and country contactFirstName.
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
@@ -83,7 +86,7 @@ public class ClientService {
   /**
    * <p><b>List Provinces</b></p>
    * <p>List provinces by country (which include states) by page with a defined size.
-   * The list will be sorted by province name.</p>
+   * The list will be sorted by province contactFirstName.</p>
    *
    * @param countryCode The code of the country to list provinces from.
    * @param page        The page number, it is a 0-index base.
@@ -116,53 +119,52 @@ public class ClientService {
     SubmissionEntity submissionEntity =
         SubmissionEntity
             .builder()
-            .createdBy(UUID.randomUUID().toString()) //TODO: receive user id
-            .submissionDate(LocalDateTime.now())
             .submitterUserId(UUID.randomUUID().toString()) //TODO: set the correct user
             .submissionStatus(SubmissionStatusEnum.S)
             .submissionDate(LocalDateTime.now())
+            .createdBy(UUID.randomUUID().toString()) //TODO: receive user id
             .build();
 
     return submissionRepository.save(submissionEntity)
         .map(submission ->
-            mapToSubmissionDetailEntity(
+            mapToSubmitterEntity(
                 submission.getSubmissionId(),
+                clientSubmissionDto.submitterInformation()))
+        .flatMap(submitterRepository::save)
+        .map(submitter ->
+            mapToSubmissionDetailEntity(
+                submitter.getSubmissionId(),
                 clientSubmissionDto)
         )
         .flatMap(submissionDetailRepository::save)
         .flatMap(submissionDetail ->
             submitLocations(
-                clientSubmissionDto.clientLocationDto(),
-                submissionDetail.getSubmissionId()
-            )
+                clientSubmissionDto.location(),
+                submissionDetail.getSubmissionId())
                 .thenReturn(submissionDetail.getSubmissionId())
         );
   }
 
   private Mono<Void> submitLocations(ClientLocationDto clientLocationDto, Integer submissionId) {
     return Flux.fromIterable(clientLocationDto
-            .clientAddressDto())
+            .addresses())
         .flatMap(addressDto ->
             submissionLocationRepository
                 .save(mapToSubmissionLocationEntity(submissionId, addressDto))
                 .flatMap(location ->
-                    submitLocationContacts(addressDto, location.getSubmissionLocationId())
-                )
-        )
+                    submitLocationContacts(addressDto, location.getSubmissionLocationId())))
         .then();
   }
 
   private Mono<Void> submitLocationContacts(ClientAddressDto addressDto,
                                             Integer submissionLocationId) {
     return Flux
-        .fromIterable(addressDto.clientContactDtoList())
+        .fromIterable(addressDto.contacts())
         .flatMap(contactDto ->
             submissionLocationContactRepository.save(
                 mapToSubmissionLocationContactEntity(
                     submissionLocationId,
-                    contactDto)
-            )
-        )
+                    contactDto)))
         .then();
   }
 }

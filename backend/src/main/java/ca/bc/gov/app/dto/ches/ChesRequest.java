@@ -13,7 +13,7 @@ public record ChesRequest(
     @Min(1)
     @Email
     @Schema(name = "emailTo",
-        description = "An array of recipients email addresses",
+        description = "An array of recipients contactEmail addresses",
         example = "foo@bar.com")
     List<String> emailTo,
     @NotNull
