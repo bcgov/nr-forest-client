@@ -116,7 +116,6 @@ import ValidationMessages from "../../common/ValidationMessagesComponent.vue";
 import AddressSection from "./AddressSectionComponent.vue";
 
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-const forestClientBase = import.meta.env.VITE_BACKEND_URL;
 
 //---- Form Data ----//
 let formData = ref(formDataDto);
@@ -124,17 +123,19 @@ let formData = ref(formDataDto);
 //--- Initializing the Addresses array ---//
 addNewAddress(formDataDto.location.addresses);
 
+const addressDataRef = ref({});
+
 const { data: activeClientTypeCodes } = useFetch('/api/clients/activeClientTypeCodes', { method:'get', initialData:[] });
 const clientTypeCodes = computed(() => {
     return activeClientTypeCodes.value.map(conversionFn);
 });
 
-let businessNames = Array<CodeDescrType>();
+const originalBusinessNames = ref([]);
+const businessNames = ref([]);
 async function populateBusinessList(event: any) {
     if (event.length >= 3) {
-        const encodedBusinessName = encodeURIComponent(event);
-        const response = await axios.get(forestClientBase + '/api/orgbook/name/' + encodedBusinessName);
-        businessNames = response.data.map(conversionFn);
+        const encodedBusinessName = encodeURIComponent(event);        
+        useFetchTo(`/api/orgbook/name/${encodedBusinessName}`,originalBusinessNames, { method:'get' });
     }
 };
 
@@ -165,13 +166,28 @@ const displayCommonSections = computed(() => {
 });
 
 function filterSearchData(event: any) {
-    const filterValue = event.toLowerCase();
-    const filteredSearchData = businessNames.filter(p => p.text.toLowerCase().includes(filterValue));
+    const filterValue = event.toLowerCase();    
+    const filteredSearchData = businessNames.value.filter(p => p.text.toLowerCase().includes(filterValue));
     if (filteredSearchData.length === 1) {
-        formData.value.businessInformation.incorporationNumber = filteredSearchData[0].value.value;
+        formData.value.businessInformation.incorporationNumber = filteredSearchData[0].value.value;    
     }
+    
+    if(formData.value.businessInformation.incorporationNumber){        
+        useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`,addressDataRef, { method:'get' });
+    }
+    
     return filteredSearchData;
 }
+
+watch(
+   [addressDataRef], 
+   () => { formData.value.location.addresses = addressDataRef.value.addresses;}
+);
+
+watch(
+   [originalBusinessNames], 
+   () => { businessNames.value = originalBusinessNames.value.map(conversionFn); }
+);
 
 //---- Functions ----//
 let validationMessages = ref([] as ValidationMessageType[]);
@@ -206,8 +222,8 @@ function submit(): void {
 </script>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
-import { addNewAddress, useFetch } from "../../services/ForestClientService";
+import { computed, defineComponent, ref, watch } from "vue";
+import { addNewAddress, useFetch, useFetchTo } from "../../services/ForestClientService";
 import { conversionFn } from "../../services/FetchService";
 import axios from "axios";
 import type { CodeDescrType, ValidationMessageType } from "../../core/CommonTypes";
