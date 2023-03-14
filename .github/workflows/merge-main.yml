@@ -182,6 +182,9 @@ jobs:
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p CHES_TOKEN_URL='https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1'
+            -p BCREGISTRY_URI='https://bcregistry-sandbox.apigee.net'
+            -p BCREGISTRY_KEY='{{ secrets.BCREGISTRY_KEY }}'
+            -p BCREGISTRY_ACCOUNT='{{ secrets.BCREGISTRY_ACCOUNT }}'
 
   test-legacy:
     name: TEST Legacy
@@ -333,6 +336,9 @@ jobs:
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+            -p BCREGISTRY_KEY='{{ secrets.BCREGISTRY_KEY }}'
+            -p BCREGISTRY_ACCOUNT='{{ secrets.BCREGISTRY_ACCOUNT }}'
 
   prod-legacy:
     name: PROD Legacy

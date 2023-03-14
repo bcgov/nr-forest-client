@@ -44,6 +44,15 @@ parameters:
     value: 300Mi
   - name: MEMORY_LIMIT
     value: 400Mi
+  - name: BCREGISTRY_URI
+    description: Bc Registry API address
+    required: true
+  - name: BCREGISTRY_KEY
+    description: BC Registry key
+    required: true
+  - name: BCREGISTRY_ACCOUNT
+    description: BC Registry account Id
+    required: true
 objects:
   - apiVersion: v1
     kind: Secret
@@ -55,6 +64,8 @@ objects:
       x-api-key: "${X_API_KEY}"
       ches-client-id: "${CHES_CLIENT_ID}"
       ches-client-secret: "${CHES_CLIENT_SECRET}"
+      bcregistry-key: "${BCREGISTRY_KEY}"
+      bcregistry-account: "${BCREGISTRY_ACCOUNT}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -139,7 +150,19 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-database
                       key: database-user
-
+                - name: BCREGISTRY_URI
+                  value: ${BCREGISTRY_URI}
+                - name: BCREGISTRY_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: bcregistry-key
+                - name: BCREGISTRY_ACCOUNT
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: bcregistry-account
+                
               ports:
                 - containerPort: 3000
                   protocol: TCP
