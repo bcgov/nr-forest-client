@@ -54,7 +54,12 @@ public class ChesHandler extends AbstractHandler<ChesRequest, ChesRequestValidat
                             URI
                                 .create(String.format("/api/mail/%s", companyId))
                         )
-                        .contentType(request.headers().contentType().orElse(MediaType.APPLICATION_JSON))
+                        .contentType(
+                            request
+                                .headers()
+                                .contentType()
+                                .orElse(MediaType.APPLICATION_JSON)
+                        )
                         .build()
             )
             .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())

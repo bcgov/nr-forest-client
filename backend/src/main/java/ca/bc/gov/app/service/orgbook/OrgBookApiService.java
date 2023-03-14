@@ -25,7 +25,7 @@ public class OrgBookApiService {
   }
 
   public Flux<ClientNameCodeDto> findByClientName(String clientName) {
-    log.info("Looking up on OrgBook for {}",clientName);
+    log.info("Looking up on OrgBook for {}", clientName);
     return
         orgBookApi
             .get()

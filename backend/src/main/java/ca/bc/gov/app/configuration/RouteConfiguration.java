@@ -18,13 +18,13 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-@Configuration
-@Slf4j
 /**
  * <p><b>Base Router Class</b></p>
  * This configuration class is responsible for configuring the routing for webflux.
  * It also configures the OpenAPI part of the code with some default data.
  */
+@Configuration
+@Slf4j
 public class RouteConfiguration {
 
   @Bean

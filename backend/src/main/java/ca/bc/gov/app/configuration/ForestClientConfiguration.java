@@ -21,6 +21,7 @@ public class ForestClientConfiguration {
   private FrontEndConfiguration frontend;
   private OpenMapsConfiguration openmaps;
   private OrgBookConfiguration orgbook;
+  private BcRegistryConfiguration bcregistry;
 
   @Data
   @Builder
@@ -69,5 +70,15 @@ public class ForestClientConfiguration {
   @AllArgsConstructor
   public static class OrgBookConfiguration {
     private String uri;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class BcRegistryConfiguration {
+    private String uri;
+    private String apiKey;
+    private String accountId;
   }
 }

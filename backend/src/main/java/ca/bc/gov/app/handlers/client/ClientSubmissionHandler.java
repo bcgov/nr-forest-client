@@ -39,7 +39,7 @@ public class ClientSubmissionHandler implements BaseHandler {
                     .created(
                         URI.create(String.format("/api/clients/submissions/%d", submissionId))
                     )
-                    .header("x-sub-id",String.valueOf(submissionId))
+                    .header("x-sub-id", String.valueOf(submissionId))
                     .build()
             )
             .doOnError(ResponseStatusException.class, HandlerUtil.handleStatusResponse())

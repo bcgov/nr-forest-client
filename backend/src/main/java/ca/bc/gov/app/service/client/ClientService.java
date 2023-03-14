@@ -4,11 +4,15 @@ import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationContactEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationEntity;
 
+import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
+import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
@@ -18,9 +22,14 @@ import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
+import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -39,6 +48,7 @@ public class ClientService {
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionLocationRepository submissionLocationRepository;
   private final SubmissionLocationContactRepository submissionLocationContactRepository;
+  private final BcRegistryService bcRegistryService;
 
   /**
    * <p><b>Find Active Client Type Codes</b></p>
@@ -137,6 +147,48 @@ public class ClientService {
             )
                 .thenReturn(submissionDetail.getSubmissionId())
         );
+  }
+
+  public Mono<ClientDetailsDto> getClientDetails(String clientNumber) {
+    return
+        bcRegistryService
+            .getCompanyStanding(clientNumber)
+            .flatMap(details ->
+                bcRegistryService
+                    .getAddresses(clientNumber)
+                    .onErrorReturn(NoClientDataFound.class,
+                        new BcRegistryBusinessAdressesDto(null, null)
+                    )
+                    .flatMapIterable(addresses ->
+                        Stream
+                            .of(addresses.mailingAddress(), addresses.deliveryAddress())
+                            .filter(Objects::nonNull)
+                            .sorted(Comparator.comparing(BcRegistryAddressDto::id))
+                            .toList()
+                    )
+                    .index()
+                    .map(addressTuple ->
+                        new ClientAddressDto(
+                            addressTuple.getT2().streetAddress(),
+                            addressTuple.getT2().addressCountry(),
+                            addressTuple.getT2().addressRegion(),
+                            addressTuple.getT2().addressCity(),
+                            addressTuple.getT2().postalCode(),
+                            null,
+                            null,
+                            addressTuple.getT1().intValue(),
+                            List.of()
+                        )
+                    )
+                    .collectList()
+                    .map(addresses -> new ClientDetailsDto(
+                            details.legalName(),
+                            details.identifier(),
+                            details.goodStanding(),
+                            addresses
+                        )
+                    )
+            );
   }
 
   private Mono<Void> submitLocations(ClientLocationDto clientLocationDto, Integer submissionId) {
