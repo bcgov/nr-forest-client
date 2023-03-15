@@ -29,12 +29,12 @@ public record ChesMailRequest(
     @Valid
     List<ChesMailAttachment> attachments,
 
-    @JsonPropertyDescription("An array of recipients email addresses "
+    @JsonPropertyDescription("An array of recipients contactEmail addresses "
         + "that will appear on the BCC: field")
     @Valid
     List<String> bcc,
 
-    @JsonPropertyDescription("The email body type (html = content with html, text = plaintext)")
+    @JsonPropertyDescription("The contactEmail body type (html = content with html, text = plaintext)")
     @NotNull
     ChesMailBodyType bodyType,
 
@@ -42,7 +42,7 @@ public record ChesMailRequest(
     @NotNull
     String body,
 
-    @JsonPropertyDescription("An array of recipients email addresses "
+    @JsonPropertyDescription("An array of recipients contactEmail addresses "
         + "that will appear on the CC: field")
     @Valid
     List<String> cc,
@@ -56,8 +56,8 @@ public record ChesMailRequest(
         + "(defaults to 'utf-8', other values are 'hex' and 'base64')")
     ChesMailEncoding encoding,
 
-    @JsonPropertyDescription("The email address of the sender. "
-        + "All email addresses can be plain 'sender@server.com' or "
+    @JsonPropertyDescription("The contactEmail address of the sender. "
+        + "All contactEmail addresses can be plain 'sender@server.com' or "
         + "formatted '\"Sender Name\" <sender@server.com>'")
     @NotNull
     String from,
@@ -66,14 +66,14 @@ public record ChesMailRequest(
         + "'high', 'normal' (default) or 'low'.")
     ChesMailPriority priority,
 
-    @JsonPropertyDescription("The email subject")
+    @JsonPropertyDescription("The contactEmail subject")
     @NotNull
     String subject,
 
     @JsonPropertyDescription("A unique string which is associated with the message")
     String tag,
 
-    @JsonPropertyDescription("An array of recipients email addresses "
+    @JsonPropertyDescription("An array of recipients contactEmail addresses "
         + "that will appear on the To: field")
     @Valid
     @NotNull
