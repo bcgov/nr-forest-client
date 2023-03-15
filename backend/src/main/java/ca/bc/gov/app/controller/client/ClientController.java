@@ -39,7 +39,7 @@ public class ClientController {
       responses = {
           @ApiResponse(
               responseCode = "200",
-              description = "OK - List a page of countries with contactFirstName and code",
+              description = "OK - List a page of countries with name and code",
               content = @Content(
                   mediaType = MediaType.APPLICATION_JSON_VALUE,
                   array = @ArraySchema(
@@ -72,7 +72,7 @@ public class ClientController {
       responses = {
           @ApiResponse(
               responseCode = "200",
-              description = "OK - List a page of provinces with contactFirstName and code",
+              description = "OK - List a page of provinces with name and code",
               content = @Content(
                   mediaType = MediaType.APPLICATION_JSON_VALUE,
                   array = @ArraySchema(
@@ -112,7 +112,7 @@ public class ClientController {
       responses = {
           @ApiResponse(
               responseCode = "200",
-              description = "OK - List a page of active clients with contactFirstName and code",
+              description = "OK - List a page of active clients with name and code",
               content = @Content(
                   mediaType = MediaType.APPLICATION_JSON_VALUE,
                   array = @ArraySchema(

@@ -70,8 +70,8 @@ public class ClientService {
   /**
    * <p><b>List countries</b></p>
    * <p>List countries by page with a defined size.
-   * The list will be sorted by order and country contactFirstName.</p>
-   * List countries by page with a defined size. The list will be sorted by order and country contactFirstName.
+   * The list will be sorted by order and country name.</p>
+   * List countries by page with a defined size. The list will be sorted by order and country name.
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
@@ -86,7 +86,7 @@ public class ClientService {
   /**
    * <p><b>List Provinces</b></p>
    * <p>List provinces by country (which include states) by page with a defined size.
-   * The list will be sorted by province contactFirstName.</p>
+   * The list will be sorted by province name.</p>
    *
    * @param countryCode The code of the country to list provinces from.
    * @param page        The page number, it is a 0-index base.

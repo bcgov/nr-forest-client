@@ -26,7 +26,7 @@ public record ChesMailAttachment(
     ChesMailEncoding encoding,
 
     @JsonPropertyDescription(
-        "Filename to be reported as the contactFirstName of the attached file. "
+        "Filename to be reported as the name of the attached file. "
             + "Use of unicode is allowed.")
     String filename
 ) {
