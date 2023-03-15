@@ -24,14 +24,14 @@ public class SubmissionLocationContactEntity {
   @Column("submission_location_id")
   private Integer submissionLocationId;
 
-  @Column("first_name")
-  private String firstName;
-  
-  @Column("last_name")
-  private String lastName;
-
   @Column("contact_type_code")
   private String contactTypeCode;
+
+  @Column("first_name")
+  private String firstName;
+
+  @Column("last_name")
+  private String lastName;
 
   @Column("business_phone_number")
   private String businessPhoneNumber;
