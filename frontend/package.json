@@ -51,6 +51,7 @@
     "vite": "^4.0.0",
     "vue": "^3.2.47",
     "vue-axios": "^3.4.1",
+    "vue-the-mask": "^0.11.1",
     "vue-tsc": "^1.1.5"
   },
   "devDependencies": {

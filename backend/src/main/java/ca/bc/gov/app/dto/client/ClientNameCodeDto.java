@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
     example = """
         {
           "code": "00000002",
-          "name": "BAXTER"
+          "contactFirstName": "BAXTER"
         }"""
 )
 public record ClientNameCodeDto(
