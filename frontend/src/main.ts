@@ -1,4 +1,5 @@
 import { createApp } from "vue";
+import VueTheMask from 'vue-the-mask';
 import App from "./App.vue";
 import VueKeycloakJs from "@dsb-norge/vue-keycloak-js";
 import type { KeycloakInstance } from "keycloak-js";
@@ -10,6 +11,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue-3/dist/bootstrap-vue-3.css";
 
 const app = createApp(App);
+app.use(VueTheMask);
 
 if (nodeEnv && nodeEnv == "openshift-dev") {
   // disable the login authentication for the deployment in the openshift dev namespace

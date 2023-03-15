@@ -40,8 +40,7 @@ public class ClientMapper {
         .withCountryCode(clientAddressDto.country())
         .withProvinceCode(clientAddressDto.province())
         .withCityName(clientAddressDto.city())
-        .withPostalCode(clientAddressDto.postalCode())
-        .withEmailAddress(clientAddressDto.email());
+        .withPostalCode(clientAddressDto.postalCode());
   }
 
   public static SubmissionLocationContactEntity mapToSubmissionLocationContactEntity(
