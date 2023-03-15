@@ -4,7 +4,6 @@ import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -35,7 +34,5 @@ public class SubmissionEntity extends BaseEntity {
   private SubmissionStatusEnum submissionStatus;
 
   @Column("submission_date")
-  @Builder.Default
-  private LocalDateTime submissionDate = LocalDateTime.now();
-
+  private LocalDateTime submissionDate;
 }

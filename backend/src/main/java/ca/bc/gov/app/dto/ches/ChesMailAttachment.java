@@ -22,11 +22,12 @@ public record ChesMailAttachment(
 
     @JsonPropertyDescription("If set and content is string, then encodes the content to a "
         + "Buffer using the specified encoding. Example values: 'base64', 'hex', 'binary' etc. "
-        + "Useful if you want to use binary attachments in a JSON formatted email object.")
+        + "Useful if you want to use binary attachments in a JSON formatted contactEmail object.")
     ChesMailEncoding encoding,
 
-    @JsonPropertyDescription("Filename to be reported as the name of the attached file. "
-        + "Use of unicode is allowed.")
+    @JsonPropertyDescription(
+        "Filename to be reported as the contactFirstName of the attached file. "
+            + "Use of unicode is allowed.")
     String filename
 ) {
 }
