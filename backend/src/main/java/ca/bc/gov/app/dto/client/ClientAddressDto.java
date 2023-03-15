@@ -8,6 +8,7 @@ public record ClientAddressDto(
     String province,
     String city,
     String postalCode,
+
     int index,
     List<ClientContactDto> contacts
 ) {
