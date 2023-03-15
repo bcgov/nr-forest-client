@@ -31,7 +31,6 @@ public class AbstractController<T, V extends Validator> {
         errors
             .getAllErrors()
             .stream()
-            //.map(FieldError.class::cast)
             .map(DefaultMessageSourceResolvable::getCode)
             .reduce(StringUtils.EMPTY,
                 (message1, message2) -> String.join(",", message1, message2));

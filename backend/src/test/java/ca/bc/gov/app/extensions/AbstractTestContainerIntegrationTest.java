@@ -40,8 +40,7 @@ public abstract class AbstractTestContainerIntegrationTest {
     registry
         .add(
             "ca.bc.gov.nrs.postgres.host",
-            //() -> String.format("%s:%d", database.getHost(), database.getMappedPort(5432))
-            () -> String.format("127.0.0.1:%d", database.getMappedPort(5432))
+            () -> String.format("%s:%d", database.getHost(), database.getMappedPort(5432))
         );
 
     registry
