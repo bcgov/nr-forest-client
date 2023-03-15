@@ -12,6 +12,6 @@ public record OrgBookNameDto(
     String subType,
     @JsonProperty("topic_source_id")
     String topicSourceId,
-    List<String>names
+    List<String> names
 ) {
 }

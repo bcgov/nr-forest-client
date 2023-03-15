@@ -10,22 +10,19 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table(name = "submission_location_contact", schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
+@Table(name = "submission_submitter", schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @With
-public class SubmissionLocationContactEntity {
+public class SubmitterEntity {
   @Id
-  @Column("submission_location_id")
-  private Integer submissionLocationContactId;
+  @Column("submission_submitter_id")
+  private Integer submissionSubmitterId;
 
-  @Column("submission_location_id")
-  private Integer submissionLocationId;
-
-  @Column("contact_type_code")
-  private String contactTypeCode;
+  @Column("submission_id")
+  private Integer submissionId;
 
   @Column("first_name")
   private String firstName;
@@ -33,8 +30,8 @@ public class SubmissionLocationContactEntity {
   @Column("last_name")
   private String lastName;
 
-  @Column("business_phone_number")
-  private String businessPhoneNumber;
+  @Column("phone_number")
+  private String phoneNumber;
 
   @Column("email_address")
   private String emailAddress;

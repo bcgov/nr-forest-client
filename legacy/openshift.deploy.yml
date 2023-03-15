@@ -41,7 +41,12 @@ parameters:
     required: true
   - name: ORACLEDB_SERVICENAME
     description: Oracle database service name
-    required: true  
+    required: true
+  - name: ORACLEDB_KEYSTORE
+    description: Oracle database keystore file
+  - name: ORACLEDB_SECRET
+    description: Oracle database keystore secret/password
+    required: true
   - name: CPU_REQUEST
     value: 75m
   - name: CPU_LIMIT
@@ -64,6 +69,7 @@ objects:
       oracle-database: "${ORACLEDB_DATABASE}"
       oracle-host: "${ORACLEDB_HOST}"
       oracle-service: "${ORACLEDB_SERVICENAME}"
+      oracle-secret: "${ORACLEDB_SECRET}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -108,6 +114,24 @@ objects:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
+          volumes:
+            - name: certs
+              emptyDir: { }
+          initContainers:
+            - name: ${NAME}-init
+              image: ${REGISTRY}/bcgov/${NAME}/common:${ZONE}
+              imagePullPolicy: Always
+              env:
+                - name: ORACLEDB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-host
+                - name: ORACLEDB_PORT
+                  value: "1543"
+              volumeMounts:
+                - mountPath: /cert
+                  name: certs
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
@@ -148,6 +172,13 @@ objects:
                       key: oracle-service
                 - name: ORACLEDB_PORT
                   value: "1543"
+                - name: ORACLEDB_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-secret
+                - name: ORACLEDB_KEYSTORE
+                  value: /cert/jssecacerts
               ports:
                 - containerPort: 9000
                   protocol: TCP
@@ -162,12 +193,25 @@ objects:
                 successThreshold: 1
                 failureThreshold: 30
                 httpGet:
-                  path: /
+                  path: /health
                   port: 9000
                   scheme: HTTP
-                initialDelaySeconds: 60
+                initialDelaySeconds: 3
                 periodSeconds: 30
                 timeoutSeconds: 5
+              livenessProbe:
+                successThreshold: 1
+                failureThreshold: 12
+                httpGet:
+                  path: /health
+                  port: 9000
+                  scheme: HTTP
+                initialDelaySeconds: 3
+                periodSeconds: 30
+                timeoutSeconds: 5
+              volumeMounts:
+                - mountPath: /cert
+                  name: certs
   - apiVersion: v1
     kind: Service
     metadata:

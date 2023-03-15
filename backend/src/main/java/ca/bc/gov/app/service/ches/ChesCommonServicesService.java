@@ -86,7 +86,7 @@ public class ChesCommonServicesService {
             .bodyToMono(ChesMailResponse.class)
 
             .map(response -> response.txId().toString())
-            .doOnError(error -> log.error("Failed to send email", error));
+            .doOnError(error -> log.error("Failed to send contactEmail", error));
 
   }
 
@@ -145,7 +145,7 @@ public class ChesCommonServicesService {
           .accessToken(request, OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class)
           .getAccessToken();
     } catch (Exception e) {
-      log.error("Failed to get email authentication token", e);
+      log.error("Failed to get contactEmail authentication token", e);
       throw new CannotExtractTokenException();
     }
 
