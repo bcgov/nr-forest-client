@@ -6,11 +6,14 @@ import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationEntity;
 
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientDetailsAddressDto;
 import ca.bc.gov.app.dto.client.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
@@ -29,6 +32,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +40,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 @Service
 @RequiredArgsConstructor
@@ -159,36 +164,75 @@ public class ClientService {
                     .onErrorReturn(NoClientDataFound.class,
                         new BcRegistryBusinessAdressesDto(null, null)
                     )
-                    .flatMapIterable(addresses ->
-                        Stream
-                            .of(addresses.mailingAddress(), addresses.deliveryAddress())
-                            .filter(Objects::nonNull)
-                            .sorted(Comparator.comparing(BcRegistryAddressDto::id))
-                            .toList()
-                    )
+                    .flatMapIterable(expandAddresses())
                     .index()
-                    .map(addressTuple ->
-                        new ClientAddressDto(
-                            addressTuple.getT2().streetAddress(),
-                            addressTuple.getT2().addressCountry(),
-                            addressTuple.getT2().addressRegion(),
-                            addressTuple.getT2().addressCity(),
-                            addressTuple.getT2().postalCode(),
-                            null,
-                            null,
-                            addressTuple.getT1().intValue(),
-                            List.of()
-                        )
-                    )
+                    .flatMap(buildAddressFromTuple())
                     .collectList()
-                    .map(addresses -> new ClientDetailsDto(
-                            details.legalName(),
-                            details.identifier(),
-                            details.goodStanding(),
-                            addresses
-                        )
-                    )
+                    .map(buildDetails(details))
             );
+  }
+
+  private Function<List<ClientDetailsAddressDto>, ClientDetailsDto> buildDetails(
+      BcRegistryBusinessDto details) {
+    return addresses -> new ClientDetailsDto(
+        details.legalName(),
+        details.identifier(),
+        details.goodStanding(),
+        addresses
+    );
+  }
+
+  private Function<Tuple2<Long, BcRegistryAddressDto>, Mono<ClientDetailsAddressDto>> buildAddressFromTuple() {
+    return addressTuple ->
+        Mono
+            .just(
+                new ClientDetailsAddressDto(
+                    addressTuple.getT2().streetAddress(),
+                    null,
+                    null,
+                    addressTuple.getT2().addressCity(),
+                    addressTuple.getT2().postalCode(),
+                    addressTuple.getT1().intValue()
+                )
+            )
+            .flatMap(address ->
+                loadCountry(addressTuple.getT2().addressCountry())
+                    .map(address::withCountry)
+            )
+            .flatMap(address ->
+                loadProvince(
+                    addressTuple.getT2().addressCountry(),
+                    addressTuple.getT2().addressRegion()
+                )
+                    .map(address::withProvince)
+            );
+  }
+
+  private Mono<ClientValueTextDto> loadCountry(String countryCode) {
+    return
+        countryCodeRepository
+            .findByCountryCode(countryCode)
+            .map(
+                entity -> new ClientValueTextDto(entity.getCountryCode(), entity.getDescription())
+            );
+  }
+
+  private Mono<ClientValueTextDto> loadProvince(String countryCode, String province) {
+    return
+        provinceCodeRepository
+            .findByCountryCodeAndProvinceCode(countryCode, province)
+            .map(
+                entity -> new ClientValueTextDto(entity.getProvinceCode(), entity.getDescription())
+            );
+  }
+
+  private Function<BcRegistryBusinessAdressesDto, List<BcRegistryAddressDto>> expandAddresses() {
+    return addresses ->
+        Stream
+            .of(addresses.mailingAddress(), addresses.deliveryAddress())
+            .filter(Objects::nonNull)
+            .sorted(Comparator.comparing(BcRegistryAddressDto::id))
+            .toList();
   }
 
   private Mono<Void> submitLocations(ClientLocationDto clientLocationDto, Integer submissionId) {

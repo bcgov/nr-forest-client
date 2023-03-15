@@ -516,25 +516,19 @@ public class TestConstants {
         "addresses": [
           {
             "streetAddress": "501 Belleville Street",
-            "country": "CA",
-            "province": "BC",
+            "country": {"value":"CA","text":"Canada"},
+            "province": {"value":"BC","text":"British Columbia"},
             "city": "VICTORIA",
             "postalCode": "V8V1X4",
-            "businessPhone": null,
-            "email": null,
-            "index": 0,
-            "clientContactDtoList": []
+            "index": 0
           },
           {
             "streetAddress": "501 Belleville Street",
-            "country": "CA",
-            "province": "BC",
+            "country": {"value":"CA","text":"Canada"},
+            "province": {"value":"BC","text":"British Columbia"},
             "city": "VICTORIA",
             "postalCode": "V8V1X4",
-            "businessPhone": null,
-            "email": null,
-            "index": 1,
-            "clientContactDtoList": []
+            "index": 1
           }
         ]
       }""";

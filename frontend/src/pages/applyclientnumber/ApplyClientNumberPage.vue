@@ -30,7 +30,7 @@
                           :value="formData.businessInformation.businessName"
                           :searchData="businessNames"
                           datalistId="businessNameListId"
-                          @updateValue="formData.businessInformation.businessName = $event;
+                          @updateValue="formData.businessInformation.businessName = $event;                                        
                                         populateBusinessList($event);
                                         filterSearchData($event)" />
             <Note note="The name must be the same as it is in BC Registries" />
@@ -107,13 +107,13 @@
 </template>
 
 <script setup lang="ts">
-import { formDataDto } from "../../dto/ApplyClientNumberDto";
-import CollapseCard from "../../common/CollapseCardComponent.vue";
-import Label from "../../common/LabelComponent.vue";
-import Note from "../../common/NoteComponent.vue";
-import Autocomplete from "../../common/AutocompleteComponent.vue";
-import ValidationMessages from "../../common/ValidationMessagesComponent.vue";
-import AddressSection from "./AddressSectionComponent.vue";
+import { formDataDto } from "@/dto/ApplyClientNumberDto";
+import CollapseCard from "@/common/CollapseCardComponent.vue";
+import Label from "@/common/LabelComponent.vue";
+import Note from "@/common/NoteComponent.vue";
+import Autocomplete from "@/common/AutocompleteComponent.vue";
+import ValidationMessages from "@/common/ValidationMessagesComponent.vue";
+import AddressSection from "@/pages/applyclientnumber/AddressSectionComponent.vue";
 
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 
@@ -123,7 +123,7 @@ let formData = ref(formDataDto);
 //--- Initializing the Addresses array ---//
 addNewAddress(formDataDto.location.addresses);
 
-const addressDataRef = ref({});
+const addressDataRef = ref([]);
 
 const { data: activeClientTypeCodes } = useFetch('/api/clients/activeClientTypeCodes', { method:'get', initialData:[] });
 const clientTypeCodes = computed(() => {
@@ -131,11 +131,14 @@ const clientTypeCodes = computed(() => {
 });
 
 const originalBusinessNames = ref([]);
-const businessNames = ref([]);
+const businessNames = computed(() => {
+    return originalBusinessNames.value.map(conversionFn);
+});
 async function populateBusinessList(event: any) {
     if (event.length >= 3) {
         const encodedBusinessName = encodeURIComponent(event);        
         useFetchTo(`/api/orgbook/name/${encodedBusinessName}`,originalBusinessNames, { method:'get' });
+        filterSearchData(event);
     }
 };
 
@@ -166,27 +169,30 @@ const displayCommonSections = computed(() => {
 });
 
 function filterSearchData(event: any) {
-    const filterValue = event.toLowerCase();    
-    const filteredSearchData = businessNames.value.filter(p => p.text.toLowerCase().includes(filterValue));
-    if (filteredSearchData.length === 1) {
-        formData.value.businessInformation.incorporationNumber = filteredSearchData[0].value.value;    
-    }
+    const filteredSearchDataValues = businessNames.value.filter(p => p.text.toLowerCase() === event.toLowerCase());
     
-    if(formData.value.businessInformation.incorporationNumber){        
-        useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`,addressDataRef, { method:'get' });
+    if (filteredSearchDataValues.length === 1) {    
+        formData.value.businessInformation.incorporationNumber = filteredSearchDataValues[0].value.value;    
+        useFetchTo(`/api/clients/${filteredSearchDataValues[0].value.value}`,addressDataRef, { method:'get' });
     }
-    
-    return filteredSearchData;
+        
+    return filteredSearchDataValues;
 }
+
+watch(
+    [formData],
+    (cur,_) =>{
+        console.log(cur);
+        if(formData.value.businessInformation && formData.value.businessInformation.incorporationNumber){
+            console.log(formData.value.businessInformation.incorporationNumber);
+            
+        }   
+    }
+)
 
 watch(
    [addressDataRef], 
    () => { formData.value.location.addresses = addressDataRef.value.addresses;}
-);
-
-watch(
-   [originalBusinessNames], 
-   () => { businessNames.value = originalBusinessNames.value.map(conversionFn); }
 );
 
 //---- Functions ----//

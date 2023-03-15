@@ -6,6 +6,6 @@ public record ClientDetailsDto(
     String name,
     String id,
     boolean goodStanding,
-    List<ClientAddressDto> addresses
+    List<ClientDetailsAddressDto> addresses
 ) {
 }
