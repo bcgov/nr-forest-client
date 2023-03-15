@@ -154,8 +154,8 @@ const displayCommonSections = computed(() => {
     else { 
         if (null !== formData.value.businessType.clientType && 
             null !== formData.value.businessInformation && 
-            null !== formData.value.businessInformation.businessName &&
-            "" !== formData.value.businessInformation.businessName) {
+            null !== formData.value.businessInformation.incorporationNumber &&
+            "" !== formData.value.businessInformation.incorporationNumber) {
             return true;
         }
         else {

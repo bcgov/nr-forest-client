@@ -9,7 +9,6 @@ public record ClientAddressDto(
     String city,
     String postalCode,
     String businessPhone,
-    String email,
     int index,
     List<ClientContactDto> clientContactDtoList
 ) {
