@@ -169,9 +169,32 @@ jobs:
       - builds
       - build-native
     environment: dev
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
+      VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
+      - name: Broker
+        id: broker
+        uses: bcgov-nr/action-vault-broker-approle@v0.0.5
+        with:
+          broker_jwt: ${{ secrets.BROKER_JWT }}
+          provision_role_id: ${{ secrets.PROVISION_ROLE_ID }}
+          project_name: client
+          app_name: app-client
+          environment: development
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2.5.0
+        with:
+          url: https://vault-iit.apps.silver.devops.gov.bc.ca
+          token: ${{ steps.broker.outputs.vault_token }}
+          exportEnv: 'false'
+          secrets: |
+            apps/data/dev/client/app-client/db_proxy_read_only db_username | VAULT_DB_USER;
+            apps/data/dev/client/app-client/db_proxy_read_only db_password | VAULT_DB_PASS;
       - name: Deploys
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
@@ -180,7 +203,18 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
-          parameters: -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+          parameters: 
+            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
+            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
+            -p BCREGISTRY_KEY='${{ secrets.BCREGISTRY_KEY }}'
+            -p BCREGISTRY_ACCOUNT='${{ secrets.BCREGISTRY_ACCOUNT }}'
+            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
+            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
 
   deploy-database:
     name: Deploy Database
@@ -222,14 +256,10 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}
-            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
-            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
+            -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}            
             -p CHES_TOKEN_URL='https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches-dev.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-sandbox.apigee.net'
-            -p BCREGISTRY_KEY='{{ secrets.BCREGISTRY_KEY }}'
-            -p BCREGISTRY_ACCOUNT='{{ secrets.BCREGISTRY_ACCOUNT }}'
   
   deploy-legacy:
     name: Deploy Legacy
@@ -243,25 +273,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      - name: Broker
-        id: broker
-        uses: bcgov-nr/action-vault-broker-approle@v0.0.5
-        with:
-          broker_jwt: ${{ secrets.BROKER_JWT }}
-          provision_role_id: ${{ secrets.PROVISION_ROLE_ID }}
-          project_name: client
-          app_name: app-client
-          environment: development
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@v2.5.0
-        with:
-          url: https://vault-iit.apps.silver.devops.gov.bc.ca
-          token: ${{ steps.broker.outputs.vault_token }}
-          exportEnv: 'false'
-          secrets: |
-            apps/data/dev/client/app-client/db_proxy_read_only db_username | VAULT_DB_USER;
-            apps/data/dev/client/app-client/db_proxy_read_only db_password | VAULT_DB_PASS;
+
       - name: Deploys
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
@@ -273,15 +285,9 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
-            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
-            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
-            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
-            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}            
             -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ github.event.number }}-backend.apps.silver.devops.gov.bc.ca
-            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
-
+            
   deploy-frontend:
     name: Deploy Frontend
     needs:

@@ -27,26 +27,8 @@ parameters:
   - name: FOREST_API_URL
     description: Forest Client service api url
     required: true
-  - name: ORACLEDB_USER
-    description: Oracle database user name
-    required: true
-  - name: ORACLEDB_PASSWORD
-    description: Oracle database password
-    required: true
-  - name: ORACLEDB_DATABASE
-    description: Oracle database database name
-    required: true
-  - name: ORACLEDB_HOST
-    description: Oracle database host
-    required: true
-  - name: ORACLEDB_SERVICENAME
-    description: Oracle database service name
-    required: true
   - name: ORACLEDB_KEYSTORE
-    description: Oracle database keystore file
-  - name: ORACLEDB_SECRET
-    description: Oracle database keystore secret/password
-    required: true
+    description: Oracle database keystore file  
   - name: CPU_REQUEST
     value: 75m
   - name: CPU_LIMIT
@@ -55,21 +37,7 @@ parameters:
     value: 300Mi
   - name: MEMORY_LIMIT
     value: 400Mi
-objects:
-  - apiVersion: v1
-    kind: Secret
-    metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}
-      labels:
-        app: ${NAME}-${ZONE}
-    stringData:
-      x-api-key: "${X_API_KEY}"
-      oracle-user: "${ORACLEDB_USER}"
-      oracle-password: "${ORACLEDB_PASSWORD}"
-      oracle-database: "${ORACLEDB_DATABASE}"
-      oracle-host: "${ORACLEDB_HOST}"
-      oracle-service: "${ORACLEDB_SERVICENAME}"
-      oracle-secret: "${ORACLEDB_SECRET}"
+objects:  
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -125,7 +93,7 @@ objects:
                 - name: ORACLEDB_HOST
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: oracle-host
                 - name: ORACLEDB_PORT
                   value: "1543"
@@ -148,34 +116,34 @@ objects:
                 - name: ORACLEDB_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: oracle-user
                 - name: ORACLEDB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: oracle-password
                 - name: ORACLEDB_DATABASE
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: oracle-database
                 - name: ORACLEDB_HOST
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: oracle-host
                 - name: ORACLEDB_SERVICENAME
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: oracle-service
                 - name: ORACLEDB_PORT
                   value: "1543"
                 - name: ORACLEDB_SECRET
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: oracle-secret
                 - name: ORACLEDB_KEYSTORE
                   value: /cert/jssecacerts

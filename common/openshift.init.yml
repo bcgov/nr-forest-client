@@ -14,17 +14,59 @@ parameters:
     description: Password for the PostgreSQL connection user.
     from: "[a-zA-Z0-9]{16}"
     generate: expression
+  - name: ORACLEDB_USER
+    description: Oracle database user name
+    required: true
+  - name: ORACLEDB_PASSWORD
+    description: Oracle database password
+    required: true
+  - name: ORACLEDB_DATABASE
+    description: Oracle database database name
+    required: true
+  - name: ORACLEDB_HOST
+    description: Oracle database host
+    required: true
+  - name: ORACLEDB_SERVICENAME
+    description: Oracle database service name
+    required: true
+  - name: ORACLEDB_SECRET
+    description: Oracle database keystore secret/password
+    required: true
+  - name: BCREGISTRY_KEY
+    description: BC Registry key
+    required: true
+  - name: BCREGISTRY_ACCOUNT
+    description: BC Registry account Id
+    required: true
+  - name: CHES_CLIENT_ID
+    description: CHES service client id
+    required: true
+  - name: CHES_CLIENT_SECRET
+    description: CHES service client secret
+    required: true
+  - name: VITE_KEYCLOAK_CLIENT_ID
+    value: ""
 objects:
   - apiVersion: v1
     kind: Secret
     metadata:
-      name: ${NAME}-${ZONE}-${PG_DATABASE}
+      name: ${NAME}-${ZONE}
       labels:
         app: ${NAME}-${ZONE}
     stringData:
       database-name: ${NAME}
       database-password: ${DB_PASSWORD}
-      database-user: ${NAME}
+      database-user: ${NAME}  
+      oracle-user: "${ORACLEDB_USER}"
+      oracle-password: "${ORACLEDB_PASSWORD}"
+      oracle-database: "${ORACLEDB_DATABASE}"
+      oracle-host: "${ORACLEDB_HOST}"
+      oracle-service: "${ORACLEDB_SERVICENAME}"
+      oracle-secret: "${ORACLEDB_SECRET}"  
+      ches-client-id: "${CHES_CLIENT_ID}"
+      ches-client-secret: "${CHES_CLIENT_SECRET}"
+      bcregistry-key: "${BCREGISTRY_KEY}"
+      bcregistry-account: "${BCREGISTRY_ACCOUNT}"
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
