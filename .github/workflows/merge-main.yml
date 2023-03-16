@@ -235,6 +235,7 @@ jobs:
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
             -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
             -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}
+            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
 
   test-frontend:
     name: TEST Frontend
@@ -390,6 +391,7 @@ jobs:
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
             -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
             -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}
+            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
 
   prod-frontend:
     name: PROD Frontend
