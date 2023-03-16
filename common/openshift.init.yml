@@ -57,16 +57,16 @@ objects:
       database-name: ${NAME}
       database-password: ${DB_PASSWORD}
       database-user: ${NAME}  
-      oracle-user: "${ORACLEDB_USER}"
-      oracle-password: "${ORACLEDB_PASSWORD}"
-      oracle-database: "${ORACLEDB_DATABASE}"
-      oracle-host: "${ORACLEDB_HOST}"
-      oracle-service: "${ORACLEDB_SERVICENAME}"
-      oracle-secret: "${ORACLEDB_SECRET}"  
-      ches-client-id: "${CHES_CLIENT_ID}"
-      ches-client-secret: "${CHES_CLIENT_SECRET}"
-      bcregistry-key: "${BCREGISTRY_KEY}"
-      bcregistry-account: "${BCREGISTRY_ACCOUNT}"
+      oracle-user: ${ORACLEDB_USER}
+      oracle-password: ${ORACLEDB_PASSWORD}
+      oracle-database: ${ORACLEDB_DATABASE}
+      oracle-host: ${ORACLEDB_HOST}
+      oracle-service: ${ORACLEDB_SERVICENAME}
+      oracle-secret: ${ORACLEDB_SECRET}  
+      ches-client-id: ${CHES_CLIENT_ID}
+      ches-client-secret: ${CHES_CLIENT_SECRET}
+      bcregistry-key: ${BCREGISTRY_KEY}
+      bcregistry-account: ${BCREGISTRY_ACCOUNT}
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
