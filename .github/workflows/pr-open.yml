@@ -106,7 +106,7 @@ jobs:
             triggers: ('common/')
           - package: frontend
             triggers: ('frontend/')
-            
+
     steps:
       - uses: actions/checkout@v3
 
@@ -140,9 +140,9 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.3.0'
-          java-version: '17'
-          components: 'native-image'
+          version: "22.3.0"
+          java-version: "17"
+          components: "native-image"
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build App
@@ -191,7 +191,7 @@ jobs:
         with:
           url: https://vault-iit.apps.silver.devops.gov.bc.ca
           token: ${{ steps.broker.outputs.vault_token }}
-          exportEnv: 'false'
+          exportEnv: "false"
           secrets: |
             apps/data/dev/client/app-client/db_proxy_read_only db_username | VAULT_DB_USER;
             apps/data/dev/client/app-client/db_proxy_read_only db_password | VAULT_DB_PASS;
@@ -203,10 +203,10 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
-          parameters: 
+          parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
-            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
-            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
+            -p ORACLEDB_USER='${{ steps.secrets.outputs.VAULT_DB_USER }}'
+            -p ORACLEDB_PASSWORD='${{ steps.secrets.outputs.VAULT_DB_PASS }}'
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
             -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
@@ -256,11 +256,11 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}            
+            -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}
             -p CHES_TOKEN_URL='https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches-dev.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-sandbox.apigee.net'
-  
+
   deploy-legacy:
     name: Deploy Legacy
     needs:
@@ -285,9 +285,9 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}            
+            -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
             -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ github.event.number }}-backend.apps.silver.devops.gov.bc.ca
-            
+
   deploy-frontend:
     name: Deploy Frontend
     needs:
