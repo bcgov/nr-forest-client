@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,6 +37,48 @@ public class ClientController {
   private final ClientService clientService;
 
   @GetMapping("/{clientNumber}")
+  @Operation(
+      summary = "Get the details of a client",
+      responses = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "Returns a client data based on it's number",
+              content = @Content(
+                  mediaType = MediaType.APPLICATION_JSON_VALUE,
+                  schema = @Schema(
+                      name = "ClientDetails",
+                      implementation = ClientDetailsDto.class
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "No client found based on the provided ID",
+              content = @Content(
+                  mediaType = MediaType.APPLICATION_JSON_VALUE,
+                  schema = @Schema(implementation = String.class),
+                  examples = {
+                      @ExampleObject(
+                          value =
+                              "No data found for client number 00000002")
+                  }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "Provided access token is missing or invalid",
+              content = @Content(
+                  mediaType = MediaType.APPLICATION_JSON_VALUE,
+                  schema = @Schema(implementation = String.class),
+                  examples = {
+                      @ExampleObject(
+                          value =
+                              "Provided access token is missing or invalid")
+                  }
+              )
+          )
+      }
+  )
   public Mono<ClientDetailsDto> getClientDetails(
       @Parameter(
           description = "The client number to look for",
