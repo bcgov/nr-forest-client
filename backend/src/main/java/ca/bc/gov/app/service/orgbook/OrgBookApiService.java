@@ -50,7 +50,6 @@ public class OrgBookApiService {
 
   }
 
-
   public Mono<OrgBookTopicListResponse> findByIncorporationNumber(
       String incorporationNumber) {
     return
