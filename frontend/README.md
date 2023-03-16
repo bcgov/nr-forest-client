@@ -44,7 +44,7 @@ Press "option+shift+f" and select prettier as the formatter
 
 ### **Style**:
 
-[Bootstrap for vue3]([https://cdmoro.github.io/bootstrap-vue-3/components/Button.html](https://www.npmjs.com/package/bootstrap-vue-3)), installed through this [prefered installation method](https://cdmoro.github.io/bootstrap-vue-3/getting-started/#preferred-installation), so it can automatically importing components, to aviod the warn message that cannot find components when run unit tests
+[Bootstrap for vue3](https://www.npmjs.com/package/bootstrap-vue-3), installed through this [prefered installation method](https://cdmoro.github.io/bootstrap-vue-3/getting-started/#preferred-installation), so it can automatically importing components, to aviod the warn message that cannot find components when run unit tests
 
 [Bootstrap icon for vue3](https://github.com/tommyip/bootstrap-icons-vue) doesn't work well with the bootstrap-vue-3 after installed bootstrap-vue-3 using the preferred method, so use [unplugin-icons for bootstrap](https://github.com/antfu/unplugin-icons) for now, until bootstrap-vue-3 adds all the icons. The problem of bootstrap-icons-vue library is that that its naming convention uses b-icon as prefix, so bootstrap-vue-3 will think it belongs to it, and then complains cannot found
 
