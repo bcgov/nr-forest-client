@@ -153,7 +153,7 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
           parameters: 
-            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
             -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
@@ -329,7 +329,7 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
           parameters: 
-            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
             -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
