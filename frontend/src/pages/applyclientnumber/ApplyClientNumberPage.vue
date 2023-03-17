@@ -30,7 +30,7 @@
                           :value="formData.businessInformation.businessName"
                           :searchData="businessNames"
                           datalistId="businessNameListId"
-                          @updateValue="formData.businessInformation.businessName = $event;
+                          @updateValue="formData.businessInformation.businessName = $event;                                        
                                         populateBusinessList($event);
                                         filterSearchData($event)" />
             <Note note="The name must be the same as it is in BC Registries" />
@@ -107,16 +107,15 @@
 </template>
 
 <script setup lang="ts">
-import { formDataDto } from "../../dto/ApplyClientNumberDto";
-import CollapseCard from "../../common/CollapseCardComponent.vue";
-import Label from "../../common/LabelComponent.vue";
-import Note from "../../common/NoteComponent.vue";
-import Autocomplete from "../../common/AutocompleteComponent.vue";
-import ValidationMessages from "../../common/ValidationMessagesComponent.vue";
-import AddressSection from "./AddressSectionComponent.vue";
+import { formDataDto } from "@/dto/ApplyClientNumberDto";
+import CollapseCard from "@/common/CollapseCardComponent.vue";
+import Label from "@/common/LabelComponent.vue";
+import Note from "@/common/NoteComponent.vue";
+import Autocomplete from "@/common/AutocompleteComponent.vue";
+import ValidationMessages from "@/common/ValidationMessagesComponent.vue";
+import AddressSection from "@/pages/applyclientnumber/AddressSectionComponent.vue";
 
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-const forestClientBase = import.meta.env.VITE_BACKEND_URL;
 
 //---- Form Data ----//
 let formData = ref(formDataDto);
@@ -124,17 +123,22 @@ let formData = ref(formDataDto);
 //--- Initializing the Addresses array ---//
 addNewAddress(formDataDto.location.addresses);
 
+const addressDataRef = ref([]);
+
 const { data: activeClientTypeCodes } = useFetch('/api/clients/activeClientTypeCodes', { method:'get', initialData:[] });
 const clientTypeCodes = computed(() => {
     return activeClientTypeCodes.value.map(conversionFn);
 });
 
-let businessNames = Array<CodeDescrType>();
+const originalBusinessNames = ref([]);
+const businessNames = computed(() => {
+    return originalBusinessNames.value.map(conversionFn);
+});
 async function populateBusinessList(event: any) {
     if (event.length >= 3) {
-        const encodedBusinessName = encodeURIComponent(event);
-        const response = await axios.get(forestClientBase + '/api/orgbook/name/' + encodedBusinessName);
-        businessNames = response.data.map(conversionFn);
+        const encodedBusinessName = encodeURIComponent(event);        
+        useFetchTo(`/api/orgbook/name/${encodedBusinessName}`,originalBusinessNames, { method:'get' });
+        filterSearchData(event);
     }
 };
 
@@ -154,8 +158,8 @@ const displayCommonSections = computed(() => {
     else { 
         if (null !== formData.value.businessType.clientType && 
             null !== formData.value.businessInformation && 
-            null !== formData.value.businessInformation.businessName &&
-            "" !== formData.value.businessInformation.businessName) {
+            null !== formData.value.businessInformation.incorporationNumber &&
+            "" !== formData.value.businessInformation.incorporationNumber) {
             return true;
         }
         else {
@@ -165,13 +169,31 @@ const displayCommonSections = computed(() => {
 });
 
 function filterSearchData(event: any) {
-    const filterValue = event.toLowerCase();
-    const filteredSearchData = businessNames.filter(p => p.text.toLowerCase().includes(filterValue));
-    if (filteredSearchData.length === 1) {
-        formData.value.businessInformation.incorporationNumber = filteredSearchData[0].value.value;
+    const filteredSearchDataValues = businessNames.value.filter(p => p.text.toLowerCase() === event.toLowerCase());
+    
+    if (filteredSearchDataValues.length === 1) {    
+        formData.value.businessInformation.incorporationNumber = filteredSearchDataValues[0].value.value;    
+        useFetchTo(`/api/clients/${filteredSearchDataValues[0].value.value}`,addressDataRef, { method:'get' });
     }
-    return filteredSearchData;
+        
+    return filteredSearchDataValues;
 }
+
+watch(
+    [formData],
+    (cur,_) =>{
+        console.log(cur);
+        if(formData.value.businessInformation && formData.value.businessInformation.incorporationNumber){
+            console.log(formData.value.businessInformation.incorporationNumber);
+            
+        }   
+    }
+)
+
+watch(
+   [addressDataRef], 
+   () => { formData.value.location.addresses = addressDataRef.value.addresses;}
+);
 
 //---- Functions ----//
 let validationMessages = ref([] as ValidationMessageType[]);
@@ -206,8 +228,8 @@ function submit(): void {
 </script>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
-import { addNewAddress, useFetch } from "../../services/ForestClientService";
+import { computed, defineComponent, ref, watch } from "vue";
+import { addNewAddress, useFetch, useFetchTo } from "../../services/ForestClientService";
 import { conversionFn } from "../../services/FetchService";
 import axios from "axios";
 import type { CodeDescrType, ValidationMessageType } from "../../core/CommonTypes";

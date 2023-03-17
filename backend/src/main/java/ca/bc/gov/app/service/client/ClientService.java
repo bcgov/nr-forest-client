@@ -3,12 +3,21 @@ package ca.bc.gov.app.service.client;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationContactEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationEntity;
+import static ca.bc.gov.app.util.ClientMapper.mapToSubmitterEntity;
 
+import ca.bc.gov.app.repository.client.SubmitterRepository;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientDetailsAddressDto;
+import ca.bc.gov.app.dto.client.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
+import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
@@ -18,15 +27,23 @@ import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
+import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
+
 
 @Service
 @RequiredArgsConstructor
@@ -36,9 +53,12 @@ public class ClientService {
   private final ProvinceCodeRepository provinceCodeRepository;
   private final ContactTypeCodeRepository contactTypeCodeRepository;
   private final SubmissionRepository submissionRepository;
+
+  private final SubmitterRepository submitterRepository;
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionLocationRepository submissionLocationRepository;
   private final SubmissionLocationContactRepository submissionLocationContactRepository;
+  private final BcRegistryService bcRegistryService;
 
   /**
    * <p><b>Find Active Client Type Codes</b></p>
@@ -50,8 +70,6 @@ public class ClientService {
    * @param targetDate The date to be used as reference.
    * @return A list of {@link ClientNameCodeDto}
    */
-
-
   public Flux<ClientNameCodeDto> findActiveClientTypeCodes(LocalDate targetDate) {
 
     return
@@ -116,53 +134,134 @@ public class ClientService {
     SubmissionEntity submissionEntity =
         SubmissionEntity
             .builder()
-            .createdBy(UUID.randomUUID().toString()) //TODO: receive user id
-            .submissionDate(LocalDateTime.now())
             .submitterUserId(UUID.randomUUID().toString()) //TODO: set the correct user
             .submissionStatus(SubmissionStatusEnum.S)
             .submissionDate(LocalDateTime.now())
+            .createdBy(UUID.randomUUID().toString()) //TODO: receive user id
             .build();
 
     return submissionRepository.save(submissionEntity)
         .map(submission ->
-            mapToSubmissionDetailEntity(
+            mapToSubmitterEntity(
                 submission.getSubmissionId(),
+                clientSubmissionDto.submitterInformation()))
+        .flatMap(submitterRepository::save)
+        .map(submitter ->
+            mapToSubmissionDetailEntity(
+                submitter.getSubmissionId(),
                 clientSubmissionDto)
         )
         .flatMap(submissionDetailRepository::save)
         .flatMap(submissionDetail ->
             submitLocations(
-                clientSubmissionDto.clientLocationDto(),
-                submissionDetail.getSubmissionId()
-            )
+                clientSubmissionDto.location(),
+                submissionDetail.getSubmissionId())
                 .thenReturn(submissionDetail.getSubmissionId())
         );
   }
 
+  public Mono<ClientDetailsDto> getClientDetails(String clientNumber) {
+    return
+        bcRegistryService
+            .getCompanyStanding(clientNumber)
+            .flatMap(details ->
+                bcRegistryService
+                    .getAddresses(clientNumber)
+                    .onErrorReturn(NoClientDataFound.class,
+                        new BcRegistryBusinessAdressesDto(null, null)
+                    )
+                    .flatMapIterable(expandAddresses())
+                    .index()
+                    .flatMap(buildAddressFromTuple())
+                    .collectList()
+                    .map(buildDetails(details))
+            );
+  }
+
+  private Function<List<ClientDetailsAddressDto>, ClientDetailsDto> buildDetails(
+      BcRegistryBusinessDto details) {
+    return addresses -> new ClientDetailsDto(
+        details.legalName(),
+        details.identifier(),
+        details.goodStanding(),
+        addresses
+    );
+  }
+
+  private Function<Tuple2<Long, BcRegistryAddressDto>, Mono<ClientDetailsAddressDto>> buildAddressFromTuple() {
+    return addressTuple ->
+        Mono
+            .just(
+                new ClientDetailsAddressDto(
+                    addressTuple.getT2().streetAddress(),
+                    null,
+                    null,
+                    addressTuple.getT2().addressCity(),
+                    addressTuple.getT2().postalCode(),
+                    addressTuple.getT1().intValue()
+                )
+            )
+            .flatMap(address ->
+                loadCountry(addressTuple.getT2().addressCountry())
+                    .map(address::withCountry)
+            )
+            .flatMap(address ->
+                loadProvince(
+                    addressTuple.getT2().addressCountry(),
+                    addressTuple.getT2().addressRegion()
+                )
+                    .map(address::withProvince)
+            );
+  }
+
+  private Mono<ClientValueTextDto> loadCountry(String countryCode) {
+    return
+        countryCodeRepository
+            .findByCountryCode(countryCode)
+            .map(
+                entity -> new ClientValueTextDto(entity.getCountryCode(), entity.getDescription())
+            );
+  }
+
+  private Mono<ClientValueTextDto> loadProvince(String countryCode, String province) {
+    return
+        provinceCodeRepository
+            .findByCountryCodeAndProvinceCode(countryCode, province)
+            .map(
+                entity -> new ClientValueTextDto(entity.getProvinceCode(), entity.getDescription())
+            );
+  }
+
+  private Function<BcRegistryBusinessAdressesDto, List<BcRegistryAddressDto>> expandAddresses() {
+    return addresses ->
+        Stream
+            .of(addresses.mailingAddress(), addresses.deliveryAddress())
+            .filter(Objects::nonNull)
+            .sorted(Comparator.comparing(BcRegistryAddressDto::id))
+            .toList();
+  }
+
   private Mono<Void> submitLocations(ClientLocationDto clientLocationDto, Integer submissionId) {
     return Flux.fromIterable(clientLocationDto
-            .clientAddressDto())
+            .addresses())
         .flatMap(addressDto ->
             submissionLocationRepository
                 .save(mapToSubmissionLocationEntity(submissionId, addressDto))
                 .flatMap(location ->
-                    submitLocationContacts(addressDto, location.getSubmissionLocationId())
-                )
-        )
+                    submitLocationContacts(addressDto, location.getSubmissionLocationId())))
         .then();
   }
 
   private Mono<Void> submitLocationContacts(ClientAddressDto addressDto,
                                             Integer submissionLocationId) {
     return Flux
-        .fromIterable(addressDto.clientContactDtoList())
+        .fromIterable(addressDto.contacts())
         .flatMap(contactDto ->
             submissionLocationContactRepository.save(
                 mapToSubmissionLocationContactEntity(
                     submissionLocationId,
-                    contactDto)
-            )
-        )
+                    contactDto)))
         .then();
   }
+
 }

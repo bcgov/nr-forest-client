@@ -438,4 +438,127 @@ public class TestConstants {
         "OFFICE_POSTAL_CODE": "V9A 2P6"
       }
       """;
+
+  public static final String BCREG_NOK = """
+      {
+          "errorMessage": "API backend third party service error.",
+          "rootCause": "message:AA0000001 not found "
+      }""";
+
+  public static final String BCREG_DETAIL_OK = """
+      {
+          "business": {
+              "adminFreeze": false,
+              "arMaxDate": "2006-12-31",
+              "arMinDate": "2006-01-01",
+              "associationType": null,
+              "complianceWarnings": [],
+              "fiscalYearEndDate": "2022-10-12",
+              "foundingDate": "2005-07-27T07:00:00+00:00",
+              "goodStanding": true,
+              "hasCorrections": false,
+              "hasCourtOrders": false,
+              "hasRestrictions": false,
+              "identifier": "AA0000001",
+              "lastAddressChangeDate": "2005-07-27",
+              "lastAnnualGeneralMeetingDate": "",
+              "lastAnnualReportDate": "",
+              "lastDirectorChangeDate": "2005-07-27",
+              "lastLedgerTimestamp": "2022-10-12T20:03:19.229545+00:00",
+              "lastModified": "2005-07-27T07:00:00+00:00",
+              "legalName": "SAMPLE COMPANY",
+              "legalType": "SP",
+              "naicsCode": null,
+              "naicsDescription": "DEMO APP",
+              "naicsKey": null,
+              "nextAnnualReport": "2006-07-27T07:00:00+00:00",
+              "startDate": "2005-06-17",
+              "state": "ACTIVE",
+              "submitter": "AB12345",
+              "warnings": []
+          }
+      }
+      """;
+  public static final String BCREG_ADDR_OK = """
+      {
+          "businessOffice": {
+              "deliveryAddress": {
+                  "addressCity": "VICTORIA",
+                  "addressCountry": "CA",
+                  "addressRegion": "BC",
+                  "addressType": "delivery",
+                  "deliveryInstructions": null,
+                  "id": 1,
+                  "postalCode": "V8V1X4",
+                  "streetAddress": "501 Belleville Street",
+                  "streetAddressAdditional": ""
+              },
+              "mailingAddress": {
+                  "addressCity": "VICTORIA",
+                  "addressCountry": "CA",
+                  "addressRegion": "BC",
+                  "addressType": "mailing",
+                  "deliveryInstructions": null,
+                  "id": 2,
+                  "postalCode": "V8V1X4",
+                  "streetAddress": "501 Belleville Street",
+                  "streetAddressAdditional": ""
+              }
+          }
+      }
+      """;
+
+  public static final String BCREG_RESPONSE_OK = """
+      {
+        "name": "SAMPLE COMPANY",
+        "id": "AA0000001",
+        "goodStanding": true,
+        "addresses": [
+          {
+            "streetAddress": "501 Belleville Street",
+            "country": {"value":"CA","text":"Canada"},
+            "province": {"value":"BC","text":"British Columbia"},
+            "city": "VICTORIA",
+            "postalCode": "V8V1X4",
+            "index": 0
+          },
+          {
+            "streetAddress": "501 Belleville Street",
+            "country": {"value":"CA","text":"Canada"},
+            "province": {"value":"BC","text":"British Columbia"},
+            "city": "VICTORIA",
+            "postalCode": "V8V1X4",
+            "index": 1
+          }
+        ]
+      }""";
+
+  public static final String BCREG_RESPONSE_OK2 = """
+      {
+        "name": "SAMPLE COMPANY",
+        "id": "AA0000001",
+        "goodStanding": true,
+        "addresses": []
+      }""";
+
+  public static final String BCREG_RESPONSE_NOK = "No data found for client number AA0000001";
+
+  public static final String BCREG_MISSING_ACCOUNTID = """
+      {
+          "errorMessage": "API required account ID is missing."
+      }""";
+
+  public static final String BCREG_400 = """
+      {
+          "errorMessage": "API security error: API key check failed.",
+          "rootCause": "fault:faultstring:Failed to resolve API Key variable request.header.x-apikey,detail:errorcode:steps.oauth.v2.FailedToResolveAPIKey"
+      }""";
+
+  public static final String BCREG_401 = """
+      {
+          "errorMessage": "API security error: API key check failed.",
+          "rootCause": "fault:faultstring:Invalid ApiKey,detail:errorcode:oauth.v2.InvalidApiKey"
+      }""";
+
+  public static final String BCREG_RESPONSE_401 = "Provided access token is missing or invalid";
 }

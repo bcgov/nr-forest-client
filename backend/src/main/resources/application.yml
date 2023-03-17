@@ -52,10 +52,6 @@ springdoc:
   swagger-ui:
     path: /
 
-frontend:
-  url: ${FRONTEND_URL:*}
-
-
 ca:
   bc:
     gov:
@@ -66,6 +62,10 @@ ca:
           clientId: ${CHES_CLIENT_ID:clientId}
           clientSecret: ${CHES_CLIENT_SECRET:secret}
           scope: scope
+        bcregistry:
+          uri: ${BCREGISTRY_URI:https://bcregistry-sandbox.apigee.net}
+          apiKey: ${BCREGISTRY_KEY:123456}
+          accountId: account ${BCREGISTRY_ACCOUNT:123456}
         orgbook:
           uri: https://orgbook.gov.bc.ca/api
         openmaps:

@@ -1,8 +1,9 @@
 package ca.bc.gov.app.dto.client;
 
 public record ClientSubmissionDto(
-    ClientBusinessTypeDto clientBusinessTypeDto,
-    ClientInformationDto clientInformationDto,
-    ClientLocationDto clientLocationDto
+    ClientBusinessTypeDto businessType,
+    ClientBusinessInformationDto businessInformation,
+    ClientLocationDto location,
+    ClientSubmitterInformationDto submitterInformation
 ) {
 }
