@@ -4,6 +4,9 @@ import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.With;
 
+/**
+ * Represents the data associated with a client's address.
+ */
 @Schema(
     description = "An address information",
     title = "ClientAddressData",

@@ -3,6 +3,9 @@ package ca.bc.gov.app.dto.bcregistry;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
+/**
+ * A data transfer object representing the details of a client.
+ */
 @Schema(
     example = """
         {
@@ -34,8 +37,8 @@ public record ClientDetailsDto(
     String name,
     @Schema(description = "ID of the client", example = "AC0000000")
     String id,
-    @Schema(description = """
-        The definition from the Ministry of Finance if this client is in good standing""",
+    @Schema(
+        description = "Defines if the client is in good standing with the Ministry of Finance",
         example = "true"
     )
     boolean goodStanding,
