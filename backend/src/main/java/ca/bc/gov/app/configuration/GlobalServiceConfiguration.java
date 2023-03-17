@@ -40,6 +40,16 @@ public class GlobalServiceConfiguration {
   }
 
   @Bean
+  public WebClient bcRegistryApi(ForestClientConfiguration configuration) {
+    return WebClient
+        .builder()
+        .baseUrl(configuration.getBcregistry().getUri())
+        .defaultHeader("x-apikey", configuration.getBcregistry().getApiKey())
+        .defaultHeader("Account-Id", configuration.getBcregistry().getAccountId())
+        .build();
+  }
+
+
   /**
    * <p><b>CORS Filter</b></p>
    * Creates the CORS (Cross-Origin Resource Sharing) filter to enable external requests from
@@ -47,6 +57,7 @@ public class GlobalServiceConfiguration {
    * It consumes from the configuration file, AKA <b>application.yml</b> file and add as a default
    * filter when receiving a CORS request.
    */
+  @Bean
   public WebFilter corsFilter(ForestClientConfiguration configuration) {
     return (ServerWebExchange ctx, WebFilterChain chain) -> {
 

@@ -65,9 +65,9 @@ public class ClientMapper {
         .withSubmissionLocationId(submissionLocationId)
         .withContactTypeCode(clientContactDto.contactType())
         .withContactTypeCode(clientContactDto.contactType())
-        .withFirstName(clientContactDto.contactFirstName())
-        .withLastName(clientContactDto.contactLastName())
-        .withBusinessPhoneNumber(clientContactDto.contactPhoneNumber())
-        .withEmailAddress(clientContactDto.contactEmail());
+        .withFirstName(clientContactDto.firstName())
+        .withLastName(clientContactDto.lastName())
+        .withBusinessPhoneNumber(clientContactDto.phoneNumber())
+        .withEmailAddress(clientContactDto.email());
   }
 }

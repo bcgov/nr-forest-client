@@ -1,6 +1,15 @@
 package ca.bc.gov.app.endpoints.client;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.status;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+
+import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
+import ca.bc.gov.app.extensions.WiremockLogNotifier;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,10 +18,13 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriBuilder;
 
@@ -22,6 +34,19 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
   @Autowired
   protected WebTestClient client;
+
+  @RegisterExtension
+  static WireMockExtension wireMockExtension = WireMockExtension
+      .newInstance()
+      .options(
+          wireMockConfig()
+              .port(10040)
+              .notifier(new WiremockLogNotifier())
+              .asynchronousResponseEnabled(true)
+              .stubRequestLoggingDisabled(false)
+      )
+      .configureStaticDsl(true)
+      .build();
 
   @Test
   @DisplayName("Codes are in expected order")
@@ -140,6 +165,111 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .jsonPath("$[0].name").isEqualTo(description);
   }
 
+  @ParameterizedTest
+  @MethodSource("clientDetailing")
+  @DisplayName("Client details")
+  void shouldGetClientDetails(
+      String clientNumber,
+      int detailsStatus,
+      String detailsResponse,
+      int addressStatus,
+      String addressResponse,
+      int responseStatus,
+      String responseContent
+  ) {
+
+    wireMockExtension.resetAll();
+
+
+    wireMockExtension
+        .stubFor(get(urlPathEqualTo("/business/api/v2/businesses/" + clientNumber))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .willReturn(
+                status(detailsStatus)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(detailsResponse)
+            )
+        );
+
+    wireMockExtension
+        .stubFor(get(urlPathEqualTo("/business/api/v2/businesses/" + clientNumber + "/addresses"))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .willReturn(
+                status(addressStatus)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(addressResponse)
+            )
+        );
+
+
+    WebTestClient.BodyContentSpec response =
+        client
+            .get()
+            .uri("/api/clients/{clientNumber}", Map.of("clientNumber", clientNumber))
+            .exchange()
+            .expectStatus().isEqualTo(HttpStatus.valueOf(responseStatus))
+            .expectBody()
+            .consumeWith(System.out::println);
+
+    if (HttpStatus.valueOf(responseStatus).is2xxSuccessful()) {
+      response.json(responseContent);
+    } else {
+      response.equals(responseContent);
+    }
+
+  }
+
+  private static Stream<Arguments> clientDetailing() {
+    return
+        Stream.of(
+            Arguments.of(
+                "AA0000001",
+                200, TestConstants.BCREG_DETAIL_OK,
+                200, TestConstants.BCREG_ADDR_OK,
+                200, TestConstants.BCREG_RESPONSE_OK
+            ),
+            Arguments.of(
+                "AA0000001",
+                404, TestConstants.BCREG_NOK,
+                404, TestConstants.BCREG_NOK,
+                404, TestConstants.BCREG_RESPONSE_NOK
+            ),
+            Arguments.of(
+                "AA0000001",
+                200, TestConstants.BCREG_DETAIL_OK,
+                404, TestConstants.BCREG_NOK,
+                200, TestConstants.BCREG_RESPONSE_OK2
+            ),
+            Arguments.of(
+                "AA0000001",
+                200, TestConstants.BCREG_DETAIL_OK,
+                401, TestConstants.BCREG_401,
+                401, TestConstants.BCREG_RESPONSE_401
+            ),
+            Arguments.of(
+                "AA0000001",
+                401, TestConstants.BCREG_401,
+                401, TestConstants.BCREG_401,
+                401, TestConstants.BCREG_RESPONSE_401
+            ),
+            Arguments.of(
+                "AA0000001",
+                400, TestConstants.BCREG_400,
+                400, TestConstants.BCREG_400,
+                401, TestConstants.BCREG_RESPONSE_401
+            ),
+
+            Arguments.of(
+                "AA0000001",
+                200, TestConstants.BCREG_DETAIL_OK,
+                400, TestConstants.BCREG_400,
+                401, TestConstants.BCREG_RESPONSE_401
+            )
+        );
+  }
+
   private static Stream<Arguments> countryCode() {
     return
         Stream.of(
@@ -171,4 +301,5 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             Arguments.of(22, 1, "TP", "EDI Trading Partner")
         );
   }
+
 }
