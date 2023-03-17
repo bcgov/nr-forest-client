@@ -118,10 +118,32 @@ jobs:
       - codeql
     env:
       ZONE: test
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
+      VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
     environment: test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-22.04    
     steps:
       - uses: actions/checkout@v3
+      - name: Broker
+        id: broker
+        uses: bcgov-nr/action-vault-broker-approle@v0.0.5
+        with:
+          broker_jwt: ${{ secrets.BROKER_JWT }}
+          provision_role_id: ${{ secrets.PROVISION_ROLE_ID }}
+          project_name: client
+          app_name: app-client
+          environment: test
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2.5.0
+        with:
+          url: https://vault-iit.apps.silver.devops.gov.bc.ca
+          token: ${{ steps.broker.outputs.vault_token }}
+          exportEnv: 'false'
+          secrets: |
+            apps/data/test/client/app-client/db_proxy_read_only db_username | VAULT_DB_USER;
+            apps/data/test/client/app-client/db_proxy_read_only db_password | VAULT_DB_PASS;
       - name: Deploys
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
@@ -130,7 +152,18 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
-          parameters: -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+          parameters: 
+            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
+            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
+            -p BCREGISTRY_KEY='${{ secrets.BCREGISTRY_KEY }}'
+            -p BCREGISTRY_ACCOUNT='${{ secrets.BCREGISTRY_ACCOUNT }}'
+            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
+            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
 
   test-database:
     name: TEST Database
@@ -177,11 +210,10 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/backend:${{ env.ZONE }}
-            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
-            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
+            -p PROMOTE=${{ github.repository }}/backend:${{ env.ZONE }}            
             -p CHES_TOKEN_URL='https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1'
+            -p BCREGISTRY_URI='https://bcregistry-sandbox.apigee.net'
 
   test-legacy:
     name: TEST Legacy
@@ -194,25 +226,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      - name: Broker
-        id: broker
-        uses: bcgov-nr/action-vault-broker-approle@v0.0.5
-        with:
-          broker_jwt: ${{ secrets.BROKER_JWT }}
-          provision_role_id: ${{ secrets.PROVISION_ROLE_ID }}
-          project_name: client
-          app_name: app-client
-          environment: test
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@v2.5.0
-        with:
-          url: https://vault-iit.apps.silver.devops.gov.bc.ca
-          token: ${{ steps.broker.outputs.vault_token }}
-          exportEnv: 'false'
-          secrets: |
-            apps/data/test/client/app-client/db_proxy_read_only db_username | VAULT_DB_USER;
-            apps/data/test/client/app-client/db_proxy_read_only db_password | VAULT_DB_PASS;
+
       - name: Deploys
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
@@ -226,12 +240,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
-            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
-            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
-            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
-            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
-            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}
+            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}            
 
   test-frontend:
     name: TEST Frontend
@@ -258,6 +267,23 @@ jobs:
             -p VITE_KEYCLOAK_URL=https://test.loginproxy.gov.bc.ca/auth
             -p VITE_KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
 
+  image-promotions:
+    name: Promote images to PROD
+    needs:      
+      - test-backend
+      - test-frontend
+      - test-legacy
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [backend, frontend, legacy]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: test
+          tags: prod
   
   prod-init:
     name: PROD Init
@@ -265,12 +291,35 @@ jobs:
       - test-backend
       - test-frontend
       - test-legacy
+      - image-promotions
     env:
       ZONE: prod
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
+      VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
     environment: prod
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
+      - name: Broker
+        id: broker
+        uses: bcgov-nr/action-vault-broker-approle@v0.0.5
+        with:
+          broker_jwt: ${{ secrets.BROKER_JWT }}
+          provision_role_id: ${{ secrets.PROVISION_ROLE_ID }}
+          project_name: client
+          app_name: app-client
+          environment: production
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2.5.0
+        with:
+          url: https://vault-iit.apps.silver.devops.gov.bc.ca
+          token: ${{ steps.broker.outputs.vault_token }}
+          exportEnv: 'false'
+          secrets: |
+            apps/data/prod/client/app-client/db_proxy_read_only db_username | VAULT_DB_USER;
+            apps/data/prod/client/app-client/db_proxy_read_only db_password | VAULT_DB_PASS;
       - name: Deploys
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
@@ -279,7 +328,18 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
-          parameters: -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+          parameters: 
+            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
+            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
+            -p BCREGISTRY_KEY='${{ secrets.BCREGISTRY_KEY }}'
+            -p BCREGISTRY_ACCOUNT='${{ secrets.BCREGISTRY_ACCOUNT }}'
+            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
+            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
 
   prod-database:
     name: PROD Database
@@ -329,10 +389,9 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/backend:${{ env.PREV }}
-            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
-            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'            
 
   prod-legacy:
     name: PROD Legacy
@@ -346,25 +405,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      - name: Broker
-        id: broker
-        uses: bcgov-nr/action-vault-broker-approle@v0.0.5
-        with:
-          broker_jwt: ${{ secrets.BROKER_JWT }}
-          provision_role_id: ${{ secrets.PROVISION_ROLE_ID }}
-          project_name: client
-          app_name: app-client
-          environment: production
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@v2.5.0
-        with:
-          url: https://vault-iit.apps.silver.devops.gov.bc.ca
-          token: ${{ steps.broker.outputs.vault_token }}
-          exportEnv: 'false'
-          secrets: |
-            apps/data/prod/client/app-client/db_proxy_read_only db_username | VAULT_DB_USER;
-            apps/data/prod/client/app-client/db_proxy_read_only db_password | VAULT_DB_PASS;
       - name: Deploys
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
@@ -378,12 +418,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
-            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
-            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
-            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
-            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
-            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}
+            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}            
 
   prod-frontend:
     name: PROD Frontend
@@ -411,20 +446,4 @@ jobs:
             -p VITE_KEYCLOAK_URL=https://loginproxy.gov.bc.ca/auth
             -p VITE_KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
 
-  image-promotions:
-    name: Promote images to PROD
-    needs:      
-      - prod-backend
-      - prod-frontend
-      - prod-legacy
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        component: [backend, frontend, legacy]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: test
-          tags: prod
+  

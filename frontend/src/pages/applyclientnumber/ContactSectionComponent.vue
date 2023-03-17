@@ -1,4 +1,5 @@
 <template>
+  <div class="table-responsive">
     <table class="table">
         <thead>
             <tr>
@@ -36,7 +37,8 @@
                 </td>
                 <td>
                     <b-form-input :id="'contactPhoneNumberId' + itemIndex"
-                                v-model="item.contactPhoneNumber">
+                                  v-model="item.contactPhoneNumber"
+                                  v-mask="'##########'">
                     </b-form-input>
                     <ValidationMessages :fieldId = "'contactPhoneNumberId' + itemIndex"
                                         :validationMessages="validationMessages"  />
@@ -46,23 +48,24 @@
                                   v-model="item.contactEmail">
                     </b-form-input>
                     <ValidationMessages :fieldId = "'contactEmailId' + itemIndex"
-                                        :validationMessages="validationMessages"  />
+                                        :validationMessages="validationMessages" />
                 </td>
                 <td>
                     <b-button enabled="contacts.length > 1"
-                            @click="deleteContact(itemIndex)">
+                              @click="deleteContact(itemIndex)">
                         <bi-x-circle></bi-x-circle>
                     </b-button>
                 </td>
             </tr>
         </tbody>
     </table>
+  </div>
     
-    <b-button class="chefsBlue"
+  <b-button class="chefsBlue"
             @click="addContact()">
-        <bi-plus-lg></bi-plus-lg>
-        Add another person for this address
-    </b-button>
+    <bi-plus-lg></bi-plus-lg>
+    Add another person for this address
+  </b-button>
   </template>
     
   <script setup lang="ts">

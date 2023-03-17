@@ -39,9 +39,6 @@ public class SubmissionLocationEntity {
   @Column("postal_code")
   private String postalCode;
 
-  @Column("email_address")
-  private String emailAddress;
-
   @Column("main_address_ind")
   private String mainAddressInd;
 }

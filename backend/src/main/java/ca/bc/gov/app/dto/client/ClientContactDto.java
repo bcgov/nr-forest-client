@@ -4,7 +4,7 @@ public record ClientContactDto(
     String contactType,
     String firstName,
     String lastName,
-    String businessPhone,
+    String phoneNumber,
     String email,
     int index
 ) {

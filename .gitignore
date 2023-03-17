@@ -118,6 +118,9 @@ snyk.sarif
 # Dist
 **/dist/**
 
+# IntelliJ
+.idea/**
+**/*.iml
 
 ### Eclipse ###
 backend/.metadata
