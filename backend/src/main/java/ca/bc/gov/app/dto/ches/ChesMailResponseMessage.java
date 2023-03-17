@@ -22,7 +22,7 @@ public record ChesMailResponseMessage(
     @JsonPropertyDescription("A unique string which is associated with the message")
     String tag,
 
-    @JsonPropertyDescription("An array of recipient contactEmail addresses that this message will go to")
+    @JsonPropertyDescription("An array of recipient email addresses that this message will go to")
     @Valid
     @NotNull
     List<String> to

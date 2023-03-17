@@ -3,6 +3,9 @@ package ca.bc.gov.app;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+/**
+ * This class contains constants used throughout the application.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ApplicationConstant {
   public static final String POSTGRES_ATTRIBUTE_SCHEMA = "nrfc";

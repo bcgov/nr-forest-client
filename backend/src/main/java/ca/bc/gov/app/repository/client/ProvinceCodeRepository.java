@@ -11,5 +11,7 @@ public interface ProvinceCodeRepository extends ReactiveCrudRepository<ProvinceC
     ReactiveSortingRepository<ProvinceCodeEntity, String> {
 
   Flux<ProvinceCodeEntity> findByCountryCode(String countryCode, Pageable pageable);
-  Mono<ProvinceCodeEntity> findByCountryCodeAndProvinceCode(String countryCode, String provinceCode);
+
+  Mono<ProvinceCodeEntity> findByCountryCodeAndProvinceCode(String countryCode,
+                                                            String provinceCode);
 }

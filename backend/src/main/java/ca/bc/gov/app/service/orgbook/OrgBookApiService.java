@@ -24,6 +24,12 @@ public class OrgBookApiService {
     this.orgBookApi = orgBookApi;
   }
 
+  /**
+   * Looks up a list of clients by name on the OrgBook API.
+   *
+   * @param clientName the name of the client to look up
+   * @return a {@link Flux} of {@link ClientNameCodeDto} representing clients with the given name
+   */
   public Flux<ClientNameCodeDto> findByClientName(String clientName) {
     log.info("Looking up on OrgBook for {}", clientName);
     return
@@ -43,13 +49,22 @@ public class OrgBookApiService {
             )
             .flatMapMany(
                 orgBookResultListResponse -> Flux.fromIterable(orgBookResultListResponse.results()))
-            .filter(orgBookNameDto -> orgBookNameDto.subType().equalsIgnoreCase("entity_name"))
+            .filter(orgBookNameDto -> orgBookNameDto
+                .subType()
+                .equalsIgnoreCase("entity_name")
+            )
             .map(orgBookNameDto -> new ClientNameCodeDto(orgBookNameDto.topicSourceId(),
                 orgBookNameDto.value()))
             .doOnNext(content -> log.info("OrgBook Name Lookup {} -> {}", clientName, content));
 
   }
 
+  /**
+   * Retrieves an OrgBookTopicListResponse by incorporation number.
+   *
+   * @param incorporationNumber the incorporation number to search for
+   * @return a {@link Mono} that emits the {@link OrgBookTopicListResponse} found by the search
+   */
   public Mono<OrgBookTopicListResponse> findByIncorporationNumber(
       String incorporationNumber) {
     return

@@ -1,6 +1,6 @@
 package ca.bc.gov.app.controller.client;
 
-import ca.bc.gov.app.dto.client.ClientDetailsDto;
+import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.service.client.ClientService;
 import io.swagger.v3.oas.annotations.Operation;

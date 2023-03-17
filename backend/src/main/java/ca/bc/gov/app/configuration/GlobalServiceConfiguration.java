@@ -15,30 +15,57 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
-@Configuration
-@Slf4j
 /**
  * <p><b>Global Service Configuration</b></p>
  * This class is responsible for configuring basic beans to be used by the services.
  * It creates and holds the external API webclients and the cors filter.
  */
+@Configuration
+@Slf4j
 public class GlobalServiceConfiguration {
 
+  /**
+   * Creates and configures a WebClient instance for accessing OrgBook API based on the provided
+   * {@link ForestClientConfiguration}.
+   *
+   * @param configuration The {@link ForestClientConfiguration} containing the OrgBook API URI.
+   * @return A {@link WebClient} instance configured for accessing OrgBook API.
+   */
   @Bean
   public WebClient orgBookApi(ForestClientConfiguration configuration) {
     return WebClient.builder().baseUrl(configuration.getOrgbook().getUri()).build();
   }
 
+  /**
+   * Returns a configured instance of WebClient to communicate with the CHES API
+   * based on the provided configuration.
+   *
+   * @param configuration the ForestClientConfiguration containing the CHES API base URI
+   * @return a WebClient instance configured with the CHES API base URI
+   */
   @Bean
   public WebClient chesApi(ForestClientConfiguration configuration) {
     return WebClient.builder().baseUrl(configuration.getChes().getUri()).build();
   }
 
+  /**
+   * Creates a WebClient instance for making HTTP requests to the OpenMaps API based on the provided
+   * {@link ForestClientConfiguration}.
+   *
+   * @param configuration the configuration object for the Forest client
+   * @return a WebClient instance configured for the OpenMaps API
+   */
   @Bean
   public WebClient openMapsApi(ForestClientConfiguration configuration) {
     return WebClient.builder().baseUrl(configuration.getOpenmaps().getUri()).build();
   }
 
+  /**
+   * Returns a configured instance of WebClient for accessing the BC Registry API.
+   *
+   * @param configuration The configuration for the ForestClient.
+   * @return A configured instance of WebClient for accessing the BC Registry API.
+   */
   @Bean
   public WebClient bcRegistryApi(ForestClientConfiguration configuration) {
     return WebClient

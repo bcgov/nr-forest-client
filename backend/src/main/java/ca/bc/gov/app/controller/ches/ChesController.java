@@ -40,7 +40,7 @@ public class ChesController extends AbstractController<ChesRequest, ChesRequestV
 
   @PostMapping
   @Operation(
-      summary = "Send an contactEmail to one or more contactEmail addresses",
+      summary = "Send an email to one or more email addresses",
       responses = {
           @ApiResponse(
               responseCode = "201",
@@ -66,7 +66,7 @@ public class ChesController extends AbstractController<ChesRequest, ChesRequestV
               content = @Content(
                   mediaType = MediaType.APPLICATION_JSON_VALUE,
                   schema = @Schema(implementation = String.class),
-                  examples = {@ExampleObject(value = "Destination contactEmail is required")}
+                  examples = {@ExampleObject(value = "Destination email is required")}
               )
           )
       }
@@ -80,16 +80,15 @@ public class ChesController extends AbstractController<ChesRequest, ChesRequestV
         )
         .doOnNext(this::validate)
         .doOnNext(
-            requestBody -> log.info("Requesting an contactEmail to be sent {}", requestBody))
+            requestBody -> log.info("Requesting an email to be sent {}", requestBody))
         .flatMap(service::sendEmail)
         .doOnNext(companyId -> {
-              serverResponse
-                  .setStatusCode(HttpStatus.CREATED);
-              serverResponse
-                  .getHeaders()
-                  .add("Location", String.format("/api/mail/%s", companyId));
-            }
-        )
+          serverResponse
+              .setStatusCode(HttpStatus.CREATED);
+          serverResponse
+              .getHeaders()
+              .add("Location", String.format("/api/mail/%s", companyId));
+        })
         .then();
   }
 }

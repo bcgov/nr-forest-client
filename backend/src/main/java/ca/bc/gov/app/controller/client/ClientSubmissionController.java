@@ -70,18 +70,17 @@ public class ClientSubmissionController {
         )
         .flatMap(clientService::submit)
         .doOnNext(submissionId -> {
-              serverResponse
-                  .setStatusCode(HttpStatus.CREATED);
+          serverResponse
+              .setStatusCode(HttpStatus.CREATED);
 
-              HttpHeaders headers = serverResponse.getHeaders();
-              headers
-                  .add(
-                      "Location",
-                      String.format("/api/clients/submissions/%d", submissionId));
-              headers.add(
-                  "x-sub-id", String.valueOf(submissionId));
-            }
-        )
+          HttpHeaders headers = serverResponse.getHeaders();
+          headers
+              .add(
+                  "Location",
+                  String.format("/api/clients/submissions/%d", submissionId));
+          headers.add(
+              "x-sub-id", String.valueOf(submissionId));
+        })
         .then();
   }
 }
