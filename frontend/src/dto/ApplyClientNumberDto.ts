@@ -34,10 +34,10 @@ export interface Address {
 
 export interface Contact {
   contactType: CodeDescrType;
-  contactFirstName: string;
-  contactLastName: string;
-  contactPhoneNumber: string;
-  contactEmail: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  email: string;
 }
 
 export const formDataDto: FormDataDto = {

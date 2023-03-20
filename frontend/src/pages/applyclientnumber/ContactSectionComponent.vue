@@ -23,21 +23,21 @@
                 </td>
                 <td>
                     <b-form-input :id="'contactFirstNameId' + itemIndex"
-                                  v-model="item.contactFirstName">
+                                  v-model="item.firstName">
                     </b-form-input>
                     <ValidationMessages :fieldId = "'contactFirstNameId' + itemIndex"
                                         :validationMessages="validationMessages"  />
                 </td>
                 <td>
                     <b-form-input :id="'contactLastNameId' + itemIndex"
-                                  v-model="item.contactLastName">
+                                  v-model="item.lastName">
                     </b-form-input>
                     <ValidationMessages :fieldId = "'contactLastNameId' + itemIndex"
                                         :validationMessages="validationMessages"  />
                 </td>
                 <td>
                     <b-form-input :id="'contactPhoneNumberId' + itemIndex"
-                                  v-model="item.contactPhoneNumber"
+                                  v-model="item.phoneNumber"
                                   v-mask="'##########'">
                     </b-form-input>
                     <ValidationMessages :fieldId = "'contactPhoneNumberId' + itemIndex"
@@ -45,7 +45,7 @@
                 </td>
                 <td>
                     <b-form-input :id="'contactEmailId' + itemIndex"
-                                  v-model="item.contactEmail">
+                                  v-model="item.email">
                     </b-form-input>
                     <ValidationMessages :fieldId = "'contactEmailId' + itemIndex"
                                         :validationMessages="validationMessages" />
@@ -69,18 +69,14 @@
   </template>
     
   <script setup lang="ts">
-    import { conversionFn } from '../../services/FetchService';
-    import { addNewContact, useFetch } from '../../services/ForestClientService';
+    import { conversionFn } from '@/services/FetchService';
+    import { addNewContact, useFetch } from '@/services/ForestClientService';
     import { computed } from 'vue';
-    import ValidationMessages from "../../common/ValidationMessagesComponent.vue";
+    import ValidationMessages from "@/common/ValidationMessagesComponent.vue";
     import BiXCircle from "~icons/bi/x-circle";
     import BiPlusLg from "~icons/bi/plus-lg";
-    import type { Contact } from '../../dto/ApplyClientNumberDto';
-    import axios from 'axios';
+    import type { Contact } from '@/dto/ApplyClientNumberDto';
     
-    axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-    const forestClientBase = import.meta.env.VITE_BACKEND_URL;
-  
     const props = defineProps({
       contacts: { 
         type: Array<Contact>, 
@@ -95,7 +91,7 @@
         required: true
     }
     });
-
+    
     const { data: activeContactTypeCodes } = useFetch('/api/clients/activeContactTypeCodes?page=0&size=250', { method:'get', initialData:[] });
     const contactTypeCodes = computed(() => {
       return activeContactTypeCodes.value.map(conversionFn);
