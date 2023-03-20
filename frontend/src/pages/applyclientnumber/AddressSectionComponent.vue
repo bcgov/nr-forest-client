@@ -4,7 +4,7 @@
       <AddressComponent 
       :address="item"
       :id="itemIndex"
-      :validationMessages="[]"
+      :validationMessages="validationMessages"
       :countryCodes="countryCodes"
       />
 
