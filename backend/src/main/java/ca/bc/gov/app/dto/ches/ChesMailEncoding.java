@@ -32,6 +32,13 @@ public enum ChesMailEncoding {
     return this.value;
   }
 
+  /**
+   * Returns the enum constant with the specified string value.
+   *
+   * @param value the string value representing the enum constant
+   * @return the enum constant with the specified string value
+   * @throws IllegalArgumentException if no enum constant with the specified string value exists
+   */
   @JsonCreator
   public static ChesMailEncoding fromValue(String value) {
     ChesMailEncoding constant = CONSTANTS.get(value);

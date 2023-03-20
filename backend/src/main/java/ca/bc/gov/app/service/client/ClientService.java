@@ -5,13 +5,12 @@ import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationContactEnti
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmitterEntity;
 
-import ca.bc.gov.app.repository.client.SubmitterRepository;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
+import ca.bc.gov.app.dto.bcregistry.ClientAddressDataDto;
+import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientDetailsAddressDto;
-import ca.bc.gov.app.dto.client.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
@@ -27,6 +26,7 @@ import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
+import ca.bc.gov.app.repository.client.SubmitterRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -130,6 +130,13 @@ public class ClientService {
             entity.getDescription()));
   }
 
+
+  /**
+   * Submits a new client submission and returns a Mono of the submission ID.
+   *
+   * @param clientSubmissionDto the DTO representing the client submission
+   * @return a Mono of the submission ID
+   */
   public Mono<Integer> submit(ClientSubmissionDto clientSubmissionDto) {
     SubmissionEntity submissionEntity =
         SubmissionEntity
@@ -160,6 +167,13 @@ public class ClientService {
         );
   }
 
+  /**
+   * Retrieves the client details for a given client number by making calls to BC Registry service.
+   * The details include the company standing and addresses.
+   *
+   * @param clientNumber the client number for which to retrieve details
+   * @return a Mono that emits a ClientDetailsDto object representing the details of the client
+   */
   public Mono<ClientDetailsDto> getClientDetails(String clientNumber) {
     return
         bcRegistryService
@@ -172,13 +186,13 @@ public class ClientService {
                     )
                     .flatMapIterable(expandAddresses())
                     .index()
-                    .flatMap(buildAddressFromTuple())
+                    .flatMap(buildAddress())
                     .collectList()
                     .map(buildDetails(details))
             );
   }
 
-  private Function<List<ClientDetailsAddressDto>, ClientDetailsDto> buildDetails(
+  private Function<List<ClientAddressDataDto>, ClientDetailsDto> buildDetails(
       BcRegistryBusinessDto details) {
     return addresses -> new ClientDetailsDto(
         details.legalName(),
@@ -188,11 +202,11 @@ public class ClientService {
     );
   }
 
-  private Function<Tuple2<Long, BcRegistryAddressDto>, Mono<ClientDetailsAddressDto>> buildAddressFromTuple() {
+  private Function<Tuple2<Long, BcRegistryAddressDto>, Mono<ClientAddressDataDto>> buildAddress() {
     return addressTuple ->
         Mono
             .just(
-                new ClientDetailsAddressDto(
+                new ClientAddressDataDto(
                     addressTuple.getT2().streetAddress(),
                     null,
                     null,

@@ -50,6 +50,15 @@ public class ChesCommonServicesService {
   @Setter
   private OAuthClient oauthClient = new OAuthClient(new URLConnectionClient());
 
+  /**
+   * Sends an email using the BC Government's Common Email Service (Ches)
+   * via HTTP POST request using WebClient.
+   *
+   * @param requestContent the {@link ChesRequest} object representing the email to be sent
+   * @return a {@link Mono} that the transaction ID of the email send operation upon completion
+   * @throws InvalidAccessTokenException if the authorization token is invalid or expired
+   * @throws InvalidRoleException if does not have the required role to perform the requested action
+   */
   public Mono<String> sendEmail(ChesRequest requestContent) {
 
     ChesMailRequest request = new ChesMailRequest(
@@ -86,7 +95,7 @@ public class ChesCommonServicesService {
             .bodyToMono(ChesMailResponse.class)
 
             .map(response -> response.txId().toString())
-            .doOnError(error -> log.error("Failed to send contactEmail", error));
+            .doOnError(error -> log.error("Failed to send email", error));
 
   }
 
@@ -145,7 +154,7 @@ public class ChesCommonServicesService {
           .accessToken(request, OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class)
           .getAccessToken();
     } catch (Exception e) {
-      log.error("Failed to get contactEmail authentication token", e);
+      log.error("Failed to get email authentication token", e);
       throw new CannotExtractTokenException();
     }
 

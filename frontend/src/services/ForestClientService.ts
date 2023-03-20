@@ -52,21 +52,21 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
 export const addNewAddress = (addresses: Address[]) => {
   const blankAddress: Address = {
     streetAddress: "",
-    country: {value: "", text:""} as CodeDescrType,
-    province: {value: "", text:""} as CodeDescrType,
+    country: { value: "", text: "" } as CodeDescrType,
+    province: { value: "", text: "" } as CodeDescrType,
     city: "",
     postalCode: "",
     contacts: [
       {
         contactType: { value: "", text: "" } as CodeDescrType,
-        contactFirstName: "",
-        contactLastName: "",
-        contactPhoneNumber: "",
-        contactEmail: "",
+        firstName: "",
+        lastName: "",
+        phoneNumber: "",
+        email: "",
       }
     ] as Contact[],
   };
-  
+
   let newAddresses = addresses.push(blankAddress);
   return newAddresses;
 }
@@ -74,12 +74,12 @@ export const addNewAddress = (addresses: Address[]) => {
 export const addNewContact = (contacts: Contact[]) => {
   const blankContact: Contact = {
     contactType: { value: "", text: "" } as CodeDescrType,
-    contactFirstName: "",
-    contactLastName: "",
-    contactPhoneNumber: "",
-    contactEmail: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    email: "",
   };
-  
+
   let newContacts = contacts.push(blankContact);
   return newContacts;
 }
