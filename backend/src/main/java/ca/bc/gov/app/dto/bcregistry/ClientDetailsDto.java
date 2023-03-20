@@ -2,6 +2,7 @@ package ca.bc.gov.app.dto.bcregistry;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
+import lombok.With;
 
 /**
  * A data transfer object representing the details of a client.
@@ -32,6 +33,7 @@ import java.util.List;
           ]
         }"""
 )
+@With
 public record ClientDetailsDto(
     @Schema(description = "The client name as registered on the BC Registry", example = "Acme Inc.")
     String name,
