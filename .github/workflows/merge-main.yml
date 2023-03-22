@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths-ignore:
-      - ".github/ISSUE_TEMPLATE/*"
-      - "**.md"
+      - '.github/ISSUE_TEMPLATE/*'
+      - '**.md'
   workflow_dispatch:
 
 concurrency:
@@ -25,7 +25,7 @@ jobs:
           dir: backend
           java-cache: maven
           java-distribution: temurin
-          java-version: "17"
+          java-version: '17'
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-backend
@@ -42,7 +42,7 @@ jobs:
           dir: legacy
           java-cache: maven
           java-distribution: temurin
-          java-version: "17"
+          java-version: '17'
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-legacy
@@ -89,9 +89,9 @@ jobs:
       - name: Set up JDK 17 and Caching maven dependencies
         uses: actions/setup-java@v3
         with:
-          distribution: "temurin"
-          java-version: "17"
-          cache: "maven"
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
 
       - name: Build Backend
         run: |
@@ -122,7 +122,7 @@ jobs:
       BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
       VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
     environment: test
-    runs-on: ubuntu-22.04    
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Broker
@@ -152,7 +152,7 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
-          parameters: 
+          parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
             -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
@@ -164,6 +164,29 @@ jobs:
             -p BCREGISTRY_ACCOUNT='${{ secrets.BCREGISTRY_ACCOUNT }}'
             -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
+
+      - name: Conventional Changelog Update
+        uses: TriPSs/conventional-changelog-action@v3
+        id: changelog
+        continue-on-error: true
+        with:
+          github-token: ${{ github.token }}
+          output-file: 'CHANGELOG.md'
+          skip-version-file: 'true'
+          skip-commit: 'true'
+          git-push: 'true'
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: ${{ steps.changelog.outputs.tag != '' }}
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          token: ${{ github.token }}
+          tag_name: ${{ steps.changelog.outputs.tag }}
+          name: ${{ steps.changelog.outputs.tag }}
+          body: ${{ steps.changelog.outputs.clean_changelog }}
 
   test-database:
     name: TEST Database
@@ -187,7 +210,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
-  
+
   test-backend:
     name: TEST Backend
     needs:
@@ -210,7 +233,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/backend:${{ env.ZONE }}            
+            -p PROMOTE=${{ github.repository }}/backend:${{ env.ZONE }}
             -p CHES_TOKEN_URL='https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-sandbox.apigee.net'
@@ -240,7 +263,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
-            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}            
+            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}
 
   test-frontend:
     name: TEST Frontend
@@ -269,7 +292,7 @@ jobs:
 
   image-promotions:
     name: Promote images to PROD
-    needs:      
+    needs:
       - test-backend
       - test-frontend
       - test-legacy
@@ -284,10 +307,10 @@ jobs:
           repository: ${{ github.repository }}/${{ matrix.component }}
           target: test
           tags: prod
-  
+
   prod-init:
     name: PROD Init
-    needs:      
+    needs:
       - test-backend
       - test-frontend
       - test-legacy
@@ -328,7 +351,7 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
-          parameters: 
+          parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
             -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
@@ -367,7 +390,7 @@ jobs:
 
   prod-backend:
     name: PROD Backend
-    needs:      
+    needs:
       - prod-database
     env:
       PREV: test
@@ -391,7 +414,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/backend:${{ env.PREV }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
-            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'            
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
   prod-legacy:
     name: PROD Legacy
@@ -418,7 +441,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
-            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}            
+            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}
 
   prod-frontend:
     name: PROD Frontend
@@ -445,5 +468,3 @@ jobs:
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}
             -p VITE_KEYCLOAK_URL=https://loginproxy.gov.bc.ca/auth
             -p VITE_KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
-
-  
