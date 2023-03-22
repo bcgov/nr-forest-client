@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,10 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @Slf4j
+@Tag(
+    name = "FSA Clients",
+    description = "The FSA Client endpoint, responsible for handling client data"
+)
 @RequestMapping(value = "/api/clients", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class ClientSubmissionController {

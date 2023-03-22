@@ -4,3 +4,4 @@
 // window.localStorage.setItem("VITE_KEYCLOAK_URL", "");
 // window.localStorage.setItem("VITE_KEYCLOAK_CLIENT_ID", "");
 // window.localStorage.setItem("VITE_NODE_ENV", "");
+// window.localStorage.setItem("VITE_BACKEND_URL", "");
