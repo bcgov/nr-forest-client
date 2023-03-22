@@ -2,9 +2,9 @@ import { ref } from "vue";
 import axios from "axios";
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
 import type { CodeDescrType } from "@/core/CommonTypes";
+import { backendUrl } from "@/core/CoreConstants";
 
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-const forestClientBase = import.meta.env.VITE_BACKEND_URL;
 
 /**
  * Fetch data from external resource
@@ -32,7 +32,7 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
     try {
       const result = await axios.request({
         url,
-        baseURL: forestClientBase,
+        baseURL: backendUrl,
         ...config
       });
       Object.assign(response, result);
