@@ -137,7 +137,7 @@ const businessNames = computed(() => {
 async function populateBusinessList(event: any) {
     if (event.length >= 3) {
         const encodedBusinessName = encodeURIComponent(event);        
-        useFetchTo(`/api/orgbook/name/${encodedBusinessName}`,originalBusinessNames, { method:'get' });
+        useFetchTo(`/api/clients/name/${encodedBusinessName}`,originalBusinessNames, { method:'get' });
         filterSearchData(event);
     }
 };

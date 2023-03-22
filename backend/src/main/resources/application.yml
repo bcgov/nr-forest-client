@@ -66,8 +66,6 @@ ca:
           uri: ${BCREGISTRY_URI:https://bcregistry-sandbox.apigee.net}
           apiKey: ${BCREGISTRY_KEY:123456}
           accountId: account ${BCREGISTRY_ACCOUNT:123456}
-        orgbook:
-          uri: https://orgbook.gov.bc.ca/api
         openmaps:
           uri: https://openmaps.gov.bc.ca/geo/pub/ows
         postgres:
