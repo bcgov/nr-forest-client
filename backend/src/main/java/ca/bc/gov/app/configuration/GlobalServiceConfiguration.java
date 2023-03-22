@@ -25,18 +25,6 @@ import reactor.core.publisher.Mono;
 public class GlobalServiceConfiguration {
 
   /**
-   * Creates and configures a WebClient instance for accessing OrgBook API based on the provided
-   * {@link ForestClientConfiguration}.
-   *
-   * @param configuration The {@link ForestClientConfiguration} containing the OrgBook API URI.
-   * @return A {@link WebClient} instance configured for accessing OrgBook API.
-   */
-  @Bean
-  public WebClient orgBookApi(ForestClientConfiguration configuration) {
-    return WebClient.builder().baseUrl(configuration.getOrgbook().getUri()).build();
-  }
-
-  /**
    * Returns a configured instance of WebClient to communicate with the CHES API
    * based on the provided configuration.
    *

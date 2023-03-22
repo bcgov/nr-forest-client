@@ -8,14 +8,17 @@ import static ca.bc.gov.app.util.ClientMapper.mapToSubmitterEntity;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.ClientAddressDataDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
+import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
+import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
@@ -192,6 +195,27 @@ public class ClientService {
             );
   }
 
+  /**
+   * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances
+   * matching the given value and maps them to {@link ClientLookUpDto} instances.
+   *
+   * @param value the value to search for
+   * @return a {@link Flux} of {@link ClientLookUpDto} instances representing
+   *       matching BC Registry entries
+   * @throws NoClientDataFound if no matching data is found
+   * @throws InvalidAccessTokenException if the access token is invalid or expired
+   */
+  public Flux<ClientLookUpDto> findByClientNameOrIncorporation(String value) {
+    return bcRegistryService
+        .searchByFacces(value)
+        .map(entry -> new ClientLookUpDto(
+            entry.identifier(),
+            entry.name(),
+            entry.status(),
+            entry.legalType()
+        ));
+  }
+
   private Function<List<ClientAddressDataDto>, ClientDetailsDto> buildDetails(
       BcRegistryBusinessDto details) {
     return addresses -> new ClientDetailsDto(
@@ -277,5 +301,6 @@ public class ClientService {
                     contactDto)))
         .then();
   }
+
 
 }
