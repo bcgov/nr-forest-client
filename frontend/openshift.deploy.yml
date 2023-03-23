@@ -112,7 +112,7 @@ objects:
               name: ${NAME}
               volumeMounts:
                 - name: env-config
-                  mountPath: /app/dist/data
+                  mountPath: /srv/data
               ports:
                 - containerPort: 3000
                   protocol: TCP
