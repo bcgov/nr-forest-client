@@ -35,9 +35,9 @@ parameters:
   - name: CPU_LIMIT
     value: 200m
   - name: MEMORY_REQUEST
-    value: 300Mi
+    value: 125Mi
   - name: MEMORY_LIMIT
-    value: 400Mi
+    value: 250Mi
   - name: BCREGISTRY_URI
     description: Bc Registry API address
     required: true
@@ -93,8 +93,6 @@ objects:
               env:
                 - name: FRONTEND_URL
                   value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
-                - name: BACKEND_URL
-                  value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: CHES_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
