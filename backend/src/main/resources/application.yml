@@ -78,12 +78,25 @@ ca:
           cors:
             headers:
               - x-requested-with
+              - X-REQUESTED-WITH
               - authorization
-              - Content-Type
               - Authorization
+              - Content-Type
+              - content-type
               - credential
+              - CREDENTIAL
               - X-XSRF-TOKEN
               - access-control-allow-origin
+              - Access-Control-Allow-Origin
+              - DNT
+              - Keep-Alive,
+              - User-Agent,
+              - X-Requested-With,
+              - If-Modified-Since,
+              - Cache-Control,
+              - Content-Type,
+              - Content-Range,
+              - Range
             methods:
               - OPTIONS
               - GET
