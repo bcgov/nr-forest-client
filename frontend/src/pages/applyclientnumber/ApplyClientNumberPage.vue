@@ -123,8 +123,6 @@ import Autocomplete from "@/common/AutocompleteComponent.vue";
 import ValidationMessages from "@/common/ValidationMessagesComponent.vue";
 import AddressSection from "@/pages/applyclientnumber/AddressSectionComponent.vue";
 
-axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-
 //---- Form Data ----//
 let formData = ref(formDataDto);
 
@@ -237,7 +235,6 @@ function submit(): void {
 import { computed, defineComponent, ref, watch, watchEffect } from "vue";
 import { addNewAddress, useFetch, useFetchTo } from "../../services/ForestClientService";
 import { conversionFn } from "../../services/FetchService";
-import axios from "axios";
 import type { ValidationMessageType } from "../../core/CommonTypes";
 
 export default defineComponent({

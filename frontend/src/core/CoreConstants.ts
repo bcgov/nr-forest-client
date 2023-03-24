@@ -2,6 +2,9 @@
 export const backendUrl =
   window.localStorage.getItem("VITE_BACKEND_URL") ||
   import.meta.env.VITE_BACKEND_URL;
+export const frontendUrl =
+  window.localStorage.getItem("VITE_FRONTEND_URL") ||
+  import.meta.env.VITE_FRONTEND_URL;
 export const keycloakUrl =
   window.localStorage.getItem("VITE_KEYCLOAK_URL") ||
   import.meta.env.VITE_KEYCLOAK_URL;
