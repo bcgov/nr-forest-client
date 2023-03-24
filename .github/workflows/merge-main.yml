@@ -188,17 +188,19 @@ jobs:
           name: ${{ steps.changelog.outputs.tag }}
           body: ${{ steps.changelog.outputs.clean_changelog }}
 
-  test-database:
-    name: TEST Database
+  test-deploy:
+    name: TEST Deployment
     needs:
       - test-init
     env:
       ZONE: test
+      DOMAIN: apps.silver.devops.gov.bc.ca
     environment: test
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      - name: Deploys
+
+      - name: Deploy Database
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: database/openshift.deploy.yml
@@ -211,17 +213,7 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
 
-  test-backend:
-    name: TEST Backend
-    needs:
-      - test-database
-    env:
-      ZONE: test
-    environment: test
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
+      - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: backend/openshift.deploy.yml
@@ -238,19 +230,7 @@ jobs:
             -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-sandbox.apigee.net'
 
-  test-legacy:
-    name: TEST Legacy
-    needs:
-      - test-init
-    env:
-      ZONE: test
-      DOMAIN: apps.silver.devops.gov.bc.ca
-    environment: test
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Deploys
+      - name: Deplo Legacy
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: legacy/openshift.deploy.yml
@@ -265,17 +245,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
             -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}
 
-  test-frontend:
-    name: TEST Frontend
-    needs:
-      - test-init
-    env:
-      ZONE: test
-    environment: test
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
+      - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: frontend/openshift.deploy.yml
@@ -293,9 +263,7 @@ jobs:
   image-promotions:
     name: Promote images to PROD
     needs:
-      - test-backend
-      - test-frontend
-      - test-legacy
+      - test-deploy
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -311,9 +279,6 @@ jobs:
   prod-init:
     name: PROD Init
     needs:
-      - test-backend
-      - test-frontend
-      - test-legacy
       - image-promotions
     env:
       ZONE: prod
@@ -364,18 +329,20 @@ jobs:
             -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
 
-  prod-database:
+  prod-deploy:
     name: PROD Database
     needs:
       - prod-init
     env:
       PREV: test
       ZONE: prod
+      DOMAIN: apps.silver.devops.gov.bc.ca
     environment: prod
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      - name: Deploys
+
+      - name: Deploy Database
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: database/openshift.deploy.yml
@@ -388,18 +355,7 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
 
-  prod-backend:
-    name: PROD Backend
-    needs:
-      - prod-database
-    env:
-      PREV: test
-      ZONE: prod
-    environment: prod
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
+      - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: backend/openshift.deploy.yml
@@ -416,19 +372,7 @@ jobs:
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
-  prod-legacy:
-    name: PROD Legacy
-    needs:
-      - prod-init
-    env:
-      PREV: test
-      ZONE: prod
-      DOMAIN: apps.silver.devops.gov.bc.ca
-    environment: prod
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
+      - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: legacy/openshift.deploy.yml
@@ -443,18 +387,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
             -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}
 
-  prod-frontend:
-    name: PROD Frontend
-    needs:
-      - prod-init
-    env:
-      PREV: test
-      ZONE: prod
-    environment: prod
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
+      - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: frontend/openshift.deploy.yml
