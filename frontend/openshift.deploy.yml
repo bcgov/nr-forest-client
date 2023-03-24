@@ -37,7 +37,7 @@ parameters:
   - name: MEMORY_REQUEST
     value: 50Mi
   - name: MEMORY_LIMIT
-    value: 150Mi
+    value: 50Mi
   - name: VITE_NODE_ENV
     value: ""
   - name: VITE_KEYCLOAK_URL
