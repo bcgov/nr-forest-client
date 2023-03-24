@@ -5,12 +5,13 @@ export interface FormDataDto {
     clientType: CodeDescrType;
   };
   businessInformation: {
+    incorporationNumber: string;
+    businessName: null | string;
+    goodStanding: string;
     firstName: string;
     lastName: string;
     birthdate: string;
-    incorporationNumber: string;
     doingBusinessAsName: string;
-    businessName: null | string;
   };
   location: {
     addresses: Address[];
@@ -45,12 +46,13 @@ export const formDataDto: FormDataDto = {
     clientType: { value: "", text: "" },
   },
   businessInformation: {
+    incorporationNumber: "",
+    businessName: "",
+    goodStanding: "",
     firstName: "",
     lastName: "",
     birthdate: "",
-    incorporationNumber: "",
     doingBusinessAsName: "",
-    businessName: "",
   },
   location: {
     addresses: [],
