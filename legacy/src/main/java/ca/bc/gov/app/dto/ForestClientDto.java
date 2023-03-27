@@ -1,7 +1,10 @@
 package ca.bc.gov.app.dto;
 
 import java.time.LocalDate;
+import java.util.List;
+import lombok.With;
 
+@With
 public record ForestClientDto(
     String clientNumber,
     String clientName,
@@ -17,6 +20,9 @@ public record ForestClientDto(
     String clientAcronym,
     String wcbFirmNumber,
     String ocgSupplierNmbr,
-    String clientComment
+    String clientComment,
+
+    List<String> knowAs,
+    List<ForestClientLocationDto> locations
 ) {
 }

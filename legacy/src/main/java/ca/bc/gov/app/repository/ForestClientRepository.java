@@ -1,6 +1,7 @@
 package ca.bc.gov.app.repository;
 
 import ca.bc.gov.app.entity.ForestClientEntity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
@@ -29,4 +30,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       @Param("companyName") String companyName
   );
 
+
+  Flux<ForestClientEntity> findBy(Pageable page);
+
+  Flux<ForestClientEntity> findByClientNumber(String clientNumber);
 }

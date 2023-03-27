@@ -8,6 +8,7 @@ import ca.bc.gov.app.repository.ForestClientRepository;
 import ca.bc.gov.app.util.MonoUtil;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,9 @@ public class ClientSearchService {
                     entity.getClientAcronym(),
                     entity.getWcbFirmNumber(),
                     entity.getOcgSupplierNmbr(),
-                    entity.getClientComment()
+                    entity.getClientComment(),
+                    List.of(),
+                    List.of()
                 )
             )
             .doOnNext(MonoUtil.logContent(log));
@@ -125,7 +128,9 @@ public class ClientSearchService {
                 entity.getClientAcronym(),
                 entity.getWcbFirmNumber(),
                 entity.getOcgSupplierNmbr(),
-                entity.getClientComment()
+                entity.getClientComment(),
+                List.of(),
+                List.of()
             )
         );
   }

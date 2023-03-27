@@ -18,7 +18,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Builder
 @With
 @Table(name = "CLIENT_STATUS_CODE", schema = ORACLE_ATTRIBUTE_SCHEMA)
-public class ClientStatusCodeEntity {
+public class ForestClientStatusCodeEntity {
 
   public static final String ACTIVE = "ACT"; //TODO: move to enum
 

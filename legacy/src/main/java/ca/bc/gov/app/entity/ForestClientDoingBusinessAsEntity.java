@@ -17,7 +17,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Builder
 @With
 @Table(name = "CLIENT_DOING_BUSINESS_AS", schema = ORACLE_ATTRIBUTE_SCHEMA)
-public class ClientDoingBusinessAsEntity {
+public class ForestClientDoingBusinessAsEntity {
 
   @Id
   @Column("CLIENT_NUMBER")

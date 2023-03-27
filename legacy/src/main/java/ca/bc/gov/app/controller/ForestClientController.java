@@ -1,21 +1,14 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.dto.ClientPublicViewDto;
-import ca.bc.gov.app.dto.FirstNationBandVidationDto;
 import ca.bc.gov.app.dto.ForestClientDto;
-import ca.bc.gov.app.service.ForestClientService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import ca.bc.gov.app.service.ClientService;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
@@ -29,75 +22,20 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 public class ForestClientController {
 
-  private final ForestClientService service;
+  private final ClientService clientService;
 
-  @GetMapping("/bands")
-  @Operation(
-      summary = "List First nation band validation information",
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "Returns a client based on it's number",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  array = @ArraySchema(
-                      schema = @Schema(
-                          name = "FirstNationBand",
-                          implementation = FirstNationBandVidationDto.class
-                      )
-                  )
-              )
-          )
-      }
-  )
-  public Flux<FirstNationBandVidationDto> getFirstNationBandInfo() {
-    return service.getFirstNationBandInfo();
+  public Flux<ForestClientDto> listClientData(
+      @RequestParam(required = false) String clientNumber,
+      @Parameter(description = "The one index page number, defaults to 0", example = "0")
+      @RequestParam(value = "page", required = false, defaultValue = "0")
+      Integer page,
+
+      @Parameter(description = "The amount of data to be returned per page, defaults to 10",
+          example = "10")
+      @RequestParam(value = "size", required = false, defaultValue = "10")
+      Integer size
+  ) {
+    return clientService.listClientData(clientNumber, page, size);
   }
 
-
-  @GetMapping("/business")
-  @Operation(
-      summary = "List all clients we are doing business with",
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "Returns a client based on it's number",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  array = @ArraySchema(
-                      schema = @Schema(
-                          name = "ClientInformation",
-                          implementation = ClientPublicViewDto.class
-                      )
-                  )
-              )
-          )
-      }
-  )
-  public Flux<ClientPublicViewDto> getClientDoingBusiness() {
-    return service.getClientDoingBusiness();
-  }
-
-  @GetMapping("/unregistered")
-  @Operation(
-      summary = "List all clients that are unregistered",
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "Returns a client based on it's number",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  array = @ArraySchema(
-                      schema = @Schema(
-                          name = "ClientInformation",
-                          implementation = ClientPublicViewDto.class
-                      )
-                  )
-              )
-          )
-      }
-  )
-  public Flux<ClientPublicViewDto> getUnregisteredCompanies() {
-    return service.getUnregisteredCompanies();
-  }
 }
