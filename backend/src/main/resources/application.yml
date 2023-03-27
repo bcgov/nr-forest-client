@@ -43,6 +43,7 @@ management:
       include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
 
 springdoc:
+  enable-native-support: true
   webjars:
     prefix: /v3
   api-docs:
@@ -73,6 +74,7 @@ ca:
           host: ${POSTGRESQL_HOST:localhost}:5432
           username: ${POSTGRESQL_USER:user}
           password: ${POSTGRESQL_PASSWORD:passwd}
+        legacyUri: ${LEGACY_URL:http://127.0.0.1:9000}
         frontend:
           url: ${FRONTEND_URL:*}
           cors:
