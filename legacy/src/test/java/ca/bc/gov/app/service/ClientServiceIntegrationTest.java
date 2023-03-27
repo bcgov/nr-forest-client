@@ -34,10 +34,6 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         .verifyComplete();
   }
 
-  //TODO: Check for basic fields
-  //TODO: Check for business as
-  //TODO: Check for locations
-  //TODO: Check for contacts
   private static Stream<Arguments> clientListing() {
     return
         Stream.of(
