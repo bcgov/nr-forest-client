@@ -1,6 +1,5 @@
 package ca.bc.gov.app.configuration;
 
-import javax.net.ssl.SSLException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,7 +45,7 @@ public class GlobalServiceConfiguration {
    * @return A configured instance of WebClient for accessing the BC Registry API.
    */
   @Bean
-  public WebClient bcRegistryApi(ForestClientConfiguration configuration) throws SSLException {
+  public WebClient bcRegistryApi(ForestClientConfiguration configuration) {
     return WebClient
         .builder()
         .baseUrl(configuration.getBcregistry().getUri())
@@ -55,4 +54,14 @@ public class GlobalServiceConfiguration {
         .build();
   }
 
+  /**
+   * Creates a WebClient instance for making HTTP requests to the legacy API based on the
+   * provided {@link ForestClientConfiguration}.
+   *
+   * @param configuration the configuration object for the Forest client
+   * @return a WebClient instance configured for the legacy API
+   */
+  public WebClient legacyApi(ForestClientConfiguration configuration) {
+    return WebClient.builder().baseUrl(configuration.getLegacyUri()).build();
+  }
 }

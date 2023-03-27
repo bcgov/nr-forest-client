@@ -31,6 +31,8 @@ public class ForestClientConfiguration {
   @NestedConfigurationProperty
   private BcRegistryConfiguration bcregistry;
 
+  private String legacyUri;
+
   @Data
   @Builder
   @NoArgsConstructor
