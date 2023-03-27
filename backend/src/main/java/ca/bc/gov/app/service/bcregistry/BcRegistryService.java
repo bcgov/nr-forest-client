@@ -20,7 +20,6 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
-
 public class BcRegistryService {
 
   private final WebClient bcRegistryApi;
@@ -111,7 +110,7 @@ public class BcRegistryService {
    * @throws NoClientDataFound if no matching data is found
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
-  public Flux<BcRegistryFacetSearchResultEntryDto> searchByFacces(String value) {
+  public Flux<BcRegistryFacetSearchResultEntryDto> searchByFacets(String value) {
     return
         bcRegistryApi
             .get()

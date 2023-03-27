@@ -207,7 +207,7 @@ public class ClientService {
    */
   public Flux<ClientLookUpDto> findByClientNameOrIncorporation(String value) {
     return bcRegistryService
-        .searchByFacces(value)
+        .searchByFacets(value)
         .map(entry -> new ClientLookUpDto(
             entry.identifier(),
             entry.name(),
