@@ -63,7 +63,7 @@ public class ClientSubmitRequestValidator implements Validator {
   private void validateBusinessInformation(
       String businessType, ClientBusinessInformationDto businessInformation, Errors errors) {
 
-    if(StringUtils.isBlank(businessType) || "I".equalsIgnoreCase(businessType)) {
+    if (StringUtils.isBlank(businessType) || "I".equalsIgnoreCase(businessType)) {
       return;
     }
 

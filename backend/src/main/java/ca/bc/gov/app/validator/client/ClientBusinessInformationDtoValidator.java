@@ -4,7 +4,6 @@ import static ca.bc.gov.app.util.ValidationUtil.fieldIsMissingErrorMessage;
 
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
-import java.util.concurrent.ExecutionException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;

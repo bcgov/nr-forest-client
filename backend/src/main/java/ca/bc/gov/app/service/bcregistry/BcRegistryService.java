@@ -28,6 +28,15 @@ public class BcRegistryService {
     this.bcRegistryApi = bcRegistryApi;
   }
 
+  /**
+   * Retrieves the standing of a business with the given client number from the BC Registry API.
+   *
+   * @param clientNumber the client number of the business to retrieve standing for
+   * @return a {@link Mono} emitting a {@link BcRegistryBusinessDto}
+   *     representing the standing of the business
+   * @throws NoClientDataFound if no client data could be found with the given client number
+   * @throws InvalidAccessTokenException if the access token is invalid or expired
+   */
   public Mono<BcRegistryBusinessDto> getCompanyStanding(String clientNumber) {
     return
         bcRegistryApi
@@ -37,6 +46,7 @@ public class BcRegistryService {
             )
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
+            // handle different HTTP error codes
             .onStatus(
                 statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(404)),
                 exception -> Mono.error(new NoClientDataFound(clientNumber))
@@ -50,10 +60,21 @@ public class BcRegistryService {
                 exception -> Mono.error(new InvalidAccessTokenException())
             )
             .bodyToMono(BcRegistryIdentificationDto.class)
+            // transform the response into a BcRegistryBusinessDto
             .map(BcRegistryIdentificationDto::business);
   }
 
+  /**
+   * Retrieves the addresses for a business with the given client number from the BC Registry API.
+   *
+   * @param clientNumber the client number of the business to retrieve addresses for
+   * @return a {@link Mono} emitting a {@link BcRegistryBusinessAdressesDto}
+   *     representing the addresses of the business
+   * @throws NoClientDataFound if no client data could be found with the given client number
+   * @throws InvalidAccessTokenException if the access token is invalid or expired
+   */
   public Mono<BcRegistryBusinessAdressesDto> getAddresses(String clientNumber) {
+    // make a request to the BC Registry API to retrieve the addresses of the business
     return
         bcRegistryApi
             .get()
@@ -61,6 +82,7 @@ public class BcRegistryService {
                 Map.of("clientNumber", clientNumber))
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
+            // handle different HTTP error codes
             .onStatus(
                 statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(404)),
                 exception -> Mono.error(new NoClientDataFound(clientNumber))
@@ -83,7 +105,7 @@ public class BcRegistryService {
    *
    * @param value the value to search for
    * @return a {@link Flux} of matching {@link BcRegistryFacetSearchResultEntryDto} instances
-   * @throws NoClientDataFound if no matching data is found
+   * @throws NoClientDataFound           if no matching data is found
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
   public Flux<BcRegistryFacetSearchResultEntryDto> searchByFacces(String value) {
@@ -117,6 +139,6 @@ public class BcRegistryService {
             .bodyToMono(BcRegistryFacetResponseDto.class)
             .map(BcRegistryFacetResponseDto::searchResults)
             .flatMapIterable(BcRegistryFacetSearchResultsDto::results)
-            .doOnNext(content -> log.info("Found entry on BC Registry {}",content));
+            .doOnNext(content -> log.info("Found entry on BC Registry {}", content));
   }
 }

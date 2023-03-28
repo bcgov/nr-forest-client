@@ -201,8 +201,8 @@ public class ClientService {
    *
    * @param value the value to search for
    * @return a {@link Flux} of {@link ClientLookUpDto} instances representing
-   *       matching BC Registry entries
-   * @throws NoClientDataFound if no matching data is found
+   * matching BC Registry entries
+   * @throws NoClientDataFound           if no matching data is found
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
   public Flux<ClientLookUpDto> findByClientNameOrIncorporation(String value) {

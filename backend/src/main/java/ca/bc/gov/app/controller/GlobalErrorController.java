@@ -60,7 +60,8 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
         exception);
 
     if (exception instanceof ValidationException validationException) {
-      log.error("Failed Validations: {}", Arrays.toString(validationException.getErrors().toArray()));
+      log.error("Failed Validations: {}",
+          Arrays.toString(validationException.getErrors().toArray()));
       return ServerResponse.status(validationException.getStatusCode())
           .header("Reason", validationException.getReason())
           .contentType(MediaType.APPLICATION_JSON)
