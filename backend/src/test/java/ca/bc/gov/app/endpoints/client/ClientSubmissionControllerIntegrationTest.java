@@ -86,7 +86,7 @@ public class ClientSubmissionControllerIntegrationTest
                         List.of(
                             new ClientContactDto(
                                 "LP", "James", "Bond",
-                                "987654321", "bond_james_bond@007.com"
+                                "987654321", "bond_james_bond@007.com", 0
                             )
                         )
                     )

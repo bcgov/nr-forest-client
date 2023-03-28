@@ -115,7 +115,7 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     String contactEmail = accessor.getString(24);
 
     return new ClientContactDto(
-        contactType, contactFirstName, contactLastName, contactPhoneNumber, contactEmail);
+        contactType, contactFirstName, contactLastName, contactPhoneNumber, contactEmail, 0);
   }
 
   private static ClientSubmitterInformationDto createSubmitterInformation(
