@@ -1,5 +1,7 @@
 package ca.bc.gov.app.controller;
 
+import ca.bc.gov.app.exception.ValidationException;
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -50,14 +52,24 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
       ServerRequest request, ErrorAttributes errorAttributes) {
 
     Throwable exception = errorAttributes.getError(request).fillInStackTrace();
-    String errorMessage = exception.getMessage();
-    HttpStatusCode errorStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
     log.error(
         "An error was generated during request for {} {}",
         request.method(),
         request.requestPath(),
         exception);
+
+    if (exception instanceof ValidationException validationException) {
+      log.error("Failed Validations: {}",
+          Arrays.toString(validationException.getErrors().toArray()));
+      return ServerResponse.status(validationException.getStatusCode())
+          .header("Reason", validationException.getReason())
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(BodyInserters.fromValue(validationException.getErrors()));
+    }
+
+    String errorMessage = exception.getMessage();
+    HttpStatusCode errorStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
     if (exception instanceof ResponseStatusException responseStatusException) {
       errorMessage = responseStatusException.getReason();

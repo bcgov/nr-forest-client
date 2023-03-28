@@ -54,7 +54,5 @@ public abstract class AbstractTestContainerIntegrationTest {
             "ca.bc.gov.nrs.postgres.password",
             database::getPassword
         );
-
   }
-
 }

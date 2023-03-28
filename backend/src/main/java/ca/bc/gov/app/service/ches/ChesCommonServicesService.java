@@ -57,7 +57,7 @@ public class ChesCommonServicesService {
    * @param requestContent the {@link ChesRequest} object representing the email to be sent
    * @return a {@link Mono} that the transaction ID of the email send operation upon completion
    * @throws InvalidAccessTokenException if the authorization token is invalid or expired
-   * @throws InvalidRoleException if does not have the required role to perform the requested action
+   * @throws InvalidRoleException        if does not have the required role to perform the requested action
    */
   public Mono<String> sendEmail(ChesRequest requestContent) {
 
