@@ -2,6 +2,9 @@ package ca.bc.gov.app.service.bcregistry;
 
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetResponseDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryIdentificationDto;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
@@ -12,6 +15,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -73,4 +77,46 @@ public class BcRegistryService {
             .map(BcRegistryIdentificationDto::businessOffice);
   }
 
+  /**
+   * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto}
+   * instances matching the given value.
+   *
+   * @param value the value to search for
+   * @return a {@link Flux} of matching {@link BcRegistryFacetSearchResultEntryDto} instances
+   * @throws NoClientDataFound if no matching data is found
+   * @throws InvalidAccessTokenException if the access token is invalid or expired
+   */
+  public Flux<BcRegistryFacetSearchResultEntryDto> searchByFacces(String value) {
+    return
+        bcRegistryApi
+            .get()
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/registry-search/api/v1/businesses/search/facets")
+                    .queryParam("query", String.format("value:%s", value))
+                    .queryParam("start", "0")
+                    .queryParam("rows", "100")
+                    .queryParam("category", "status:Active")
+                    .build(Map.of())
+            )
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            // handle different HTTP error codes
+            .onStatus(
+                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(404)),
+                exception -> Mono.error(new NoClientDataFound(value))
+            )
+            .onStatus(
+                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(401)),
+                exception -> Mono.error(new InvalidAccessTokenException())
+            )
+            .onStatus(
+                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(400)),
+                exception -> Mono.error(new InvalidAccessTokenException())
+            )
+            .bodyToMono(BcRegistryFacetResponseDto.class)
+            .map(BcRegistryFacetResponseDto::searchResults)
+            .flatMapIterable(BcRegistryFacetSearchResultsDto::results)
+            .doOnNext(content -> log.info("Found entry on BC Registry {}",content));
+  }
 }
