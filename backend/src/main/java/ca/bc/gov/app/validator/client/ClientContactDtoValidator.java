@@ -20,20 +20,20 @@ public class ClientContactDtoValidator implements Validator {
   @Override
   public void validate(Object target, Errors errors) {
 
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "contactType",
-        fieldIsMissingErrorMessage("contactType"));
+    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "type",
+        fieldIsMissingErrorMessage("type"));
 
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "contactFirstName",
-        fieldIsMissingErrorMessage("contactFirstName"));
+    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName",
+        fieldIsMissingErrorMessage("firstName"));
 
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "contactLastName",
-        fieldIsMissingErrorMessage("contactLastName"));
+    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName",
+        fieldIsMissingErrorMessage("lastName"));
 
     ClientContactDto contact = (ClientContactDto) target;
 
     validatePhoneNumber(
-        contact.contactPhoneNumber(), "contactPhoneNumber", errors);
+        contact.phoneNumber(), "phoneNumber", errors);
 
-    validateEmail(contact.contactEmail(), "contactEmail", errors);
+    validateEmail(contact.email(), "email", errors);
   }
 }

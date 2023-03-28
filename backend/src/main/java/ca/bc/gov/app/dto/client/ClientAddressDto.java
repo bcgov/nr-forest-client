@@ -4,8 +4,8 @@ import java.util.List;
 
 public record ClientAddressDto(
     String streetAddress,
-    ClientCountryDto country,
-    ClientProvinceDto province,
+    ClientValueTextDto country,
+    ClientValueTextDto province,
     String city,
     String postalCode,
     List<ClientContactDto> contacts

@@ -97,10 +97,10 @@ public class ClientMapper {
   ) {
     return new SubmissionLocationContactEntity()
         .withSubmissionLocationId(submissionLocationId)
-        .withContactTypeCode(clientContactDto.contactType())
-        .withFirstName(clientContactDto.contactFirstName())
-        .withLastName(clientContactDto.contactLastName())
-        .withBusinessPhoneNumber(clientContactDto.contactPhoneNumber())
-        .withEmailAddress(clientContactDto.contactEmail());
+        .withContactTypeCode(clientContactDto.type())
+        .withFirstName(clientContactDto.firstName())
+        .withLastName(clientContactDto.lastName())
+        .withBusinessPhoneNumber(clientContactDto.phoneNumber())
+        .withEmailAddress(clientContactDto.email());
   }
 }

@@ -10,12 +10,10 @@ import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientBusinessTypeDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
-import ca.bc.gov.app.dto.client.ClientCountryDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
-import ca.bc.gov.app.dto.client.ClientProvinceDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
-import ca.bc.gov.app.dto.client.ClientTypeDto;
+import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
@@ -73,7 +71,7 @@ public class ClientSubmissionControllerIntegrationTest
   void shouldSubmitClientData() {
     ClientSubmissionDto clientSubmissionDto =
         new ClientSubmissionDto(
-            new ClientBusinessTypeDto(new ClientTypeDto("A", "Association")),
+            new ClientBusinessTypeDto(new ClientValueTextDto("A", "Association")),
             new ClientBusinessInformationDto(
                 "Auric", "Goldfinger", "1964-07-07",
                 "1234", "test", "Auric Enterprises"
@@ -82,8 +80,8 @@ public class ClientSubmissionControllerIntegrationTest
                 List.of(
                     new ClientAddressDto(
                         "3570 S Las Vegas Blvd",
-                        new ClientCountryDto("US", ""),
-                        new ClientProvinceDto("NV", ""),
+                        new ClientValueTextDto("US", ""),
+                        new ClientValueTextDto("NV", ""),
                         "Las Vegas", "89109",
                         List.of(
                             new ClientContactDto(

@@ -4,12 +4,10 @@ import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientBusinessTypeDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
-import ca.bc.gov.app.dto.client.ClientCountryDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
-import ca.bc.gov.app.dto.client.ClientProvinceDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
-import ca.bc.gov.app.dto.client.ClientTypeDto;
+import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -42,7 +40,7 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     }
 
     String clientType = accessor.getString(2);
-    return new ClientBusinessTypeDto(new ClientTypeDto(clientType, ""));
+    return new ClientBusinessTypeDto(new ClientValueTextDto(clientType, ""));
   }
 
   private static ClientBusinessInformationDto createBusinessInformation(
@@ -105,8 +103,8 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     }
 
     return new ClientAddressDto(
-        streetAddress, new ClientCountryDto(country, ""),
-        new ClientProvinceDto(province, ""), city, postalCode, contacts);
+        streetAddress, new ClientValueTextDto(country, ""),
+        new ClientValueTextDto(province, ""), city, postalCode, contacts);
   }
 
   private static ClientContactDto createContact(ArgumentsAccessor accessor) {
