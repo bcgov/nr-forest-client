@@ -31,6 +31,13 @@ public enum ChesMailBodyType {
     return this.value;
   }
 
+  /**
+   * Returns the enum constant with the specified string value.
+   *
+   * @param value the string value representing the enum constant
+   * @return the enum constant with the specified string value
+   * @throws IllegalArgumentException if no enum constant with the specified string value exists
+   */
   @JsonCreator
   public static ChesMailBodyType fromValue(String value) {
     ChesMailBodyType constant = CONSTANTS.get(value);

@@ -36,6 +36,14 @@
             <Note note="The name must be the same as it is in BC Registries" />
             <ValidationMessages fieldId = 'businessNameId'
                                 :validationMessages="validationMessages" />
+            <span v-if="'' !== formData.businessInformation.incorporationNumber &&
+                        '' !== formData.businessInformation.goodStanding &&
+                        !formData.businessInformation.goodStanding">
+                <strong>Your business is not in good standing with BC Registries. You must go to
+                        <a href="https://www.bcregistry.ca/business/auth/home/decide-business">BC Registries </a>
+                        to resolve this before you can apply for a client number.
+                </strong>
+            </span>
         </CollapseCard>
 
         <CollapseCard title="Mailing address" 
@@ -115,8 +123,6 @@ import Autocomplete from "@/common/AutocompleteComponent.vue";
 import ValidationMessages from "@/common/ValidationMessagesComponent.vue";
 import AddressSection from "@/pages/applyclientnumber/AddressSectionComponent.vue";
 
-axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-
 //---- Form Data ----//
 let formData = ref(formDataDto);
 
@@ -131,16 +137,40 @@ const clientTypeCodes = computed(() => {
 });
 
 const originalBusinessNames = ref([]);
+
 const businessNames = computed(() => {
     return originalBusinessNames.value.map(conversionFn);
 });
+
 async function populateBusinessList(event: any) {
     if (event.length >= 3) {
         const encodedBusinessName = encodeURIComponent(event);        
-        useFetchTo(`/api/orgbook/name/${encodedBusinessName}`,originalBusinessNames, { method:'get' });
+        useFetchTo(`/api/clients/name/${encodedBusinessName}`,originalBusinessNames, { method:'get' });
         filterSearchData(event);
     }
 };
+
+function filterSearchData(event: any) {
+    const filteredSearchDataValues = businessNames.value.filter(p => p.text.toLowerCase() === event.toLowerCase());
+
+    if (filteredSearchDataValues.length === 1) {    
+        formData.value.businessInformation.incorporationNumber = filteredSearchDataValues[0].value.value;    
+        useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, addressDataRef, { method:'get' });
+    }
+    else {
+        formData.value.businessInformation.incorporationNumber = "";
+        formData.value.businessInformation.goodStanding = "";
+    }    
+    return filteredSearchDataValues;
+}
+
+watch(
+   [addressDataRef], 
+   () => { 
+        formData.value.location.addresses = addressDataRef.value.addresses;
+        formData.value.businessInformation.goodStanding = addressDataRef.value.goodStanding.toString();
+    }
+);
 
 const displayBusinessInformation = computed(() => {
     return null !== formData.value.businessType.clientType && 
@@ -159,7 +189,8 @@ const displayCommonSections = computed(() => {
         if (null !== formData.value.businessType.clientType && 
             null !== formData.value.businessInformation && 
             null !== formData.value.businessInformation.incorporationNumber &&
-            "" !== formData.value.businessInformation.incorporationNumber) {
+            "" !== formData.value.businessInformation.incorporationNumber &&
+            "true" === formData.value.businessInformation.goodStanding) {
             return true;
         }
         else {
@@ -167,33 +198,6 @@ const displayCommonSections = computed(() => {
         }
     }
 });
-
-function filterSearchData(event: any) {
-    const filteredSearchDataValues = businessNames.value.filter(p => p.text.toLowerCase() === event.toLowerCase());
-    
-    if (filteredSearchDataValues.length === 1) {    
-        formData.value.businessInformation.incorporationNumber = filteredSearchDataValues[0].value.value;    
-        useFetchTo(`/api/clients/${filteredSearchDataValues[0].value.value}`,addressDataRef, { method:'get' });
-    }
-        
-    return filteredSearchDataValues;
-}
-
-watch(
-    [formData],
-    (cur,_) =>{
-        console.log(cur);
-        if(formData.value.businessInformation && formData.value.businessInformation.incorporationNumber){
-            console.log(formData.value.businessInformation.incorporationNumber);
-            
-        }   
-    }
-)
-
-watch(
-   [addressDataRef], 
-   () => { formData.value.location.addresses = addressDataRef.value.addresses;}
-);
 
 //---- Functions ----//
 let validationMessages = ref([] as ValidationMessageType[]);
@@ -228,11 +232,10 @@ function submit(): void {
 </script>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from "vue";
+import { computed, defineComponent, ref, watch, watchEffect } from "vue";
 import { addNewAddress, useFetch, useFetchTo } from "../../services/ForestClientService";
 import { conversionFn } from "../../services/FetchService";
-import axios from "axios";
-import type { CodeDescrType, ValidationMessageType } from "../../core/CommonTypes";
+import type { ValidationMessageType } from "../../core/CommonTypes";
 
 export default defineComponent({
     name: "ApplyClientNumber"

@@ -8,14 +8,17 @@ import static ca.bc.gov.app.util.ClientMapper.mapToSubmitterEntity;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
+import ca.bc.gov.app.dto.bcregistry.ClientAddressDataDto;
+import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientDetailsAddressDto;
-import ca.bc.gov.app.dto.client.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
+import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
+import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
@@ -130,6 +133,13 @@ public class ClientService {
             entity.getDescription()));
   }
 
+
+  /**
+   * Submits a new client submission and returns a Mono of the submission ID.
+   *
+   * @param clientSubmissionDto the DTO representing the client submission
+   * @return a Mono of the submission ID
+   */
   public Mono<Integer> submit(ClientSubmissionDto clientSubmissionDto) {
     SubmissionEntity submissionEntity =
         SubmissionEntity
@@ -160,6 +170,13 @@ public class ClientService {
         );
   }
 
+  /**
+   * Retrieves the client details for a given client number by making calls to BC Registry service.
+   * The details include the company standing and addresses.
+   *
+   * @param clientNumber the client number for which to retrieve details
+   * @return a Mono that emits a ClientDetailsDto object representing the details of the client
+   */
   public Mono<ClientDetailsDto> getClientDetails(String clientNumber) {
     return
         bcRegistryService
@@ -172,13 +189,34 @@ public class ClientService {
                     )
                     .flatMapIterable(expandAddresses())
                     .index()
-                    .flatMap(buildAddressFromTuple())
+                    .flatMap(buildAddress())
                     .collectList()
                     .map(buildDetails(details))
             );
   }
 
-  private Function<List<ClientDetailsAddressDto>, ClientDetailsDto> buildDetails(
+  /**
+   * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances
+   * matching the given value and maps them to {@link ClientLookUpDto} instances.
+   *
+   * @param value the value to search for
+   * @return a {@link Flux} of {@link ClientLookUpDto} instances representing
+   *       matching BC Registry entries
+   * @throws NoClientDataFound if no matching data is found
+   * @throws InvalidAccessTokenException if the access token is invalid or expired
+   */
+  public Flux<ClientLookUpDto> findByClientNameOrIncorporation(String value) {
+    return bcRegistryService
+        .searchByFacces(value)
+        .map(entry -> new ClientLookUpDto(
+            entry.identifier(),
+            entry.name(),
+            entry.status(),
+            entry.legalType()
+        ));
+  }
+
+  private Function<List<ClientAddressDataDto>, ClientDetailsDto> buildDetails(
       BcRegistryBusinessDto details) {
     return addresses -> new ClientDetailsDto(
         details.legalName(),
@@ -188,11 +226,11 @@ public class ClientService {
     );
   }
 
-  private Function<Tuple2<Long, BcRegistryAddressDto>, Mono<ClientDetailsAddressDto>> buildAddressFromTuple() {
+  private Function<Tuple2<Long, BcRegistryAddressDto>, Mono<ClientAddressDataDto>> buildAddress() {
     return addressTuple ->
         Mono
             .just(
-                new ClientDetailsAddressDto(
+                new ClientAddressDataDto(
                     addressTuple.getT2().streetAddress(),
                     null,
                     null,
@@ -263,5 +301,6 @@ public class ClientService {
                     contactDto)))
         .then();
   }
+
 
 }

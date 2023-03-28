@@ -2,6 +2,7 @@ package ca.bc.gov.app.endpoints.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -47,6 +49,11 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
       )
       .configureStaticDsl(true)
       .build();
+
+  @BeforeEach
+  public void reset() {
+    wireMockExtension.resetAll();
+  }
 
   @Test
   @DisplayName("Codes are in expected order")
@@ -178,7 +185,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
       String responseContent
   ) {
 
-    wireMockExtension.resetAll();
+    reset();
 
 
     wireMockExtension
@@ -219,6 +226,100 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
       response.equals(responseContent);
     }
 
+  }
+
+  @Test
+  @DisplayName("Look for Incorporation with ID 'BC0772006'")
+  void shouldGetDataFromIncorporation() {
+
+    wireMockExtension
+        .stubFor(
+            get(urlPathEqualTo("/registry-search/api/v1/businesses/search/facets"))
+                .withQueryParam("category", equalTo("status:Active"))
+                .withQueryParam("start", equalTo("0"))
+                .withQueryParam("rows", equalTo("100"))
+                .withQueryParam("query", equalTo("value:BC0772006"))
+                .willReturn(okJson(TestConstants.ORGBOOK_INCORP_OK))
+        );
+
+    client
+        .get()
+        .uri("/api/clients/incorporation/BC0772006")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .json(TestConstants.ORGBOOK_INCORP_OK_RESPONSE);
+
+  }
+
+  @Test
+  @DisplayName("Look for Incorporation with ID 'BC0000000'")
+  void shouldGetNoDataFromIncorporation() {
+
+    wireMockExtension
+        .stubFor(
+            get(urlPathEqualTo("/registry-search/api/v1/businesses/search/facets"))
+                .withQueryParam("category", equalTo("status:Active"))
+                .withQueryParam("start", equalTo("0"))
+                .withQueryParam("rows", equalTo("100"))
+                .withQueryParam("query", equalTo("value:BC0000000"))
+                .willReturn(okJson(TestConstants.ORGBOOK_INCORP_EMPTY))
+        );
+
+    client
+        .get()
+        .uri("/api/clients/incorporation/BC0000000")
+        .exchange()
+        .expectStatus().isNotFound()
+        .expectBody(String.class)
+        .isEqualTo("No data found for client number BC0000000");
+
+  }
+
+  @Test
+  @DisplayName("Look for name 'Power Corp'")
+  void shouldGetDataFromNameLookup() {
+
+    wireMockExtension
+        .stubFor(
+            get(urlPathEqualTo("/registry-search/api/v1/businesses/search/facets"))
+                .withQueryParam("category", equalTo("status:Active"))
+                .withQueryParam("start", equalTo("0"))
+                .withQueryParam("rows", equalTo("100"))
+                .withQueryParam("query", equalTo("value:Power"))
+                .willReturn(okJson(TestConstants.ORGBOOK_INCORP_OK))
+        );
+
+    client
+        .get()
+        .uri("/api/clients/name/Power")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .json(TestConstants.BCREG_NAMELOOKUP_OK_RESPONSE);
+  }
+
+  @Test
+  @DisplayName("Look for name 'Jhon'")
+  void shouldGetNoDataFromNameLookup() {
+
+    wireMockExtension
+        .stubFor(
+            get(urlPathEqualTo("/registry-search/api/v1/businesses/search/facets"))
+                .withQueryParam("category", equalTo("status:Active"))
+                .withQueryParam("start", equalTo("0"))
+                .withQueryParam("rows", equalTo("100"))
+                .withQueryParam("query", equalTo("value:Jhon"))
+                .willReturn(okJson(TestConstants.ORGBOOK_INCORP_EMPTY))
+        );
+
+    client
+        .get()
+        .uri("/api/clients/name/Jhon")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .json(TestConstants.BCREG_NAMELOOKUP_EMPTY);
   }
 
   private static Stream<Arguments> clientDetailing() {

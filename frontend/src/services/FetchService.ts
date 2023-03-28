@@ -5,7 +5,7 @@ import { ref, watch } from "vue";
 import { useFetchTo } from "@/services/ForestClientService";
 import EventBus, { EventBusEvent } from "@/services/EventBus";
 
-export const conversionFn = (code: any) => { return { value: {value: code.code, text: code.name}, text: code.name } };
+export const conversionFn = (code: any) => { return { value: { value: code.code, text: code.name }, text: code.name } };
 
 /**
  * Autocomplete function for the business name
@@ -20,7 +20,7 @@ export const useBusinessNameIdAutoComplete = () => {
   //We will listen to changes on the businessNameId text field and do the fetch
   EventBus.addEventListener("businessNameId", (ev: any) => {
     dataInput.value = ev.data;
-    useFetchTo(`/api/orgbook/name/${ev.data}`, data, { method: "get" });
+    useFetchTo(`/api/clients/name/${ev.data}`, data, { method: "get" });
   });
   //We watch for changes on the data to emit back to the datalist
   watch(data, (dataFetched, _) => {

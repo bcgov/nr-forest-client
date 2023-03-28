@@ -1,7 +1,9 @@
 package ca.bc.gov.app.controller.client;
 
-import ca.bc.gov.app.dto.client.ClientDetailsDto;
+import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
+import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
+import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -217,5 +219,63 @@ public class ClientController {
   ) {
     return clientService
         .listClientContactTypeCodes(page, size);
+  }
+
+  @GetMapping(value = "/name/{name}")
+  @Operation(
+      summary = "Search the Bc Registry based on the name",
+      responses = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK - Data was found based on the provided name",
+              content = @Content(
+                  mediaType = MediaType.APPLICATION_JSON_VALUE,
+                  array = @ArraySchema(
+                      schema = @Schema(
+                          name = "ClientLookup",
+                          implementation = ClientLookUpDto.class
+                      )
+                  )
+              )
+          )
+      }
+  )
+  public Flux<ClientLookUpDto> findByClientName(
+      @Parameter(
+          description = "The name to lookup",
+          example = "Power Corp"
+      )
+      @PathVariable String name) {
+    return clientService
+        .findByClientNameOrIncorporation(name);
+  }
+
+  @GetMapping(value = "/incorporation/{incorporationId}")
+  @Operation(
+      summary = "Search the BcRegistry based on the incorporation id",
+      responses = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK - Data was found based on the provided incorporation",
+              content = @Content(
+                  mediaType = MediaType.APPLICATION_JSON_VALUE,
+                  schema = @Schema(
+                      name = "ClientLookup",
+                      implementation = ClientLookUpDto.class
+                  )
+              )
+          )
+      }
+  )
+  public Mono<ClientLookUpDto> findByIncorporationNumber(
+      @Parameter(
+          description = "The incorporation ID to lookup",
+          example = "BC0772006"
+      )
+      @PathVariable String incorporationId) {
+    return clientService
+        .findByClientNameOrIncorporation(incorporationId)
+        .next()
+        .switchIfEmpty(Mono.error(new NoClientDataFound(incorporationId)));
   }
 }

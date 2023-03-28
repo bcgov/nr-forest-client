@@ -32,6 +32,13 @@ public enum ChesMailPriority {
     return this.value;
   }
 
+  /**
+   * Returns the enum constant with the specified string value.
+   *
+   * @param value the string value representing the enum constant
+   * @return the enum constant with the specified string value
+   * @throws IllegalArgumentException if no enum constant with the specified string value exists
+   */
   @JsonCreator
   public static ChesMailPriority fromValue(String value) {
     ChesMailPriority constant = CONSTANTS.get(value);

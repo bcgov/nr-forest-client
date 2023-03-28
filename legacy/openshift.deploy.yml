@@ -34,9 +34,9 @@ parameters:
   - name: CPU_LIMIT
     value: 200m
   - name: MEMORY_REQUEST
-    value: 300Mi
+    value: 75Mi
   - name: MEMORY_LIMIT
-    value: 400Mi
+    value: 75Mi
 objects:  
   - apiVersion: v1
     kind: ImageStream

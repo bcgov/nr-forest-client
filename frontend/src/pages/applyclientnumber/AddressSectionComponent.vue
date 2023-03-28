@@ -4,7 +4,7 @@
       <AddressComponent 
       :address="item"
       :id="itemIndex"
-      :validationMessages="[]"
+      :validationMessages="validationMessages"
       :countryCodes="countryCodes"
       />
 
@@ -38,7 +38,7 @@
   import BiPlusLg from "~icons/bi/plus-lg";
   import type { Address } from '@/dto/ApplyClientNumberDto';
   import type { ValidationMessageType } from '@/core/CommonTypes';  
-  import AddressComponent from '@/common/AddressComponent.vue';
+  import AddressComponent from '@/pages/applyclientnumber/AddressComponent.vue';
   
   const props = defineProps({
     addresses: { 
