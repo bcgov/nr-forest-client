@@ -2,10 +2,9 @@ package ca.bc.gov.app.dto.client;
 
 public record ClientContactDto(
     String contactType,
-    String firstName,
-    String lastName,
-    String phoneNumber,
-    String email,
-    int index
+    String contactFirstName,
+    String contactLastName,
+    String contactPhoneNumber,
+    String contactEmail
 ) {
 }

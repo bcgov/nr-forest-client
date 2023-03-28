@@ -51,8 +51,8 @@ public class ClientMapper {
     return new SubmissionLocationEntity()
         .withSubmissionId(submissionId)
         .withStreetAddress(clientAddressDto.streetAddress())
-        .withCountryCode(clientAddressDto.country())
-        .withProvinceCode(clientAddressDto.province())
+        .withCountryCode(clientAddressDto.country().value())
+        .withProvinceCode(clientAddressDto.province().value())
         .withCityName(clientAddressDto.city())
         .withPostalCode(clientAddressDto.postalCode());
   }
@@ -64,10 +64,9 @@ public class ClientMapper {
     return new SubmissionLocationContactEntity()
         .withSubmissionLocationId(submissionLocationId)
         .withContactTypeCode(clientContactDto.contactType())
-        .withContactTypeCode(clientContactDto.contactType())
-        .withFirstName(clientContactDto.firstName())
-        .withLastName(clientContactDto.lastName())
-        .withBusinessPhoneNumber(clientContactDto.phoneNumber())
-        .withEmailAddress(clientContactDto.email());
+        .withFirstName(clientContactDto.contactFirstName())
+        .withLastName(clientContactDto.contactLastName())
+        .withBusinessPhoneNumber(clientContactDto.contactPhoneNumber())
+        .withEmailAddress(clientContactDto.contactEmail());
   }
 }

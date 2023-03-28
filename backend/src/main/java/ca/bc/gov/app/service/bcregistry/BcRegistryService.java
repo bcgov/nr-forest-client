@@ -14,9 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-@Service
 @Slf4j
-
+@Service
 public class BcRegistryService {
 
   private final WebClient bcRegistryApi;
@@ -24,7 +23,6 @@ public class BcRegistryService {
   public BcRegistryService(@Qualifier("bcRegistryApi") WebClient bcRegistryApi) {
     this.bcRegistryApi = bcRegistryApi;
   }
-
 
   public Mono<BcRegistryBusinessDto> getCompanyStanding(String clientNumber) {
     return
@@ -49,7 +47,6 @@ public class BcRegistryService {
             )
             .bodyToMono(BcRegistryIdentificationDto.class)
             .map(BcRegistryIdentificationDto::business);
-
   }
 
   public Mono<BcRegistryBusinessAdressesDto> getAddresses(String clientNumber) {

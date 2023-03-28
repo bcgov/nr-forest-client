@@ -1,15 +1,16 @@
 package ca.bc.gov.app.controller.client;
 
+import ca.bc.gov.app.controller.AbstractController;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.exception.InvalidRequestObjectException;
 import ca.bc.gov.app.service.client.ClientService;
+import ca.bc.gov.app.validator.client.ClientSubmitRequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,10 +25,16 @@ import reactor.core.publisher.Mono;
 @RestController
 @Slf4j
 @RequestMapping(value = "/api/clients", produces = MediaType.APPLICATION_JSON_VALUE)
-@RequiredArgsConstructor
-public class ClientSubmissionController {
+public class ClientSubmissionController extends
+    AbstractController<ClientSubmissionDto, ClientSubmitRequestValidator> {
 
   private final ClientService clientService;
+
+  public ClientSubmissionController(
+      ClientService clientService, ClientSubmitRequestValidator validator) {
+    super(ClientSubmissionDto.class, validator);
+    this.clientService = clientService;
+  }
 
   @PostMapping("/submissions")
   @Operation(
@@ -68,6 +75,7 @@ public class ClientSubmissionController {
         .switchIfEmpty(
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
         )
+        .doOnNext(this::validate)
         .flatMap(clientService::submit)
         .doOnNext(submissionId -> {
               serverResponse

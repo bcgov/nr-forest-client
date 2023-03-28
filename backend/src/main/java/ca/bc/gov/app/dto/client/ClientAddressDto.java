@@ -4,12 +4,10 @@ import java.util.List;
 
 public record ClientAddressDto(
     String streetAddress,
-    String country,
-    String province,
+    ClientCountryDto country,
+    ClientProvinceDto province,
     String city,
     String postalCode,
-
-    int index,
     List<ClientContactDto> contacts
 ) {
 }

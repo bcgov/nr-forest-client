@@ -1,6 +1,5 @@
 package ca.bc.gov.app.dto.client;
 
-import java.util.List;
 import lombok.With;
 
 @With

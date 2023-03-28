@@ -1,11 +1,11 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.exception.InvalidRequestObjectException;
-import java.util.function.Function;
+import ca.bc.gov.app.dto.ValidationError;
+import ca.bc.gov.app.exception.ValidationException;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -22,17 +22,19 @@ public class AbstractController<T, V extends Validator> {
     Errors errors = new BeanPropertyBindingResult(target, contentClass.getName());
     validator.validate(target, errors);
     if (errors.hasErrors()) {
-      throw new InvalidRequestObjectException(getErrorMessages().apply(errors));
+      throw new ValidationException(getValidationErrors(errors));
     }
   }
 
-  private static Function<Errors, String> getErrorMessages() {
-    return errors ->
-        errors
-            .getAllErrors()
-            .stream()
-            .map(DefaultMessageSourceResolvable::getCode)
-            .reduce(StringUtils.EMPTY,
-                (message1, message2) -> String.join(",", message1, message2));
+  private List<ValidationError> getValidationErrors(Errors errors) {
+    return errors
+        .getFieldErrors()
+        .stream()
+        .map(fieldError ->
+            new ValidationError()
+                .withFieldId(fieldError.getField())
+                .withErrorMsg(fieldError.getCode())
+        )
+        .collect(Collectors.toList());
   }
 }

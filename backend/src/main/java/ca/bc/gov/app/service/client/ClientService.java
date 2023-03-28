@@ -5,7 +5,6 @@ import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationContactEnti
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmitterEntity;
 
-import ca.bc.gov.app.repository.client.SubmitterRepository;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
@@ -27,6 +26,7 @@ import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
+import ca.bc.gov.app.repository.client.SubmitterRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
