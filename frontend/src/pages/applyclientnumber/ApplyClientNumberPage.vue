@@ -13,7 +13,7 @@
                                v-model="formData.businessType.clientType" 
                                :options="clientTypeCodes" />  
             </div>
-            <ValidationMessages fieldId = 'businessTypeId'
+            <ValidationMessages fieldId = 'businessType.clientType'
                                 :validationMessages="validationMessages"  />
         </CollapseCard>
 
@@ -34,7 +34,7 @@
                                         populateBusinessList($event);
                                         filterSearchData($event)" />
             <Note note="The name must be the same as it is in BC Registries" />
-            <ValidationMessages fieldId = 'businessNameId'
+            <ValidationMessages fieldId = 'businessInformation.businessName'
                                 :validationMessages="validationMessages" />
             <span v-if="'' !== formData.businessInformation.incorporationNumber &&
                         '' !== formData.businessInformation.goodStanding &&
@@ -70,7 +70,7 @@
 
             <span>
                 <strong>This information is from your BCeID. If it's incorrect, go to BCeID login page to update it before submitting your form.</strong>
-            </span>>
+            </span>
 
             <br /><br />
             <b-row>
@@ -78,28 +78,28 @@
                     <Label label="First name" 
                            :required="true" />
                     <b-form-input v-model="formData.submitterInformation.submitterFirstName" />
-                    <ValidationMessages fieldId = 'submitterFirstNameId'
+                    <ValidationMessages fieldId = 'submitterInformation.submitterFirstName'
                                         :validationMessages="validationMessages"  />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Last name" 
                            :required="true" />
                     <b-form-input v-model="formData.submitterInformation.submitterLastName" />
-                    <ValidationMessages fieldId = 'submitterLastNameId'
+                    <ValidationMessages fieldId = 'submitterInformation.submitterLastName'
                                         :validationMessages="validationMessages"  />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Phone number" 
                            :required="true" />
                     <b-form-input v-model="formData.submitterInformation.submitterPhoneNumber" />
-                    <ValidationMessages fieldId = 'submitterPhoneNumberId'
+                    <ValidationMessages fieldId = 'submitterInformation.submitterPhoneNumber'
                                         :validationMessages="validationMessages"  />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Email address" 
                            :required="true" />
                     <b-form-input v-model="formData.submitterInformation.submitterEmail" />
-                    <ValidationMessages fieldId = 'submitterEmailId'
+                    <ValidationMessages fieldId = 'submitterInformation.submitterEmail'
                                         :validationMessages="validationMessages"  />
                 </b-col>
             </b-row>
@@ -166,7 +166,7 @@ function filterSearchData(event: any) {
 
 watch(
    [addressDataRef], 
-   () => { 
+   () => {         
         formData.value.location.addresses = addressDataRef.value.addresses;
         formData.value.businessInformation.goodStanding = addressDataRef.value.goodStanding.toString();
     }
@@ -202,40 +202,39 @@ const displayCommonSections = computed(() => {
 //---- Functions ----//
 let validationMessages = ref([] as ValidationMessageType[]);
 
-//TODO: Get this from BE. This is an example.
-const validationMessages2 = [
-    { 
-        fieldId: "clientTypeId", 
-        errorMsg: "What type of business are you? is required"
-    },
-    { 
-        fieldId: "businessNameId", 
-        errorMsg: "Business name is required"
-    },
-    { 
-        fieldId: "countryId0", 
-        errorMsg: "Country is required"
-    },
-    {
-        fieldId: "contactTypeId0",
-        errorMsg: "Role is required"
+const { response, error, fetch } = usePost('/api/clients/submissions', formData.value, { skip:true })
+
+watch(
+    [response],
+    () => {
+        if(response.value.status === 201){
+            console.log('submission created, id ',response.value.headers['x-sub-id']);
+        }        
     }
-] as ValidationMessageType[];
+)
+
+watch(
+    [error],
+    () => {
+        if(error.value.status === 400){
+            validationMessages.value = error.value.data;
+        }
+    }
+)
+
+
 
 function submit(): void {
-  //TODO: Call API to persist data and get validation messages
-  validationMessages.value = validationMessages2;
-  console.log("validationMessages = ", JSON.stringify(validationMessages));
-  console.log("formData = ", JSON.stringify(formData.value));
+  fetch();
 }
 
 </script>
 
 <script lang="ts">
 import { computed, defineComponent, ref, watch, watchEffect } from "vue";
-import { addNewAddress, useFetch, useFetchTo } from "../../services/ForestClientService";
-import { conversionFn } from "../../services/FetchService";
-import type { ValidationMessageType } from "../../core/CommonTypes";
+import { addNewAddress, useFetch, useFetchTo, usePost } from "@/services/ForestClientService";
+import { conversionFn } from "@/services/FetchService";
+import type { ValidationMessageType } from "@/core/CommonTypes";
 
 export default defineComponent({
     name: "ApplyClientNumber"

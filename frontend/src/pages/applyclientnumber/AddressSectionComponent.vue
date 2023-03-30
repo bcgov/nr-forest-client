@@ -38,7 +38,7 @@
   import BiPlusLg from "~icons/bi/plus-lg";
   import type { Address } from '@/dto/ApplyClientNumberDto';
   import type { ValidationMessageType } from '@/core/CommonTypes';  
-  import AddressComponent from '@/pages/applyclientnumber/AddressComponent.vue';
+  
   
   const props = defineProps({
     addresses: { 
@@ -73,6 +73,7 @@
 
 <script lang="ts">
   import { defineComponent } from "vue";
+  import AddressComponent from '@/pages/applyclientnumber/AddressComponent.vue';
   export default defineComponent({
     name: "AddressSectionComponent",
   });
