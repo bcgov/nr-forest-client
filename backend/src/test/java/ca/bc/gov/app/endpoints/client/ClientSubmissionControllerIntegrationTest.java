@@ -83,9 +83,10 @@ public class ClientSubmissionControllerIntegrationTest
                         new ClientValueTextDto("US", ""),
                         new ClientValueTextDto("NV", ""),
                         "Las Vegas", "89109",
+                        0,
                         List.of(
                             new ClientContactDto(
-                                "LP", "James", "Bond",
+                                new ClientValueTextDto("LP","LP"), "James", "Bond",
                                 "987654321", "bond_james_bond@007.com", 0
                             )
                         )

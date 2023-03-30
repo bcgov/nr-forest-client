@@ -1,5 +1,6 @@
 package ca.bc.gov.app.dto.bcregistry;
 
+import ca.bc.gov.app.dto.client.ClientAddressDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.With;
@@ -28,7 +29,14 @@ import lombok.With;
               "province": {"value": "QC", text": "Quebec"},
               "city": "Montreal",
               "postalCode": "H3B1A7",
-              "index": 1
+              "index": 1,
+              "contacts":{
+                  "type": "person",
+                  "firstName": "JAMES",
+                  "lastName": "BAXTER",
+                  "phoneNumber": "123456789"
+                  "email": "james@email.ca",
+              }
             }
           ]
         }"""
@@ -63,6 +71,6 @@ public record ClientDetailsDto(
             "index": 1
           }
         ]""")
-    List<ClientAddressDataDto> addresses
+    List<ClientAddressDto> addresses
 ) {
 }
