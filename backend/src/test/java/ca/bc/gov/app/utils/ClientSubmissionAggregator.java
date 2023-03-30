@@ -94,9 +94,9 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
 
     boolean contactsNull = accessor.getBoolean(18);
     boolean contactsEmpty = accessor.getBoolean(19);
-    if(contactsNull) {
+    if (contactsNull) {
       contacts = null;
-    } else if(contactsEmpty) {
+    } else if (contactsEmpty) {
       contacts = new ArrayList<>();
     } else {
       contacts = List.of(createContact(accessor));
@@ -104,7 +104,7 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
 
     return new ClientAddressDto(
         streetAddress, new ClientValueTextDto(country, ""),
-        new ClientValueTextDto(province, ""), city, postalCode, contacts);
+        new ClientValueTextDto(province, ""), city, postalCode, 0, contacts);
   }
 
   private static ClientContactDto createContact(ArgumentsAccessor accessor) {
@@ -115,14 +115,15 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     String contactEmail = accessor.getString(24);
 
     return new ClientContactDto(
-        contactType, contactFirstName, contactLastName, contactPhoneNumber, contactEmail, 0);
+        new ClientValueTextDto(contactType, contactType), contactFirstName, contactLastName,
+        contactPhoneNumber, contactEmail, 0);
   }
 
   private static ClientSubmitterInformationDto createSubmitterInformation(
       ArgumentsAccessor accessor) {
 
     boolean submitterInformationNull = accessor.getBoolean(25);
-    if(submitterInformationNull) {
+    if (submitterInformationNull) {
       return null;
     }
 
