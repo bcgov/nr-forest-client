@@ -57,6 +57,8 @@ public class CorsWebFilter implements WebFilter {
 
     headers.add("Access-Control-Allow-Headers",
         String.join(",", corsSettings.getHeaders()));
+    headers.add("Access-Control-Expose-Headers",
+        String.join(",", corsSettings.getHeaders()));
 
     if (CorsUtils.isPreFlightRequest(request)) {
       response.setStatusCode(HttpStatus.NO_CONTENT);

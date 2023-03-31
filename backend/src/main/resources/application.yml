@@ -99,6 +99,9 @@ ca:
               - Content-Type,
               - Content-Range,
               - Range
+              - Location
+              - location
+              - x-sub-id
             methods:
               - OPTIONS
               - GET

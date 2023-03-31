@@ -20,7 +20,6 @@ export const useFetch = (url: string, config: any = {}) => {
   return { ...info, data }
 }
 
-
 export const useFetchTo = (url: string, data: any, config: any = {}) => {
 
   const response: any = ref({});
@@ -31,9 +30,9 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
     loading.value = true;
     try {
       const result = await axios.request({
+        ...config,
         url,
-        baseURL: backendUrl,
-        ...config
+        baseURL: backendUrl
       });
       Object.assign(response, result);
       data.value = result.data;
@@ -47,6 +46,39 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
   !config.skip && fetch();
 
   return { response, error, data, loading, fetch }
+}
+
+export const usePost = (url: string, body: any, config: any = {}) => {
+  const response: any = ref({});
+  const responseBody: any = ref({});
+  const error: any = ref({});
+  const loading: any = ref(false);
+
+  const fetch = async () => {
+    loading.value = true;
+    try {
+      const result = await axios.request({
+        ...config,
+        url,
+        baseURL: backendUrl,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: body
+      });
+      response.value = result;
+      responseBody.value = result.data;
+    } catch (ex: any) {
+      error.value = ex.response;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  !config.skip && fetch();
+
+  return { response, error, responseBody, loading, fetch }
 }
 
 export const addNewAddress = (addresses: Address[]) => {
@@ -83,59 +115,3 @@ export const addNewContact = (contacts: Contact[]) => {
   let newContacts = contacts.push(blankContact);
   return newContacts;
 }
-
-// import { backendUrl } from "../core/CoreConstants";
-
-// export const sendConfirmationEmail = (emailTo: String, emailBody: String) => {
-//   return axios
-//     .post(backendUrl + "/app/m/ches/sendEmail", null, {
-//       params: { emailTo, emailBody },
-//     })
-//     .then((response) => {
-//       return response;
-//     })
-//     .catch((e) => {
-//       console.log("Failed to send confirmation email", e);
-//       return e;
-//     });
-// };
-
-// export const foundDuplicateForBusiness = async (
-//   incorporationNumber: String,
-//   companyName: String
-// ) => {
-//   return axios
-//     .get(
-//       backendUrl + "/app/m/legacyclient/findClientByIncorporationNumberOrName",
-//       {
-//         params: { incorporationNumber, companyName },
-//       }
-//     )
-//     .then((response) => {
-//       if (response.data.length > 0) return true;
-//       return false;
-//     })
-//     .catch((e) => {
-//       console.log("Failed to check duplicate client for business user", e);
-//       return e;
-//     });
-// };
-
-// export const foundDuplicateForIndividual = async (
-//   firstName: String,
-//   lastName: String,
-//   birthdate: String
-// ) => {
-//   return axios
-//     .get(backendUrl + "/app/m/legacyclient/findClientByNameAndBirthdate", {
-//       params: { firstName, lastName, birthdate },
-//     })
-//     .then((response) => {
-//       if (response.data.length > 0) return true;
-//       return false;
-//     })
-//     .catch((e) => {
-//       console.log("Failed to check duplicate client for individual user", e);
-//       return e;
-//     });
-// };

@@ -9,7 +9,6 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
-import ca.bc.gov.app.dto.bcregistry.ClientAddressDataDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
@@ -201,8 +200,8 @@ public class ClientService {
    *
    * @param value the value to search for
    * @return a {@link Flux} of {@link ClientLookUpDto} instances representing
-   *       matching BC Registry entries
-   * @throws NoClientDataFound if no matching data is found
+   * matching BC Registry entries
+   * @throws NoClientDataFound           if no matching data is found
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
   public Flux<ClientLookUpDto> findByClientNameOrIncorporation(String value) {
@@ -216,7 +215,7 @@ public class ClientService {
         ));
   }
 
-  private Function<List<ClientAddressDataDto>, ClientDetailsDto> buildDetails(
+  private Function<List<ClientAddressDto>, ClientDetailsDto> buildDetails(
       BcRegistryBusinessDto details) {
     return addresses -> new ClientDetailsDto(
         details.legalName(),
@@ -226,17 +225,18 @@ public class ClientService {
     );
   }
 
-  private Function<Tuple2<Long, BcRegistryAddressDto>, Mono<ClientAddressDataDto>> buildAddress() {
+  private Function<Tuple2<Long, BcRegistryAddressDto>, Mono<ClientAddressDto>> buildAddress() {
     return addressTuple ->
         Mono
             .just(
-                new ClientAddressDataDto(
+                new ClientAddressDto(
                     addressTuple.getT2().streetAddress(),
                     null,
                     null,
                     addressTuple.getT2().addressCity(),
                     addressTuple.getT2().postalCode(),
-                    addressTuple.getT1().intValue()
+                    addressTuple.getT1().intValue(),
+                    List.of()
                 )
             )
             .flatMap(address ->

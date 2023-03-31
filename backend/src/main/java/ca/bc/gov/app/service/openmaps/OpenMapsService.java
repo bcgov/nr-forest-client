@@ -29,7 +29,7 @@ public class OpenMapsService {
    *
    * @param firstNationId a {@code String} representing the federal ID of the first nation
    * @return a Mono that emits a {@link PropertyDto} object representing the first nation with the
-   *     given federal ID.
+   * given federal ID.
    * @throws NoFirstNationException if no first nation with the given federal ID was found.
    */
   public Mono<PropertyDto> getFirstNation(String firstNationId) {
