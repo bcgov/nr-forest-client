@@ -21,5 +21,7 @@ declare module '@vue/runtime-core' {
     BRow: typeof import('bootstrap-vue-3')['BRow']
     BTab: typeof import('bootstrap-vue-3')['BTab']
     BTabs: typeof import('bootstrap-vue-3')['BTabs']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
   }
 }
