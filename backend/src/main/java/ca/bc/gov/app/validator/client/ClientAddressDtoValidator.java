@@ -1,9 +1,12 @@
 package ca.bc.gov.app.validator.client;
 
+import static ca.bc.gov.app.validator.common.CommonValidator.fieldIsMissingErrorMessage;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.entity.client.ProvinceCodeEntity;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
+import java.util.List;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -12,9 +15,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-import java.util.List;
-import java.util.regex.Pattern;
-import static ca.bc.gov.app.validator.common.CommonValidator.fieldIsMissingErrorMessage;
 
 @Component
 @RequiredArgsConstructor
