@@ -50,8 +50,8 @@ public class ClientSubmitRequestValidator implements Validator {
       return StringUtils.EMPTY;
     }
     else if (StringUtils.isBlank(businessType.clientType().value())) {
-    	errors.rejectValue(clientTypeField, "clientType is missing");
-        return StringUtils.EMPTY;
+      errors.rejectValue(clientTypeField, "clientType is missing");
+      return StringUtils.EMPTY;
     }
 
     if (null == businessType.clientType().value()) {
