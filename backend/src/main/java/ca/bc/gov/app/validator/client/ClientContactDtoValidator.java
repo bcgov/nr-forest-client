@@ -3,6 +3,7 @@ package ca.bc.gov.app.validator.client;
 import static ca.bc.gov.app.validator.common.CommonValidator.fieldIsMissingErrorMessage;
 import static ca.bc.gov.app.validator.common.CommonValidator.validateEmail;
 import static ca.bc.gov.app.validator.common.CommonValidator.validatePhoneNumber;
+
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.entity.client.ContactTypeCodeEntity;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
@@ -46,8 +47,10 @@ public class ClientContactDtoValidator implements Validator {
 
   @SneakyThrows
   private void validateContactType(ClientContactDto contact, Errors errors) {
+	String contactTypeField = "contactType";
+	
     if (contact.contactType() == null || StringUtils.isBlank(contact.contactType().value())) {
-      errors.rejectValue("contactType", fieldIsMissingErrorMessage("contactType"));
+      errors.rejectValue(contactTypeField, fieldIsMissingErrorMessage("contactType"));
       return;
     }
 
@@ -55,7 +58,9 @@ public class ClientContactDtoValidator implements Validator {
         .findById(contact.contactType().value()).toFuture().get();
 
     if (contactTypeCode == null) {
-      errors.rejectValue("contactType", "Contact Type " + contact.contactType().text() + " is invalid");
+      errors.rejectValue(contactTypeField, "Contact Type " + 
+                         contact.contactType().text() + 
+                         " is invalid");
     }
 
   }
