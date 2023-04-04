@@ -1,10 +1,5 @@
 package ca.bc.gov.app.validator.client;
 
-import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
-import ca.bc.gov.app.service.bcregistry.BcRegistryService;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-
 import static ca.bc.gov.app.validator.common.CommonValidator.fieldIsMissingErrorMessage;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +8,11 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.server.ResponseStatusException;
+
+import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
+import ca.bc.gov.app.service.bcregistry.BcRegistryService;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 @Component
 @RequiredArgsConstructor
