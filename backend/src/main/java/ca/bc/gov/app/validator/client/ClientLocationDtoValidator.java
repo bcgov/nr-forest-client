@@ -1,16 +1,14 @@
 package ca.bc.gov.app.validator.client;
 
+import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientLocationDto;
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-
-import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientLocationDto;
-import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
