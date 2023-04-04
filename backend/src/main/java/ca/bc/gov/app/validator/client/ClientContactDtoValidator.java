@@ -3,17 +3,13 @@ package ca.bc.gov.app.validator.client;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.entity.client.ContactTypeCodeEntity;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-
 import org.apache.commons.lang3.StringUtils;
-
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-
 import static ca.bc.gov.app.validator.common.CommonValidator.fieldIsMissingErrorMessage;
 import static ca.bc.gov.app.validator.common.CommonValidator.validateEmail;
 import static ca.bc.gov.app.validator.common.CommonValidator.validatePhoneNumber;
