@@ -1,13 +1,5 @@
 package ca.bc.gov.app.validator.client;
 
-import ca.bc.gov.app.dto.client.ClientContactDto;
-import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
-import ca.bc.gov.app.entity.client.ContactTypeCodeEntity;
-import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
-import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-
 import static ca.bc.gov.app.validator.common.CommonValidator.fieldIsMissingErrorMessage;
 import static ca.bc.gov.app.validator.common.CommonValidator.validateEmail;
 import static ca.bc.gov.app.validator.common.CommonValidator.validatePhoneNumber;
@@ -17,6 +9,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+
+import ca.bc.gov.app.dto.client.ClientContactDto;
+import ca.bc.gov.app.entity.client.ContactTypeCodeEntity;
+import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 @Component
 @RequiredArgsConstructor
@@ -59,7 +57,7 @@ public class ClientContactDtoValidator implements Validator {
         .findById(contact.contactType().value()).toFuture().get();
 
     if (contactTypeCode == null) {
-      errors.rejectValue("contactType", "Contact Type "+contact.contactType().text()+" is invalid");
+      errors.rejectValue("contactType", "Contact Type " + contact.contactType().text() + " is invalid");
     }
 
   }
