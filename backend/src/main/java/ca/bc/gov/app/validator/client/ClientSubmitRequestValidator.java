@@ -49,7 +49,7 @@ public class ClientSubmitRequestValidator implements Validator {
       errors.rejectValue("businessType.clientType", "clientType is missing");
       return StringUtils.EMPTY;
     }
-    else if (isNullOrSpacesOnly(businessType.clientType().value())) {
+    else if (StringUtils.isBlank(businessType.clientType().value())) {
     	errors.rejectValue("businessType.clientType", "clientType is missing");
         return StringUtils.EMPTY;
     }
@@ -100,9 +100,5 @@ public class ClientSubmitRequestValidator implements Validator {
     ValidationUtils
         .invokeValidator(submitterInformationDtoValidator, submitterInformation, errors);
   }
-	
-  private boolean isNullOrSpacesOnly(final String str) {
-	return str == null || str.trim().length() == 0;
-  }	
 	
 }
