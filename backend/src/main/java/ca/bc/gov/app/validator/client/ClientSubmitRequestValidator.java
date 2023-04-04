@@ -44,10 +44,13 @@ public class ClientSubmitRequestValidator implements Validator {
       errors.rejectValue("businessType", "businessType is missing");
       return StringUtils.EMPTY;
     }
-
-    if (businessType.clientType() == null) {
+    else if (businessType.clientType() == null) {
       errors.rejectValue("businessType.clientType", "clientType is missing");
       return StringUtils.EMPTY;
+    }
+    else if (isNullOrSpacesOnly(businessType.clientType().value())) {
+    	errors.rejectValue("businessType.clientType", "clientType is missing");
+        return StringUtils.EMPTY;
     }
 
     if (businessType.clientType().value() == null) {
@@ -96,4 +99,9 @@ public class ClientSubmitRequestValidator implements Validator {
     ValidationUtils
         .invokeValidator(submitterInformationDtoValidator, submitterInformation, errors);
   }
+	
+  private boolean isNullOrSpacesOnly(final String str) {
+	return str == null || str.trim().length() == 0;
+  }	
+	
 }

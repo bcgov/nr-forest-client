@@ -1,11 +1,12 @@
 package ca.bc.gov.app.validator.client;
 
-import static ca.bc.gov.app.util.ValidationUtil.fieldIsMissingErrorMessage;
-
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+
+import static ca.bc.gov.app.validator.common.CommonValidator.fieldIsMissingErrorMessage;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

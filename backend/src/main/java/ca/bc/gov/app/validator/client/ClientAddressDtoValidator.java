@@ -1,11 +1,12 @@
 package ca.bc.gov.app.validator.client;
 
-import static ca.bc.gov.app.util.ValidationUtil.fieldIsMissingErrorMessage;
-
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.entity.client.ProvinceCodeEntity;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
+
+import static ca.bc.gov.app.validator.common.CommonValidator.fieldIsMissingErrorMessage;
+
 import java.util.List;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;

@@ -4,21 +4,21 @@
           <b-form-select :id="'contactTypeId' + id"
                           v-model="contact.contactType" 
                           :options="contactTypeCodes" />
-          <ValidationMessages :fieldId = "`location.addresses[${parentId}].contacts[${id}].contactType`"
+          <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].contactType`"
                               :validationMessages="validationMessages"  />
       </td>
       <td>
           <b-form-input :id="'contactFirstNameId' + id"
                         v-model="contact.firstName">
           </b-form-input>
-          <ValidationMessages :fieldId = "`location.addresses[${parentId}].contacts[${id}].firstName`"
+          <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].firstName`"
                               :validationMessages="validationMessages"  />
       </td>
       <td>
           <b-form-input :id="'contactLastNameId' + id"
                         v-model="contact.lastName">
           </b-form-input>
-          <ValidationMessages :fieldId = "`location.addresses[${parentId}].contacts[${id}].lastName`"
+          <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].lastName`"
                               :validationMessages="validationMessages"  />
       </td>
       <td>
@@ -26,14 +26,14 @@
                         v-model="contact.phoneNumber"
                         v-mask="'##########'">
           </b-form-input>
-          <ValidationMessages :fieldId = "`location.addresses[${parentId}].contacts[${id}].phoneNumber`"
+          <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].phoneNumber`"
                               :validationMessages="validationMessages"  />
       </td>
       <td>
           <b-form-input :id="'contactEmailId' + id"
                         v-model="contact.email">
           </b-form-input>
-          <ValidationMessages :fieldId = "`location.addresses[${parentId}].contacts[${id}].email`"
+          <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].email`"
                               :validationMessages="validationMessages" />
       </td>
       <td>
@@ -59,7 +59,7 @@
       type: Number,
       required: true
     },
-    parentId: {
+    index: {
       type: Number,
       required: true
     },

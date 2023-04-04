@@ -1,10 +1,11 @@
 package ca.bc.gov.app.validator.client;
 
-import static ca.bc.gov.app.util.ValidationUtil.fieldIsMissingErrorMessage;
-import static ca.bc.gov.app.util.ValidationUtil.validateEmail;
-import static ca.bc.gov.app.util.ValidationUtil.validatePhoneNumber;
-
 import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
+
+import static ca.bc.gov.app.validator.common.CommonValidator.fieldIsMissingErrorMessage;
+import static ca.bc.gov.app.validator.common.CommonValidator.validateEmail;
+import static ca.bc.gov.app.validator.common.CommonValidator.validatePhoneNumber;
+
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;

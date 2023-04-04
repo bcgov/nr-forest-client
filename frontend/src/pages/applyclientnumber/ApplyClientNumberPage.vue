@@ -14,7 +14,7 @@
                                :options="clientTypeCodes" />  
             </div>
             <ValidationMessages fieldId = 'businessType.clientType'
-                                :validationMessages="validationMessages"  />
+                                :validationMessages="validationMessages" />
         </CollapseCard>
 
         <CollapseCard title="Registered business" 
@@ -94,7 +94,8 @@
                     <Label label="Phone number" 
                            :required="true" />
                     <b-form-input id="submitterPhoneNumberId"
-                                  v-model="formData.submitterInformation.submitterPhoneNumber" />
+                                  v-model="formData.submitterInformation.submitterPhoneNumber"
+                                  v-mask="'##########'" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterPhoneNumber'
                                         :validationMessages="validationMessages"  />
                 </b-col>
