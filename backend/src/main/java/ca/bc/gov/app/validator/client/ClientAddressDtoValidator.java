@@ -50,10 +50,12 @@ public class ClientAddressDtoValidator implements Validator {
 
   @SneakyThrows
   private void validateCountryProvinceAndPostalCode(ClientAddressDto address, Errors errors) {
-	String countryField = "country";
+    String countryField = "country";
 	
     if (StringUtils.isBlank(address.country().value())) {
-      errors.rejectValue(countryField, fieldIsMissingErrorMessage(countryField));
+      errors.rejectValue(
+              countryField, 
+              fieldIsMissingErrorMessage(countryField));
       return;
     }
     validatePostalCode(address, errors);
@@ -63,7 +65,9 @@ public class ClientAddressDtoValidator implements Validator {
     if ("US".equalsIgnoreCase(address.country().value())
         || "CA".equalsIgnoreCase(address.country().value())) {
       if (StringUtils.isBlank(address.province().value())) {
-        errors.rejectValue(provinceField, fieldIsMissingErrorMessage(provinceField));
+        errors.rejectValue(
+                provinceField, 
+                fieldIsMissingErrorMessage(provinceField));
         return;
       }
 

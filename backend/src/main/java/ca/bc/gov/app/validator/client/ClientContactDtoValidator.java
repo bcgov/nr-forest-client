@@ -57,10 +57,11 @@ public class ClientContactDtoValidator implements Validator {
     ContactTypeCodeEntity contactTypeCode = typeCodeRepository
         .findById(contact.contactType().value()).toFuture().get();
 
-    if (contactTypeCode == null) {
-      errors.rejectValue(contactTypeField, "Contact Type " + 
-                         contact.contactType().text() + 
-                         " is invalid");
+    if (null == contactTypeCode) {
+      errors.rejectValue(
+               contactTypeField, "Contact Type " 
+               + contact.contactType().text()
+               + " is invalid");
     }
 
   }
