@@ -13,7 +13,8 @@
                        v-model="country" 
                        :options="countryCodes" />
         <ValidationMessages :fieldId="`location.addresses[${id}].country`" 
-                            :validationMessages="validationMessages" />
+                           :validationMessages="validationMessages"
+                           :fieldValue="country" />
       </div>
 
     </b-row>
@@ -28,7 +29,8 @@
                       v-model="address.streetAddress">
         </b-form-input>
         <ValidationMessages :fieldId="`location.addresses[${id}].streetAddress`" 
-                            :validationMessages="validationMessages" />
+                            :validationMessages="validationMessages"
+                            :fieldValue="address.streetAddress" />
       </div>
     </b-row>
 
@@ -42,7 +44,8 @@
                       v-model="address.city">
         </b-form-input>
         <ValidationMessages :fieldId="`location.addresses[${id}].city`" 
-                            :validationMessages="validationMessages" />
+                            :validationMessages="validationMessages"
+                            :fieldValue="address.streetAddress" />
       </div>
     </b-row>
 
@@ -58,10 +61,12 @@
         </span>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-        <b-form-select :id="'provinceId' + id" v-model="province" 
+        <b-form-select :id="'provinceId' + id" 
+                       v-model="province" 
                        :options="provinceCodes" />
         <ValidationMessages :fieldId="`location.addresses[${id}].province`" 
-                            :validationMessages="validationMessages" />
+                            :validationMessages="validationMessages"
+                            :fieldValue="province" />
       </div>
     </b-row>
 
@@ -96,7 +101,8 @@
           </b-form-input>
         </span>
         <ValidationMessages :fieldId="`location.addresses[${id}].postalCode`" 
-                            :validationMessages="validationMessages" />
+                            :validationMessages="validationMessages"
+                            :fieldValue="address.postalCode" />
       </div>
     </b-row>
 
@@ -118,7 +124,8 @@
                                   :contacts="address.contacts"
                                   :validationMessages="validationMessages" />
           <ValidationMessages :fieldId="`location.addresses[${id}].contacts`"
-                              :validationMessages="validationMessages" />
+                              :validationMessages="validationMessages"
+                              :fieldValue="address.contacts"  />
         </CollapseCard>
       </div>
     </b-row>

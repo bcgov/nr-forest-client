@@ -14,7 +14,8 @@
                                :options="clientTypeCodes" />  
             </div>
             <ValidationMessages fieldId = 'businessType.clientType'
-                                :validationMessages="validationMessages" />
+                                :validationMessages="validationMessages"
+                                :fieldValue="formData.businessType.clientType" />
         </CollapseCard>
 
         <CollapseCard title="Registered business" 
@@ -35,7 +36,9 @@
                                         filterSearchData($event)" />
             <Note note="The name must be the same as it is in BC Registries" />
             <ValidationMessages fieldId = 'businessInformation.businessName'
-                                :validationMessages="validationMessages" />
+                                :validationMessages="validationMessages"
+                                :fieldValue="formData.businessInformation.businessName" />
+                                
             <span v-if="'' !== formData.businessInformation.incorporationNumber &&
                         '' !== formData.businessInformation.goodStanding &&
                         !formData.businessInformation.goodStanding">
@@ -80,7 +83,8 @@
                     <b-form-input id="submitterFirstNameId"
                                   v-model="formData.submitterInformation.submitterFirstName" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterFirstName'
-                                        :validationMessages="validationMessages"  />
+                                        :validationMessages="validationMessages"
+                                        :fieldValue="formData.submitterInformation.submitterFirstName"  />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Last name" 
@@ -88,7 +92,8 @@
                     <b-form-input id="submitterLastNameId"
                                   v-model="formData.submitterInformation.submitterLastName" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterLastName'
-                                        :validationMessages="validationMessages"  />
+                                        :validationMessages="validationMessages"
+                                        :fieldValue="formData.submitterInformation.submitterLastName"  />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Phone number" 
@@ -97,7 +102,8 @@
                                   v-model="formData.submitterInformation.submitterPhoneNumber"
                                   v-mask="'##########'" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterPhoneNumber'
-                                        :validationMessages="validationMessages"  />
+                                        :validationMessages="validationMessages"
+                                        :fieldValue="formData.submitterInformation.submitterPhoneNumber" />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Email address" 
@@ -105,7 +111,8 @@
                     <b-form-input id="submitterEmailId"
                                   v-model="formData.submitterInformation.submitterEmail" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterEmail'
-                                        :validationMessages="validationMessages"  />
+                                        :validationMessages="validationMessages"
+                                        :fieldValue="formData.submitterInformation.submitterEmail"  />
                 </b-col>
             </b-row>
 
@@ -238,6 +245,7 @@ import { computed, defineComponent, ref, watch, watchEffect } from "vue";
 import { addNewAddress, useFetch, useFetchTo, usePost } from "@/services/ForestClientService";
 import { conversionFn } from "@/services/FetchService";
 import type { ValidationMessageType } from "@/core/CommonTypes";
+import { propsToAttrMap } from "@vue/shared";
 
 export default defineComponent({
     name: "ApplyClientNumber"
