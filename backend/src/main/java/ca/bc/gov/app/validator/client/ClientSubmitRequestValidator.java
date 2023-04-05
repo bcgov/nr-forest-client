@@ -49,8 +49,12 @@ public class ClientSubmitRequestValidator implements Validator {
       errors.rejectValue(clientTypeField, "clientType is missing");
       return StringUtils.EMPTY;
     }
+    else if (StringUtils.isBlank(businessType.clientType().value())) {
+      errors.rejectValue(clientTypeField, "clientType is missing");
+      return StringUtils.EMPTY;
+    }
 
-    if (StringUtils.isBlank(businessType.clientType().value())) {
+    if (null == businessType.clientType().value()) {
       errors.pushNestedPath(clientTypeField);
       errors.rejectValue("value", "clientType value is missing");
       errors.popNestedPath();
