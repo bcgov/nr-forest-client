@@ -114,9 +114,11 @@
 
           <br /><br />
           <ContactSectionComponent id="contactListId" 
-                                  :parentId="id"
+                                  :index="id"
                                   :contacts="address.contacts"
                                   :validationMessages="validationMessages" />
+          <ValidationMessages :fieldId="`location.addresses[${id}].contacts`"
+                              :validationMessages="validationMessages" />
         </CollapseCard>
       </div>
     </b-row>

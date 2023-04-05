@@ -1,4 +1,4 @@
-package ca.bc.gov.app.util;
+package ca.bc.gov.app.validator.common;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -7,7 +7,8 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.validation.Errors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ValidationUtil {
+public class CommonValidator {
+	
   private static final EmailValidator emailValidator = EmailValidator.getInstance();
 
   public static void validateEmail(String email, String field, Errors errors) {
@@ -28,11 +29,11 @@ public class ValidationUtil {
     }
 
     if (!StringUtils.isNumeric(phoneNumber)) {
-      errors.rejectValue(field, "Invalid format");
+      errors.rejectValue(field, field + " has an invalid format");
     }
 
-    if (StringUtils.length(phoneNumber) > 10) {
-      errors.rejectValue(field, "Has more than 10 digits");
+    if (StringUtils.length(phoneNumber) != 10) {
+      errors.rejectValue(field, field + " has to be 10 digits");
     }
   }
 

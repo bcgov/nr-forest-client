@@ -12,14 +12,13 @@
             </tr>
         </thead>
         <tbody>
-            <ContactComponent
-            v-for="(item, itemIndex) in contacts" 
-            :id="itemIndex" 
-            :parentId="parentId" 
-            :validationMessages="validationMessages"
-            :contact="item" 
-            :contactTypeCodes="contactTypeCodes" 
-            :parentFunctions="reactiveFunctions"/>
+            <ContactComponent v-for="(item, itemIndex) in contacts" 
+                              :id="itemIndex" 
+                              :index="index" 
+                              :validationMessages="validationMessages"
+                              :contact="item" 
+                              :contactTypeCodes="contactTypeCodes" 
+                              :parentFunctions="reactiveFunctions" />
         </tbody>
     </table>
   </div>
@@ -47,7 +46,7 @@
         type: String, 
         required: true 
       },
-      parentId: {
+      index: {
         type: Number,
         required: true
       },

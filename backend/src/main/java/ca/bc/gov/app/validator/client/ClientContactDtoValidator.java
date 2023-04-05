@@ -1,13 +1,11 @@
 package ca.bc.gov.app.validator.client;
 
-import static ca.bc.gov.app.util.ValidationUtil.fieldIsMissingErrorMessage;
-import static ca.bc.gov.app.util.ValidationUtil.validateEmail;
-import static ca.bc.gov.app.util.ValidationUtil.validatePhoneNumber;
+import static ca.bc.gov.app.validator.common.CommonValidator.fieldIsMissingErrorMessage;
+import static ca.bc.gov.app.validator.common.CommonValidator.validateEmail;
+import static ca.bc.gov.app.validator.common.CommonValidator.validatePhoneNumber;
 
 import ca.bc.gov.app.dto.client.ClientContactDto;
-import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
 import ca.bc.gov.app.entity.client.ContactTypeCodeEntity;
-import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -49,16 +47,21 @@ public class ClientContactDtoValidator implements Validator {
 
   @SneakyThrows
   private void validateContactType(ClientContactDto contact, Errors errors) {
+	String contactTypeField = "contactType";
+	
     if (contact.contactType() == null || StringUtils.isBlank(contact.contactType().value())) {
-      errors.rejectValue("contactType", fieldIsMissingErrorMessage("contactType"));
+      errors.rejectValue(contactTypeField, fieldIsMissingErrorMessage("contactType"));
       return;
     }
 
     ContactTypeCodeEntity contactTypeCode = typeCodeRepository
         .findById(contact.contactType().value()).toFuture().get();
 
-    if (contactTypeCode == null) {
-      errors.rejectValue("contactType", "Contact Type "+contact.contactType().text()+" is invalid");
+    if (null == contactTypeCode) {
+      errors.rejectValue(
+               contactTypeField, "Contact Type " 
+               + contact.contactType().text()
+               + " is invalid");
     }
 
   }

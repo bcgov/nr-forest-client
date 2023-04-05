@@ -14,7 +14,7 @@
                                :options="clientTypeCodes" />  
             </div>
             <ValidationMessages fieldId = 'businessType.clientType'
-                                :validationMessages="validationMessages"  />
+                                :validationMessages="validationMessages" />
         </CollapseCard>
 
         <CollapseCard title="Registered business" 
@@ -77,28 +77,33 @@
                 <b-col cols="3">
                     <Label label="First name" 
                            :required="true" />
-                    <b-form-input v-model="formData.submitterInformation.submitterFirstName" />
+                    <b-form-input id="submitterFirstNameId"
+                                  v-model="formData.submitterInformation.submitterFirstName" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterFirstName'
                                         :validationMessages="validationMessages"  />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Last name" 
                            :required="true" />
-                    <b-form-input v-model="formData.submitterInformation.submitterLastName" />
+                    <b-form-input id="submitterLastNameId"
+                                  v-model="formData.submitterInformation.submitterLastName" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterLastName'
                                         :validationMessages="validationMessages"  />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Phone number" 
                            :required="true" />
-                    <b-form-input v-model="formData.submitterInformation.submitterPhoneNumber" />
+                    <b-form-input id="submitterPhoneNumberId"
+                                  v-model="formData.submitterInformation.submitterPhoneNumber"
+                                  v-mask="'##########'" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterPhoneNumber'
                                         :validationMessages="validationMessages"  />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Email address" 
                            :required="true" />
-                    <b-form-input v-model="formData.submitterInformation.submitterEmail" />
+                    <b-form-input id="submitterEmailId"
+                                  v-model="formData.submitterInformation.submitterEmail" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterEmail'
                                         :validationMessages="validationMessages"  />
                 </b-col>
@@ -202,13 +207,13 @@ const displayCommonSections = computed(() => {
 //---- Functions ----//
 let validationMessages = ref([] as ValidationMessageType[]);
 
-const { response, error, fetch } = usePost('/api/clients/submissions', formData.value, { skip:true })
+const { response, error, fetch: persistValidateData } = usePost('/api/clients/submissions', formData.value, { skip: true });
 
 watch(
     [response],
     () => {
-        if(response.value.status === 201){
-            console.log('submission created, id ',response.value.headers['x-sub-id']);
+        if (201 === response.value.status) {
+            console.log('submission created, id ', response.value.headers['x-sub-id']);
         }        
     }
 )
@@ -216,16 +221,14 @@ watch(
 watch(
     [error],
     () => {
-        if(error.value.status === 400){
+        if (400 === error.value.status) {
             validationMessages.value = error.value.data;
         }
     }
 )
 
-
-
 function submit(): void {
-  fetch();
+    persistValidateData();
 }
 
 </script>

@@ -39,19 +39,23 @@ public class ClientSubmitRequestValidator implements Validator {
   }
 
   private String validateBusinessType(ClientBusinessTypeDto businessType, Errors errors) {
-
+	String clientTypeField = "businessType.clientType";
+	  
     if (businessType == null) {
       errors.rejectValue("businessType", "businessType is missing");
       return StringUtils.EMPTY;
     }
-
-    if (businessType.clientType() == null) {
-      errors.rejectValue("businessType.clientType", "clientType is missing");
+    else if (null == businessType.clientType()) {
+      errors.rejectValue(clientTypeField, "clientType is missing");
+      return StringUtils.EMPTY;
+    }
+    else if (StringUtils.isBlank(businessType.clientType().value())) {
+      errors.rejectValue(clientTypeField, "clientType is missing");
       return StringUtils.EMPTY;
     }
 
-    if (businessType.clientType().value() == null) {
-      errors.pushNestedPath("businessType.clientType");
+    if (null == businessType.clientType().value()) {
+      errors.pushNestedPath(clientTypeField);
       errors.rejectValue("value", "clientType value is missing");
       errors.popNestedPath();
       return StringUtils.EMPTY;
@@ -96,4 +100,5 @@ public class ClientSubmitRequestValidator implements Validator {
     ValidationUtils
         .invokeValidator(submitterInformationDtoValidator, submitterInformation, errors);
   }
+	
 }
