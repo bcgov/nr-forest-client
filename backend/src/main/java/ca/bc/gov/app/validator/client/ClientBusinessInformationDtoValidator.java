@@ -50,7 +50,7 @@ public class ClientBusinessInformationDtoValidator implements Validator {
 
     bcRegistryService.getCompanyStanding(businessInformation.incorporationNumber())
         .doOnError(ResponseStatusException.class, e -> errors.rejectValue(
-            "incorporationNumber", "IncomporationNumber was not found in BC Registry"))
+            "incorporationNumber", "Incorporation Number was not found in BC Registry"))
         .doOnNext(bcRegistryBusinessDto -> {
           if (!bcRegistryBusinessDto.goodStanding()) {
             errors.rejectValue(
