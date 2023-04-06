@@ -34,6 +34,7 @@ management:
         include: health,metrics
 
 springdoc:
+  enable-native-support: true
   webjars:
     prefix: /v3
   api-docs:
