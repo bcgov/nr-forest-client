@@ -15,4 +15,5 @@ public interface CountryCodeRepository extends ReactiveCrudRepository<CountryCod
   Flux<CountryCodeEntity> findBy(Pageable pageable);
 
   Mono<CountryCodeEntity> findByCountryCode(String code);
+  Mono<CountryCodeEntity> findByDescription(String description);
 }

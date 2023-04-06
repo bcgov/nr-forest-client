@@ -321,14 +321,6 @@ public class TestConstants {
             "city": "VICTORIA",
             "postalCode": "V8V1X4",
             "index": 0
-          },
-          {
-            "streetAddress": "501 Belleville Street",
-            "country": {"value":"CA","text":"Canada"},
-            "province": {"value":"BC","text":"British Columbia"},
-            "city": "VICTORIA",
-            "postalCode": "V8V1X4",
-            "index": 1
           }
         ]
       }""";
@@ -361,4 +353,104 @@ public class TestConstants {
       }""";
 
   public static final String BCREG_RESPONSE_401 = "Provided access token is missing or invalid";
+
+  public static final String BCREG_DOC_REQ = """
+      {
+        "documentAccessRequest":{
+          "documents":[
+            {"type":"BUSINESS_SUMMARY_FILING_HISTORY"}
+          ]
+        }
+      }""";
+
+  public static final String BCREG_DOC_REQ_RES = """
+      {
+          "businessIdentifier": "AA0000001",
+          "documents": [
+              {
+                  "documentKey": "aa0a00a0a",
+                  "documentType": "BUSINESS_SUMMARY_FILING_HISTORY",                  
+                  "id": 18315
+              }
+          ]
+      }""";
+
+  public static final String BCREG_DOC_DATA = """
+      {
+          "business": {
+              "goodStanding": true,
+              "identifier": "AA0000001",
+              "legalName": "SAMPLE COMPANY",
+              "legalType": "SP",
+              "state": "ACTIVE"
+          },
+          "offices": {
+              "businessOffice": {
+                  "deliveryAddress": {
+                      "addressCity": "VICTORIA",
+                      "addressCountry": "Canada",
+                      "addressCountryDescription": "Canada",
+                      "addressRegion": "BC",
+                      "deliveryInstructions": "",
+                      "postalCode": "V8V1X4",
+                      "streetAddress": "501 Belleville Street",
+                      "streetAddressAdditional": ""
+                  },
+                  "mailingAddress": {
+                      "addressCity": "VICTORIA",
+                      "addressCountry": "Canada",
+                      "addressCountryDescription": "Canada",
+                      "addressRegion": "BC",
+                      "deliveryInstructions": "",
+                      "postalCode": "V8V1X4",
+                      "streetAddress": "501 Belleville Street",
+                      "streetAddressAdditional": ""
+                  }
+              }
+          },
+          "parties": [
+              {
+                  "deliveryAddress": {
+                      "addressCity": "VICTORIA",
+                      "addressCountry": "Canada",
+                      "addressCountryDescription": "Canada",
+                      "addressRegion": "BC",
+                      "deliveryInstructions": "",
+                      "postalCode": "V8V1X4",
+                      "streetAddress": "501 Belleville Street",
+                      "streetAddressAdditional": ""
+                  },
+                  "mailingAddress": {
+                      "addressCity": "VICTORIA",
+                      "addressCountry": "Canada",
+                      "addressCountryDescription": "Canada",
+                      "addressRegion": "BC",
+                      "deliveryInstructions": "",
+                      "postalCode": "V8V1X4",
+                      "streetAddress": "501 Belleville Street",
+                      "streetAddressAdditional": ""
+                  },
+                  "officer": {
+                      "email": "",
+                      "firstName": "JAMES",
+                      "lastName": "BAXTER",
+                      "middleInitial": "JAMES",
+                      "partyType": "person"
+                  },
+                  "roles": [
+                      {
+                          "appointmentDate": "2005-07-27",
+                          "cessationDate": null,
+                          "roleType": "Proprietor"
+                      }
+                  ]
+              }
+          ],
+          "registrarInfo": {
+              "endDate": null,
+              "name": "Wattles",
+              "startDate": "2022-06-01T00:00:00",
+              "title": "Registrar of Companies"
+          }
+      }""";
 }

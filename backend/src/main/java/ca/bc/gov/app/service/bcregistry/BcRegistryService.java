@@ -1,11 +1,14 @@
 package ca.bc.gov.app.service.bcregistry;
 
-import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
-import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
+import static ca.bc.gov.app.ApplicationConstant.BUSINESS_SUMMARY_FILING_HISTORY;
+
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestDocumentDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestResponseDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryExceptionMessageDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
-import ca.bc.gov.app.dto.bcregistry.BcRegistryIdentificationDto;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import java.util.Map;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,76 +32,6 @@ public class BcRegistryService {
     this.bcRegistryApi = bcRegistryApi;
   }
 
-  /**
-   * Retrieves the standing of a business with the given client number from the BC Registry API.
-   *
-   * @param clientNumber the client number of the business to retrieve standing for
-   * @return a {@link Mono} emitting a {@link BcRegistryBusinessDto}
-   *     representing the standing of the business
-   * @throws NoClientDataFound if no client data could be found with the given client number
-   * @throws InvalidAccessTokenException if the access token is invalid or expired
-   */
-  public Mono<BcRegistryBusinessDto> getCompanyStanding(String clientNumber) {
-    return
-        bcRegistryApi
-            .get()
-            .uri("/business/api/v2/businesses/{clientNumber}",
-                Map.of("clientNumber", clientNumber)
-            )
-            .accept(MediaType.APPLICATION_JSON)
-            .retrieve()
-            // handle different HTTP error codes
-            .onStatus(
-                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(404)),
-                exception -> Mono.error(new NoClientDataFound(clientNumber))
-            )
-            .onStatus(
-                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(401)),
-                exception -> Mono.error(new InvalidAccessTokenException())
-            )
-            .onStatus(
-                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(400)),
-                exception -> Mono.error(new InvalidAccessTokenException())
-            )
-            .bodyToMono(BcRegistryIdentificationDto.class)
-            // transform the response into a BcRegistryBusinessDto
-            .map(BcRegistryIdentificationDto::business);
-  }
-
-  /**
-   * Retrieves the addresses for a business with the given client number from the BC Registry API.
-   *
-   * @param clientNumber the client number of the business to retrieve addresses for
-   * @return a {@link Mono} emitting a {@link BcRegistryBusinessAdressesDto}
-   *     representing the addresses of the business
-   * @throws NoClientDataFound if no client data could be found with the given client number
-   * @throws InvalidAccessTokenException if the access token is invalid or expired
-   */
-  public Mono<BcRegistryBusinessAdressesDto> getAddresses(String clientNumber) {
-    // make a request to the BC Registry API to retrieve the addresses of the business
-    return
-        bcRegistryApi
-            .get()
-            .uri("/business/api/v2/businesses/{clientNumber}/addresses",
-                Map.of("clientNumber", clientNumber))
-            .accept(MediaType.APPLICATION_JSON)
-            .retrieve()
-            // handle different HTTP error codes
-            .onStatus(
-                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(404)),
-                exception -> Mono.error(new NoClientDataFound(clientNumber))
-            )
-            .onStatus(
-                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(401)),
-                exception -> Mono.error(new InvalidAccessTokenException())
-            )
-            .onStatus(
-                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(400)),
-                exception -> Mono.error(new InvalidAccessTokenException())
-            )
-            .bodyToMono(BcRegistryIdentificationDto.class)
-            .map(BcRegistryIdentificationDto::businessOffice);
-  }
 
   /**
    * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto}
@@ -108,7 +42,8 @@ public class BcRegistryService {
    * @throws NoClientDataFound           if no matching data is found
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
-  public Flux<BcRegistryFacetSearchResultEntryDto> searchByFacces(String value) {
+  public Flux<BcRegistryFacetSearchResultEntryDto> searchByFacets(String value) {
+    log.info("Searching BC Registry for {}",value);
     return
         bcRegistryApi
             .get()
@@ -139,6 +74,87 @@ public class BcRegistryService {
             .bodyToMono(BcRegistryFacetResponseDto.class)
             .map(BcRegistryFacetResponseDto::searchResults)
             .flatMapIterable(BcRegistryFacetSearchResultsDto::results)
+            .filter(entry -> entry.status().equalsIgnoreCase("active"))
             .doOnNext(content -> log.info("Found entry on BC Registry {}", content));
+  }
+
+  /**
+   * Sends a request to retrieve the document data for a given value using the BC Registry API.
+   * The method returns a Flux of {@link BcRegistryDocumentDto}, which represents the document data.
+   *
+   * @param value the value used to identify the document data
+   * @return a Flux of {@link BcRegistryDocumentDto} representing the requested document data
+   * @throws NoClientDataFound           if the API responds with a 404 status code indicating
+   *                                     that no data was found for the given value
+   * @throws InvalidAccessTokenException if the API responds with a 401 status code indicating
+   *                                     that the access token used for the request is invalid
+   */
+  public Flux<BcRegistryDocumentDto> requestDocumentData(String value) {
+    log.info("Requesting document for {}",value);
+    return
+        bcRegistryApi
+            .post()
+            .uri("/registry-search/api/v1/businesses/{identifier}/documents/requests",
+                Map.of("identifier", value)
+            )
+            .accept(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(BUSINESS_SUMMARY_FILING_HISTORY))
+            .retrieve()
+            // handle different HTTP error codes
+            .onStatus(
+                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(404)),
+                exception -> Mono.error(new NoClientDataFound(value))
+            )
+            .onStatus(
+                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(401)),
+                exception -> Mono.error(new InvalidAccessTokenException())
+            )
+            .onStatus(
+                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(400)),
+                exception ->
+                    exception
+                        .bodyToMono(BcRegistryExceptionMessageDto.class)
+                        .map(BcRegistryExceptionMessageDto::rootCause)
+                        .doOnNext(
+                            message -> log.error("Error while requesting data for {} -- {}", value,
+                                message))
+                        .map(message -> message.contains("not found"))
+                        .filter(message -> message)
+                        .switchIfEmpty(Mono.error(new InvalidAccessTokenException()))
+                        .flatMap(message -> Mono.error(new NoClientDataFound(value)))
+
+            )
+            .bodyToMono(BcRegistryDocumentRequestResponseDto.class)
+            .flatMapIterable(BcRegistryDocumentRequestResponseDto::documents)
+            .map(BcRegistryDocumentRequestDocumentDto::documentKey)
+            .doOnNext(documentKey -> log.info("Loading document {} for identifier {}", documentKey,
+                value))
+            .flatMap(documentKey -> getDocumentData(value, documentKey));
+  }
+
+  private Mono<BcRegistryDocumentDto> getDocumentData(String identifier, String documentKey) {
+    return
+        bcRegistryApi
+            .get()
+            .uri("/registry-search/api/v1/businesses/{identifier}/documents/{documentKey}",
+                Map.of("identifier", identifier, "documentKey", documentKey)
+            )
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            // handle different HTTP error codes
+            .onStatus(
+                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(404)),
+                exception -> Mono.error(new NoClientDataFound(identifier))
+            )
+            .onStatus(
+                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(401)),
+                exception -> Mono.error(new InvalidAccessTokenException())
+            )
+            .onStatus(
+                statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(400)),
+                exception -> Mono.error(new InvalidAccessTokenException())
+            )
+            .bodyToMono(BcRegistryDocumentDto.class)
+            .doOnNext(document -> log.info("Document loaded for {} {} as {}",identifier, documentKey,document));
   }
 }
