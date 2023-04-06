@@ -24,9 +24,6 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-old-growth:prod-backend
-  - name: FOREST_API_URL
-    description: Forest Client service api url
-    required: true
   - name: ORACLEDB_KEYSTORE
     description: Oracle database keystore file  
   - name: CPU_REQUEST
@@ -85,6 +82,8 @@ objects:
           volumes:
             - name: certs
               emptyDir: { }
+            - name: reports
+              emptyDir: { }
           initContainers:
             - name: ${NAME}-init
               image: ${REGISTRY}/bcgov/${NAME}/common:${ZONE}
@@ -104,15 +103,11 @@ objects:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
-              env:                
-                - name: FRONTEND_URL
-                  value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
+              env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
-                - name: LEGACY_URL
-                  value: https://${NAME}-${ZONE}-legacy.${DOMAIN}                                
                 - name: FOREST_API_URL
-                  value: ${FOREST_API_URL}
+                  value: https://${NAME}-${ZONE}-legacy.${DOMAIN}
                 - name: ORACLEDB_USER
                   valueFrom:
                     secretKeyRef:
@@ -180,6 +175,8 @@ objects:
               volumeMounts:
                 - mountPath: /cert
                   name: certs
+                - mountPath: /workspace/temp
+                  name: reports
   - apiVersion: v1
     kind: Service
     metadata:
