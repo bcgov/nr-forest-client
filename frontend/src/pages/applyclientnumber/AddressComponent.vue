@@ -12,7 +12,7 @@
         <b-form-select :id="'countryId' + id" 
                        v-model="country" 
                        :options="countryCodes" />
-        <ValidationMessages :fieldId="'countryId' + id" 
+        <ValidationMessages :fieldId="`location.addresses[${id}].country`" 
                             :validationMessages="validationMessages" />
       </div>
 
@@ -27,7 +27,7 @@
         <b-form-input :id="'streetAddressId' + id" 
                       v-model="address.streetAddress">
         </b-form-input>
-        <ValidationMessages :fieldId="'streetAddressId' + id" 
+        <ValidationMessages :fieldId="`location.addresses[${id}].streetAddress`" 
                             :validationMessages="validationMessages" />
       </div>
     </b-row>
@@ -41,7 +41,7 @@
         <b-form-input :id="'cityId' + id" 
                       v-model="address.city">
         </b-form-input>
-        <ValidationMessages :fieldId="'cityId' + id" 
+        <ValidationMessages :fieldId="`location.addresses[${id}].city`" 
                             :validationMessages="validationMessages" />
       </div>
     </b-row>
@@ -60,7 +60,7 @@
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <b-form-select :id="'provinceId' + id" v-model="province" 
                        :options="provinceCodes" />
-        <ValidationMessages :fieldId="'provinceId' + id" 
+        <ValidationMessages :fieldId="`location.addresses[${id}].province`" 
                             :validationMessages="validationMessages" />
       </div>
     </b-row>
@@ -95,7 +95,7 @@
                         :maxlength="10">
           </b-form-input>
         </span>
-        <ValidationMessages :fieldId="'postalCodeId' + id" 
+        <ValidationMessages :fieldId="`location.addresses[${id}].postalCode`" 
                             :validationMessages="validationMessages" />
       </div>
     </b-row>
@@ -114,8 +114,11 @@
 
           <br /><br />
           <ContactSectionComponent id="contactListId" 
-                                   :contacts="address.contacts"
-                                   :validationMessages="validationMessages" />
+                                  :index="id"
+                                  :contacts="address.contacts"
+                                  :validationMessages="validationMessages" />
+          <ValidationMessages :fieldId="`location.addresses[${id}].contacts`"
+                              :validationMessages="validationMessages" />
         </CollapseCard>
       </div>
     </b-row>
@@ -127,7 +130,7 @@
   import { ref, watch, computed } from 'vue';
   import Label from "@/common/LabelComponent.vue";
   import { conversionFn } from '@/services/FetchService';
-  import { useFetchTo } from '@/services/ForestClientService';
+  import { addNewContact, useFetchTo } from '@/services/ForestClientService';
   import ValidationMessages from "@/common/ValidationMessagesComponent.vue";
   import ContactSectionComponent from '@/pages/applyclientnumber/ContactSectionComponent.vue';
   import type { CodeDescrType, ValidationMessageType } from '@/core/CommonTypes';
@@ -171,6 +174,9 @@
       }
       if (props.address.province) {
         province.value = props.address.province;
+      }
+      if(!props.address.contacts){
+        props.address.contacts = addNewContact([]);
       }
     }
   });

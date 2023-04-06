@@ -7,7 +7,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
     title = "ClientContact",
     example = """
          {
-          "type": "person",
+          "contactType": {
+            "value": "person",
+            "text": "Person"
+          },
           "firstName": "JAMES",
           "lastName": "BAXTER",
           "phoneNumber": "123456789"
@@ -17,7 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record ClientContactDto(
     @Schema(description = "The type of contact",
         example = "person")
-    String type,
+    ClientValueTextDto contactType,
 
     @Schema(description = "The first name of the contact",
         example = "JAMES")
@@ -34,6 +37,8 @@ public record ClientContactDto(
         example = "jhon@email.ca")
     String email,
 
+    @Schema(description = "The index for this address. It is used to order the addresses",
+        example = "3")
     int index
 ) {
 }

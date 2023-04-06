@@ -1,6 +1,6 @@
 package ca.bc.gov.app.validator.client;
 
-import static ca.bc.gov.app.util.ValidationUtil.fieldIsMissingErrorMessage;
+import static ca.bc.gov.app.validator.common.CommonValidator.fieldIsMissingErrorMessage;
 
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
@@ -27,34 +27,36 @@ public class ClientBusinessInformationDtoValidator implements Validator {
   @SneakyThrows
   @Override
   public void validate(Object target, Errors errors) {
-
+	String businessNameField = "businessName";
+	
     errors.pushNestedPath("businessInformation");
 
+    ValidationUtils.rejectIfEmpty(errors, businessNameField,
+            fieldIsMissingErrorMessage(businessNameField));
+    
     validateIncorporationNumber(target, errors);
-
-    ValidationUtils.rejectIfEmpty(errors, "businessName",
-        fieldIsMissingErrorMessage("businessName"));
 
     errors.popNestedPath();
   }
 
   private void validateIncorporationNumber(Object target, Errors errors) {
+	String businessNameField = "businessName";
     ClientBusinessInformationDto businessInformation = (ClientBusinessInformationDto) target;
 
     if (StringUtils.isBlank(businessInformation.incorporationNumber())) {
-      errors.rejectValue(
-          "incorporationNumber", fieldIsMissingErrorMessage("incorporationNumber"));
+      errors.rejectValue(businessNameField, 
+                         fieldIsMissingErrorMessage("incorporationNumber"));
 
       return;
     }
 
     bcRegistryService.getCompanyStanding(businessInformation.incorporationNumber())
         .doOnError(ResponseStatusException.class, e -> errors.rejectValue(
-            "incorporationNumber", "IncomporationNumber was not found in BC Registry"))
+            "businessName", "Incorporation Number was not found in BC Registry"))
         .doOnNext(bcRegistryBusinessDto -> {
           if (!bcRegistryBusinessDto.goodStanding()) {
-            errors.rejectValue(
-                "goodStanding", "Company is not in goodStanding in BC Registry");
+            errors.rejectValue(businessNameField, 
+                               "Company is not in goodStanding in BC Registry");
           }
         })
         .subscribe();

@@ -12,6 +12,7 @@ import ca.bc.gov.app.entity.client.SubmitterEntity;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientMapper {
@@ -59,7 +60,7 @@ public class ClientMapper {
         .withFirstName(clientBusinessInformationDto.firstName())
         .withLastName(clientBusinessInformationDto.lastName())
         .withClientTypeCode(clientSubmissionDto.businessType().clientType().value())
-        .withDateOfBirth(LocalDate.parse(clientBusinessInformationDto.birthdate()))
+        .withDateOfBirth(parseBirthdate(clientBusinessInformationDto))
         .withDoingBusinessAsName(clientBusinessInformationDto.doingBusinessAsName());
   }
 
@@ -97,10 +98,16 @@ public class ClientMapper {
   ) {
     return new SubmissionLocationContactEntity()
         .withSubmissionLocationId(submissionLocationId)
-        .withContactTypeCode(clientContactDto.type())
+        .withContactTypeCode(clientContactDto.contactType().value())
         .withFirstName(clientContactDto.firstName())
         .withLastName(clientContactDto.lastName())
         .withBusinessPhoneNumber(clientContactDto.phoneNumber())
         .withEmailAddress(clientContactDto.email());
+  }
+
+  private static LocalDate parseBirthdate(ClientBusinessInformationDto clientBusinessInformationDto) {
+    if(clientBusinessInformationDto == null || StringUtils.isBlank(clientBusinessInformationDto.birthdate()))
+      return null;
+    return LocalDate.parse(clientBusinessInformationDto.birthdate());
   }
 }

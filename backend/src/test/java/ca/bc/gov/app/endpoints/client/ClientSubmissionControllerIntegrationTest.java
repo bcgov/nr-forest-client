@@ -5,6 +5,21 @@ import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.aggregator.AggregateWith;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
+
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
@@ -17,19 +32,7 @@ import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.aggregator.AggregateWith;
-import org.junit.jupiter.params.provider.CsvFileSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -71,10 +74,16 @@ public class ClientSubmissionControllerIntegrationTest
   void shouldSubmitClientData() {
     ClientSubmissionDto clientSubmissionDto =
         new ClientSubmissionDto(
-            new ClientBusinessTypeDto(new ClientValueTextDto("A", "Association")),
+            new ClientBusinessTypeDto(new ClientValueTextDto(
+            								"A", 
+            								"Association")),
             new ClientBusinessInformationDto(
-                "Auric", "Goldfinger", "1964-07-07",
-                "1234", "test", "Auric Enterprises"
+                "Auric", 
+                "Goldfinger", 
+                "1964-07-07",
+                "1234", 
+                "test", 
+                "Auric Enterprises"
             ),
             new ClientLocationDto(
                 List.of(
@@ -83,17 +92,24 @@ public class ClientSubmissionControllerIntegrationTest
                         new ClientValueTextDto("US", ""),
                         new ClientValueTextDto("NV", ""),
                         "Las Vegas", "89109",
+                        0,
                         List.of(
                             new ClientContactDto(
-                                "LP", "James", "Bond",
-                                "987654321", "bond_james_bond@007.com", 0
+                                new ClientValueTextDto("LP","LP"), 
+                                "James", 
+                                "Bond",
+                                "9876543210", 
+                                "bond_james_bond@007.com", 
+                                0
                             )
                         )
                     )
                 )
             ),
             new ClientSubmitterInformationDto(
-                "James", "Bond", "1234567890",
+                "James", 
+                "Bond", 
+                "1234567890",
                 "james_bond@MI6.com"
             )
         );

@@ -23,10 +23,13 @@
   });
 
   const getErrorMessage = (fieldId: string) => {
-    let errorMsg = props.validationMessages
+    let errorMsg = (Array.isArray(props.validationMessages)) ? 
+                      props.validationMessages
                                 .filter(p => p.fieldId == fieldId)
-                                .map(p => p.errorMsg);
-    return errorMsg.toString();
+                                .map(p => p.errorMsg)
+                                .toString() :
+                      "";
+    return errorMsg;
   };
 </script>
 
