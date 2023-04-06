@@ -286,7 +286,6 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
-            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ github.event.number }}-backend.apps.silver.devops.gov.bc.ca
 
   deploy-frontend:
     name: Deploy Frontend
