@@ -228,7 +228,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/backend:${{ env.ZONE }}
             -p CHES_TOKEN_URL='https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1'
-            -p BCREGISTRY_URI='https://bcregistry-sandbox.apigee.net'
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
       - name: Deplo Legacy
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
