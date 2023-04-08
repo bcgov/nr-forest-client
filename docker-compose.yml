@@ -70,7 +70,7 @@ services:
       retries: 3
       start_period: 40s
     hostname: frontend
-    image: ghcr.io/bcgov/nr-forest-client/frontend:396
+    image: ghcr.io/bcgov/nr-forest-client/frontend:396@sha256:62e0f9e3c4b04002f42155e7f76810c2504277d9ccbd9b1cc7ed3bb5561308e4
     links:
       - backend
     ports:
@@ -88,7 +88,7 @@ services:
       APP_USER: THE
       ORACLE_RANDOM_PASSWORD: yes
     hostname: legacydb
-    image: gvenzl/oracle-xe:21.3.0-slim-faststart
+    image: gvenzl/oracle-xe:21.3.0-slim-faststart@sha256:0ed000df2f0e3d1b99cec69e5aa596d4ed24be36ea4c8ae03c96b9da1080f396
     ports:
       - 1521:1521
     restart: always
