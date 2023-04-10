@@ -33,16 +33,4 @@ public class ClientStatusCodeEntity {
   @Column("EXPIRY_DATE")
   private LocalDate expiryDate;
 
-  @Column("CREATE_TIMESTAMP")
-  private LocalDate createTimestamp;
-
-  @Column("UPDATE_TIMESTAMP")
-  private LocalDate updateTimestamp;
-
-  @Column("CREATE_USER")
-  private String createUser;
-
-  @Column("UPDATE_USER")
-  private String updateUser;
-
 }

@@ -13,9 +13,10 @@ public record OrgBookTopicDto(
     List<OrgBookTopicNameDto> names,
     Boolean inactive
 ) {
-  public String name(){
-    if(CollectionUtils.isEmpty(names))
+  public String name() {
+    if (CollectionUtils.isEmpty(names)) {
       return StringUtils.EMPTY;
+    }
     return names
         .stream()
         .filter(entry -> entry.topicNameType().equalsIgnoreCase("entity_name"))
