@@ -67,7 +67,7 @@
 
 		<spring-cloud.version>2022.0.1</spring-cloud.version>
 		<oci.revision>${project.version}</oci.revision>
-		<poi.version>5.2.2</poi.version>
+		<poi.version>5.2.3</poi.version>
 	</properties>
 
 	<dependencies>
@@ -118,6 +118,17 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
+			<version>${poi.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml-full</artifactId>
 			<version>${poi.version}</version>
 			<exclusions>
 				<exclusion>
