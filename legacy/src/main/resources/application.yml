@@ -60,3 +60,7 @@ ca:
           password: ${ORACLEDB_PASSWORD:passwd}
           keystore: ${ORACLEDB_KEYSTORE:jssecacerts.jks}
           secret: ${ORACLEDB_SECRET:changeit}
+        bcregistry:
+          uri: ${BCREGISTRY_URI:https://bcregistry-prod.apigee.net}
+          apiKey: ${BCREGISTRY_KEY:thekeyisalie}
+          accountId: ${BCREGISTRY_ACCOUNT:12345}
