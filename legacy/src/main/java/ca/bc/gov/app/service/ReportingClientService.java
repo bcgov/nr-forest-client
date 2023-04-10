@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -206,6 +207,7 @@ public class ReportingClientService {
             .exchangeToMono(
                 clientResponse -> clientResponse.bodyToMono(OrgBookTopicListResponse.class)
             )
+            .filter(response -> !CollectionUtils.isEmpty(response.results()))
             .flatMapIterable(OrgBookTopicListResponse::results)
             .doOnNext(
                 content -> log.info("OrgBook Topic Lookup {} -> {}", value,
