@@ -67,6 +67,7 @@
 
 		<spring-cloud.version>2022.0.1</spring-cloud.version>
 		<oci.revision>${project.version}</oci.revision>
+		<poi.version>5.2.2</poi.version>
 	</properties>
 
 	<dependencies>
@@ -117,12 +118,24 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>5.2.0</version>
+			<version>${poi.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>5.2.0</version>
+			<version>${poi.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -222,7 +235,7 @@
 							<buildpack>gcr.io/paketo-buildpacks/image-labels</buildpack>
 						</buildpacks>
 						<env>
-							<BP_JVM_VERSION>19.0.2</BP_JVM_VERSION>
+							<BP_JVM_VERSION>17</BP_JVM_VERSION>
 							<BP_OCI_SOURCE>https://github.com/bcgov/nr-forest-client</BP_OCI_SOURCE>
 							<BP_OCI_VERSION>${project.version}</BP_OCI_VERSION>
 							<BP_OCI_DESCRIPTION>${project.description}</BP_OCI_DESCRIPTION>
