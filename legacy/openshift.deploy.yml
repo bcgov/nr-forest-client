@@ -55,6 +55,19 @@ objects:
           referencePolicy:
             type: Local
   - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: ${CERT_PVC_SIZE}
+      storageClassName: netapp-file-standard
+  - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:
@@ -83,8 +96,9 @@ objects:
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           volumes:
-            - name: certs
-              emptyDir: { }
+            - name: ${NAME}-${ZONE}-certs
+              persistentVolumeClaim:
+                claimName: ${NAME}-${ZONE}-${COMPONENT}
             - name: reports
               emptyDir: { }
           initContainers:
@@ -95,13 +109,25 @@ objects:
                 - name: ORACLEDB_HOST
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}
+                      name: ${NAME}-${ZONE}-${COMPONENT}
                       key: oracle-host
+                - name: ORACLEDB_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-secret
                 - name: ORACLEDB_PORT
                   value: "1543"
               volumeMounts:
-                - mountPath: /cert
-                  name: certs
+                - name: ${NAME}-${ZONE}-certs
+                  mountPath: /cert
+              resources:
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
@@ -189,7 +215,7 @@ objects:
                 timeoutSeconds: 5
               volumeMounts:
                 - mountPath: /cert
-                  name: certs
+                  name: ${NAME}-${ZONE}-certs
                 - mountPath: /workspace/temp
                   name: reports
   - apiVersion: v1
