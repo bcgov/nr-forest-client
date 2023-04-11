@@ -44,8 +44,7 @@ public class ClientBusinessInformationDtoValidator implements Validator {
     ClientBusinessInformationDto businessInformation = (ClientBusinessInformationDto) target;
 
     if (StringUtils.isBlank(businessInformation.incorporationNumber())) {
-      errors.rejectValue(businessNameField, 
-                         fieldIsMissingErrorMessage("incorporationNumber"));
+      errors.rejectValue(businessNameField, businessNameField + " is invalid");
 
       return;
     }
