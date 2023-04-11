@@ -5,24 +5,21 @@
                           v-model="contact.contactType" 
                           :options="contactTypeCodes" />
           <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].contactType`"
-                              :validationMessages="validationMessages"
-                              :fieldValue="contact.contactType" />
+                              :validationMessages="validationMessages" />
       </td>
       <td>
           <b-form-input :id="'contactFirstNameId' + id"
                         v-model="contact.firstName">
           </b-form-input>
           <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].firstName`"
-                              :validationMessages="validationMessages"
-                              :fieldValue="contact.firstName" />
+                              :validationMessages="validationMessages" />
       </td>
       <td>
           <b-form-input :id="'contactLastNameId' + id"
                         v-model="contact.lastName">
           </b-form-input>
           <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].lastName`"
-                              :validationMessages="validationMessages"
-                              :fieldValue="contact.lastName"  />
+                              :validationMessages="validationMessages" />
       </td>
       <td>
           <b-form-input :id="'contactPhoneNumberId' + id"
@@ -30,16 +27,14 @@
                         v-mask="'##########'">
           </b-form-input>
           <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].phoneNumber`"
-                              :validationMessages="validationMessages"
-                              :fieldValue="contact.phoneNumber" />
+                              :validationMessages="validationMessages" />
       </td>
       <td>
           <b-form-input :id="'contactEmailId' + id"
                         v-model="contact.email">
           </b-form-input>
           <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].email`"
-                              :validationMessages="validationMessages"
-                              :fieldValue="contact.email" />
+                              :validationMessages="validationMessages" />
       </td>
       <td>
           <b-button enabled="contacts.length > 1"

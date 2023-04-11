@@ -7,9 +7,6 @@
 </template>
   
 <script setup lang="ts">
-  import BiAsterisk from "~icons/bi/asterisk";
-  import BiQuestionCircleFill from "~icons/bi/question-circle-fill";
-  
   const props = defineProps({
     fieldId: { 
       type: String, 
@@ -19,10 +16,6 @@
       type: Array<ValidationMessageType>, 
       required: true,
       default: null 
-    },
-    fieldValue: {
-      type: Object, 
-      required: true 
     }
   });
 
@@ -34,16 +27,10 @@
                                 .join('<br>') :
                       "";
   });
-
-  watch(() => props.fieldValue, (currentState, prevState) => {
-    if (currentState !== prevState) {
-      errorMsg = computed(() => { return "" });
-    }
-  });
 </script>
 
 <script lang="ts">
-  import { computed, defineComponent, ref, watch } from "vue";
+  import { computed, defineComponent } from "vue";
   import type { ValidationMessageType } from "@/core/CommonTypes";
   export default defineComponent({
     name: "ValidationMessageComponent",
