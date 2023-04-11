@@ -9,7 +9,6 @@ public record ForestClientDto(
     String legalMiddleName,
     String clientStatusCode,
     String clientTypeCode,
-    LocalDate birthdate,
     String clientIdTypeCode,
     String clientIdentification,
     String registryCompanyTypeCode,

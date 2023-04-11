@@ -18,6 +18,7 @@ ca:
   bc:
     gov:
       nrs:
+        orgbook: 'http://127.0.0.1:10001'
         forest:
           uri: 'http://127.0.0.1:10000'
         oracle:
@@ -32,3 +33,4 @@ logging:
     org.springframework.r2dbc: DEBUG
     io.r2dbc.postgresql.QUERY: DEBUG
     io.r2dbc.postgresql.PARAM: DEBUG
+    ca.bc.gov.app: DEBUG

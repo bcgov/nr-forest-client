@@ -75,57 +75,5 @@ public class ClientSearchController {
         .findByIncorporationOrName(incorporationNumber, companyName);
   }
 
-  @GetMapping("/nameAndBirth")
-  @Operation(
-      summary = "List forest client entries by first name, last name and date of birth",
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "Returns a client based on it's number",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  array = @ArraySchema(
-                      schema = @Schema(
-                          name = "ForestClient",
-                          implementation = ForestClientDto.class
-                      )
-                  )
-              )
-          )
-      }
-  )
-  public Flux<ForestClientDto> findByNameAndBirth(
-      @Parameter(
-          description = "First name to lookup. For companies, you can pass an empty value",
-          example = "Jhon",
-          required = false
-      )
-      @RequestParam(required = false,defaultValue = "") String firstName,
-
-      @Parameter(
-          description = "Last name to lookup. For companies, this will be the company name",
-          example = "Doh",
-          required = false
-      )
-      @RequestParam(required = false) String lastName,
-
-      @Parameter(
-          description = """                        
-                    Date of birth to lookup in an ISO Local Date format, 
-                    such as YYYY-MM-dd.<br> 
-                    For companies, you can pass an empty value""",
-          example = "1955-05-09",
-          required = false
-      )
-      @RequestParam(required = false,defaultValue = "") String birthdate
-  ) {
-    return service
-        .findByNameAndBirth(
-            Optional.ofNullable(firstName),
-            Optional.ofNullable(lastName),
-            Optional.ofNullable(birthdate)
-        );
-  }
-
 
 }

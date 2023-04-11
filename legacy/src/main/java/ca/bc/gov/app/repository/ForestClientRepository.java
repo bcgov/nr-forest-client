@@ -1,6 +1,7 @@
 package ca.bc.gov.app.repository;
 
 import ca.bc.gov.app.entity.ForestClientEntity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
@@ -13,6 +14,8 @@ import reactor.core.publisher.Flux;
 public interface ForestClientRepository extends ReactiveCrudRepository<ForestClientEntity, String>,
     ReactiveQueryByExampleExecutor<ForestClientEntity>,
     ReactiveSortingRepository<ForestClientEntity, String> {
+
+  Flux<ForestClientEntity> findBy(Pageable page);
 
   @Query("""
       select * from FOREST_CLIENT x
