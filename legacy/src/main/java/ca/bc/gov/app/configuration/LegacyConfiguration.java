@@ -12,7 +12,16 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
-@ConfigurationProperties("ca.bc.gov.nrs.forest")
-public class ForestConfiguration {
-  private String uri;
+@ConfigurationProperties("ca.bc.gov.nrs")
+public class LegacyConfiguration {
+  private ForestClientConfiguration forest;
+  private String orgbook;
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class ForestClientConfiguration {
+    private String uri;
+  }
 }

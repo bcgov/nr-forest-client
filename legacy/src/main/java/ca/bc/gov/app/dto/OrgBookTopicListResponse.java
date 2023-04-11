@@ -5,14 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record OrgBookNameDto(
-
-    String value,
-    @JsonProperty("sub_type")
-    String subType,
-    @JsonProperty("topic_source_id")
-    String topicSourceId,
-    List<String> names
+public record OrgBookTopicListResponse(
+    int total,
+    Integer page,
+    @JsonProperty("page_size")
+    Integer pageSize,
+    List<OrgBookTopicDto> results
 ) {
 }
-
