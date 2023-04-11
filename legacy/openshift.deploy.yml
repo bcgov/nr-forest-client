@@ -37,6 +37,9 @@ parameters:
   - name: BCREGISTRY_URI
     description: Bc Registry API address
     required: true
+  - name: CERT_PVC_SIZE
+    description: The amount of storage the cert PVC should have
+    value: 25Mi
 objects:  
   - apiVersion: v1
     kind: ImageStream
