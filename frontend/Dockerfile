@@ -13,5 +13,6 @@ EXPOSE 3000
 COPY --from=builder /app/Caddyfile /etc/caddy/Caddyfile
 COPY --from=builder /app/dist /srv
 
-USER 1001
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3000
+RUN chmod +x /usr/bin/caddy
+USER app
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3000/
