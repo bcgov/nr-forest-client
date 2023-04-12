@@ -1,6 +1,7 @@
 package ca.bc.gov.app.dto.client;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.With;
 
 @Schema(
     description = "Client information contact",
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
           "email": "james@email.ca",
         }"""
 )
+@With
 public record ClientContactDto(
     @Schema(description = "The type of contact",
         example = "person")

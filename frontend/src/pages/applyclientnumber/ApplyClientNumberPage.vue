@@ -36,6 +36,7 @@
             <Note note="The name must be the same as it is in BC Registries" />
             <ValidationMessages fieldId = 'businessInformation.businessName'
                                 :validationMessages="validationMessages" />
+                                
             <span v-if="'' !== formData.businessInformation.incorporationNumber &&
                         '' !== formData.businessInformation.goodStanding &&
                         !formData.businessInformation.goodStanding">
@@ -80,7 +81,7 @@
                     <b-form-input id="submitterFirstNameId"
                                   v-model="formData.submitterInformation.submitterFirstName" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterFirstName'
-                                        :validationMessages="validationMessages"  />
+                                        :validationMessages="validationMessages" />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Last name" 
@@ -88,7 +89,7 @@
                     <b-form-input id="submitterLastNameId"
                                   v-model="formData.submitterInformation.submitterLastName" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterLastName'
-                                        :validationMessages="validationMessages"  />
+                                        :validationMessages="validationMessages" />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Phone number" 
@@ -97,7 +98,7 @@
                                   v-model="formData.submitterInformation.submitterPhoneNumber"
                                   v-mask="'##########'" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterPhoneNumber'
-                                        :validationMessages="validationMessages"  />
+                                        :validationMessages="validationMessages" />
                 </b-col>
                 <b-col cols="3">
                     <Label label="Email address" 
@@ -105,7 +106,7 @@
                     <b-form-input id="submitterEmailId"
                                   v-model="formData.submitterInformation.submitterEmail" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterEmail'
-                                        :validationMessages="validationMessages"  />
+                                        :validationMessages="validationMessages" />
                 </b-col>
             </b-row>
 
@@ -231,13 +232,22 @@ function submit(): void {
     persistValidateData();
 }
 
+const deepFormDataCopy = computed(() => cloneDeep(formData));
+    watch(deepFormDataCopy, (newObj, oldObj) => {
+        if (JSON.stringify(newObj.value) !== JSON.stringify(oldObj.value) &&
+            validationMessages.value.length > 0) {
+            submit();   
+        }
+}, { deep: true });
+
 </script>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch, watchEffect } from "vue";
+import { computed, defineComponent, ref, watch } from "vue";
 import { addNewAddress, useFetch, useFetchTo, usePost } from "@/services/ForestClientService";
 import { conversionFn } from "@/services/FetchService";
 import type { ValidationMessageType } from "@/core/CommonTypes";
+import { cloneDeep } from "lodash";
 
 export default defineComponent({
     name: "ApplyClientNumber"

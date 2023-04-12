@@ -16,4 +16,5 @@ public interface ProvinceCodeRepository extends ReactiveCrudRepository<ProvinceC
                                                             String provinceCode);
 
   Mono<ProvinceCodeEntity> findByProvinceCode(String provinceCode);
+  Mono<ProvinceCodeEntity> findByDescription(String description);
 }

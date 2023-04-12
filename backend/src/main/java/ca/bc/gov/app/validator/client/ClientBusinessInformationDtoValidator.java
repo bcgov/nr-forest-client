@@ -44,17 +44,15 @@ public class ClientBusinessInformationDtoValidator implements Validator {
     ClientBusinessInformationDto businessInformation = (ClientBusinessInformationDto) target;
 
     if (StringUtils.isBlank(businessInformation.incorporationNumber())) {
-      errors.rejectValue(businessNameField, 
-                         fieldIsMissingErrorMessage("incorporationNumber"));
-
+      errors.rejectValue(businessNameField, businessNameField + " is invalid");
       return;
     }
 
-    bcRegistryService.getCompanyStanding(businessInformation.incorporationNumber())
+    bcRegistryService.requestDocumentData(businessInformation.incorporationNumber())
         .doOnError(ResponseStatusException.class, e -> errors.rejectValue(
             "businessName", "Incorporation Number was not found in BC Registry"))
         .doOnNext(bcRegistryBusinessDto -> {
-          if (!bcRegistryBusinessDto.goodStanding()) {
+          if (Boolean.FALSE.equals(bcRegistryBusinessDto.business().goodStanding())) {
             errors.rejectValue(businessNameField, 
                                "Company is not in goodStanding in BC Registry");
           }

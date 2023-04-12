@@ -1,8 +1,10 @@
 package ca.bc.gov.app.endpoints.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
@@ -187,11 +189,12 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     reset();
 
-
     wireMockExtension
-        .stubFor(get(urlPathEqualTo("/business/api/v2/businesses/" + clientNumber))
+        .stubFor(post(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + clientNumber + "/documents/requests"))
             .withHeader("x-apikey", equalTo("abc1234"))
             .withHeader("Account-Id", equalTo("account 0000"))
+            .withRequestBody(equalToJson(TestConstants.BCREG_DOC_REQ))
             .willReturn(
                 status(detailsStatus)
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -200,7 +203,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         );
 
     wireMockExtension
-        .stubFor(get(urlPathEqualTo("/business/api/v2/businesses/" + clientNumber + "/addresses"))
+        .stubFor(get(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + clientNumber + "/documents/aa0a00a0a"))
             .withHeader("x-apikey", equalTo("abc1234"))
             .withHeader("Account-Id", equalTo("account 0000"))
             .willReturn(
@@ -327,8 +331,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         Stream.of(
             Arguments.of(
                 "AA0000001",
-                200, TestConstants.BCREG_DETAIL_OK,
-                200, TestConstants.BCREG_ADDR_OK,
+                200, TestConstants.BCREG_DOC_REQ_RES,
+                200, TestConstants.BCREG_DOC_DATA,
                 200, TestConstants.BCREG_RESPONSE_OK
             ),
             Arguments.of(
@@ -339,13 +343,13 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             ),
             Arguments.of(
                 "AA0000001",
-                200, TestConstants.BCREG_DETAIL_OK,
+                200, TestConstants.BCREG_DOC_REQ_RES,
                 404, TestConstants.BCREG_NOK,
-                200, TestConstants.BCREG_RESPONSE_OK2
+                404, TestConstants.BCREG_RESPONSE_NOK
             ),
             Arguments.of(
                 "AA0000001",
-                200, TestConstants.BCREG_DETAIL_OK,
+                200, TestConstants.BCREG_DOC_REQ_RES,
                 401, TestConstants.BCREG_401,
                 401, TestConstants.BCREG_RESPONSE_401
             ),
@@ -364,7 +368,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
             Arguments.of(
                 "AA0000001",
-                200, TestConstants.BCREG_DETAIL_OK,
+                200, TestConstants.BCREG_DOC_REQ_RES,
                 400, TestConstants.BCREG_400,
                 401, TestConstants.BCREG_RESPONSE_401
             )
