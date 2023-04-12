@@ -1,7 +1,28 @@
 package ca.bc.gov.app.configuration;
 
-import javax.net.ssl.SSLException;
+import ca.bc.gov.app.dto.ValidationError;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetResponseDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryIdentificationDto;
+import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
+import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
+import ca.bc.gov.app.dto.client.ClientBusinessTypeDto;
+import ca.bc.gov.app.dto.client.ClientCodeTypeDto;
+import ca.bc.gov.app.dto.client.ClientContactDto;
+import ca.bc.gov.app.dto.client.ClientDetailsAddressDto;
+import ca.bc.gov.app.dto.client.ClientLocationDto;
+import ca.bc.gov.app.dto.client.ClientLookUpDto;
+import ca.bc.gov.app.dto.client.ClientNameCodeDto;
+import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
+import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -13,6 +34,29 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 @Configuration
 @Slf4j
+@RegisterReflectionForBinding({
+    ValidationError.class,
+    ClientAddressDto.class,
+    ClientBusinessInformationDto.class,
+    ClientBusinessTypeDto.class,
+    ClientCodeTypeDto.class,
+    ClientContactDto.class,
+    ClientDetailsAddressDto.class,
+    ClientLocationDto.class,
+    ClientLookUpDto.class,
+    ClientNameCodeDto.class,
+    ClientSubmissionDto.class,
+    ClientSubmitterInformationDto.class,
+    ClientValueTextDto.class,
+    BcRegistryAddressDto.class,
+    BcRegistryBusinessAdressesDto.class,
+    BcRegistryBusinessDto.class,
+    BcRegistryFacetResponseDto.class,
+    BcRegistryFacetSearchResultEntryDto.class,
+    BcRegistryFacetSearchResultsDto.class,
+    BcRegistryIdentificationDto.class,
+    ClientDetailsDto.class
+})
 public class GlobalServiceConfiguration {
 
   /**
@@ -46,7 +90,7 @@ public class GlobalServiceConfiguration {
    * @return A configured instance of WebClient for accessing the BC Registry API.
    */
   @Bean
-  public WebClient bcRegistryApi(ForestClientConfiguration configuration) throws SSLException {
+  public WebClient bcRegistryApi(ForestClientConfiguration configuration) {
     return WebClient
         .builder()
         .baseUrl(configuration.getBcregistry().getUri())
