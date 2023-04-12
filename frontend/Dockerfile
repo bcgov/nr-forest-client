@@ -8,11 +8,10 @@ COPY . ./
 RUN npm ci --omit=dev && npm run build
 
 # Deployment container
-FROM caddy:2.6.4-alpine@sha256:eefd3d61e9ee8f35e046f614982d9a970006e3943c6e5f09957a4048f4c80d35
+FROM caddy:2.4.6-alpine@sha256:c8555e2ca66576a4404c2b5f31d843a5378dea6134acb500502901b563efebcf
 EXPOSE 3000
 COPY --from=builder /app/Caddyfile /etc/caddy/Caddyfile
 COPY --from=builder /app/dist /srv
 
-RUN chmod +x /usr/bin/caddy
-USER app
+USER 1001
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3000/
