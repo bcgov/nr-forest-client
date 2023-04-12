@@ -13,7 +13,7 @@
                        v-model="country" 
                        :options="countryCodes" />
         <ValidationMessages :fieldId="`location.addresses[${id}].country`" 
-                            :validationMessages="validationMessages" />
+                           :validationMessages="validationMessages" />
       </div>
 
     </b-row>
@@ -58,7 +58,8 @@
         </span>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-        <b-form-select :id="'provinceId' + id" v-model="province" 
+        <b-form-select :id="'provinceId' + id" 
+                       v-model="province" 
                        :options="provinceCodes" />
         <ValidationMessages :fieldId="`location.addresses[${id}].province`" 
                             :validationMessages="validationMessages" />

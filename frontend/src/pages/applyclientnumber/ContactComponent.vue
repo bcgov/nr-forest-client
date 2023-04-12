@@ -5,21 +5,21 @@
                           v-model="contact.contactType" 
                           :options="contactTypeCodes" />
           <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].contactType`"
-                              :validationMessages="validationMessages"  />
+                              :validationMessages="validationMessages" />
       </td>
       <td>
           <b-form-input :id="'contactFirstNameId' + id"
                         v-model="contact.firstName">
           </b-form-input>
           <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].firstName`"
-                              :validationMessages="validationMessages"  />
+                              :validationMessages="validationMessages" />
       </td>
       <td>
           <b-form-input :id="'contactLastNameId' + id"
                         v-model="contact.lastName">
           </b-form-input>
           <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].lastName`"
-                              :validationMessages="validationMessages"  />
+                              :validationMessages="validationMessages" />
       </td>
       <td>
           <b-form-input :id="'contactPhoneNumberId' + id"
@@ -27,7 +27,7 @@
                         v-mask="'##########'">
           </b-form-input>
           <ValidationMessages :fieldId = "`location.addresses[${index}].contacts[${id}].phoneNumber`"
-                              :validationMessages="validationMessages"  />
+                              :validationMessages="validationMessages" />
       </td>
       <td>
           <b-form-input :id="'contactEmailId' + id"
