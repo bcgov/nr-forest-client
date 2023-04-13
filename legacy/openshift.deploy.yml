@@ -242,7 +242,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
       annotations:
-        haproxy.router.openshift.io/timeout: "240s"
+        haproxy.router.openshift.io/timeout: "10m"
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
