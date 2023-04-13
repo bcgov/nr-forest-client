@@ -5,7 +5,7 @@ RUN chmod +x ./mvnw
 RUN ./mvnw clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true -q
 RUN echo
 
-FROM eclipse-temurin:17.0.6_10-jre-alpine@sha256:f59c1acc26975859545eabb2051f4b9a41d5ef278aad9dfe42bdb0aff5611613
+FROM eclipse-temurin:17.0.6_10-jre-alpine@sha256:e39db8ba89a39ccd1224490e4bbfc9e3bdbc4493ac849523f2aa8a52f5b42ad9
 LABEL maintainer="Paulo Gomes da Cruz Junior <paulo.cruz@encora.com>"
 
 WORKDIR /usr/share/service/
