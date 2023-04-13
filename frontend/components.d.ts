@@ -15,7 +15,9 @@ declare module '@vue/runtime-core' {
     BCardHeader: typeof import('bootstrap-vue-3')['BCardHeader']
     BCol: typeof import('bootstrap-vue-3')['BCol']
     BCollapse: typeof import('bootstrap-vue-3')['BCollapse']
+    BFormGroup: typeof import('bootstrap-vue-3')['BFormGroup']
     BFormInput: typeof import('bootstrap-vue-3')['BFormInput']
+    BFormRadio: typeof import('bootstrap-vue-3')['BFormRadio']
     BFormSelect: typeof import('bootstrap-vue-3')['BFormSelect']
     BPopover: typeof import('bootstrap-vue-3')['BPopover']
     BRow: typeof import('bootstrap-vue-3')['BRow']
@@ -23,5 +25,8 @@ declare module '@vue/runtime-core' {
     BTabs: typeof import('bootstrap-vue-3')['BTabs']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+  }
+  export interface ComponentCustomProperties {
+    vBPopover: typeof import('bootstrap-vue-3')['VBPopover']
   }
 }

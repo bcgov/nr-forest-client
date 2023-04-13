@@ -9,23 +9,43 @@
             <Label label="What type of business are you?" 
                    :required="true" />
             <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-                <b-form-select id="businessTypeId"
-                               v-model="formData.businessType.clientType" 
+                <b-form-select id="businessInformationId"
+                               v-model="formData.businessInformation.clientType" 
                                :options="clientTypeCodes" />  
             </div>
-            <ValidationMessages fieldId = 'businessType.clientType'
+            <ValidationMessages fieldId = 'businessInformation.clientType'
                                 :validationMessages="validationMessages" />
         </CollapseCard>
 
         <CollapseCard title="Registered business" 
                       id="businessInformationId"
-                      :display="displayBusinessInformation"
                       defaultOpen>
+            <Label label="Please choose one of the options below" 
+                   tooltip="Go to <a href='https://www.bcregistry.ca/business/auth/home/decide-business' target='_blank'>BC Registries and Online Services</a>
+                            to read more about registered businesses. Sole proprietorships can be registered and unregistered."
+                   id="clientTypeLabelId"
+                   :required="true" />
+
+            <b-form-group>
+                <b-form-radio v-model="formData.businessInformation.businessType" 
+                              value="R">
+                    I have a BC registered business (corporation, sole proprietorship, society, etc.)
+                </b-form-radio>
+                <b-form-radio v-model="formData.businessInformation.businessType" 
+                              value="U">I have an unregistered sole proprietorship
+                </b-form-radio>
+            </b-form-group>
+            <ValidationMessages fieldId = 'businessInformation.businessType'
+                                :validationMessages="validationMessages" />
+
+            <!-- TODO: Ask Andrea about this logic -->
+            <div v-if="formData.businessInformation.businessType == 'R'"></div>
+
             <Label label="Start typing to search for your B.C. registered business" 
+                   tooltip="If your business name isn't in the list, go to BC Registries to confirm."
+                   id="businessNameLabelId"
                    :required="true" />
        
-            <!-- TODO: Value should be an object. It displays the name, but on the back, this should contain:
-            the code, the name, the id, and the address (for BC registry) -->
             <Autocomplete id="businessNameId"
                           :value="formData.businessInformation.businessName"
                           :searchData="businessNames"
@@ -41,7 +61,7 @@
                         '' !== formData.businessInformation.goodStanding &&
                         !formData.businessInformation.goodStanding">
                 <strong>Your business is not in good standing with BC Registries. You must go to
-                        <a href="https://www.bcregistry.ca/business/auth/home/decide-business">BC Registries </a>
+                        <a href="https://www.bcregistry.ca/business/auth/home/decide-business" target="_blank">BC Registries </a>
                         to resolve this before you can apply for a client number.
                 </strong>
             </span>
@@ -54,7 +74,7 @@
 
             <span>
                 <strong>This information is from 
-                        <a href="https://www.bcregistry.ca/business/auth/home/decide-business">BC Registries</a>. 
+                        <a href="https://www.bcregistry.ca/business/auth/home/decide-business" target="_blank">BC Registries</a>. 
                         If it's incorrect, go to BC Registries to update it before continuing.</strong>
             </span>
 
@@ -178,21 +198,14 @@ watch(
     }
 );
 
-const displayBusinessInformation = computed(() => {
-    return null !== formData.value.businessType.clientType && 
-            formData.value.businessType.clientType.value.length > 0 &&
-            "I" !== formData.value.businessType.clientType.value &&
-            "Z" !== formData.value.businessType.clientType.value;
-});
-
 const displayCommonSections = computed(() => {
-    if (null !== formData.value.businessType.clientType && 
-            "I" === formData.value.businessType.clientType.value) {
+    if (null !== formData.value.businessInformation.clientType && 
+            "I" === formData.value.businessInformation.clientType.value) {
         //TODO
         return true;
     }
     else { 
-        if (null !== formData.value.businessType.clientType && 
+        if (null !== formData.value.businessInformation.clientType && 
             null !== formData.value.businessInformation && 
             null !== formData.value.businessInformation.incorporationNumber &&
             "" !== formData.value.businessInformation.incorporationNumber &&
