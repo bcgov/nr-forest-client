@@ -11,9 +11,12 @@ import ca.bc.gov.app.dto.ches.ChesRequest;
 import ca.bc.gov.app.exception.BadRequestException;
 import ca.bc.gov.app.exception.CannotExtractTokenException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
+import ca.bc.gov.app.exception.InvalidRequestObjectException;
 import ca.bc.gov.app.exception.InvalidRoleException;
 import ca.bc.gov.app.exception.UnableToProcessRequestException;
 import ca.bc.gov.app.exception.UnexpectedErrorException;
+import ca.bc.gov.app.util.ValidationUtil;
+import ca.bc.gov.app.validator.ches.ChesRequestValidator;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -39,12 +42,17 @@ import reactor.core.publisher.Mono;
 public class ChesCommonServicesService {
 
   private final ForestClientConfiguration configuration;
+  private final ChesRequestValidator validator;
   private final WebClient webClient;
 
-  public ChesCommonServicesService(ForestClientConfiguration configuration,
-                                   @Qualifier("chesApi") WebClient webClient) {
+  public ChesCommonServicesService(
+      ForestClientConfiguration configuration,
+      @Qualifier("chesApi") WebClient webClient,
+      ChesRequestValidator validator
+  ) {
     this.configuration = configuration;
     this.webClient = webClient;
+    this.validator = validator;
   }
 
   @Setter
@@ -61,39 +69,47 @@ public class ChesCommonServicesService {
    */
   public Mono<String> sendEmail(ChesRequest requestContent) {
 
-    ChesMailRequest request = new ChesMailRequest(
-        null,
-        null,
-        ChesMailBodyType.HTML,
-        requestContent.emailBody(),
-        null,
-        0,
-        ChesMailEncoding.UTF_8,
-        "FSA_donotreply@gov.bc.ca",
-        ChesMailPriority.NORMAL,
-        "Forest Client Application Confirmation",
-        null,
-        requestContent.emailTo()
-    );
+    if (requestContent == null) {
+      return Mono.error(new InvalidRequestObjectException("no request body was provided"));
+    }
 
     return
-        webClient
-            .post()
-            .uri(configuration.getChes().getUri())
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + getToken())
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .body(Mono.just(request), ChesMailRequest.class)
-            .retrieve()
-            .onStatus(httpStatusCode -> httpStatusCode.value() == 401,
-                response -> Mono.error(new InvalidAccessTokenException()))
-            .onStatus(httpStatusCode -> httpStatusCode.value() == 403,
-                response -> Mono.error(new InvalidRoleException()))
+        ValidationUtil
+            .validateReactive(requestContent, ChesRequest.class, validator)
+            .map(request ->
+                new ChesMailRequest(
+                    null,
+                    null,
+                    ChesMailBodyType.HTML,
+                    request.emailBody(),
+                    null,
+                    0,
+                    ChesMailEncoding.UTF_8,
+                    "FSA_donotreply@gov.bc.ca",
+                    ChesMailPriority.NORMAL,
+                    "Forest Client Application Confirmation",
+                    null,
+                    request.emailTo()
+                )
+            )
+            .flatMap(request ->
+                webClient
+                    .post()
+                    .uri(configuration.getChes().getUri())
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + getToken())
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .body(Mono.just(request), ChesMailRequest.class)
+                    .retrieve()
+                    .onStatus(httpStatusCode -> httpStatusCode.value() == 401,
+                        response -> Mono.error(new InvalidAccessTokenException()))
+                    .onStatus(httpStatusCode -> httpStatusCode.value() == 403,
+                        response -> Mono.error(new InvalidRoleException()))
 
-            .onStatus(httpStatusCode -> httpStatusCode.value() == 400, get400ErrorMessage())
-            .onStatus(httpStatusCode -> httpStatusCode.value() == 422, get422ErrorMessage())
-            .onStatus(HttpStatusCode::isError, get500ErrorMessage())
-            .bodyToMono(ChesMailResponse.class)
-
+                    .onStatus(httpStatusCode -> httpStatusCode.value() == 400, get400ErrorMessage())
+                    .onStatus(httpStatusCode -> httpStatusCode.value() == 422, get422ErrorMessage())
+                    .onStatus(HttpStatusCode::isError, get500ErrorMessage())
+                    .bodyToMono(ChesMailResponse.class)
+            )
             .map(response -> response.txId().toString())
             .doOnError(error -> log.error("Failed to send email", error));
 
