@@ -1,4 +1,4 @@
-package ca.bc.gov.app.endpoints.openmaps;
+package ca.bc.gov.app.service.openmaps;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -7,6 +7,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.exception.NoFirstNationException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -17,15 +18,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.test.StepVerifier;
 
 @Slf4j
-@DisplayName("Integrated Test | OpenMaps Controller")
+@DisplayName("Integrated Test | OpenMaps Service")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class OpenMapsHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
+class OpenMapsServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Autowired
-  protected WebTestClient client;
+  private OpenMapsService service;
 
   @RegisterExtension
   static WireMockExtension wireMockExtension = WireMockExtension
@@ -60,13 +61,11 @@ class OpenMapsHandlerIntegrationTest extends AbstractTestContainerIntegrationTes
                 .willReturn(okJson(TestConstants.OPENMAPS_OK))
         );
 
-    client
-        .get()
-        .uri("/api/maps/firstNation/656")
-        .exchange()
-        .expectStatus().isOk()
-        .expectBody()
-        .json(TestConstants.OPENMAPS_OK_RESPONSE);
+    service
+        .getFirstNation("656")
+        .as(StepVerifier::create)
+        .expectNext(TestConstants.OPENMAPS_OK_RESPONSE)
+        .verifyComplete();
 
   }
 
@@ -88,13 +87,11 @@ class OpenMapsHandlerIntegrationTest extends AbstractTestContainerIntegrationTes
                 .withQueryParam("outputFormat", equalTo("json"))
                 .willReturn(okJson(TestConstants.OPENMAPS_EMPTY))
         );
-
-    client
-        .get()
-        .uri("/api/maps/firstNation/000")
-        .exchange()
-        .expectStatus().isNotFound()
-        .expectBody().equals("No first nation found with federal id 000");
+    service
+        .getFirstNation("000")
+        .as(StepVerifier::create)
+        .expectError(NoFirstNationException.class)
+        .verify();
 
   }
 

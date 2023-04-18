@@ -1,4 +1,4 @@
-package ca.bc.gov.app.endpoints.client;
+package ca.bc.gov.app.controller.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
@@ -37,7 +37,7 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @DisplayName("Integrated Test | FSA Client Submission Controller")
-public class ClientSubmissionControllerIntegrationTest
+class ClientSubmissionControllerIntegrationTest
     extends AbstractTestContainerIntegrationTest {
 
   @Autowired
@@ -139,4 +139,6 @@ public class ClientSubmissionControllerIntegrationTest
         .expectStatus().isBadRequest()
         .expectHeader().valueEquals("Reason", "Validation failed");
   }
+
+
 }
