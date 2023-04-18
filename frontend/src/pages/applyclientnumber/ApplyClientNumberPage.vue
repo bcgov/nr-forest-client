@@ -238,13 +238,13 @@ function submit(): void {
     persistValidateData();
 }
 
-/*const deepFormDataCopy = computed(() => cloneDeep(formData));
+const deepFormDataCopy = computed(() => cloneDeep(formData));
     watch(deepFormDataCopy, (newObj, oldObj) => {
         if (JSON.stringify(newObj.value) !== JSON.stringify(oldObj.value) &&
             validationMessages.value.length > 0) {
             submit();   
         }
-}, { deep: true });*/
+}, { deep: true });
 
 </script>
 
