@@ -1,30 +1,13 @@
 <template>
-
     <div style="margin: 24px">
         
-        <CollapseCard title="Business Type"
-                      id="clientTypeId"
-                      defaultOpen>
-
-            <Label label="What type of business are you?" 
-                   :required="true" />
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-                <b-form-select id="businessInformationId"
-                               v-model="formData.businessInformation.clientType" 
-                               :options="clientTypeCodes" />  
-            </div>
-            <ValidationMessages fieldId = 'businessInformation.clientType'
-                                :validationMessages="validationMessages" />
-        </CollapseCard>
-
         <CollapseCard title="Registered business" 
                       id="businessInformationId"
                       defaultOpen>
             <Label label="Please choose one of the options below" 
                    tooltip="Go to <a href='https://www.bcregistry.ca/business/auth/home/decide-business' target='_blank'>BC Registries and Online Services</a>
                             to read more about registered businesses. Sole proprietorships can be registered and unregistered."
-                   id="clientTypeLabelId"
-                   :required="true" />
+                   id="clientTypeLabelId" />
 
             <b-form-group>
                 <b-form-radio v-model="formData.businessInformation.businessType" 
@@ -38,28 +21,33 @@
             <ValidationMessages fieldId = 'businessInformation.businessType'
                                 :validationMessages="validationMessages" />
 
-            <!-- TODO: Ask Andrea about this logic -->
-            <div v-if="formData.businessInformation.businessType == 'R'"></div>
+            <div v-if="formData.businessInformation.businessType == 'R'">
+                <Label label="Start typing to search for your B.C. registered business" 
+                    tooltip="If your business name isn't in the list, go to BC Registries to confirm."
+                    id="businessNameLabelId" />
+        
+                <Autocomplete id="businessNameId"
+                            :value="formData.businessInformation.businessName"
+                            :searchData="businessNames"
+                            datalistId="businessNameListId"
+                            @updateValue="formData.businessInformation.businessName = $event;                                        
+                                            populateBusinessList($event);
+                                            filterSearchData($event)" />
+                <Note note="The name must be the same as it is in BC Registries" />
+                <ValidationMessages fieldId = 'businessInformation.businessName'
+                                    :validationMessages="validationMessages" />
+            </div>
 
-            <Label label="Start typing to search for your B.C. registered business" 
-                   tooltip="If your business name isn't in the list, go to BC Registries to confirm."
-                   id="businessNameLabelId"
-                   :required="true" />
-       
-            <Autocomplete id="businessNameId"
-                          :value="formData.businessInformation.businessName"
-                          :searchData="businessNames"
-                          datalistId="businessNameListId"
-                          @updateValue="formData.businessInformation.businessName = $event;                                        
-                                        populateBusinessList($event);
-                                        filterSearchData($event)" />
-            <Note note="The name must be the same as it is in BC Registries" />
-            <ValidationMessages fieldId = 'businessInformation.businessName'
-                                :validationMessages="validationMessages" />
-                                
+            <div v-if="formData.businessInformation.businessType == 'U'">
+                <Label label="Unregistered sole proprietorship" />
+                {{ businessName }}
+            </div>
+
             <span v-if="'' !== formData.businessInformation.incorporationNumber &&
                         '' !== formData.businessInformation.goodStanding &&
-                        !formData.businessInformation.goodStanding">
+                        !formData.businessInformation.goodStanding &&
+                        ('SP' === formData.businessInformation.legalType ||
+                         'GP' === formData.businessInformation.legalType)">
                 <strong>Your business is not in good standing with BC Registries. You must go to
                         <a href="https://www.bcregistry.ca/business/auth/home/decide-business" target="_blank">BC Registries </a>
                         to resolve this before you can apply for a client number.
@@ -149,6 +137,13 @@ import Autocomplete from "@/common/AutocompleteComponent.vue";
 import ValidationMessages from "@/common/ValidationMessagesComponent.vue";
 import AddressSection from "@/pages/applyclientnumber/AddressSectionComponent.vue";
 
+const props = defineProps({
+    businessName: {
+      type: String,
+      required: false
+    }
+  });
+
 //---- Form Data ----//
 let formData = ref(formDataDto);
 
@@ -180,7 +175,11 @@ function filterSearchData(event: any) {
     const filteredSearchDataValues = businessNames.value.filter(p => p.text.toLowerCase() === event.toLowerCase());
 
     if (filteredSearchDataValues.length === 1) {    
-        formData.value.businessInformation.incorporationNumber = filteredSearchDataValues[0].value.value;    
+        formData.value.businessInformation.incorporationNumber = filteredSearchDataValues[0].value.value;   
+        formData.value.businessInformation.legalType = filteredSearchDataValues[0].legalType;
+        //TODO: Do mapping function
+
+        console.log(JSON.stringify(filteredSearchDataValues[0]));
         useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, addressDataRef, { method:'get' });
     }
     else {
@@ -199,22 +198,16 @@ watch(
 );
 
 const displayCommonSections = computed(() => {
-    if (null !== formData.value.businessInformation.clientType && 
-            "I" === formData.value.businessInformation.clientType.value) {
-        //TODO
+    if ("" === formData.value.businessInformation.businessType || 
+        "" === formData.value.businessInformation.legalType ||
+        "" === formData.value.businessInformation.incorporationNumber) {
+        return false;
+    }
+    else if ("true" === formData.value.businessInformation.goodStanding) {
         return true;
     }
-    else { 
-        if (null !== formData.value.businessInformation.clientType && 
-            null !== formData.value.businessInformation && 
-            null !== formData.value.businessInformation.incorporationNumber &&
-            "" !== formData.value.businessInformation.incorporationNumber &&
-            "true" === formData.value.businessInformation.goodStanding) {
-            return true;
-        }
-        else {
-            return false;
-        }
+    else {
+        return false;
     }
 });
 
@@ -245,13 +238,13 @@ function submit(): void {
     persistValidateData();
 }
 
-const deepFormDataCopy = computed(() => cloneDeep(formData));
+/*const deepFormDataCopy = computed(() => cloneDeep(formData));
     watch(deepFormDataCopy, (newObj, oldObj) => {
         if (JSON.stringify(newObj.value) !== JSON.stringify(oldObj.value) &&
             validationMessages.value.length > 0) {
             submit();   
         }
-}, { deep: true });
+}, { deep: true });*/
 
 </script>
 
