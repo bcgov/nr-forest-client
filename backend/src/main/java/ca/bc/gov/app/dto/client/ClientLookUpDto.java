@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
         "code": "00000002",
         "name": "BAXTER",
         "status": "ACTIVE",
-        "clientType": "SP"
+        "legalType": "SP"
         }"""
 )
 public record ClientLookUpDto(
@@ -22,7 +22,7 @@ public record ClientLookUpDto(
     @Schema(description = "The status of the client, could be ACTIVE or INACTIVE",
         example = "ACTIVE")
     String status,
-    @Schema(description = "The type of the client", example = "SP")
-    String clientType
+    @Schema(description = "The legal type of the client", example = "SP")
+    String legalType
 ) {
 }
