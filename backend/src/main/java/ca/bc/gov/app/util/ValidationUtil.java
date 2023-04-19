@@ -49,6 +49,6 @@ public class ValidationUtil {
                 .withFieldId(fieldError.getField())
                 .withErrorMsg(fieldError.getCode())
         )
-        .collect(Collectors.toList());
+        .toList();
   }
 }
