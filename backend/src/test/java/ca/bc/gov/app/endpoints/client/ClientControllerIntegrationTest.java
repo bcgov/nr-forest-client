@@ -71,7 +71,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .jsonPath("$[0].code").isEqualTo("A")
 
         .jsonPath("$[1].code").isNotEmpty()
-        .jsonPath("$[1].code").isEqualTo("B");
+        .jsonPath("$[1].code").isEqualTo("C");
 
   }
 
