@@ -1,10 +1,11 @@
 import type { CodeDescrType } from "@/core/CommonTypes";
 
 export interface FormDataDto {
+  userId: string,
   businessInformation: {
     businessType: string,
     legalType: string,
-    clientType: CodeDescrType;
+    clientType: string;
     incorporationNumber: string;
     businessName: null | string;
     goodStanding: string;
@@ -42,10 +43,11 @@ export interface Contact {
 }
 
 export const formDataDto: FormDataDto = {
+  userId: "",
   businessInformation: {
     businessType: "",
     legalType: "",
-    clientType: { value: "", text: "" },
+    clientType: "",
     incorporationNumber: "",
     businessName: "",
     goodStanding: "",

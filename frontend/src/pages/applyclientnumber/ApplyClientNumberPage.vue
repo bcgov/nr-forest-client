@@ -1,6 +1,5 @@
 <template>
     <div style="margin: 24px">
-        
         <CollapseCard title="Registered business" 
                       id="businessInformationId"
                       defaultOpen>
@@ -9,7 +8,7 @@
                             to read more about registered businesses. Sole proprietorships can be registered and unregistered."
                    id="clientTypeLabelId" />
 
-            <b-form-group>
+            <b-form-group @change="getBusinessName">
                 <b-form-radio v-model="formData.businessInformation.businessType" 
                               value="R">
                     I have a BC registered business (corporation, sole proprietorship, society, etc.)
@@ -40,11 +39,10 @@
 
             <div v-if="formData.businessInformation.businessType == 'U'">
                 <Label label="Unregistered sole proprietorship" />
-                {{ businessName }}
+                {{ formData.businessInformation.businessName }}
             </div>
 
             <span v-if="'' !== formData.businessInformation.incorporationNumber &&
-                        '' !== formData.businessInformation.goodStanding &&
                         !formData.businessInformation.goodStanding &&
                         ('SP' === formData.businessInformation.legalType ||
                          'GP' === formData.businessInformation.legalType)">
@@ -140,7 +138,11 @@ import AddressSection from "@/pages/applyclientnumber/AddressSectionComponent.vu
 const props = defineProps({
     businessName: {
       type: String,
-      required: false
+      required: true
+    },
+    userId: {
+      type: String,
+      required: true
     }
   });
 
@@ -151,12 +153,6 @@ let formData = ref(formDataDto);
 addNewAddress(formDataDto.location.addresses);
 
 const addressDataRef = ref([]);
-
-const { data: activeClientTypeCodes } = useFetch('/api/clients/activeClientTypeCodes', { method:'get', initialData:[] });
-const clientTypeCodes = computed(() => {
-    return activeClientTypeCodes.value.map(conversionFn);
-});
-
 const originalBusinessNames = ref([]);
 
 const businessNames = computed(() => {
@@ -166,7 +162,7 @@ const businessNames = computed(() => {
 async function populateBusinessList(event: any) {
     if (event.length >= 3) {
         const encodedBusinessName = encodeURIComponent(event);        
-        useFetchTo(`/api/clients/name/${encodedBusinessName}`,originalBusinessNames, { method:'get' });
+        useFetchTo(`/api/clients/name/${encodedBusinessName}`, originalBusinessNames, { method:'get' });
         filterSearchData(event);
     }
 };
@@ -177,9 +173,8 @@ function filterSearchData(event: any) {
     if (filteredSearchDataValues.length === 1) {    
         formData.value.businessInformation.incorporationNumber = filteredSearchDataValues[0].value.value;   
         formData.value.businessInformation.legalType = filteredSearchDataValues[0].legalType;
-        //TODO: Do mapping function
+        formData.value.businessInformation.clientType = retrieveClientType(formData.value.businessInformation.legalType);
 
-        console.log(JSON.stringify(filteredSearchDataValues[0]));
         useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, addressDataRef, { method:'get' });
     }
     else {
@@ -200,16 +195,25 @@ watch(
 const displayCommonSections = computed(() => {
     if ("" === formData.value.businessInformation.businessType || 
         "" === formData.value.businessInformation.legalType ||
-        "" === formData.value.businessInformation.incorporationNumber) {
+        "" === formData.value.businessInformation.incorporationNumber ||
+        "false" === formData.value.businessInformation.goodStanding) {
         return false;
-    }
-    else if ("true" === formData.value.businessInformation.goodStanding) {
-        return true;
     }
     else {
-        return false;
+        return true;
     }
 });
+
+function getBusinessName() {
+    formData.value.userId = props.userId;
+
+    if ("U" === formData.value.businessInformation.businessType) {
+        formData.value.businessInformation.businessName = props.businessName;
+    }
+    else {
+        formData.value.businessInformation.businessName = "";
+    }
+};
 
 //---- Functions ----//
 let validationMessages = ref([] as ValidationMessageType[]);
@@ -236,10 +240,42 @@ watch(
 
 function submit(): void {
     persistValidateData();
-}
+};
+
+function retrieveClientType(legalType: string): string {
+    switch (legalType) {
+        case "A":
+        case "B":
+        case "BC":
+        case "C":
+        case "CP":
+        case "EPR":
+        case "FOR":
+        case "LIC":
+        case "REG":
+            return "C";
+        case "S":
+        case "XS":
+            return "S";
+        case "XCP":
+            return "A";
+        case "SP":
+            return "I";
+        case "GP":
+            return "P";
+        case "LP":
+        case "XL":
+        case "XP":
+            return "L";
+        default:
+            throw new Error("Unknown Legal Type.");
+    }
+};
 
 const deepFormDataCopy = computed(() => cloneDeep(formData));
-    watch(deepFormDataCopy, (newObj, oldObj) => {
+
+//TODO: Improve this logic as it makes the app very slow
+watch(deepFormDataCopy, (newObj, oldObj) => {
         if (JSON.stringify(newObj.value) !== JSON.stringify(oldObj.value) &&
             validationMessages.value.length > 0) {
             submit();   
