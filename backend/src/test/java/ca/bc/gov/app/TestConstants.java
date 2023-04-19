@@ -454,4 +454,16 @@ public class TestConstants {
               "title": "Registrar of Companies"
           }
       }""";
+  public static final String SUBMISSION_LIST_CONTENT = """
+      [
+        {
+          "id":1,
+          "requestType":"",
+          "name":"Auric Enterprises",
+          "clientType":"A",
+          "updated":" | 2023-04-19",
+          "status":"Submitted"
+        }
+      ]""";
+  public static final String SUBMISSION_LIST_CONTENT_EMPTY = "[]";
 }
