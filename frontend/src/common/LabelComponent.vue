@@ -3,14 +3,21 @@
     <label>{{ label }}</label>
     <!-- <bi-asterisk v-if="required" 
                  style="font-size: 8px; color: red; margin-top: 2px; margin-right: 6px" /> -->
-    <bi-question-circle-fill :id="'form-field-label-' + id" 
-                              v-if="tooltip" 
-                              style="font-size: 12px; color: #6c757d" />
-    <b-popover :target="'form-field-label-' + id" 
-                triggers="hover" 
-                placement="top" 
-               :content="tooltip">
-    </b-popover>
+    <div v-if="tooltip">
+      &nbsp;
+<!--       <bi-question-circle-fill  :id="'popover' + id"
+                                style="font-size: 12px; 
+                                       color: #6c757d;
+                                       vertical-align: top;" /> -->
+      <bi-question-circle-fill :id="'popover' + id"
+                               style="font-size: 12px; 
+                                      color: #6c757d;
+                                      vertical-align: top;" />
+      <b-popover :target="'popover' + id" 
+                  placement="right">
+        <span v-html="tooltip" />
+      </b-popover>
+    </div>
   </div>
 </template>
 
