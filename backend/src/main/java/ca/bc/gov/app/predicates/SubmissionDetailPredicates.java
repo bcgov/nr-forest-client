@@ -1,17 +1,18 @@
 package ca.bc.gov.app.predicates;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.query.Criteria;
 
-@NoArgsConstructor
-public class SubmissionDetailPredicates extends AbstractQueryPredicates {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class SubmissionDetailPredicates implements QueryPredicates {
 
   public static Criteria orName(String[] values) {
     if (values != null) {
-      orContains(values, "organizationName")
-          .or(orContains(values, "firstName"))
-          .or(orContains(values, "middleName"))
-          .or(orContains(values, "lastName"));
+      QueryPredicates.orContains(values, "organizationName")
+          .or(QueryPredicates.orContains(values, "firstName"))
+          .or(QueryPredicates.orContains(values, "middleName"))
+          .or(QueryPredicates.orContains(values, "lastName"));
     }
     return Criteria.empty();
   }

@@ -3,14 +3,11 @@ package ca.bc.gov.app.predicates;
 import static org.springframework.data.relational.core.query.Criteria.where;
 
 import java.util.stream.Stream;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.query.Criteria;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractQueryPredicates {
+public interface QueryPredicates {
 
-  public static Criteria orEqualTo(String[] values, String fieldName) {
+  static Criteria orEqualTo(String[] values, String fieldName) {
     if (values != null) {
       return
           Stream
@@ -22,7 +19,7 @@ public abstract class AbstractQueryPredicates {
     return Criteria.empty();
   }
 
-  public static Criteria orContains(String[] values, String fieldName) {
+  static Criteria orContains(String[] values, String fieldName) {
     if (values != null) {
       return
           Stream

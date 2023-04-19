@@ -6,9 +6,12 @@ import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Stream;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.query.Criteria;
 
-public class SubmissionPredicates extends AbstractQueryPredicates {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class SubmissionPredicates implements QueryPredicates {
 
   public static Criteria orStatus(String[] values) {
     if (values != null) {

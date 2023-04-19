@@ -13,7 +13,7 @@ import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
-import ca.bc.gov.app.predicates.AbstractQueryPredicates;
+import ca.bc.gov.app.predicates.QueryPredicates;
 import ca.bc.gov.app.predicates.SubmissionDetailPredicates;
 import ca.bc.gov.app.predicates.SubmissionPredicates;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
@@ -125,7 +125,7 @@ public class ClientSubmissionService {
                                 .where("submissionId")
                                 .is(submission.getSubmissionId())
                                 .and(
-                                    AbstractQueryPredicates
+                                    QueryPredicates
                                         .orEqualTo(clientType, "clientTypeCode")
                                         .and(SubmissionDetailPredicates.orName(name))
                                 )
