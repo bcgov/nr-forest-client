@@ -5,7 +5,13 @@ import { ref, watch } from "vue";
 import { useFetchTo } from "@/services/ForestClientService";
 import EventBus, { EventBusEvent } from "@/services/EventBus";
 
-export const conversionFn = (code: any) => { return { value: { value: code.code, text: code.name }, text: code.name } };
+export const conversionFn = (code: any) => { 
+                              return { 
+                                value: { value: code.code, text: code.name }, 
+                                text: code.name,
+                                legalType: code.legalType
+                              } 
+};
 
 /**
  * Autocomplete function for the business name
@@ -26,7 +32,7 @@ export const useBusinessNameIdAutoComplete = () => {
   watch(data, (dataFetched, _) => {
     dataSelection.value = dataFetched;
     EventBus.emit("businessNameListId", dataFetched.map((code: any) => {
-      return { value: code.name, text: code.name }
+      return { value: code.name, text: code.name, test: code.legalType }
     }));
   });
 

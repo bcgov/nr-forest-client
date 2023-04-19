@@ -1,47 +1,53 @@
 <template>
-
     <div style="margin: 24px">
-        
-        <CollapseCard title="Business Type"
-                      id="clientTypeId"
-                      defaultOpen>
-
-            <Label label="What type of business are you?" 
-                   :required="true" />
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-                <b-form-select id="businessTypeId"
-                               v-model="formData.businessType.clientType" 
-                               :options="clientTypeCodes" />  
-            </div>
-            <ValidationMessages fieldId = 'businessType.clientType'
-                                :validationMessages="validationMessages" />
-        </CollapseCard>
-
         <CollapseCard title="Registered business" 
                       id="businessInformationId"
-                      :display="displayBusinessInformation"
                       defaultOpen>
-            <Label label="Start typing to search for your B.C. registered business" 
-                   :required="true" />
-       
-            <!-- TODO: Value should be an object. It displays the name, but on the back, this should contain:
-            the code, the name, the id, and the address (for BC registry) -->
-            <Autocomplete id="businessNameId"
-                          :value="formData.businessInformation.businessName"
-                          :searchData="businessNames"
-                          datalistId="businessNameListId"
-                          @updateValue="formData.businessInformation.businessName = $event;                                        
-                                        populateBusinessList($event);
-                                        filterSearchData($event)" />
-            <Note note="The name must be the same as it is in BC Registries" />
-            <ValidationMessages fieldId = 'businessInformation.businessName'
+            <Label label="Please choose one of the options below" 
+                   tooltip="Go to <a href='https://www.bcregistry.ca/business/auth/home/decide-business' target='_blank'>BC Registries and Online Services</a>
+                            to read more about registered businesses. Sole proprietorships can be registered and unregistered."
+                   id="clientTypeLabelId" />
+
+            <b-form-group @change="getBusinessName">
+                <b-form-radio v-model="formData.businessInformation.businessType" 
+                              value="R">
+                    I have a BC registered business (corporation, sole proprietorship, society, etc.)
+                </b-form-radio>
+                <b-form-radio v-model="formData.businessInformation.businessType" 
+                              value="U">I have an unregistered sole proprietorship
+                </b-form-radio>
+            </b-form-group>
+            <ValidationMessages fieldId = 'businessInformation.businessType'
                                 :validationMessages="validationMessages" />
-                                
+
+            <div v-if="formData.businessInformation.businessType == 'R'">
+                <Label label="Start typing to search for your B.C. registered business" 
+                    tooltip="If your business name isn't in the list, go to BC Registries to confirm."
+                    id="businessNameLabelId" />
+        
+                <Autocomplete id="businessNameId"
+                            :value="formData.businessInformation.businessName"
+                            :searchData="businessNames"
+                            datalistId="businessNameListId"
+                            @updateValue="formData.businessInformation.businessName = $event;                                        
+                                            populateBusinessList($event);
+                                            filterSearchData($event)" />
+                <Note note="The name must be the same as it is in BC Registries" />
+                <ValidationMessages fieldId = 'businessInformation.businessName'
+                                    :validationMessages="validationMessages" />
+            </div>
+
+            <div v-if="formData.businessInformation.businessType == 'U'">
+                <Label label="Unregistered sole proprietorship" />
+                {{ formData.businessInformation.businessName }}
+            </div>
+
             <span v-if="'' !== formData.businessInformation.incorporationNumber &&
-                        '' !== formData.businessInformation.goodStanding &&
-                        !formData.businessInformation.goodStanding">
+                        !formData.businessInformation.goodStanding &&
+                        ('SP' === formData.businessInformation.legalType ||
+                         'GP' === formData.businessInformation.legalType)">
                 <strong>Your business is not in good standing with BC Registries. You must go to
-                        <a href="https://www.bcregistry.ca/business/auth/home/decide-business">BC Registries </a>
+                        <a href="https://www.bcregistry.ca/business/auth/home/decide-business" target="_blank">BC Registries </a>
                         to resolve this before you can apply for a client number.
                 </strong>
             </span>
@@ -54,7 +60,7 @@
 
             <span>
                 <strong>This information is from 
-                        <a href="https://www.bcregistry.ca/business/auth/home/decide-business">BC Registries</a>. 
+                        <a href="https://www.bcregistry.ca/business/auth/home/decide-business" target="_blank">BC Registries</a>. 
                         If it's incorrect, go to BC Registries to update it before continuing.</strong>
             </span>
 
@@ -129,6 +135,17 @@ import Autocomplete from "@/common/AutocompleteComponent.vue";
 import ValidationMessages from "@/common/ValidationMessagesComponent.vue";
 import AddressSection from "@/pages/applyclientnumber/AddressSectionComponent.vue";
 
+const props = defineProps({
+    businessName: {
+      type: String,
+      required: true
+    },
+    userId: {
+      type: String,
+      required: true
+    }
+  });
+
 //---- Form Data ----//
 let formData = ref(formDataDto);
 
@@ -136,12 +153,6 @@ let formData = ref(formDataDto);
 addNewAddress(formDataDto.location.addresses);
 
 const addressDataRef = ref([]);
-
-const { data: activeClientTypeCodes } = useFetch('/api/clients/activeClientTypeCodes', { method:'get', initialData:[] });
-const clientTypeCodes = computed(() => {
-    return activeClientTypeCodes.value.map(conversionFn);
-});
-
 const originalBusinessNames = ref([]);
 
 const businessNames = computed(() => {
@@ -151,7 +162,7 @@ const businessNames = computed(() => {
 async function populateBusinessList(event: any) {
     if (event.length >= 3) {
         const encodedBusinessName = encodeURIComponent(event);        
-        useFetchTo(`/api/clients/name/${encodedBusinessName}`,originalBusinessNames, { method:'get' });
+        useFetchTo(`/api/clients/name/${encodedBusinessName}`, originalBusinessNames, { method:'get' });
         filterSearchData(event);
     }
 };
@@ -160,7 +171,10 @@ function filterSearchData(event: any) {
     const filteredSearchDataValues = businessNames.value.filter(p => p.text.toLowerCase() === event.toLowerCase());
 
     if (filteredSearchDataValues.length === 1) {    
-        formData.value.businessInformation.incorporationNumber = filteredSearchDataValues[0].value.value;    
+        formData.value.businessInformation.incorporationNumber = filteredSearchDataValues[0].value.value;   
+        formData.value.businessInformation.legalType = filteredSearchDataValues[0].legalType;
+        formData.value.businessInformation.clientType = retrieveClientType(formData.value.businessInformation.legalType);
+
         useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, addressDataRef, { method:'get' });
     }
     else {
@@ -178,32 +192,28 @@ watch(
     }
 );
 
-const displayBusinessInformation = computed(() => {
-    return null !== formData.value.businessType.clientType && 
-            formData.value.businessType.clientType.value.length > 0 &&
-            "I" !== formData.value.businessType.clientType.value &&
-            "Z" !== formData.value.businessType.clientType.value;
-});
-
 const displayCommonSections = computed(() => {
-    if (null !== formData.value.businessType.clientType && 
-            "I" === formData.value.businessType.clientType.value) {
-        //TODO
+    if ("" === formData.value.businessInformation.businessType || 
+        "" === formData.value.businessInformation.legalType ||
+        "" === formData.value.businessInformation.incorporationNumber ||
+        "false" === formData.value.businessInformation.goodStanding) {
+        return false;
+    }
+    else {
         return true;
     }
-    else { 
-        if (null !== formData.value.businessType.clientType && 
-            null !== formData.value.businessInformation && 
-            null !== formData.value.businessInformation.incorporationNumber &&
-            "" !== formData.value.businessInformation.incorporationNumber &&
-            "true" === formData.value.businessInformation.goodStanding) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
 });
+
+function getBusinessName() {
+    formData.value.userId = props.userId;
+
+    if ("U" === formData.value.businessInformation.businessType) {
+        formData.value.businessInformation.businessName = props.businessName;
+    }
+    else {
+        formData.value.businessInformation.businessName = "";
+    }
+};
 
 //---- Functions ----//
 let validationMessages = ref([] as ValidationMessageType[]);
@@ -230,10 +240,42 @@ watch(
 
 function submit(): void {
     persistValidateData();
-}
+};
+
+function retrieveClientType(legalType: string): string {
+    switch (legalType) {
+        case "A":
+        case "B":
+        case "BC":
+        case "C":
+        case "CP":
+        case "EPR":
+        case "FOR":
+        case "LIC":
+        case "REG":
+            return "C";
+        case "S":
+        case "XS":
+            return "S";
+        case "XCP":
+            return "A";
+        case "SP":
+            return "I";
+        case "GP":
+            return "P";
+        case "LP":
+        case "XL":
+        case "XP":
+            return "L";
+        default:
+            throw new Error("Unknown Legal Type.");
+    }
+};
 
 const deepFormDataCopy = computed(() => cloneDeep(formData));
-    watch(deepFormDataCopy, (newObj, oldObj) => {
+
+//TODO: Improve this logic as it makes the app very slow
+watch(deepFormDataCopy, (newObj, oldObj) => {
         if (JSON.stringify(newObj.value) !== JSON.stringify(oldObj.value) &&
             validationMessages.value.length > 0) {
             submit();   

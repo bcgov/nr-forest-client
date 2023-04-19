@@ -57,7 +57,7 @@ public class TestConstants {
           "code": "BC0772006",
           "name": "U3 POWER CORP.",
           "status": "ACTIVE",
-          "clientType": "SP"
+          "legalType": "SP"
         }
       ]""";
 
@@ -153,7 +153,7 @@ public class TestConstants {
         "code": "BC0772006",
         "name": "U3 POWER CORP.",
         "status": "ACTIVE",
-        "clientType": "SP"
+        "legalType": "SP"
       }""";
 
   public static final String OPENMAPS_OK = """
