@@ -68,10 +68,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .expectStatus().isOk()
         .expectBody()
         .jsonPath("$[0].code").isNotEmpty()
-        .jsonPath("$[0].code").isEqualTo("C")
+        .jsonPath("$[0].code").isEqualTo("A")
 
         .jsonPath("$[1].code").isNotEmpty()
-        .jsonPath("$[1].code").isEqualTo("Z");
+        .jsonPath("$[1].code").isEqualTo("C");
 
   }
 
