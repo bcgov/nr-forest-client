@@ -3,14 +3,12 @@ package ca.bc.gov.app.service;
 import ca.bc.gov.app.dto.ClientPublicViewDto;
 import ca.bc.gov.app.dto.OrgBookTopicDto;
 import ca.bc.gov.app.dto.OrgBookTopicListResponse;
-import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.ForestClientEntity;
-import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
+import ca.bc.gov.app.exception.MissingReportFileException;
 import ca.bc.gov.app.repository.ForestClientRepository;
 import ca.bc.gov.app.util.SheetWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -39,46 +37,86 @@ import reactor.core.publisher.Mono;
 public class ReportingClientService {
 
   private final ForestClientRepository forestClientRepository;
-  private final ClientDoingBusinessAsRepository clientDoingBusinessAsRepository;
   private final WebClient orgBookApi;
 
   public ReportingClientService(ForestClientRepository forestClientRepository,
-                                ClientDoingBusinessAsRepository clientDoingBusinessAsRepository,
-                                @Qualifier("orgBookApi") WebClient orgBookApi) {
+                                @Qualifier("orgBookApi") WebClient orgBookApi
+  ) {
     this.forestClientRepository = forestClientRepository;
-    this.clientDoingBusinessAsRepository = clientDoingBusinessAsRepository;
     this.orgBookApi = orgBookApi;
   }
 
-  public Mono<File> generateDoingBusinessAsReport() {
+  /**
+   * Returns a {@link Mono} of {@link File} representing the report file for the given report ID.
+   *
+   * @param reportId the report ID for which to retrieve the report file
+   * @return a {@link Mono} of {@link File} representing the report file for the given report ID
+   * @throws MissingReportFileException if the report file does not exist for the given report ID
+   */
+  public Mono<File> getReportFile(String reportId) {
 
-    return
-        generateReport(
-            clientDoingBusinessAsRepository
-                //As we are streaming through the data with Flux, we will not have the entire
-                //dataset in memory at any given time
-                .findAll()
-                //for each entry, we will grab the data from orgbook
-                .flatMap(this::mapToPublicView)
-        );
+    File sheetFile = getReportPath(reportId)
+        .normalize()
+        .toFile();
+
+    if (!sheetFile.exists()) {
+      return Mono.error(new MissingReportFileException(reportId));
+    }
+
+    return Mono.just(sheetFile);
   }
 
-  public Mono<File> generateAllClientsReport() {
-    return
-        generateReport(
-            forestClientRepository
-                //As we are streaming through the data with Flux, we will not have the entire
-                //dataset in memory at any given time
-                .findAll()
-                //for each entry, we will grab the data from orgbook
-                .flatMap(this::mapToPublicView)
-        );
+  /**
+   * Returns a {@link Flux} of {@link String} containing the names of reports in the report folder,
+   * with the ".xlsx" extension removed.
+   *
+   * @return a {@link Flux} of {@link String} containing the names of reports in the report folder
+   */
+  public Flux<String> listReports() {
+    try {
+      return Flux
+          .fromStream(Files.list(getReportFolder()))
+          .map(Path::getFileName)
+          .map(Path::toFile)
+          .map(File::getName)
+          .map(name -> name.replace(".xlsx", StringUtils.EMPTY));
+    } catch (IOException exception) {
+      log.error("Error while cleaning temp folder", exception);
+    }
+    return Flux.empty();
   }
 
-  @Scheduled(fixedDelay = 5, timeUnit = TimeUnit.MINUTES)
+  @Scheduled(cron = "0 0 0 ? * MON-FRI")
+  public void generateAllClientsReport() {
+    generateReport(
+        forestClientRepository
+            //As we are streaming through the data with Flux, we will not have the entire
+            //dataset in memory at any given time
+            .findAll()
+            //for each entry, we will grab the data from orgbook
+            .flatMap(this::mapToPublicView)
+    )
+        .blockOptional()
+        .ifPresent(reportFile -> log.info("Generated report {} now", reportFile));
+  }
+
+  @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.HOURS)
   @SuppressWarnings({"java:S3864", "java:S4042"})
   public void cleanOldReports() {
 
+    try (Stream<Path> paths = Files.list(getReportFolder())) {
+      paths
+          .peek(file -> log.info("Found report on folder with name {}", file.getFileName()))
+          .filter(file -> isFileOlderThan(file.toFile(), 24))
+          .forEach(path -> path.toFile().delete());
+    } catch (IOException exception) {
+      log.error("Error while cleaning temp folder", exception);
+    }
+
+
+  }
+
+  private Path getReportFolder() {
     Path sheetFolder = Paths
         .get("./temp/")
         .normalize();
@@ -90,43 +128,28 @@ public class ReportingClientService {
           sheetFolder.toFile().mkdirs()
       );
     }
-
-    try (Stream<Path> paths = Files.list(sheetFolder)) {
-      paths
-          .peek(file -> log.info("Found report on folder with name {}", file.getFileName()))
-          .filter(file -> isFileOlderThan(file.toFile(), 5))
-          .forEach(path -> path.toFile().delete());
-    } catch (IOException exception) {
-      log.error("Error while cleaning temp folder", exception);
-    }
-
-
+    return sheetFolder;
   }
 
-  private boolean isFileOlderThan(File file, int minutesDiff) {
+  private Path getReportPath(String reportId) {
+    return getReportFolder().resolve(reportId + ".xlsx");
+  }
+
+  private boolean isFileOlderThan(File file, int hoursDiff) {
     return
         Duration
             .between(
                 Instant.ofEpochMilli(file.lastModified()),
                 Instant.now()
             )
-            .toMinutes() > minutesDiff;
+            .toHours() > hoursDiff;
   }
 
   private Mono<File> generateReport(Flux<ClientPublicViewDto> values) {
 
-    File sheetFile = Paths
-        .get("./temp/", UUID.randomUUID().toString() + ".xlsx")
+    File sheetFile = getReportPath(UUID.randomUUID().toString())
         .normalize()
         .toFile();
-
-    if (!sheetFile.getParentFile().exists()) {
-      log.info(
-          "Temporary folder for reports {} does not exist, creating {}",
-          sheetFile.getParentFile().getAbsolutePath(),
-          sheetFile.getParentFile().mkdirs()
-      );
-    }
 
     SheetWriter writer = new SheetWriter(sheetFile);
 
@@ -148,14 +171,6 @@ public class ReportingClientService {
             StringUtils.defaultString(entity.getRegistryCompanyTypeCode()),
             StringUtils.defaultString(entity.getCorpRegnNmbr())
         )
-    );
-  }
-
-  private Mono<ClientPublicViewDto> mapToPublicView(ClientDoingBusinessAsEntity entity) {
-    return loadValueFromOrgbook(
-        entity.getDoingBusinessAsName(),
-        entity.getClientNumber(),
-        StringUtils.EMPTY
     );
   }
 
