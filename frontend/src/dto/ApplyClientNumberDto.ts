@@ -9,6 +9,7 @@ export interface FormDataDto {
     incorporationNumber: string;
     businessName: null | string;
     goodStanding: string;
+    fullMatchInd: string;
     firstName: string;
     lastName: string;
     birthdate: string;

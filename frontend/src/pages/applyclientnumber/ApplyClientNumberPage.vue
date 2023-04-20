@@ -44,13 +44,26 @@
 
             <span v-if="'' !== formData.businessInformation.incorporationNumber &&
                         !formData.businessInformation.goodStanding &&
-                        ('SP' === formData.businessInformation.legalType ||
-                         'GP' === formData.businessInformation.legalType)">
+                        '' !== formData.businessInformation.goodStanding">
                 <strong>Your business is not in good standing with BC Registries. You must go to
                         <a href="https://www.bcregistry.ca/business/auth/home/decide-business" target="_blank">BC Registries </a>
                         to resolve this before you can apply for a client number.
                 </strong>
             </span>
+
+            <span v-if="'' !== formData.businessInformation.incorporationNumber &&
+                        !formData.businessInformation.fullMatchInd &&
+                        '' !== formData.businessInformation.fullMatchInd">
+                <strong>Your business is not 100% match</strong>
+            </span>
+
+            <!-- This section is for the demo. It has to be removed. -->
+            <br /><br />
+            <div class="alert alert-warning">
+                Incorporation number: {{ formData.businessInformation.incorporationNumber }}<br />
+                Good Standing? {{ formData.businessInformation.goodStanding }}<br />
+                100% Match? {{ formData.businessInformation.fullMatchInd }}
+            </div>
         </CollapseCard>
 
         <CollapseCard title="Mailing address" 
