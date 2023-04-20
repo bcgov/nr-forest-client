@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -96,6 +97,23 @@ public class GlobalServiceConfiguration {
         .baseUrl(configuration.getBcregistry().getUri())
         .defaultHeader("x-apikey", configuration.getBcregistry().getApiKey())
         .defaultHeader("Account-Id", configuration.getBcregistry().getAccountId())
+        .build();
+  }
+
+  /**
+   * Creates a WebClient instance for making HTTP requests to the Oracle Legacy API
+   * based on the provided {@link ForestClientConfiguration}.
+   *
+   * @param configuration the configuration object for the Forest client
+   * @return a WebClient instance configured for the Oracle Legacy API
+   */
+  @Bean
+  public WebClient legacyApi(ForestClientConfiguration configuration) {
+    return WebClient
+        .builder()
+        .baseUrl(configuration.getLegacy().getUri())
+        .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader("Accept", MediaType.APPLICATION_JSON_VALUE)
         .build();
   }
 

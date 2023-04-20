@@ -10,6 +10,7 @@ import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
+import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
@@ -43,6 +44,7 @@ public class ClientService {
   private final ProvinceCodeRepository provinceCodeRepository;
   private final ContactTypeCodeRepository contactTypeCodeRepository;
   private final BcRegistryService bcRegistryService;
+  private final ClientLegacyService legacyService;
 
   /**
    * <p><b>Find Active Client Type Codes</b></p>
@@ -127,6 +129,32 @@ public class ClientService {
         bcRegistryService
             .requestDocumentData(clientNumber)
             .next()
+            .flatMap(document ->
+                legacyService
+                    .searchLegacy(document.business().identifier(), document.business().legalName())
+                    .next()
+                    .filter(legacy ->
+                        StringUtils.equals(
+                            StringUtils.defaultString(legacy.registryCompanyTypeCode()) +
+                                StringUtils.defaultString(legacy.corpRegnNmbr()),
+                            document.business().identifier()
+                        ) &&
+                            StringUtils.equals(
+                                document.business().legalName(),
+                                legacy.legalName()
+                            )
+                    )
+                    .flatMap(legacy -> Mono
+                        .error(
+                            new ClientAlreadyExistException(
+                                legacy.clientNumber(),
+                                document.business().identifier(),
+                                document.business().legalName())
+                        )
+                    )
+                    .defaultIfEmpty(document)
+            )
+            .map(BcRegistryDocumentDto.class::cast)
             .flatMap(buildDetails());
   }
 
@@ -144,11 +172,12 @@ public class ClientService {
     return bcRegistryService
         .searchByFacets(value)
         .map(entry -> new ClientLookUpDto(
-            entry.identifier(),
-            entry.name(),
-            entry.status(),
-            entry.legalType()
-        ));
+                entry.identifier(),
+                entry.name(),
+                entry.status(),
+                entry.legalType()
+            )
+        );
   }
 
   private Function<BcRegistryDocumentDto, Mono<ClientDetailsDto>> buildDetails() {

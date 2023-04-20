@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
@@ -179,12 +180,17 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
   @DisplayName("Client details")
   void shouldGetClientDetails(
       String clientNumber,
+
       int detailsStatus,
       String detailsResponse,
+
       int addressStatus,
       String addressResponse,
+
       int responseStatus,
-      String responseContent
+      String responseContent,
+
+      String legacyResponse
   ) {
 
     reset();
@@ -214,6 +220,13 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             )
         );
 
+    wireMockExtension
+        .stubFor(
+            get(urlPathEqualTo("/search/incorporationOrName"))
+            .withQueryParam("incorporationNumber", equalTo("AA0000001"))
+            .withQueryParam("companyName", equalTo("SAMPLE COMPANY"))
+            .willReturn(okJson(legacyResponse))
+        );
 
     WebTestClient.BodyContentSpec response =
         client
@@ -333,44 +346,65 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 "AA0000001",
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 200, TestConstants.BCREG_DOC_DATA,
-                200, TestConstants.BCREG_RESPONSE_OK
+                200, TestConstants.BCREG_RESPONSE_OK,
+                TestConstants.LEGACY_EMPTY
+            ),
+            Arguments.of(
+                "AA0000001",
+                200, TestConstants.BCREG_DOC_REQ_RES,
+                200, TestConstants.BCREG_DOC_DATA,
+                409, TestConstants.BCREG_RESPONSE_DUP,
+                TestConstants.LEGACY_OK
+            ),
+            Arguments.of(
+                "AA0000001",
+                200, TestConstants.BCREG_DOC_REQ_RES,
+                200, TestConstants.BCREG_DOC_DATA,
+                200, TestConstants.BCREG_RESPONSE_OK,
+                TestConstants.LEGACY_OK.replace("0000001","0000002")
             ),
             Arguments.of(
                 "AA0000001",
                 404, TestConstants.BCREG_NOK,
                 404, TestConstants.BCREG_NOK,
-                404, TestConstants.BCREG_RESPONSE_NOK
+                404, TestConstants.BCREG_RESPONSE_NOK,
+                TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
                 "AA0000001",
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 404, TestConstants.BCREG_NOK,
-                404, TestConstants.BCREG_RESPONSE_NOK
+                404, TestConstants.BCREG_RESPONSE_NOK,
+                TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
                 "AA0000001",
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 401, TestConstants.BCREG_401,
-                401, TestConstants.BCREG_RESPONSE_401
+                401, TestConstants.BCREG_RESPONSE_401,
+                TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
                 "AA0000001",
                 401, TestConstants.BCREG_401,
                 401, TestConstants.BCREG_401,
-                401, TestConstants.BCREG_RESPONSE_401
+                401, TestConstants.BCREG_RESPONSE_401,
+                TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
                 "AA0000001",
                 400, TestConstants.BCREG_400,
                 400, TestConstants.BCREG_400,
-                401, TestConstants.BCREG_RESPONSE_401
+                401, TestConstants.BCREG_RESPONSE_401,
+                TestConstants.LEGACY_EMPTY
             ),
 
             Arguments.of(
                 "AA0000001",
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 400, TestConstants.BCREG_400,
-                401, TestConstants.BCREG_RESPONSE_401
+                401, TestConstants.BCREG_RESPONSE_401,
+                TestConstants.LEGACY_EMPTY
             )
         );
   }
