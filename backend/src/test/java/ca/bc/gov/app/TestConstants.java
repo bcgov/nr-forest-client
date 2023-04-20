@@ -1,5 +1,7 @@
 package ca.bc.gov.app;
 
+import ca.bc.gov.app.dto.openmaps.PropertyDto;
+
 public class TestConstants {
   public static final String CHES_SUCCESS_MESSAGE = """      
       {
@@ -227,17 +229,16 @@ public class TestConstants {
       }
       """;
 
-  public static final String OPENMAPS_OK_RESPONSE = """
-      {        
-        "FIRST_NATION_FEDERAL_NAME": "Songhees Nation",
-        "FIRST_NATION_FEDERAL_ID": 656,        
-        "ADDRESS_LINE1": "1100 Admirals Road",
-        "ADDRESS_LINE2": " ",
-        "OFFICE_CITY": "VICTORIA",
-        "OFFICE_PROVINCE": "BC",
-        "OFFICE_POSTAL_CODE": "V9A 2P6"
-      }
-      """;
+  public static final PropertyDto OPENMAPS_OK_RESPONSE =
+      new PropertyDto(
+          "Songhees Nation",
+          656,
+          "1100 Admirals Road",
+          " ",
+          "VICTORIA",
+          "BC",
+          "V9A 2P6"
+      );
 
   public static final String BCREG_NOK = """
       {
@@ -453,4 +454,16 @@ public class TestConstants {
               "title": "Registrar of Companies"
           }
       }""";
+  public static final String SUBMISSION_LIST_CONTENT = """
+      [
+        {
+          "id":1,
+          "requestType":"",
+          "name":"Auric Enterprises",
+          "clientType":"A",
+          "updated":" | 2023-04-19",
+          "status":"Submitted"
+        }
+      ]""";
+  public static final String SUBMISSION_LIST_CONTENT_EMPTY = "[]";
 }

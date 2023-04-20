@@ -1,4 +1,4 @@
-package ca.bc.gov.app.endpoints.client;
+package ca.bc.gov.app.controller.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;

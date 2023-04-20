@@ -1,4 +1,4 @@
-package ca.bc.gov.app.endpoints.ches;
+package ca.bc.gov.app.service.ches;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.forbidden;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
@@ -12,12 +12,15 @@ import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.ches.ChesRequest;
+import ca.bc.gov.app.exception.BadRequestException;
+import ca.bc.gov.app.exception.CannotExtractTokenException;
+import ca.bc.gov.app.exception.InvalidAccessTokenException;
+import ca.bc.gov.app.exception.InvalidRoleException;
+import ca.bc.gov.app.exception.UnableToProcessRequestException;
+import ca.bc.gov.app.exception.UnexpectedErrorException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
-import ca.bc.gov.app.service.ches.ChesCommonServicesService;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.oltu.oauth2.client.OAuthClient;
@@ -32,18 +35,14 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 @Slf4j
-@DisplayName("Integrated Test | Ches Controller")
+@DisplayName("Integrated Test | Ches Service")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
+class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
-  @Autowired
-  protected WebTestClient client;
   @Autowired
   private ChesCommonServicesService service;
 
@@ -69,16 +68,11 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
                 )
         );
 
-
-    client
-        .post()
-        .uri("/api/mail", new HashMap<>())
-        .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca"), "simple body")), ChesRequest.class)
-        .exchange()
-
-        .expectStatus().isCreated()
-        .expectHeader().location("/api/mail/00000000-0000-0000-0000-000000000000")
-        .expectBody().isEmpty();
+    service
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"))
+        .as(StepVerifier::create)
+        .expectNext("00000000-0000-0000-0000-000000000000")
+        .verifyComplete();
 
   }
 
@@ -87,14 +81,11 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
   void shoulNotSendMailWhenNotAuth() throws OAuthProblemException, OAuthSystemException {
     mockOAuthFail();
 
-    client
-        .post()
-        .uri("/api/mail", new HashMap<>())
-        .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca"), "simple body")), ChesRequest.class)
-        .exchange()
-
-        .expectStatus().isEqualTo(HttpStatusCode.valueOf(412))
-        .expectBody().equals("Cannot retrieve a token");
+    service
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"))
+        .as(StepVerifier::create)
+        .expectError(CannotExtractTokenException.class)
+        .verify();
   }
 
   @Test
@@ -106,14 +97,11 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
         .stubFor(post("/chess/uri").willReturn(unauthorized()));
 
 
-    client
-        .post()
-        .uri("/api/mail", new HashMap<>())
-        .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca"), "simple body")), ChesRequest.class)
-        .exchange()
-
-        .expectStatus().isEqualTo(HttpStatusCode.valueOf(401))
-        .expectBody().equals("Provided access token is missing or invalid");
+    service
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"))
+        .as(StepVerifier::create)
+        .expectError(InvalidAccessTokenException.class)
+        .verify();
   }
 
   @Test
@@ -124,15 +112,11 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
     wireMockExtension
         .stubFor(post("/chess/uri").willReturn(forbidden()));
 
-
-    client
-        .post()
-        .uri("/api/mail", new HashMap<>())
-        .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca"), "simple body")), ChesRequest.class)
-        .exchange()
-
-        .expectStatus().isEqualTo(HttpStatusCode.valueOf(403))
-        .expectBody().equals("You don't have the required role to perform this action");
+    service
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"))
+        .as(StepVerifier::create)
+        .expectError(InvalidRoleException.class)
+        .verify();
   }
 
 
@@ -151,17 +135,11 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
                 )
         );
 
-
-    client
-        .post()
-        .uri("/api/mail", new HashMap<>())
-        .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca"), "<p>I am an HTML</p>")),
-            ChesRequest.class)
-        .exchange()
-
-        .expectStatus().isCreated()
-        .expectHeader().location("/api/mail/00000000-0000-0000-0000-000000000000")
-        .expectBody().isEmpty();
+    service
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "<p>I am an HTML</p>"))
+        .as(StepVerifier::create)
+        .expectNext("00000000-0000-0000-0000-000000000000")
+        .verifyComplete();
   }
 
   @Test
@@ -179,17 +157,13 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
                 )
         );
 
-
-    client
-        .post()
-        .uri("/api/mail", new HashMap<>())
-        .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon")), ChesRequest.class)
-        .exchange()
-
-        .expectStatus().isCreated()
-        .expectHeader().location("/api/mail/00000000-0000-0000-0000-000000000000")
-        .expectBody().isEmpty();
+    service
+        .sendEmail(
+            new ChesRequest(List.of("jhon@mail.ca"),
+                "Thanks for your email\nYou will hear from us soon"))
+        .as(StepVerifier::create)
+        .expectNext("00000000-0000-0000-0000-000000000000")
+        .verifyComplete();
   }
 
   @Test
@@ -207,16 +181,12 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
                 )
         );
 
-
-    client
-        .post()
-        .uri("/api/mail", new HashMap<>())
-        .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon")), ChesRequest.class)
-        .exchange()
-
-        .expectStatus().isEqualTo(HttpStatusCode.valueOf(422))
-        .expectBody().equals("string,Invalid value `encoding`. on utf-8x");
+    service
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"),
+            "Thanks for your email\nYou will hear from us soon"))
+        .as(StepVerifier::create)
+        .expectError(UnableToProcessRequestException.class)
+        .verify();
   }
 
   @Test
@@ -234,16 +204,12 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
                 )
         );
 
-
-    client
-        .post()
-        .uri("/api/mail", new HashMap<>())
-        .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon")), ChesRequest.class)
-        .exchange()
-
-        .expectStatus().isBadRequest()
-        .expectBody().equals("string");
+    service
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"),
+            "Thanks for your email\nYou will hear from us soon"))
+        .as(StepVerifier::create)
+        .expectError(BadRequestException.class)
+        .verify();
   }
 
   @Test
@@ -261,16 +227,12 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
                 )
         );
 
-
-    client
-        .post()
-        .uri("/api/mail", new HashMap<>())
-        .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon")), ChesRequest.class)
-        .exchange()
-
-        .expectStatus().isEqualTo(HttpStatusCode.valueOf(500))
-        .expectBody().equals("string");
+    service
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"),
+            "Thanks for your email\nYou will hear from us soon"))
+        .as(StepVerifier::create)
+        .expectError(UnexpectedErrorException.class)
+        .verify();
   }
 
   @ParameterizedTest
@@ -290,16 +252,11 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
                 )
         );
 
-
-    client
-        .post()
-        .uri("/api/mail", new HashMap<>())
-        .body(Mono.justOrEmpty(Optional.ofNullable(request)), ChesRequest.class)
-        .exchange()
-
-        .expectStatus().isBadRequest()
-        .expectBody()
-        .consumeWith(System.out::println);
+    service
+        .sendEmail(request)
+        .as(StepVerifier::create)
+        .expectError()
+        .verify();
 
   }
 
@@ -318,17 +275,11 @@ class ChesHandlerIntegrationTest extends AbstractTestContainerIntegrationTest {
                 )
         );
 
-
-    client
-        .post()
-        .uri("/api/mail", new HashMap<>())
-        .body(Mono.just(new ChesRequest(List.of("jhon@mail.ca", "james@mail.ca"), "simple body")),
-            ChesRequest.class)
-        .exchange()
-
-        .expectStatus().isCreated()
-        .expectHeader().location("/api/mail/00000000-0000-0000-0000-000000000000")
-        .expectBody().isEmpty();
+    service
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca", "james@mail.ca"), "simple body"))
+        .as(StepVerifier::create)
+        .expectNext("00000000-0000-0000-0000-000000000000")
+        .verifyComplete();
   }
 
 
