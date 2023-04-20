@@ -12,6 +12,7 @@ drop table if exists nrfc.submission_status_code;
 drop table if exists nrfc.province_code;
 drop table if exists nrfc.country_code;
 drop table if exists nrfc.contact_type_code;
+drop table if exists nrfc.business_type_code;
 
 drop sequence if exists nrfc.submission_id_seq;
 drop sequence if exists nrfc.submission_detail_id_seq;
@@ -86,6 +87,18 @@ create table if not exists nrfc.contact_type_code (
     constraint contact_type_code_pk primary key (contact_type_code)
 );
 
+create table if not exists nrfc.business_type_code (
+    business_type_code        	varchar(1)      not null,
+    description                 varchar(100)    not null,
+    effective_date              date            not null,
+    expiry_date                 date            default to_date('99991231','YYYYMMDD') not null,
+    create_timestamp            timestamp       default current_timestamp not null,
+    update_timestamp            timestamp       default current_timestamp,
+    create_user                 varchar(60)     not null,
+    update_user                 varchar(60)		null,
+    constraint business_type_code_pk primary key (business_type_code)
+);
+
 create table if not exists nrfc.submission(
     submission_id             	integer 		not null,
     submitter_user_guid        	varchar(50) 	null,
@@ -101,18 +114,14 @@ create table if not exists nrfc.submission(
 create table if not exists nrfc.submission_detail (
     submission_detail_id        integer			not null,
 	submission_id				integer			not null,
+	business_type_code			varchar(1)    	not null,
 	incorporation_number		varchar(50)    	null,
     organization_name           varchar(100)    null,
-    first_name                  varchar(100)    null,
-	middle_name                 varchar(100)    null,
-	last_name                 	varchar(100)    null,
 	client_type_code          	varchar(1)    	not null,
-	date_of_birth				date 			null,
-    doing_business_as_ind       varchar(1)      not null default 'N',
-    doing_business_as_name      varchar(100)    null,
-    has_additional_location_ind varchar(1)      not null default 'N',
+    good_standing_ind           varchar(1)      not null default 'N',
 	constraint submission_detail_id_pk primary key (submission_detail_id),
 	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
+    constraint submission_detail_business_type_code_fk foreign key (business_type_code) references nrfc.business_type_code(business_type_code),
     constraint submission_detail_client_type_code_fk foreign key (client_type_code) references nrfc.client_type_code(client_type_code),
     constraint submission_detail_submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id)
 );
@@ -184,7 +193,10 @@ insert into nrfc.submission_status_code (submission_status_code, description, ef
 insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('A', 'Approved', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
 insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('R', 'Rejected', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
 insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('D', 'Deleted', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
-insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('S', 'Submitted', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
+insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('N', 'New', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
+
+insert into nrfc.business_type_code (business_type_code, description, effective_date, create_user) values ('R', 'Registered Business', current_timestamp, 'mariamar') on conflict (business_type_code) do nothing;
+insert into nrfc.business_type_code (business_type_code, description, effective_date, create_user) values ('U', 'Unegistered Business', current_timestamp, 'mariamar') on conflict (business_type_code) do nothing;
 
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('A', 'Association', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('B', 'First Nation Band', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
