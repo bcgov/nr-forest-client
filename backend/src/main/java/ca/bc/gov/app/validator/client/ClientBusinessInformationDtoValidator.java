@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class ClientBusinessInformationDtoValidator implements Validator {
 
+  public static final String BUSINESS_NAME = "businessName";
   private final BcRegistryService bcRegistryService;
 
   @Override
@@ -27,7 +28,7 @@ public class ClientBusinessInformationDtoValidator implements Validator {
   @SneakyThrows
   @Override
   public void validate(Object target, Errors errors) {
-	String businessNameField = "businessName";
+	String businessNameField = BUSINESS_NAME;
 	
     errors.pushNestedPath("businessInformation");
 
@@ -40,7 +41,7 @@ public class ClientBusinessInformationDtoValidator implements Validator {
   }
 
   private void validateIncorporationNumber(Object target, Errors errors) {
-	String businessNameField = "businessName";
+	String businessNameField = BUSINESS_NAME;
     ClientBusinessInformationDto businessInformation = (ClientBusinessInformationDto) target;
 
     if (StringUtils.isBlank(businessInformation.incorporationNumber())) {
@@ -50,7 +51,7 @@ public class ClientBusinessInformationDtoValidator implements Validator {
 
     bcRegistryService.requestDocumentData(businessInformation.incorporationNumber())
         .doOnError(ResponseStatusException.class, e -> errors.rejectValue(
-            "businessName", "Incorporation Number was not found in BC Registry"))
+            BUSINESS_NAME, "Incorporation Number was not found in BC Registry"))
         .doOnNext(bcRegistryBusinessDto -> {
           if (Boolean.FALSE.equals(bcRegistryBusinessDto.business().goodStanding())) {
             errors.rejectValue(businessNameField, 

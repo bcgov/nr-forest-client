@@ -12,12 +12,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -207,6 +208,9 @@ public class ReportingClientService {
             .exchangeToMono(
                 clientResponse -> clientResponse.bodyToMono(OrgBookTopicListResponse.class)
             )
+            .onErrorReturn(
+                new OrgBookTopicListResponse(0, 0, 0, new ArrayList<>())
+            )
             .filter(response -> !CollectionUtils.isEmpty(response.results()))
             .flatMapIterable(OrgBookTopicListResponse::results)
             .doOnNext(
@@ -217,11 +221,7 @@ public class ReportingClientService {
   }
 
   private static String encodeUri(String clientName) {
-    try {
-      return URLEncoder.encode(clientName, "utf-8");
-    } catch (UnsupportedEncodingException e) {
-      return clientName;
-    }
+    return URLEncoder.encode(clientName, StandardCharsets.UTF_8);
   }
 
 }

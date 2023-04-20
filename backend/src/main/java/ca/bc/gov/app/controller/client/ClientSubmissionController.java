@@ -1,9 +1,10 @@
 package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.controller.AbstractController;
+import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.exception.InvalidRequestObjectException;
-import ca.bc.gov.app.service.client.ClientService;
+import ca.bc.gov.app.service.client.ClientSubmissionService;
 import ca.bc.gov.app.validator.client.ClientSubmitRequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -19,11 +20,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Tag(
@@ -32,19 +36,49 @@ import reactor.core.publisher.Mono;
 )
 @RestController
 @Slf4j
-@RequestMapping(value = "/api/clients", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/clients/submissions", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ClientSubmissionController extends
     AbstractController<ClientSubmissionDto, ClientSubmitRequestValidator> {
 
-  private final ClientService clientService;
+  private final ClientSubmissionService clientService;
 
   public ClientSubmissionController(
-      ClientService clientService, ClientSubmitRequestValidator validator) {
+      ClientSubmissionService clientService, ClientSubmitRequestValidator validator) {
     super(ClientSubmissionDto.class, validator);
     this.clientService = clientService;
   }
 
-  @PostMapping("/submissions")
+  @GetMapping
+  public Flux<ClientListSubmissionDto> listSubmissions(
+
+      @RequestParam(required = false, defaultValue = "0")
+      int page,
+      @RequestParam(required = false, defaultValue = "10")
+      int size,
+      @RequestParam(required = false)
+      String[] requestType,
+      @RequestParam(required = false)
+      String[] requestStatus,
+      @RequestParam(required = false)
+      String[] clientType,
+      @RequestParam(required = false)
+      String[] name,
+      @RequestParam(required = false)
+      String[] updatedAt
+  ) {
+    return clientService
+        .listSubmissions(
+            page,
+            size,
+            requestType,
+            requestStatus,
+            clientType,
+            name,
+            updatedAt
+        );
+  }
+
+  @PostMapping
   @Operation(
       summary = "Submit client data",
       responses = {

@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Getter
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class ValidationException extends ResponseStatusException {
+  @SuppressWarnings("java:S1948")
   private final List<ValidationError> errors;
 
   public ValidationException(List<ValidationError> errors) {
