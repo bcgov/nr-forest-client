@@ -10,6 +10,7 @@ import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -133,17 +135,7 @@ public class ClientService {
                 legacyService
                     .searchLegacy(document.business().identifier(), document.business().legalName())
                     .next()
-                    .filter(legacy ->
-                        StringUtils.equals(
-                            StringUtils.defaultString(legacy.registryCompanyTypeCode()) +
-                                StringUtils.defaultString(legacy.corpRegnNmbr()),
-                            document.business().identifier()
-                        ) &&
-                            StringUtils.equals(
-                                document.business().legalName(),
-                                legacy.legalName()
-                            )
-                    )
+                    .filter(isMatchWith(document))
                     .flatMap(legacy -> Mono
                         .error(
                             new ClientAlreadyExistException(
@@ -157,6 +149,8 @@ public class ClientService {
             .map(BcRegistryDocumentDto.class::cast)
             .flatMap(buildDetails());
   }
+
+
 
   /**
    * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances
@@ -286,5 +280,18 @@ public class ClientService {
             .defaultIfEmpty(new ClientValueTextDto(province, province));
   }
 
+  private Predicate<ForestClientDto> isMatchWith(
+      BcRegistryDocumentDto document) {
+    return legacy ->
+        StringUtils.equals(
+            StringUtils.defaultString(legacy.registryCompanyTypeCode()) +
+                StringUtils.defaultString(legacy.corpRegnNmbr()),
+            document.business().identifier()
+        ) &&
+            StringUtils.equals(
+                document.business().legalName(),
+                legacy.legalName()
+            );
+  }
 
 }

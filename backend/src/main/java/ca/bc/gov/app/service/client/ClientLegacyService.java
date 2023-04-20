@@ -34,13 +34,13 @@ public class ClientLegacyService {
             .uri(builder ->
                 builder
                     .path("/search/incorporationOrName")
-                    .queryParam("incorporationNumber", Optional.ofNullable(incorporationNumber))
-                    .queryParam("companyName", Optional.ofNullable(companyName))
+                    .queryParamIfPresent("incorporationNumber", Optional.ofNullable(incorporationNumber))
+                    .queryParamIfPresent("companyName", Optional.ofNullable(companyName))
                     .build(Map.of())
             )
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
             .doOnNext(
-                dto -> log.info("Loading Legacy data for {} {} from legacy with registration {} {}",
-                    incorporationNumber, companyName, dto.clientNumber(), dto));
+                dto -> log.info("Loading Legacy data for {} {} from legacy with client number {}",
+                    incorporationNumber, companyName, dto.clientNumber()));
   }
 }

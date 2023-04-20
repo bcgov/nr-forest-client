@@ -96,6 +96,6 @@ public class ForestClientConfiguration {
   @NoArgsConstructor
   @AllArgsConstructor
   public static class LegacyConfiguration {
-    private String uri;
+    private String url;
   }
 }

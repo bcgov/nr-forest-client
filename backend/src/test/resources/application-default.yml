@@ -22,7 +22,7 @@ ca:
           apiKey: abc1234
           accountId: 'account 0000'
         legacy:
-          uri: 'http://127.0.0.1:10040'
+          url: 'http://127.0.0.1:10040'
 
 
 logging:

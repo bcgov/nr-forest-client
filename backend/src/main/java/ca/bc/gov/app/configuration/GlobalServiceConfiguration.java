@@ -111,7 +111,7 @@ public class GlobalServiceConfiguration {
   public WebClient legacyApi(ForestClientConfiguration configuration) {
     return WebClient
         .builder()
-        .baseUrl(configuration.getLegacy().getUri())
+        .baseUrl(configuration.getLegacy().getUrl())
         .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
         .defaultHeader("Accept", MediaType.APPLICATION_JSON_VALUE)
         .build();

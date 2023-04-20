@@ -487,5 +487,5 @@ public class TestConstants {
       ]""";
   public static final String LEGACY_EMPTY = "[]";
 
-  public static final String BCREG_RESPONSE_DUP = "Client SAMPLE COMPANY with the Incorporation number AA0000001 already exists";
+  public static final String BCREG_RESPONSE_DUP = "SAMPLE COMPANY already exists with the Incorporation number AA0000001 and client number 00000002";
 }

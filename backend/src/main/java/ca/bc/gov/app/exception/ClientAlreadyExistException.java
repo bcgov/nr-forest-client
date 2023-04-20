@@ -14,7 +14,7 @@ public class ClientAlreadyExistException extends ResponseStatusException {
     super(
         HttpStatus.CONFLICT,
         String.format(
-            "Client %s with the Incorporation number %s already exists with client number %s",
+            "%s already exists with the Incorporation number %s and client number %s",
             clientName,
             clientCode,
             clientNumber
