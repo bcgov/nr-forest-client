@@ -82,24 +82,4 @@ public class ClientLocationEntity {
   @Column("CLI_LOCN_COMMENT ")
   private String cliLocnComment;
 
-  @Column("UPDATE_TIMESTAMP")
-  private LocalDate updateTimestamp;
-
-  @Column("UPDATE_USERID")
-  private String updateUserId;
-
-  @Column("UPDATE_ORG_UNIT")
-  private Long updateOrgUnit;
-
-  @Column("ADD_TIMESTAMP")
-  private LocalDate addTimestamp;
-
-  @Column("ADD_USERID")
-  private String addUserId;
-
-  @Column("ADD_ORG_UNIT")
-  private Long addOrgUnit;
-
-  @Column("REVISION_COUNT")
-  private Long revisionCount;
 }

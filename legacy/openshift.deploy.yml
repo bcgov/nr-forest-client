@@ -24,46 +24,23 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-old-growth:prod-backend
-  - name: FOREST_API_URL
-    description: Forest Client service api url
-    required: true
-  - name: ORACLEDB_USER
-    description: Oracle database user name
-    required: true
-  - name: ORACLEDB_PASSWORD
-    description: Oracle database password
-    required: true
-  - name: ORACLEDB_DATABASE
-    description: Oracle database database name
-    required: true
-  - name: ORACLEDB_HOST
-    description: Oracle database host
-    required: true
-  - name: ORACLEDB_SERVICENAME
-    description: Oracle database service name
-    required: true  
+  - name: ORACLEDB_KEYSTORE
+    description: Oracle database keystore file  
   - name: CPU_REQUEST
     value: 75m
   - name: CPU_LIMIT
     value: 200m
   - name: MEMORY_REQUEST
-    value: 300Mi
+    value: 125Mi
   - name: MEMORY_LIMIT
-    value: 400Mi
-objects:
-  - apiVersion: v1
-    kind: Secret
-    metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}
-      labels:
-        app: ${NAME}-${ZONE}
-    stringData:
-      x-api-key: "${X_API_KEY}"
-      oracle-user: "${ORACLEDB_USER}"
-      oracle-password: "${ORACLEDB_PASSWORD}"
-      oracle-database: "${ORACLEDB_DATABASE}"
-      oracle-host: "${ORACLEDB_HOST}"
-      oracle-service: "${ORACLEDB_SERVICENAME}"
+    value: 125Mi
+  - name: BCREGISTRY_URI
+    description: Bc Registry API address
+    required: true
+  - name: CERT_PVC_SIZE
+    description: The amount of storage the cert PVC should have
+    value: 25Mi
+objects:  
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -80,6 +57,19 @@ objects:
             name: ${REGISTRY}/${PROMOTE}
           referencePolicy:
             type: Local
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: ${CERT_PVC_SIZE}
+      storageClassName: netapp-file-standard
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -108,46 +98,94 @@ objects:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
+          volumes:
+            - name: ${NAME}-${ZONE}-certs
+              persistentVolumeClaim:
+                claimName: ${NAME}-${ZONE}-${COMPONENT}
+            - name: reports
+              emptyDir: { }
+          initContainers:
+            - name: ${NAME}-init
+              image: ${REGISTRY}/bcgov/${NAME}/common:${ZONE}
+              imagePullPolicy: Always
+              env:
+                - name: ORACLEDB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: oracle-host
+                - name: ORACLEDB_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: oracle-secret
+                - name: ORACLEDB_PORT
+                  value: "1543"
+              volumeMounts:
+                - name: ${NAME}-${ZONE}-certs
+                  mountPath: /cert
+              resources:
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: 75Mi
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: 75Mi
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
-              env:                
-                - name: FRONTEND_URL
-                  value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
+              env:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
-                - name: LEGACY_URL
-                  value: https://${NAME}-${ZONE}-legacy.${DOMAIN}                                
                 - name: FOREST_API_URL
-                  value: ${FOREST_API_URL}
+                  value: https://${NAME}-${ZONE}-legacy.${DOMAIN}
                 - name: ORACLEDB_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: oracle-user
                 - name: ORACLEDB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: oracle-password
                 - name: ORACLEDB_DATABASE
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: oracle-database
                 - name: ORACLEDB_HOST
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: oracle-host
                 - name: ORACLEDB_SERVICENAME
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: oracle-service
                 - name: ORACLEDB_PORT
                   value: "1543"
+                - name: ORACLEDB_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: oracle-secret
+                - name: ORACLEDB_KEYSTORE
+                  value: /cert/jssecacerts
+                - name: BCREGISTRY_URI
+                  value: ${BCREGISTRY_URI}
+                - name: BCREGISTRY_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: bcregistry-key
+                - name: BCREGISTRY_ACCOUNT
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: bcregistry-account
               ports:
                 - containerPort: 9000
                   protocol: TCP
@@ -162,12 +200,27 @@ objects:
                 successThreshold: 1
                 failureThreshold: 30
                 httpGet:
-                  path: /
+                  path: /health
                   port: 9000
                   scheme: HTTP
-                initialDelaySeconds: 60
+                initialDelaySeconds: 3
                 periodSeconds: 30
                 timeoutSeconds: 5
+              livenessProbe:
+                successThreshold: 1
+                failureThreshold: 12
+                httpGet:
+                  path: /health
+                  port: 9000
+                  scheme: HTTP
+                initialDelaySeconds: 3
+                periodSeconds: 30
+                timeoutSeconds: 5
+              volumeMounts:
+                - mountPath: /cert
+                  name: ${NAME}-${ZONE}-certs
+                - mountPath: /workspace/temp
+                  name: reports
   - apiVersion: v1
     kind: Service
     metadata:
@@ -188,6 +241,8 @@ objects:
       labels:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
+      annotations:
+        haproxy.router.openshift.io/timeout: "10m"
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:

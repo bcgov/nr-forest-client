@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
 
 @Data
@@ -17,10 +18,18 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("ca.bc.gov.nrs")
 public class ForestClientConfiguration {
 
+  @NestedConfigurationProperty
   private ChesConfiguration ches;
+  @NestedConfigurationProperty
   private FrontEndConfiguration frontend;
+
+  @NestedConfigurationProperty
   private OpenMapsConfiguration openmaps;
+  @NestedConfigurationProperty
   private OrgBookConfiguration orgbook;
+
+  @NestedConfigurationProperty
+  private BcRegistryConfiguration bcregistry;
 
   @Data
   @Builder
@@ -40,6 +49,7 @@ public class ForestClientConfiguration {
   @AllArgsConstructor
   public static class FrontEndConfiguration {
     private String url;
+    @NestedConfigurationProperty
     private FrontEndCorsConfiguration cors;
 
   }
@@ -69,5 +79,15 @@ public class ForestClientConfiguration {
   @AllArgsConstructor
   public static class OrgBookConfiguration {
     private String uri;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class BcRegistryConfiguration {
+    private String uri;
+    private String apiKey;
+    private String accountId;
   }
 }

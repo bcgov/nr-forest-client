@@ -24,12 +24,6 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-old-growth:prod-backend
-  - name: CHES_CLIENT_ID
-    description: CHES service client id
-    required: true
-  - name: CHES_CLIENT_SECRET
-    description: CHES service client secret
-    required: true
   - name: CHES_TOKEN_URL
     description: CHES service authentication url
     required: true
@@ -41,20 +35,13 @@ parameters:
   - name: CPU_LIMIT
     value: 200m
   - name: MEMORY_REQUEST
-    value: 300Mi
+    value: 75Mi
   - name: MEMORY_LIMIT
-    value: 400Mi
+    value: 75Mi
+  - name: BCREGISTRY_URI
+    description: Bc Registry API address
+    required: true
 objects:
-  - apiVersion: v1
-    kind: Secret
-    metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}
-      labels:
-        app: ${NAME}-${ZONE}
-    stringData:
-      x-api-key: "${X_API_KEY}"
-      ches-client-id: "${CHES_CLIENT_ID}"
-      ches-client-secret: "${CHES_CLIENT_SECRET}"
   - apiVersion: v1
     kind: ImageStream
     metadata:
@@ -106,17 +93,15 @@ objects:
               env:
                 - name: FRONTEND_URL
                   value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
-                - name: BACKEND_URL
-                  value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: CHES_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: ches-client-id
                 - name: CHES_CLIENT_SECRET
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: ches-client-secret
                 - name: CHES_TOKEN_URL
                   value: ${CHES_TOKEN_URL}
@@ -127,19 +112,31 @@ objects:
                 - name: POSTGRESQL_DATABASE
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
+                      name: ${NAME}-${ZONE}
                       key: database-name
                 - name: POSTGRESQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
+                      name: ${NAME}-${ZONE}
                       key: database-password
                 - name: POSTGRESQL_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
+                      name: ${NAME}-${ZONE}
                       key: database-user
-
+                - name: BCREGISTRY_URI
+                  value: ${BCREGISTRY_URI}
+                - name: BCREGISTRY_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: bcregistry-key
+                - name: BCREGISTRY_ACCOUNT
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: bcregistry-account
+                
               ports:
                 - containerPort: 3000
                   protocol: TCP

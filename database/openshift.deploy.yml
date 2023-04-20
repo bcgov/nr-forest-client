@@ -182,17 +182,17 @@ objects:
                 - name: POSTGRES_DB
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: database-name
                 - name: POSTGRES_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: database-password
                 - name: POSTGRES_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      name: ${NAME}-${ZONE}
                       key: database-user
               volumeMounts:
                 - name: ${NAME}-${ZONE}-${COMPONENT}

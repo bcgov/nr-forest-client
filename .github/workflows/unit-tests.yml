@@ -36,6 +36,40 @@ jobs:
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-backend
           sonar_project_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
+      - name: Archive CycloneDX
+        continue-on-error: true
+        uses: actions/upload-artifact@v3
+        with:
+          name: cyclone-backend
+          path: target/bom.json
+          retention-days: 5
+
+      - name: Use Checkstyle report
+        continue-on-error: true
+        uses: jwgmeligmeyling/checkstyle-github-action@master
+        with:
+          path: 'backend/**/checkstyle-result.xml'
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        continue-on-error: true
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          report_paths: 'backend/target/**/TEST-*.xml'
+          commit: ${{ github.event.pull_request.head.sha }}
+          summary: Pull Request Tests Backend
+          detailed_summary: true
+          job_name: Backend Tests
+
+      - name: Add coverage to PR
+        id: jacoco
+        continue-on-error: true
+        uses: madrapps/jacoco-report@v1.3
+        with:
+          paths: backend/target/coverage-reports/merged-test-report/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 75
+          min-coverage-changed-files: 75
 
   tests-legacy:
     name: Legacy Unit Tests
@@ -54,6 +88,40 @@ jobs:
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-legacy
           sonar_project_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
+      - name: Archive CycloneDX
+        continue-on-error: true
+        uses: actions/upload-artifact@v3
+        with:
+          name: cyclone-legacy
+          path: target/bom.json
+          retention-days: 5
+
+      - name: Use Checkstyle report
+        continue-on-error: true
+        uses: jwgmeligmeyling/checkstyle-github-action@master
+        with:
+          path: 'legacy/**/checkstyle-result.xml'
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        continue-on-error: true
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          report_paths: 'legacy/target/**/TEST-*.xml'
+          commit: ${{ github.event.pull_request.head.sha }}
+          summary: Pull Request Tests Legacy
+          detailed_summary: true
+          job_name: Legacy Tests
+
+      - name: Add coverage to PR
+        id: jacoco
+        continue-on-error: true
+        uses: madrapps/jacoco-report@v1.3
+        with:
+          paths: legacy/target/coverage-reports/merged-test-report/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 75
+          min-coverage-changed-files: 75
 
   tests-frontend:
     name: Frontend Unit Tests

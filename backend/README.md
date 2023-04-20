@@ -25,18 +25,73 @@ When creating your own configuration file, you can overwrite any of the entries 
 [configuration file](src/main/resources/application.yml) as you wish, but the most optimal way of using it is by 
 setting just the parameters inside the `ca.bc.gov.nrs` context, as the rest of the parameters are already defined.
 
-Below is an example of the database configuration:
+Some parameters also have a link to an environment variable, that's usually used to replace 
+its value during deployment.
+
+Below is an example of the yml configuration and some comments on it:
 
 ```yml
 ca:
   bc:
     gov:
       nrs:
+        #Configures postgres access
         postgres:
-          database: fsa
-          host: 127.0.0.1:5432
-          username: fsa
-          password: thisisnotapassword
+          database: ${POSTGRESQL_DATABASE:fsa-forest}
+          host: ${POSTGRESQL_HOST:localhost}:5432
+          username: ${POSTGRESQL_USER:user}
+          password: ${POSTGRESQL_PASSWORD:passwd}
+        #Common hosted services configuration
+        ches:
+          #defines the CHES uri
+          uri: ${CHES_API_URL:http://127.0.0.1:10010/chess/uri}
+          #defines the token URL keycloak server
+          tokenUrl: ${CHES_TOKEN_URL:http://127.0.0.1:10010/token/uri}
+          #the id provided by CHES
+          clientId: ${CHES_CLIENT_ID:clientId}
+          #the secret provided by CHES
+          clientSecret: ${CHES_CLIENT_SECRET:secret}
+          #the scope of the ches
+          scope: scope
+        #BC Registry parameters
+        bcregistry:
+          #The BC Registry environment uri, it varies based on the environment
+          uri: ${BCREGISTRY_URI:https://bcregistry-sandbox.apigee.net}
+          #The API key used
+          apiKey: ${BCREGISTRY_KEY:123456}
+          #The account ID used. We only need to receive the number here, as the account fixed text is set
+          accountId: account ${BCREGISTRY_ACCOUNT:123456}
+        #OrgBook URL
+        orgbook:
+          uri: https://orgbook.gov.bc.ca/api
+        #OpenMaps URL
+        openmaps:
+          uri: https://openmaps.gov.bc.ca/geo/pub/ows
+        #Frontend parameters used to configure CORS
+        frontend:
+          #The Frontend URL
+          url: ${FRONTEND_URL:*}
+          #all cors parameters
+          cors:
+            #Authorized CORS headers
+            headers:
+              - x-requested-with
+              - authorization
+              - Content-Type
+              - Authorization
+              - credential
+              - X-XSRF-TOKEN
+              - access-control-allow-origin
+            #Authorized CORS methods
+            methods:
+              - OPTIONS
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            #Cors token duration
+            age: 5m
+
 ```
 
 

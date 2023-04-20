@@ -37,7 +37,7 @@ parameters:
   - name: MEMORY_REQUEST
     value: 50Mi
   - name: MEMORY_LIMIT
-    value: 150Mi
+    value: 50Mi
   - name: VITE_NODE_ENV
     value: ""
   - name: VITE_KEYCLOAK_URL
@@ -68,8 +68,9 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
-      config.js:
+      config.js: |
         window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${ZONE}-backend.${DOMAIN}');
+        window.localStorage.setItem('VITE_FRONTEND_URL', 'https://${NAME}-${ZONE}-frontend.${DOMAIN}');
         window.localStorage.setItem('VITE_NODE_ENV', '${VITE_NODE_ENV}');
         window.localStorage.setItem('VITE_KEYCLOAK_URL', '${VITE_KEYCLOAK_URL}');
         window.localStorage.setItem('VITE_KEYCLOAK_CLIENT_ID', '${VITE_KEYCLOAK_CLIENT_ID}');
@@ -111,8 +112,7 @@ objects:
               name: ${NAME}
               volumeMounts:
                 - name: env-config
-                  mountPath: /app/dist/config.js
-                  subPath: config.js
+                  mountPath: /srv/data
               ports:
                 - containerPort: 3000
                   protocol: TCP

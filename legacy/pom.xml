@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.3</version>
+		<version>3.0.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -65,7 +65,8 @@
 		<junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
 		<junit-platform.version>1.9.1</junit-platform.version>
 
-		<spring-cloud.version>2022.0.1</spring-cloud.version>
+		<oci.revision>${project.version}</oci.revision>
+		<poi.version>5.2.3</poi.version>
 	</properties>
 
 	<dependencies>
@@ -99,7 +100,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
-			<version>2.0.2</version>
+			<version>2.1.0</version>
 		</dependency>
 
 		<dependency>
@@ -111,6 +112,12 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.dhatim</groupId>
+			<artifactId>fastexcel</artifactId>
+			<version>0.15.3</version>
 		</dependency>
 
 		<dependency>
@@ -170,13 +177,6 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>testcontainers-bom</artifactId>
 				<version>${testcontainers.version}</version>
@@ -189,6 +189,11 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.graalvm.buildtools</groupId>
+				<artifactId>native-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
@@ -198,13 +203,34 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+					<image>
+						<buildpacks>
+							<buildpack>gcr.io/paketo-buildpacks/graalvm</buildpack>
+							<buildpack>gcr.io/paketo-buildpacks/java-native-image</buildpack>
+							<buildpack>gcr.io/paketo-buildpacks/image-labels</buildpack>
+						</buildpacks>
+						<env>
+							<BP_JVM_VERSION>17</BP_JVM_VERSION>
+							<BP_OCI_SOURCE>https://github.com/bcgov/nr-forest-client</BP_OCI_SOURCE>
+							<BP_OCI_VERSION>${project.version}</BP_OCI_VERSION>
+							<BP_OCI_DESCRIPTION>${project.description}</BP_OCI_DESCRIPTION>
+							<BP_OCI_LICENSES>Apache License, Version 2.0</BP_OCI_LICENSES>
+							<BP_OCI_REVISION>${oci.revision}</BP_OCI_REVISION>
+							<BP_OCI_TITLE>${project.name}</BP_OCI_TITLE>
+							<BP_OCI_CREATED>${timestamp}</BP_OCI_CREATED>
+							<BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
+						</env>
+					</image>
+					<layers>
+						<includeLayerTools>false</includeLayerTools>
+					</layers>
 				</configuration>
 			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.22.2</version>
+				<version>3.0.0</version>
 				<executions>
 					<execution>
 						<id>integration-tests</id>
@@ -227,7 +253,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.2</version>
+				<version>3.0.0</version>
 				<configuration>
 					<argLine>@{argLine}</argLine>
 					<skipTests>${skip.unit.tests}</skipTests>
@@ -355,7 +381,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.4.1</version>
+				<version>3.5.0</version>
 				<configuration>
 					<source>8</source>
 					<doctitle>Javadoc Documentation for ${project.name} ${project.version}
@@ -368,7 +394,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.2.1</version>
+				<version>3.3.0</version>
 				<executions>
 					<execution>
 						<id>default-cli</id>
@@ -432,7 +458,7 @@
 			<plugin>
 				<groupId>org.cyclonedx</groupId>
 				<artifactId>cyclonedx-maven-plugin</artifactId>
-				<version>2.7.5</version>
+				<version>2.7.6</version>
 				<executions>
 					<execution>
 						<phase>validate</phase>

@@ -2,9 +2,9 @@ import { ref } from "vue";
 import axios from "axios";
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
 import type { CodeDescrType } from "@/core/CommonTypes";
+import { backendUrl, frontendUrl } from "@/core/CoreConstants";
 
-axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-const forestClientBase = import.meta.env.VITE_BACKEND_URL;
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = frontendUrl;
 
 /**
  * Fetch data from external resource
@@ -20,7 +20,6 @@ export const useFetch = (url: string, config: any = {}) => {
   return { ...info, data }
 }
 
-
 export const useFetchTo = (url: string, data: any, config: any = {}) => {
 
   const response: any = ref({});
@@ -31,9 +30,9 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
     loading.value = true;
     try {
       const result = await axios.request({
+        ...config,
         url,
-        baseURL: forestClientBase,
-        ...config
+        baseURL: backendUrl
       });
       Object.assign(response, result);
       data.value = result.data;
@@ -49,24 +48,57 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
   return { response, error, data, loading, fetch }
 }
 
+export const usePost = (url: string, body: any, config: any = {}) => {
+  const response: any = ref({});
+  const responseBody: any = ref({});
+  const error: any = ref({});
+  const loading: any = ref(false);
+
+  const fetch = async () => {
+    loading.value = true;
+    try {
+      const result = await axios.request({
+        ...config,
+        url,
+        baseURL: backendUrl,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: body
+      });
+      response.value = result;
+      responseBody.value = result.data;
+    } catch (ex: any) {
+      error.value = ex.response;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  !config.skip && fetch();
+
+  return { response, error, responseBody, loading, fetch }
+}
+
 export const addNewAddress = (addresses: Address[]) => {
   const blankAddress: Address = {
     streetAddress: "",
-    country: {value: "", text:""} as CodeDescrType,
-    province: {value: "", text:""} as CodeDescrType,
+    country: { value: "", text: "" } as CodeDescrType,
+    province: { value: "", text: "" } as CodeDescrType,
     city: "",
     postalCode: "",
     contacts: [
       {
         contactType: { value: "", text: "" } as CodeDescrType,
-        contactFirstName: "",
-        contactLastName: "",
-        contactPhoneNumber: "",
-        contactEmail: "",
+        firstName: "",
+        lastName: "",
+        phoneNumber: "",
+        email: "",
       }
     ] as Contact[],
   };
-  
+
   let newAddresses = addresses.push(blankAddress);
   return newAddresses;
 }
@@ -74,68 +106,12 @@ export const addNewAddress = (addresses: Address[]) => {
 export const addNewContact = (contacts: Contact[]) => {
   const blankContact: Contact = {
     contactType: { value: "", text: "" } as CodeDescrType,
-    contactFirstName: "",
-    contactLastName: "",
-    contactPhoneNumber: "",
-    contactEmail: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    email: "",
   };
-  
+
   let newContacts = contacts.push(blankContact);
   return newContacts;
 }
-
-// import { backendUrl } from "../core/CoreConstants";
-
-// export const sendConfirmationEmail = (emailTo: String, emailBody: String) => {
-//   return axios
-//     .post(backendUrl + "/app/m/ches/sendEmail", null, {
-//       params: { emailTo, emailBody },
-//     })
-//     .then((response) => {
-//       return response;
-//     })
-//     .catch((e) => {
-//       console.log("Failed to send confirmation email", e);
-//       return e;
-//     });
-// };
-
-// export const foundDuplicateForBusiness = async (
-//   incorporationNumber: String,
-//   companyName: String
-// ) => {
-//   return axios
-//     .get(
-//       backendUrl + "/app/m/legacyclient/findClientByIncorporationNumberOrName",
-//       {
-//         params: { incorporationNumber, companyName },
-//       }
-//     )
-//     .then((response) => {
-//       if (response.data.length > 0) return true;
-//       return false;
-//     })
-//     .catch((e) => {
-//       console.log("Failed to check duplicate client for business user", e);
-//       return e;
-//     });
-// };
-
-// export const foundDuplicateForIndividual = async (
-//   firstName: String,
-//   lastName: String,
-//   birthdate: String
-// ) => {
-//   return axios
-//     .get(backendUrl + "/app/m/legacyclient/findClientByNameAndBirthdate", {
-//       params: { firstName, lastName, birthdate },
-//     })
-//     .then((response) => {
-//       if (response.data.length > 0) return true;
-//       return false;
-//     })
-//     .catch((e) => {
-//       console.log("Failed to check duplicate client for individual user", e);
-//       return e;
-//     });
-// };

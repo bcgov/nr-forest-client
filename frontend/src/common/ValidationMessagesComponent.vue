@@ -1,15 +1,12 @@
 <template>
   <div v-if="validationMessages != null" class="err-msg">
-    <span v-if="getErrorMessage(fieldId).length > 0">
-      {{ getErrorMessage(fieldId) }}
+    <span v-if="errorMsg">
+      <span v-html="errorMsg" />
     </span>
   </div>
 </template>
   
 <script setup lang="ts">
-  import BiAsterisk from "~icons/bi/asterisk";
-  import BiQuestionCircleFill from "~icons/bi/question-circle-fill";
-  
   const props = defineProps({
     fieldId: { 
       type: String, 
@@ -19,19 +16,21 @@
       type: Array<ValidationMessageType>, 
       required: true,
       default: null 
-    },
+    }
   });
 
-  const getErrorMessage = (fieldId: string) => {
-    let errorMsg = props.validationMessages
-                                .filter(p => p.fieldId == fieldId)
-                                .map(p => p.errorMsg);
-    return errorMsg.toString();
-  };
+  let errorMsg = computed(() => {
+    return (Array.isArray(props.validationMessages)) ? 
+                      props.validationMessages
+                                .filter(p => p.fieldId == props.fieldId)
+                                .map(p => p.errorMsg)
+                                .join('<br>') :
+                      "";
+  });
 </script>
 
 <script lang="ts">
-  import { defineComponent } from "vue";
+  import { computed, defineComponent } from "vue";
   import type { ValidationMessageType } from "@/core/CommonTypes";
   export default defineComponent({
     name: "ValidationMessageComponent",

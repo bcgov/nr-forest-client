@@ -126,7 +126,6 @@ create table if not exists nrfc.submission_location (
     city_name                   varchar(100)    not null,
     postal_code                 varchar(10)     not null,
     main_address_ind            varchar(1)      not null default 'N',
-    email_address               varchar(50)    	not null,
     constraint submission_location_id_pk primary key (submission_location_id),
     constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
     constraint submission_location_country_code_fk foreign key (country_code) references nrfc.country_code(country_code),
@@ -199,9 +198,6 @@ insert into nrfc.client_type_code (client_type_code, description, effective_date
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('S', 'Society', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('T', 'First Nation Tribal Council', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('U', 'Unregistered Company', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
-insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('Z', 'Sole Proprietorship', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
-
-update nrfc.client_type_code set expiry_date =  current_timestamp where client_type_code not in ('C', 'Z');
 
 insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('AP', 'Accounts Payable', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
 insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('AR', 'Accounts Receivable', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;

@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths-ignore:
-      - ".github/ISSUE_TEMPLATE/*"
-      - "**.md"
+      - '.github/ISSUE_TEMPLATE/*'
+      - '**.md'
   workflow_dispatch:
 
 concurrency:
@@ -25,7 +25,7 @@ jobs:
           dir: backend
           java-cache: maven
           java-distribution: temurin
-          java-version: "17"
+          java-version: '17'
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-backend
@@ -42,7 +42,7 @@ jobs:
           dir: legacy
           java-cache: maven
           java-distribution: temurin
-          java-version: "17"
+          java-version: '17'
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-legacy
@@ -89,9 +89,9 @@ jobs:
       - name: Set up JDK 17 and Caching maven dependencies
         uses: actions/setup-java@v3
         with:
-          distribution: "temurin"
-          java-version: "17"
-          cache: "maven"
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
 
       - name: Build Backend
         run: |
@@ -118,78 +118,9 @@ jobs:
       - codeql
     env:
       ZONE: test
-    environment: test
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: common/openshift.init.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          parameters: -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-
-  test-database:
-    name: TEST Database
-    needs:
-      - test-init
-    env:
-      ZONE: test
-    environment: test
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: database/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          penetration_test: false
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
-  
-  test-backend:
-    name: TEST Backend
-    needs:
-      - test-database
-    env:
-      ZONE: test
-    environment: test
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: backend/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          penetration_test: false
-          verification_path: health
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/backend:${{ env.ZONE }}
-            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
-            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
-            -p CHES_TOKEN_URL='https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
-            -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1'
-
-  test-legacy:
-    name: TEST Legacy
-    needs:
-      - test-init
-    env:
-      ZONE: test
       DOMAIN: apps.silver.devops.gov.bc.ca
+      BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
+      VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
     environment: test
     runs-on: ubuntu-22.04
     steps:
@@ -216,6 +147,92 @@ jobs:
       - name: Deploys
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
+          file: common/openshift.init.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
+            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
+            -p BCREGISTRY_KEY='${{ secrets.BCREGISTRY_KEY }}'
+            -p BCREGISTRY_ACCOUNT='${{ secrets.BCREGISTRY_ACCOUNT }}'
+            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
+            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
+
+      - name: Conventional Changelog Update
+        uses: TriPSs/conventional-changelog-action@v3
+        id: changelog
+        continue-on-error: true
+        with:
+          github-token: ${{ github.token }}
+          output-file: 'CHANGELOG.md'
+          skip-version-file: 'true'
+          skip-commit: 'true'
+          git-push: 'true'
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: ${{ steps.changelog.outputs.tag != '' }}
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          token: ${{ github.token }}
+          tag_name: ${{ steps.changelog.outputs.tag }}
+          name: ${{ steps.changelog.outputs.tag }}
+          body: ${{ steps.changelog.outputs.clean_changelog }}
+
+  test-deploy:
+    name: TEST Deployment
+    needs:
+      - test-init
+    env:
+      ZONE: test
+      DOMAIN: apps.silver.devops.gov.bc.ca
+    environment: test
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy Database
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: database/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          penetration_test: false
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
+
+      - name: Deploy Backend
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: backend/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          verification_path: health
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/backend:${{ env.ZONE }}
+            -p CHES_TOKEN_URL='https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
+            -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1'
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+
+      - name: Deplo Legacy
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
@@ -226,24 +243,9 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
-            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
-            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
-            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
-            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
-            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
-  test-frontend:
-    name: TEST Frontend
-    needs:
-      - test-init
-    env:
-      ZONE: test
-    environment: test
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
+      - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: frontend/openshift.deploy.yml
@@ -258,90 +260,31 @@ jobs:
             -p VITE_KEYCLOAK_URL=https://test.loginproxy.gov.bc.ca/auth
             -p VITE_KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
 
-  
+  image-promotions:
+    name: Promote images to PROD
+    needs:
+      - test-deploy
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [backend, frontend, legacy, database, common]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: test
+          tags: prod
+
   prod-init:
     name: PROD Init
-    needs:      
-      - test-backend
-      - test-frontend
-      - test-legacy
-    env:
-      ZONE: prod
-    environment: prod
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: common/openshift.init.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          parameters: -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-
-  prod-database:
-    name: PROD Database
     needs:
-      - prod-init
+      - image-promotions
     env:
-      PREV: test
-      ZONE: prod
-    environment: prod
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: database/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          penetration_test: false
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
-
-  prod-backend:
-    name: PROD Backend
-    needs:      
-      - prod-database
-    env:
-      PREV: test
-      ZONE: prod
-    environment: prod
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: backend/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          penetration_test: false
-          verification_path: health
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/backend:${{ env.PREV }}
-            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
-            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
-            -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
-            -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
-
-  prod-legacy:
-    name: PROD Legacy
-    needs:
-      - prod-init
-    env:
-      PREV: test
       ZONE: prod
       DOMAIN: apps.silver.devops.gov.bc.ca
+      BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
+      VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
     environment: prod
     runs-on: ubuntu-22.04
     steps:
@@ -368,6 +311,70 @@ jobs:
       - name: Deploys
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
+          file: common/openshift.init.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
+            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
+            -p BCREGISTRY_KEY='${{ secrets.BCREGISTRY_KEY }}'
+            -p BCREGISTRY_ACCOUNT='${{ secrets.BCREGISTRY_ACCOUNT }}'
+            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
+            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
+
+  prod-deploy:
+    name: PROD Database
+    needs:
+      - prod-init
+    env:
+      PREV: test
+      ZONE: prod
+      DOMAIN: apps.silver.devops.gov.bc.ca
+    environment: prod
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy Database
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: database/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          penetration_test: false
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
+
+      - name: Deploy Backend
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: backend/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          verification_path: health
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/backend:${{ env.PREV }}
+            -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
+            -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+
+      - name: Deploy Legacy
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
@@ -378,25 +385,9 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
-            -p ORACLEDB_USER=${{ steps.secrets.outputs.VAULT_DB_USER }}
-            -p ORACLEDB_PASSWORD=${{ steps.secrets.outputs.VAULT_DB_PASS }}
-            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
-            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
-            -p FOREST_API_URL=https://${{ github.event.repository.name }}-${{ env.ZONE }}-backend.${{ env.DOMAIN }}
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
-  prod-frontend:
-    name: PROD Frontend
-    needs:
-      - prod-init
-    env:
-      PREV: test
-      ZONE: prod
-    environment: prod
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
+      - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: frontend/openshift.deploy.yml
@@ -410,21 +401,3 @@ jobs:
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}
             -p VITE_KEYCLOAK_URL=https://loginproxy.gov.bc.ca/auth
             -p VITE_KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
-
-  image-promotions:
-    name: Promote images to PROD
-    needs:      
-      - prod-backend
-      - prod-frontend
-      - prod-legacy
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        component: [backend, frontend, legacy]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: test
-          tags: prod

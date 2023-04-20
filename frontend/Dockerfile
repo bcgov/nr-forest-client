@@ -1,44 +1,17 @@
 # RedHat UBI 8 with nodejs 14
-FROM registry.access.redhat.com/ubi8/ubi:8.7@sha256:70fc843d4eb70159799e065d2830726b884c93950f8891e263d6328af6141173 as builder
+FROM registry.access.redhat.com/ubi8/ubi:8.7-1112@sha256:e3311058176628ad7f0f288f894ed2afef61be77ad01d53d5b69bca0f6b6cec1 as builder
 RUN dnf module install -y nodejs:18
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
 COPY . ./
-RUN npm ci --omit=dev && \
-    npm run build && \
-    npm i serve
+RUN npm ci --omit=dev && npm run build
 
 # Deployment container
-FROM registry.access.redhat.com/ubi8/ubi-micro:8.7-6@sha256:af0a83c2fb7db1b63a5655c85f3f37d32b114443b8969fd8a40d47429cd87016
+FROM caddy:2.4.6-alpine@sha256:c8555e2ca66576a4404c2b5f31d843a5378dea6134acb500502901b563efebcf
+EXPOSE 3000
+COPY --from=builder /app/Caddyfile /etc/caddy/Caddyfile
+COPY --from=builder /app/dist /srv
 
-# Set node to production 
-ENV NODE_ENV production
-
-# Node packages and dependencies
-COPY --from=builder /usr/bin/node /usr/bin/
-COPY --from=builder /usr/lib64/libz.so.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libbrotlidec.so.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libbrotlienc.so.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libcrypto.so.1.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libssl.so.1.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libstdc++.so.6 /usr/lib64/
-COPY --from=builder /usr/lib64/libgcc_s.so.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
-
-# Copy over app
-WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-
-# Expose port - mostly a convention, for readability
-EXPOSE 8080
-
-HEALTHCHECK --interval=35s --timeout=4s CMD curl -f http://localhost:8080/ || exit 1
- 
-
-# Non-privileged user
-USER app
-
-# Start up command
-ENTRYPOINT ["./node_modules/.bin/serve", "dist"]
+USER 1001
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3000/

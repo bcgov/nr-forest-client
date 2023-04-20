@@ -3,8 +3,6 @@ package ca.bc.gov.app.entity;
 
 import static ca.bc.gov.app.ApplicationConstants.ORACLE_ATTRIBUTE_SCHEMA;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,9 +39,6 @@ public class ForestClientEntity {
   @Column("CLIENT_TYPE_CODE")
   private String clientTypeCode;
 
-  @Column("BIRTHDATE")
-  private LocalDate birthdate;
-
   @Column("CLIENT_ID_TYPE_CODE")
   private String clientIdTypeCode;
 
@@ -67,27 +62,5 @@ public class ForestClientEntity {
 
   @Column("CLIENT_COMMENT")
   private String clientComment;
-
-  @Column("ADD_TIMESTAMP")
-  private LocalDateTime addTimestamp;
-
-  @Column("ADD_USERID")
-  private String addUserId;
-
-  @Column("ADD_ORG_UNIT")
-  private Long addOrgUnit;
-
-  @Column("UPDATE_TIMESTAMP")
-  private LocalDateTime updateTimestamp;
-
-  @Column("UPDATE_USERID")
-  private String updateUserId;
-
-  @Column("UPDATE_ORG_UNIT")
-  private Long updateOrgUnit;
-
-  @Column("REVISION_COUNT")
-  private Long revisionCount;
-
 
 }

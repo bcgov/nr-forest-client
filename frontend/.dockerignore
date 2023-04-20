@@ -4,3 +4,5 @@
 Dockerfile
 .git*/
 **/dist
+openshift.deploy.yml
+README.md
