@@ -461,7 +461,7 @@ public class TestConstants {
           "requestType":"",
           "name":"Auric Enterprises",
           "clientType":"A",
-          "updated":" | 2023-04-19",
+          "updated":" | %s",
           "status":"Submitted"
         }
       ]""";

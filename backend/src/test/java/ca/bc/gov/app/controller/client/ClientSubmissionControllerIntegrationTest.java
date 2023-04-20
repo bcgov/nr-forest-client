@@ -19,6 +19,8 @@ import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -182,7 +184,8 @@ class ClientSubmissionControllerIntegrationTest
         .expectStatus().isOk()
         .expectBody()
         .json(found ?
-            TestConstants.SUBMISSION_LIST_CONTENT :
+            String.format(TestConstants.SUBMISSION_LIST_CONTENT, LocalDate.now().format(
+                DateTimeFormatter.ISO_DATE)) :
             TestConstants.SUBMISSION_LIST_CONTENT_EMPTY
         );
   }
