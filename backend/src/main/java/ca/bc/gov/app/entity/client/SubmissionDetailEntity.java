@@ -7,7 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -55,4 +57,18 @@ public class SubmissionDetailEntity {
 
   @Column("has_additional_location_ind")
   private String hasAdditionalLocationInd;
+
+  @Transient
+  public String getDisplayName(){
+    if(StringUtils.defaultString(clientTypeCode).equalsIgnoreCase("I")){
+      return
+          StringUtils.joinWith(" ",
+              StringUtils.defaultString(firstName),
+              StringUtils.defaultString(middleName),
+              StringUtils.defaultString(lastName)
+          );
+    }
+    return StringUtils.defaultString(organizationName);
+  }
+
 }

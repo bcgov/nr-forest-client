@@ -31,9 +31,9 @@ parameters:
   - name: CPU_LIMIT
     value: 200m
   - name: MEMORY_REQUEST
-    value: 75Mi
+    value: 125Mi
   - name: MEMORY_LIMIT
-    value: 75Mi
+    value: 125Mi
   - name: BCREGISTRY_URI
     description: Bc Registry API address
     required: true
@@ -127,10 +127,10 @@ objects:
               resources:
                 limits:
                   cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
+                  memory: 75Mi
                 requests:
                   cpu: ${CPU_REQUEST}
-                  memory: ${MEMORY_REQUEST}
+                  memory: 75Mi
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
@@ -241,6 +241,8 @@ objects:
       labels:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
+      annotations:
+        haproxy.router.openshift.io/timeout: "10m"
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:

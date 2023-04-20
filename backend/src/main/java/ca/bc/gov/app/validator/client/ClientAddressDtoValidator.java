@@ -25,7 +25,7 @@ public class ClientAddressDtoValidator implements Validator {
   private final ProvinceCodeRepository provinceCodeRepository;
 
   private static final Pattern CA_POSTAL_CODE_FORMAT =
-      Pattern.compile("[A-Z][0-9][A-Z][0-9][A-Z][0-9]");
+      Pattern.compile("[A-Z]\\d[A-Z]\\d[A-Z]\\d");
 
   @Override
   public boolean supports(Class<?> clazz) {
