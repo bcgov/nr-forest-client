@@ -165,6 +165,9 @@ let formData = ref(formDataDto);
 //--- Initializing the Addresses array ---//
 addNewAddress(formDataDto.location.addresses);
 
+//--- Initializing the validation error ---//
+let validationMessages = ref([] as ValidationMessageType[]);
+
 const addressDataRef = ref([]);
 const originalBusinessNames = ref([]);
 
@@ -188,7 +191,16 @@ function filterSearchData(event: any) {
         formData.value.businessInformation.legalType = filteredSearchDataValues[0].legalType;
         formData.value.businessInformation.clientType = retrieveClientType(formData.value.businessInformation.legalType);
 
-        useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, addressDataRef, { method:'get' });
+        const {error: detailsResponse } = useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, addressDataRef, { method:'get' });
+        watch(
+            [detailsResponse],
+            () =>{                
+                if(409 === detailsResponse.value.response.status){
+                    if(!validationMessages.value.some(msg => msg.fieldId === 'businessInformation.businessName'))
+                        validationMessages.value.push({fieldId: 'businessInformation.businessName',errorMsg: detailsResponse.value.response.data})
+                }
+            }
+        )
     }
     else {
         formData.value.businessInformation.incorporationNumber = "";
@@ -229,7 +241,7 @@ function getBusinessName() {
 };
 
 //---- Functions ----//
-let validationMessages = ref([] as ValidationMessageType[]);
+
 
 const { response, error, fetch: persistValidateData } = usePost('/api/clients/submissions', formData.value, { skip: true });
 
