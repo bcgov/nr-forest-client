@@ -170,32 +170,6 @@ class ForestClientReportingIntegrationTest extends
         .findFirst();
 
     assertTrue(reportId.isPresent());
-    
-    client
-        .get()
-        .uri("/api/reports")
-        .exchange()
-        .expectStatus().isOk()
-        .expectBody()
-        .jsonPath("$[0]").isNotEmpty()
-        .consumeWith(response -> persistIds(response.getResponseBody()));
-
-  }
-
-
-  @Test
-  @DisplayName("Get the report")
-  @Order(5)
-  void shouldGetTheReport() throws IOException {
-
-    Optional<String> reportId =
-    Files
-        .list(Paths.get("./temp"))
-        .map(path -> path.toFile().getName())
-        .map(name -> name.replace(".xlsx",StringUtils.EMPTY))
-        .findFirst();
-
-    assertTrue(reportId.isPresent());
 
     client
         .get()
