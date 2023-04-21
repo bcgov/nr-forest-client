@@ -194,9 +194,9 @@ function filterSearchData(event: any) {
         const {error: detailsResponse } = useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, addressDataRef, { method:'get' });
         watch(
             [detailsResponse],
-            () =>{                
-                if(409 === detailsResponse.value.response.status){
-                    if(!validationMessages.value.some(msg => msg.fieldId === 'businessInformation.businessName'))
+            () => {                
+                if (409 === detailsResponse.value.response.status) {
+                    if (!validationMessages.value.some(msg => msg.fieldId === 'businessInformation.businessName'))
                         validationMessages.value.push({fieldId: 'businessInformation.businessName',errorMsg: detailsResponse.value.response.data})
                 }
             }
