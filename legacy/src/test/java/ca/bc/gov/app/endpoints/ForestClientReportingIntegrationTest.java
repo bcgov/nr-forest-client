@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.UUID;
+import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -62,7 +63,18 @@ class ForestClientReportingIntegrationTest extends
       .build();
 
   @BeforeAll
-  public static void setUp() {
+  public static void setUp() throws IOException {
+    Path tempFolder = Paths.get("./temp");
+
+    if(!tempFolder.toFile().exists())
+      tempFolder.toFile().mkdirs();
+
+    Files
+        .list(tempFolder)
+        .forEach(path -> path.toFile().delete());
+
+    tempFolder.toFile().delete();
+
     wireMockExtension.resetAll();
   }
 
@@ -70,7 +82,6 @@ class ForestClientReportingIntegrationTest extends
   @DisplayName("List no reports available")
   @Order(1)
   void shouldGetNoReportsListed() throws IOException {
-
     Files
         .list(Paths.get("./temp"))
             .forEach(path -> path.toFile().delete());
@@ -159,6 +170,32 @@ class ForestClientReportingIntegrationTest extends
         .findFirst();
 
     assertTrue(reportId.isPresent());
+    
+    client
+        .get()
+        .uri("/api/reports")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$[0]").isNotEmpty()
+        .consumeWith(response -> persistIds(response.getResponseBody()));
+
+  }
+
+
+  @Test
+  @DisplayName("Get the report")
+  @Order(5)
+  void shouldGetTheReport() throws IOException {
+
+    Optional<String> reportId =
+    Files
+        .list(Paths.get("./temp"))
+        .map(path -> path.toFile().getName())
+        .map(name -> name.replace(".xlsx",StringUtils.EMPTY))
+        .findFirst();
+
+    assertTrue(reportId.isPresent());
 
     client
         .get()
@@ -170,6 +207,34 @@ class ForestClientReportingIntegrationTest extends
         .expectHeader().valueEquals(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=FC Report "+reportId.get()+".xlsx");
   }
 
+  @Test
+  @DisplayName("Remove the report")
+  @Order(6)
+  void shouldRemoveReport() throws IOException {
+    Optional<String> reportId =
+        Files
+            .list(Paths.get("./temp"))
+            .map(path -> path.toFile().getName())
+            .map(name -> name.replace(".xlsx",StringUtils.EMPTY))
+            .findFirst();
+
+    assertTrue(reportId.isPresent());
+
+    client
+        .delete()
+        .uri("/api/reports/"+reportId.get())
+        .exchange()
+        .expectStatus().isAccepted()
+        .expectBody()
+        .isEmpty();
+  }
+
+  @Test
+  @DisplayName("Remove the report")
+  @Order(7)
+  void shouldHaveNoReportAgain() throws IOException {
+    shouldGetNoReportsListed();
+  }
 
   private void persistIds(byte[] data) {
     this.reportId =

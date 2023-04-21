@@ -82,9 +82,16 @@ public class ReportingClientService {
           .map(name -> name.replace(".xlsx", StringUtils.EMPTY));
     } catch (IOException exception) {
       log.error("Error while cleaning temp folder", exception);
+      return Flux.empty();
     }
-    return Flux.empty();
   }
+
+  public Mono<Void> removeReport(String id) {
+    return getReportFile(id)
+        .doOnNext(this::deleteReportFile)
+        .then();
+  }
+
 
   @Scheduled(cron = "0 0 0 ? * MON-FRI")
   public void generateAllClientsReport() {
@@ -107,13 +114,12 @@ public class ReportingClientService {
     try (Stream<Path> paths = Files.list(getReportFolder())) {
       paths
           .peek(file -> log.info("Found report on folder with name {}", file.getFileName()))
-          .filter(file -> isFileOlderThan(file.toFile(), 24))
+          .filter(file -> isFileOlderThan(file.toFile(), 48))
+          .peek(file -> log.info("Report {} is older than 48 hours, removing it", file.getFileName()))
           .forEach(path -> path.toFile().delete());
     } catch (IOException exception) {
       log.error("Error while cleaning temp folder", exception);
     }
-
-
   }
 
   private Path getReportFolder() {
@@ -133,6 +139,12 @@ public class ReportingClientService {
 
   private Path getReportPath(String reportId) {
     return getReportFolder().resolve(reportId + ".xlsx");
+  }
+
+  @SuppressWarnings("java:S4042")
+  private void deleteReportFile(File file){
+    if(file.exists())
+      log.info("File {} deleted {}",file,file.delete());
   }
 
   private boolean isFileOlderThan(File file, int hoursDiff) {
