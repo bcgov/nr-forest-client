@@ -8,8 +8,7 @@ export interface FormDataDto {
     clientType: string;
     incorporationNumber: string;
     businessName: null | string;
-    goodStanding: string;
-    fullMatchInd: string;
+    goodStandingInd: string;
     firstName: string;
     lastName: string;
     birthdate: string;
@@ -51,7 +50,7 @@ export const formDataDto: FormDataDto = {
     clientType: "",
     incorporationNumber: "",
     businessName: "",
-    goodStanding: "",
+    goodStandingInd: "",
     firstName: "",
     lastName: "",
     birthdate: "",

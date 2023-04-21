@@ -43,8 +43,8 @@
             </div>
 
             <span v-if="'' !== formData.businessInformation.incorporationNumber &&
-                        !formData.businessInformation.goodStanding &&
-                        '' !== formData.businessInformation.goodStanding">
+                        !formData.businessInformation.goodStandingInd &&
+                        '' !== formData.businessInformation.goodStandingInd">
                 <strong>Your business is not in good standing with BC Registries. You must go to
                         <a href="https://www.bcregistry.ca/business/auth/home/decide-business" target="_blank">BC Registries </a>
                         to resolve this before you can apply for a client number.
@@ -61,8 +61,8 @@
             <br /><br />
             <div class="alert alert-warning">
                 Incorporation number: {{ formData.businessInformation.incorporationNumber }}<br />
-                Good Standing? {{ formData.businessInformation.goodStanding }}<br />
-                100% Match? {{ formData.businessInformation.fullMatchInd }}
+                Good Standing? {{ formData.businessInformation.goodStandingInd }}<br />
+                Legal Type {{ formData.businessInformation.legalType }}
             </div>
         </CollapseCard>
 
@@ -204,7 +204,7 @@ function filterSearchData(event: any) {
     }
     else {
         formData.value.businessInformation.incorporationNumber = "";
-        formData.value.businessInformation.goodStanding = "";
+        formData.value.businessInformation.goodStandingInd = "";
     }    
     return filteredSearchDataValues;
 }
@@ -213,7 +213,7 @@ watch(
    [addressDataRef], 
    () => {         
         formData.value.location.addresses = addressDataRef.value.addresses;
-        formData.value.businessInformation.goodStanding = addressDataRef.value.goodStanding.toString();
+        formData.value.businessInformation.goodStandingInd = addressDataRef.value.goodStanding.toString();
     }
 );
 
@@ -221,7 +221,7 @@ const displayCommonSections = computed(() => {
     if ("" === formData.value.businessInformation.businessType || 
         "" === formData.value.businessInformation.legalType ||
         "" === formData.value.businessInformation.incorporationNumber ||
-        "false" === formData.value.businessInformation.goodStanding) {
+        "false" === formData.value.businessInformation.goodStandingInd) {
         return false;
     }
     else {
