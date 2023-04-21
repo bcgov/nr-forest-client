@@ -15,12 +15,15 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ZeroCopyHttpOutputMessage;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -67,6 +70,22 @@ public class ReportingClientController {
   public Mono<List<String>> listReports() {
     return service.listReports().collectList();
   }
+
+  @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+  @Operation(summary = "Delete an excel report file")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "202", description = "Excel file deleted successfully"),
+      @ApiResponse(responseCode = "404", description = "No report found for ID 00000000")
+  })
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public Mono<Void> removeReport(
+      @Parameter(name = "id", in = ParameterIn.PATH, description = "ID of the report to be removed")
+      @PathVariable String id,
+      ServerHttpResponse response
+  ) {
+    return service.removeReport(id);
+  }
+
 
   private Mono<Void> getReport(Mono<File> request, ServerHttpResponse response, String fileName) {
     ZeroCopyHttpOutputMessage zeroCopyResponse = (ZeroCopyHttpOutputMessage) response;
