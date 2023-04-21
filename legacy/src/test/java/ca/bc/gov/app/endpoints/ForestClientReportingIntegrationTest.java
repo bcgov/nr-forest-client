@@ -82,9 +82,6 @@ class ForestClientReportingIntegrationTest extends
   @DisplayName("List no reports available")
   @Order(1)
   void shouldGetNoReportsListed() throws IOException {
-    Files
-        .list(Paths.get("./temp"))
-            .forEach(path -> path.toFile().delete());
 
     client
         .get()
