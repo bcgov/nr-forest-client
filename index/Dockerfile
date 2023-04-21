@@ -1,4 +1,4 @@
-FROM docker.elastic.co/elasticsearch/elasticsearch-oss:7.12.0
+FROM elasticsearch:8.7.0@sha256:861409a3479ce337308777570ea6caa179731c59e10181d2931a110766b0d2fb
 
 # Switch to the Elasticsearch user
 USER elasticsearch
