@@ -86,12 +86,12 @@ public class ReportingClientService {
     }
   }
 
-
   public Mono<Void> removeReport(String id) {
     return getReportFile(id)
         .doOnNext(this::deleteReportFile)
         .then();
   }
+
 
   @Scheduled(cron = "0 0 0 ? * MON-FRI")
   public void generateAllClientsReport() {

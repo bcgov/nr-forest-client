@@ -17,9 +17,10 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.UUID;
+import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -206,7 +207,6 @@ class ForestClientReportingIntegrationTest extends
     shouldGetNoReportsListed();
   }
 
-
   private void persistIds(byte[] data) {
     this.reportId =
         new String(data, Charset.defaultCharset())
@@ -217,6 +217,5 @@ class ForestClientReportingIntegrationTest extends
     System.out.printf("Report Id loaded " + this.reportId);
 
     assertNotNull(this.reportId);
-
   }
 }

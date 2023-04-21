@@ -93,6 +93,8 @@ objects:
               env:
                 - name: FRONTEND_URL
                   value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
+                - name: LEGACY_URL
+                  value: https://${NAME}-${ZONE}-legacy.${DOMAIN}
                 - name: CHES_CLIENT_ID
                   valueFrom:
                     secretKeyRef:

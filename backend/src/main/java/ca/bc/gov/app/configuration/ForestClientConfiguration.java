@@ -22,12 +22,12 @@ public class ForestClientConfiguration {
   private ChesConfiguration ches;
   @NestedConfigurationProperty
   private FrontEndConfiguration frontend;
-
   @NestedConfigurationProperty
   private OpenMapsConfiguration openmaps;
   @NestedConfigurationProperty
   private OrgBookConfiguration orgbook;
-
+  @NestedConfigurationProperty
+  private LegacyConfiguration legacy;
   @NestedConfigurationProperty
   private BcRegistryConfiguration bcregistry;
 
@@ -89,5 +89,13 @@ public class ForestClientConfiguration {
     private String uri;
     private String apiKey;
     private String accountId;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class LegacyConfiguration {
+    private String url;
   }
 }
