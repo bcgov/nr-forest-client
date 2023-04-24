@@ -57,14 +57,6 @@ public class ClientSubmitRequestValidator implements Validator {
       return;
     }
 
-    if(businessInformation.businessType() == null) {
-      String businessTypeField = "businessType";
-      errors.rejectValue(
-          businessTypeField,
-          fieldIsMissingErrorMessage(businessTypeField));
-      return;
-    }
-
     if(BusinessTypeEnum.R.equals(businessInformation.businessType())) {
       ValidationUtils
           .invokeValidator(registeredBusinessInformationValidator, businessInformation, errors);
@@ -73,8 +65,10 @@ public class ClientSubmitRequestValidator implements Validator {
 
     //Only option left is Business Type == U (Unregistered)
     if (StringUtils.isBlank(businessInformation.businessName())) {
+      errors.pushNestedPath("businessInformation");
       String businessNameField = "businessName";
       errors.rejectValue(businessNameField, fieldIsMissingErrorMessage(businessNameField));
+      errors.popNestedPath();
     }
   }
 

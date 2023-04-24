@@ -54,11 +54,6 @@ public class RegisteredBusinessInformationValidator implements Validator {
       ClientTypeEnum clientType, LegalTypeEnum legalType, Errors errors) {
     String clientTypeField = "clientType";
 
-    if (clientType == null) {
-      errors.rejectValue(clientTypeField, fieldIsMissingErrorMessage(clientTypeField));
-      return;
-    }
-
     if(ClientTypeEnum.I.equals(clientType)) {
       errors.rejectValue(clientTypeField, clientTypeField + "invalid value");
     }
@@ -82,13 +77,6 @@ public class RegisteredBusinessInformationValidator implements Validator {
           incorporationNumberField,
           fieldIsMissingErrorMessage(incorporationNumberField));
       return;
-    }
-
-    if(legalType == null) {
-      String legalTypeField = "legalType";
-      errors.rejectValue(
-          legalTypeField,
-          fieldIsMissingErrorMessage(legalTypeField));
     }
 
     if(LegalTypeEnum.SP.equals(legalType) || LegalTypeEnum.GP.equals(legalType)) {
