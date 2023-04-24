@@ -3,7 +3,6 @@ package ca.bc.gov.app.util;
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.exception.ValidationException;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.BeanPropertyBindingResult;

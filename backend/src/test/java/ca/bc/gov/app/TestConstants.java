@@ -459,10 +459,10 @@ public class TestConstants {
         {
           "id":1,
           "requestType":"",
-          "name":"Auric Enterprises",
-          "clientType":"A",
-          "updated":" | %s",
-          "status":"Submitted"
+          "name":"Goldfinger",
+          "clientType":"P",
+          "updated":"testUserId | %s",
+          "status":"In Progress"
         }
       ]""";
   public static final String SUBMISSION_LIST_CONTENT_EMPTY = "[]";

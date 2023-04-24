@@ -27,9 +27,6 @@ public class SubmissionEntity extends BaseEntity {
   @Column("submission_id")
   private Integer submissionId;
 
-  @Column("submitter_user_guid")
-  private String submitterUserId;
-
   @Column("submission_status_code")
   private SubmissionStatusEnum submissionStatus;
 

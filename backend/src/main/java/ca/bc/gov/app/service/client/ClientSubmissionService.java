@@ -24,7 +24,6 @@ import ca.bc.gov.app.repository.client.SubmitterRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +46,6 @@ public class ClientSubmissionService {
   private final SubmissionLocationContactRepository submissionLocationContactRepository;
   private final R2dbcEntityTemplate template;
 
-
   /**
    * Submits a new client submission and returns a Mono of the submission ID.
    *
@@ -55,13 +53,15 @@ public class ClientSubmissionService {
    * @return a Mono of the submission ID
    */
   public Mono<Integer> submit(ClientSubmissionDto clientSubmissionDto) {
+    String userId = clientSubmissionDto.userId();
+
     SubmissionEntity submissionEntity =
         SubmissionEntity
             .builder()
-            .submitterUserId(UUID.randomUUID().toString()) //TODO: set the correct user
-            .submissionStatus(SubmissionStatusEnum.S)
+            .submissionStatus(SubmissionStatusEnum.P)
             .submissionDate(LocalDateTime.now())
-            .createdBy(UUID.randomUUID().toString()) //TODO: receive user id
+            .createdBy(userId)
+            .updatedBy(userId)
             .build();
 
     return submissionRepository.save(submissionEntity)
@@ -73,7 +73,7 @@ public class ClientSubmissionService {
         .map(submitter ->
             mapToSubmissionDetailEntity(
                 submitter.getSubmissionId(),
-                clientSubmissionDto)
+                clientSubmissionDto.businessInformation())
         )
         .flatMap(submissionDetailRepository::save)
         .flatMap(submissionDetail ->
@@ -88,7 +88,7 @@ public class ClientSubmissionService {
       int page,
       int size,
       String[] requestType,
-      String[] requestStatus,
+      SubmissionStatusEnum[] requestStatus,
       String[] clientType,
       String[] name,
       String[] updatedAt
@@ -136,7 +136,7 @@ public class ClientSubmissionService {
                         new ClientListSubmissionDto(
                             submission.getSubmissionId(),
                             "", //TODO: Must include and process
-                            submissionDetail.getDisplayName(),
+                            submissionDetail.getOrganizationName(),
                             submissionDetail.getClientTypeCode(),
                             String.format("%s | %s",
                                 StringUtils.defaultString(submission.getUpdatedBy()),
@@ -164,7 +164,6 @@ public class ClientSubmissionService {
         .then();
   }
 
-
   private Mono<Void> submitLocationContacts(ClientAddressDto addressDto,
                                             Integer submissionLocationId) {
     return Flux
@@ -176,6 +175,4 @@ public class ClientSubmissionService {
                     contactDto)))
         .then();
   }
-
-
 }

@@ -13,14 +13,14 @@ import org.springframework.data.relational.core.query.Criteria;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SubmissionPredicates implements QueryPredicates {
 
-  public static Criteria orStatus(String[] values) {
+  public static Criteria orStatus(SubmissionStatusEnum[] values) {
     if (values != null) {
       return
           Stream
               .of(values)
               .map(value ->
                   where("submissionStatus")
-                      .is(SubmissionStatusEnum.fromValue(value))
+                      .is(value)
               )
               .reduce(Criteria::or)
               .orElse(Criteria.empty());
