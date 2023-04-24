@@ -43,14 +43,27 @@
             </div>
 
             <span v-if="'' !== formData.businessInformation.incorporationNumber &&
-                        !formData.businessInformation.goodStanding &&
-                        ('SP' === formData.businessInformation.legalType ||
-                         'GP' === formData.businessInformation.legalType)">
+                        !formData.businessInformation.goodStandingInd &&
+                        '' !== formData.businessInformation.goodStandingInd">
                 <strong>Your business is not in good standing with BC Registries. You must go to
                         <a href="https://www.bcregistry.ca/business/auth/home/decide-business" target="_blank">BC Registries </a>
                         to resolve this before you can apply for a client number.
                 </strong>
             </span>
+
+            <span v-if="'' !== formData.businessInformation.incorporationNumber &&
+                        !formData.businessInformation.fullMatchInd &&
+                        '' !== formData.businessInformation.fullMatchInd">
+                <strong>Your business is not 100% match</strong>
+            </span>
+
+            <!-- This section is for the demo. It has to be removed. -->
+            <br /><br />
+            <div class="alert alert-warning">
+                Incorporation number: {{ formData.businessInformation.incorporationNumber }}<br />
+                Good Standing? {{ formData.businessInformation.goodStandingInd }}<br />
+                Legal Type {{ formData.businessInformation.legalType }}
+            </div>
         </CollapseCard>
 
         <CollapseCard title="Mailing address" 
@@ -152,6 +165,9 @@ let formData = ref(formDataDto);
 //--- Initializing the Addresses array ---//
 addNewAddress(formDataDto.location.addresses);
 
+//--- Initializing the validation error ---//
+let validationMessages = ref([] as ValidationMessageType[]);
+
 const addressDataRef = ref([]);
 const originalBusinessNames = ref([]);
 
@@ -175,11 +191,20 @@ function filterSearchData(event: any) {
         formData.value.businessInformation.legalType = filteredSearchDataValues[0].legalType;
         formData.value.businessInformation.clientType = retrieveClientType(formData.value.businessInformation.legalType);
 
-        useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, addressDataRef, { method:'get' });
+        const {error: detailsResponse } = useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, addressDataRef, { method:'get' });
+        watch(
+            [detailsResponse],
+            () => {                
+                if (409 === detailsResponse.value.response.status) {
+                    if (!validationMessages.value.some(msg => msg.fieldId === 'businessInformation.businessName'))
+                        validationMessages.value.push({fieldId: 'businessInformation.businessName',errorMsg: detailsResponse.value.response.data})
+                }
+            }
+        )
     }
     else {
         formData.value.businessInformation.incorporationNumber = "";
-        formData.value.businessInformation.goodStanding = "";
+        formData.value.businessInformation.goodStandingInd = "";
     }    
     return filteredSearchDataValues;
 }
@@ -188,7 +213,7 @@ watch(
    [addressDataRef], 
    () => {         
         formData.value.location.addresses = addressDataRef.value.addresses;
-        formData.value.businessInformation.goodStanding = addressDataRef.value.goodStanding.toString();
+        formData.value.businessInformation.goodStandingInd = addressDataRef.value.goodStanding.toString();
     }
 );
 
@@ -196,7 +221,7 @@ const displayCommonSections = computed(() => {
     if ("" === formData.value.businessInformation.businessType || 
         "" === formData.value.businessInformation.legalType ||
         "" === formData.value.businessInformation.incorporationNumber ||
-        "false" === formData.value.businessInformation.goodStanding) {
+        "false" === formData.value.businessInformation.goodStandingInd) {
         return false;
     }
     else {
@@ -216,7 +241,7 @@ function getBusinessName() {
 };
 
 //---- Functions ----//
-let validationMessages = ref([] as ValidationMessageType[]);
+
 
 const { response, error, fetch: persistValidateData } = usePost('/api/clients/submissions', formData.value, { skip: true });
 

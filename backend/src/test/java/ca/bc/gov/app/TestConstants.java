@@ -461,9 +461,31 @@ public class TestConstants {
           "requestType":"",
           "name":"Auric Enterprises",
           "clientType":"A",
-          "updated":" | 2023-04-19",
+          "updated":" | %s",
           "status":"Submitted"
         }
       ]""";
   public static final String SUBMISSION_LIST_CONTENT_EMPTY = "[]";
+  public static final String LEGACY_OK = """
+      [
+          {
+              "clientNumber": "00000002",
+              "clientName": "SAMPLE COMPANY",
+              "legalFirstName": null,
+              "legalMiddleName": null,
+              "clientStatusCode": "ACT",
+              "clientTypeCode": "C",
+              "clientIdTypeCode": "BCDL",
+              "clientIdentification": null,
+              "registryCompanyTypeCode": "AA",
+              "corpRegnNmbr": "0000001",
+              "clientAcronym": null,
+              "wcbFirmNumber": null,
+              "ocgSupplierNmbr": null,
+              "clientComment": "C v."
+          }
+      ]""";
+  public static final String LEGACY_EMPTY = "[]";
+
+  public static final String BCREG_RESPONSE_DUP = "SAMPLE COMPANY already exists with the Incorporation number AA0000001 and client number 00000002";
 }
