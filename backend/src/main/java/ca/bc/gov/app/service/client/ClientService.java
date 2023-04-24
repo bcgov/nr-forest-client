@@ -36,7 +36,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -149,8 +148,6 @@ public class ClientService {
             .map(BcRegistryDocumentDto.class::cast)
             .flatMap(buildDetails());
   }
-
-
 
   /**
    * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances
@@ -293,5 +290,4 @@ public class ClientService {
                 legacy.legalName()
             );
   }
-
 }

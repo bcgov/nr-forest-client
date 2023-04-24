@@ -1,19 +1,21 @@
 package ca.bc.gov.app.controller.client;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
-import ca.bc.gov.app.dto.client.ClientBusinessTypeDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
+import ca.bc.gov.app.dto.client.ClientTypeEnum;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
+import ca.bc.gov.app.dto.client.LegalTypeEnum;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
@@ -72,7 +74,8 @@ class ClientSubmissionControllerIntegrationTest
   public void init() {
     wireMockExtension.resetAll();
     wireMockExtension
-        .stubFor(get(urlPathEqualTo("/business/api/v2/businesses/1234"))
+        .stubFor(post(
+            urlPathEqualTo("/registry-search/api/v1/businesses/1234/documents/requests"))
             .willReturn(
                 status(200)
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -87,16 +90,14 @@ class ClientSubmissionControllerIntegrationTest
   void shouldSubmitClientData() {
     ClientSubmissionDto clientSubmissionDto =
         new ClientSubmissionDto(
-            new ClientBusinessTypeDto(new ClientValueTextDto(
-                "A",
-                "Association")),
+            "testUserId",
             new ClientBusinessInformationDto(
-                "Auric",
-                "Goldfinger",
-                "1964-07-07",
                 "1234",
-                "test",
-                "Auric Enterprises"
+                "Goldfinger",
+                BusinessTypeEnum.R,
+                ClientTypeEnum.P,
+                "Y",
+                LegalTypeEnum.GP
             ),
             new ClientLocationDto(
                 List.of(
@@ -108,11 +109,11 @@ class ClientSubmissionControllerIntegrationTest
                         0,
                         List.of(
                             new ClientContactDto(
-                                new ClientValueTextDto("LP", "LP"),
-                                "James",
+                                new ClientValueTextDto("LP","LP"), 
+                                "James", 
                                 "Bond",
-                                "9876543210",
-                                "bond_james_bond@007.com",
+                                "9876543210", 
+                                "bond_james_bond@007.com", 
                                 0
                             )
                         )
@@ -120,8 +121,8 @@ class ClientSubmissionControllerIntegrationTest
                 )
             ),
             new ClientSubmitterInformationDto(
-                "James",
-                "Bond",
+                "James", 
+                "Bond", 
                 "1234567890",
                 "james_bond@MI6.com"
             )
@@ -197,11 +198,10 @@ class ClientSubmissionControllerIntegrationTest
             Arguments.of(null,null,0,null,true),
             Arguments.of(null,null,0,10,true),
             Arguments.of(null,null,null,10,true),
-            Arguments.of("requestStatus","Submitted",null,null,true),
-            Arguments.of("clientType","A",null,null,true),
-            Arguments.of("name","Auric",null,null,true),
-            Arguments.of("name","Enterprises",null,null,true),
-            Arguments.of("name","Auric Enterprises",null,null,true),
+            Arguments.of("requestStatus","P",null,null,true),
+            Arguments.of("clientType","P",null,null,true),
+            Arguments.of("name","Goldfinger",null,null,true),
+            Arguments.of("name","Auric",null,null,false),
             Arguments.of(null,null,1,null,false),
             Arguments.of(null,null,1,1,false)
         );

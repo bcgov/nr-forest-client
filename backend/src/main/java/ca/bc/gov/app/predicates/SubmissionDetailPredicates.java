@@ -9,10 +9,7 @@ public class SubmissionDetailPredicates implements QueryPredicates {
 
   public static Criteria orName(String[] values) {
     if (values != null) {
-      QueryPredicates.orContains(values, "organizationName")
-          .or(QueryPredicates.orContains(values, "firstName"))
-          .or(QueryPredicates.orContains(values, "middleName"))
-          .or(QueryPredicates.orContains(values, "lastName"));
+      return QueryPredicates.orContains(values, "organizationName");
     }
     return Criteria.empty();
   }
