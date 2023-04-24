@@ -59,7 +59,7 @@ public class ClientMapper {
         .withOrganizationName(clientBusinessInformationDto.businessName())
         .withFirstName(clientBusinessInformationDto.firstName())
         .withLastName(clientBusinessInformationDto.lastName())
-        .withClientTypeCode(clientSubmissionDto.businessType().clientType().value())
+        .withClientTypeCode(clientSubmissionDto.businessInformation().clientType().toString())
         .withDateOfBirth(parseBirthdate(clientBusinessInformationDto))
         .withDoingBusinessAsName(clientBusinessInformationDto.doingBusinessAsName());
   }

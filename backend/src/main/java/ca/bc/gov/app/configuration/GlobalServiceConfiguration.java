@@ -11,7 +11,6 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryIdentificationDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
-import ca.bc.gov.app.dto.client.ClientBusinessTypeDto;
 import ca.bc.gov.app.dto.client.ClientCodeTypeDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientDetailsAddressDto;
@@ -38,7 +37,6 @@ import org.springframework.web.reactive.function.client.WebClient;
     ValidationError.class,
     ClientAddressDto.class,
     ClientBusinessInformationDto.class,
-    ClientBusinessTypeDto.class,
     ClientCodeTypeDto.class,
     ClientContactDto.class,
     ClientDetailsAddressDto.class,

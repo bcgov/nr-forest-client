@@ -1,6 +1,6 @@
 package ca.bc.gov.app.validator.client;
 
-import static ca.bc.gov.app.validator.common.CommonValidator.fieldIsMissingErrorMessage;
+import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;

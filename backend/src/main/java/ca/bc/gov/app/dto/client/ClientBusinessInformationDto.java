@@ -6,6 +6,10 @@ public record ClientBusinessInformationDto(
     String birthdate,
     String incorporationNumber,
     String doingBusinessAsName,
-    String businessName
+    String businessName,
+    ClientTypeEnum clientType,
+    BusinessTypeEnum businessType,
+    LegalTypeEnum legalType,
+    String goodStanding
 ) {
 }

@@ -10,6 +10,7 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
+import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
@@ -17,6 +18,7 @@ import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
+import ca.bc.gov.app.dto.client.LegalTypeEnum;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
@@ -37,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -136,7 +137,6 @@ public class ClientService {
             entity.getDescription()));
   }
 
-
   /**
    * Submits a new client submission and returns a Mono of the submission ID.
    *
@@ -144,13 +144,17 @@ public class ClientService {
    * @return a Mono of the submission ID
    */
   public Mono<Integer> submit(ClientSubmissionDto clientSubmissionDto) {
+    String userId = clientSubmissionDto.userId();
+
     SubmissionEntity submissionEntity =
         SubmissionEntity
             .builder()
-            .submitterUserId(UUID.randomUUID().toString()) //TODO: set the correct user
-            .submissionStatus(SubmissionStatusEnum.S)
+            .submitterUserId(userId)
+            .submissionStatus(
+                getSubmissionStatus(clientSubmissionDto))
             .submissionDate(LocalDateTime.now())
-            .createdBy(UUID.randomUUID().toString()) //TODO: receive user id
+            .createdBy(userId)
+            .updatedBy(userId)
             .build();
 
     return submissionRepository.save(submissionEntity)
@@ -171,6 +175,18 @@ public class ClientService {
                 submissionDetail.getSubmissionId())
                 .thenReturn(submissionDetail.getSubmissionId())
         );
+  }
+
+  private SubmissionStatusEnum getSubmissionStatus(ClientSubmissionDto clientSubmissionDto) {
+    if (!BusinessTypeEnum.R.equals(clientSubmissionDto.businessInformation().businessType())) {
+      return SubmissionStatusEnum.S;
+    }
+    LegalTypeEnum legalType = clientSubmissionDto.businessInformation().legalType();
+    if (LegalTypeEnum.SP.equals(legalType) || LegalTypeEnum.GP.equals(legalType)) {
+      return SubmissionStatusEnum.A;
+    }
+
+    return SubmissionStatusEnum.S;
   }
 
   /**

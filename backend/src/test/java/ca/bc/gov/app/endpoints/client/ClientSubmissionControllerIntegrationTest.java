@@ -1,12 +1,27 @@
 package ca.bc.gov.app.endpoints.client;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
+import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.dto.client.BusinessTypeEnum;
+import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
+import ca.bc.gov.app.dto.client.ClientContactDto;
+import ca.bc.gov.app.dto.client.ClientLocationDto;
+import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
+import ca.bc.gov.app.dto.client.ClientTypeEnum;
+import ca.bc.gov.app.dto.client.ClientValueTextDto;
+import ca.bc.gov.app.dto.client.LegalTypeEnum;
+import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
+import ca.bc.gov.app.extensions.WiremockLogNotifier;
+import ca.bc.gov.app.utils.ClientSubmissionAggregator;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,22 +32,6 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-
-import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
-import ca.bc.gov.app.dto.client.ClientBusinessTypeDto;
-import ca.bc.gov.app.dto.client.ClientContactDto;
-import ca.bc.gov.app.dto.client.ClientLocationDto;
-import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
-import ca.bc.gov.app.dto.client.ClientValueTextDto;
-import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
-import ca.bc.gov.app.extensions.WiremockLogNotifier;
-import ca.bc.gov.app.utils.ClientSubmissionAggregator;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -60,7 +59,8 @@ public class ClientSubmissionControllerIntegrationTest
   public void init() {
     wireMockExtension.resetAll();
     wireMockExtension
-        .stubFor(get(urlPathEqualTo("/business/api/v2/businesses/1234"))
+        .stubFor(post(
+            urlPathEqualTo("/registry-search/api/v1/businesses/1234/documents/requests"))
             .willReturn(
                 status(200)
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -74,16 +74,18 @@ public class ClientSubmissionControllerIntegrationTest
   void shouldSubmitClientData() {
     ClientSubmissionDto clientSubmissionDto =
         new ClientSubmissionDto(
-            new ClientBusinessTypeDto(new ClientValueTextDto(
-            								"A", 
-            								"Association")),
+            "testUserId",
             new ClientBusinessInformationDto(
                 "Auric", 
                 "Goldfinger", 
                 "1964-07-07",
                 "1234", 
                 "test", 
-                "Auric Enterprises"
+                "Auric Enterprises",
+                ClientTypeEnum.P,
+                BusinessTypeEnum.R,
+                LegalTypeEnum.GP,
+                "true"
             ),
             new ClientLocationDto(
                 List.of(
@@ -130,7 +132,6 @@ public class ClientSubmissionControllerIntegrationTest
   @CsvFileSource(resources = "/failValidationTest.csv", numLinesToSkip = 1)
   void shouldFailValidationSubmit(
       @AggregateWith(ClientSubmissionAggregator.class) ClientSubmissionDto clientSubmissionDto) {
-    System.out.println(clientSubmissionDto);
     client
         .post()
         .uri("/api/clients/submissions")
