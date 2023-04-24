@@ -143,14 +143,8 @@ objects:
               env:
                 - name: cluster.name
                   value: ${NAME}-${ZONE}
-                - name: node.name
-                  valueFrom:
-                    fieldRef:
-                      fieldPath: metadata.name
-                - name: discovery.seed_hosts
-                  value: ${NAME}-${ZONE}.elasticsearch-oss-headless
-                - name: cluster.initial_master_nodes
-                  value: ${NAME}-${ZONE}
+                - name: discovery.type
+                  value: single-node                
               volumeMounts:
                 - name: ${NAME}-${ZONE}-${COMPONENT}
                   mountPath: ${PVC_MOUNT_PATH}
