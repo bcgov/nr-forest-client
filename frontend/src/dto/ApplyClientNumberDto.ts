@@ -9,10 +9,6 @@ export interface FormDataDto {
     incorporationNumber: string;
     businessName: null | string;
     goodStandingInd: string;
-    firstName: string;
-    lastName: string;
-    birthdate: string;
-    doingBusinessAsName: string;
   };
   location: {
     addresses: Address[];
@@ -50,11 +46,7 @@ export const formDataDto: FormDataDto = {
     clientType: "",
     incorporationNumber: "",
     businessName: "",
-    goodStandingInd: "",
-    firstName: "",
-    lastName: "",
-    birthdate: "",
-    doingBusinessAsName: "",
+    goodStandingInd: ""
   },
   location: {
     addresses: [],
