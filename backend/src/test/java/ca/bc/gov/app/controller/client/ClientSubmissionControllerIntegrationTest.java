@@ -1,4 +1,4 @@
-package ca.bc.gov.app.endpoints.client;
+package ca.bc.gov.app.controller.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
@@ -19,8 +19,6 @@ import ca.bc.gov.app.dto.client.LegalTypeEnum;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import java.util.List;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
 import java.time.LocalDate;
@@ -48,16 +46,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriBuilder;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.aggregator.AggregateWith;
-import org.junit.jupiter.params.provider.CsvFileSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -104,7 +92,7 @@ class ClientSubmissionControllerIntegrationTest
         new ClientSubmissionDto(
             "testUserId",
             new ClientBusinessInformationDto(
-                "Auric", 
+                "1234",
                 "Goldfinger",
                 BusinessTypeEnum.R,
                 ClientTypeEnum.P,
@@ -210,11 +198,10 @@ class ClientSubmissionControllerIntegrationTest
             Arguments.of(null,null,0,null,true),
             Arguments.of(null,null,0,10,true),
             Arguments.of(null,null,null,10,true),
-            Arguments.of("requestStatus","Submitted",null,null,true),
-            Arguments.of("clientType","A",null,null,true),
-            Arguments.of("name","Auric",null,null,true),
-            Arguments.of("name","Enterprises",null,null,true),
-            Arguments.of("name","Auric Enterprises",null,null,true),
+            Arguments.of("requestStatus","P",null,null,true),
+            Arguments.of("clientType","P",null,null,true),
+            Arguments.of("name","Goldfinger",null,null,true),
+            Arguments.of("name","Auric",null,null,false),
             Arguments.of(null,null,1,null,false),
             Arguments.of(null,null,1,1,false)
         );

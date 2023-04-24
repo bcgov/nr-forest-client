@@ -1,7 +1,6 @@
 package ca.bc.gov.app.entity.client;
 
 import ca.bc.gov.app.ApplicationConstant;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

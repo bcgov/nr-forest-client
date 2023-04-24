@@ -18,11 +18,6 @@ import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
-import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
-import ca.bc.gov.app.repository.client.SubmissionRepository;
-import ca.bc.gov.app.repository.client.SubmitterRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -41,7 +36,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -50,12 +44,6 @@ public class ClientService {
   private final CountryCodeRepository countryCodeRepository;
   private final ProvinceCodeRepository provinceCodeRepository;
   private final ContactTypeCodeRepository contactTypeCodeRepository;
-  private final SubmissionRepository submissionRepository;
-
-  private final SubmitterRepository submitterRepository;
-  private final SubmissionDetailRepository submissionDetailRepository;
-  private final SubmissionLocationRepository submissionLocationRepository;
-  private final SubmissionLocationContactRepository submissionLocationContactRepository;
   private final BcRegistryService bcRegistryService;
   private final ClientLegacyService legacyService;
 

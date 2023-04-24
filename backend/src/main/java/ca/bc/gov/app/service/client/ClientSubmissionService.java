@@ -6,12 +6,10 @@ import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmitterEntity;
 import static org.springframework.data.relational.core.query.Query.query;
 
-import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.LegalTypeEnum;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
@@ -26,7 +24,6 @@ import ca.bc.gov.app.repository.client.SubmitterRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -61,8 +58,7 @@ public class ClientSubmissionService {
     SubmissionEntity submissionEntity =
         SubmissionEntity
             .builder()
-            .submissionStatus(
-                getSubmissionStatus(clientSubmissionDto))
+            .submissionStatus(SubmissionStatusEnum.P)
             .submissionDate(LocalDateTime.now())
             .createdBy(userId)
             .updatedBy(userId)
@@ -88,23 +84,11 @@ public class ClientSubmissionService {
         );
   }
 
-  private SubmissionStatusEnum getSubmissionStatus(ClientSubmissionDto clientSubmissionDto) {
-    if (!BusinessTypeEnum.R.equals(clientSubmissionDto.businessInformation().businessType())) {
-      return SubmissionStatusEnum.P;
-    }
-    LegalTypeEnum legalType = clientSubmissionDto.businessInformation().legalType();
-    if (LegalTypeEnum.SP.equals(legalType) || LegalTypeEnum.GP.equals(legalType)) {
-      return SubmissionStatusEnum.A;
-    }
-
-    return SubmissionStatusEnum.P;
-  }
-
   public Flux<ClientListSubmissionDto> listSubmissions(
       int page,
       int size,
       String[] requestType,
-      String[] requestStatus,
+      SubmissionStatusEnum[] requestStatus,
       String[] clientType,
       String[] name,
       String[] updatedAt

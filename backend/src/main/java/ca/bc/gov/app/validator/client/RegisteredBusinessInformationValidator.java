@@ -22,6 +22,8 @@ public class RegisteredBusinessInformationValidator implements Validator {
 
   private final BcRegistryService bcRegistryService;
 
+  private static String BUSINESS_NAME_FIELD = "businessName";
+
   @Override
   public boolean supports(Class<?> clazz) {
     return ClientBusinessInformationDto.class.equals(clazz);
@@ -30,7 +32,6 @@ public class RegisteredBusinessInformationValidator implements Validator {
   @SneakyThrows
   @Override
   public void validate(Object target, Errors errors) {
-	String businessNameField = "businessName";
 	
     errors.pushNestedPath("businessInformation");
 
@@ -38,8 +39,8 @@ public class RegisteredBusinessInformationValidator implements Validator {
 
     validateClientType(businessInformation.clientType(), businessInformation.legalType(), errors);
 
-    ValidationUtils.rejectIfEmpty(errors, businessNameField,
-            fieldIsMissingErrorMessage(businessNameField));
+    ValidationUtils.rejectIfEmpty(errors, BUSINESS_NAME_FIELD,
+            fieldIsMissingErrorMessage(BUSINESS_NAME_FIELD));
     
     validateIncorporationNumberAndLegalType(
         businessInformation.incorporationNumber(),
