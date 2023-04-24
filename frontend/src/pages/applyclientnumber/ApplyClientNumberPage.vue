@@ -3,9 +3,7 @@
         <CollapseCard title="Registered business" 
                       id="businessInformationId"
                       defaultOpen>
-            <Label label="Please choose one of the options below" 
-                   tooltip="Go to <a href='https://www.bcregistry.ca/business/auth/home/decide-business' target='_blank'>BC Registries and Online Services</a>
-                            to read more about registered businesses. Sole proprietorships can be registered and unregistered."
+            <Label label="Choose one these options:" 
                    id="clientTypeLabelId" />
 
             <b-form-group @change="getBusinessName">
@@ -22,8 +20,7 @@
 
             <div v-if="formData.businessInformation.businessType == 'R'">
                 <Label label="Start typing to search for your B.C. registered business" 
-                    tooltip="If your business name isn't in the list, go to BC Registries to confirm."
-                    id="businessNameLabelId" />
+                       id="businessNameLabelId" />
         
                 <Autocomplete id="businessNameId"
                             :value="formData.businessInformation.businessName"
@@ -32,7 +29,7 @@
                             @updateValue="formData.businessInformation.businessName = $event;                                        
                                             populateBusinessList($event);
                                             filterSearchData($event)" />
-                <Note note="The name must be the same as it is in BC Registries" />
+                <Note note="The name must be the same as in BC Registries" />
                 <ValidationMessages fieldId = 'businessInformation.businessName'
                                     :validationMessages="validationMessages" />
             </div>
@@ -51,18 +48,12 @@
                 </strong>
             </span>
 
-            <span v-if="'' !== formData.businessInformation.incorporationNumber &&
-                        !formData.businessInformation.fullMatchInd &&
-                        '' !== formData.businessInformation.fullMatchInd">
-                <strong>Your business is not 100% match</strong>
-            </span>
-
             <!-- This section is for the demo. It has to be removed. -->
             <br /><br />
             <div class="alert alert-warning">
                 Incorporation number: {{ formData.businessInformation.incorporationNumber }}<br />
                 Good Standing? {{ formData.businessInformation.goodStandingInd }}<br />
-                Legal Type {{ formData.businessInformation.legalType }}
+                Legal Type: {{ formData.businessInformation.legalType }}
             </div>
         </CollapseCard>
 
@@ -219,9 +210,12 @@ watch(
 
 const displayCommonSections = computed(() => {
     if ("" === formData.value.businessInformation.businessType || 
-        "" === formData.value.businessInformation.legalType ||
-        "" === formData.value.businessInformation.incorporationNumber ||
-        "false" === formData.value.businessInformation.goodStandingInd) {
+        "" === formData.value.businessInformation.legalType) {
+        return false;
+    }
+    else if ("R" === formData.value.businessInformation.businessType && (
+             "" === formData.value.businessInformation.incorporationNumber ||
+             "false" === formData.value.businessInformation.goodStandingInd)) {
         return false;
     }
     else {
@@ -234,6 +228,7 @@ function getBusinessName() {
 
     if ("U" === formData.value.businessInformation.businessType) {
         formData.value.businessInformation.businessName = props.businessName;
+        formData.value.businessInformation.legalType = "SP";
     }
     else {
         formData.value.businessInformation.businessName = "";
