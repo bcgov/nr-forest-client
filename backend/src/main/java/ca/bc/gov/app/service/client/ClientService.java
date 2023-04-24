@@ -1,28 +1,19 @@
 package ca.bc.gov.app.service.client;
 
-import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
-import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationContactEntity;
-import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationEntity;
-import static ca.bc.gov.app.util.ClientMapper.mapToSubmitterEntity;
-
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
-import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
-import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
-import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
-import ca.bc.gov.app.dto.client.LegalTypeEnum;
-import ca.bc.gov.app.entity.client.SubmissionEntity;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
-import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
@@ -34,13 +25,13 @@ import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.repository.client.SubmitterRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -66,6 +57,7 @@ public class ClientService {
   private final SubmissionLocationRepository submissionLocationRepository;
   private final SubmissionLocationContactRepository submissionLocationContactRepository;
   private final BcRegistryService bcRegistryService;
+  private final ClientLegacyService legacyService;
 
   /**
    * <p><b>Find Active Client Type Codes</b></p>
@@ -138,57 +130,6 @@ public class ClientService {
   }
 
   /**
-   * Submits a new client submission and returns a Mono of the submission ID.
-   *
-   * @param clientSubmissionDto the DTO representing the client submission
-   * @return a Mono of the submission ID
-   */
-  public Mono<Integer> submit(ClientSubmissionDto clientSubmissionDto) {
-    String userId = clientSubmissionDto.userId();
-
-    SubmissionEntity submissionEntity =
-        SubmissionEntity
-            .builder()
-            .submissionStatus(
-                getSubmissionStatus(clientSubmissionDto))
-            .submissionDate(LocalDateTime.now())
-            .createdBy(userId)
-            .updatedBy(userId)
-            .build();
-
-    return submissionRepository.save(submissionEntity)
-        .map(submission ->
-            mapToSubmitterEntity(
-                submission.getSubmissionId(),
-                clientSubmissionDto.submitterInformation()))
-        .flatMap(submitterRepository::save)
-        .map(submitter ->
-            mapToSubmissionDetailEntity(
-                submitter.getSubmissionId(),
-                clientSubmissionDto.businessInformation())
-        )
-        .flatMap(submissionDetailRepository::save)
-        .flatMap(submissionDetail ->
-            submitLocations(
-                clientSubmissionDto.location(),
-                submissionDetail.getSubmissionId())
-                .thenReturn(submissionDetail.getSubmissionId())
-        );
-  }
-
-  private SubmissionStatusEnum getSubmissionStatus(ClientSubmissionDto clientSubmissionDto) {
-    if (!BusinessTypeEnum.R.equals(clientSubmissionDto.businessInformation().businessType())) {
-      return SubmissionStatusEnum.P;
-    }
-    LegalTypeEnum legalType = clientSubmissionDto.businessInformation().legalType();
-    if (LegalTypeEnum.SP.equals(legalType) || LegalTypeEnum.GP.equals(legalType)) {
-      return SubmissionStatusEnum.A;
-    }
-
-    return SubmissionStatusEnum.P;
-  }
-
-  /**
    * Retrieves the client details for a given client number by making calls to BC Registry service.
    * The details include the company standing and addresses.
    *
@@ -201,6 +142,22 @@ public class ClientService {
         bcRegistryService
             .requestDocumentData(clientNumber)
             .next()
+            .flatMap(document ->
+                legacyService
+                    .searchLegacy(document.business().identifier(), document.business().legalName())
+                    .next()
+                    .filter(isMatchWith(document))
+                    .flatMap(legacy -> Mono
+                        .error(
+                            new ClientAlreadyExistException(
+                                legacy.clientNumber(),
+                                document.business().identifier(),
+                                document.business().legalName())
+                        )
+                    )
+                    .defaultIfEmpty(document)
+            )
+            .map(BcRegistryDocumentDto.class::cast)
             .flatMap(buildDetails());
   }
 
@@ -218,11 +175,12 @@ public class ClientService {
     return bcRegistryService
         .searchByFacets(value)
         .map(entry -> new ClientLookUpDto(
-            entry.identifier(),
-            entry.name(),
-            entry.status(),
-            entry.legalType()
-        ));
+                entry.identifier(),
+                entry.name(),
+                entry.status(),
+                entry.legalType()
+            )
+        );
   }
 
   private Function<BcRegistryDocumentDto, Mono<ClientDetailsDto>> buildDetails() {
@@ -331,28 +289,17 @@ public class ClientService {
             .defaultIfEmpty(new ClientValueTextDto(province, province));
   }
 
-  private Mono<Void> submitLocations(ClientLocationDto clientLocationDto, Integer submissionId) {
-    return Flux.fromIterable(clientLocationDto
-            .addresses())
-        .flatMap(addressDto ->
-            submissionLocationRepository
-                .save(mapToSubmissionLocationEntity(submissionId, addressDto))
-                .flatMap(location ->
-                    submitLocationContacts(addressDto, location.getSubmissionLocationId())))
-        .then();
+  private Predicate<ForestClientDto> isMatchWith(
+      BcRegistryDocumentDto document) {
+    return legacy ->
+        StringUtils.equals(
+            StringUtils.defaultString(legacy.registryCompanyTypeCode()) +
+                StringUtils.defaultString(legacy.corpRegnNmbr()),
+            document.business().identifier()
+        ) &&
+            StringUtils.equals(
+                document.business().legalName(),
+                legacy.legalName()
+            );
   }
-
-  private Mono<Void> submitLocationContacts(ClientAddressDto addressDto,
-                                            Integer submissionLocationId) {
-    return Flux
-        .fromIterable(addressDto.contacts())
-        .flatMap(contactDto ->
-            submissionLocationContactRepository.save(
-                mapToSubmissionLocationContactEntity(
-                    submissionLocationId,
-                    contactDto)))
-        .then();
-  }
-
-
 }

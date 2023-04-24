@@ -1,13 +1,14 @@
 import type { CodeDescrType } from "@/core/CommonTypes";
 
 export interface FormDataDto {
-  businessType: {
-    clientType: CodeDescrType;
-  };
+  userId: string,
   businessInformation: {
+    businessType: string,
+    legalType: string,
+    clientType: string;
     incorporationNumber: string;
     businessName: null | string;
-    goodStanding: string;
+    goodStandingInd: string;
     firstName: string;
     lastName: string;
     birthdate: string;
@@ -42,13 +43,14 @@ export interface Contact {
 }
 
 export const formDataDto: FormDataDto = {
-  businessType: {
-    clientType: { value: "", text: "" },
-  },
+  userId: "",
   businessInformation: {
+    businessType: "",
+    legalType: "",
+    clientType: "",
     incorporationNumber: "",
     businessName: "",
-    goodStanding: "",
+    goodStandingInd: "",
     firstName: "",
     lastName: "",
     birthdate: "",

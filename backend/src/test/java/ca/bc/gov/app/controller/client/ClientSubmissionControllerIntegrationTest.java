@@ -21,7 +21,33 @@ import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.List;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import java.net.URI;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.aggregator.AggregateWith;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.util.UriBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +62,8 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @DisplayName("Integrated Test | FSA Client Submission Controller")
-public class ClientSubmissionControllerIntegrationTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+class ClientSubmissionControllerIntegrationTest
     extends AbstractTestContainerIntegrationTest {
 
   @Autowired
@@ -71,6 +98,7 @@ public class ClientSubmissionControllerIntegrationTest
 
   @Test
   @DisplayName("Submit client data")
+  @Order(1)
   void shouldSubmitClientData() {
     ClientSubmissionDto clientSubmissionDto =
         new ClientSubmissionDto(
@@ -126,8 +154,10 @@ public class ClientSubmissionControllerIntegrationTest
   @DisplayName("Fail Validation")
   @ParameterizedTest
   @CsvFileSource(resources = "/failValidationTest.csv", numLinesToSkip = 1)
+  @Order(3)
   void shouldFailValidationSubmit(
       @AggregateWith(ClientSubmissionAggregator.class) ClientSubmissionDto clientSubmissionDto) {
+    System.out.println(clientSubmissionDto);
     client
         .post()
         .uri("/api/clients/submissions")
@@ -136,4 +166,69 @@ public class ClientSubmissionControllerIntegrationTest
         .expectStatus().isBadRequest()
         .expectHeader().valueEquals("Reason", "Validation failed");
   }
+
+  @ParameterizedTest
+  @MethodSource("listValues")
+  @DisplayName("List and Search")
+  @Order(2)
+  void shouldListAndSearch(
+      String paramName,
+      String paramValue,
+      Integer page,
+      Integer size,
+      boolean found
+  ) {
+
+    Function<UriBuilder, URI> uri = uriBuilder ->
+        addQuery((page != null), "page", page)
+            .andThen(
+                addQuery((size != null), "size", size)
+            )
+            .andThen(
+                addQuery(StringUtils.isNotBlank(paramName), paramName, paramValue)
+            )
+            .apply(uriBuilder.path("/api/clients/submissions"))
+            .build(Map.of());
+
+    client
+        .get()
+        .uri(uri)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .json(found ?
+            String.format(TestConstants.SUBMISSION_LIST_CONTENT, LocalDate.now().format(
+                DateTimeFormatter.ISO_DATE)) :
+            TestConstants.SUBMISSION_LIST_CONTENT_EMPTY
+        );
+  }
+
+  private static Stream<Arguments> listValues() {
+    return
+        Stream.of(
+            Arguments.of(null,null,null,null,true),
+            Arguments.of(null,null,0,null,true),
+            Arguments.of(null,null,0,10,true),
+            Arguments.of(null,null,null,10,true),
+            Arguments.of("requestStatus","Submitted",null,null,true),
+            Arguments.of("clientType","A",null,null,true),
+            Arguments.of("name","Auric",null,null,true),
+            Arguments.of("name","Enterprises",null,null,true),
+            Arguments.of("name","Auric Enterprises",null,null,true),
+            Arguments.of(null,null,1,null,false),
+            Arguments.of(null,null,1,1,false)
+        );
+  }
+
+  private static UnaryOperator<UriBuilder> addQuery(
+      boolean shouldAdd,
+      String paramName,
+      Object paramValue
+  ) {
+    if (shouldAdd) {
+      return builder -> builder.queryParam(paramName, paramValue);
+    }
+    return UnaryOperator.identity();
+  }
+
 }

@@ -22,9 +22,9 @@ export const useFetch = (url: string, config: any = {}) => {
 
 export const useFetchTo = (url: string, data: any, config: any = {}) => {
 
-  const response: any = ref({});
-  const error: any = ref({});
-  const loading: any = ref(false);
+  const response = ref({});
+  const error = ref({});
+  const loading = ref(false);
 
   const fetch = async () => {
     loading.value = true;
@@ -34,10 +34,10 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
         url,
         baseURL: backendUrl
       });
-      Object.assign(response, result);
+      response.value = result;
       data.value = result.data;
     } catch (ex) {
-      Object.assign(error, ex);
+      error.value = ex;
     } finally {
       loading.value = false;
     }

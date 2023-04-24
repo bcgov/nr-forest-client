@@ -1,5 +1,7 @@
 package ca.bc.gov.app;
 
+import ca.bc.gov.app.dto.openmaps.PropertyDto;
+
 public class TestConstants {
   public static final String CHES_SUCCESS_MESSAGE = """      
       {
@@ -55,7 +57,7 @@ public class TestConstants {
           "code": "BC0772006",
           "name": "U3 POWER CORP.",
           "status": "ACTIVE",
-          "clientType": "SP"
+          "legalType": "SP"
         }
       ]""";
 
@@ -151,7 +153,7 @@ public class TestConstants {
         "code": "BC0772006",
         "name": "U3 POWER CORP.",
         "status": "ACTIVE",
-        "clientType": "SP"
+        "legalType": "SP"
       }""";
 
   public static final String OPENMAPS_OK = """
@@ -227,17 +229,16 @@ public class TestConstants {
       }
       """;
 
-  public static final String OPENMAPS_OK_RESPONSE = """
-      {        
-        "FIRST_NATION_FEDERAL_NAME": "Songhees Nation",
-        "FIRST_NATION_FEDERAL_ID": 656,        
-        "ADDRESS_LINE1": "1100 Admirals Road",
-        "ADDRESS_LINE2": " ",
-        "OFFICE_CITY": "VICTORIA",
-        "OFFICE_PROVINCE": "BC",
-        "OFFICE_POSTAL_CODE": "V9A 2P6"
-      }
-      """;
+  public static final PropertyDto OPENMAPS_OK_RESPONSE =
+      new PropertyDto(
+          "Songhees Nation",
+          656,
+          "1100 Admirals Road",
+          " ",
+          "VICTORIA",
+          "BC",
+          "V9A 2P6"
+      );
 
   public static final String BCREG_NOK = """
       {
@@ -453,4 +454,38 @@ public class TestConstants {
               "title": "Registrar of Companies"
           }
       }""";
+  public static final String SUBMISSION_LIST_CONTENT = """
+      [
+        {
+          "id":1,
+          "requestType":"",
+          "name":"Auric Enterprises",
+          "clientType":"A",
+          "updated":" | %s",
+          "status":"Submitted"
+        }
+      ]""";
+  public static final String SUBMISSION_LIST_CONTENT_EMPTY = "[]";
+  public static final String LEGACY_OK = """
+      [
+          {
+              "clientNumber": "00000002",
+              "clientName": "SAMPLE COMPANY",
+              "legalFirstName": null,
+              "legalMiddleName": null,
+              "clientStatusCode": "ACT",
+              "clientTypeCode": "C",
+              "clientIdTypeCode": "BCDL",
+              "clientIdentification": null,
+              "registryCompanyTypeCode": "AA",
+              "corpRegnNmbr": "0000001",
+              "clientAcronym": null,
+              "wcbFirmNumber": null,
+              "ocgSupplierNmbr": null,
+              "clientComment": "C v."
+          }
+      ]""";
+  public static final String LEGACY_EMPTY = "[]";
+
+  public static final String BCREG_RESPONSE_DUP = "SAMPLE COMPANY already exists with the Incorporation number AA0000001 and client number 00000002";
 }

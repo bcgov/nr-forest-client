@@ -74,6 +74,8 @@ ca:
           host: ${POSTGRESQL_HOST:localhost}:5432
           username: ${POSTGRESQL_USER:user}
           password: ${POSTGRESQL_PASSWORD:passwd}
+        legacy:
+          url: ${LEGACY_URL:http://127.0.0.1:9019/api}
         frontend:
           url: ${FRONTEND_URL:*}
           cors:

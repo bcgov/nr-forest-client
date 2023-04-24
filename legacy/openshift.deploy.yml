@@ -31,9 +31,9 @@ parameters:
   - name: CPU_LIMIT
     value: 200m
   - name: MEMORY_REQUEST
-    value: 75Mi
+    value: 125Mi
   - name: MEMORY_LIMIT
-    value: 75Mi
+    value: 125Mi
   - name: BCREGISTRY_URI
     description: Bc Registry API address
     required: true
@@ -71,6 +71,19 @@ objects:
           storage: ${CERT_PVC_SIZE}
       storageClassName: netapp-file-standard
   - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}-reports
+    spec:
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 125Mi
+      storageClassName: netapp-file-standard
+  - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:
@@ -102,8 +115,9 @@ objects:
             - name: ${NAME}-${ZONE}-certs
               persistentVolumeClaim:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}
-            - name: reports
-              emptyDir: { }
+            - name: ${NAME}-${ZONE}-reports
+              persistentVolumeClaim:
+                claimName: ${NAME}-${ZONE}-${COMPONENT}-reports
           initContainers:
             - name: ${NAME}-init
               image: ${REGISTRY}/bcgov/${NAME}/common:${ZONE}
@@ -127,10 +141,10 @@ objects:
               resources:
                 limits:
                   cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
+                  memory: 125Mi
                 requests:
                   cpu: ${CPU_REQUEST}
-                  memory: ${MEMORY_REQUEST}
+                  memory: 125Mi
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
@@ -220,7 +234,7 @@ objects:
                 - mountPath: /cert
                   name: ${NAME}-${ZONE}-certs
                 - mountPath: /workspace/temp
-                  name: reports
+                  name: ${NAME}-${ZONE}-reports
   - apiVersion: v1
     kind: Service
     metadata:
@@ -241,6 +255,8 @@ objects:
       labels:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
+      annotations:
+        haproxy.router.openshift.io/timeout: "10m"
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
