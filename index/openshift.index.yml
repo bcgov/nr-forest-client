@@ -36,48 +36,6 @@ parameters:
     description: Image (namespace/name:tag) to promote/import
     required: true
 objects:
-  - kind: PersistentVolumeClaim
-    apiVersion: v1
-    metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}
-      labels:
-        app: ${NAME}-${ZONE}
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: ${IDX_PVC_SIZE}
-      storageClassName: netapp-file-standard
-  - kind: PersistentVolumeClaim
-    apiVersion: v1
-    metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}-backup
-      labels:
-        app: ${NAME}-${ZONE}
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: ${IDX_BKP_PVC_SIZE}
-      storageClassName: netapp-file-standard
-  - kind: ImageStream
-    apiVersion: v1
-    metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}
-      labels:
-        app: ${NAME}-${ZONE}
-    spec:
-      lookupPolicy:
-        local: false
-      tags:
-        - name: ${IMAGE_TAG}
-          from:
-            kind: DockerImage
-            name: ${REGISTRY}/${PROMOTE}
-          referencePolicy:
-            type: Local
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
@@ -127,15 +85,15 @@ objects:
               readinessProbe:
                 tcpSocket:
                   port: 9200
-                initialDelaySeconds: 60
-                periodSeconds: 10
+                initialDelaySeconds: 240
+                periodSeconds: 30
                 timeoutSeconds: 3
                 successThreshold: 1
-                failureThreshold: 3
+                failureThreshold: 10
               livenessProbe:
                 tcpSocket:
                   port: 9200
-                initialDelaySeconds: 120
+                initialDelaySeconds: 240
                 periodSeconds: 60
                 timeoutSeconds: 5
                 successThreshold: 1
