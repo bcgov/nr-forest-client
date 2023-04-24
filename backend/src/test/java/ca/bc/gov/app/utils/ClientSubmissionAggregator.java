@@ -36,34 +36,30 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
       return null;
     }
 
-    String firstName = accessor.getString(2);
-    String lastName = accessor.getString(3);
-    String birthdate = accessor.getString(4);
-    String incorporationNumber = accessor.getString(5);
-    String doingBusinessAsName = accessor.getString(6);
-    String businessName = accessor.getString(7);
-    ClientTypeEnum clientType = ClientTypeEnum.valueOf(accessor.getString(8));
-    BusinessTypeEnum businessType = BusinessTypeEnum.valueOf(accessor.getString(9));
-    LegalTypeEnum legalType = LegalTypeEnum.valueOf(accessor.getString(10));
-    String goodStanding = accessor.getString(11);
+    String incorporationNumber = accessor.getString(2);
+    String businessName = accessor.getString(3);
+    ClientTypeEnum clientType = ClientTypeEnum.valueOf(accessor.getString(4));
+    BusinessTypeEnum businessType = BusinessTypeEnum.valueOf(accessor.getString(5));
+    LegalTypeEnum legalType = LegalTypeEnum.valueOf(accessor.getString(6));
+    String goodStanding = accessor.getString(7);
 
-    return new ClientBusinessInformationDto(firstName, lastName, birthdate, incorporationNumber,
-        doingBusinessAsName, businessName, clientType, businessType, legalType, goodStanding);
+    return new ClientBusinessInformationDto(incorporationNumber, businessName, businessType,
+        clientType, goodStanding, legalType);
   }
 
   private static ClientLocationDto createLocation(ArgumentsAccessor accessor) {
 
-    boolean locationNull = accessor.getBoolean(12);
+    boolean locationNull = accessor.getBoolean(8);
     if (locationNull) {
       return null;
     }
 
-    boolean addressNull = accessor.getBoolean(13);
+    boolean addressNull = accessor.getBoolean(9);
     if (addressNull) {
       new ClientLocationDto(null);
     }
 
-    boolean addressEmpty = accessor.getBoolean(14);
+    boolean addressEmpty = accessor.getBoolean(10);
     if (addressEmpty) {
       return new ClientLocationDto(new ArrayList<>());
     }
@@ -75,15 +71,16 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
 
   private static ClientAddressDto createAddress(ArgumentsAccessor accessor) {
 
-    String streetAddress = accessor.getString(15);
-    String country = accessor.getString(16);
-    String province = accessor.getString(17);
-    String city = accessor.getString(18);
-    String postalCode = accessor.getString(19);
+    String streetAddress = accessor.getString(11);
+    String country = accessor.getString(12);
+    String province = accessor.getString(13);
+    String city = accessor.getString(14);
+    String postalCode = accessor.getString(15);
+
     List<ClientContactDto> contacts;
 
-    boolean contactsNull = accessor.getBoolean(20);
-    boolean contactsEmpty = accessor.getBoolean(21);
+    boolean contactsNull = accessor.getBoolean(16);
+    boolean contactsEmpty = accessor.getBoolean(17);
     if (contactsNull) {
       contacts = null;
     } else if (contactsEmpty) {
@@ -98,11 +95,11 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
   }
 
   private static ClientContactDto createContact(ArgumentsAccessor accessor) {
-    String contactType = accessor.getString(22);
-    String contactFirstName = accessor.getString(23);
-    String contactLastName = accessor.getString(24);
-    String contactPhoneNumber = accessor.getString(25);
-    String contactEmail = accessor.getString(26);
+    String contactType = accessor.getString(18);
+    String contactFirstName = accessor.getString(19);
+    String contactLastName = accessor.getString(20);
+    String contactPhoneNumber = accessor.getString(21);
+    String contactEmail = accessor.getString(22);
 
     return new ClientContactDto(
         new ClientValueTextDto(contactType, contactType), contactFirstName, contactLastName,
@@ -112,15 +109,15 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
   private static ClientSubmitterInformationDto createSubmitterInformation(
       ArgumentsAccessor accessor) {
 
-    boolean submitterInformationNull = accessor.getBoolean(27);
+    boolean submitterInformationNull = accessor.getBoolean(23);
     if (submitterInformationNull) {
       return null;
     }
 
-    String submitterFirstName = accessor.getString(28);
-    String submitterLastName = accessor.getString(29);
-    String submitterPhoneNumber = accessor.getString(30);
-    String submitterEmail = accessor.getString(31);
+    String submitterFirstName = accessor.getString(24);
+    String submitterLastName = accessor.getString(25);
+    String submitterPhoneNumber = accessor.getString(26);
+    String submitterEmail = accessor.getString(27);
 
     return new ClientSubmitterInformationDto(
         submitterFirstName, submitterLastName, submitterPhoneNumber, submitterEmail);

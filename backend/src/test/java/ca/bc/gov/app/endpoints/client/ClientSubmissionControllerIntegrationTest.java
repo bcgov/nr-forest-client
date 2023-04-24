@@ -77,15 +77,11 @@ public class ClientSubmissionControllerIntegrationTest
             "testUserId",
             new ClientBusinessInformationDto(
                 "Auric", 
-                "Goldfinger", 
-                "1964-07-07",
-                "1234", 
-                "test", 
-                "Auric Enterprises",
-                ClientTypeEnum.P,
+                "Goldfinger",
                 BusinessTypeEnum.R,
-                LegalTypeEnum.GP,
-                "true"
+                ClientTypeEnum.P,
+                "Y",
+                LegalTypeEnum.GP
             ),
             new ClientLocationDto(
                 List.of(

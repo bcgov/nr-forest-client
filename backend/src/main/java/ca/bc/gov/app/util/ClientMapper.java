@@ -38,30 +38,26 @@ public class ClientMapper {
   }
 
   /**
-   * Maps a {@link ClientSubmissionDto} object to a {@link SubmissionDetailEntity} object,
+   * Maps a {@link ClientBusinessInformationDto} object to a {@link SubmissionDetailEntity} object,
    * using the specified submission ID.
    *
    * @param submissionId        the submission ID to be set on the {@link SubmissionDetailEntity}
-   * @param clientSubmissionDto the {@link ClientSubmissionDto} object to be
+   * @param clientBusinessInformationDto the {@link ClientBusinessInformationDto} object to be
    *                            mapped to a {@link SubmissionDetailEntity}
-   * @return the {@link SubmissionDetailEntity} object mapped from {@link ClientSubmissionDto}
+   * @return the {@link SubmissionDetailEntity}
+   * object mapped from {@link ClientBusinessInformationDto}
    */
   public static SubmissionDetailEntity mapToSubmissionDetailEntity(
       Integer submissionId,
-      ClientSubmissionDto clientSubmissionDto) {
-
-    ClientBusinessInformationDto
-        clientBusinessInformationDto = clientSubmissionDto.businessInformation();
+      ClientBusinessInformationDto clientBusinessInformationDto) {
 
     return new SubmissionDetailEntity()
         .withSubmissionId(submissionId)
         .withIncorporationNumber(clientBusinessInformationDto.incorporationNumber())
         .withOrganizationName(clientBusinessInformationDto.businessName())
-        .withFirstName(clientBusinessInformationDto.firstName())
-        .withLastName(clientBusinessInformationDto.lastName())
-        .withClientTypeCode(clientSubmissionDto.businessInformation().clientType().toString())
-        .withDateOfBirth(parseBirthdate(clientBusinessInformationDto))
-        .withDoingBusinessAsName(clientBusinessInformationDto.doingBusinessAsName());
+        .withBusinessTypeCode(clientBusinessInformationDto.businessType().toString())
+        .withClientTypeCode(clientBusinessInformationDto.clientType().toString())
+        .withGoodStandingInd(clientBusinessInformationDto.goodStanding());
   }
 
   /**
@@ -103,11 +99,5 @@ public class ClientMapper {
         .withLastName(clientContactDto.lastName())
         .withBusinessPhoneNumber(clientContactDto.phoneNumber())
         .withEmailAddress(clientContactDto.email());
-  }
-
-  private static LocalDate parseBirthdate(ClientBusinessInformationDto clientBusinessInformationDto) {
-    if(clientBusinessInformationDto == null || StringUtils.isBlank(clientBusinessInformationDto.birthdate()))
-      return null;
-    return LocalDate.parse(clientBusinessInformationDto.birthdate());
   }
 }

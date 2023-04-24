@@ -10,7 +10,7 @@ public enum SubmissionStatusEnum {
   A("Approved"),
   R("Rejected"),
   D("Deleted"),
-  S("Submitted");
+  N("New");
 
   private final String description;
 }

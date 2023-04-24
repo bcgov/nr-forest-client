@@ -32,27 +32,12 @@ public class SubmissionDetailEntity {
   @Column("organization_name")
   private String organizationName;
 
-  @Column("first_name")
-  private String firstName;
-
-  @Column("middle_name")
-  private String middleName;
-
-  @Column("last_name")
-  private String lastName;
+  @Column("business_type_code")
+  private String businessTypeCode;
 
   @Column("client_type_code")
   private String clientTypeCode;
 
-  @Column("date_of_birth")
-  private LocalDate dateOfBirth;
-
-  @Column("doing_business_as_ind")
-  private String doingBusinessAsInd;
-
-  @Column("doing_business_as_name")
-  private String doingBusinessAsName;
-
-  @Column("has_additional_location_ind")
-  private String hasAdditionalLocationInd;
+  @Column("good_standing_ind")
+  private String goodStandingInd;
 }

@@ -149,7 +149,6 @@ public class ClientService {
     SubmissionEntity submissionEntity =
         SubmissionEntity
             .builder()
-            .submitterUserId(userId)
             .submissionStatus(
                 getSubmissionStatus(clientSubmissionDto))
             .submissionDate(LocalDateTime.now())
@@ -166,7 +165,7 @@ public class ClientService {
         .map(submitter ->
             mapToSubmissionDetailEntity(
                 submitter.getSubmissionId(),
-                clientSubmissionDto)
+                clientSubmissionDto.businessInformation())
         )
         .flatMap(submissionDetailRepository::save)
         .flatMap(submissionDetail ->
@@ -179,14 +178,14 @@ public class ClientService {
 
   private SubmissionStatusEnum getSubmissionStatus(ClientSubmissionDto clientSubmissionDto) {
     if (!BusinessTypeEnum.R.equals(clientSubmissionDto.businessInformation().businessType())) {
-      return SubmissionStatusEnum.S;
+      return SubmissionStatusEnum.P;
     }
     LegalTypeEnum legalType = clientSubmissionDto.businessInformation().legalType();
     if (LegalTypeEnum.SP.equals(legalType) || LegalTypeEnum.GP.equals(legalType)) {
       return SubmissionStatusEnum.A;
     }
 
-    return SubmissionStatusEnum.S;
+    return SubmissionStatusEnum.P;
   }
 
   /**
