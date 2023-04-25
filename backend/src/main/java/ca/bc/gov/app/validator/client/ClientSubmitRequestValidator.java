@@ -1,6 +1,7 @@
 package ca.bc.gov.app.validator.client;
 
 import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
+import static ca.bc.gov.app.util.ClientValidationUtils.isValidEnum;
 
 import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
@@ -49,27 +50,35 @@ public class ClientSubmitRequestValidator implements Validator {
   private void validateBusinessInformation(
       ClientBusinessInformationDto businessInformation, Errors errors) {
 
+    String businessInformationField = "businessInformation";
     if (businessInformation == null) {
-      String businessInformationField = "businessInformation";
       errors.rejectValue(
           businessInformationField,
           fieldIsMissingErrorMessage(businessInformationField));
       return;
     }
 
-    if(BusinessTypeEnum.R.equals(businessInformation.businessType())) {
-      ValidationUtils
-          .invokeValidator(registeredBusinessInformationValidator, businessInformation, errors);
+    String businessType = businessInformation.businessType();
+
+    errors.pushNestedPath(businessInformationField);
+    if (!isValidEnum(businessType, "businessType", BusinessTypeEnum.class, errors)) {
       return;
     }
 
-    //Only option left is Business Type == U (Unregistered)
-    if (StringUtils.isBlank(businessInformation.businessName())) {
-      errors.pushNestedPath("businessInformation");
+    //The only validation for BusinessType == U (Unregistered) is that it must have a business name
+    if (BusinessTypeEnum.U.toString().equals(businessType)
+        && StringUtils.isBlank(businessInformation.businessName())) {
       String businessNameField = "businessName";
       errors.rejectValue(businessNameField, fieldIsMissingErrorMessage(businessNameField));
       errors.popNestedPath();
+      return;
     }
+
+    errors.popNestedPath();
+
+    //Only option left is Business Type == R (Registered)
+    ValidationUtils
+        .invokeValidator(registeredBusinessInformationValidator, businessInformation, errors);
   }
 
   private void validateLocation(ClientLocationDto location, Errors errors) {

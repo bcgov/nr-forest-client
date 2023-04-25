@@ -94,10 +94,10 @@ class ClientSubmissionControllerIntegrationTest
             new ClientBusinessInformationDto(
                 "1234",
                 "Goldfinger",
-                BusinessTypeEnum.R,
-                ClientTypeEnum.P,
+                "R",
+                "P",
                 "Y",
-                LegalTypeEnum.GP
+                "GP"
             ),
             new ClientLocationDto(
                 List.of(
@@ -198,7 +198,7 @@ class ClientSubmissionControllerIntegrationTest
             Arguments.of(null,null,0,null,true),
             Arguments.of(null,null,0,10,true),
             Arguments.of(null,null,null,10,true),
-            Arguments.of("requestStatus","P",null,null,true),
+            Arguments.of("requestStatus","N",null,null,true),
             Arguments.of("clientType","P",null,null,true),
             Arguments.of("name","Goldfinger",null,null,true),
             Arguments.of("name","Auric",null,null,false),

@@ -2,6 +2,7 @@ package ca.bc.gov.app.validator.client;
 
 import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
 import static ca.bc.gov.app.util.ClientValidationUtils.getClientType;
+import static ca.bc.gov.app.util.ClientValidationUtils.isValidEnum;
 
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientTypeEnum;
@@ -22,8 +23,6 @@ public class RegisteredBusinessInformationValidator implements Validator {
 
   private final BcRegistryService bcRegistryService;
 
-  private static String BUSINESS_NAME_FIELD = "businessName";
-
   @Override
   public boolean supports(Class<?> clazz) {
     return ClientBusinessInformationDto.class.equals(clazz);
@@ -32,34 +31,55 @@ public class RegisteredBusinessInformationValidator implements Validator {
   @SneakyThrows
   @Override
   public void validate(Object target, Errors errors) {
-	
+
     errors.pushNestedPath("businessInformation");
+
+    String businessNameField = "businessName";
+    ValidationUtils.rejectIfEmpty(errors, businessNameField,
+        fieldIsMissingErrorMessage(businessNameField));
 
     ClientBusinessInformationDto businessInformation = (ClientBusinessInformationDto) target;
 
-    validateClientType(businessInformation.clientType(), businessInformation.legalType(), errors);
+    LegalTypeEnum legalType = isValidLegalType(businessInformation.legalType(), errors);
 
-    ValidationUtils.rejectIfEmpty(errors, BUSINESS_NAME_FIELD,
-            fieldIsMissingErrorMessage(BUSINESS_NAME_FIELD));
-    
+    validateClientType(businessInformation.clientType(), legalType, errors);
+
     validateIncorporationNumberAndLegalType(
         businessInformation.incorporationNumber(),
-        businessInformation.legalType(),
+        legalType,
         errors);
 
     errors.popNestedPath();
   }
 
+  private LegalTypeEnum isValidLegalType(String legalType, Errors errors) {
+    if (!isValidEnum(legalType, "legalType", LegalTypeEnum.class, errors)) {
+      return null;
+    }
+    return LegalTypeEnum.valueOf(legalType);
+  }
+
   private void validateClientType(
-      ClientTypeEnum clientType, LegalTypeEnum legalType, Errors errors) {
+      String clientType, LegalTypeEnum legalType, Errors errors) {
     String clientTypeField = "clientType";
 
-    if(ClientTypeEnum.I.equals(clientType)) {
-      errors.rejectValue(clientTypeField, clientTypeField + "invalid value");
+    if (!isValidEnum(clientType, clientTypeField, ClientTypeEnum.class, errors)) {
+      return;
+    }
+
+    if (ClientTypeEnum.I.toString().equals(clientType)) {
+      errors.rejectValue(
+          clientTypeField,
+          String.format("%s value %s is not supported for registered businesses",
+              clientTypeField, clientType));
+    }
+
+    if (legalType == null) {
+      return;
     }
 
     ClientTypeEnum expectedClientType = getClientType(legalType);
-    if(!clientType.equals(expectedClientType)) {
+    if (!ClientTypeEnum.valueOf(clientType).equals(expectedClientType)) {
       errors.rejectValue(
           clientTypeField,
           clientTypeField +
@@ -70,7 +90,7 @@ public class RegisteredBusinessInformationValidator implements Validator {
   private void validateIncorporationNumberAndLegalType(
       String incorporationNumber, LegalTypeEnum legalType, Errors errors) {
 
-	String incorporationNumberField = "incorporationNumber";
+    String incorporationNumberField = "incorporationNumber";
 
     if (StringUtils.isBlank(incorporationNumber)) {
       errors.rejectValue(
@@ -79,7 +99,11 @@ public class RegisteredBusinessInformationValidator implements Validator {
       return;
     }
 
-    if(LegalTypeEnum.SP.equals(legalType) || LegalTypeEnum.GP.equals(legalType)) {
+    if (legalType == null) {
+      return;
+    }
+
+    if (LegalTypeEnum.SP.equals(legalType) || LegalTypeEnum.GP.equals(legalType)) {
       bcRegistryService.requestDocumentData(incorporationNumber)
           .doOnError(ResponseStatusException.class, e -> errors.rejectValue(
               "businessName", "Incorporation Number was not found in BC Registry"))

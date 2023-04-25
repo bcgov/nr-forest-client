@@ -38,9 +38,9 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
 
     String incorporationNumber = accessor.getString(2);
     String businessName = accessor.getString(3);
-    ClientTypeEnum clientType = ClientTypeEnum.valueOf(accessor.getString(4));
-    BusinessTypeEnum businessType = BusinessTypeEnum.valueOf(accessor.getString(5));
-    LegalTypeEnum legalType = LegalTypeEnum.valueOf(accessor.getString(6));
+    String clientType = accessor.getString(4);
+    String businessType = accessor.getString(5);
+    String legalType = accessor.getString(6);
     String goodStanding = accessor.getString(7);
 
     return new ClientBusinessInformationDto(incorporationNumber, businessName, businessType,

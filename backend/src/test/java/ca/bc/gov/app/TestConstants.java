@@ -462,7 +462,7 @@ public class TestConstants {
           "name":"Goldfinger",
           "clientType":"P",
           "updated":"testUserId | %s",
-          "status":"In Progress"
+          "status":"New"
         }
       ]""";
   public static final String SUBMISSION_LIST_CONTENT_EMPTY = "[]";
