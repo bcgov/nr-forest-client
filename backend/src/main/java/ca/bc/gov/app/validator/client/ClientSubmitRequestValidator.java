@@ -62,6 +62,7 @@ public class ClientSubmitRequestValidator implements Validator {
 
     errors.pushNestedPath(businessInformationField);
     if (!isValidEnum(businessType, "businessType", BusinessTypeEnum.class, errors)) {
+      errors.popNestedPath();
       return;
     }
 

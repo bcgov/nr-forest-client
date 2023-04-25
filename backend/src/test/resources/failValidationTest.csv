@@ -16,6 +16,7 @@ userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 Vancouve
 userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,BC,Las Vegas,89109,false,false,LP,James,Bond,987654321,bond_james_bond@007.com,false,James,Bond,1234567890,james_bond@MI6.com
 userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,false,false,LP,James,Bond,987654321,bond_james_bond@.com,false,James,Bond,1234567890,@MI6.com
 userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,false,false,LP,James,Bond,98765432101,bond_james_bond@.com,false,James,Bond,01234567890,james@MI6.com
+userIdTest,false,1234,Auric Enterprises,ABC,DEF,GHI,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,false,false,LP,James,Bond,98765432101,bond_james_bond@.com,false,James,Bond,01234567890,james@MI6.com
 userIdTest,false,1234,Auric Enterprises,A,U,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vega,89109,false,false,LP,James,Bond,98765432101,bond_james_bond@.com,false,James,Bond,01234567890,james@MI6.com
 userIdTest,false,1234,,A,U,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vega,89109,false,false,LP,James,Bond,98765432101,bond_james_bond@.com,false,James,Bond,01234567890,james@MI6.com
-,false,,,A,R,GP,,false,false,false,,,,,,false,false,,,,,,false,,,,
+,false,,,,,,,false,false,false,,,,,,false,false,,,,,,false,,,,
