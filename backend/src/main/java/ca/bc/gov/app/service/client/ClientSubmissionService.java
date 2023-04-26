@@ -58,7 +58,7 @@ public class ClientSubmissionService {
     SubmissionEntity submissionEntity =
         SubmissionEntity
             .builder()
-            .submissionStatus(SubmissionStatusEnum.P)
+            .submissionStatus(SubmissionStatusEnum.N)
             .submissionDate(LocalDateTime.now())
             .createdBy(userId)
             .updatedBy(userId)
@@ -110,8 +110,8 @@ public class ClientSubmissionService {
                 query(
                     //Commenting it out as we don't have the requestType field
                     /*AbstractQueryPredicates*/
-                        /*.orEqualTo(requestType, "requestType")*/
-                        /*.and(*/SubmissionPredicates.orStatus(requestStatus)/*)*/
+                    /*.orEqualTo(requestType, "requestType")*/
+                    /*.and(*/SubmissionPredicates.orStatus(requestStatus)/*)*/
                         .and(SubmissionPredicates.orUpdatedAt(updatedAt))
                 )
                     .with(PageRequest.of(page, size)),

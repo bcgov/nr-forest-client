@@ -4,13 +4,14 @@ import ca.bc.gov.app.dto.client.ClientTypeEnum;
 import ca.bc.gov.app.dto.client.LegalTypeEnum;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.validation.Errors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientValidationUtils {
-	
+
   private static final EmailValidator emailValidator = EmailValidator.getInstance();
 
   public static void validateEmail(String email, String field, Errors errors) {
@@ -41,6 +42,20 @@ public class ClientValidationUtils {
 
   public static String fieldIsMissingErrorMessage(String fieldName) {
     return String.format("%s is missing", fieldName);
+  }
+
+  public static <T extends Enum<T>> boolean isValidEnum(
+      String value, String field, Class<T> enumClass, Errors errors) {
+    if (value == null) {
+      errors.rejectValue(field, fieldIsMissingErrorMessage(field));
+      return false;
+    }
+
+    if (!EnumUtils.isValidEnum(enumClass, value)) {
+      errors.rejectValue(field, String.format("%s has an invalid value", field));
+      return false;
+    }
+    return true;
   }
 
   public static ClientTypeEnum getClientType(LegalTypeEnum legalType) {
