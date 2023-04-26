@@ -4,6 +4,7 @@ import ca.bc.gov.app.controller.AbstractController;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.exception.InvalidRequestObjectException;
+import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.service.client.ClientSubmissionService;
 import ca.bc.gov.app.validator.client.ClientSubmitRequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,7 +59,7 @@ public class ClientSubmissionController extends
       @RequestParam(required = false)
       String[] requestType,
       @RequestParam(required = false)
-      String[] requestStatus,
+      SubmissionStatusEnum[] requestStatus,
       @RequestParam(required = false)
       String[] clientType,
       @RequestParam(required = false)
