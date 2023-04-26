@@ -1,6 +1,14 @@
 package ca.bc.gov.app;
 
+import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
+import ca.bc.gov.app.dto.client.ClientContactDto;
+import ca.bc.gov.app.dto.client.ClientLocationDto;
+import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
+import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.openmaps.PropertyDto;
+import java.util.List;
 
 public class TestConstants {
   public static final String CHES_SUCCESS_MESSAGE = """      
@@ -488,4 +496,85 @@ public class TestConstants {
   public static final String LEGACY_EMPTY = "[]";
 
   public static final String BCREG_RESPONSE_DUP = "SAMPLE COMPANY already exists with the Incorporation number AA0000001 and client number 00000002";
+
+
+  public static final ClientSubmissionDto REGISTERED_BUSINESS_SUBMISSION_DTO =
+      new ClientSubmissionDto(
+          "testUserId",
+          new ClientBusinessInformationDto(
+              "1234",
+              "Goldfinger",
+              "R",
+              "P",
+              "Y",
+              "GP"
+          ),
+          new ClientLocationDto(
+              List.of(
+                  new ClientAddressDto(
+                      "3570 S Las Vegas Blvd",
+                      new ClientValueTextDto("US", ""),
+                      new ClientValueTextDto("NV", ""),
+                      "Las Vegas", "89109",
+                      0,
+                      List.of(
+                          new ClientContactDto(
+                              new ClientValueTextDto("LP","LP"),
+                              "James",
+                              "Bond",
+                              "9876543210",
+                              "bond_james_bond@007.com",
+                              0
+                          )
+                      )
+                  )
+              )
+          ),
+          new ClientSubmitterInformationDto(
+              "James",
+              "Bond",
+              "1234567890",
+              "james_bond@MI6.com"
+          )
+      );
+
+  public static final ClientSubmissionDto UNREGISTERED_BUSINESS_SUBMISSION_DTO =
+      new ClientSubmissionDto(
+          "testUserId2",
+          new ClientBusinessInformationDto(
+              "",
+              "James",
+              "U",
+              "I",
+              "",
+              "SP"
+          ),
+          new ClientLocationDto(
+              List.of(
+                  new ClientAddressDto(
+                      "3570 S Las Vegas Blvd",
+                      new ClientValueTextDto("US", ""),
+                      new ClientValueTextDto("NV", ""),
+                      "Las Vegas", "89109",
+                      0,
+                      List.of(
+                          new ClientContactDto(
+                              new ClientValueTextDto("LP","LP"),
+                              "James",
+                              "Bond",
+                              "9876543210",
+                              "bond_james_bond@007.com",
+                              0
+                          )
+                      )
+                  )
+              )
+          ),
+          new ClientSubmitterInformationDto(
+              "James",
+              "Bond",
+              "1234567890",
+              "james_bond@MI6.com"
+          )
+      );
 }
