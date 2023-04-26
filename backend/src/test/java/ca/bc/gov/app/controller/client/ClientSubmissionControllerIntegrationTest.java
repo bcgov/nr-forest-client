@@ -85,9 +85,9 @@ class ClientSubmissionControllerIntegrationTest
   }
 
   @Test
-  @DisplayName("Submit client data")
+  @DisplayName("Submit Registered Business client data")
   @Order(1)
-  void shouldSubmitClientData() {
+  void shouldSubmitRegisteredBusinessData() {
     ClientSubmissionDto clientSubmissionDto =
         new ClientSubmissionDto(
             "testUserId",
@@ -109,11 +109,11 @@ class ClientSubmissionControllerIntegrationTest
                         0,
                         List.of(
                             new ClientContactDto(
-                                new ClientValueTextDto("LP","LP"), 
-                                "James", 
+                                new ClientValueTextDto("LP","LP"),
+                                "James",
                                 "Bond",
-                                "9876543210", 
-                                "bond_james_bond@007.com", 
+                                "9876543210",
+                                "bond_james_bond@007.com",
                                 0
                             )
                         )
@@ -121,8 +121,8 @@ class ClientSubmissionControllerIntegrationTest
                 )
             ),
             new ClientSubmitterInformationDto(
-                "James", 
-                "Bond", 
+                "James",
+                "Bond",
                 "1234567890",
                 "james_bond@MI6.com"
             )
@@ -136,6 +136,61 @@ class ClientSubmissionControllerIntegrationTest
         .expectStatus().isCreated()
         .expectHeader().location("/api/clients/submissions/1")
         .expectHeader().valueEquals("x-sub-id", "1")
+        .expectBody().isEmpty();
+  }
+
+  @Test
+  @DisplayName("Submit Unregistered Business client data")
+  @Order(4)
+  void shouldSubmitUnregisteredBusinessData() {
+    ClientSubmissionDto clientSubmissionDto =
+        new ClientSubmissionDto(
+            "testUserId2",
+            new ClientBusinessInformationDto(
+                "",
+                "James",
+                "U",
+                "I",
+                "",
+                "SP"
+            ),
+            new ClientLocationDto(
+                List.of(
+                    new ClientAddressDto(
+                        "3570 S Las Vegas Blvd",
+                        new ClientValueTextDto("US", ""),
+                        new ClientValueTextDto("NV", ""),
+                        "Las Vegas", "89109",
+                        0,
+                        List.of(
+                            new ClientContactDto(
+                                new ClientValueTextDto("LP","LP"),
+                                "James",
+                                "Bond",
+                                "9876543210",
+                                "bond_james_bond@007.com",
+                                0
+                            )
+                        )
+                    )
+                )
+            ),
+            new ClientSubmitterInformationDto(
+                "James",
+                "Bond",
+                "1234567890",
+                "james_bond@MI6.com"
+            )
+        );
+
+    client
+        .post()
+        .uri("/api/clients/submissions")
+        .body(Mono.just(clientSubmissionDto), ClientSubmissionDto.class)
+        .exchange()
+        .expectStatus().isCreated()
+        .expectHeader().location("/api/clients/submissions/2")
+        .expectHeader().valueEquals("x-sub-id", "2")
         .expectBody().isEmpty();
   }
 
