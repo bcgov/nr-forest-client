@@ -13,7 +13,8 @@
                        v-model="country" 
                        :options="countryCodes" />
         <ValidationMessages :fieldId="`location.addresses[${id}].country`" 
-                           :validationMessages="validationMessages" />
+                            :validationMessages="validationMessages"
+                            :modelValue="country" />
       </div>
 
     </b-row>
@@ -28,7 +29,8 @@
                       v-model="address.streetAddress">
         </b-form-input>
         <ValidationMessages :fieldId="`location.addresses[${id}].streetAddress`" 
-                            :validationMessages="validationMessages" />
+                            :validationMessages="validationMessages"
+                            :modelValue="address.streetAddress" />
       </div>
     </b-row>
 
@@ -42,7 +44,8 @@
                       v-model="address.city">
         </b-form-input>
         <ValidationMessages :fieldId="`location.addresses[${id}].city`" 
-                            :validationMessages="validationMessages" />
+                            :validationMessages="validationMessages"
+                            :modelValue="address.city" />
       </div>
     </b-row>
 
@@ -62,7 +65,8 @@
                        v-model="province" 
                        :options="provinceCodes" />
         <ValidationMessages :fieldId="`location.addresses[${id}].province`" 
-                            :validationMessages="validationMessages" />
+                            :validationMessages="validationMessages"
+                            :modelValue="province" />
       </div>
     </b-row>
 
@@ -97,7 +101,8 @@
           </b-form-input>
         </span>
         <ValidationMessages :fieldId="`location.addresses[${id}].postalCode`" 
-                            :validationMessages="validationMessages" />
+                            :validationMessages="validationMessages"
+                            :modelValue="address.postalCode" />
       </div>
     </b-row>
 
@@ -118,8 +123,10 @@
                                   :index="id"
                                   :contacts="address.contacts"
                                   :validationMessages="validationMessages" />
+
           <ValidationMessages :fieldId="`location.addresses[${id}].contacts`"
-                              :validationMessages="validationMessages" />
+                              :validationMessages="validationMessages"
+                              :modelValue="address.contacts[0]" />
         </CollapseCard>
       </div>
     </b-row>
@@ -163,8 +170,8 @@
   });
 
   //Both constants are temporary, to hold the data for the dropdown
-  const country = ref({});
-  const province = ref({});
+  const country = ref({ value: "", text: "" } as CodeDescrType);
+  const province = ref({ value: "", text: "" } as CodeDescrType);
 
   //We watch the props due to possible after loading addresses when selecting client
   watch([props], () => {
