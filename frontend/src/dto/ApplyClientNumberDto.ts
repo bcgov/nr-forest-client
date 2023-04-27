@@ -9,7 +9,6 @@ export interface FormDataDto {
     incorporationNumber: string;
     businessName: null | string;
     goodStandingInd: string;
-    fullMatchInd: string;
   },
   location: {
     addresses: Address[];
@@ -48,7 +47,6 @@ export const formDataDto: FormDataDto = {
     incorporationNumber: "",
     businessName: "",
     goodStandingInd: "",
-    fullMatchInd: "",
   },
   location: {
     addresses: [],

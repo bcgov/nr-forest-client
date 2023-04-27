@@ -30,7 +30,7 @@
                                 :modelValue="formData.businessInformation.businessType" />
 
             <div v-if="formData.businessInformation.businessType == 'R'">
-                <Label label="Start typing to search for your B.C. registered business" fsdfsdfsdfpacific
+                <Label label="Start typing to search for your B.C. registered business"
                        id="businessNameLabelId" />
         
                 <Autocomplete id="businessNameId"
@@ -196,7 +196,6 @@ function filterSearchData(event: any) {
         formData.value.businessInformation.incorporationNumber = filteredSearchDataValues[0].value.value;   
         formData.value.businessInformation.legalType = filteredSearchDataValues[0].legalType;
         formData.value.businessInformation.clientType = retrieveClientType(formData.value.businessInformation.legalType);
-        formData.value.businessInformation.fullMatchInd = 'Y';
 
         const {error: detailsResponse } = useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, addressDataRef, { method:'get' });
         watch(
@@ -205,7 +204,6 @@ function filterSearchData(event: any) {
                 if (409 === detailsResponse.value.response.status) {
                     if (!validationMessages.value.some(msg => msg.fieldId === 'businessInformation.businessName')) {
                         validationMessages.value.push({fieldId: 'businessInformation.businessName',errorMsg: detailsResponse.value.response.data})
-                        formData.value.businessInformation.fullMatchInd = 'N';
                     }
                 }
             }
@@ -252,7 +250,6 @@ function resetPartialBusinessInformation() {
     formData.value.businessInformation.businessName = "";
     formData.value.businessInformation.legalType = "";
     formData.value.businessInformation.goodStandingInd = "";
-    formData.value.businessInformation.fullMatchInd = "";
     formData.value.businessInformation.clientType = "";
 };
 
