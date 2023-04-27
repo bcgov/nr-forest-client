@@ -186,7 +186,7 @@ create table if not exists nrfc.submission_detail (
 	incorporation_number		varchar(50)    	null,
     organization_name           varchar(100)    null,
 	client_type_code          	varchar(1)    	not null,
-    good_standing_ind           varchar(1)      not null default 'N',
+    good_standing_ind           varchar(1)      null,
 	constraint submission_detail_id_pk primary key (submission_detail_id),
 	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
     constraint submission_detail_business_type_code_fk foreign key (business_type_code) references nrfc.business_type_code(business_type_code),
