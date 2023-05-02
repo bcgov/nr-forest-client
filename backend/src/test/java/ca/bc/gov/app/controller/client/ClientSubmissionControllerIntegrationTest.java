@@ -1,19 +1,23 @@
 package ca.bc.gov.app.controller.client;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static ca.bc.gov.app.TestConstants.REGISTERED_BUSINESS_SUBMISSION_DTO;
+import static ca.bc.gov.app.TestConstants.UNREGISTERED_BUSINESS_SUBMISSION_DTO;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
-import ca.bc.gov.app.dto.client.ClientBusinessTypeDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
+import ca.bc.gov.app.dto.client.ClientTypeEnum;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
+import ca.bc.gov.app.dto.client.LegalTypeEnum;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
@@ -72,7 +76,8 @@ class ClientSubmissionControllerIntegrationTest
   public void init() {
     wireMockExtension.resetAll();
     wireMockExtension
-        .stubFor(get(urlPathEqualTo("/business/api/v2/businesses/1234"))
+        .stubFor(post(
+            urlPathEqualTo("/registry-search/api/v1/businesses/1234/documents/requests"))
             .willReturn(
                 status(200)
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -82,59 +87,32 @@ class ClientSubmissionControllerIntegrationTest
   }
 
   @Test
-  @DisplayName("Submit client data")
+  @DisplayName("Submit Registered Business client data")
   @Order(1)
-  void shouldSubmitClientData() {
-    ClientSubmissionDto clientSubmissionDto =
-        new ClientSubmissionDto(
-            new ClientBusinessTypeDto(new ClientValueTextDto(
-                "A",
-                "Association")),
-            new ClientBusinessInformationDto(
-                "Auric",
-                "Goldfinger",
-                "1964-07-07",
-                "1234",
-                "test",
-                "Auric Enterprises"
-            ),
-            new ClientLocationDto(
-                List.of(
-                    new ClientAddressDto(
-                        "3570 S Las Vegas Blvd",
-                        new ClientValueTextDto("US", ""),
-                        new ClientValueTextDto("NV", ""),
-                        "Las Vegas", "89109",
-                        0,
-                        List.of(
-                            new ClientContactDto(
-                                new ClientValueTextDto("LP", "LP"),
-                                "James",
-                                "Bond",
-                                "9876543210",
-                                "bond_james_bond@007.com",
-                                0
-                            )
-                        )
-                    )
-                )
-            ),
-            new ClientSubmitterInformationDto(
-                "James",
-                "Bond",
-                "1234567890",
-                "james_bond@MI6.com"
-            )
-        );
-
+  void shouldSubmitRegisteredBusinessData() {
     client
         .post()
         .uri("/api/clients/submissions")
-        .body(Mono.just(clientSubmissionDto), ClientSubmissionDto.class)
+        .body(Mono.just(REGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
         .expectHeader().location("/api/clients/submissions/1")
         .expectHeader().valueEquals("x-sub-id", "1")
+        .expectBody().isEmpty();
+  }
+
+  @Test
+  @DisplayName("Submit Unregistered Business client data")
+  @Order(4)
+  void shouldSubmitUnregisteredBusinessData() {
+    client
+        .post()
+        .uri("/api/clients/submissions")
+        .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
+        .exchange()
+        .expectStatus().isCreated()
+        .expectHeader().location("/api/clients/submissions/2")
+        .expectHeader().valueEquals("x-sub-id", "2")
         .expectBody().isEmpty();
   }
 
@@ -197,11 +175,10 @@ class ClientSubmissionControllerIntegrationTest
             Arguments.of(null,null,0,null,true),
             Arguments.of(null,null,0,10,true),
             Arguments.of(null,null,null,10,true),
-            Arguments.of("requestStatus","Submitted",null,null,true),
-            Arguments.of("clientType","A",null,null,true),
-            Arguments.of("name","Auric",null,null,true),
-            Arguments.of("name","Enterprises",null,null,true),
-            Arguments.of("name","Auric Enterprises",null,null,true),
+            Arguments.of("requestStatus","N",null,null,true),
+            Arguments.of("clientType","P",null,null,true),
+            Arguments.of("name","Goldfinger",null,null,true),
+            Arguments.of("name","Auric",null,null,false),
             Arguments.of(null,null,1,null,false),
             Arguments.of(null,null,1,1,false)
         );
