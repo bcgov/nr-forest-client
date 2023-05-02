@@ -124,7 +124,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend, legacy]
+        package: [backend, legacy, processor]
 
     name: Builds (${{ matrix.package }})
     runs-on: ubuntu-latest
@@ -260,6 +260,28 @@ jobs:
             -p CHES_TOKEN_URL='https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches-dev.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+
+  deploy-processor:
+    name: Deploy Processor
+    needs:
+      - deploy-init
+      - deploy-database
+    environment: dev
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploys
+        uses: bcgov-nr/action-deployer-openshift@v1.0.3
+        with:
+          file: processor/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          verification_path: health
+          parameters:
+            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/processor:${{ github.event.number }}
 
   deploy-legacy:
     name: Deploy Legacy

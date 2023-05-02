@@ -1,0 +1,54 @@
+server:
+  port: 3100
+
+spring:
+  application:
+    name: FSA Forest Client Processor
+  main:
+    lazy-initialization: false
+    banner-mode: "off"
+    allow-bean-definition-overriding: true
+  r2dbc:
+    url: r2dbcs:oracle:thin:@tcps://${ca.bc.gov.nrs.oracle.host}:${ca.bc.gov.nrs.oracle.port}/${ca.bc.gov.nrs.oracle.service}?javax.net.ssl.trustStore=${ca.bc.gov.nrs.oracle.keystore}&javax.net.ssl.trustStorePassword=${ca.bc.gov.nrs.oracle.secret}&javax.net.ssl.keyStore=${ca.bc.gov.nrs.oracle.keystore}&javax.net.ssl.keyStorePassword=${ca.bc.gov.nrs.oracle.secret}&oracle.net.ssl_certificate_alias=${ca.bc.gov.nrs.oracle.host}&oracle.net.ssl_server_dn_match=false
+    username: ${ca.bc.gov.nrs.oracle.username}
+    password: ${ca.bc.gov.nrs.oracle.password}
+    pool:
+      enabled: true
+      initialSize: 1
+      minIdle: 1
+      maxSize: 3
+      maxLifeTime: 60000
+      maxIdleTime: 45000
+      maxCreateConnectionTime: 90000
+      poolName: FsaLegacyClientConPool
+
+management:
+  enable-native-support: true
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health,metrics
+
+ca:
+  bc:
+    gov:
+      nrs:
+        oracle:
+          service: ${ORACLEDB_SERVICENAME:fsa-forest}
+          database: ${ORACLEDB_DATABASE:fsa-forest}
+          host: ${ORACLEDB_HOST:localhost}
+          port: ${ORACLEDB_PORT:1521}
+          username: ${ORACLEDB_USER:user}
+          password: ${ORACLEDB_PASSWORD:passwd}
+          keystore: ${ORACLEDB_KEYSTORE:jssecacerts.jks}
+          secret: ${ORACLEDB_SECRET:changeit}
+        postgres:
+          database: ${POSTGRESQL_DATABASE:fsa-forest}
+          host: ${POSTGRESQL_HOST:localhost}:5432
+          username: ${POSTGRESQL_USER:user}
+          password: ${POSTGRESQL_PASSWORD:passwd}
+          url: r2dbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
