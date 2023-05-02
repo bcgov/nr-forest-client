@@ -230,7 +230,7 @@ jobs:
             -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
-      - name: Deplo Legacy
+      - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: legacy/openshift.deploy.yml

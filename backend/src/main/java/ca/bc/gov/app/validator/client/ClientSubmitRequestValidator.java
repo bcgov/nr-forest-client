@@ -1,12 +1,14 @@
 package ca.bc.gov.app.validator.client;
 
+import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
+import static ca.bc.gov.app.util.ClientValidationUtils.isValidEnum;
+
+import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
-import ca.bc.gov.app.dto.client.ClientBusinessTypeDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -15,7 +17,8 @@ import org.springframework.validation.Validator;
 @Component
 @RequiredArgsConstructor
 public class ClientSubmitRequestValidator implements Validator {
-  private final ClientBusinessInformationDtoValidator businessInformationDtoValidator;
+  private final RegisteredBusinessInformationValidator registeredBusinessInformationValidator;
+  private final UnregisteredBusinessInformationValidator unregisteredBusinessInformationValidator;
   private final ClientLocationDtoValidator locationDtoValidator;
   private final ClientSubmitterInformationDtoValidator submitterInformationDtoValidator;
 
@@ -29,49 +32,57 @@ public class ClientSubmitRequestValidator implements Validator {
 
     ClientSubmissionDto request = (ClientSubmissionDto) target;
 
-    String businessType = validateBusinessType(request.businessType(), errors);
+    String userId = "userId";
 
-    validateBusinessInformation(businessType, request.businessInformation(), errors);
+    ValidationUtils
+        .rejectIfEmptyOrWhitespace(
+            errors,
+            userId,
+            fieldIsMissingErrorMessage(userId));
+
+    validateBusinessInformation(request.businessInformation(), errors);
 
     validateLocation(request.location(), errors);
 
     validateSubmitterInformation(request.submitterInformation(), errors);
   }
 
-  private String validateBusinessType(ClientBusinessTypeDto businessType, Errors errors) {
-	String clientTypeField = "businessType.clientType";
-	  
-    if (businessType == null) {
-      errors.rejectValue("businessType", "businessType is missing");
-      return StringUtils.EMPTY;
-    }
-    else if (null == businessType.clientType() || StringUtils.isBlank(businessType.clientType().value())) {
-      errors.rejectValue(clientTypeField, "clientType is missing");
-      return StringUtils.EMPTY;
-    }
-
-    return businessType.clientType().value();
-  }
-
   private void validateBusinessInformation(
-      String businessType, ClientBusinessInformationDto businessInformation, Errors errors) {
+      ClientBusinessInformationDto businessInformation, Errors errors) {
 
-    if (StringUtils.isBlank(businessType) || "I".equalsIgnoreCase(businessType)) {
-      return;
-    }
-
+    String businessInformationField = "businessInformation";
     if (businessInformation == null) {
-      errors.rejectValue("businessInformation", "businessInformation is missing");
+      errors.rejectValue(
+          businessInformationField,
+          fieldIsMissingErrorMessage(businessInformationField));
       return;
     }
 
-    ValidationUtils
-        .invokeValidator(businessInformationDtoValidator, businessInformation, errors);
+    String businessType = businessInformation.businessType();
+
+    errors.pushNestedPath(businessInformationField);
+    if (!isValidEnum(businessType, "businessType", BusinessTypeEnum.class, errors)) {
+      errors.popNestedPath();
+      return;
+    }
+    errors.popNestedPath();
+
+    if (BusinessTypeEnum.U.toString().equals(businessType)) {
+      ValidationUtils
+          .invokeValidator(unregisteredBusinessInformationValidator, businessInformation, errors);
+    } else {
+      //Only option left is Business Type == R (Registered)
+      ValidationUtils
+          .invokeValidator(registeredBusinessInformationValidator, businessInformation, errors);
+    }
   }
 
   private void validateLocation(ClientLocationDto location, Errors errors) {
+
+    String locationField = "location";
+
     if (location == null) {
-      errors.rejectValue("location", "location is missing");
+      errors.rejectValue(locationField, fieldIsMissingErrorMessage(locationField));
       return;
     }
 
@@ -81,13 +92,17 @@ public class ClientSubmitRequestValidator implements Validator {
 
   private void validateSubmitterInformation(
       ClientSubmitterInformationDto submitterInformation, Errors errors) {
+
+    String submitterInformationField = "submitterInformation";
+
     if (submitterInformation == null) {
-      errors.rejectValue("submitterInformation", "submitterInformation is missing");
+      errors.rejectValue(
+          submitterInformationField,
+          fieldIsMissingErrorMessage(submitterInformationField));
       return;
     }
 
     ValidationUtils
         .invokeValidator(submitterInformationDtoValidator, submitterInformation, errors);
   }
-	
 }
