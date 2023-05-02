@@ -500,7 +500,6 @@ public class TestConstants {
 
   public static final ClientSubmissionDto REGISTERED_BUSINESS_SUBMISSION_DTO =
       new ClientSubmissionDto(
-          "testUserId",
           new ClientBusinessInformationDto(
               "1234",
               "Goldfinger",
@@ -531,6 +530,7 @@ public class TestConstants {
               )
           ),
           new ClientSubmitterInformationDto(
+              "testUserId",
               "James",
               "Bond",
               "1234567890",
@@ -540,7 +540,6 @@ public class TestConstants {
 
   public static final ClientSubmissionDto UNREGISTERED_BUSINESS_SUBMISSION_DTO =
       new ClientSubmissionDto(
-          "testUserId2",
           new ClientBusinessInformationDto(
               "",
               "James",
@@ -571,6 +570,7 @@ public class TestConstants {
               )
           ),
           new ClientSubmitterInformationDto(
+              "testUserId2",
               "James",
               "Bond",
               "1234567890",

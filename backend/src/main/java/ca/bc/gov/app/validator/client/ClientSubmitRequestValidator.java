@@ -32,13 +32,7 @@ public class ClientSubmitRequestValidator implements Validator {
 
     ClientSubmissionDto request = (ClientSubmissionDto) target;
 
-    String userId = "userId";
 
-    ValidationUtils
-        .rejectIfEmptyOrWhitespace(
-            errors,
-            userId,
-            fieldIsMissingErrorMessage(userId));
 
     validateBusinessInformation(request.businessInformation(), errors);
 
