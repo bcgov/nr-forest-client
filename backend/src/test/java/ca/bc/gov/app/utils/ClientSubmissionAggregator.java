@@ -23,7 +23,6 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
   public Object aggregateArguments(ArgumentsAccessor accessor, ParameterContext context)
       throws ArgumentsAggregationException {
     return new ClientSubmissionDto(
-        accessor.getString(0),
         createBusinessInformation(accessor),
         createLocation(accessor),
         createSubmitterInformation(accessor));
@@ -114,12 +113,13 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
       return null;
     }
 
+    String userId = accessor.getString(0);
     String submitterFirstName = accessor.getString(24);
     String submitterLastName = accessor.getString(25);
     String submitterPhoneNumber = accessor.getString(26);
     String submitterEmail = accessor.getString(27);
 
     return new ClientSubmitterInformationDto(
-        submitterFirstName, submitterLastName, submitterPhoneNumber, submitterEmail);
+        userId, submitterFirstName, submitterLastName, submitterPhoneNumber, submitterEmail);
   }
 }
