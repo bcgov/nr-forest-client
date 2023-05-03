@@ -10,6 +10,8 @@
         <br />
         <!--  -->
 
+        <label>All fields are mandatory unless noted.</label>
+        
         <CollapseCard title="Registered business" 
                       id="businessInformationId"
                       defaultOpen>

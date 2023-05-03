@@ -37,7 +37,7 @@ if (keycloak &&
   tabs.value = [{ title: "Review Applications", content: ReviewApplicationPage }];
 } 
 else {
-  tabs.value = [{ title: "Apply a New Client", content: ApplyClientNumber }];
+  tabs.value = [{ title: "Request a client number", content: ApplyClientNumber }];
   submitterInformation.value.bceidBusinessName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.displayed : "Dev Test Client Name";
   submitterInformation.value.userId = keycloak && keycloak.tokenParsed ? keycloak.subject : "testUserId";
   submitterInformation.value.submitterFirstName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : "";
