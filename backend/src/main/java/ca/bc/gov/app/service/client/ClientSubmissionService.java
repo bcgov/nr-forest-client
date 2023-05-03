@@ -53,7 +53,7 @@ public class ClientSubmissionService {
    * @return a Mono of the submission ID
    */
   public Mono<Integer> submit(ClientSubmissionDto clientSubmissionDto) {
-    String userId = clientSubmissionDto.userId();
+    String userId = clientSubmissionDto.submitterInformation().userId();
 
     SubmissionEntity submissionEntity =
         SubmissionEntity

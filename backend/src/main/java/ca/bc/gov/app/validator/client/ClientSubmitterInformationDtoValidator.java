@@ -22,11 +22,18 @@ public class ClientSubmitterInformationDtoValidator implements Validator {
 
     errors.pushNestedPath("submitterInformation");
 
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "submitterFirstName",
-        fieldIsMissingErrorMessage("submitterFirstName"));
+    String userId = "userId";
+    ValidationUtils.rejectIfEmptyOrWhitespace(errors, userId,
+        fieldIsMissingErrorMessage(userId));
 
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "submitterLastName",
-        fieldIsMissingErrorMessage("submitterLastName"));
+
+    String submitterFirstName = "submitterFirstName";
+    ValidationUtils.rejectIfEmptyOrWhitespace(errors, submitterFirstName,
+        fieldIsMissingErrorMessage(submitterFirstName));
+
+    String submitterLastName = "submitterLastName";
+    ValidationUtils.rejectIfEmptyOrWhitespace(errors, submitterLastName,
+        fieldIsMissingErrorMessage(submitterLastName));
 
     ClientSubmitterInformationDto submitterInformation = (ClientSubmitterInformationDto) target;
 
