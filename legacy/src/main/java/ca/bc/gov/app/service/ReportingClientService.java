@@ -92,8 +92,6 @@ public class ReportingClientService {
         .then();
   }
 
-
-  @Scheduled(cron = "0 0 0 ? * MON-FRI")
   public void generateAllClientsReport() {
     generateReport(
         forestClientRepository
