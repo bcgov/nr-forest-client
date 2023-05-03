@@ -2,12 +2,14 @@
 -- DROPPING TABLES AND SEQUENCES IF EXIST AS THIS IS THE INIT FILE TO CREATE THE DB
 --
 drop table if exists nrfc.submission_detail;
+drop table if exists nrfc.submission_matching_detail;
 drop table if exists nrfc.submission_location_contact;
 drop table if exists nrfc.submission_location;
 drop table if exists nrfc.submission_submitter;
 drop table if exists nrfc.submission;
 drop table if exists nrfc.client_type_code;
 drop table if exists nrfc.submission_status_code;
+drop table if exists nrfc.submission_type_code;
 drop table if exists nrfc.province_code;
 drop table if exists nrfc.country_code;
 drop table if exists nrfc.contact_type_code;
@@ -15,6 +17,7 @@ drop table if exists nrfc.business_type_code;
 
 drop sequence if exists nrfc.submission_id_seq;
 drop sequence if exists nrfc.submission_detail_id_seq;
+drop sequence if exists nrfc.submission_matching_detail_id_seq;
 drop sequence if exists nrfc.submission_location_seq;
 drop sequence if exists nrfc.submission_location_contact_seq;
 drop sequence if exists nrfc.submission_submitter_seq;
@@ -65,6 +68,28 @@ comment on column nrfc.submission_status_code.create_timestamp is 'The date and 
 comment on column nrfc.submission_status_code.update_timestamp is 'The date and time the record was created or last updated.';
 comment on column nrfc.submission_status_code.create_user is 'The user or proxy account that created the record.';
 comment on column nrfc.submission_status_code.update_user is 'The user or proxy account that created or last updated the record.';
+
+create table if not exists nrfc.submission_type_code (
+    submission_type_code  	    varchar(5)      not null,
+    description                 varchar(100)    not null,
+    effective_date              date            not null,
+    expiry_date                 date            default to_date('99991231','YYYYMMDD') not null,
+    create_timestamp            timestamp       default current_timestamp not null,
+    update_timestamp            timestamp       default current_timestamp,
+    create_user                 varchar(60)     not null,
+    update_user                 varchar(60)		null,
+    constraint submission_type_code_pk primary key (submission_type_code)
+);
+
+comment on table nrfc.submission_type_code is 'A code indicating the type of a submission request. Examples of possible type are TBD.';
+comment on column nrfc.submission_type_code.submission_type_code is 'A code representing the type of a submission request.';
+comment on column nrfc.submission_type_code.description is 'The description of the code value.';
+comment on column nrfc.submission_type_code.effective_date is 'The date that the code value has become or is expected to become effective. Default is the data that the code value is created.';
+comment on column nrfc.submission_type_code.expiry_date is 'The date on which the code value has expired or is expected to expire.  Default 9999-12-31';
+comment on column nrfc.submission_type_code.create_timestamp is 'The date and time the record was created.';
+comment on column nrfc.submission_type_code.update_timestamp is 'The date and time the record was created or last updated.';
+comment on column nrfc.submission_type_code.create_user is 'The user or proxy account that created the record.';
+comment on column nrfc.submission_type_code.update_user is 'The user or proxy account that created or last updated the record.';
 
 create table if not exists nrfc.country_code (
     country_code                varchar(2)      not null,
@@ -163,17 +188,20 @@ comment on column nrfc.business_type_code.update_user is 'The user or proxy acco
 create table if not exists nrfc.submission(
     submission_id             	integer 		not null,
     submission_status_code		varchar(5)      null,
+    submission_type_code		varchar(5)      null,
     submission_date             timestamp       null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
     update_user                 varchar(60)		null,
     constraint submission_pk primary key (submission_id),
-    constraint submission_submission_status_code_fk foreign key (submission_status_code) references nrfc.submission_status_code(submission_status_code)
+    constraint submission_submission_status_code_fk foreign key (submission_status_code) references nrfc.submission_status_code(submission_status_code),
+    constraint submission_submission_type_code_fk foreign key (submission_type_code) references nrfc.submission_type_code(submission_type_code)
 );
 
 comment on table nrfc.submission is 'A submission request to create a client';
 comment on column nrfc.submission.submission_id is 'Incremental id generated for a submission of a client';
-comment on column nrfc.submission.submission_status_code is 'A code indicating the status of a submission request. Examples include, but are not limited to: New, Approved, Rejected, and others.';
+comment on column nrfc.submission.submission_status_code is 'TBD';
+comment on column nrfc.submission.submission_type_code is 'A code indicating the status of a submission request. Examples include, but are not limited to: New, Approved, Rejected, and others.';
 comment on column nrfc.submission.submission_date is 'The date and time the record was created.';
 comment on column nrfc.submission.update_timestamp is 'The date and time the record was created or last updated.';
 comment on column nrfc.submission.create_user is 'The user or proxy account that created the record.';
@@ -182,6 +210,7 @@ comment on column nrfc.submission.update_user is 'The user or proxy account that
 create table if not exists nrfc.submission_detail (
     submission_detail_id        integer			not null,
 	submission_id				integer			not null,
+    client_number               varchar(8)      null,
 	business_type_code			varchar(1)    	not null,
 	incorporation_number		varchar(50)    	null,
     organization_name           varchar(100)    null,
@@ -202,6 +231,17 @@ comment on column nrfc.submission_detail.incorporation_number is 'A number provi
 comment on column nrfc.submission_detail.organization_name is 'The name of the client.';
 comment on column nrfc.submission_detail.client_type_code is 'A code representing the type of a client';
 comment on column nrfc.submission_detail.good_standing_ind is 'An indicator that determines whether a client is in good standing with respect to their financial obligations.';
+
+create table if not exists nrfc.submission_matching_detail (
+    submission_matching_detail_id        integer			not null,
+	submission_id				integer			not null,
+	matching_fields_json		text			null,
+	confirmed_match_status_ind	varchar(1)      null,
+	constraint submission_matching_detail_id_pk primary key (submission_matching_detail_id),
+	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id)
+);
+
+--TODO: Document table and columns
 
 create table if not exists nrfc.submission_location (
     submission_location_id      integer			not null,
@@ -277,6 +317,9 @@ alter table nrfc.submission alter column submission_id set default nextval('nrfc
 
 create sequence if not exists nrfc.submission_detail_id_seq start 1;
 alter table nrfc.submission_detail alter column submission_detail_id set default nextval('nrfc.submission_detail_id_seq');
+
+create sequence if not exists nrfc.submission_matching_detail_id_seq start 1;
+alter table nrfc.submission_matching_detail alter column submission_matching_detail_id set default nextval('nrfc.submission_matching_detail_id_seq');
 
 create sequence if not exists nrfc.submission_location_seq start 1;
 alter table nrfc.submission_location alter column submission_location_id set default nextval('nrfc.submission_location_seq');
