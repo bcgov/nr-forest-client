@@ -17,8 +17,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       SELECT *
       FROM FOREST_CLIENT
       WHERE
-        UTL_MATCH.EDIT_DISTANCE(UPPER(CLIENT_NAME),UPPER(:companyName)) <=2 OR
-        UPPER(CLIENT_NAME) LIKE '%' || UPPER(:companyName) || '%'""")
+      UTL_MATCH.JARO_WINKLER_SIMILARITY(UPPER(CLIENT_NAME),UPPER(:companyName)) >= 85""")
   Flux<ForestClientEntity> matchBy(String companyName);
 
 }

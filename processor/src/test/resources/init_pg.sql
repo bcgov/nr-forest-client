@@ -1,7 +1,6 @@
 DROP DATABASE IF EXISTS nrfc;
 CREATE DATABASE nrfc;
 GRANT ALL PRIVILEGES ON DATABASE nrfc TO nrfc;
-
 --
 -- DROPPING TABLES AND SEQUENCES IF EXIST AS THIS IS THE INIT FILE TO CREATE THE DB
 --
@@ -9,13 +8,13 @@ drop table if exists nrfc.submission_detail;
 drop table if exists nrfc.submission_location_contact;
 drop table if exists nrfc.submission_location;
 drop table if exists nrfc.submission_submitter;
-drop table if exists nrfc.submission_contact;
 drop table if exists nrfc.submission;
 drop table if exists nrfc.client_type_code;
 drop table if exists nrfc.submission_status_code;
 drop table if exists nrfc.province_code;
 drop table if exists nrfc.country_code;
 drop table if exists nrfc.contact_type_code;
+drop table if exists nrfc.business_type_code;
 
 drop sequence if exists nrfc.submission_id_seq;
 drop sequence if exists nrfc.submission_detail_id_seq;
@@ -38,6 +37,16 @@ create table if not exists nrfc.client_type_code (
     constraint client_type_code_pk primary key (client_type_code)
 );
 
+comment on table nrfc.client_type_code is 'A code indicating the type of a client. Examples include, but are not limited to: Corporation, Individual, Association, and others.';
+comment on column nrfc.client_type_code.client_type_code is 'A code representing the type of a client';
+comment on column nrfc.client_type_code.description is 'The description of the code value.';
+comment on column nrfc.client_type_code.effective_date is 'The date that the code value has become or is expected to become effective. Default is the data that the code value is created.';
+comment on column nrfc.client_type_code.expiry_date is 'The date on which the code value has expired or is expected to expire.  Default 9999-12-31';
+comment on column nrfc.client_type_code.create_timestamp is 'The date and time the record was created.';
+comment on column nrfc.client_type_code.update_timestamp is 'The date and time the record was created or last updated.';
+comment on column nrfc.client_type_code.create_user is 'The user or proxy account that created the record.';
+comment on column nrfc.client_type_code.update_user is 'The user or proxy account that created or last updated the record.';
+
 create table if not exists nrfc.submission_status_code (
     submission_status_code  	varchar(5)      not null,
     description                 varchar(100)    not null,
@@ -49,6 +58,16 @@ create table if not exists nrfc.submission_status_code (
     update_user                 varchar(60)		null,
     constraint submission_status_code_pk primary key (submission_status_code)
 );
+
+comment on table nrfc.submission_status_code is 'A code indicating the status of a client creation submission request. Examples of possible statuses include Approved, Rejected, and others.';
+comment on column nrfc.submission_status_code.submission_status_code is 'A code representing the status of a submission request.';
+comment on column nrfc.submission_status_code.description is 'The description of the code value.';
+comment on column nrfc.submission_status_code.effective_date is 'The date that the code value has become or is expected to become effective. Default is the data that the code value is created.';
+comment on column nrfc.submission_status_code.expiry_date is 'The date on which the code value has expired or is expected to expire.  Default 9999-12-31';
+comment on column nrfc.submission_status_code.create_timestamp is 'The date and time the record was created.';
+comment on column nrfc.submission_status_code.update_timestamp is 'The date and time the record was created or last updated.';
+comment on column nrfc.submission_status_code.create_user is 'The user or proxy account that created the record.';
+comment on column nrfc.submission_status_code.update_user is 'The user or proxy account that created or last updated the record.';
 
 create table if not exists nrfc.country_code (
     country_code                varchar(2)      not null,
@@ -64,6 +83,17 @@ create table if not exists nrfc.country_code (
     constraint display_order_uk unique (display_order)
 );
 
+comment on table nrfc.country_code is 'A list of countries, serving as a reference for country-specific data.';
+comment on column nrfc.country_code.country_code is 'A code representing the code of a country.';
+comment on column nrfc.country_code.description is 'The description of the code value.';
+comment on column nrfc.country_code.effective_date is 'The date that the code value has become or is expected to become effective. Default is the data that the code value is created.';
+comment on column nrfc.country_code.expiry_date is 'The date on which the code value has expired or is expected to expire.  Default 9999-12-31';
+comment on column nrfc.country_code.display_order is 'The the display order of a country. If no value is provided, the application will order countries alphabetically by default.';
+comment on column nrfc.country_code.create_timestamp is 'The date and time the record was created.';
+comment on column nrfc.country_code.update_timestamp is 'The date and time the record was created or last updated.';
+comment on column nrfc.country_code.create_user is 'The user or proxy account that created the record.';
+comment on column nrfc.country_code.update_user is 'The user or proxy account that created or last updated the record.';
+
 create table if not exists nrfc.province_code (
     province_code               varchar(2)      not null,
     country_code                varchar(2)      null,
@@ -78,6 +108,17 @@ create table if not exists nrfc.province_code (
     constraint province_code_country_code_fk foreign key (country_code) references nrfc.country_code(country_code)
 );
 
+comment on table nrfc.province_code is 'A list of provinces, serving as a reference for province-specific data.';
+comment on column nrfc.province_code.province_code is 'A code representing the code of a province.';
+comment on column nrfc.province_code.country_code is 'A code representing the country in which the province is located.';
+comment on column nrfc.province_code.description is 'The description of the code value.';
+comment on column nrfc.province_code.effective_date is 'The date that the code value has become or is expected to become effective. Default is the data that the code value is created.';
+comment on column nrfc.province_code.expiry_date is 'The date on which the code value has expired or is expected to expire.  Default 9999-12-31';
+comment on column nrfc.province_code.create_timestamp is 'The date and time the record was created.';
+comment on column nrfc.province_code.update_timestamp is 'The date and time the record was created or last updated.';
+comment on column nrfc.province_code.create_user is 'The user or proxy account that created the record.';
+comment on column nrfc.province_code.update_user is 'The user or proxy account that created or last updated the record.';
+
 create table if not exists nrfc.contact_type_code (
     contact_type_code           varchar(2)      not null,
     description                 varchar(100)    not null,
@@ -90,9 +131,40 @@ create table if not exists nrfc.contact_type_code (
     constraint contact_type_code_pk primary key (contact_type_code)
 );
 
+comment on table nrfc.contact_type_code is 'A code indicating the role of a contact of a client.';
+comment on column nrfc.contact_type_code.contact_type_code is 'A code representing the code of a role of a client''s contact.';
+comment on column nrfc.contact_type_code.description is 'The description of the code value.';
+comment on column nrfc.contact_type_code.effective_date is 'The date that the code value has become or is expected to become effective. Default is the data that the code value is created.';
+comment on column nrfc.contact_type_code.expiry_date is 'The date on which the code value has expired or is expected to expire.  Default 9999-12-31';
+comment on column nrfc.contact_type_code.create_timestamp is 'The date and time the record was created.';
+comment on column nrfc.contact_type_code.update_timestamp is 'The date and time the record was created or last updated.';
+comment on column nrfc.contact_type_code.create_user is 'The user or proxy account that created the record.';
+comment on column nrfc.contact_type_code.update_user is 'The user or proxy account that created or last updated the record.';
+
+create table if not exists nrfc.business_type_code (
+    business_type_code        	varchar(1)      not null,
+    description                 varchar(100)    not null,
+    effective_date              date            not null,
+    expiry_date                 date            default to_date('99991231','YYYYMMDD') not null,
+    create_timestamp            timestamp       default current_timestamp not null,
+    update_timestamp            timestamp       default current_timestamp,
+    create_user                 varchar(60)     not null,
+    update_user                 varchar(60)		null,
+    constraint business_type_code_pk primary key (business_type_code)
+);
+
+comment on table nrfc.business_type_code is 'A code indicating the business type of a client. It could be either Registered Business and Unregistered Business.';
+comment on column nrfc.business_type_code.business_type_code is 'A code indicating the business type of a client.';
+comment on column nrfc.business_type_code.description is 'The description of the code value.';
+comment on column nrfc.business_type_code.effective_date is 'The date that the code value has become or is expected to become effective. Default is the data that the code value is created.';
+comment on column nrfc.business_type_code.expiry_date is 'The date on which the code value has expired or is expected to expire.  Default 9999-12-31';
+comment on column nrfc.business_type_code.create_timestamp is 'The date and time the record was created.';
+comment on column nrfc.business_type_code.update_timestamp is 'The date and time the record was created or last updated.';
+comment on column nrfc.business_type_code.create_user is 'The user or proxy account that created the record.';
+comment on column nrfc.business_type_code.update_user is 'The user or proxy account that created or last updated the record.';
+
 create table if not exists nrfc.submission(
     submission_id             	integer 		not null,
-    submitter_user_guid        	varchar(50) 	null,
     submission_status_code		varchar(5)      null,
     submission_date             timestamp       null,
     update_timestamp            timestamp       default current_timestamp,
@@ -102,24 +174,37 @@ create table if not exists nrfc.submission(
     constraint submission_submission_status_code_fk foreign key (submission_status_code) references nrfc.submission_status_code(submission_status_code)
 );
 
+comment on table nrfc.submission is 'A submission request to create a client';
+comment on column nrfc.submission.submission_id is 'Incremental id generated for a submission of a client';
+comment on column nrfc.submission.submission_status_code is 'A code indicating the status of a submission request. Examples include, but are not limited to: New, Approved, Rejected, and others.';
+comment on column nrfc.submission.submission_date is 'The date and time the record was created.';
+comment on column nrfc.submission.update_timestamp is 'The date and time the record was created or last updated.';
+comment on column nrfc.submission.create_user is 'The user or proxy account that created the record.';
+comment on column nrfc.submission.update_user is 'The user or proxy account that created or last updated the record.';
+
 create table if not exists nrfc.submission_detail (
     submission_detail_id        integer			not null,
 	submission_id				integer			not null,
+	business_type_code			varchar(1)    	not null,
 	incorporation_number		varchar(50)    	null,
     organization_name           varchar(100)    null,
-    first_name                  varchar(100)    null,
-	middle_name                 varchar(100)    null,
-	last_name                 	varchar(100)    null,
 	client_type_code          	varchar(1)    	not null,
-	date_of_birth				date 			null,
-    doing_business_as_ind       varchar(1)      not null default 'N',
-    doing_business_as_name      varchar(100)    null,
-    has_additional_location_ind varchar(1)      not null default 'N',
+    good_standing_ind           varchar(1)      null,
 	constraint submission_detail_id_pk primary key (submission_detail_id),
 	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
+    constraint submission_detail_business_type_code_fk foreign key (business_type_code) references nrfc.business_type_code(business_type_code),
     constraint submission_detail_client_type_code_fk foreign key (client_type_code) references nrfc.client_type_code(client_type_code),
     constraint submission_detail_submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id)
 );
+
+comment on table nrfc.submission_detail is 'The details of a submission request to create a client';
+comment on column nrfc.submission_detail.submission_detail_id is 'Incremental id generated for a submission detail of a client';
+comment on column nrfc.submission_detail.submission_id is 'Incremental id generated for a submission of a client';
+comment on column nrfc.submission_detail.business_type_code is 'A code indicating the business type of a client. It could be either Registered Business and Unregistered Business.';
+comment on column nrfc.submission_detail.incorporation_number is 'A number provided to B.C. corporations, businesses or societies as part of the registration or incorporation process.';
+comment on column nrfc.submission_detail.organization_name is 'The name of the client.';
+comment on column nrfc.submission_detail.client_type_code is 'A code representing the type of a client';
+comment on column nrfc.submission_detail.good_standing_ind is 'An indicator that determines whether a client is in good standing with respect to their financial obligations.';
 
 create table if not exists nrfc.submission_location (
     submission_location_id      integer			not null,
@@ -136,6 +221,15 @@ create table if not exists nrfc.submission_location (
     constraint submission_location_province_code_fk foreign key (province_code) references nrfc.province_code(province_code)
 );
 
+comment on table nrfc.submission_location is 'The details of a client''s location.';
+comment on column nrfc.submission_location.submission_location_id is 'Incremental id generated for a location of a client.';
+comment on column nrfc.submission_location.submission_id is 'Incremental id generated for a submission of a client.';
+comment on column nrfc.submission_location.street_address is 'The address of a client, including the street number and street name.';
+comment on column nrfc.submission_location.country_code is 'A code representing the code of a country.';
+comment on column nrfc.submission_location.province_code is 'A code representing the code of a province.';
+comment on column nrfc.submission_location.city_name is 'The name of the city of the location.';
+comment on column nrfc.submission_location.main_address_ind is 'An indicator that determines whether the location is the main address.';
+
 create table if not exists nrfc.submission_location_contact (
     submission_location_contact_id      integer			not null,
 	submission_location_id              integer			not null,
@@ -149,6 +243,15 @@ create table if not exists nrfc.submission_location_contact (
     constraint submission_location_contact_contact_type_code_fk foreign key (contact_type_code) references nrfc.contact_type_code(contact_type_code)
 );
 
+comment on table nrfc.submission_location_contact is 'The details of a contacts for each client''s location.';
+comment on column nrfc.submission_location_contact.submission_location_contact_id is 'Incremental id generated for the contact details of a client.';
+comment on column nrfc.submission_location_contact.submission_location_id is 'Incremental id generated for a location of a client.';
+comment on column nrfc.submission_location_contact.contact_type_code is 'A code representing the code of a role of a client''s contact.';
+comment on column nrfc.submission_location_contact.first_name is 'The first name of the client''s contact.';
+comment on column nrfc.submission_location_contact.last_name is 'The last name of the client''s contact.';
+comment on column nrfc.submission_location_contact.business_phone_number is 'The phone number of the client''s contact.';
+comment on column nrfc.submission_location_contact.email_address is 'The email address of the client''s contact.';
+
 create table if not exists nrfc.submission_submitter (
     submission_submitter_id     integer			not null,
 	submission_id               integer			not null,
@@ -159,6 +262,14 @@ create table if not exists nrfc.submission_submitter (
     constraint submission_submitter_id_pk primary key (submission_submitter_id),
     constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id)
 );
+
+comment on table nrfc.submission_submitter is 'The details of the submission of the form request.';
+comment on column nrfc.submission_submitter.submission_submitter_id is 'Incremental id generated for the details of the submitter''s submission request.';
+comment on column nrfc.submission_submitter.submission_id is 'Incremental id generated for a submission of a client.';
+comment on column nrfc.submission_submitter.first_name is 'The first name of the client''s contact.';
+comment on column nrfc.submission_submitter.last_name is 'The last name of the client''s contact.';
+comment on column nrfc.submission_submitter.phone_number is 'The phone number of the client''s contact.';
+comment on column nrfc.submission_submitter.email_address is 'The email address of the client''s contact.';
 
 --
 -- SEQUENCES
@@ -188,7 +299,10 @@ insert into nrfc.submission_status_code (submission_status_code, description, ef
 insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('A', 'Approved', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
 insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('R', 'Rejected', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
 insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('D', 'Deleted', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
-insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('S', 'Submitted', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
+insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('N', 'New', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
+
+insert into nrfc.business_type_code (business_type_code, description, effective_date, create_user) values ('R', 'Registered Business', current_timestamp, 'mariamar') on conflict (business_type_code) do nothing;
+insert into nrfc.business_type_code (business_type_code, description, effective_date, create_user) values ('U', 'Unegistered Business', current_timestamp, 'mariamar') on conflict (business_type_code) do nothing;
 
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('A', 'Association', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('B', 'First Nation Band', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;

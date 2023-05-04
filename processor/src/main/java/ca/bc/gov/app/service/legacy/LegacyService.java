@@ -1,15 +1,14 @@
 package ca.bc.gov.app.service.legacy;
 
+import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.entity.client.SubmissionEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
-import ca.bc.gov.app.repository.legacy.ForestClientRepository;
 import ca.bc.gov.app.service.processor.ProcessorMatcher;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
@@ -26,44 +25,47 @@ public class LegacyService {
   private final List<ProcessorMatcher> matchers;
 
   @ServiceActivator(
-      inputChannel = "matchCheckingChannel",
-      outputChannel = "goodStanceChannel",
+      inputChannel = ApplicationConstant.MATCH_CHECKING_CHANNEL,
+      outputChannel = ApplicationConstant.FORWARD_CHANNEL,
       async = "true"
   )
-  public Mono<Message<SubmissionInformationDto>> matchCheck(
-      Message<SubmissionInformationDto> eventMono) {
+  public Mono<Message<List<MatcherResult>>> matchCheck(
+      Message<SubmissionInformationDto> eventMono
+  ) {
+
+    Function<Boolean, String> replier =
+        value -> BooleanUtils.toString(
+            value,
+            ApplicationConstant.AUTO_APPROVE_CHANNEL,
+            ApplicationConstant.REVIEW_CHANNEL
+        );
 
     return
         Flux
             .fromIterable(matchers)
             .doOnNext(matcher -> log.info("Running {}", matcher.name()))
-            .map(ProcessorMatcher::matches)
-            .doOnError(x -> log.error("Oops we have a winner", x))
-            .reduce(Function::andThen)
-            .doOnError(x -> log.error("Reduced Winners are tight", x))
-            .flatMap(allMatchers -> allMatchers.apply(Mono.just(eventMono.getPayload())))
-            .doOnError(x -> log.error("This is awkward", x))
-            .onErrorContinue((t, o) -> log.error("This is O {} and this is BAM", o, t))
-            .map(event -> eventMono);
+
+            //If matcher returns empty, all good, if not, it is a problem
+            .flatMap(matcher -> matcher.matches(eventMono.getPayload()))
+
+            .doOnNext(results -> log.info("Matched a result {}", results))
+
+            .collectList()
+
+            .map(matchList ->
+                MessageBuilder
+                    .withPayload(matchList)
+                    .setReplyChannelName(replier.apply(matchList.isEmpty()))
+                    .setHeader("output-channel", replier.apply(matchList.isEmpty()))
+                    .setHeader(MessageHeaders.REPLY_CHANNEL, replier.apply(matchList.isEmpty()))
+                    .setHeader("submission-id",eventMono.getHeaders().get("submission-id"))
+                    .build()
+            );
   }
 
-  @ServiceActivator(inputChannel = "goodStanceChannel")
-  public Message<SubmissionInformationDto> goodStanding(Message<SubmissionInformationDto> eventMono) {
-
-    String replyChannelName = new Random().nextBoolean() ?
-        "reviewChannel" :
-        "autoApproveChannel";
-
-
-    return /*Mono.just(eventMono)
-        .doOnNext(x -> log.info("Checking good standing {}", x))
-        .map(event ->*/
-        MessageBuilder
-            .fromMessage(eventMono)
-            .setReplyChannelName(replyChannelName)
-            .setHeader("output-channel", replyChannelName)
-            .setHeader(MessageHeaders.REPLY_CHANNEL, replyChannelName)
-            .build()
-        /*)*/;
+  @ServiceActivator(inputChannel = ApplicationConstant.FORWARD_CHANNEL)
+  public Message<List<MatcherResult>> approved(Message<List<MatcherResult>> eventMono) {
+    return eventMono;
   }
+
 }

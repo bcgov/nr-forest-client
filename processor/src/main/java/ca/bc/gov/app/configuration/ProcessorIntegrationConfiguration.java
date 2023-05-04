@@ -1,7 +1,9 @@
 package ca.bc.gov.app.configuration;
 
+import ca.bc.gov.app.ApplicationConstant;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -13,32 +15,26 @@ import org.springframework.integration.r2dbc.inbound.R2dbcMessageSource;
 @Configuration
 public class ProcessorIntegrationConfiguration {
 
-
-  // Starts here
   @Bean
   public FluxMessageChannel submissionListChannel() {
     return new FluxMessageChannel();
   }
 
-  //Mandatory, check for matches
   @Bean
   public FluxMessageChannel matchCheckingChannel() {
     return new FluxMessageChannel();
   }
 
-  //If no match and stance is null
   @Bean
-  public FluxMessageChannel goodStanceChannel() {
+  public FluxMessageChannel forwardChannel() {
     return new FluxMessageChannel();
   }
 
-  //If no match and stance is true
   @Bean
   public FluxMessageChannel autoApproveChannel() {
     return new FluxMessageChannel();
   }
 
-  //Everything else that is not the above
   @Bean
   public FluxMessageChannel reviewChannel() {
     return new FluxMessageChannel();
@@ -64,11 +60,12 @@ public class ProcessorIntegrationConfiguration {
 
   @Bean
   public IntegrationFlow integrationFlow(
-      @Qualifier("submissionListChannel") FluxMessageChannel inputChannel,
+      @Value("${ca.bc.gov.nrs.processor.poolTime:1M}") Duration poolingTime,
+      @Qualifier(ApplicationConstant.SUBMISSION_LIST_CHANNEL) FluxMessageChannel inputChannel,
       R2dbcMessageSource messageSource
   ) {
     return IntegrationFlow
-        .from(messageSource, c -> c.poller(Pollers.fixedDelay(Duration.ofMinutes(1))))
+        .from(messageSource, adapter -> adapter.poller(Pollers.fixedDelay(poolingTime)))
         .split()
         .channel(inputChannel)
         .get();

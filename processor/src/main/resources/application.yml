@@ -37,6 +37,8 @@ ca:
   bc:
     gov:
       nrs:
+        processor:
+          poolTime: 5M
         oracle:
           service: ${ORACLEDB_SERVICENAME:fsa-forest}
           database: ${ORACLEDB_DATABASE:fsa-forest}

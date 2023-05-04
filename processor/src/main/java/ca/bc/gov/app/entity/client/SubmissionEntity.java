@@ -1,5 +1,6 @@
 package ca.bc.gov.app.entity.client;
 
+import ca.bc.gov.app.ApplicationConstant;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +13,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table(name = "submission", schema = "nrfc")
+@Table(name = "submission", schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -24,9 +25,6 @@ public class SubmissionEntity extends BaseEntity {
   @Id
   @Column("submission_id")
   private Integer submissionId;
-
-  @Column("submitter_user_guid")
-  private String submitterUserId;
 
   @Column("submission_status_code")
   private SubmissionStatusEnum submissionStatus;
