@@ -48,7 +48,6 @@ ca:
   bc:
     gov:
       nrs:
-        orgbook: https://orgbook.gov.bc.ca/api
         forest:
           uri: ${FOREST_API_URL:http://127.0.0.1:3000}
         oracle:
@@ -60,7 +59,3 @@ ca:
           password: ${ORACLEDB_PASSWORD:passwd}
           keystore: ${ORACLEDB_KEYSTORE:jssecacerts.jks}
           secret: ${ORACLEDB_SECRET:changeit}
-        bcregistry:
-          uri: ${BCREGISTRY_URI:https://bcregistry-prod.apigee.net}
-          apiKey: ${BCREGISTRY_KEY:thekeyisalie}
-          accountId: ${BCREGISTRY_ACCOUNT:12345}

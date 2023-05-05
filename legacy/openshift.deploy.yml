@@ -31,12 +31,9 @@ parameters:
   - name: CPU_LIMIT
     value: 200m
   - name: MEMORY_REQUEST
-    value: 125Mi
+    value: 75Mi
   - name: MEMORY_LIMIT
-    value: 125Mi
-  - name: BCREGISTRY_URI
-    description: Bc Registry API address
-    required: true
+    value: 75Mi
   - name: CERT_PVC_SIZE
     description: The amount of storage the cert PVC should have
     value: 25Mi
@@ -71,19 +68,6 @@ objects:
           storage: ${CERT_PVC_SIZE}
       storageClassName: netapp-file-standard
   - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}-reports
-    spec:
-      accessModes:
-        - ReadWriteMany
-      resources:
-        requests:
-          storage: 125Mi
-      storageClassName: netapp-file-standard
-  - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:
@@ -115,9 +99,6 @@ objects:
             - name: ${NAME}-${ZONE}-certs
               persistentVolumeClaim:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}
-            - name: ${NAME}-${ZONE}-reports
-              persistentVolumeClaim:
-                claimName: ${NAME}-${ZONE}-${COMPONENT}-reports
           initContainers:
             - name: ${NAME}-init
               image: ${REGISTRY}/bcgov/${NAME}/common:${ZONE}
@@ -141,10 +122,10 @@ objects:
               resources:
                 limits:
                   cpu: ${CPU_LIMIT}
-                  memory: 125Mi
+                  memory: ${MEMORY_LIMIT}
                 requests:
                   cpu: ${CPU_REQUEST}
-                  memory: 125Mi
+                  memory: ${MEMORY_REQUEST}
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
@@ -188,18 +169,6 @@ objects:
                       key: oracle-secret
                 - name: ORACLEDB_KEYSTORE
                   value: /cert/jssecacerts
-                - name: BCREGISTRY_URI
-                  value: ${BCREGISTRY_URI}
-                - name: BCREGISTRY_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: bcregistry-key
-                - name: BCREGISTRY_ACCOUNT
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: bcregistry-account
               ports:
                 - containerPort: 9000
                   protocol: TCP
@@ -233,8 +202,6 @@ objects:
               volumeMounts:
                 - mountPath: /cert
                   name: ${NAME}-${ZONE}-certs
-                - mountPath: /workspace/temp
-                  name: ${NAME}-${ZONE}-reports
   - apiVersion: v1
     kind: Service
     metadata:
@@ -255,8 +222,6 @@ objects:
       labels:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
-      annotations:
-        haproxy.router.openshift.io/timeout: "10m"
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
