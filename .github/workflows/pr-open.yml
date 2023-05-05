@@ -286,7 +286,6 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
-            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
   deploy-frontend:
     name: Deploy Frontend
