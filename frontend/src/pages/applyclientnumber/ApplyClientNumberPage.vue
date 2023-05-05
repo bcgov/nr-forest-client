@@ -100,7 +100,8 @@
                     <Label label="First name" 
                            :required="true" />
                     <b-form-input id="submitterFirstNameId"
-                                  v-model="formData.submitterInformation.submitterFirstName" />
+                                  v-model="formData.submitterInformation.submitterFirstName"
+                                  :disabled="formData.submitterInformation.submitterFirstName !== ''" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterFirstName'
                                         :validationMessages="validationMessages"
                                         :modelValue="formData.submitterInformation.submitterFirstName" />
@@ -109,7 +110,8 @@
                     <Label label="Last name" 
                            :required="true" />
                     <b-form-input id="submitterLastNameId"
-                                  v-model="formData.submitterInformation.submitterLastName" />
+                                  v-model="formData.submitterInformation.submitterLastName"
+                                  :disabled="formData.submitterInformation.submitterLastName !== ''" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterLastName'
                                         :validationMessages="validationMessages"
                                         :modelValue="formData.submitterInformation.submitterLastName" />
@@ -119,7 +121,8 @@
                            :required="true" />
                     <b-form-input id="submitterPhoneNumberId"
                                   v-model="formData.submitterInformation.submitterPhoneNumber"
-                                  v-mask="'##########'" />
+                                  v-mask="'##########'"
+                                  :disabled="formData.submitterInformation.submitterPhoneNumber !== ''" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterPhoneNumber'
                                         :validationMessages="validationMessages"
                                         :modelValue="formData.submitterInformation.submitterPhoneNumber" />
@@ -128,7 +131,8 @@
                     <Label label="Email address" 
                            :required="true" />
                     <b-form-input id="submitterEmailId"
-                                  v-model="formData.submitterInformation.submitterEmail" />
+                                  v-model="formData.submitterInformation.submitterEmail"
+                                  :disabled="formData.submitterInformation.submitterEmail !== ''" />
                     <ValidationMessages fieldId = 'submitterInformation.submitterEmail'
                                         :validationMessages="validationMessages"
                                         :modelValue="formData.submitterInformation.submitterEmail" />
@@ -155,13 +159,9 @@ import ValidationMessages from "@/common/ValidationMessagesComponent.vue";
 import AddressSection from "@/pages/applyclientnumber/AddressSectionComponent.vue";
 
 const props = defineProps({
-    businessName: {
-      type: String,
-      required: true
-    },
-    userId: {
-      type: String,
-      required: true
+    submitterInformation: {
+        type: Object,
+        required: true
     }
   });
 
@@ -231,11 +231,14 @@ const displayCommonSections = computed(() => {
 });
 
 function getBusinessName() {
-    formData.value.userId = props.userId;
+    formData.value.submitterInformation.userId = props.submitterInformation.userId;
+    formData.value.submitterInformation.submitterFirstName = props.submitterInformation.submitterFirstName;
+    formData.value.submitterInformation.submitterLastName = props.submitterInformation.submitterLastName;
+    formData.value.submitterInformation.submitterEmail = props.submitterInformation.submitterEmail;
 
     if ("U" === formData.value.businessInformation.businessType) {
         formData.value.businessInformation.incorporationNumber = "";
-        formData.value.businessInformation.businessName = props.businessName;
+        formData.value.businessInformation.businessName = props.submitterInformation.businessName;
         formData.value.businessInformation.legalType = "SP";
         formData.value.businessInformation.clientType = retrieveClientType(formData.value.businessInformation.legalType);
     }
