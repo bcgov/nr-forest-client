@@ -266,6 +266,7 @@ jobs:
     needs:
       - deploy-init
       - deploy-database
+      - deploy-backend
     environment: dev
     runs-on: ubuntu-22.04
     steps:
