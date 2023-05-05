@@ -308,3 +308,41 @@ jobs:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
             -p VITE_NODE_ENV=openshift-dev
+
+  cypress-run:
+    name: "User flow test"
+    runs-on: ubuntu-22.04
+    needs:
+      - deploy-frontend
+    environment: dev
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        name: Start node
+        with:
+          node-version: 18
+      
+      - name: Run Cypress End-to-End
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: cypress
+        env:
+          CYPRESS_baseUrl: https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/cypress/screenshots
+      
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/cypress/videos
