@@ -18,7 +18,6 @@ ca:
   bc:
     gov:
       nrs:
-        orgbook: 'http://127.0.0.1:10001'
         forest:
           uri: 'http://127.0.0.1:10000'
         oracle:
