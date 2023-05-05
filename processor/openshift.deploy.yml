@@ -24,12 +24,8 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-old-growth:prod-backend
-  - name: CHES_TOKEN_URL
-    description: CHES service authentication url
-    required: true
-  - name: CHES_API_URL
-    description: CHES service api url
-    required: true
+  - name: ORACLEDB_KEYSTORE
+    description: Oracle database keystore file
   - name: CPU_REQUEST
     value: 75m
   - name: CPU_LIMIT
@@ -38,9 +34,9 @@ parameters:
     value: 75Mi
   - name: MEMORY_LIMIT
     value: 75Mi
-  - name: BCREGISTRY_URI
-    description: Bc Registry API address
-    required: true
+  - name: CERT_PVC_SIZE
+    description: The amount of storage the cert PVC should have
+    value: 25Mi
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -58,6 +54,19 @@ objects:
             name: ${REGISTRY}/${PROMOTE}
           referencePolicy:
             type: Local
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: ${CERT_PVC_SIZE}
+      storageClassName: netapp-file-standard
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -86,29 +95,42 @@ objects:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
+          volumes:
+            - name: ${NAME}-${ZONE}-certs
+              persistentVolumeClaim:
+                claimName: ${NAME}-${ZONE}-${COMPONENT}
+          initContainers:
+            - name: ${NAME}-init
+              image: ${REGISTRY}/bcgov/${NAME}/common:${ZONE}
+              imagePullPolicy: Always
+              env:
+                - name: ORACLEDB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: oracle-host
+                - name: ORACLEDB_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: oracle-secret
+                - name: ORACLEDB_PORT
+                  value: "1543"
+              volumeMounts:
+                - name: ${NAME}-${ZONE}-certs
+                  mountPath: /cert
+              resources:
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
               env:
-                - name: FRONTEND_URL
-                  value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
-                - name: LEGACY_URL
-                  value: https://${NAME}-${ZONE}-legacy.${DOMAIN}
-                - name: CHES_CLIENT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: ches-client-id
-                - name: CHES_CLIENT_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: ches-client-secret
-                - name: CHES_TOKEN_URL
-                  value: ${CHES_TOKEN_URL}
-                - name: CHES_API_URL
-                  value: ${CHES_API_URL}
                 - name: POSTGRESQL_HOST
                   value: ${NAME}-${ZONE}-database
                 - name: POSTGRESQL_DATABASE
@@ -126,19 +148,40 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
                       key: database-user
-                - name: BCREGISTRY_URI
-                  value: ${BCREGISTRY_URI}
-                - name: BCREGISTRY_KEY
+                - name: ORACLEDB_USER
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
-                      key: bcregistry-key
-                - name: BCREGISTRY_ACCOUNT
+                      key: oracle-user
+                - name: ORACLEDB_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
-                      key: bcregistry-account
-                
+                      key: oracle-password
+                - name: ORACLEDB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: oracle-database
+                - name: ORACLEDB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: oracle-host
+                - name: ORACLEDB_SERVICENAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: oracle-service
+                - name: ORACLEDB_PORT
+                  value: "1543"
+                - name: ORACLEDB_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: oracle-secret
+                - name: ORACLEDB_KEYSTORE
+                  value: /cert/jssecacerts
               ports:
                 - containerPort: 3000
                   protocol: TCP
@@ -154,7 +197,7 @@ objects:
                 failureThreshold: 12
                 httpGet:
                   path: /health
-                  port: 3000
+                  port: 3100
                   scheme: HTTP
                 initialDelaySeconds: 180
                 periodSeconds: 30
@@ -167,10 +210,10 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       ports:
-        - name: 3000-tcp
+        - name: 3100-tcp
           protocol: TCP
           port: 80
-          targetPort: 3000
+          targetPort: 3100
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: route.openshift.io/v1
@@ -182,7 +225,7 @@ objects:
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
-        targetPort: 3000-tcp
+        targetPort: 3100-tcp
       to:
         kind: Service
         name: ${NAME}-${ZONE}-${COMPONENT}

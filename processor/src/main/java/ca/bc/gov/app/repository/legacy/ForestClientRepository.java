@@ -20,4 +20,9 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       UTL_MATCH.JARO_WINKLER_SIMILARITY(UPPER(CLIENT_NAME),UPPER(:companyName)) >= 85""")
   Flux<ForestClientEntity> matchBy(String companyName);
 
+  @Query("""
+      select * from FOREST_CLIENT x
+       where (x.REGISTRY_COMPANY_TYPE_CODE || x.CORP_REGN_NMBR) = :incorporationNumber""")
+  Flux<ForestClientEntity> findByIncorporationNumber(String incorporationNumber);
+
 }

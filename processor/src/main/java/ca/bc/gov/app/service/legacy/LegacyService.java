@@ -41,17 +41,7 @@ public class LegacyService {
         );
 
     return
-        Flux
-            .fromIterable(matchers)
-            .doOnNext(matcher -> log.info("Running {}", matcher.name()))
-
-            //If matcher returns empty, all good, if not, it is a problem
-            .flatMap(matcher -> matcher.matches(eventMono.getPayload()))
-
-            .doOnNext(results -> log.info("Matched a result {}", results))
-
-            .collectList()
-
+        validateSubmission(eventMono.getPayload())
             .map(matchList ->
                 MessageBuilder
                     .withPayload(matchList)
@@ -61,6 +51,16 @@ public class LegacyService {
                     .setHeader("submission-id",eventMono.getHeaders().get("submission-id"))
                     .build()
             );
+  }
+
+  public Mono<List<MatcherResult>> validateSubmission(SubmissionInformationDto message) {
+    return Flux
+        .fromIterable(matchers)
+        .doOnNext(matcher -> log.info("Running {}", matcher.name()))
+        //If matcher returns empty, all good, if not, it is a problem
+        .flatMap(matcher -> matcher.matches(message))
+        .doOnNext(results -> log.info("Matched a result {}", results))
+        .collectList();
   }
 
   @ServiceActivator(inputChannel = ApplicationConstant.FORWARD_CHANNEL)
