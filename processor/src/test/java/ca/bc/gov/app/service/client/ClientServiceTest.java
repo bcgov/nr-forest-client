@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
+import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +23,8 @@ class ClientServiceTest {
   private final SubmissionDetailRepository submissionDetailRepository =
       mock(SubmissionDetailRepository.class);
   private final ClientService service =
-      new ClientService(mock(SubmissionRepository.class), submissionDetailRepository);
+      new ClientService(mock(SubmissionRepository.class), submissionDetailRepository, mock(
+          SubmissionMatchDetailRepository.class));
 
 
   @Test

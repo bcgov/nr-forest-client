@@ -12,7 +12,9 @@ import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
+import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
 import ca.bc.gov.app.extensions.AbstractTestContainer;
+import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -31,6 +33,8 @@ class ClientServiceIntegrationTest extends AbstractTestContainer {
 
   @SpyBean
   private SubmissionRepository submissionRepository;
+  @SpyBean
+  private SubmissionMatchDetailRepository submissionMatchDetailRepository;
 
   @Autowired
   private ClientService service;
@@ -62,7 +66,6 @@ class ClientServiceIntegrationTest extends AbstractTestContainer {
         .untilAsserted(() ->
             verify(submissionRepository, times(1)).save(any(SubmissionEntity.class))
         );
-
   }
 
   @Test
@@ -94,7 +97,12 @@ class ClientServiceIntegrationTest extends AbstractTestContainer {
             verify(submissionRepository, times(1)).save(any(SubmissionEntity.class))
         );
 
-
+    await()
+        .alias("Submission matches")
+        .atMost(Duration.ofSeconds(5))
+        .untilAsserted(() ->
+            verify(submissionMatchDetailRepository, times(1)).save(any(SubmissionMatchDetailEntity.class))
+        );
   }
 
 

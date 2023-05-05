@@ -3,12 +3,16 @@ package ca.bc.gov.app.service.client;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
+import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
+import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -24,6 +28,7 @@ public class ClientService {
 
   private final SubmissionRepository submissionRepository;
   private final SubmissionDetailRepository submissionDetailRepository;
+  private final SubmissionMatchDetailRepository submissionMatchDetailRepository;
 
   @ServiceActivator(
       inputChannel = ApplicationConstant.SUBMISSION_LIST_CHANNEL,
@@ -68,6 +73,28 @@ public class ClientService {
         message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class),
         SubmissionStatusEnum.R
     );
+
+    submissionMatchDetailRepository
+        .save(
+            SubmissionMatchDetailEntity
+                .builder()
+                .matchers(message
+                    .getPayload()
+                    .stream()
+                    .collect(Collectors.toMap(MatcherResult::fieldName, MatcherResult::value))
+                )
+                .submissionId(
+                    message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class))
+                .build()
+        )
+        .subscribe(entity -> log.info(
+                "Added matches for submission {} {}",
+                entity.getSubmissionId(),
+                entity.getMatchingField()
+            )
+        );
+
+
     log.info("Request {} was put into review",
         message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class));
   }
