@@ -9,7 +9,7 @@ parameters:
     value: nr-forest-client
   - name: COMPONENT
     description: Component name
-    value: backend
+    value: processor
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
