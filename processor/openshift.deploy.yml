@@ -96,7 +96,7 @@ objects:
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           volumes:
-            - name: ${NAME}-${ZONE}-certs
+            - name: ${NAME}-${ZONE}-${COMPONENT}-certs
               persistentVolumeClaim:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}
           initContainers:
@@ -117,7 +117,7 @@ objects:
                 - name: ORACLEDB_PORT
                   value: "1543"
               volumeMounts:
-                - name: ${NAME}-${ZONE}-certs
+                - name: ${NAME}-${ZONE}-${COMPONENT}-certs
                   mountPath: /cert
               resources:
                 limits:
@@ -185,6 +185,9 @@ objects:
               ports:
                 - containerPort: 3000
                   protocol: TCP
+              volumeMounts:
+                - name: ${NAME}-${ZONE}-${COMPONENT}-certs
+                  mountPath: /cert
               resources:
                 limits:
                   cpu: ${CPU_LIMIT}
