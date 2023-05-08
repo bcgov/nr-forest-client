@@ -82,7 +82,7 @@ public class ClientAddressDtoValidator implements Validator {
     //Validate that province is from the correct country, only if country is US or CA
     if ("US".equalsIgnoreCase(country) || "CA".equalsIgnoreCase(country)) {
       ProvinceCodeEntity provinceCodeEntity = provinceCodeRepository
-          .findByProvinceCode(province).toFuture().get();
+          .findByCountryCodeAndProvinceCode(country, province).toFuture().get();
 
       if (provinceCodeEntity == null) {
         errors.rejectValue(provinceField, "province is invalid");
