@@ -2,22 +2,14 @@ package ca.bc.gov.app.controller.client;
 
 import static ca.bc.gov.app.TestConstants.REGISTERED_BUSINESS_SUBMISSION_DTO;
 import static ca.bc.gov.app.TestConstants.UNREGISTERED_BUSINESS_SUBMISSION_DTO;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.dto.client.BusinessTypeEnum;
-import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
-import ca.bc.gov.app.dto.client.ClientContactDto;
-import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
-import ca.bc.gov.app.dto.client.ClientTypeEnum;
-import ca.bc.gov.app.dto.client.ClientValueTextDto;
-import ca.bc.gov.app.dto.client.LegalTypeEnum;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
@@ -25,7 +17,6 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -60,7 +51,7 @@ class ClientSubmissionControllerIntegrationTest
   protected WebTestClient client;
 
   @RegisterExtension
-  static WireMockExtension wireMockExtension = WireMockExtension
+  static WireMockExtension wireMockExtensionBcReg = WireMockExtension
       .newInstance()
       .options(
           wireMockConfig()
@@ -72,10 +63,23 @@ class ClientSubmissionControllerIntegrationTest
       .configureStaticDsl(true)
       .build();
 
+  @RegisterExtension
+  static WireMockExtension wireMockExtensionChes = WireMockExtension
+      .newInstance()
+      .options(
+          wireMockConfig()
+              .port(10010)
+              .notifier(new WiremockLogNotifier())
+              .asynchronousResponseEnabled(true)
+              .stubRequestLoggingDisabled(false)
+      )
+      .configureStaticDsl(true)
+      .build();
+
   @BeforeEach
   public void init() {
-    wireMockExtension.resetAll();
-    wireMockExtension
+    wireMockExtensionBcReg.resetAll();
+    wireMockExtensionBcReg
         .stubFor(post(
             urlPathEqualTo("/registry-search/api/v1/businesses/1234/documents/requests"))
             .willReturn(
@@ -83,6 +87,15 @@ class ClientSubmissionControllerIntegrationTest
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .withBody(TestConstants.BCREG_DETAIL_OK)
             )
+        );
+
+    wireMockExtensionChes
+        .stubFor(
+            post("/chess/uri")
+                .willReturn(
+                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
         );
   }
 
