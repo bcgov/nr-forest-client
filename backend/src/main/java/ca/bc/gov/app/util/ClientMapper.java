@@ -52,8 +52,8 @@ public class ClientMapper {
         .withSubmissionId(submissionId)
         .withIncorporationNumber(clientBusinessInformationDto.incorporationNumber())
         .withOrganizationName(clientBusinessInformationDto.businessName())
-        .withBusinessTypeCode(clientBusinessInformationDto.businessType().toString())
-        .withClientTypeCode(clientBusinessInformationDto.clientType().toString())
+        .withBusinessTypeCode(clientBusinessInformationDto.businessType())
+        .withClientTypeCode(clientBusinessInformationDto.clientType())
         .withGoodStandingInd(clientBusinessInformationDto.goodStanding());
   }
 
