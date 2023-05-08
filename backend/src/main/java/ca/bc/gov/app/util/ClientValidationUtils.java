@@ -59,31 +59,15 @@ public class ClientValidationUtils {
   }
 
   public static ClientTypeEnum getClientType(LegalTypeEnum legalType) {
-    switch (legalType) {
-      case A:
-      case B:
-      case BC:
-      case C:
-      case CP:
-      case EPR:
-      case FOR:
-      case LIC:
-      case REG:
-        return ClientTypeEnum.C;
-      case S:
-      case XS:
-        return ClientTypeEnum.S;
-      case XCP:
-        return ClientTypeEnum.A;
-      case SP:
-        return ClientTypeEnum.I;
-      case GP:
-        return ClientTypeEnum.P;
-      case LP:
-      case XL:
-      case XP:
-        return ClientTypeEnum.L;
-    }
-    return null;
+    if(legalType == null)
+      return null;
+    return switch (legalType) {
+      case A, B, BC, C, CP, EPR, FOR, LIC, REG -> ClientTypeEnum.C;
+      case S, XS -> ClientTypeEnum.S;
+      case XCP -> ClientTypeEnum.A;
+      case SP -> ClientTypeEnum.I;
+      case GP -> ClientTypeEnum.P;
+      case LP, XL, XP -> ClientTypeEnum.L;
+    };
   }
 }
