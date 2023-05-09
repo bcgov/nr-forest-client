@@ -24,6 +24,22 @@
   <b-col xs="10" sm="10" md="11" lg="11" 
          style="border: 1px solid lightgray; padding: 0.7rem !important;">
 
+    <b-row v-if="id > 0" class="rowSpace">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <Label label="Location or address name" 
+               :required="true" />
+      </div>
+
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <b-form-input :id="'todoId' + id" >
+        </b-form-input>
+
+        <!-- <ValidationMessages :fieldId="`location.addresses[${id}].country`" 
+                            :validationMessages="validationMessages"
+                            :modelValue="country" /> -->
+      </div>
+    </b-row>
+
     <b-row class="rowSpace">
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <Label label="Country" 
