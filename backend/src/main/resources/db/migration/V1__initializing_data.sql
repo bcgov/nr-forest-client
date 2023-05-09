@@ -3,9 +3,11 @@
 --
 drop table if exists nrfc.submission_detail;
 drop table if exists nrfc.submission_matching_detail;
-drop table if exists nrfc.submission_location_contact;
+drop table if exists nrfc.submission_location_contact;--Legacy table
+drop table if exists nrfc.submission_location_contact_xref;
 drop table if exists nrfc.submission_location;
-drop table if exists nrfc.submission_submitter;
+drop table if exists nrfc.submission_submitter;--Legacy table
+drop table if exists nrfc.submission_contact;
 drop table if exists nrfc.submission;
 drop table if exists nrfc.client_type_code;
 drop table if exists nrfc.submission_status_code;
@@ -19,7 +21,8 @@ drop sequence if exists nrfc.submission_id_seq;
 drop sequence if exists nrfc.submission_detail_id_seq;
 drop sequence if exists nrfc.submission_matching_detail_id_seq;
 drop sequence if exists nrfc.submission_location_seq;
-drop sequence if exists nrfc.submission_location_contact_seq;
+drop sequence if exists nrfc.submission_location_contact_seq;--Legacy sequence
+drop sequence if exists nrfc.submission_contact_seq;
 drop sequence if exists nrfc.submission_submitter_seq;
 ---
 
@@ -232,6 +235,7 @@ comment on column nrfc.submission_detail.organization_name is 'The name of the c
 comment on column nrfc.submission_detail.client_type_code is 'A code representing the type of a client';
 comment on column nrfc.submission_detail.good_standing_ind is 'An indicator that determines whether a client is in good standing with respect to their financial obligations.';
 
+--TODO: Document table and columns
 create table if not exists nrfc.submission_matching_detail (
     submission_matching_detail_id   integer			not null,
 	submission_id				    integer			not null,
@@ -241,8 +245,6 @@ create table if not exists nrfc.submission_matching_detail (
 	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id)
 );
 
---TODO: Document table and columns
-
 create table if not exists nrfc.submission_location (
     submission_location_id      integer			not null,
 	submission_id               integer			not null,
@@ -251,7 +253,7 @@ create table if not exists nrfc.submission_location (
     province_code               varchar(2)      not null,
     city_name                   varchar(100)    not null,
     postal_code                 varchar(10)     not null,
-    main_address_ind            varchar(1)      not null default 'N',
+    location_name               varchar(20)     not null,
     constraint submission_location_id_pk primary key (submission_location_id),
     constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
     constraint submission_location_country_code_fk foreign key (country_code) references nrfc.country_code(country_code),
@@ -265,48 +267,38 @@ comment on column nrfc.submission_location.street_address is 'The address of a c
 comment on column nrfc.submission_location.country_code is 'A code representing the code of a country.';
 comment on column nrfc.submission_location.province_code is 'A code representing the code of a province.';
 comment on column nrfc.submission_location.city_name is 'The name of the city of the location.';
-comment on column nrfc.submission_location.main_address_ind is 'An indicator that determines whether the location is the main address.';
+comment on column nrfc.submission_location.location_name is 'The location name of an address. Examples of location names include, but are not limited to, Mailing Address, Billing Address among others.';
 
-create table if not exists nrfc.submission_location_contact (
-    submission_location_contact_id      integer			not null,
-	submission_location_id              integer			not null,
-    contact_type_code                   varchar(2)      not null,
-    first_name                          varchar(100)    null,
-	last_name                           varchar(100)    null,
-    business_phone_number               varchar(20)     not null,
-    email_address                       varchar(100)    not null,
-    constraint submission_location_contact_id_pk primary key (submission_location_contact_id),
-    constraint submission_location_contact_id_fk foreign key (submission_location_id) references nrfc.submission_location(submission_location_id),
-    constraint submission_location_contact_contact_type_code_fk foreign key (contact_type_code) references nrfc.contact_type_code(contact_type_code)
+create table if not exists nrfc.submission_contact (
+    submission_contact_id      integer		    not null,
+	submission_id              integer			not null,
+    contact_type_code          varchar(2)       not null,
+    first_name                 varchar(100)     null,
+	last_name                  varchar(100)     null,
+    business_phone_number      varchar(20)      not null,
+    email_address              varchar(100)     not null,
+    constraint submission_contact_id_pk primary key (submission_contact_id),
+    constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
+    constraint submission_contact_contact_type_code_fk foreign key (contact_type_code) references nrfc.contact_type_code(contact_type_code)
 );
 
-comment on table nrfc.submission_location_contact is 'The details of a contacts for each client''s location.';
-comment on column nrfc.submission_location_contact.submission_location_contact_id is 'Incremental id generated for the contact details of a client.';
-comment on column nrfc.submission_location_contact.submission_location_id is 'Incremental id generated for a location of a client.';
-comment on column nrfc.submission_location_contact.contact_type_code is 'A code representing the code of a role of a client''s contact.';
-comment on column nrfc.submission_location_contact.first_name is 'The first name of the client''s contact.';
-comment on column nrfc.submission_location_contact.last_name is 'The last name of the client''s contact.';
-comment on column nrfc.submission_location_contact.business_phone_number is 'The phone number of the client''s contact.';
-comment on column nrfc.submission_location_contact.email_address is 'The email address of the client''s contact.';
+comment on table nrfc.submission_contact is 'The details of a contacts for each client''s location.';
+comment on column nrfc.submission_contact.submission_contact_id is 'Incremental id generated for the contact details of a client.';
+comment on column nrfc.submission_contact.submission_id is 'Incremental id generated for a submission of a client.';
+comment on column nrfc.submission_contact.contact_type_code is 'A code representing the code of a role of a client''s contact.';
+comment on column nrfc.submission_contact.first_name is 'The first name of the client''s contact.';
+comment on column nrfc.submission_contact.last_name is 'The last name of the client''s contact.';
+comment on column nrfc.submission_contact.business_phone_number is 'The phone number of the client''s contact.';
+comment on column nrfc.submission_contact.email_address is 'The email address of the client''s contact.';
 
-create table if not exists nrfc.submission_submitter (
-    submission_submitter_id     integer			not null,
-	submission_id               integer			not null,
-    first_name                  varchar(100)    null,
-	last_name                 	varchar(100)    null,
-    phone_number       			varchar(20)     not null,
-    email_address               varchar(100)    not null,
-    constraint submission_submitter_id_pk primary key (submission_submitter_id),
-    constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id)
+--TODO: Document table and columns
+create table if not exists nrfc.submission_location_contact_xref (
+    submission_location_id      integer			not null,
+    submission_contact_id       integer		    not null,
+    constraint submission_location_contact_xref_id_pk primary key (submission_location_id, submission_contact_id),
+    constraint submission_location_id_fk foreign key (submission_location_id) references nrfc.submission_location(submission_location_id),
+    constraint submission_contact_id_fk foreign key (submission_contact_id) references nrfc.submission_contact(submission_contact_id)
 );
-
-comment on table nrfc.submission_submitter is 'The details of the submission of the form request.';
-comment on column nrfc.submission_submitter.submission_submitter_id is 'Incremental id generated for the details of the submitter''s submission request.';
-comment on column nrfc.submission_submitter.submission_id is 'Incremental id generated for a submission of a client.';
-comment on column nrfc.submission_submitter.first_name is 'The first name of the client''s contact.';
-comment on column nrfc.submission_submitter.last_name is 'The last name of the client''s contact.';
-comment on column nrfc.submission_submitter.phone_number is 'The phone number of the client''s contact.';
-comment on column nrfc.submission_submitter.email_address is 'The email address of the client''s contact.';
 
 -- 
 -- SEQUENCES
@@ -324,8 +316,5 @@ alter table nrfc.submission_matching_detail alter column submission_matching_det
 create sequence if not exists nrfc.submission_location_seq start 1;
 alter table nrfc.submission_location alter column submission_location_id set default nextval('nrfc.submission_location_seq');
 
-create sequence if not exists nrfc.submission_location_contact_seq start 1;
-alter table nrfc.submission_location_contact alter column submission_location_contact_id set default nextval('nrfc.submission_location_contact_seq');
-
-create sequence if not exists nrfc.submission_submitter_seq start 1;
-alter table nrfc.submission_submitter alter column submission_submitter_id set default nextval('nrfc.submission_submitter_seq');
+create sequence if not exists nrfc.submission_contact_seq start 1;
+alter table nrfc.submission_contact alter column submission_contact_id set default nextval('nrfc.submission_contact_seq');

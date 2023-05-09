@@ -11,6 +11,7 @@ export interface FormDataDto {
   },
   location: {
     addresses: Address[];
+    contacts: Contact[];
   },
   submitterInformation: {
     userId: string,
@@ -22,12 +23,12 @@ export interface FormDataDto {
 }
 
 export interface Address {
+  locationName: string;
   streetAddress: string;
   country: CodeDescrType;
   province: CodeDescrType;
   city: string;
   postalCode: string;
-  contacts: Contact[];
 }
 
 export interface Contact {
@@ -49,6 +50,7 @@ export const formDataDto: FormDataDto = {
   },
   location: {
     addresses: [],
+    contacts: [],
   },
   submitterInformation: {
     userId: "",

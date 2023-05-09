@@ -83,20 +83,12 @@ export const usePost = (url: string, body: any, config: any = {}) => {
 
 export const addNewAddress = (addresses: Address[]) => {
   const blankAddress: Address = {
+    locationName: "",
     streetAddress: "",
     country: { value: "", text: "" } as CodeDescrType,
     province: { value: "", text: "" } as CodeDescrType,
     city: "",
     postalCode: "",
-    contacts: [
-      {
-        contactType: { value: "", text: "" } as CodeDescrType,
-        firstName: "",
-        lastName: "",
-        phoneNumber: "",
-        email: "",
-      }
-    ] as Contact[],
   };
 
   let newAddresses = addresses.push(blankAddress);
