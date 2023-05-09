@@ -97,6 +97,7 @@ export const addNewAddress = (addresses: Address[]) => {
 
 export const addNewContact = (contacts: Contact[]) => {
   const blankContact: Contact = {
+    locationNames: { value: "", text: "" } as CodeDescrType[],
     contactType: { value: "", text: "" } as CodeDescrType,
     firstName: "",
     lastName: "",

@@ -32,6 +32,7 @@ export interface Address {
 }
 
 export interface Contact {
+  locationNames: CodeDescrType[];
   contactType: CodeDescrType;
   firstName: string;
   lastName: string;
