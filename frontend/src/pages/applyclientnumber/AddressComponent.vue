@@ -1,4 +1,26 @@
 <template>
+
+  <span v-if="id == 0">
+    <h5><strong>Mailing address</strong></h5>
+    <br />
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      This is the primary address where you'll receive mail.
+    </div>
+    <br />
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      If you'd like another location, for example a seed orchard or a street address different from your mailing address, select the "+ Add another address" button below. 
+    </div>
+    <br />
+  </span>
+
+  <span v-if="id > 0">
+    <h5><strong>Additional address</strong></h5>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      Provide a name to identify your additional address.
+    </div>
+    <br />
+  </span>
+
   <b-col xs="10" sm="10" md="11" lg="11" 
          style="border: 1px solid lightgray; padding: 0.7rem !important;">
 
@@ -114,11 +136,16 @@
                       title="Business contacts" 
                       defaultOpen>
 
-          <span>
-            <strong>Enter an authorized person you want to add for this address</strong>
+          <span v-if="id == 0">
+            <strong>Add authorized people to your account</strong>
+            <br /><br />
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              Your first name, last name and email address are from your BCeID. If they’re incorrect, go to BCeID to update them before submitting your form. Be sure to add your phone number, location and role.
+            </div>
+            <br />
+            To add another contact to the account, select the "+ Add another contact" button below.
           </span>
 
-          <br /><br />
           <ContactSectionComponent id="contactListId" 
                                   :index="id"
                                   :contacts="address.contacts"

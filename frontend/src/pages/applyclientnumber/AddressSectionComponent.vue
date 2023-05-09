@@ -8,14 +8,14 @@
       :countryCodes="countryCodes"
       />
 
-      <b-col xs="2" sm="2" md="1" lg="1" 
+      <b-col v-if="itemIndex >= 1"
+             xs="2" sm="2" md="1" lg="1" 
              style="border-top: 1px solid lightgray;
                     border-right: 1px solid lightgray;
                     border-bottom: 1px solid lightgray;
                     padding: 0.7rem !important;
                     text-align: center;">
-        <b-button enabled="addresses.length > 1"
-                  @click="deleteAddress(itemIndex)">
+        <b-button @click="deleteAddress(itemIndex)">
           <bi-x-circle></bi-x-circle>
         </b-button>
       </b-col>

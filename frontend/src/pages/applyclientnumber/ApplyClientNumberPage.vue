@@ -11,6 +11,7 @@
         <!--  -->
 
         <label>All fields are mandatory unless noted.</label>
+        <br /><br />
         
         <CollapseCard title="Registered business" 
                       id="businessInformationId"
@@ -66,18 +67,11 @@
             </span> 
         </CollapseCard>
 
-        <CollapseCard title="Mailing address" 
-                      id="mailingAddressId"
+        <CollapseCard title="Address" 
+                      id="addressesId"
                       :display="displayCommonSections"
                       defaultOpen>
 
-            <span>
-                <strong>This information is from 
-                        <a href="https://www.bcregistry.ca/business/auth/home/decide-business" target="_blank">BC Registries</a>. 
-                        If it's incorrect, go to BC Registries to update it before continuing.</strong>
-            </span>
-
-            <br /><br />
             <AddressSection id="addressListId" 
                             :addresses="formData.location.addresses"
                             :validationMessages="validationMessages" />
@@ -85,62 +79,6 @@
             <ValidationMessages :fieldId="'location.addresses'"
                                 :validationMessages="validationMessages"
                                 :modelValue="formData.location.addresses[0]" />
-        </CollapseCard>
-
-        <CollapseCard title="Form submitter information" 
-                      id="submitterInformationId"
-                      :display="displayCommonSections"
-                      defaultOpen>
-
-            <span>
-                <strong>This information is from your BCeID. If it's incorrect, go to BCeID login page to update it before submitting your form.</strong>
-            </span>
-
-            <br /><br />
-            <b-row>
-                <b-col cols="3">
-                    <Label label="First name" 
-                           :required="true" />
-                    <b-form-input id="submitterFirstNameId"
-                                  v-model="formData.submitterInformation.submitterFirstName"
-                                  :disabled="formData.submitterInformation.submitterFirstName !== ''" />
-                    <ValidationMessages fieldId = 'submitterInformation.submitterFirstName'
-                                        :validationMessages="validationMessages"
-                                        :modelValue="formData.submitterInformation.submitterFirstName" />
-                </b-col>
-                <b-col cols="3">
-                    <Label label="Last name" 
-                           :required="true" />
-                    <b-form-input id="submitterLastNameId"
-                                  v-model="formData.submitterInformation.submitterLastName"
-                                  :disabled="formData.submitterInformation.submitterLastName !== ''" />
-                    <ValidationMessages fieldId = 'submitterInformation.submitterLastName'
-                                        :validationMessages="validationMessages"
-                                        :modelValue="formData.submitterInformation.submitterLastName" />
-                </b-col>
-                <b-col cols="3">
-                    <Label label="Phone number" 
-                           :required="true" />
-                    <b-form-input id="submitterPhoneNumberId"
-                                  v-model="formData.submitterInformation.submitterPhoneNumber"
-                                  v-mask="'##########'"
-                                  :disabled="formData.submitterInformation.submitterPhoneNumber !== ''" />
-                    <ValidationMessages fieldId = 'submitterInformation.submitterPhoneNumber'
-                                        :validationMessages="validationMessages"
-                                        :modelValue="formData.submitterInformation.submitterPhoneNumber" />
-                </b-col>
-                <b-col cols="3">
-                    <Label label="Email address" 
-                           :required="true" />
-                    <b-form-input id="submitterEmailId"
-                                  v-model="formData.submitterInformation.submitterEmail"
-                                  :disabled="formData.submitterInformation.submitterEmail !== ''" />
-                    <ValidationMessages fieldId = 'submitterInformation.submitterEmail'
-                                        :validationMessages="validationMessages"
-                                        :modelValue="formData.submitterInformation.submitterEmail" />
-                </b-col>
-            </b-row>
-
         </CollapseCard>
 
         <b-button class="chefsBlue"
@@ -240,7 +178,7 @@ function getBusinessName() {
 
     if ("U" === formData.value.businessInformation.businessType) {
         formData.value.businessInformation.incorporationNumber = "";
-        formData.value.businessInformation.businessName = props.submitterInformation.businessName;
+        formData.value.businessInformation.businessName = props.submitterInformation.bceidBusinessName;
         formData.value.businessInformation.legalType = "SP";
         formData.value.businessInformation.clientType = retrieveClientType(formData.value.businessInformation.legalType);
     }
