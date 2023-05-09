@@ -34,7 +34,7 @@
         <b-form-input :id="'todoId' + id" >
         </b-form-input>
 
-        <!-- <ValidationMessages :fieldId="`location.addresses[${id}].country`" 
+        <!-- <ValidationMessages :fieldId="`location.addresses[${id}].todo`" 
                             :validationMessages="validationMessages"
                             :modelValue="country" /> -->
       </div>
