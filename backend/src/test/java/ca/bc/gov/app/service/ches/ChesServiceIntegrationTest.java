@@ -286,9 +286,10 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
   @Test
   @DisplayName("Template was built")
   void shouldBuildTemplate() {
-    Map<String, Object> variables = Map.of(
+    Map<String, Object> variables = Map.of("business",Map.of(
         "name", "John",
-        "email", "john@example.com");
+        "incorporation", "john@example.com")
+    );
     String expected = """
         <html>
         <body><p>Hi John,</p>
@@ -296,7 +297,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         </html>""";
 
     service
-        .buildTemplate("registration", variables)
+        .buildTemplate("test", variables)
         .as(StepVerifier::create)
         .expectNext(expected)
         .verifyComplete();

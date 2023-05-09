@@ -184,16 +184,16 @@ class ClientSubmissionControllerIntegrationTest
   private static Stream<Arguments> listValues() {
     return
         Stream.of(
-            Arguments.of(null,null,null,null,true),
-            Arguments.of(null,null,0,null,true),
-            Arguments.of(null,null,0,10,true),
-            Arguments.of(null,null,null,10,true),
-            Arguments.of("requestStatus","N",null,null,true),
-            Arguments.of("clientType","P",null,null,true),
-            Arguments.of("name","Goldfinger",null,null,true),
-            Arguments.of("name","Auric",null,null,false),
-            Arguments.of(null,null,1,null,false),
-            Arguments.of(null,null,1,1,false)
+            Arguments.of(null, null, null, null, true),
+            Arguments.of(null, null, 0, null, true),
+            Arguments.of(null, null, 0, 10, true),
+            Arguments.of(null, null, null, 10, true),
+            Arguments.of("requestStatus", "N", null, null, true),
+            Arguments.of("clientType", "P", null, null, true),
+            Arguments.of("name", "Goldfinger", null, null, true),
+            Arguments.of("name", "Auric", null, null, false),
+            Arguments.of(null, null, 1, null, false),
+            Arguments.of(null, null, 1, 1, false)
         );
   }
 

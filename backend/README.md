@@ -1,5 +1,10 @@
 The nr-forest-client backend provides the internal apis that support the frontend development.
 
+## Mail Templating
+
+For more information on how to use our mail templating, [click here](docs/MAIL_FORMAT.md)
+
+
 ## Setup local development
 
 

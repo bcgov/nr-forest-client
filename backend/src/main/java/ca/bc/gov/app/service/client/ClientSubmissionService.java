@@ -165,10 +165,7 @@ public class ClientSubmissionService {
         chesService
             .buildTemplate(
                 "registration",
-                Map.of(
-                    "name",clientSubmissionDto.submitterInformation().submitterFirstName(),
-                    "email",clientSubmissionDto.submitterInformation().submitterEmail()
-                )
+                clientSubmissionDto.description()
             )
             .flatMap(body ->
                 chesService

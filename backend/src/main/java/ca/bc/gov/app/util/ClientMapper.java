@@ -8,8 +8,12 @@ import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import ca.bc.gov.app.entity.client.SubmitterEntity;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientMapper {
@@ -38,9 +42,9 @@ public class ClientMapper {
    * Maps a {@link ClientBusinessInformationDto} object to a {@link SubmissionDetailEntity} object,
    * using the specified submission ID.
    *
-   * @param submissionId        the submission ID to be set on the {@link SubmissionDetailEntity}
+   * @param submissionId                 the submission ID to be set on the {@link SubmissionDetailEntity}
    * @param clientBusinessInformationDto the {@link ClientBusinessInformationDto} object to be
-   *                            mapped to a {@link SubmissionDetailEntity}
+   *                                     mapped to a {@link SubmissionDetailEntity}
    * @return the {@link SubmissionDetailEntity}
    * object mapped from {@link ClientBusinessInformationDto}
    */
@@ -96,5 +100,12 @@ public class ClientMapper {
         .withLastName(clientContactDto.lastName())
         .withBusinessPhoneNumber(clientContactDto.phoneNumber())
         .withEmailAddress(clientContactDto.email());
+  }
+
+  public static String stringJoin(String delimiter, String... values) {
+    return Stream
+        .of(values)
+        .filter(StringUtils::isNotBlank)
+        .collect(Collectors.joining(delimiter));
   }
 }

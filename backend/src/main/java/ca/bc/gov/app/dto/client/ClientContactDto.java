@@ -1,6 +1,7 @@
 package ca.bc.gov.app.dto.client;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Map;
 import lombok.With;
 
 @Schema(
@@ -43,4 +44,13 @@ public record ClientContactDto(
         example = "3")
     int index
 ) {
+  public Map<String, Object> description() {
+    return Map.of(
+        "firstName", firstName,
+        "lastName", lastName,
+        "name", String.join(" ", firstName, lastName),
+        "phone", phoneNumber,
+        "email", email
+    );
+  }
 }
