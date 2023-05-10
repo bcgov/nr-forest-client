@@ -49,7 +49,7 @@ public class ClientAddressDtoValidator implements Validator {
 
     validateProvince(address, country, errors);
 
-    validateContacts(address.contacts(), errors);
+    /*validateContacts(address.contacts(), errors);*/
   }
 
   private String validateCountry(ClientAddressDto address, Errors errors) {

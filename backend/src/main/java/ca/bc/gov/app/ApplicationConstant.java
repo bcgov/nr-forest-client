@@ -13,6 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ApplicationConstant {
   public static final String POSTGRES_ATTRIBUTE_SCHEMA = "nrfc";
+
+  public static final String USERID_HEADER = "x-user-id";
+  public static final String USERMAIL_HEADER = "x-user-mail";
   public static final BcRegistryDocumentRequestBodyDto
       BUSINESS_SUMMARY_FILING_HISTORY =
       new BcRegistryDocumentRequestBodyDto(

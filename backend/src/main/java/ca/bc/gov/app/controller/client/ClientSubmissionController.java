@@ -1,5 +1,6 @@
 package ca.bc.gov.app.controller.client;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.controller.AbstractController;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
@@ -23,6 +24,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -128,13 +130,15 @@ public class ClientSubmissionController extends
   @ResponseStatus(HttpStatus.CREATED)
   public Mono<Void> submit(
       @RequestBody ClientSubmissionDto request,
+      @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
+      @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail,
       ServerHttpResponse serverResponse) {
     return Mono.just(request)
         .switchIfEmpty(
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
         )
         .doOnNext(this::validate)
-        .flatMap(clientService::submit)
+        .flatMap(submissionDto -> clientService.submit(submissionDto,userId,userEmail))
         .doOnNext(submissionId ->
             serverResponse
                 .getHeaders()
