@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -36,7 +35,6 @@ import reactor.core.publisher.Mono;
     description = "The FSA Client endpoint, responsible for handling client data"
 )
 @RestController
-@Slf4j
 @RequestMapping(value = "/api/clients/submissions", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ClientSubmissionController extends
     AbstractController<ClientSubmissionDto, ClientSubmitRequestValidator> {
@@ -105,6 +103,22 @@ public class ClientSubmissionController extends
                       schema = @Schema(
                           implementation = String.class,
                           example = "000123"
+                      )
+                  ),
+                  @Header(
+                      name = "x-user-id",
+                      description = "The ID of the submitter who is making the submission",
+                      schema = @Schema(
+                          implementation = String.class,
+                          example = "1234"
+                      )
+                  ),
+                  @Header(
+                      name = "x-user-email",
+                      description = "The email address of the submitter who is making the submission",
+                      schema = @Schema(
+                          implementation = String.class,
+                          example = "joe.doe@gov.bc.ca"
                       )
                   )
               }
