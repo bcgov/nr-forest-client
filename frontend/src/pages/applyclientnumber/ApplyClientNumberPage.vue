@@ -57,7 +57,6 @@
 
             <div v-if="formData.businessInformation.businessType == 'U'">
                 <Label label="Unregistered sole proprietorship" />
-                --{{ submitterInformation }}
                 {{ formData.businessInformation.businessName }}
             </div>
 
