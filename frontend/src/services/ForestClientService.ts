@@ -48,7 +48,7 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
   return { response, error, data, loading, fetch }
 }
 
-export const usePost = (url: string, body: any, config: any = {}) => {
+export const usePost = (url: string, body: any, submitterInfoHeader: any, config: any = {}) => {
   const response: any = ref({});
   const responseBody: any = ref({});
   const error: any = ref({});
@@ -63,7 +63,9 @@ export const usePost = (url: string, body: any, config: any = {}) => {
         baseURL: backendUrl,
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-user-id': submitterInfoHeader.userId,
+          'x-user-email': submitterInfoHeader.submitterEmail
         },
         data: body
       });
