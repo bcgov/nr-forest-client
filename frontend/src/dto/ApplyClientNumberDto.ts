@@ -52,12 +52,5 @@ export const formDataDto: FormDataDto = {
   location: {
     addresses: [],
     contacts: [],
-  },
-  submitterInformation: {
-    userId: "",
-    submitterFirstName: "",
-    submitterLastName: "",
-    submitterPhoneNumber: "",
-    submitterEmail: "",
-  },
+  }
 };

@@ -7,8 +7,18 @@
         <ValidationMessages fieldId = 'businessInformation.clientType'
                             :validationMessages="validationMessages"
                             :modelValue="formData.businessInformation.clientType" />
-        <br />
+        <ValidationMessages fieldId = 'apiErrorLblId'
+                            :validationMessages="validationMessages"
+                            :modelValue="formData.businessInformation.clientType" />
         <!--  -->
+
+        <label>
+            To use this form:<br />
+            &nbsp;&nbsp;&nbsp;1. A registered business must be in good standing with BC Registries.<br />
+            &nbsp;&nbsp;&nbsp;2. You must be able to receive email.<br /><br />
+            All fields are mandatory unless noted.
+        </label>
+        <br /><br />
 
         <CollapseCard title="Registered business" 
                       id="businessInformationId"
@@ -47,6 +57,7 @@
 
             <div v-if="formData.businessInformation.businessType == 'U'">
                 <Label label="Unregistered sole proprietorship" />
+                --{{ submitterInformation }}
                 {{ formData.businessInformation.businessName }}
             </div>
 
@@ -237,8 +248,9 @@ function getBusinessName() {
     formData.value.submitterInformation.submitterEmail = props.submitterInformation.submitterEmail;
 
     if ("U" === formData.value.businessInformation.businessType) {
+        console.log("props.submitterInformation.bceidBusinessName = " + props.submitterInformation.bceidBusinessName);
         formData.value.businessInformation.incorporationNumber = "";
-        formData.value.businessInformation.businessName = props.submitterInformation.businessName;
+        formData.value.businessInformation.businessName = props.submitterInformation.bceidBusinessName;
         formData.value.businessInformation.legalType = "SP";
         formData.value.businessInformation.clientType = retrieveClientType(formData.value.businessInformation.legalType);
     }
