@@ -13,13 +13,6 @@ export interface FormDataDto {
     addresses: Address[];
     contacts: Contact[];
   },
-  submitterInformation: {
-    userId: string,
-    submitterFirstName: string;
-    submitterLastName: string;
-    submitterPhoneNumber: string;
-    submitterEmail: string;
-  }
 }
 
 export interface Address {

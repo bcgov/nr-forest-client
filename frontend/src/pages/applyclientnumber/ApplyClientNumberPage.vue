@@ -242,11 +242,6 @@ const displayCommonSections = computed(() => {
 });
 
 function getBusinessName() {
-    formData.value.submitterInformation.userId = props.submitterInformation.userId;
-    formData.value.submitterInformation.submitterFirstName = props.submitterInformation.submitterFirstName;
-    formData.value.submitterInformation.submitterLastName = props.submitterInformation.submitterLastName;
-    formData.value.submitterInformation.submitterEmail = props.submitterInformation.submitterEmail;
-
     if ("U" === formData.value.businessInformation.businessType) {
         console.log("props.submitterInformation.bceidBusinessName = " + props.submitterInformation.bceidBusinessName);
         formData.value.businessInformation.incorporationNumber = "";
