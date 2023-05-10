@@ -194,7 +194,10 @@ const businessNames = computed(() => {
 async function populateBusinessList(event: any) {
     if (event.length >= 3) {
         const encodedBusinessName = encodeURIComponent(event);        
-        useFetchTo(`/api/clients/name/${encodedBusinessName}`, originalBusinessNames, { method:'get' });
+        useFetchTo(`/api/clients/name/${encodedBusinessName}`, 
+                   originalBusinessNames, 
+                   { method:'get' }, 
+                   props.submitterInformation);
         filterSearchData(event);
     }
 };
@@ -207,7 +210,10 @@ function filterSearchData(event: any) {
         formData.value.businessInformation.legalType = filteredSearchDataValues[0].legalType;
         formData.value.businessInformation.clientType = retrieveClientType(formData.value.businessInformation.legalType);
 
-        const {error: detailsResponse } = useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, addressDataRef, { method:'get' });
+        const {error: detailsResponse } = useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, 
+                                                     addressDataRef, 
+                                                     { method:'get' }, 
+                                                     props.submitterInformation);
         watch(
             [detailsResponse],
             () => {                

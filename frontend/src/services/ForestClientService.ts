@@ -15,12 +15,12 @@ axios.defaults.headers.common['Access-Control-Allow-Origin'] = frontendUrl;
 export const useFetch = (url: string, config: any = {}) => {
 
   const data: any = ref(config.initialData || {});
-  const info = useFetchTo(url, data, config);
+  const info = useFetchTo(url, data, config, {});
 
   return { ...info, data }
 }
 
-export const useFetchTo = (url: string, data: any, config: any = {}) => {
+export const useFetchTo = (url: string, data: any, config: any = {}, submitterInfoHeader: any) => {
 
   const response = ref({});
   const error = ref({});
@@ -32,7 +32,11 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
       const result = await axios.request({
         ...config,
         url,
-        baseURL: backendUrl
+        baseURL: backendUrl,
+        headers: {
+          'x-user-id': submitterInfoHeader.userId,
+          'x-user-email': submitterInfoHeader.submitterEmail
+        },
       });
       response.value = result;
       data.value = result.data;
