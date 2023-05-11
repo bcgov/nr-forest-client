@@ -108,7 +108,7 @@ public class ClientSubmissionController extends
                       )
                   ),
                   @Header(
-                      name = "x-user-id",
+                      name = ApplicationConstant.USERID_HEADER,
                       description = "The ID of the submitter who is making the submission",
                       schema = @Schema(
                           implementation = String.class,
@@ -116,7 +116,7 @@ public class ClientSubmissionController extends
                       )
                   ),
                   @Header(
-                      name = "x-user-email",
+                      name = ApplicationConstant.USERMAIL_HEADER,
                       description = "The email address of the submitter who is making the submission",
                       schema = @Schema(
                           implementation = String.class,
