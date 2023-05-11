@@ -103,7 +103,7 @@ ca:
               - location
               - x-sub-id
               - x-user-id
-              - x-user-mail
+              - x-user-email
             methods:
               - OPTIONS
               - GET
