@@ -15,28 +15,32 @@ axios.defaults.headers.common['Access-Control-Allow-Origin'] = frontendUrl;
 export const useFetch = (url: string, config: any = {}) => {
 
   const data: any = ref(config.initialData || {});
-  const info = useFetchTo(url, data, config, {});
+  const info = useFetchTo(url, data, config);
 
   return { ...info, data }
 }
 
-export const useFetchTo = (url: string, data: any, config: any = {}, submitterInfoHeader: any) => {
+export const useFetchTo = (url: string, data: any, config: any = {}) => {
 
   const response = ref({});
   const error = ref({});
   const loading = ref(false);
 
+  const parameters = {
+    ...config,
+    headers: {
+      'Content-Type': 'application/json',
+      ...config.headers
+    }
+  };
+
   const fetch = async () => {
     loading.value = true;
     try {
       const result = await axios.request({
-        ...config,
+        ...parameters,
         url,
-        baseURL: backendUrl,
-        headers: {
-          'x-user-id': submitterInfoHeader.userId,
-          'x-user-email': submitterInfoHeader.submitterEmail
-        },
+        baseURL: backendUrl
       });
       response.value = result;
       data.value = result.data;
@@ -52,25 +56,28 @@ export const useFetchTo = (url: string, data: any, config: any = {}, submitterIn
   return { response, error, data, loading, fetch }
 }
 
-export const usePost = (url: string, body: any, submitterInfoHeader: any, config: any = {}) => {
+export const usePost = (url: string, body: any, config: any = {}) => {
   const response: any = ref({});
   const responseBody: any = ref({});
   const error: any = ref({});
   const loading: any = ref(false);
 
+  const parameters = {
+    ...config,
+    headers: {
+      'Content-Type': 'application/json',
+      ...config.headers
+    }
+  };
+
   const fetch = async () => {
     loading.value = true;
     try {
       const result = await axios.request({
-        ...config,
+        ...parameters,
         url,
         baseURL: backendUrl,
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': submitterInfoHeader.userId,
-          'x-user-email': submitterInfoHeader.submitterEmail
-        },
         data: body
       });
       response.value = result;

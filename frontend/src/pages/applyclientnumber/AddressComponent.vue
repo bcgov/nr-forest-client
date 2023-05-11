@@ -192,7 +192,7 @@
   //We watch the country change to load the provinces
   watch([country], () => {
     if (country.value && country.value.value) {
-      useFetchTo(`/api/clients/activeCountryCodes/${country.value.value}?page=0&size=250`, provinceCodesOriginal, { method: 'get' }, {});
+      useFetchTo(`/api/clients/activeCountryCodes/${country.value.value}?page=0&size=250`, provinceCodesOriginal, { method: 'get' });
       //Set the value on the props
       props.address.country = country.value;
     }

@@ -196,8 +196,13 @@ async function populateBusinessList(event: any) {
         const encodedBusinessName = encodeURIComponent(event);        
         useFetchTo(`/api/clients/name/${encodedBusinessName}`, 
                    originalBusinessNames, 
-                   { method:'get' }, 
-                   props.submitterInformation);
+                   { 
+                    method:'get', 
+                    headers:{
+                        'x-user-id': props.submitterInformation.userId,
+                        'x-user-email': props.submitterInformation.submitterEmail
+                   } 
+                  });
         filterSearchData(event);
     }
 };
@@ -212,8 +217,13 @@ function filterSearchData(event: any) {
 
         const {error: detailsResponse } = useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, 
                                                      addressDataRef, 
-                                                     { method:'get' }, 
-                                                     props.submitterInformation);
+                                                     { 
+                                                        method:'get',
+                                                        headers:{                                                         
+                                                            'x-user-id': props.submitterInformation.userId,
+                                                            'x-user-email': props.submitterInformation.submitterEmail                                                    
+                                                        } 
+                                                    });
         watch(
             [detailsResponse],
             () => {                
