@@ -16,9 +16,9 @@ public record BcRegistryBusinessAdressesDto(
   public Set<BcRegistryAddressDto> addresses(){
     Set<BcRegistryAddressDto> addressDtoSet = new HashSet<>();
     if(mailingAddress != null)
-      addressDtoSet.add(mailingAddress);
+      addressDtoSet.add(mailingAddress.withAddressType("mailing"));
     if(deliveryAddress != null)
-      addressDtoSet.add(deliveryAddress);
+      addressDtoSet.add(deliveryAddress.withAddressType("delivery"));
     return addressDtoSet;
   }
 }
