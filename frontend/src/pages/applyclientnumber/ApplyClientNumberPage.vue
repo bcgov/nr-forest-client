@@ -312,7 +312,7 @@ function retrieveClientType(legalType: string): string {
     }
 };
 
-const { response, error, fetch: persistValidateData } = usePost('/api/clients/submissions', formData.value, props.submitterInformation, { skip: true });
+const { response, error, fetch: persistValidateData } = usePost('/api/clients/submissions', formData.value, { skip: true });
 
 watch(
     [response],

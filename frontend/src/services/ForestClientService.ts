@@ -88,7 +88,6 @@ export const usePost = (url: string, body: any, config: any = {}) => {
       loading.value = false;
     }
   };
-
   !config.skip && fetch();
 
   return { response, error, responseBody, loading, fetch }
