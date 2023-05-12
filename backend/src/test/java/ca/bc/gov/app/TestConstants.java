@@ -5,9 +5,7 @@ import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
-import ca.bc.gov.app.dto.openmaps.PropertyDto;
 import java.util.List;
 
 public class TestConstants {
@@ -164,90 +162,6 @@ public class TestConstants {
         "legalType": "SP"
       }""";
 
-  public static final String OPENMAPS_OK = """
-      {
-        "type": "FeatureCollection",
-        "features": [{
-          "type": "Feature",
-          "id": "WHSE_HUMAN_CULTURAL_ECONOMIC.FN_COMMUNITY_LOCATIONS_SP.129",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [
-              1190868.482,
-              384526.713
-            ]
-          },
-          "geometry_name": "SHAPE",
-          "properties": {
-            "COMMUNITY_LOCATION_ID": 129,
-            "FIRST_NATION_BC_NAME": "Songhees First Nation",
-            "FIRST_NATION_FEDERAL_NAME": "Songhees Nation",
-            "FIRST_NATION_FEDERAL_ID": 656,
-            "URL_TO_BC_WEBSITE": "http://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/consulting-with-first-nations/first-nations-negotiations/first-nations-a-z-listing/songhees-nation",
-            "URL_TO_FEDERAL_WEBSITE": "http://fnp-ppn.aadnc-aandc.gc.ca/fnp/Main/Search/FNMain.aspx?BAND_NUMBER=656&lang=eng",
-            "URL_TO_FIRST_NATION_WEBSITE": "http://songheesnation.ca/",
-            "MEMBER_ORGANIZATION_NAMES": "Te'mexw Treaty Association",
-            "LANGUAGE_GROUP": "SENĆOŦEN / Malchosen / Lkwungen / Semiahmoo / T’Sou-ke",
-            "BC_REGIONAL_OFFICE": "West Coast (Nanaimo)",
-            "MAPSHEET_NUMBER": "92B",
-            "PREFERRED_NAME": "Songhees Nation",
-            "ALTERNATIVE_NAME_1": "formerly Songhees First Nation, SONGHEES (variation SONGHISH); includes SWENGWHUNG TRIBE, WHYOMILTH TRIBE,TEECHAMITSA TRIBE, CHE-KO-NEIN TRIBE and CHILCOWITCH TRIBE (all part of Douglas Treaty (1850))",
-            "ALTERNATIVE_NAME_2": " ",
-            "ADDRESS_LINE1": "1100 Admirals Road",
-            "ADDRESS_LINE2": " ",
-            "OFFICE_CITY": "VICTORIA",
-            "OFFICE_PROVINCE": "BC",
-            "OFFICE_POSTAL_CODE": "V9A 2P6",
-            "LOCATION_DESCRIPTION": "ESQUIMALT DISTRICT SECTION 2A FRONTING ON ESQUIMALT HARBOUR AND EAST OF AND ADJOINING LOT 25",
-            "SITE_NAME": "New Songhess No. 1A",
-            "SITE_NUMBER": "06839",
-            "COMMENTS": " ",
-            "OBJECTID": 643,
-            "SE_ANNO_CAD_DATA": null
-          }
-        }],
-        "totalFeatures": 1,
-        "numberMatched": 1,
-        "numberReturned": 1,
-        "timeStamp": "2023-01-03T18:55:48.913Z",
-        "crs": {
-          "type": "name",
-          "properties": {
-            "name": "urn:ogc:def:crs:EPSG::3005"
-          }
-        }
-      }
-      """;
-
-
-  public static final String OPENMAPS_EMPTY = """
-      {
-        "type": "FeatureCollection",
-        "features": [],
-        "totalFeatures": 0,
-        "numberMatched": 0,
-        "numberReturned": 0,
-        "timeStamp": "2023-01-03T18:55:48.913Z",
-        "crs": {
-          "type": "name",
-          "properties": {
-            "name": "urn:ogc:def:crs:EPSG::3005"
-          }
-        }
-      }
-      """;
-
-  public static final PropertyDto OPENMAPS_OK_RESPONSE =
-      new PropertyDto(
-          "Songhees Nation",
-          656,
-          "1100 Admirals Road",
-          " ",
-          "VICTORIA",
-          "BC",
-          "V9A 2P6"
-      );
-
   public static final String BCREG_NOK = """
       {
           "errorMessage": "API backend third party service error.",
@@ -288,34 +202,6 @@ public class TestConstants {
           }
       }
       """;
-  public static final String BCREG_ADDR_OK = """
-      {
-          "businessOffice": {
-              "deliveryAddress": {
-                  "addressCity": "VICTORIA",
-                  "addressCountry": "CA",
-                  "addressRegion": "BC",
-                  "addressType": "delivery",
-                  "deliveryInstructions": null,
-                  "id": 1,
-                  "postalCode": "V8V1X4",
-                  "streetAddress": "501 Belleville Street",
-                  "streetAddressAdditional": ""
-              },
-              "mailingAddress": {
-                  "addressCity": "VICTORIA",
-                  "addressCountry": "CA",
-                  "addressRegion": "BC",
-                  "addressType": "mailing",
-                  "deliveryInstructions": null,
-                  "id": 2,
-                  "postalCode": "V8V1X4",
-                  "streetAddress": "501 Belleville Street",
-                  "streetAddressAdditional": ""
-              }
-          }
-      }
-      """;
 
   public static final String BCREG_RESPONSE_OK = """
       {
@@ -334,20 +220,7 @@ public class TestConstants {
         ]
       }""";
 
-  public static final String BCREG_RESPONSE_OK2 = """
-      {
-        "name": "SAMPLE COMPANY",
-        "id": "AA0000001",
-        "goodStanding": true,
-        "addresses": []
-      }""";
-
   public static final String BCREG_RESPONSE_NOK = "No data found for client number AA0000001";
-
-  public static final String BCREG_MISSING_ACCOUNTID = """
-      {
-          "errorMessage": "API required account ID is missing."
-      }""";
 
   public static final String BCREG_400 = """
       {
@@ -495,7 +368,8 @@ public class TestConstants {
       ]""";
   public static final String LEGACY_EMPTY = "[]";
 
-  public static final String BCREG_RESPONSE_DUP = "SAMPLE COMPANY already exists with the Incorporation number AA0000001 and client number 00000002";
+  public static final String BCREG_RESPONSE_DUP =
+      "SAMPLE COMPANY already exists with the Incorporation number AA0000001 and client number 00000002";
 
 
   public static final ClientSubmissionDto REGISTERED_BUSINESS_SUBMISSION_DTO =
@@ -516,25 +390,25 @@ public class TestConstants {
                       new ClientValueTextDto("NV", ""),
                       "Las Vegas", "89109",
                       0,
+                      "Billing Address"
+                  )
+              ),
+              List.of(
+                  new ClientContactDto(
+                      new ClientValueTextDto("LP", "LP"),
+                      "James",
+                      "Bond",
+                      "9876543210",
+                      "bond_james_bond@007.com",
+                      0,
                       List.of(
-                          new ClientContactDto(
-                              new ClientValueTextDto("LP","LP"),
-                              "James",
-                              "Bond",
-                              "9876543210",
-                              "bond_james_bond@007.com",
-                              0
+                          new ClientValueTextDto(
+                              "0",
+                              "Billing Address"
                           )
                       )
                   )
               )
-          ),
-          new ClientSubmitterInformationDto(
-              "testUserId",
-              "James",
-              "Bond",
-              "1234567890",
-              "james_bond@MI6.com"
           )
       );
 
@@ -556,25 +430,25 @@ public class TestConstants {
                       new ClientValueTextDto("NV", ""),
                       "Las Vegas", "89109",
                       0,
+                      "Billing Address"
+                  )
+              ),
+              List.of(
+                  new ClientContactDto(
+                      new ClientValueTextDto("LP", "LP"),
+                      "James",
+                      "Bond",
+                      "9876543210",
+                      "bond_james_bond@007.com",
+                      0,
                       List.of(
-                          new ClientContactDto(
-                              new ClientValueTextDto("LP","LP"),
-                              "James",
-                              "Bond",
-                              "9876543210",
-                              "bond_james_bond@007.com",
-                              0
+                          new ClientValueTextDto(
+                              "0",
+                              "Billing Address"
                           )
                       )
                   )
               )
-          ),
-          new ClientSubmitterInformationDto(
-              "testUserId2",
-              "James",
-              "Bond",
-              "1234567890",
-              "james_bond@MI6.com"
           )
       );
 }
