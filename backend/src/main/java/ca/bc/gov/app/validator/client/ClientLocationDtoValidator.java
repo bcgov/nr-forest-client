@@ -1,6 +1,7 @@
 package ca.bc.gov.app.validator.client;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.validation.Validator;
 @RequiredArgsConstructor
 public class ClientLocationDtoValidator implements Validator {
   private final ClientAddressDtoValidator addressDtoValidator;
+  private final ClientContactDtoValidator contactDtoValidator;
 
   @Override
   public boolean supports(Class<?> clazz) {
@@ -25,6 +27,13 @@ public class ClientLocationDtoValidator implements Validator {
 
     ClientLocationDto location = (ClientLocationDto) target;
 
+    validateAddresses(errors, location);
+    validateContacts(errors, location);
+
+
+  }
+
+  private void validateAddresses(Errors errors, ClientLocationDto location) {
     if (CollectionUtils.isEmpty(location.addresses())) {
       errors.pushNestedPath("location");
       errors.rejectValue("addresses", "addresses are missing");
@@ -44,4 +53,26 @@ public class ClientLocationDtoValidator implements Validator {
       }
     }
   }
+
+  private void validateContacts(Errors errors, ClientLocationDto location) {
+    if (CollectionUtils.isEmpty(location.contacts())) {
+      errors.pushNestedPath("location");
+      errors.rejectValue("contacts", "contacts are missing");
+      errors.popNestedPath();
+      return;
+    }
+
+    List<ClientContactDto> contacts = location.contacts();
+
+    for (int i = 0; i < contacts.size(); ++i) {
+      try {
+        errors.pushNestedPath("location.contacts[" + i + "]");
+        ValidationUtils
+            .invokeValidator(contactDtoValidator, contacts.get(i), errors);
+      } finally {
+        errors.popNestedPath();
+      }
+    }
+  }
+
 }

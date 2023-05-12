@@ -37,12 +37,12 @@ if (keycloak &&
   tabs.value = [{ title: "Review Applications", content: ReviewApplicationPage }];
 } 
 else {
-  tabs.value = [{ title: "Apply a New Client", content: ApplyClientNumber }];
+  tabs.value = [{ title: "Request a client number", content: ApplyClientNumber }];
   submitterInformation.value.bceidBusinessName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.displayed : "Dev Test Client Name";
   submitterInformation.value.userId = keycloak && keycloak.tokenParsed ? keycloak.subject : "testUserId";
   submitterInformation.value.submitterFirstName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : "";
   submitterInformation.value.submitterLastName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.family_name : "";
-  submitterInformation.value.submitterEmail = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.email : "";
+  submitterInformation.value.submitterEmail = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.email : "fsa_donotreply@gov.bc.ca";
 }
 </script>
 

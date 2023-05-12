@@ -26,7 +26,7 @@
   <b-button class="chefsBlue"
             @click="addContact()">
     <bi-plus-lg></bi-plus-lg>
-    Add a person for this address
+    Add a contact
   </b-button>
   </template>
     

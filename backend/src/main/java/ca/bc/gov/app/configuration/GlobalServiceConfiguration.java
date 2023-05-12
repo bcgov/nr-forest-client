@@ -18,7 +18,6 @@ import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
@@ -45,7 +44,6 @@ import org.springframework.web.reactive.function.client.WebClient;
     ClientLookUpDto.class,
     ClientNameCodeDto.class,
     ClientSubmissionDto.class,
-    ClientSubmitterInformationDto.class,
     ClientValueTextDto.class,
     BcRegistryAddressDto.class,
     BcRegistryBusinessAdressesDto.class,

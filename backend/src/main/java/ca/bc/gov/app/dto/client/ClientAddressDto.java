@@ -1,7 +1,6 @@
 package ca.bc.gov.app.dto.client;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.List;
 import lombok.With;
 
 @Schema(
@@ -9,6 +8,7 @@ import lombok.With;
     title = "ClientAddressData",
     example = """
         {
+          "locationName": "Billing Address",
           "streetAddress": "123 Main St",
           "country": {
             "value": "CA",
@@ -20,14 +20,7 @@ import lombok.With;
           },
           "city": "Toronto",
           "postalCode": "M5V2L7",
-          "index": 1,
-          "contacts":{
-              "type": "person",
-              "firstName": "JAMES",
-              "lastName": "BAXTER",
-              "phoneNumber": "123456789"
-              "email": "james@email.ca",
-          }
+          "index": 1
         }"""
 )
 @With
@@ -54,14 +47,10 @@ public record ClientAddressDto(
         example = "3")
     int index,
 
-    @Schema(description = "A list of contacts for this address",example = """
-         {
-          "type": "person",
-          "firstName": "JAMES",
-          "lastName": "BAXTER",
-          "phoneNumber": "123456789"
-          "email": "james@email.ca",
-        }""")
-    List<ClientContactDto> contacts
+    @Schema(description = """
+        The location name of an address. Examples of location names include, 
+        but are not limited to, Mailing Address, Billing Address among others.""",
+        example = "Billing Address")
+    String locationName
 ) {
 }
