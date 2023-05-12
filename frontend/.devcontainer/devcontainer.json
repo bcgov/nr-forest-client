@@ -1,0 +1,60 @@
+{
+	"name": "Forest Client Frontend",
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:0-18",
+	"features": {
+		"ghcr.io/devcontainers/features/git:1": {
+			"ppa": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/github-cli:1": {
+			"installDirectlyFromGitHubRelease": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/caddy:1": {
+			"version": "latest",
+			"golangVersion": "1.19"
+		},
+		"ghcr.io/devcontainers-contrib/features/typescript:2": {
+			"version": "latest"
+		},
+		"ghcr.io/eitsupi/devcontainer-features/jq-likes:1": {
+			"jqVersion": "os-provided",
+			"yqVersion": "latest",
+			"gojqVersion": "latest"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"eamodio.gitlens",
+				"formulahendry.auto-close-tag",
+				"steoates.autoimport",
+				"shakram02.bash-beautify",
+				"matthewpi.caddyfile-support",
+				"mads-hartmann.bash-ide-vscode",
+				"zamerick.vscode-caddyfile-syntax",
+				"mikestead.dotenv",
+				"dbaeumer.vscode-eslint",
+				"xabikos.JavaScriptSnippets",
+				"ZainChen.json",
+				"PKief.material-icon-theme",
+				"christian-kohler.path-intellisense",
+				"esbenp.prettier-vscode",
+				"syler.sass-indented",
+				"sibiraj-s.vscode-scss-formatter",
+				"Vue.vscode-typescript-vue-plugin",
+				"octref.vetur",
+				"Wscats.vue",
+				"Vue.volar",
+				"MisterJ.vue-volar-extention-pack",
+				"sdras.vue-vscode-snippets",
+				"redhat.vscode-yaml"
+			],
+			"settings": {}
+		}
+	},
+	"forwardPorts": [
+		8080
+	],
+	"postCreateCommand": "npm i"
+}
