@@ -9,19 +9,17 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum SubmissionStatusEnum {
-  P("In Progress"),
-  A("Approved"),
-  R("Rejected"),
-  D("Deleted"),
-  N("New");
+public enum SubmissionTypeCodeEnum {
+  SPP("Submission pending processing"),
+  RNC("Review new client"),
+  AAC("Auto approved client");
 
   private final String description;
-  private static final Map<String, SubmissionStatusEnum>
+  private static final Map<String, SubmissionTypeCodeEnum>
       CONSTANTS = new HashMap<>();
 
   static {
-    for (SubmissionStatusEnum c : values()) {
+    for (SubmissionTypeCodeEnum c : values()) {
       CONSTANTS.put(c.description, c);
     }
   }
@@ -39,8 +37,8 @@ public enum SubmissionStatusEnum {
    * @throws IllegalArgumentException if no enum constant with the specified string value exists
    */
   @JsonCreator
-  public static SubmissionStatusEnum fromValue(String value) {
-    SubmissionStatusEnum constant = CONSTANTS.get(value);
+  public static SubmissionTypeCodeEnum fromValue(String value) {
+    SubmissionTypeCodeEnum constant = CONSTANTS.get(value);
     if (constant == null) {
       throw new IllegalArgumentException(value);
     } else {

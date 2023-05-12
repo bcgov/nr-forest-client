@@ -29,6 +29,9 @@ public class SubmissionEntity extends BaseEntity {
   @Column("submission_status_code")
   private SubmissionStatusEnum submissionStatus;
 
+  @Column("submission_type_code")
+  private SubmissionTypeCodeEnum submissionType;
+
   @Column("submission_date")
   private LocalDateTime submissionDate;
 }

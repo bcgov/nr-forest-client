@@ -4,14 +4,12 @@ import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
-import ca.bc.gov.app.entity.client.SubmissionStatusEnum;
+import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +38,7 @@ public class ClientService {
     return
         submissionDetailRepository
             .findBySubmissionId(submissionId)
+            .doOnNext(submission -> log.info("Loaded submission details {}",submission))
             //Grab what we need for the match part
             .map(details -> new SubmissionInformationDto(
                     details.getOrganizationName(),
@@ -61,7 +60,7 @@ public class ClientService {
   public void approved(Message<List<MatcherResult>> message) {
     persistData(
         message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class),
-        SubmissionStatusEnum.A
+        SubmissionTypeCodeEnum.AAC
     );
     log.info("Request {} was approved",
         message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class));
@@ -71,8 +70,11 @@ public class ClientService {
   public void reviewed(Message<List<MatcherResult>> message) {
     persistData(
         message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class),
-        SubmissionStatusEnum.R
+        SubmissionTypeCodeEnum.RNC
     );
+
+    log.info("Request {} was put into review",
+        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class));
 
     submissionMatchDetailRepository
         .save(
@@ -99,20 +101,17 @@ public class ClientService {
         message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class));
   }
 
-  private void persistData(Integer submissionId, SubmissionStatusEnum status) {
+  private void persistData(Integer submissionId, SubmissionTypeCodeEnum typeCode) {
     submissionRepository
         .findById(submissionId)
-        .map(entity -> entity.withSubmissionStatus(status))
-        .doOnNext(
-            entity -> entity.setUpdatedBy(UUID.randomUUID().toString())) //TODO: Need to update ?
-        .doOnNext(
-            entity -> entity.setCreatedBy(UUID.randomUUID().toString())) //TODO: Need to update ?
+        .doOnNext(entity -> entity.setSubmissionType(typeCode))
+        .doOnNext(entity -> entity.setUpdatedBy("AUTO-PROCESSOR"))
         .doOnNext(entity -> entity.setUpdatedAt(LocalDateTime.now()))
         .flatMap(submissionRepository::save)
         .subscribe(entity -> log.info(
-                "Updated submission {} with status {}",
+                "Updated submission {} with typeCode {}",
                 entity.getSubmissionId(),
-                entity.getSubmissionStatus()
+                entity.getSubmissionType().getDescription()
             )
         );
   }

@@ -48,25 +48,25 @@ class ProcessorIntegrationTest extends AbstractTestContainer {
     await()
         .alias("Fuzzy Search")
         .atMost(Duration.ofSeconds(5))
-        .untilAsserted(() -> verify(forestClientRepository, times(1)).matchBy(any(String.class)));
+        .untilAsserted(() -> verify(forestClientRepository, times(2)).matchBy(any(String.class)));
 
     await()
         .alias("Incorporation Search")
         .atMost(Duration.ofSeconds(5))
-        .untilAsserted(() -> verify(forestClientRepository, times(1)).findByIncorporationNumber(any(String.class)));
+        .untilAsserted(() -> verify(forestClientRepository, times(2)).findByIncorporationNumber(any(String.class)));
 
     await()
         .alias("Submission lookup")
         .atMost(Duration.ofSeconds(5))
         .untilAsserted(() ->
-            verify(submissionRepository, times(1)).findById(eq(1))
+            verify(submissionRepository, times(2)).findById(eq(1))
         );
 
     await()
         .alias("Submission persistence")
         .atMost(Duration.ofSeconds(5))
         .untilAsserted(() ->
-            verify(submissionRepository, times(1)).save(any(SubmissionEntity.class))
+            verify(submissionRepository, times(2)).save(any(SubmissionEntity.class))
         );
 
 

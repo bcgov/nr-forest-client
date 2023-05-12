@@ -161,7 +161,6 @@ public abstract class AbstractTestContainer {
         .write(
             finalFile,
             finalStream
-                .peek(path -> System.out.println("Going trough " + path))
                 .map(AbstractTestContainer::readAll)
                 .flatMap(List::stream)
                 .toList(),

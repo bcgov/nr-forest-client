@@ -47,7 +47,7 @@ public class ProcessorIntegrationConfiguration {
     final String submissionIdQuery = """
         SELECT nrfc.submission.submission_id
         FROM nrfc.submission
-        WHERE nrfc.submission.submission_status_code = 'S'""";
+        WHERE nrfc.submission.submission_type_code = 'SPP'""";
 
     R2dbcMessageSource template = new R2dbcMessageSource(
         r2dbcEntityTemplate,
