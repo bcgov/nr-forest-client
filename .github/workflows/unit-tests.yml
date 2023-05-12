@@ -23,21 +23,25 @@ jobs:
     name: ${{ matrix.package }} Integrated Tests
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
+    env:
+      SONAR_TOKEN_BACKEND: ${{ secrets.SONAR_TOKEN_BACKEND }}
+      SONAR_TOKEN_LEGACY: ${{ secrets.SONAR_TOKEN_LEGACY }}
+      SONAR_TOKEN_PROCESSOR: ${{ secrets.SONAR_TOKEN_PROCESSOR }}
     strategy:
       matrix:
         package: [ backend, legacy, processor ]
         include:
           - package: backend
             triggers: ('backend/')
-            token: ('${{ secrets.SONAR_TOKEN_BACKEND }}')
+            token: ${{ vars.SONAR_TOKEN_BACKEND }}
             key: forest-client-backend
           - package: legacy
             triggers: ('legacy/')
-            token: ('${{ secrets.SONAR_TOKEN_LEGACY }}')
+            token: ${{ vars.SONAR_TOKEN_LEGACY }}
             key: forest-client-backend
           - package: processor
             triggers: ('processor/')
-            token: ('${{ secrets.SONAR_TOKEN_PROCESSOR }}')
+            token: ${{ vars.SONAR_TOKEN_PROCESSOR }}
             key: forest-client-processor
     steps:
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
