@@ -33,8 +33,8 @@
   });
 
   watch(() => props.modelValue, (newVal, oldVal) => {
-    if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
-      props.validationMessages.forEach((item, index) => {
+    if (JSON.stringify(newVal) !== JSON.stringify(oldVal) && Array.isArray(props.validationMessages)) {      
+      props.validationMessages?.forEach((item, index) => {
         if (item['fieldId'] === props.fieldId) {
           props.validationMessages.splice(index, 1);
         }

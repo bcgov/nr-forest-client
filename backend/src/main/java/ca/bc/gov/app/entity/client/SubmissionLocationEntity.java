@@ -41,4 +41,7 @@ public class SubmissionLocationEntity {
 
   @Column("main_address_ind")
   private String mainAddressInd;
+
+  @Column("location_name")
+  private String name;
 }

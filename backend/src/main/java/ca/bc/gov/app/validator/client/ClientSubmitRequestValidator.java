@@ -7,7 +7,6 @@ import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -20,8 +19,7 @@ public class ClientSubmitRequestValidator implements Validator {
   private final RegisteredBusinessInformationValidator registeredBusinessInformationValidator;
   private final UnregisteredBusinessInformationValidator unregisteredBusinessInformationValidator;
   private final ClientLocationDtoValidator locationDtoValidator;
-  private final ClientSubmitterInformationDtoValidator submitterInformationDtoValidator;
-
+  
   @Override
   public boolean supports(Class<?> clazz) {
     return ClientSubmissionDto.class.equals(clazz);
@@ -32,13 +30,9 @@ public class ClientSubmitRequestValidator implements Validator {
 
     ClientSubmissionDto request = (ClientSubmissionDto) target;
 
-
-
     validateBusinessInformation(request.businessInformation(), errors);
 
     validateLocation(request.location(), errors);
-
-    validateSubmitterInformation(request.submitterInformation(), errors);
   }
 
   private void validateBusinessInformation(
@@ -84,19 +78,4 @@ public class ClientSubmitRequestValidator implements Validator {
         .invokeValidator(locationDtoValidator, location, errors);
   }
 
-  private void validateSubmitterInformation(
-      ClientSubmitterInformationDto submitterInformation, Errors errors) {
-
-    String submitterInformationField = "submitterInformation";
-
-    if (submitterInformation == null) {
-      errors.rejectValue(
-          submitterInformationField,
-          fieldIsMissingErrorMessage(submitterInformationField));
-      return;
-    }
-
-    ValidationUtils
-        .invokeValidator(submitterInformationDtoValidator, submitterInformation, errors);
-  }
 }
