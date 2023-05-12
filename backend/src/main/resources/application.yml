@@ -97,12 +97,13 @@ ca:
               - X-Requested-With,
               - If-Modified-Since,
               - Cache-Control,
-              - Content-Type,
               - Content-Range,
               - Range
               - Location
               - location
               - x-sub-id
+              - x-user-id
+              - x-user-email
             methods:
               - OPTIONS
               - GET

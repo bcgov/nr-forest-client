@@ -1,5 +1,6 @@
 package ca.bc.gov.app.controller.client;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.controller.AbstractController;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
@@ -16,7 +17,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -24,6 +24,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -36,7 +37,6 @@ import reactor.core.publisher.Mono;
     description = "The FSA Client endpoint, responsible for handling client data"
 )
 @RestController
-@Slf4j
 @RequestMapping(value = "/api/clients/submissions", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ClientSubmissionController extends
     AbstractController<ClientSubmissionDto, ClientSubmitRequestValidator> {
@@ -106,6 +106,22 @@ public class ClientSubmissionController extends
                           implementation = String.class,
                           example = "000123"
                       )
+                  ),
+                  @Header(
+                      name = ApplicationConstant.USERID_HEADER,
+                      description = "The ID of the submitter who is making the submission",
+                      schema = @Schema(
+                          implementation = String.class,
+                          example = "1234"
+                      )
+                  ),
+                  @Header(
+                      name = ApplicationConstant.USERMAIL_HEADER,
+                      description = "The email address of the submitter who is making the submission",
+                      schema = @Schema(
+                          implementation = String.class,
+                          example = "joe.doe@gov.bc.ca"
+                      )
                   )
               }
           )
@@ -114,13 +130,15 @@ public class ClientSubmissionController extends
   @ResponseStatus(HttpStatus.CREATED)
   public Mono<Void> submit(
       @RequestBody ClientSubmissionDto request,
+      @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
+      @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail,
       ServerHttpResponse serverResponse) {
     return Mono.just(request)
         .switchIfEmpty(
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
         )
         .doOnNext(this::validate)
-        .flatMap(clientService::submit)
+        .flatMap(submissionDto -> clientService.submit(submissionDto,userId,userEmail))
         .doOnNext(submissionId ->
             serverResponse
                 .getHeaders()

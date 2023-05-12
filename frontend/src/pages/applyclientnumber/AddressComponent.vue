@@ -108,28 +108,6 @@
 
     <br />
 
-    <b-row class="rowSpace">
-      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-        <CollapseCard id="contactsId" 
-                      title="Business contacts" 
-                      defaultOpen>
-
-          <span>
-            <strong>Enter an authorized person you want to add for this address</strong>
-          </span>
-
-          <br /><br />
-          <ContactSectionComponent id="contactListId" 
-                                  :index="id"
-                                  :contacts="address.contacts"
-                                  :validationMessages="validationMessages" />
-
-          <ValidationMessages :fieldId="`location.addresses[${id}].contacts`"
-                              :validationMessages="validationMessages"
-                              :modelValue="address.contacts[0]" />
-        </CollapseCard>
-      </div>
-    </b-row>
 
   </b-col>
 </template>
@@ -140,7 +118,7 @@
   import { conversionFn } from '@/services/FetchService';
   import { addNewContact, useFetchTo } from '@/services/ForestClientService';
   import ValidationMessages from "@/common/ValidationMessagesComponent.vue";
-  import ContactSectionComponent from '@/pages/applyclientnumber/ContactSectionComponent.vue';
+  
   import type { CodeDescrType, ValidationMessageType } from '@/core/CommonTypes';
   const props = defineProps({
     address: {
@@ -182,9 +160,6 @@
       }
       if (props.address.province) {
         province.value = props.address.province;
-      }
-      if(!props.address.contacts){
-        props.address.contacts = addNewContact([]);
       }
     }
   });

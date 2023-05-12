@@ -6,10 +6,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
@@ -232,6 +232,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         client
             .get()
             .uri("/api/clients/{clientNumber}", Map.of("clientNumber", clientNumber))
+            .header(ApplicationConstant.USERID_HEADER,"testUserId")
+            .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
             .exchange()
             .expectStatus().isEqualTo(HttpStatus.valueOf(responseStatus))
             .expectBody()
@@ -310,6 +312,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     client
         .get()
         .uri("/api/clients/name/Power")
+        .header(ApplicationConstant.USERID_HEADER,"testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
@@ -333,6 +337,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     client
         .get()
         .uri("/api/clients/name/Jhon")
+        .header(ApplicationConstant.USERID_HEADER,"testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
         .exchange()
         .expectStatus().isOk()
         .expectBody()

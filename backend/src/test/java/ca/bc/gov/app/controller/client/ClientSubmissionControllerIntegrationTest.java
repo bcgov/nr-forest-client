@@ -7,17 +7,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.dto.client.BusinessTypeEnum;
-import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
-import ca.bc.gov.app.dto.client.ClientContactDto;
-import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
-import ca.bc.gov.app.dto.client.ClientTypeEnum;
-import ca.bc.gov.app.dto.client.ClientValueTextDto;
-import ca.bc.gov.app.dto.client.LegalTypeEnum;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
@@ -25,7 +17,6 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -93,6 +84,8 @@ class ClientSubmissionControllerIntegrationTest
     client
         .post()
         .uri("/api/clients/submissions")
+        .header(ApplicationConstant.USERID_HEADER,"testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
         .body(Mono.just(REGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
@@ -108,6 +101,8 @@ class ClientSubmissionControllerIntegrationTest
     client
         .post()
         .uri("/api/clients/submissions")
+        .header(ApplicationConstant.USERID_HEADER,"testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
         .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
@@ -126,6 +121,8 @@ class ClientSubmissionControllerIntegrationTest
     client
         .post()
         .uri("/api/clients/submissions")
+        .header(ApplicationConstant.USERID_HEADER,"testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
         .body(Mono.just(clientSubmissionDto), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isBadRequest()
@@ -158,6 +155,8 @@ class ClientSubmissionControllerIntegrationTest
     client
         .get()
         .uri(uri)
+        .header(ApplicationConstant.USERID_HEADER,"testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
