@@ -1,16 +1,11 @@
 package ca.bc.gov.app.utils;
 
-import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.ClientSubmitterInformationDto;
-import ca.bc.gov.app.dto.client.ClientTypeEnum;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
-import ca.bc.gov.app.dto.client.LegalTypeEnum;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
@@ -23,10 +18,9 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
   public Object aggregateArguments(ArgumentsAccessor accessor, ParameterContext context)
       throws ArgumentsAggregationException {
     return new ClientSubmissionDto(
-        accessor.getString(0),
         createBusinessInformation(accessor),
-        createLocation(accessor),
-        createSubmitterInformation(accessor));
+        createLocation(accessor)
+    );
   }
 
   private static ClientBusinessInformationDto createBusinessInformation(
@@ -56,16 +50,17 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
 
     boolean addressNull = accessor.getBoolean(9);
     if (addressNull) {
-      new ClientLocationDto(null);
+      new ClientLocationDto(null, null);
     }
 
     boolean addressEmpty = accessor.getBoolean(10);
     if (addressEmpty) {
-      return new ClientLocationDto(new ArrayList<>());
+      return new ClientLocationDto(List.of(), List.of());
     }
 
     return new ClientLocationDto(
-        List.of(createAddress(accessor))
+        List.of(createAddress(accessor)),
+        List.of()
     );
   }
 
@@ -77,21 +72,9 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     String city = accessor.getString(14);
     String postalCode = accessor.getString(15);
 
-    List<ClientContactDto> contacts;
-
-    boolean contactsNull = accessor.getBoolean(16);
-    boolean contactsEmpty = accessor.getBoolean(17);
-    if (contactsNull) {
-      contacts = null;
-    } else if (contactsEmpty) {
-      contacts = new ArrayList<>();
-    } else {
-      contacts = List.of(createContact(accessor));
-    }
-
     return new ClientAddressDto(
-        streetAddress, new ClientValueTextDto(country, ""),
-        new ClientValueTextDto(province, ""), city, postalCode, 0, contacts);
+        streetAddress, new ClientValueTextDto(country, country),
+        new ClientValueTextDto(province, ""), city, postalCode, 0, "test");
   }
 
   private static ClientContactDto createContact(ArgumentsAccessor accessor) {
@@ -103,23 +86,7 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
 
     return new ClientContactDto(
         new ClientValueTextDto(contactType, contactType), contactFirstName, contactLastName,
-        contactPhoneNumber, contactEmail, 0);
+        contactPhoneNumber, contactEmail, 0, List.of());
   }
 
-  private static ClientSubmitterInformationDto createSubmitterInformation(
-      ArgumentsAccessor accessor) {
-
-    boolean submitterInformationNull = accessor.getBoolean(23);
-    if (submitterInformationNull) {
-      return null;
-    }
-
-    String submitterFirstName = accessor.getString(24);
-    String submitterLastName = accessor.getString(25);
-    String submitterPhoneNumber = accessor.getString(26);
-    String submitterEmail = accessor.getString(27);
-
-    return new ClientSubmitterInformationDto(
-        submitterFirstName, submitterLastName, submitterPhoneNumber, submitterEmail);
-  }
 }

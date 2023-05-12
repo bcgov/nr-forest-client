@@ -16,6 +16,10 @@
       type: Array<ValidationMessageType>, 
       required: true,
       default: null 
+    },
+    modelValue : { 
+      type: null,
+      required: true
     }
   });
 
@@ -27,10 +31,20 @@
                                 .join('<br>') :
                       "";
   });
+
+  watch(() => props.modelValue, (newVal, oldVal) => {
+    if (JSON.stringify(newVal) !== JSON.stringify(oldVal) && Array.isArray(props.validationMessages)) {      
+      props.validationMessages?.forEach((item, index) => {
+        if (item['fieldId'] === props.fieldId) {
+          props.validationMessages.splice(index, 1);
+        }
+      });
+    }
+  });
 </script>
 
 <script lang="ts">
-  import { computed, defineComponent } from "vue";
+  import { computed, defineComponent, watch } from "vue";
   import type { ValidationMessageType } from "@/core/CommonTypes";
   export default defineComponent({
     name: "ValidationMessageComponent",

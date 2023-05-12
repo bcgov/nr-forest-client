@@ -1,6 +1,7 @@
 package ca.bc.gov.app.dto.bcregistry;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientContactDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.With;
@@ -21,6 +22,7 @@ import lombok.With;
               "province": {"value": "ON", text": "Ontario"},
               "city": "Toronto",
               "postalCode": "M5V1E3",
+              "locationName":"Billing Address",
               "index": 0
             },
             {
@@ -29,16 +31,19 @@ import lombok.With;
               "province": {"value": "QC", text": "Quebec"},
               "city": "Montreal",
               "postalCode": "H3B1A7",
+              "locationName":"Mailing Address",
               "index": 1,
-              "contacts":{
+            },
+          ],
+          "contacts":[{
                   "type": "person",
                   "firstName": "JAMES",
                   "lastName": "BAXTER",
                   "phoneNumber": "123456789"
                   "email": "james@email.ca",
-              }
-            }
-          ]
+                  "locations":[
+                  {"value": "0", text": "Billing Address"}
+              }]
         }"""
 )
 @With
@@ -60,6 +65,7 @@ public record ClientDetailsDto(
             "province": {"value": "ON", text": "Ontario"},
             "city": "Toronto",
             "postalCode": "M5V1E3",
+            "locationName":"Billing Address",
             "index": 0
           },
           {
@@ -68,9 +74,22 @@ public record ClientDetailsDto(
             "province": {"value": "QC", text": "Quebec"},
             "city": "Montreal",
             "postalCode": "H3B1A7",
+            "locationName":"Mailing Address",
             "index": 1
           }
         ]""")
-    List<ClientAddressDto> addresses
+    List<ClientAddressDto> addresses,
+
+    @Schema(description = "All available contacts", example = """
+        [
+          {
+              "type": "person",
+              "firstName": "JAMES",
+              "lastName": "BAXTER",
+              "phoneNumber": "123456789"
+              "email": "james@email.ca",
+          }
+        ]""")
+    List<ClientContactDto> contacts
 ) {
 }

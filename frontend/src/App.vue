@@ -10,8 +10,7 @@
           :active="index == 0"
           >
           <component :is="tab.content" 
-                     :businessName="bceidBusinessName" 
-                     :userId="userId"/>
+                     :submitterInformation="submitterInformation" />
         </b-tab>
       </b-tabs>
     </div>
@@ -29,8 +28,8 @@ import { navBlue, navSelectBlue } from "./utils/color";
 
 const keycloak: KeycloakInstance | undefined = inject("keycloak");
 let tabs: Ref<Array<{ title: string; content: DefineComponent }>> = ref([]);
-let bceidBusinessName = ref();
-let userId = ref();
+
+let submitterInformation = ref({});
 
 if (keycloak && 
     keycloak.tokenParsed && 
@@ -38,9 +37,12 @@ if (keycloak &&
   tabs.value = [{ title: "Review Applications", content: ReviewApplicationPage }];
 } 
 else {
-  tabs.value = [{ title: "Apply a New Client", content: ApplyClientNumber }];
-  bceidBusinessName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.displayed : "Dev Test Client Name";
-  userId = keycloak && keycloak.tokenParsed ? keycloak.subject : "devtest@gov.bc.ca";
+  tabs.value = [{ title: "Request a client number", content: ApplyClientNumber }];
+  submitterInformation.value.bceidBusinessName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.displayed : "Dev Test Client Name";
+  submitterInformation.value.userId = keycloak && keycloak.tokenParsed ? keycloak.subject : "testUserId";
+  submitterInformation.value.submitterFirstName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : "";
+  submitterInformation.value.submitterLastName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.family_name : "";
+  submitterInformation.value.submitterEmail = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.email : "fsa_donotreply@gov.bc.ca";
 }
 </script>
 

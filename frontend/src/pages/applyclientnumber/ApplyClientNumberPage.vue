@@ -1,5 +1,25 @@
 <template>
     <div style="margin: 24px">
+        <!-- Global error messages for hidden fields -->
+        <ValidationMessages fieldId = 'businessInformation.incorporationNumber'
+                            :validationMessages="validationMessages"
+                            :modelValue="formData.businessInformation.incorporationNumber" />
+        <ValidationMessages fieldId = 'businessInformation.clientType'
+                            :validationMessages="validationMessages"
+                            :modelValue="formData.businessInformation.clientType" />
+        <ValidationMessages fieldId = 'apiErrorLblId'
+                            :validationMessages="validationMessages"
+                            :modelValue="formData.businessInformation.clientType" />
+        <!--  -->
+
+        <label>
+            To use this form:<br />
+            &nbsp;&nbsp;&nbsp;1. A registered business must be in good standing with BC Registries.<br />
+            &nbsp;&nbsp;&nbsp;2. You must be able to receive email.<br /><br />
+            All fields are mandatory unless noted.
+        </label>
+        <br /><br />
+
         <CollapseCard title="Registered business" 
                       id="businessInformationId"
                       defaultOpen>
@@ -16,28 +36,33 @@
                 </b-form-radio>
             </b-form-group>
             <ValidationMessages fieldId = 'businessInformation.businessType'
-                                :validationMessages="validationMessages" />
+                                :validationMessages="validationMessages"
+                                :modelValue="formData.businessInformation.businessType" />
 
             <div v-if="formData.businessInformation.businessType == 'R'">
-                <Label label="Start typing to search for your B.C. registered business" 
+                <Label label="Start typing to search for your B.C. registered business"
                        id="businessNameLabelId" />
         
                 <Autocomplete id="businessNameId"
-                            :value="formData.businessInformation.businessName"
-                            :searchData="businessNames"
-                            datalistId="businessNameListId"
-                            @updateValue="formData.businessInformation.businessName = $event;                                        
+                              :value="formData.businessInformation.businessName"
+                              :validationMessages="validationMessages"
+                              fieldId = 'businessInformation.businessName'
+                              :searchData="businessNames"
+                              datalistId="businessNameListId"
+                              @updateValue="formData.businessInformation.businessName = $event;                                        
                                             populateBusinessList($event);
                                             filterSearchData($event)" />
                 <Note note="The name must be the same as in BC Registries" />
-                <ValidationMessages fieldId = 'businessInformation.businessName'
-                                    :validationMessages="validationMessages" />
             </div>
 
             <div v-if="formData.businessInformation.businessType == 'U'">
                 <Label label="Unregistered sole proprietorship" />
                 {{ formData.businessInformation.businessName }}
             </div>
+
+            <ValidationMessages fieldId = 'businessInformation.businessName'
+                                :validationMessages="validationMessages"
+                                :modelValue="formData.businessInformation.businessName" />
 
             <span v-if="'' !== formData.businessInformation.incorporationNumber &&
                         !formData.businessInformation.goodStandingInd &&
@@ -46,15 +71,7 @@
                         <a href="https://www.bcregistry.ca/business/auth/home/decide-business" target="_blank">BC Registries </a>
                         to resolve this before you can apply for a client number.
                 </strong>
-            </span>
-
-            <!-- This section is for the demo. It has to be removed. -->
-            <br /><br />
-            <div class="alert alert-warning">
-                Incorporation number: {{ formData.businessInformation.incorporationNumber }}<br />
-                Good Standing? {{ formData.businessInformation.goodStandingInd }}<br />
-                Legal Type: {{ formData.businessInformation.legalType }}
-            </div>
+            </span> 
         </CollapseCard>
 
         <CollapseCard title="Mailing address" 
@@ -72,55 +89,39 @@
             <AddressSection id="addressListId" 
                             :addresses="formData.location.addresses"
                             :validationMessages="validationMessages" />
+            
+            <ValidationMessages :fieldId="'location.addresses'"
+                                :validationMessages="validationMessages"
+                                :modelValue="formData.location.addresses[0]" />
+
+           
         </CollapseCard>
 
-        <CollapseCard title="Form submitter information" 
-                      id="submitterInformationId"
-                      :display="displayCommonSections"
-                      defaultOpen>
-
-            <span>
-                <strong>This information is from your BCeID. If it's incorrect, go to BCeID login page to update it before submitting your form.</strong>
-            </span>
+        
+        <b-row class="rowSpace">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <CollapseCard id="contactsId" 
+                        title="Business contacts" 
+                        :display="displayCommonSections"
+                        defaultOpen>
 
             <br /><br />
-            <b-row>
-                <b-col cols="3">
-                    <Label label="First name" 
-                           :required="true" />
-                    <b-form-input id="submitterFirstNameId"
-                                  v-model="formData.submitterInformation.submitterFirstName" />
-                    <ValidationMessages fieldId = 'submitterInformation.submitterFirstName'
-                                        :validationMessages="validationMessages" />
-                </b-col>
-                <b-col cols="3">
-                    <Label label="Last name" 
-                           :required="true" />
-                    <b-form-input id="submitterLastNameId"
-                                  v-model="formData.submitterInformation.submitterLastName" />
-                    <ValidationMessages fieldId = 'submitterInformation.submitterLastName'
-                                        :validationMessages="validationMessages" />
-                </b-col>
-                <b-col cols="3">
-                    <Label label="Phone number" 
-                           :required="true" />
-                    <b-form-input id="submitterPhoneNumberId"
-                                  v-model="formData.submitterInformation.submitterPhoneNumber"
-                                  v-mask="'##########'" />
-                    <ValidationMessages fieldId = 'submitterInformation.submitterPhoneNumber'
-                                        :validationMessages="validationMessages" />
-                </b-col>
-                <b-col cols="3">
-                    <Label label="Email address" 
-                           :required="true" />
-                    <b-form-input id="submitterEmailId"
-                                  v-model="formData.submitterInformation.submitterEmail" />
-                    <ValidationMessages fieldId = 'submitterInformation.submitterEmail'
-                                        :validationMessages="validationMessages" />
-                </b-col>
-            </b-row>
+            <ContactSectionComponent id="contactListId"
+                                  :contacts="formData.location.contacts"
+                                  :validationMessages="validationMessages" />
 
-        </CollapseCard>
+            <ValidationMessages :fieldId="`location.contacts`"
+                              :validationMessages="validationMessages"
+                              :modelValue="formData.location.contacts[0]" />            
+
+            <span>
+                <strong>Enter an authorized person you want to add for this address</strong>
+            </span>
+            </CollapseCard>
+        </div>
+        </b-row>
+
+        
 
         <b-button class="chefsBlue"
                   @click="submit()">
@@ -131,22 +132,19 @@
 </template>
 
 <script setup lang="ts">
-import { formDataDto } from "@/dto/ApplyClientNumberDto";
+import { formDataDto, type Address } from "@/dto/ApplyClientNumberDto";
 import CollapseCard from "@/common/CollapseCardComponent.vue";
 import Label from "@/common/LabelComponent.vue";
 import Note from "@/common/NoteComponent.vue";
 import Autocomplete from "@/common/AutocompleteComponent.vue";
 import ValidationMessages from "@/common/ValidationMessagesComponent.vue";
 import AddressSection from "@/pages/applyclientnumber/AddressSectionComponent.vue";
+import ContactSectionComponent from '@/pages/applyclientnumber/ContactSectionComponent.vue';
 
 const props = defineProps({
-    businessName: {
-      type: String,
-      required: true
-    },
-    userId: {
-      type: String,
-      required: true
+    submitterInformation: {
+        type: Object,
+        required: true
     }
   });
 
@@ -169,7 +167,15 @@ const businessNames = computed(() => {
 async function populateBusinessList(event: any) {
     if (event.length >= 3) {
         const encodedBusinessName = encodeURIComponent(event);        
-        useFetchTo(`/api/clients/name/${encodedBusinessName}`, originalBusinessNames, { method:'get' });
+        useFetchTo(`/api/clients/name/${encodedBusinessName}`, 
+                   originalBusinessNames, 
+                   { 
+                    method:'get', 
+                    headers:{
+                        'x-user-id': props.submitterInformation.userId,
+                        'x-user-email': props.submitterInformation.submitterEmail
+                   } 
+                  });
         filterSearchData(event);
     }
 };
@@ -182,31 +188,31 @@ function filterSearchData(event: any) {
         formData.value.businessInformation.legalType = filteredSearchDataValues[0].legalType;
         formData.value.businessInformation.clientType = retrieveClientType(formData.value.businessInformation.legalType);
 
-        const {error: detailsResponse } = useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, addressDataRef, { method:'get' });
+        const {error: detailsResponse } = useFetchTo(`/api/clients/${formData.value.businessInformation.incorporationNumber}`, 
+                                                     addressDataRef, 
+                                                     { 
+                                                        method:'get',
+                                                        headers:{                                                         
+                                                            'x-user-id': props.submitterInformation.userId,
+                                                            'x-user-email': props.submitterInformation.submitterEmail                                                    
+                                                        } 
+                                                    });
         watch(
             [detailsResponse],
             () => {                
                 if (409 === detailsResponse.value.response.status) {
-                    if (!validationMessages.value.some(msg => msg.fieldId === 'businessInformation.businessName'))
+                    if (!validationMessages.value.some(msg => msg.fieldId === 'businessInformation.businessName')) {
                         validationMessages.value.push({fieldId: 'businessInformation.businessName',errorMsg: detailsResponse.value.response.data})
+                    }
                 }
             }
         )
     }
     else {
-        formData.value.businessInformation.incorporationNumber = "";
-        formData.value.businessInformation.goodStandingInd = "";
+        resetPartialBusinessInformation();
     }    
     return filteredSearchDataValues;
 }
-
-watch(
-   [addressDataRef], 
-   () => {         
-        formData.value.location.addresses = addressDataRef.value.addresses;
-        formData.value.businessInformation.goodStandingInd = addressDataRef.value.goodStanding.toString();
-    }
-);
 
 const displayCommonSections = computed(() => {
     if ("" === formData.value.businessInformation.businessType || 
@@ -224,39 +230,26 @@ const displayCommonSections = computed(() => {
 });
 
 function getBusinessName() {
-    formData.value.userId = props.userId;
-
     if ("U" === formData.value.businessInformation.businessType) {
-        formData.value.businessInformation.businessName = props.businessName;
+        console.log("props.submitterInformation.bceidBusinessName = " + props.submitterInformation.bceidBusinessName);
+        formData.value.businessInformation.incorporationNumber = "";
+        formData.value.businessInformation.businessName = props.submitterInformation.bceidBusinessName;
         formData.value.businessInformation.legalType = "SP";
+        formData.value.businessInformation.clientType = retrieveClientType(formData.value.businessInformation.legalType);
     }
     else {
-        formData.value.businessInformation.businessName = "";
+        resetPartialBusinessInformation();
     }
 };
 
-//---- Functions ----//
-
-
-const { response, error, fetch: persistValidateData } = usePost('/api/clients/submissions', formData.value, { skip: true });
-
-watch(
-    [response],
-    () => {
-        if (201 === response.value.status) {
-            console.log('submission created, id ', response.value.headers['x-sub-id']);
-        }        
-    }
-)
-
-watch(
-    [error],
-    () => {
-        if (400 === error.value.status) {
-            validationMessages.value = error.value.data;
-        }
-    }
-)
+function resetPartialBusinessInformation() {
+    formData.value.businessInformation.businessName = "";
+    formData.value.businessInformation.incorporationNumber = "";
+    formData.value.businessInformation.businessName = "";
+    formData.value.businessInformation.legalType = "";
+    formData.value.businessInformation.goodStandingInd = "";
+    formData.value.businessInformation.clientType = "";
+};
 
 function submit(): void {
     persistValidateData();
@@ -292,21 +285,40 @@ function retrieveClientType(legalType: string): string {
     }
 };
 
-const deepFormDataCopy = computed(() => cloneDeep(formData));
+const { response, error, fetch: persistValidateData } = usePost('/api/clients/submissions', formData.value, { skip: true });
 
-//TODO: Improve this logic as it makes the app very slow
-watch(deepFormDataCopy, (newObj, oldObj) => {
-        if (JSON.stringify(newObj.value) !== JSON.stringify(oldObj.value) &&
-            validationMessages.value.length > 0) {
-            submit();   
+watch(
+    [response],
+    () => {
+        if (201 === response.value.status) {
+            console.log('submission created, id ', response.value.headers['x-sub-id']);
+        }        
+    }
+);
+
+watch(
+    [error],
+    () => {
+        if (400 === error.value.status) {
+            validationMessages.value = error.value.data;
         }
-}, { deep: true });
+    }
+);
+
+watch(
+   [addressDataRef], 
+   () => {
+        formData.value.location.addresses = addressDataRef.value.addresses;
+        formData.value.location.contacts = addressDataRef.value.contacts;
+        formData.value.businessInformation.goodStandingInd = addressDataRef.value.goodStanding.toString();
+    }
+);
 
 </script>
 
 <script lang="ts">
 import { computed, defineComponent, ref, watch } from "vue";
-import { addNewAddress, useFetch, useFetchTo, usePost } from "@/services/ForestClientService";
+import { addNewAddress, useFetchTo, usePost } from "@/services/ForestClientService";
 import { conversionFn } from "@/services/FetchService";
 import type { ValidationMessageType } from "@/core/CommonTypes";
 import { cloneDeep } from "lodash";

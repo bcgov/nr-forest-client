@@ -1,7 +1,6 @@
 import type { CodeDescrType } from "@/core/CommonTypes";
 
 export interface FormDataDto {
-  userId: string,
   businessInformation: {
     businessType: string,
     legalType: string,
@@ -9,32 +8,24 @@ export interface FormDataDto {
     incorporationNumber: string;
     businessName: null | string;
     goodStandingInd: string;
-    firstName: string;
-    lastName: string;
-    birthdate: string;
-    doingBusinessAsName: string;
-  };
+  },
   location: {
     addresses: Address[];
-  };
-  submitterInformation: {
-    submitterFirstName: string;
-    submitterLastName: string;
-    submitterPhoneNumber: string;
-    submitterEmail: string;
-  };
+    contacts: Contact[];
+  },
 }
 
 export interface Address {
+  locationName: string;
   streetAddress: string;
   country: CodeDescrType;
   province: CodeDescrType;
   city: string;
   postalCode: string;
-  contacts: Contact[];
 }
 
 export interface Contact {
+  locationNames: CodeDescrType[];
   contactType: CodeDescrType;
   firstName: string;
   lastName: string;
@@ -43,7 +34,6 @@ export interface Contact {
 }
 
 export const formDataDto: FormDataDto = {
-  userId: "",
   businessInformation: {
     businessType: "",
     legalType: "",
@@ -51,18 +41,9 @@ export const formDataDto: FormDataDto = {
     incorporationNumber: "",
     businessName: "",
     goodStandingInd: "",
-    firstName: "",
-    lastName: "",
-    birthdate: "",
-    doingBusinessAsName: "",
   },
   location: {
     addresses: [],
-  },
-  submitterInformation: {
-    submitterFirstName: "",
-    submitterLastName: "",
-    submitterPhoneNumber: "",
-    submitterEmail: "",
-  },
+    contacts: [],
+  }
 };

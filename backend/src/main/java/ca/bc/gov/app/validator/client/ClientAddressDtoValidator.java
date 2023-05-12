@@ -43,36 +43,46 @@ public class ClientAddressDtoValidator implements Validator {
 
     ClientAddressDto address = (ClientAddressDto) target;
 
-    validateCountryProvinceAndPostalCode(address, errors);
+    String country = validateCountry(address, errors);
 
-    validateContacts(address.contacts(), errors);
+    validatePostalCode(address, country, errors);
+
+    validateProvince(address, country, errors);
+
+    /*validateContacts(address.contacts(), errors);*/
+  }
+
+  private String validateCountry(ClientAddressDto address, Errors errors) {
+    String country = address.country().value();
+
+    if (StringUtils.isBlank(country)) {
+      String countryField = "country";
+      errors.rejectValue(countryField, fieldIsMissingErrorMessage(countryField));
+      return StringUtils.EMPTY;
+    }
+
+    return country;
   }
 
   @SneakyThrows
-  private void validateCountryProvinceAndPostalCode(ClientAddressDto address, Errors errors) {
-    String countryField = "country";
-	
-    if (StringUtils.isBlank(address.country().value())) {
-      errors.rejectValue(
-              countryField, 
-              fieldIsMissingErrorMessage(countryField));
-      return;
-    }
-    validatePostalCode(address, errors);
+  private void validateProvince(
+      ClientAddressDto address, String country,  Errors errors) {
 
     String provinceField = "province";
-    //Province is only mandatory if the countries are US or CA
-    if ("US".equalsIgnoreCase(address.country().value())
-        || "CA".equalsIgnoreCase(address.country().value())) {
-      if (StringUtils.isBlank(address.province().value())) {
-        errors.rejectValue(
-                provinceField, 
-                fieldIsMissingErrorMessage(provinceField));
-        return;
-      }
 
+    String province = address.province().value();
+
+    if (StringUtils.isBlank(province)) {
+      errors.rejectValue(
+          provinceField,
+          fieldIsMissingErrorMessage(provinceField));
+      return;
+    }
+
+    //Validate that province is from the correct country, only if country is US or CA
+    if ("US".equalsIgnoreCase(country) || "CA".equalsIgnoreCase(country)) {
       ProvinceCodeEntity provinceCodeEntity = provinceCodeRepository
-          .findByProvinceCode(address.province().value()).toFuture().get();
+          .findByCountryCodeAndProvinceCode(country, province).toFuture().get();
 
       if (provinceCodeEntity == null) {
         errors.rejectValue(provinceField, "province is invalid");
@@ -80,21 +90,25 @@ public class ClientAddressDtoValidator implements Validator {
       }
 
       //Province and country are not matching
-      if (!address.country().value().equalsIgnoreCase(provinceCodeEntity.getCountryCode())) {
+      if (!country.equalsIgnoreCase(provinceCodeEntity.getCountryCode())) {
         errors.rejectValue(provinceField, "province doesn't belong to country");
       }
     }
   }
 
-  private void validatePostalCode(ClientAddressDto address, Errors errors) {
+  private void validatePostalCode(ClientAddressDto address, String country, Errors errors) {
     String postalCodeField = "postalCode";
-    
+
     if (StringUtils.isBlank(address.postalCode())) {
       errors.rejectValue(postalCodeField, fieldIsMissingErrorMessage(postalCodeField));
       return;
     }
 
-    if ("CA".equalsIgnoreCase(address.country().value())) {
+    if (StringUtils.isBlank(country)) {
+      return;
+    }
+
+    if ("CA".equalsIgnoreCase(country)) {
       //For CA, postal code should be up to 7 characters
       if (StringUtils.length(address.postalCode()) > 6) {
         errors.rejectValue(postalCodeField, "has more than 7 characters");
@@ -103,7 +117,7 @@ public class ClientAddressDtoValidator implements Validator {
       if (!CA_POSTAL_CODE_FORMAT.matcher(address.postalCode()).matches()) {
         errors.rejectValue(postalCodeField, "invalid Canada postal code format");
       }
-    } else if ("US".equalsIgnoreCase(address.country().value())) {
+    } else if ("US".equalsIgnoreCase(country)) {
       //For US, postal code should be digits (numbers only)
       if (!StringUtils.isNumeric(address.postalCode())) {
         errors.rejectValue(postalCodeField, "should be numeric");

@@ -1,29 +1,32 @@
 package ca.bc.gov.app.service.client;
 
+import static ca.bc.gov.app.util.ClientMapper.getLocationIdByName;
+import static ca.bc.gov.app.util.ClientMapper.mapAllToSubmissionLocationEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
-import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationContactEntity;
-import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionLocationEntity;
-import static ca.bc.gov.app.util.ClientMapper.mapToSubmitterEntity;
 import static org.springframework.data.relational.core.query.Query.query;
 
-import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
-import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
+import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
+import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.predicates.QueryPredicates;
 import ca.bc.gov.app.predicates.SubmissionDetailPredicates;
 import ca.bc.gov.app.predicates.SubmissionPredicates;
+import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
-import ca.bc.gov.app.repository.client.SubmitterRepository;
+import ca.bc.gov.app.util.ClientMapper;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -40,49 +43,11 @@ import reactor.core.publisher.Mono;
 public class ClientSubmissionService {
 
   private final SubmissionRepository submissionRepository;
-  private final SubmitterRepository submitterRepository;
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionLocationRepository submissionLocationRepository;
+  private final SubmissionContactRepository submissionContactRepository;
   private final SubmissionLocationContactRepository submissionLocationContactRepository;
   private final R2dbcEntityTemplate template;
-
-  /**
-   * Submits a new client submission and returns a Mono of the submission ID.
-   *
-   * @param clientSubmissionDto the DTO representing the client submission
-   * @return a Mono of the submission ID
-   */
-  public Mono<Integer> submit(ClientSubmissionDto clientSubmissionDto) {
-    String userId = clientSubmissionDto.userId();
-
-    SubmissionEntity submissionEntity =
-        SubmissionEntity
-            .builder()
-            .submissionStatus(SubmissionStatusEnum.N)
-            .submissionDate(LocalDateTime.now())
-            .createdBy(userId)
-            .updatedBy(userId)
-            .build();
-
-    return submissionRepository.save(submissionEntity)
-        .map(submission ->
-            mapToSubmitterEntity(
-                submission.getSubmissionId(),
-                clientSubmissionDto.submitterInformation()))
-        .flatMap(submitterRepository::save)
-        .map(submitter ->
-            mapToSubmissionDetailEntity(
-                submitter.getSubmissionId(),
-                clientSubmissionDto.businessInformation())
-        )
-        .flatMap(submissionDetailRepository::save)
-        .flatMap(submissionDetail ->
-            submitLocations(
-                clientSubmissionDto.location(),
-                submissionDetail.getSubmissionId())
-                .thenReturn(submissionDetail.getSubmissionId())
-        );
-  }
 
   public Flux<ClientListSubmissionDto> listSubmissions(
       int page,
@@ -153,26 +118,87 @@ public class ClientSubmissionService {
             );
   }
 
-  private Mono<Void> submitLocations(ClientLocationDto clientLocationDto, Integer submissionId) {
-    return Flux.fromIterable(clientLocationDto
-            .addresses())
-        .flatMap(addressDto ->
-            submissionLocationRepository
-                .save(mapToSubmissionLocationEntity(submissionId, addressDto))
-                .flatMap(location ->
-                    submitLocationContacts(addressDto, location.getSubmissionLocationId())))
-        .then();
+  /**
+   * Submits a new client submission and returns a Mono of the submission ID.
+   *
+   * @param clientSubmissionDto the DTO representing the client submission
+   * @return a Mono of the submission ID
+   */
+  public Mono<Integer> submit(
+      ClientSubmissionDto clientSubmissionDto,
+      String userId,
+      String userEmail
+  ) {
+
+    return
+        Mono
+            .just(
+                SubmissionEntity
+                    .builder()
+                    .submissionStatus(SubmissionStatusEnum.N)
+                    .submissionDate(LocalDateTime.now())
+                    .createdBy(userId)
+                    .updatedBy(userId)
+                    .build()
+            )
+            //Save submission to begin with
+            .flatMap(submissionRepository::save)
+            //Save the submission detail
+            .map(submission -> mapToSubmissionDetailEntity(submission.getSubmissionId(),
+                clientSubmissionDto.businessInformation())
+            )
+            .flatMap(submissionDetailRepository::save)
+            //Save the locations and contacts and do the association
+            .flatMap(submission ->
+                //Save all locations
+                saveAddresses(clientSubmissionDto, submission)
+                    //For each contact, save it,
+                    // then find the associated location and save the association
+                    .flatMapMany(locations ->
+                        //Best way to handle lists reactively is by using Flux
+                        //Convert the list into a flux and process each entry individually
+                        Flux.fromIterable(
+                                clientSubmissionDto
+                                    .location()
+                                    .contacts()
+                            )
+                            .flatMap(contact -> saveAndAssociateContact(locations, contact,
+                                submission.getSubmissionId()))
+                    )
+                    //Then grab all back as a list, to make all reactive flows complete
+                    .collectList()
+                    //Return what we need only
+                    .thenReturn(submission.getSubmissionId())
+            );
   }
 
-  private Mono<Void> submitLocationContacts(ClientAddressDto addressDto,
-                                            Integer submissionLocationId) {
-    return Flux
-        .fromIterable(addressDto.contacts())
-        .flatMap(contactDto ->
-            submissionLocationContactRepository.save(
-                mapToSubmissionLocationContactEntity(
-                    submissionLocationId,
-                    contactDto)))
-        .then();
+  private Mono<SubmissionLocationContactEntity> saveAndAssociateContact(
+      List<SubmissionLocationEntity> locations,
+      ClientContactDto contact,
+      Integer submissionId
+  ) {
+    return submissionContactRepository
+        .save(ClientMapper.mapToSubmissionContactEntity(contact).withSubmissionId(submissionId))
+        .map(contactEntity ->
+            SubmissionLocationContactEntity
+                .builder()
+                .submissionLocationId(getLocationIdByName(locations, contact))
+                .submissionContactId(contactEntity.getSubmissionContactId())
+                .build()
+        )
+        .flatMap(submissionLocationContactRepository::save);
   }
+
+  private Mono<List<SubmissionLocationEntity>> saveAddresses(
+      ClientSubmissionDto clientSubmissionDto,
+      SubmissionDetailEntity submission) {
+    return submissionLocationRepository
+        .saveAll(
+            mapAllToSubmissionLocationEntity(
+                submission.getSubmissionId(),
+                clientSubmissionDto.location().addresses())
+        )
+        .collectList();
+  }
+
 }

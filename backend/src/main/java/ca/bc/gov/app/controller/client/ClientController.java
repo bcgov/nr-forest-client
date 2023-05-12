@@ -1,5 +1,6 @@
 package ca.bc.gov.app.controller.client;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
@@ -20,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -86,7 +88,9 @@ public class ClientController {
           description = "The client number to look for",
           example = "00000002"
       )
-      @PathVariable String clientNumber
+      @PathVariable String clientNumber,
+      @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
+      @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail
   ) {
     return clientService.getClientDetails(clientNumber);
   }
@@ -245,7 +249,10 @@ public class ClientController {
           description = "The name to lookup",
           example = "Power Corp"
       )
-      @PathVariable String name) {
+      @PathVariable String name,
+      @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
+      @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail
+  ) {
     return clientService
         .findByClientNameOrIncorporation(name);
   }
