@@ -3,6 +3,10 @@
 -- Note: We have created draft scripts for the onboarding flow, but these are subject to change pending feedback from the UX team. Once we receive their confirmation, we can finalize the scripts and move forward with the final version.
 --
 
+insert into nrfc.submission_type_code (submission_type_code,description,effective_date,create_user) values ('SPP', 'Submission pending processing', current_timestamp, 'paulocruz') on conflict (submission_type_code) do nothing;
+insert into nrfc.submission_type_code (submission_type_code,description,effective_date,create_user) values ('RNC', 'Review new client', current_timestamp, 'paulocruz') on conflict (submission_type_code) do nothing;
+insert into nrfc.submission_type_code (submission_type_code,description,effective_date,create_user) values ('AAC', 'Auto approved client', current_timestamp, 'paulocruz') on conflict (submission_type_code) do nothing;
+
 insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('P', 'In Progress', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
 insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('A', 'Approved', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
 insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('R', 'Rejected', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;

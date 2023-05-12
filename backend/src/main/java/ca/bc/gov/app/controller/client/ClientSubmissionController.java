@@ -56,7 +56,7 @@ public class ClientSubmissionController extends
       int page,
       @RequestParam(required = false, defaultValue = "10")
       int size,
-      @RequestParam(required = false)
+      @RequestParam(required = false,defaultValue = "RNC,AAC")
       String[] requestType,
       @RequestParam(required = false)
       SubmissionStatusEnum[] requestStatus,
