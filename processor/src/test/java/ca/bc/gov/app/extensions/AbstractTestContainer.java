@@ -1,7 +1,12 @@
 package ca.bc.gov.app.extensions;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +33,8 @@ public abstract class AbstractTestContainer {
         .withDatabaseName("legacyfsa")
         .withUsername("THE")
         .withPassword(genPassword());
+
+    generateInitPostgres();
 
     postgres = (PostgreSQLContainer) new PostgreSQLContainer("postgres")
         .withInitScript("init_pg.sql")
@@ -125,6 +132,48 @@ public abstract class AbstractTestContainer {
 
   private static String getPath(String path) {
     return Paths.get(path).normalize().toFile().getAbsolutePath();
+  }
+
+  @SneakyThrows
+  private static void generateInitPostgres() {
+    Path finalFile = Paths.get("./src", "test", "resources", "init_pg.sql").normalize();
+
+    //File used to initialize things on postgres container
+    Path init = Paths.get("./src", "test", "resources", "postgres", "init.sql").normalize();
+    //Test specific content
+    Path tests = Paths.get("./src", "test", "resources", "postgres", "test.sql").normalize();
+    //Backend related scripts folder
+    Path backendFolder =
+        Paths.get("../backend", "src", "main", "resources", "db", "migration").normalize();
+
+    if (!finalFile.toFile().exists()) {
+      finalFile.toFile().createNewFile();
+    }
+
+    Stream<Path> initStream = Stream.of(init);
+    Stream<Path> testStream = Stream.of(tests);
+    Stream<Path> backEndStream = Files.list(backendFolder).map(Path::normalize);
+
+    Stream<Path> finalStream = Stream.concat(Stream.concat(initStream, backEndStream), testStream);
+
+
+    Files
+        .write(
+            finalFile,
+            finalStream
+                .peek(path -> System.out.println("Going trough " + path))
+                .map(AbstractTestContainer::readAll)
+                .flatMap(List::stream)
+                .toList(),
+            StandardOpenOption.TRUNCATE_EXISTING
+        );
+
+
+  }
+
+  @SneakyThrows
+  private static List<String> readAll(Path path) {
+    return Files.readAllLines(path);
   }
 
 }
