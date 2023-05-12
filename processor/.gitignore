@@ -226,3 +226,4 @@ buildNumber.properties
 config/application-dev-*.yml
 .checkstyle
 config/*.jks
+src/test/resources/init_pg.sql
