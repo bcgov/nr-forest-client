@@ -33,11 +33,11 @@ jobs:
             key: forest-client-backend
           - package: legacy
             triggers: ('legacy/')
-            token: ("${{ secrets.SONAR_TOKEN_LEGACY }}")
+            token: ('${{ secrets.SONAR_TOKEN_LEGACY }}')
             key: forest-client-backend
           - package: processor
             triggers: ('processor/')
-            token: (${{ secrets.SONAR_TOKEN_PROCESSOR }})
+            token: ('${{ secrets.SONAR_TOKEN_PROCESSOR }}')
             key: forest-client-processor
     steps:
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
