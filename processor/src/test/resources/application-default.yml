@@ -1,0 +1,26 @@
+server:
+  error:
+    whitelabel:
+      enabled: false
+
+spring:
+  r2dbc:
+    url: r2dbc:oracle://${ca.bc.gov.nrs.oracle.host}:${ca.bc.gov.nrs.oracle.port}/${ca.bc.gov.nrs.oracle.database}
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    user: ${ca.bc.gov.nrs.oracle.username}
+    password: ${ca.bc.gov.nrs.oracle.password}
+    url: jdbc:oracle:thin:@${ca.bc.gov.nrs.oracle.host}:${ca.bc.gov.nrs.oracle.port}/${ca.bc.gov.nrs.oracle.service}
+
+
+logging:
+  level:
+    org:
+      springframework.test: OFF
+      testcontainers: OFF
+    com.github.dockerjava: OFF
+    org.springframework.r2dbc: OFF
+    io.r2dbc.postgresql.QUERY: OFF
+    io.r2dbc.postgresql.PARAM: OFF
+    ca.bc.gov.app: OFF

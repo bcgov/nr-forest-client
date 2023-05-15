@@ -14,39 +14,50 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests-backend:
-    name: Backend Unit Tests
+  tests-java:
+    name: Backend Integrated Tests
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+        name: Backend Coverage
         with:
           commands: |
             mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
           dir: backend
           java-cache: maven
           java-distribution: temurin
-          java-version: '17'
+          java-version: "17"
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-backend
           sonar_project_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
-
-  tests-legacy:
-    name: Legacy Unit Tests
-    runs-on: ubuntu-22.04
-    steps:
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+        name: Legacy Coverage
         with:
           commands: |
             mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
           dir: legacy
           java-cache: maven
           java-distribution: temurin
-          java-version: '17'
+          java-version: "17"
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-legacy
           sonar_project_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+        name: Processor Coverage
+        with:
+          commands: |
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: processor
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=nr-forest-client_processor
+          sonar_project_token: ${{ secrets.SONAR_TOKEN_PROCESSOR }}
 
   tests-frontend:
     name: Frontend Unit Tests
@@ -69,8 +80,7 @@ jobs:
     name: Semantic Code Analysis
     runs-on: ubuntu-22.04
     needs:
-      - tests-backend
-      - tests-legacy
+      - tests-java
       - tests-frontend
     permissions:
       actions: read
@@ -259,6 +269,20 @@ jobs:
             -p VITE_KEYCLOAK_URL=https://test.loginproxy.gov.bc.ca/auth
             -p VITE_KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
 
+      - name: Deploy Processor
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: processor/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          verification_path: health
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/processor:${{ env.ZONE }}
+
   image-promotions:
     name: Promote images to PROD
     needs:
@@ -266,7 +290,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [backend, frontend, legacy, database, common]
+        component: [backend, frontend, legacy, database, common, processor]
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
         with:
@@ -329,7 +353,7 @@ jobs:
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
 
   prod-deploy:
-    name: PROD Database
+    name: PROD Deployment
     needs:
       - prod-init
     env:
@@ -384,6 +408,20 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
+
+      - name: Deploy Processor
+        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: processor/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          verification_path: health
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/processor:${{ env.PREV }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
