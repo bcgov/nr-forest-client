@@ -107,8 +107,8 @@ class ClientSubmissionControllerIntegrationTest
     client
         .post()
         .uri("/api/clients/submissions")
-        .header(ApplicationConstant.USERID_HEADER,"testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
         .body(Mono.just(REGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
@@ -124,8 +124,8 @@ class ClientSubmissionControllerIntegrationTest
     client
         .post()
         .uri("/api/clients/submissions")
-        .header(ApplicationConstant.USERID_HEADER,"testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
         .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
@@ -140,12 +140,11 @@ class ClientSubmissionControllerIntegrationTest
   @Order(3)
   void shouldFailValidationSubmit(
       @AggregateWith(ClientSubmissionAggregator.class) ClientSubmissionDto clientSubmissionDto) {
-    System.out.println(clientSubmissionDto);
     client
         .post()
         .uri("/api/clients/submissions")
-        .header(ApplicationConstant.USERID_HEADER,"testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
         .body(Mono.just(clientSubmissionDto), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isBadRequest()
@@ -178,8 +177,8 @@ class ClientSubmissionControllerIntegrationTest
     client
         .get()
         .uri(uri)
-        .header(ApplicationConstant.USERID_HEADER,"testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
