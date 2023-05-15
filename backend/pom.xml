@@ -54,6 +54,7 @@
             **/exception/**,
             **/dto/**,
             **/entity/**,
+            **/models/**,
             **/repository/**,
             **/*$*Builder*,
             **/BootApplication*
@@ -300,6 +301,7 @@
                         <exclude>**/exception/**</exclude>
                         <exclude>**/dto/**</exclude>
                         <exclude>**/entity/**</exclude>
+                        <exclude>**/models/**</exclude>
                         <exclude>**/repository/**</exclude>
                         <exclude>**/*$*Builder*</exclude>
                         <exclude>**/BootApplication*</exclude>
