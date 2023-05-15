@@ -1,5 +1,6 @@
 package ca.bc.gov.app.extensions;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,21 +30,65 @@ public abstract class AbstractTestContainer {
   static final PostgreSQLContainer postgres;
 
   static {
+    Path finalFile = Paths.get("./src", "test", "resources", "init_pg.sql").normalize();
+
+    //File used to initialize things on postgres container
+    Path init = Paths.get("./src", "test", "resources", "postgres", "init.sql").normalize();
+    //Test specific content
+    Path tests = Paths.get("./src", "test", "resources", "postgres", "test.sql").normalize();
+    //Backend related scripts folder
+    Path backendFolder =
+        Paths.get("../backend", "src", "main", "resources", "db", "migration").normalize();
+
+    if (!finalFile.toFile().exists()) {
+      try {
+        finalFile.toFile().createNewFile();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    try {
+
+      Stream<Path> initStream = Stream.of(init);
+      Stream<Path> testStream = Stream.of(tests);
+      Stream<Path> backEndStream = Files.list(backendFolder).map(Path::normalize);
+
+      Stream<Path> finalStream = Stream
+          .concat(Stream.concat(initStream, backEndStream), testStream);
+
+      Files
+          .write(
+              finalFile,
+              finalStream
+                  .filter(path -> path.toFile().exists())
+                  .map(AbstractTestContainer::readAll)
+                  .flatMap(List::stream)
+                  .toList(),
+              StandardOpenOption.TRUNCATE_EXISTING
+          );
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  static {
+
     oracle = new OracleContainer("gvenzl/oracle-xe:21.3.0-slim-faststart")
         .withDatabaseName("legacyfsa")
         .withUsername("THE")
         .withPassword(genPassword());
+    oracle.start();
 
-    generateInitPostgres();
 
-    postgres = (PostgreSQLContainer) new PostgreSQLContainer("postgres")
+    postgres = (PostgreSQLContainer) new PostgreSQLContainer("postgres:13")
         .withInitScript("init_pg.sql")
         .withDatabaseName("nfrc")
         .withUsername("nrfc")
         .withPassword(genPassword());
 
     postgres.start();
-    oracle.start();
   }
 
   @DynamicPropertySource
@@ -130,10 +175,6 @@ public abstract class AbstractTestContainer {
         .substring(24);
   }
 
-  private static String getPath(String path) {
-    return Paths.get(path).normalize().toFile().getAbsolutePath();
-  }
-
   @SneakyThrows
   private static void generateInitPostgres() {
     Path finalFile = Paths.get("./src", "test", "resources", "init_pg.sql").normalize();
@@ -154,7 +195,9 @@ public abstract class AbstractTestContainer {
     Stream<Path> testStream = Stream.of(tests);
     Stream<Path> backEndStream = Files.list(backendFolder).map(Path::normalize);
 
-    Stream<Path> finalStream = Stream.concat(Stream.concat(initStream, backEndStream), testStream);
+    Stream<Path> finalStream = Stream
+        .concat(Stream.concat(initStream, backEndStream), testStream)
+        .peek(path -> System.out.println("Processing " + path));
 
 
     Files
@@ -174,5 +217,6 @@ public abstract class AbstractTestContainer {
   private static List<String> readAll(Path path) {
     return Files.readAllLines(path);
   }
+
 
 }
