@@ -33,16 +33,16 @@ jobs:
         include:
           - package: backend
             triggers: ('backend/')
-            token: ('${{ vars.SONAR_TOKEN_BACKEND }}')
-            key: ('forest-client-backend')
+            token: ${{ vars.SONAR_TOKEN_BACKEND }}
+            key: forest-client-backend
           - package: legacy
             triggers: ('legacy/')
-            token: ('${{ vars.SONAR_TOKEN_LEGACY }}')
-            key: ('forest-client-backend')
+            token: ${{ vars.SONAR_TOKEN_LEGACY }}
+            key: forest-client-backend
           - package: processor
             triggers: ('processor/')
-            token: ('${{ vars.SONAR_TOKEN_PROCESSOR }}')
-            key: ('forest-client-processor')
+            token: ${{ vars.SONAR_TOKEN_PROCESSOR }}
+            key: forest-client-processor
     steps:
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
         name: Coverage
