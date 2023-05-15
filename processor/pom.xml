@@ -44,8 +44,7 @@
 
         <sonar.organization>bcgov-sonarcloud</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.projectKey>forest-client-processor</sonar.projectKey>
-        <sonar.token>${env.SONAR_TOKEN_PROCESSOR}</sonar.token>
+        <sonar.projectKey>nr-forest-client_processor</sonar.projectKey>
         <sonar.coverage.jacoco.xmlReportPaths>target/coverage-reports/merged-test-report/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
         <sonar.coverage.exclusions>
