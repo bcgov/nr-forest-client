@@ -30,18 +30,18 @@ This also makes it easy to identify the context of the data being consumed witho
     To get the name of the user, a variable could be represented as `${user.name}`, 
     and this will not clash with the name of the company, if the variable for it is `${company.name}`.
 
-
 ### Submission Approval
 
 We have **3** main properties that contains sub-properties. Some of the properties are list of other properties, and when this happens,
 we will have a zero-based index value for that property, usually with the index wrapped around `[` and `]` like `[2]` for example for the **third** entry on that list. 
 
-#### Location
+#### Addresses
 
 Information related to the location for this client, with an index based entry for each location. 
-The top level property name is `location` and for each entry you have to pass the index of the location, 
+The top level property name is `address` and for each entry you have to pass the index of the location, 
 wrapped around `[` and `]`. Each location will have the following properties:
 
+- name
 - address
 - city
 - country
@@ -49,12 +49,12 @@ wrapped around `[` and `]`. Each location will have the following properties:
 - province
 - contact (see below)
 
-So for example, to get the city of the **first** location, the variable would be `${location.[0].city}`.
+So for example, to get the city of the **first** location, the variable would be `${address.[0].city}`.
 
 ##### Contacts
 
-Information related to contacts is present inside the location data. Each location can have multiple contacts, 
-so it needs to follow the index based format, where for each entry you have to pass the index of the contact,
+Information related to contacts for this client, with an index based entry for each contact.
+The top level property name is `contact` and for each entry you have to pass the index of the contact,
 wrapped around `[` and `]`. Each contact will have the following properties:
 
 - name (will be the junction of first and last name)
@@ -63,8 +63,7 @@ wrapped around `[` and `]`. Each contact will have the following properties:
 - email
 - phone
 
-So for example, to get the name of the **first** contact on the **second** location, 
-the variable would be `${location.[1].contact.[0].name}`.
+So for example, to get the name of the **first** contact, the variable would be `${contact.[0].name}`.
 
 #### Business
 
@@ -80,21 +79,6 @@ The properties on business are:
 - clientType
   
 So for example, to get the name of the business, the variable would be `${business.name}`.
-
-#### Submitter
-
-Information related to the person who submitted the data. 
-Some of those fields will be automatically extracted from BCeID and the authentication system
-
-- email
-- name (will be the junction of first and last name)
-- phone
-- lastName
-- firstName
-- id
-
-So for example, to get the name of the business, the variable would be `${submitter.name}`.
-
 
 ## Opening an Issue on GitHub 
 
