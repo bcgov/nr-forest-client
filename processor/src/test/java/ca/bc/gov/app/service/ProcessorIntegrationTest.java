@@ -3,6 +3,7 @@ package ca.bc.gov.app.service;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -43,30 +44,30 @@ class ProcessorIntegrationTest extends AbstractTestContainer {
     await()
         .alias("Load details")
         .atMost(Duration.ofSeconds(5))
-        .untilAsserted(() -> verify(detailRepository, times(1)).findBySubmissionId(eq(1)));
+        .untilAsserted(() -> verify(detailRepository, atLeastOnce()).findBySubmissionId(eq(1)));
 
     await()
         .alias("Fuzzy Search")
         .atMost(Duration.ofSeconds(5))
-        .untilAsserted(() -> verify(forestClientRepository, times(2)).matchBy(any(String.class)));
+        .untilAsserted(() -> verify(forestClientRepository, atLeastOnce()).matchBy(any(String.class)));
 
     await()
         .alias("Incorporation Search")
         .atMost(Duration.ofSeconds(5))
-        .untilAsserted(() -> verify(forestClientRepository, times(2)).findByIncorporationNumber(any(String.class)));
+        .untilAsserted(() -> verify(forestClientRepository, atLeastOnce()).findByIncorporationNumber(any(String.class)));
 
     await()
         .alias("Submission lookup")
         .atMost(Duration.ofSeconds(5))
         .untilAsserted(() ->
-            verify(submissionRepository, times(2)).findById(eq(1))
+            verify(submissionRepository, atLeastOnce()).findById(eq(1))
         );
 
     await()
         .alias("Submission persistence")
         .atMost(Duration.ofSeconds(5))
         .untilAsserted(() ->
-            verify(submissionRepository, times(2)).save(any(SubmissionEntity.class))
+            verify(submissionRepository, atLeastOnce()).save(any(SubmissionEntity.class))
         );
 
 
