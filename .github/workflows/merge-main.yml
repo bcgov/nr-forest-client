@@ -15,33 +15,49 @@ concurrency:
 
 jobs:
   tests-java:
-    name: ${{ matrix.package }} Integrated Tests
+    name: Backend Integrated Tests
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
-    env:
-      SONAR_TOKEN_BACKEND: ${{ secrets.SONAR_TOKEN_BACKEND }}
-      SONAR_TOKEN_LEGACY: ${{ secrets.SONAR_TOKEN_LEGACY }}
-      SONAR_TOKEN_PROCESSOR: ${{ secrets.SONAR_TOKEN_PROCESSOR }}
-    strategy:
-      matrix:
-        package: [ backend, legacy, processor ]
-        include:
-          - package: backend
-            triggers: ('backend/')
-          - package: legacy
-            triggers: ('legacy/')
-          - package: processor
-            triggers: ('processor/')
     steps:
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
-        name: Coverage
+        name: Backend Coverage
         with:
           commands: |
-            mvn -B verify -P all-tests checkstyle:checkstyle sonar:sonar -Dcheckstyle.skip=false --file pom.xml
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
           dir: backend
           java-cache: maven
           java-distribution: temurin
           java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=forest-client-backend
+          sonar_project_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+        name: Legacy Coverage
+        with:
+          commands: |
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: legacy
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=forest-client-legacy
+          sonar_project_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+        name: Processor Coverage
+        with:
+          commands: |
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: processor
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=forest-client-processor
+          sonar_project_token: ${{ secrets.SONAR_TOKEN_PROCESSOR }}
 
   tests-frontend:
     name: Frontend Unit Tests
