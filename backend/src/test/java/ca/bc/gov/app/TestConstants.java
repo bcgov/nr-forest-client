@@ -339,7 +339,7 @@ public class TestConstants {
       [
         {
           "id":1,
-          "requestType":"",
+          "requestType":"Submission pending processing",
           "name":"Goldfinger",
           "clientType":"P",
           "updated":"testUserId | %s",

@@ -102,7 +102,7 @@ public class ClientSubmissionService {
                     .map(submissionDetail ->
                         new ClientListSubmissionDto(
                             submission.getSubmissionId(),
-                            "", //TODO: Must include and process
+                            submission.getSubmissionType().getDescription(),
                             submissionDetail.getOrganizationName(),
                             submissionDetail.getClientTypeCode(),
                             String.format("%s | %s",
