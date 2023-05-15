@@ -2,6 +2,7 @@ package ca.bc.gov.app.entity.client;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
+import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,9 @@ public class SubmissionEntity extends BaseEntity {
 
   @Column("submission_status_code")
   private SubmissionStatusEnum submissionStatus;
+
+  @Column("submission_type_code")
+  private SubmissionTypeCodeEnum submissionType;
 
   @Column("submission_date")
   private LocalDateTime submissionDate;

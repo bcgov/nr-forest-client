@@ -53,6 +53,7 @@
             **/exception/**,
             **/dto/**,
             **/entity/**,
+            **/models/**,
             **/repository/**,
             **/*$*Builder*,
             **/BootApplication*
@@ -203,6 +204,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+			<dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>2.0</version>
+			</dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -298,6 +304,7 @@
                         <exclude>**/exception/**</exclude>
                         <exclude>**/dto/**</exclude>
                         <exclude>**/entity/**</exclude>
+                        <exclude>**/models/**</exclude>
                         <exclude>**/repository/**</exclude>
                         <exclude>**/*$*Builder*</exclude>
                         <exclude>**/BootApplication*</exclude>
