@@ -61,7 +61,7 @@ jobs:
           java-version: "17"
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=forest-client-processor
+            -Dsonar.projectKey=nr-forest-client_processor
           sonar_project_token: ${{ secrets.SONAR_TOKEN_PROCESSOR }}
 
       - name: Archive CycloneDX
