@@ -7,12 +7,8 @@ public record ClientSubmissionDto(
     ClientLocationDto location
 ) {
   public Map<String, Object> description() {
-    return
-        Map
-            .of(
-                "business", businessInformation.description(),
-                "location", location.description(),
-                "submitter", submitterInformation.description()
-            );
+    Map<String, Object> descriptions = location.description();
+    descriptions.put("business", businessInformation.description());
+    return descriptions;
   }
 }

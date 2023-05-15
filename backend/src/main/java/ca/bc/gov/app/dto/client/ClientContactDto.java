@@ -2,6 +2,7 @@ package ca.bc.gov.app.dto.client;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
+import java.util.Map;
 import lombok.With;
 
 @Schema(
@@ -50,10 +51,24 @@ public record ClientContactDto(
 
     @Schema(description = "A list of contact to location association",
         example = """
-            {
-            "value": "1",
-            "text": "Billing Address"
-          }""")
+              {
+              "value": "1",
+              "text": "Billing Address"
+            }""")
     List<ClientValueTextDto> locations
 ) {
+  public Map<String, Object> description() {
+    final String indexFormatted = String.format("contact.[%d]", index);
+
+    return
+        Map.of(indexFormatted,
+            Map.of(
+                "firstName", firstName,
+                "lastName", lastName,
+                "name", String.join(" ", firstName, lastName),
+                "phone", phoneNumber,
+                "email", email
+            )
+        );
+  }
 }
