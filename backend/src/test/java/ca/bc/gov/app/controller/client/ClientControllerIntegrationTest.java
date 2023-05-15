@@ -3,6 +3,7 @@ package ca.bc.gov.app.controller.client;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
@@ -53,9 +54,31 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
       .configureStaticDsl(true)
       .build();
 
+  @RegisterExtension
+  static WireMockExtension wireMockExtensionChes = WireMockExtension
+      .newInstance()
+      .options(
+          wireMockConfig()
+              .port(10010)
+              .notifier(new WiremockLogNotifier())
+              .asynchronousResponseEnabled(true)
+              .stubRequestLoggingDisabled(false)
+      )
+      .configureStaticDsl(true)
+      .build();
+
   @BeforeEach
   public void reset() {
     wireMockExtension.resetAll();
+
+    wireMockExtensionChes
+        .stubFor(
+            post("/chess/uri")
+                .willReturn(
+                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
   }
 
   @Test

@@ -92,7 +92,7 @@ public class ClientController {
       @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
       @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail
   ) {
-    return clientService.getClientDetails(clientNumber);
+    return clientService.getClientDetails(clientNumber,userEmail);
   }
 
   @GetMapping("/activeCountryCodes")
