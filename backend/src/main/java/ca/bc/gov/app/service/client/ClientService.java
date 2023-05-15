@@ -1,6 +1,5 @@
 package ca.bc.gov.app.service.client;
 
-import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
@@ -22,14 +21,13 @@ import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -178,71 +176,87 @@ public class ClientService {
                 document.business().legalName(),
                 document.business().identifier(),
                 document.business().goodStanding(),
+                List.of(),
                 List.of()
             )
         );
   }
 
   private Mono<ClientDetailsDto> buildAddress(
-      BcRegistryDocumentDto document, ClientDetailsDto clientDetails) {
+      BcRegistryDocumentDto document,
+      ClientDetailsDto clientDetails
+  ) {
     AtomicInteger index = new AtomicInteger(0);
+
     return
         Flux.fromIterable(
                 document
-                    .matchOfficesParties()
-                    .entrySet()
+                    .offices()
+                    .addresses()
             )
-            .flatMap(mapToClientAddress(index))
+            .map(addressDto ->
+                new ClientAddressDto(
+                    addressDto.streetAddress(),
+                    new ClientValueTextDto("", addressDto.addressCountry()),
+                    new ClientValueTextDto(addressDto.addressRegion(), ""),
+                    addressDto.addressCity(),
+                    addressDto.postalCode(),
+                    index.getAndIncrement(),
+                    WordUtils.capitalize(addressDto.addressType()).concat(" Address")
+                )
+            )
             .flatMap(address -> loadCountry(address.country().text()).map(address::withCountry))
             .flatMap(address ->
                 loadProvince(address.country().value(), address.province().value())
                     .map(address::withProvince)
             )
             .collectList()
-            .doOnNext(addresses -> log.info("Address list built {}", addresses))
-            .map(clientDetails::withAddresses);
+            .defaultIfEmpty(new ArrayList<>())
+            .flatMap(addresses ->
+                Flux.fromIterable(document.parties())
+                    .filter(BcRegistryPartyDto::isValid)
+                    .map(party ->
+                        new ClientContactDto(
+                            new ClientValueTextDto(party.officer().partyType(), ""),
+                            party.officer().firstName(),
+                            party.officer().lastName(),
+                            "",
+                            party.officer().email(),
+                            index.getAndIncrement(),
+                            matchAddress(addresses, party)
+                        )
+                    )
+                    .flatMap(contact -> loadContactType(contact.contactType().value())
+                        .map(contact::withContactType)
+                    )
+                    .collectList()
+                    .defaultIfEmpty(new ArrayList<>())
+                    .map(contacts -> clientDetails
+                        .withAddresses(addresses)
+                        .withContacts(contacts)
+                    )
+            );
   }
 
-  private Function<Map.Entry<BcRegistryAddressDto, Set<BcRegistryPartyDto>>, Mono<ClientAddressDto>>
-  mapToClientAddress(AtomicInteger index) {
-    return entry ->
-        loadContacts(entry.getValue())
-            .map(contacts ->
-                new ClientAddressDto(
-                    entry.getKey().streetAddress(),
-                    new ClientValueTextDto("", entry.getKey().addressCountry()),
-                    new ClientValueTextDto(entry.getKey().addressRegion(), ""),
-                    entry.getKey().addressCity(),
-                    entry.getKey().postalCode(),
-                    index.getAndIncrement(),
-                    contacts
-                )
+  private static List<ClientValueTextDto> matchAddress(List<ClientAddressDto> addresses,
+                                                       BcRegistryPartyDto party) {
+    return addresses
+        .stream()
+        .filter(address ->
+            party.isMatch(
+                address.city(),
+                address.country().text(),
+                address.province().value(),
+                address.postalCode(),
+                address.streetAddress()
             )
-            .doOnNext(address -> log.info("Building address {}", address));
-  }
-
-  private Mono<List<ClientContactDto>> loadContacts(Set<BcRegistryPartyDto> parties) {
-    AtomicInteger index = new AtomicInteger(0);
-    return
-        Flux
-            .fromIterable(parties)
-            .filter(BcRegistryPartyDto::isValid)
-            .map(party ->
-                new ClientContactDto(
-                    new ClientValueTextDto(party.officer().partyType(), ""),
-                    party.officer().firstName(),
-                    party.officer().lastName(),
-                    "",
-                    party.officer().email(),
-                    index.getAndIncrement()
-                )
+        )
+        .map(address -> new ClientValueTextDto(
+                String.valueOf(address.index()),
+                address.locationName()
             )
-            .doOnNext(contact -> log.info("Converting client contact {}", contact))
-            .flatMap(contact -> loadContactType(contact.contactType().value())
-                .map(contact::withContactType)
-            )
-            .collectList()
-            .defaultIfEmpty(new ArrayList<>());
+        )
+        .toList();
   }
 
   private Mono<ClientValueTextDto> loadContactType(String contactCode) {
@@ -277,8 +291,7 @@ public class ClientService {
             .defaultIfEmpty(new ClientValueTextDto(province, province));
   }
 
-  private Predicate<ForestClientDto> isMatchWith(
-      BcRegistryDocumentDto document) {
+  private Predicate<ForestClientDto> isMatchWith(BcRegistryDocumentDto document) {
     return legacy ->
         StringUtils.equals(
             StringUtils.defaultString(legacy.registryCompanyTypeCode()) +

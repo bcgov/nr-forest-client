@@ -8,6 +8,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
@@ -106,6 +107,8 @@ class ClientSubmissionControllerIntegrationTest
     client
         .post()
         .uri("/api/clients/submissions")
+        .header(ApplicationConstant.USERID_HEADER,"testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
         .body(Mono.just(REGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
@@ -121,6 +124,8 @@ class ClientSubmissionControllerIntegrationTest
     client
         .post()
         .uri("/api/clients/submissions")
+        .header(ApplicationConstant.USERID_HEADER,"testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
         .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
@@ -139,6 +144,8 @@ class ClientSubmissionControllerIntegrationTest
     client
         .post()
         .uri("/api/clients/submissions")
+        .header(ApplicationConstant.USERID_HEADER,"testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
         .body(Mono.just(clientSubmissionDto), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isBadRequest()
@@ -171,6 +178,8 @@ class ClientSubmissionControllerIntegrationTest
     client
         .get()
         .uri(uri)
+        .header(ApplicationConstant.USERID_HEADER,"testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
         .exchange()
         .expectStatus().isOk()
         .expectBody()

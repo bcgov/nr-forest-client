@@ -1,7 +1,7 @@
 package ca.bc.gov.app.dto.client;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.Map;
+import java.util.List;
 import lombok.With;
 
 @Schema(
@@ -17,6 +17,10 @@ import lombok.With;
           "lastName": "BAXTER",
           "phoneNumber": "123456789"
           "email": "james@email.ca",
+          "locations":[{
+            "value": "1",
+            "text": "Billing Address"
+          }]
         }"""
 )
 @With
@@ -42,15 +46,14 @@ public record ClientContactDto(
 
     @Schema(description = "The index for this address. It is used to order the addresses",
         example = "3")
-    int index
+    int index,
+
+    @Schema(description = "A list of contact to location association",
+        example = """
+            {
+            "value": "1",
+            "text": "Billing Address"
+          }""")
+    List<ClientValueTextDto> locations
 ) {
-  public Map<String, Object> description() {
-    return Map.of(
-        "firstName", firstName,
-        "lastName", lastName,
-        "name", String.join(" ", firstName, lastName),
-        "phone", phoneNumber,
-        "email", email
-    );
-  }
 }

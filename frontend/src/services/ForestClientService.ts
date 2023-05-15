@@ -26,11 +26,19 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
   const error = ref({});
   const loading = ref(false);
 
+  const parameters = {
+    ...config,
+    headers: {
+      'Content-Type': 'application/json',
+      ...config.headers
+    }
+  };
+
   const fetch = async () => {
     loading.value = true;
     try {
       const result = await axios.request({
-        ...config,
+        ...parameters,
         url,
         baseURL: backendUrl
       });
@@ -54,17 +62,22 @@ export const usePost = (url: string, body: any, config: any = {}) => {
   const error: any = ref({});
   const loading: any = ref(false);
 
+  const parameters = {
+    ...config,
+    headers: {
+      'Content-Type': 'application/json',
+      ...config.headers
+    }
+  };
+
   const fetch = async () => {
     loading.value = true;
     try {
       const result = await axios.request({
-        ...config,
+        ...parameters,
         url,
         baseURL: backendUrl,
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         data: body
       });
       response.value = result;
@@ -75,7 +88,6 @@ export const usePost = (url: string, body: any, config: any = {}) => {
       loading.value = false;
     }
   };
-
   !config.skip && fetch();
 
   return { response, error, responseBody, loading, fetch }
@@ -83,20 +95,12 @@ export const usePost = (url: string, body: any, config: any = {}) => {
 
 export const addNewAddress = (addresses: Address[]) => {
   const blankAddress: Address = {
+    locationName: "",
     streetAddress: "",
     country: { value: "", text: "" } as CodeDescrType,
     province: { value: "", text: "" } as CodeDescrType,
     city: "",
     postalCode: "",
-    contacts: [
-      {
-        contactType: { value: "", text: "" } as CodeDescrType,
-        firstName: "",
-        lastName: "",
-        phoneNumber: "",
-        email: "",
-      }
-    ] as Contact[],
   };
 
   let newAddresses = addresses.push(blankAddress);
@@ -105,6 +109,7 @@ export const addNewAddress = (addresses: Address[]) => {
 
 export const addNewContact = (contacts: Contact[]) => {
   const blankContact: Contact = {
+    locationNames: { value: "", text: "" } as CodeDescrType[],
     contactType: { value: "", text: "" } as CodeDescrType,
     firstName: "",
     lastName: "",

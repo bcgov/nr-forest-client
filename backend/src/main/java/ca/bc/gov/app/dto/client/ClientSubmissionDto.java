@@ -4,8 +4,7 @@ import java.util.Map;
 
 public record ClientSubmissionDto(
     ClientBusinessInformationDto businessInformation,
-    ClientLocationDto location,
-    ClientSubmitterInformationDto submitterInformation
+    ClientLocationDto location
 ) {
   public Map<String, Object> description() {
     return
