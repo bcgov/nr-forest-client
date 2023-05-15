@@ -33,30 +33,21 @@ jobs:
         include:
           - package: backend
             triggers: ('backend/')
-            token: ${{ vars.SONAR_TOKEN_BACKEND }}
-            key: forest-client-backend
           - package: legacy
             triggers: ('legacy/')
-            token: ${{ vars.SONAR_TOKEN_LEGACY }}
-            key: forest-client-backend
           - package: processor
             triggers: ('processor/')
-            token: ${{ vars.SONAR_TOKEN_PROCESSOR }}
-            key: forest-client-processor
     steps:
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
         name: Coverage
         with:
           commands: |
-            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+            mvn -B verify -P all-tests checkstyle:checkstyle sonar:sonar -Dcheckstyle.skip=false --file pom.xml
           dir: backend
           java-cache: maven
           java-distribution: temurin
           java-version: "17"
-          sonar_args: >
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=${{ matrix.key }}
-          sonar_project_token: ${{ matrix.token }}
+          
 
       - name: Archive CycloneDX
         continue-on-error: true
