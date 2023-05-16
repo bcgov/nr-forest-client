@@ -89,7 +89,6 @@ public class ClientController {
           example = "00000002"
       )
       @PathVariable String clientNumber,
-      @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
       @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail
   ) {
     return clientService.getClientDetails(clientNumber,userEmail);
@@ -249,9 +248,7 @@ public class ClientController {
           description = "The name to lookup",
           example = "Power Corp"
       )
-      @PathVariable String name,
-      @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
-      @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail
+      @PathVariable String name
   ) {
     return clientService
         .findByClientNameOrIncorporation(name);

@@ -16,6 +16,7 @@ import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -79,6 +80,19 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 )
         );
+
+    wireMockExtensionChes
+        .stubFor(
+            post("/token/uri")
+                .willReturn(
+                    ok(TestConstants.CHES_TOKEN_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
+
+    client = client.mutate()
+        .responseTimeout(Duration.ofSeconds(10))
+        .build();
   }
 
   @Test

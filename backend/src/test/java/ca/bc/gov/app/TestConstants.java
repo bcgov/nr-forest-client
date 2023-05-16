@@ -24,6 +24,17 @@ public class TestConstants {
       }
        """;
 
+  public static final String CHES_TOKEN_MESSAGE = """      
+      {
+         "access_token": "dummy_access_token",
+         "token_type": "Bearer",
+         "expiresIn": 3600,
+         "refreshToken": "dummy_refresh_token",
+         "scope": "read write",
+         "oAuthToken": {},
+         "body": ""
+       }""";
+
   public static final String CHES_400_MESSAGE = """
       {
         "type": "https://httpstatuses.com/400",
