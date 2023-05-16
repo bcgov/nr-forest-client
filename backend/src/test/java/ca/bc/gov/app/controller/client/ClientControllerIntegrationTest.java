@@ -3,6 +3,7 @@ package ca.bc.gov.app.controller.client;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
@@ -15,6 +16,7 @@ import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -53,9 +55,44 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
       .configureStaticDsl(true)
       .build();
 
+  @RegisterExtension
+  static WireMockExtension wireMockExtensionChes = WireMockExtension
+      .newInstance()
+      .options(
+          wireMockConfig()
+              .port(10010)
+              .notifier(new WiremockLogNotifier())
+              .asynchronousResponseEnabled(true)
+              .stubRequestLoggingDisabled(false)
+      )
+      .configureStaticDsl(true)
+      .build();
+
   @BeforeEach
   public void reset() {
     wireMockExtension.resetAll();
+
+    wireMockExtensionChes
+        .stubFor(
+            post("/chess/uri")
+                .willReturn(
+                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
+
+    wireMockExtensionChes
+        .stubFor(
+            post("/token/uri")
+                .willReturn(
+                    ok(TestConstants.CHES_TOKEN_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
+
+    client = client.mutate()
+        .responseTimeout(Duration.ofSeconds(10))
+        .build();
   }
 
   @Test

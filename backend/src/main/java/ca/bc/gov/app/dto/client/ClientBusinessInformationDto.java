@@ -1,5 +1,7 @@
 package ca.bc.gov.app.dto.client;
 
+import java.util.Map;
+
 public record ClientBusinessInformationDto(
     String incorporationNumber,
     String businessName,
@@ -8,4 +10,14 @@ public record ClientBusinessInformationDto(
     String goodStanding,
     String legalType
 ) {
+  public Map<String, Object> description() {
+    return Map.of(
+        "incorporation", incorporationNumber,
+        "name", businessName,
+        "businessType", businessType,
+        "clientType", clientType,
+        "legalType", legalType,
+        "goodStanding", goodStanding
+    );
+  }
 }

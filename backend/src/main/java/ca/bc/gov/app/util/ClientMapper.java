@@ -6,7 +6,6 @@ import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
-import ca.bc.gov.app.exception.NoAssociationException;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -127,10 +126,9 @@ public class ClientMapper {
                     .stream()
                     .anyMatch(valueText -> valueText.text().equals(location.getName()))
             )
+            .map(SubmissionLocationEntity::getSubmissionLocationId)
             .findFirst()
-            .orElseThrow(
-                () -> new NoAssociationException("contact", "location", contactDto.firstName()))
-            .getSubmissionLocationId();
+            .orElse(0);
   }
 
 }

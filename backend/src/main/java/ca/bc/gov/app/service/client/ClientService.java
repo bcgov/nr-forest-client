@@ -4,10 +4,12 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
+import ca.bc.gov.app.dto.ches.ChesRequest;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
+import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
@@ -18,12 +20,14 @@ import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
+import ca.bc.gov.app.service.ches.ChesCommonServicesService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +47,7 @@ public class ClientService {
   private final ProvinceCodeRepository provinceCodeRepository;
   private final ContactTypeCodeRepository contactTypeCodeRepository;
   private final BcRegistryService bcRegistryService;
+  private final ChesCommonServicesService chesService;
   private final ClientLegacyService legacyService;
 
   /**
@@ -120,9 +125,13 @@ public class ClientService {
    * The details include the company standing and addresses.
    *
    * @param clientNumber the client number for which to retrieve details
+   * @param userEmail the email of the user who triggered this request
    * @return a Mono that emits a ClientDetailsDto object representing the details of the client
    */
-  public Mono<ClientDetailsDto> getClientDetails(String clientNumber) {
+  public Mono<ClientDetailsDto> getClientDetails(
+      String clientNumber,
+      String userEmail
+      ) {
     log.info("Loading details for {}", clientNumber);
     return
         bcRegistryService
@@ -133,6 +142,7 @@ public class ClientService {
                     .searchLegacy(document.business().identifier(), document.business().legalName())
                     .next()
                     .filter(isMatchWith(document))
+                    .flatMap(sendEmail(userEmail))
                     .flatMap(legacy -> Mono
                         .error(
                             new ClientAlreadyExistException(
@@ -302,5 +312,25 @@ public class ClientService {
                 document.business().legalName(),
                 legacy.legalName()
             );
+  }
+
+  private Function<ForestClientDto,Mono<ForestClientDto>> sendEmail(String email) {
+    return legacy ->
+        chesService
+            .buildTemplate(
+                "matched",
+                legacy.description()
+            )
+            .flatMap(body ->
+                chesService
+                    .sendEmail(
+                        new ChesRequest(
+                            List.of(email),
+                            body
+                        )
+                    )
+            )
+            .doOnNext(mailId -> log.info("Mail sent, transaction ID is {}", mailId))
+            .thenReturn(legacy);
   }
 }
