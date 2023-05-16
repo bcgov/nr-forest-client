@@ -5,6 +5,7 @@ import static ca.bc.gov.app.util.ClientMapper.mapAllToSubmissionLocationEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
 import static org.springframework.data.relational.core.query.Query.query;
 
+import ca.bc.gov.app.dto.ches.ChesRequest;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
@@ -22,12 +23,12 @@ import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
+import ca.bc.gov.app.service.ches.ChesCommonServicesService;
 import ca.bc.gov.app.util.ClientMapper;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +49,7 @@ public class ClientSubmissionService {
   private final SubmissionLocationRepository submissionLocationRepository;
   private final SubmissionContactRepository submissionContactRepository;
   private final SubmissionLocationContactRepository submissionLocationContactRepository;
+  private final ChesCommonServicesService chesService;
   private final R2dbcEntityTemplate template;
 
   public Flux<ClientListSubmissionDto> listSubmissions(
@@ -100,7 +102,7 @@ public class ClientSubmissionService {
                     .map(submissionDetail ->
                         new ClientListSubmissionDto(
                             submission.getSubmissionId(),
-                            "", //TODO: Must include and process
+                            submission.getSubmissionType().getDescription(),
                             submissionDetail.getOrganizationName(),
                             submissionDetail.getClientTypeCode(),
                             String.format("%s | %s",
@@ -170,7 +172,8 @@ public class ClientSubmissionService {
                     .collectList()
                     //Return what we need only
                     .thenReturn(submission.getSubmissionId())
-            );
+            )
+            .flatMap(submissionId -> sendEmail(submissionId, clientSubmissionDto, userEmail));
   }
 
   private Mono<SubmissionLocationContactEntity> saveAndAssociateContact(
@@ -200,6 +203,30 @@ public class ClientSubmissionService {
                 clientSubmissionDto.location().addresses())
         )
         .collectList();
+  }
+
+  private Mono<Integer> sendEmail(
+      Integer submissionId,
+      ClientSubmissionDto clientSubmissionDto,
+      String email
+  ) {
+    return
+        chesService
+            .buildTemplate(
+                "registration",
+                clientSubmissionDto.description()
+            )
+            .flatMap(body ->
+                chesService
+                    .sendEmail(
+                        new ChesRequest(
+                            List.of(email),
+                            body
+                        )
+                    )
+            )
+            .doOnNext(mailId -> log.info("Mail sent, transaction ID is {}", mailId))
+            .thenReturn(submissionId);
   }
 
 }

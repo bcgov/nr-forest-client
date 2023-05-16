@@ -1,6 +1,7 @@
 package ca.bc.gov.app.dto.client;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Map;
 import lombok.With;
 
 @Schema(
@@ -48,9 +49,26 @@ public record ClientAddressDto(
     int index,
 
     @Schema(description = """
-        The location name of an address. Examples of location names include, 
+        The location name of an address. Examples of location names include,
         but are not limited to, Mailing Address, Billing Address among others.""",
         example = "Billing Address")
     String locationName
 ) {
+  public Map<String, Object> description() {
+
+    final String indexFormatted = String.format("address.[%d]", index);
+
+    return
+        Map.of(indexFormatted,
+            Map.of(
+                "name", locationName,
+                "address", streetAddress,
+                "country", country.text(),
+                "province", province.text(),
+                "city", city,
+                "postalCode", postalCode
+            )
+        );
+
+  }
 }

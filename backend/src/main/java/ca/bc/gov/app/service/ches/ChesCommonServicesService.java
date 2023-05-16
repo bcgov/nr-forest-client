@@ -17,6 +17,12 @@ import ca.bc.gov.app.exception.UnableToProcessRequestException;
 import ca.bc.gov.app.exception.UnexpectedErrorException;
 import ca.bc.gov.app.util.ValidationUtil;
 import ca.bc.gov.app.validator.ches.ChesRequestValidator;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -44,6 +50,7 @@ public class ChesCommonServicesService {
   private final ForestClientConfiguration configuration;
   private final ChesRequestValidator validator;
   private final WebClient webClient;
+  private final Configuration freeMarkerConfiguration;
 
   public ChesCommonServicesService(
       ForestClientConfiguration configuration,
@@ -53,6 +60,8 @@ public class ChesCommonServicesService {
     this.configuration = configuration;
     this.webClient = webClient;
     this.validator = validator;
+    this.freeMarkerConfiguration = new Configuration(Configuration.VERSION_2_3_31);
+    freeMarkerConfiguration.setClassForTemplateLoading(this.getClass(), "/templates");
   }
 
   @Setter
@@ -113,6 +122,28 @@ public class ChesCommonServicesService {
             .map(response -> response.txId().toString())
             .doOnError(error -> log.error("Failed to send email", error));
 
+  }
+
+  /**
+   * Builds a String representation of an HTML email template by applying a map of variables
+   * to the FreeMarker template identified by the given template name.
+   *
+   * @param templateName the name of the FreeMarker template, without the ".html" extension
+   * @param variables    a map of variable names and their corresponding values to be used
+   *                     when processing the template
+   * @return a Mono that emits the String representation of the processed template, or
+   *         an error if an exception occurs during template processing
+   */
+  public Mono<String> buildTemplate(String templateName, Map<String, Object> variables) {
+    StringWriter writer = new StringWriter();
+    try {
+      Template template = freeMarkerConfiguration.getTemplate(templateName + ".html");
+      template.process(variables, writer);
+    } catch (TemplateException | IOException e) {
+      return Mono.error(e);
+    }
+
+    return Mono.just(writer.toString());
   }
 
   private static Function<ClientResponse, Mono<? extends Throwable>> get500ErrorMessage() {

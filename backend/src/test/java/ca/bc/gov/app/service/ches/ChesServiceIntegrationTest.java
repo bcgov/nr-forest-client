@@ -21,6 +21,7 @@ import ca.bc.gov.app.exception.UnexpectedErrorException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.oltu.oauth2.client.OAuthClient;
@@ -280,6 +281,41 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         .as(StepVerifier::create)
         .expectNext("00000000-0000-0000-0000-000000000000")
         .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Template was built")
+  void shouldBuildTemplate() {
+    Map<String, Object> variables = Map.of("business",Map.of(
+        "name", "John",
+        "incorporation", "john@example.com")
+    );
+    String expected = """
+        <html>
+        <body><p>Hi John,</p>
+        <p>Thanks for registering with us. We'll be in touch at john@example.com.</p></body>
+        </html>""";
+
+    service
+        .buildTemplate("test", variables)
+        .as(StepVerifier::create)
+        .expectNext(expected)
+        .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Fail when invalid template")
+  void testBuildTemplate_InvalidTemplateName() {
+
+    Map<String, Object> variables = Map.of(
+        "name", "John",
+        "email", "john@example.com");
+
+    service
+        .buildTemplate("invalid-template-name", variables)
+        .as(StepVerifier::create)
+        .expectErrorMatches(t -> t.getMessage().contains("invalid-template-name.html"))
+        .verify();
   }
 
 

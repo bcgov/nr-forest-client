@@ -1,5 +1,6 @@
 package ca.bc.gov.app.dto.legacy;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
@@ -33,5 +34,18 @@ public record ForestClientDto(
               .collect(Collectors.joining(" "));
     }
     return StringUtils.defaultString(clientName);
+  }
+
+  public Map<String, Object> description() {
+    return
+        Map.of(
+            "number", clientNumber,
+            "name", legalName(),
+            "status", ClientStatusCodeEnum.valueOf(clientStatusCode),
+            "type", ClientTypeCodeEnum.valueOf(clientTypeCode),
+            "identifier",
+            StringUtils.defaultString(registryCompanyTypeCode) +
+                StringUtils.defaultString(corpRegnNmbr)
+        );
   }
 }
