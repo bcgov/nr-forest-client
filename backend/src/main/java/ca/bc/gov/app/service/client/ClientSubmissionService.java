@@ -13,6 +13,7 @@ import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
+import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.predicates.QueryPredicates;
 import ca.bc.gov.app.predicates.SubmissionDetailPredicates;
 import ca.bc.gov.app.predicates.SubmissionPredicates;
@@ -73,10 +74,9 @@ public class ClientSubmissionService {
         template
             .select(
                 query(
-                    //Commenting it out as we don't have the requestType field
-                    /*AbstractQueryPredicates*/
-                    /*.orEqualTo(requestType, "requestType")*/
-                    /*.and(*/SubmissionPredicates.orStatus(requestStatus)/*)*/
+                    QueryPredicates
+                    .orEqualTo(requestType, "submissionType")
+                    .and(SubmissionPredicates.orStatus(requestStatus))
                         .and(SubmissionPredicates.orUpdatedAt(updatedAt))
                 )
                     .with(PageRequest.of(page, size)),
@@ -136,6 +136,7 @@ public class ClientSubmissionService {
                 SubmissionEntity
                     .builder()
                     .submissionStatus(SubmissionStatusEnum.N)
+                    .submissionType(SubmissionTypeCodeEnum.SPP)
                     .submissionDate(LocalDateTime.now())
                     .createdBy(userId)
                     .updatedBy(userId)
