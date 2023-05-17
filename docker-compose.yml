@@ -88,7 +88,7 @@ services:
       APP_USER: THE
       ORACLE_RANDOM_PASSWORD: yes
     hostname: legacydb
-    image: gvenzl/oracle-xe:21.3.0-slim-faststart@sha256:0ed000df2f0e3d1b99cec69e5aa596d4ed24be36ea4c8ae03c96b9da1080f396
+    image: gvenzl/oracle-xe:21.3.0-slim-faststart@sha256:d0ed1cedc2ec2248c1daa6d25fbc0140570e6f1f040b8f3de56ca1366277373f
     ports:
       - 1521:1521
     restart: always

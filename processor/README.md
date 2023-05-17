@@ -35,42 +35,52 @@ ca:
   bc:
     gov:
       nrs:
-        #Configures postgres access
+        processor:
+          # The time between each database check, uses duration format
+          poolTime: 5M
+        # Oracle database information
+        oracle:
+          service: ${ORACLEDB_SERVICENAME:fsa-forest}
+          database: ${ORACLEDB_DATABASE:fsa-forest}
+          host: ${ORACLEDB_HOST:localhost}
+          port: ${ORACLEDB_PORT:1521}
+          username: ${ORACLEDB_USER:user}
+          password: ${ORACLEDB_PASSWORD:passwd}
+          keystore: ${ORACLEDB_KEYSTORE:jssecacerts.jks}
+          secret: ${ORACLEDB_SECRET:changeit}
+        # Postgres database information
         postgres:
           database: ${POSTGRESQL_DATABASE:fsa-forest}
           host: ${POSTGRESQL_HOST:localhost}:5432
           username: ${POSTGRESQL_USER:user}
-          password: ${POSTGRESQL_PASSWORD:passwd}        
-        #Legacy URL
-        legacy:
-          url: http://127.0.0.1:9000        
-        #Frontend parameters used to configure CORS
-        frontend:
-          #The Frontend URL
-          url: ${FRONTEND_URL:*}
-          #all cors parameters
-          cors:
-            #Authorized CORS headers
-            headers:
-              - x-requested-with
-              - authorization
-              - Content-Type
-              - Authorization
-              - credential
-              - X-XSRF-TOKEN
-              - access-control-allow-origin
-            #Authorized CORS methods
-            methods:
-              - OPTIONS
-              - GET
-              - POST
-              - PUT
-              - DELETE
-            #Cors token duration
-            age: 5m
+          password: ${POSTGRESQL_PASSWORD:passwd}
+          url: r2dbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
 
 ```
 
+Also, as a properties file for reference:
+
+```properties
+# The time between each database check, uses duration format
+ca.bc.gov.nrs.processor.poolTime=5M
+
+# Oracle database information
+ca.bc.gov.nrs.oracle.service=${ORACLEDB_SERVICENAME:fsa-forest}
+ca.bc.gov.nrs.oracle.database=${ORACLEDB_DATABASE:fsa-forest}
+ca.bc.gov.nrs.oracle.host=${ORACLEDB_HOST:localhost}
+ca.bc.gov.nrs.oracle.port=${ORACLEDB_PORT:1521}
+ca.bc.gov.nrs.oracle.username=${ORACLEDB_USER:user}
+ca.bc.gov.nrs.oracle.password=${ORACLEDB_PASSWORD:passwd}
+ca.bc.gov.nrs.oracle.keystore=${ORACLEDB_KEYSTORE:jssecacerts.jks}
+ca.bc.gov.nrs.oracle.secret=${ORACLEDB_SECRET:changeit}
+
+# Postgres database information
+ca.bc.gov.nrs.postgres.database=${POSTGRESQL_DATABASE:fsa-forest}
+ca.bc.gov.nrs.postgres.host=${POSTGRESQL_HOST:localhost}:5432
+ca.bc.gov.nrs.postgres.username=${POSTGRESQL_USER:user}
+ca.bc.gov.nrs.postgres.password=${POSTGRESQL_PASSWORD:passwd}
+ca.bc.gov.nrs.postgres.url=r2dbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
+```
 
 ## Configuring IntelliJ Code Style
 

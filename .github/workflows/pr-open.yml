@@ -305,3 +305,54 @@ jobs:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
             -p VITE_NODE_ENV=openshift-dev
+
+  cypress-run:
+    name: "User flow test"
+    runs-on: ubuntu-22.04
+    needs:
+      - deploy-frontend
+    environment: dev
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        name: Start node
+        with:
+          node-version: 18
+      
+      - name: Run Cypress End-to-End
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: cypress
+        env:
+          CYPRESS_baseUrl: https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Publish Cypress Results
+        uses: mikepenz/action-junit-report@v3
+        continue-on-error: true
+        if: always()
+        with:
+          report_paths: cypress/result.xml
+          commit: ${{ github.event.pull_request.head.sha }}
+          summary: Cypress Test Results
+          detailed_summary: true
+          job_name: User Journeys
+      
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/cypress/screenshots
+          retention-days: 7
+      
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/cypress/videos
+          retention-days: 7
