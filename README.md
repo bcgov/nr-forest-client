@@ -14,8 +14,16 @@ The nr-forest-client is a node.js application built with [Vue.js](https://vuejs.
 
 ## Frontend
 
-The frontend is built in Vue3 composition api
+The frontend is built in Vue3 composition api, more info [here](frontend/README.md)
 
 ## Backend
 
-The backend is built in spring boot java with swagger
+The backend is built in Java 17 using Spring Boot 3. It is composed of multiple components, more info about the [backend here](backend/README.md), the [legacy](legacy/README.md) part that handles oracle connections and the [processor](processor/README.md) that handles the submission processing part.
+
+## Email templates
+
+For more info about the email templates, [click here](backend/docs/MAIL_FORMAT.md)
+
+## Automated End-to-End tests
+
+For automated end-to-end tests with cypress you can check [here](cypress/README.md). This is used to validate user journeys and some other cases.

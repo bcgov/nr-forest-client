@@ -332,14 +332,27 @@ jobs:
           CYPRESS_baseUrl: https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Publish Cypress Results
+        uses: mikepenz/action-junit-report@v3
+        continue-on-error: true
+        if: always()
+        with:
+          report_paths: cypress/result.xml
+          commit: ${{ github.event.pull_request.head.sha }}
+          summary: Cypress Test Results
+          detailed_summary: true
+          job_name: User Journeys
+      
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: cypress-screenshots
           path: cypress/cypress/screenshots
+          retention-days: 7
       
       - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: cypress-videos
           path: cypress/cypress/videos
+          retention-days: 7
