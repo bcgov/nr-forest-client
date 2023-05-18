@@ -8,7 +8,7 @@ COPY . ./
 RUN npm ci --omit=dev && npm run build
 
 # Deployment container
-FROM caddy:2.4.6-alpine@sha256:c8555e2ca66576a4404c2b5f31d843a5378dea6134acb500502901b563efebcf
+FROM caddy:2.6.4-alpine@sha256:5acae6b87b26a591d6d14ec2704b7f2cd94b888ad62af16a02356d3124198ede
 EXPOSE 3000
 COPY --from=builder /app/Caddyfile /etc/caddy/Caddyfile
 COPY --from=builder /app/dist /srv
