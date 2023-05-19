@@ -1,5 +1,5 @@
 # RedHat UBI 8 with nodejs 14
-FROM registry.access.redhat.com/ubi8/ubi:8.7-1112@sha256:e3311058176628ad7f0f288f894ed2afef61be77ad01d53d5b69bca0f6b6cec1 as builder
+FROM registry.access.redhat.com/ubi8/ubi:8.8-854@sha256:a7143118671dfc61aca46e8ab9e488500495a3c4c73a69577ca9386564614c13 as builder
 RUN dnf module install -y nodejs:18
 
 # Install packages, build and keep only prod packages
