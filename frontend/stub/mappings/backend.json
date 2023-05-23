@@ -1,0 +1,61 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "urlPattern": "/api/clients/name/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"code\": \"XX0000000\",\"name\": \"{{request.path.[3]}}\",\"status\": \"ACTIVE\",\"legalType\": \"SP\"},{\"code\": \"XX0000001\",\"name\": \"{{request.path.[3]}} SECOND\",\"status\": \"ACTIVE\",\"legalType\": \"SP\"}]",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/api/clients/XX(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"name\":\"SAMPLE DATA\",\"id\":\"{{request.path.[2]}}\",\"goodStanding\":true,\"addresses\":[{\"streetAddress\":\"123 Fake DR\",\"country\":{\"value\":\"CA\",\"text\":\"Canada\"},\"province\":{\"value\":\"BC\",\"text\":\"British Columbia\"},\"city\":\"Fakest City\",\"postalCode\":\"AAA000\",\"index\":0,\"locationName\":\"Mailing Address\"}],\"contacts\":[{\"contactType\":{\"value\":\"P\",\"text\":\"Person\"},\"firstName\":\"Jhon\",\"lastName\":\"Wick\",\"phoneNumber\":\"0000000000\",\"email\":\"babayaga@theguild.ca\",\"index\":0,\"locations\":[{\"value\":\"0\",\"text\":\"Mailing Address\"}]}]}",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+
+    {
+      "request": {
+        "url": "/api/clients/activeCountryCodes?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"code\":\"CA\",\"name\":\"Canada\"}]"
+      }
+    },
+    {
+      "request": {
+        "url": "/api/clients/activeContactTypeCodes?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"code\":\"P\",\"name\":\"Person\"}]"
+      }
+    },
+    {
+      "request": {
+        "url": "/api/clients/activeCountryCodes/CA?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"code\":\"BC\",\"name\":\"British Columbia\"}]"
+      }
+    }
+  ]
+}

@@ -42,6 +42,12 @@ Press "option+shift+f" and select prettier as the formatter
 
 ## **Technology options**
 
+## **Stubs**:
+
+To speed-up development and allow a simple development environment, a stub server was added to fake backend responses. For this we use the same technology as we use
+in our backend, that is [wiremock](https://wiremock.org/). For that run `npm run stub` in a separated window to execute the backend server. You can add new responses or update
+the existing ones by tweeking the content of the [stub](stub/) folder following the [response templating](https://wiremock.org/docs/response-templating/) format and the [request matching](https://wiremock.org/docs/request-matching/) to suit your needs.
+
 ### **Style**:
 
 [Bootstrap for vue3](https://www.npmjs.com/package/bootstrap-vue-3), installed through this [prefered installation method](https://cdmoro.github.io/bootstrap-vue-3/getting-started/#preferred-installation), so it can automatically importing components, to aviod the warn message that cannot find components when run unit tests
@@ -53,67 +59,6 @@ Press "option+shift+f" and select prettier as the formatter
 [Vitest](https://vitest.dev/api/)  
 [Vue test util](https://test-utils.vuejs.org/api/)
 
-### **Reusable Form Component Structure**:
-
-#### **FormData in a json format**:
-
-```
-{
-  "container_id": {
-    "model_name": "value",
-    "model_name": [{
-      "model_name": "value",
-      ...
-    }],
-    ...
-  },
-  ...
-}
-```
-
-where **container_id** is whatever we'd like to use for each form section, **model_name** is for the form content in this section, for example: input, select, radio, checkbox, table, etc. **model_name** is for the fields inside a table or a group
-
-#### **Form json schema**:
-
-```
-{
-  container: {
-    title: string;
-    id: string;
-    defaultOpen?: boolean;
-    nextId?: string;
-    nextText?: string;
-    alwaysOpen?: boolean;
-  },
-  content: [{
-    fieldProps: {
-        label: string;
-        required?: boolean;
-        id: string; 
-        modelName: string; // It is required and need to be aligned with the field name in formData
-        note?: string;
-        tooltip?: string;
-        errorMsg?: string;
-    };
-    type: string;
-    disabled?: boolean;
-    state?: boolean;
-    depend?: {
-      fieldModelName: string;
-      value: string | number | boolean;
-    };
-    options?: Array<CommonObjectType>; // for select, checkbox group, radio group
-    addButtonText?: string; // for table
-    subfields?: Array<CommonObjectType>; // for table and group
-  },
-  ...
-  ]
-}
-```
-
-where the:  
-**container** part has the properties for each form section, using the properties from the CollapseCard component, id need to be aliged with the one in formData
-**content** part has the properties for each field in this form section
 
 ### **Vite vs vue cli**
 

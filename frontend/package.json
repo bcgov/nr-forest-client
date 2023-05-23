@@ -29,7 +29,8 @@
     "test:e2e": "start-server-and-test preview http://127.0.0.1:5050/ 'cypress open'",
     "test:e2e:ci": "start-server-and-test preview http://127.0.0.1:5050/ 'cypress run'",
     "typecheck": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "stub":"wiremock --enable-stub-cors --port 3000 --preserve-host-header --root-dir ./stub --verbose --global-response-templating"
   },
   "dependencies": {
     "@dsb-norge/vue-keycloak-js": "^2.2.0",
@@ -73,6 +74,7 @@
     "prettier": "^2.8.4",
     "start-server-and-test": "^2.0.0",
     "typescript": "~5.0.0",
-    "vitest": "^0.31.0"
+    "vitest": "^0.31.0",
+    "wiremock": "^2.35.0"
   }
 }
