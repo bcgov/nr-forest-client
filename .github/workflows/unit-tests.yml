@@ -114,10 +114,13 @@ jobs:
             npm run test
           dir: frontend
           sonar_args: >
-            -Dsonar.exclusions=**/coverage/**,**/examples/**,**/pages/**
+            -Dsonar.javascript.lcov.reportPaths=./coverage/coverage-final.json
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-frontend
+            -Dsonar.sources=src
             -Dsonar.tests=src/tests
+            -Dsonar.exclusions=**/coverage/**/*,**/dist/**/*,**/examples/**/*,**/pages/**/*,**/tests/**/*
+            -Dsonar.test.inclusions=**/tests/**/*
           sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
   
   trivy:
