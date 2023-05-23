@@ -23,18 +23,17 @@
         <CollapseCard title="Registered business" 
                       id="businessInformationId"
                       defaultOpen>
-            <Label label="Choose one these options:" 
-                   id="clientTypeLabelId" />
 
-            <b-form-group @change="getBusinessName">
-                <b-form-radio v-model="formData.businessInformation.businessType" 
-                              value="R">
-                    I have a BC registered business (corporation, sole proprietorship, society, etc.)
-                </b-form-radio>
-                <b-form-radio v-model="formData.businessInformation.businessType" 
-                              value="U">I have an unregistered sole proprietorship
-                </b-form-radio>
-            </b-form-group>
+            <RadioInputComponent
+                :id="'businessType'"
+                :modelValue="[
+                    { value: 'R',text: 'I have a BC registered business (corporation, sole proprietorship, society, etc.)' },
+                    { value: 'U',text: 'I have an unregistered sole proprietorship' },
+                ]"
+                :validations="[]"
+                @update:modelValue="formData = { ...formData, businessInformation:{ businessType: $event } }"
+            />
+            
             <ValidationMessages fieldId = 'businessInformation.businessType'
                                 :validationMessages="validationMessages"
                                 :modelValue="formData.businessInformation.businessType" />
@@ -141,6 +140,9 @@ import ValidationMessages from "@/common/ValidationMessagesComponent.vue";
 import AddressSection from "@/pages/applyclientnumber/AddressSectionComponent.vue";
 import ContactSectionComponent from '@/pages/applyclientnumber/ContactSectionComponent.vue';
 
+
+import RadioInputComponent from '@/components/forms/RadioInputComponent.vue';
+
 const props = defineProps({
     submitterInformation: {
         type: Object,
@@ -150,6 +152,9 @@ const props = defineProps({
 
 //---- Form Data ----//
 let formData = ref(formDataDto);
+
+watch([formData],() => console.log('Updated',formData.value));
+
 
 //--- Initializing the Addresses array ---//
 addNewAddress(formDataDto.location.addresses);
