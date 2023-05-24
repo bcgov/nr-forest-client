@@ -1,6 +1,8 @@
 package ca.bc.gov.app.util;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ca.bc.gov.app.dto.client.ClientTypeEnum;
 import ca.bc.gov.app.dto.client.LegalTypeEnum;

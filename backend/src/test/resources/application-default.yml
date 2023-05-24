@@ -23,6 +23,9 @@ ca:
           accountId: 'account 0000'
         legacy:
           url: 'http://127.0.0.1:10040'
+        addressComplete:
+          url: 'http://127.0.0.1:10050'
+          apiKey: 'AB12-CD34-EF56-GH78'
 
 
 logging:
