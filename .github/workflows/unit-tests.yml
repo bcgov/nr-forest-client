@@ -114,7 +114,7 @@ jobs:
             npm run test
           dir: frontend
           sonar_args: >
-            -Dsonar.javascript.lcov.reportPaths=./nr-forest-client-report.xml
+            -Dsonar.javascript.lcov.reportPaths=coverage/coverage-final.json
             -Dsonar.exclusions=**/coverage/**/*,**/dist/**/*,**/examples/**/*,**/pages/**/*,**/tests/**/*
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-frontend
