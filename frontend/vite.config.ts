@@ -28,5 +28,15 @@ export default defineConfig(({ command, mode }) => {
     server: {
       port: port,
     },
+    test: {
+      reporters: ["json", "verbose", "vitest-sonar-reporter"],
+      outputFile: {
+        json: "nr-forest-client-report.json",
+        "vitest-sonar-reporter": "nr-forest-client-report.xml"
+      },
+      coverage: {
+        reporters: 'lcov',
+      },
+    }
   };
 });
