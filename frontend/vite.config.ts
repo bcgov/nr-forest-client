@@ -29,15 +29,13 @@ export default defineConfig(({ command, mode }) => {
       port: port,
     },
     test: {
-      reporters: ["json", "verbose", "vitest-sonar-reporter"],
-      outputFile: {
-        json: "nr-forest-client-report.json",
-        "vitest-sonar-reporter": "nr-forest-client-report.xml"
-      },
+      globals: true,
+      reporters: ["verbose"],
       coverage: {
         provider: 'c8',
-        reporters: ["json", "verbose", 'lcov', "vitest-sonar-reporter", "clover"]
+        reporter: ['text', 'json', 'lcov']
       },
+      environment: "jsdom"
     }
   };
 });

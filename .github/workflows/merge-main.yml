@@ -70,8 +70,7 @@ jobs:
             npm run test
           dir: frontend
           sonar_args: >
-            -Dsonar.core.codeCoveragePlugin=clover
-            -Dsonar.clover.reportPath=coverage/clover.xml
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.exclusions=**/coverage/**/*,**/dist/**/*,**/examples/**/*,**/pages/**/*,**/tests/**/*
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-frontend
