@@ -36,6 +36,7 @@ public class ClientAddressService {
 
   public Flux<ClientNameCodeDto> findPossibleAddresses(
       String country, Integer maxSuggestions, String searchTerm) {
+    log.info("Searching for address {} for country {}", searchTerm, country);
     return
         addressCompleteApi
             .get()
@@ -68,6 +69,8 @@ public class ClientAddressService {
 
               String lastId = addresses.get(0).id();
 
+              log.info("No retrieve addresses found, searching for lastId {}", lastId);
+
               return addressCompleteApi
                   .get()
                   .uri(uriBuilder ->
@@ -99,22 +102,8 @@ public class ClientAddressService {
             );
   }
 
-  private <T extends AddressError> void handleError(List<T> addresses) {
-
-    if(CollectionUtils.isEmpty(addresses)) {
-      throw new AddressLookupException("No address data found");
-    }
-
-    boolean hasError = addresses
-        .stream()
-        .allMatch(address -> StringUtils.isNotBlank(address.error()));
-
-    if(hasError) {
-      throw new AddressLookupException(addresses.get(0).description());
-    }
-  }
-
   public Mono<ClientAddressDto> getAddress(String addressId) {
+    log.info("Get address with Id {}", addressId);
     return
         addressCompleteApi
             .get()
@@ -157,5 +146,20 @@ public class ClientAddressService {
                     null
                 )
             );
+  }
+
+  private <T extends AddressError> void handleError(List<T> addresses) {
+
+    if(CollectionUtils.isEmpty(addresses)) {
+      throw new AddressLookupException("No address data found");
+    }
+
+    boolean hasError = addresses
+        .stream()
+        .allMatch(address -> StringUtils.isNotBlank(address.error()));
+
+    if(hasError) {
+      throw new AddressLookupException(addresses.get(0).description());
+    }
   }
 }
