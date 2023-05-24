@@ -35,7 +35,8 @@ export default defineConfig(({ command, mode }) => {
         "vitest-sonar-reporter": "nr-forest-client-report.xml"
       },
       coverage: {
-        reporters: ["json", "verbose", 'lcov', "vitest-sonar-reporter"],
+        provider: 'c8',
+        reporters: ["json", "verbose", 'lcov', "vitest-sonar-reporter", "clover"]
       },
     }
   };
