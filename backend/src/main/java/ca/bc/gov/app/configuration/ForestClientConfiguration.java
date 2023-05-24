@@ -30,6 +30,8 @@ public class ForestClientConfiguration {
   private LegacyConfiguration legacy;
   @NestedConfigurationProperty
   private BcRegistryConfiguration bcregistry;
+  @NestedConfigurationProperty
+  private AddressCompleteConfiguration addressComplete;
 
   @Data
   @Builder
@@ -97,5 +99,14 @@ public class ForestClientConfiguration {
   @AllArgsConstructor
   public static class LegacyConfiguration {
     private String url;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class AddressCompleteConfiguration {
+    private String url;
+    private String apiKey;
   }
 }
