@@ -110,12 +110,11 @@ jobs:
       - uses: bcgov-nr/action-test-and-analyse@v0.0.1
         with:
           commands: |
-            npm install
+            npm ci
             npm run test
           dir: frontend
           sonar_args: >
-            -Dsonar.javascript.lcov.reportPaths=./coverage/coverage-final.json
-            -Dsonar.exclusions=**/coverage/**/*,**/dist/**/*,**/examples/**/*,**/pages/**/*,**/tests/**/*
+            -Dsonar.exclusions=**/coverage/**,**/examples/**,**/pages/**
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-frontend
           sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
