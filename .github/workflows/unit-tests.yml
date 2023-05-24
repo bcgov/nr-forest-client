@@ -110,7 +110,7 @@ jobs:
       - uses: bcgov-nr/action-test-and-analyse@v0.0.1
         with:
           commands: |
-            npm ci
+            npm install
             npm run test
           dir: frontend
           sonar_args: >
