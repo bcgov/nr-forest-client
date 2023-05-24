@@ -1,4 +1,4 @@
-import type { Ref } from "vue";
+import { isRef } from "vue";
 
 export interface CodeDescrType {
     value: string;
@@ -10,7 +10,7 @@ export interface ValidationMessageType {
     errorMsg: string;
 }
 
-export const isEmpty = (ref: Ref): boolean => {
-    const value = ref.value;
+export const isEmpty = (receivedValue: any): boolean => {
+    const value = isRef(receivedValue) ? receivedValue.value : receivedValue;
     return value === undefined || value === null || value === "";
 };

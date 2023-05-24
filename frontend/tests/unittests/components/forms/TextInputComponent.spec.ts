@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { mount } from "@vue/test-utils";
+import { mount, shallowMount } from "@vue/test-utils";
 import TextInputComponent from "@/components/forms/TextInputComponent.vue";
 
 describe("Text Input Component", () => {
@@ -22,8 +22,7 @@ describe("Text Input Component", () => {
 
   it('emits the "update" event with the updated value', async () => {
 
-    const wrapper = mount(TextInputComponent, {
-      shallow: true,
+    const wrapper = shallowMount(TextInputComponent, {
       props: {
         id,
         modelValue: "",
@@ -31,10 +30,7 @@ describe("Text Input Component", () => {
       },
     });
 
-    const comp = wrapper.getComponent(`#${id}`);
-
-    try { await comp!.setValue("John Doe"); }
-    catch (e) { console.log('Oh geez', e); }
+    wrapper.getComponent(`#${id}`).setValue("John Doe");
 
     await wrapper.find(`#${id}`).trigger("blur");
     await wrapper.find(`#${id}`).trigger("input");
@@ -45,8 +41,7 @@ describe("Text Input Component", () => {
 
   it('emits the "error" event when there is a validation error', async () => {
 
-    const wrapper = mount(TextInputComponent, {
-      shallow: true,
+    const wrapper = shallowMount(TextInputComponent, {
       props: {
         id,
         modelValue: "",
@@ -64,8 +59,7 @@ describe("Text Input Component", () => {
 
 
   it('emits the "empty" event when the input field is empty', async () => {
-    const wrapper = mount(TextInputComponent, {
-      shallow: true,
+    const wrapper = shallowMount(TextInputComponent, {
       props: {
         id,
         modelValue: "",

@@ -9,6 +9,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AutoCompleteInputComponent: typeof import('./src/components/forms/AutoCompleteInputComponent.vue')['default']
     BButton: typeof import('bootstrap-vue-3')['BButton']
     BCard: typeof import('bootstrap-vue-3')['BCard']
     BCardBody: typeof import('bootstrap-vue-3')['BCardBody']
@@ -24,5 +25,6 @@ declare module '@vue/runtime-core' {
     BTab: typeof import('bootstrap-vue-3')['BTab']
     BTabs: typeof import('bootstrap-vue-3')['BTabs']
     RadioInputComponent: typeof import('./src/components/forms/RadioInputComponent.vue')['default']
+    TextInputComponent: typeof import('./src/components/forms/TextInputComponent.vue')['default']
   }
 }
