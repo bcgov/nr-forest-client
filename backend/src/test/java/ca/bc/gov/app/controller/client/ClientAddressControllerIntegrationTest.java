@@ -7,6 +7,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import ca.bc.gov.app.AddressTestConstants;
+import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.Duration;
@@ -25,10 +26,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 @Slf4j
 @DisplayName("Integrated Test | FSA Client Address Controller")
-@ExtendWith({SpringExtension.class})
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ContextConfiguration
-public class ClientAddressControllerIntegrationTest {
+class ClientAddressControllerIntegrationTest  extends AbstractTestContainerIntegrationTest {
   @Autowired
   protected WebTestClient client;
 
