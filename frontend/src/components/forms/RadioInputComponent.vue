@@ -13,12 +13,12 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { CodeDescrType, isEmpty } from "@/core/CommonTypes";
+import { type CodeDescrType, isEmpty } from "@/core/CommonTypes";
 
 const props = defineProps({
   id: { type: String, required: true },
   modelValue: {
-    type: Array as () => CodeDescrType[],
+    type: Array<CodeDescrType>,
     required: true,
   },
   validations: { type: Array<Function>, required: true },
