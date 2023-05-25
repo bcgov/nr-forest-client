@@ -41,16 +41,22 @@
             <div v-if="formData.businessInformation.businessType == 'R'">
                 <Label label="Start typing to search for your B.C. registered business"
                        id="businessNameLabelId" />
-        
-                <Autocomplete id="businessNameId"
-                              :value="formData.businessInformation.businessName"
-                              :validationMessages="validationMessages"
-                              fieldId = 'businessInformation.businessName'
-                              :searchData="businessNames"
-                              datalistId="businessNameListId"
-                              @updateValue="formData.businessInformation.businessName = $event;                                        
-                                            populateBusinessList($event);
-                                            filterSearchData($event)" />
+                <data-fetcher
+                    v-model:url="autoCompleteName"
+                    :watcher="formData.businessInformation.businessName"
+                    :minLength="3"
+                    :initValue="[]"
+                    #="{ content }"
+                >
+                    <AutoCompleteInputComponent
+                        :id="'complete'"
+                        v-model="formData.businessInformation.businessName"
+                        :contents="content"
+                        :validations="[]"
+                    />
+                </data-fetcher>
+
+                
                 <Note note="The name must be the same as in BC Registries" />
             </div>
 
@@ -142,6 +148,9 @@ import ContactSectionComponent from '@/pages/applyclientnumber/ContactSectionCom
 
 
 import RadioInputComponent from '@/components/forms/RadioInputComponent.vue';
+import AutoCompleteInputComponent from '@/components/forms/AutoCompleteInputComponent.vue';
+import TextInputComponent from '@/components/forms/TextInputComponent.vue';
+import DataFetcher from '@/components/DataFetcher.vue';
 
 const props = defineProps({
     submitterInformation: {
@@ -150,10 +159,16 @@ const props = defineProps({
     }
   });
 
+
+
 //---- Form Data ----//
 let formData = ref(formDataDto);
 
 watch([formData],() => console.log('Updated',formData.value));
+
+//For test
+const autoCompleteName = computed(() =>`/api/clients/name/${formData.value.businessInformation.businessName}`);
+
 
 
 //--- Initializing the Addresses array ---//

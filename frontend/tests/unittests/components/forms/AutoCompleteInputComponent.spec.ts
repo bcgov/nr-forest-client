@@ -1,17 +1,17 @@
 import { describe, it, expect } from 'vitest';
 
-import { mount, shallowMount } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import AutoCompleteInputComponent from "@/components/forms/AutoCompleteInputComponent.vue";
 
 describe("Text Input Component", () => {
 
   const id = "my-input";
   const validations = [(value: any) => (value ? "" : "Field is required")];
-  const dataList = [
-    { code: "TA", value: "TANGO" },
-    { code: "TB", value: "TAMBOR" },
-    { code: "TC", value: "TAMCADA" },
-    { code: "TD", value: "TADANARA" },
+  const contents = [
+    { code: "TA", name: "TANGO" },
+    { code: "TB", name: "TAMBOR" },
+    { code: "TC", name: "TAMCADA" },
+    { code: "TD", name: "TADANARA" },
   ];
 
   it("renders the input field with the provided id", () => {
@@ -19,7 +19,7 @@ describe("Text Input Component", () => {
       props: {
         id,
         modelValue: "",
-        dataList,
+        contents,
         validations: [],
       },
     });
@@ -29,20 +29,20 @@ describe("Text Input Component", () => {
 
     const options = wrapper.findAll('option');
 
-    expect(options.length).toBe(dataList.length);
-    for (let index = 0; index < dataList.length; index++) {
-      expect(options[index].attributes('value')).toBe(dataList[index].value);
+    expect(options.length).toBe(contents.length);
+    for (let index = 0; index < contents.length; index++) {
+      expect(options[index].attributes('value')).toBe(contents[index].name);
     }
 
   });
 
   it('emits the "update" event with the updated value', async () => {
 
-    const wrapper = shallowMount(AutoCompleteInputComponent, {
+    const wrapper = mount(AutoCompleteInputComponent, {
       props: {
         id,
         modelValue: "",
-        dataList,
+        contents,
         validations: [],
       },
     });
@@ -56,16 +56,16 @@ describe("Text Input Component", () => {
     expect(wrapper.emitted("update:modelValue")![0][0]).toEqual("TANGO");
 
     expect(wrapper.emitted("update:selectedValue")).toBeTruthy();
-    expect(wrapper.emitted("update:selectedValue")![0][0]).toStrictEqual(dataList[0]);
+    expect(wrapper.emitted("update:selectedValue")![0][0]).toStrictEqual(contents[0]);
   });
 
   it('emits the "error" event when there is a validation error', async () => {
 
-    const wrapper = shallowMount(AutoCompleteInputComponent, {
+    const wrapper = mount(AutoCompleteInputComponent, {
       props: {
         id,
         modelValue: "",
-        dataList,
+        contents,
         validations,
       },
     });
@@ -78,11 +78,11 @@ describe("Text Input Component", () => {
   });
 
   it('emits the "empty" event when the input field is empty', async () => {
-    const wrapper = shallowMount(AutoCompleteInputComponent, {
+    const wrapper = mount(AutoCompleteInputComponent, {
       props: {
         id,
         modelValue: "",
-        dataList,
+        contents,
         validations: [],
       },
     });

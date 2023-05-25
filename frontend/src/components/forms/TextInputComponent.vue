@@ -3,8 +3,8 @@
     :id="id"                        
     :data-id="'input-' + id"
     v-model="selectedValue"
-    @blur="validateInput"
-    @input="$emit('update:modelValue', $event.target.value)"
+    @blur="event => validateInput(selectedValue)"
+    @input="event => emitValueChange(selectedValue)"
     />
     <span v-if="error" class="error-message">{{ error }}</span>  
 </template>
@@ -20,37 +20,45 @@ const props = defineProps({
   validations: { type: Array<Function>, required: true },
 });
 
-//We initialize the error message handling for validation
-const error = ref<string | undefined>("");
-//We set it as a separated ref due to props not being updatable
-const selectedValue = ref<string>(props.modelValue);
-
 //Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: "error", value: string): void;
+  (e: "error", value: string|undefined): void;
   (e: "empty", value: boolean): void;
-  (e: "update:modelValue", value: string): void;
+  (e: "update:modelValue", value: string|undefined): void;
 }>();
 
+
+//We initialize the error message handling for validation
+const error = ref<string | undefined>("");
+
+//We watch for error changes to emit events
+watch(error, () => emit("error", error.value));
+
+//We set it as a separated ref due to props not being updatable
+const selectedValue = ref<string>(props.modelValue);
 //We set the value prop as a reference for update reason
 emit("empty", isEmpty(props.modelValue));
+//This function emits the events on update
+const emitValueChange = (newValue: string) : void =>{
+  emit("update:modelValue", newValue);
+  emit("empty", isEmpty(newValue));
+};
+//Watch for changes on the input
+watch([selectedValue],() => emitValueChange(selectedValue.value));
 
 
 //We call all the validations
-const validateInput = () => {  
+const validateInput = (newValue:string) => {  
   if (props.validations) {
     error.value = props.validations
-      .map((validation) => validation(selectedValue.value))
+      .map((validation) => validation(newValue))
       .filter((errorMessage) => {
         if (errorMessage) return true;
         return false;
       })
       .shift() ?? "";
   }
-  emit("update:modelValue", selectedValue.value);
-  emit("empty", isEmpty(selectedValue));
 };
 
-//We watch for error changes to emit events
-watch(error, () => emit("error", error.value));
+
 </script>

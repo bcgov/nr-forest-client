@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { mount, shallowMount } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import TextInputComponent from "@/components/forms/TextInputComponent.vue";
 
 describe("Text Input Component", () => {
@@ -22,7 +22,7 @@ describe("Text Input Component", () => {
 
   it('emits the "update" event with the updated value', async () => {
 
-    const wrapper = shallowMount(TextInputComponent, {
+    const wrapper = mount(TextInputComponent, {
       props: {
         id,
         modelValue: "",
@@ -41,7 +41,7 @@ describe("Text Input Component", () => {
 
   it('emits the "error" event when there is a validation error', async () => {
 
-    const wrapper = shallowMount(TextInputComponent, {
+    const wrapper = mount(TextInputComponent, {
       props: {
         id,
         modelValue: "",
@@ -59,7 +59,7 @@ describe("Text Input Component", () => {
 
 
   it('emits the "empty" event when the input field is empty', async () => {
-    const wrapper = shallowMount(TextInputComponent, {
+    const wrapper = mount(TextInputComponent, {
       props: {
         id,
         modelValue: "",
