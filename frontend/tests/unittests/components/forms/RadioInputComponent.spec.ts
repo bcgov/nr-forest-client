@@ -61,7 +61,7 @@ describe("Radio Input Component", () => {
     const event = wrapper.emitted("update:modelValue");
     expect(event).toBeTruthy();
     expect(event).toHaveLength(1);
-    expect(event[0]).toStrictEqual([{ value: 'B', text: 'Second' }]);
+    expect(event[0]).toStrictEqual(['B']);
   });
 
   it('emits the "error" then no error', async () => {
@@ -86,7 +86,7 @@ describe("Radio Input Component", () => {
 
     expect(updateEvent).toBeTruthy();
     expect(updateEvent).toHaveLength(1);
-    expect(updateEvent[0]).toStrictEqual([{ value: 'A', text: 'First' }]);
+    expect(updateEvent[0]).toStrictEqual(['A']);
 
     await wrapper.find('input[type=radio][value=B]').setValue();
     await wrapper.find('input[type=radio][value=B]').trigger('change');
@@ -95,7 +95,7 @@ describe("Radio Input Component", () => {
     expect(errorEvent[0][1]).toBeUndefined()
 
     expect(updateEvent).toHaveLength(2);
-    expect(updateEvent[1]).toStrictEqual([{ value: 'B', text: 'Second' }]);
+    expect(updateEvent[1]).toStrictEqual(['B']);
 
   });
 });

@@ -28,7 +28,7 @@ const props = defineProps({
 const emit = defineEmits<{
   (e: "error", value: string): void;
   (e: "empty", value: boolean): void;
-  (e: "update:modelValue", value: Object): void;
+  (e: "update:modelValue", value: string|undefined): void;
 }>();
 
 const selectedValue = ref({});
@@ -55,8 +55,9 @@ watch(selectedValue, () => {
     error.value = "";
   }  
   emit("update:modelValue",
-    props.modelValue.find((entry) => entry.value === selectedValue.value)
+    props.modelValue.map(entry => entry.value).find(entry => entry === selectedValue.value)
   );
+
 });
 
 //We watch for error changes to emit events

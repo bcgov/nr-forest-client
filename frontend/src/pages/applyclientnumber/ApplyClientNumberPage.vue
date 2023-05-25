@@ -31,7 +31,7 @@
                     { value: 'U',text: 'I have an unregistered sole proprietorship' },
                 ]"
                 :validations="[]"
-                @update:modelValue="formData = { ...formData, businessInformation:{ businessType: $event } }"
+                @update:modelValue="formData = { ...formData, businessInformation:{ ...formData.businessInformation,  businessType: $event } }"
             />
             
             <ValidationMessages fieldId = 'businessInformation.businessType'
