@@ -15,11 +15,10 @@ import org.springframework.validation.Validator;
 @Component
 @RequiredArgsConstructor
 public class ClientAddressDtoValidator implements Validator {
-  
+
   private final ProvinceCodeRepository provinceCodeRepository;
 
-  private static final Pattern CA_POSTAL_CODE_FORMAT =
-      Pattern.compile("[A-Z]\\d[A-Z]\\d[A-Z]\\d");
+  private static final Pattern CA_POSTAL_CODE_FORMAT = Pattern.compile("[A-Z]\\d[A-Z]\\d[A-Z]\\d");
 
   @Override
   public boolean supports(Class<?> clazz) {
@@ -57,8 +56,7 @@ public class ClientAddressDtoValidator implements Validator {
   }
 
   @SneakyThrows
-  private void validateProvince(
-      ClientAddressDto address, String country,  Errors errors) {
+  private void validateProvince(ClientAddressDto address, String country, Errors errors) {
 
     String provinceField = "province";
 
@@ -66,26 +64,20 @@ public class ClientAddressDtoValidator implements Validator {
 
     if (StringUtils.isBlank(province)) {
       if ("CA".equalsIgnoreCase(country)) {
-        errors.rejectValue(
-            provinceField,
-            "You must select a province or territory.");
-        return;  
-      }
+        errors.rejectValue(provinceField, "You must select a province or territory.");
+        return;
+      } 
       else if ("US".equalsIgnoreCase(country)) {
-        errors.rejectValue(
-            provinceField,
-            "You must select a state.");
-        return;  
-      }
+        errors.rejectValue(provinceField, "You must select a state.");
+        return;
+      } 
       else {
-        errors.rejectValue(
-            provinceField,
-            "You must select a province, territory or state.");
-        return;  
+        errors.rejectValue(provinceField, "You must select a province, territory or state.");
+        return;
       }
     }
 
-    //Validate that province is from the correct country, only if country is US or CA
+    // Validate that province is from the correct country, only if country is US or CA
     if ("US".equalsIgnoreCase(country) || "CA".equalsIgnoreCase(country)) {
       ProvinceCodeEntity provinceCodeEntity = provinceCodeRepository
           .findByCountryCodeAndProvinceCode(country, province).toFuture().get();
@@ -95,7 +87,7 @@ public class ClientAddressDtoValidator implements Validator {
         return;
       }
 
-      //Province and country are not matching
+      // Province and country are not matching
       if (!country.equalsIgnoreCase(provinceCodeEntity.getCountryCode())) {
         errors.rejectValue(provinceField, "province doesn't belong to country");
       }
@@ -107,23 +99,15 @@ public class ClientAddressDtoValidator implements Validator {
 
     if (StringUtils.isBlank(address.postalCode())) {
       if ("CA".equalsIgnoreCase(country)) {
-        errors.rejectValue(
-            postalCodeField,
-            "You must include a postal code in the format A9A9A9.");
-        return;  
-      }
+        errors.rejectValue(postalCodeField, "You must include a postal code in the format A9A9A9.");
+      } 
       else if ("US".equalsIgnoreCase(country)) {
-        errors.rejectValue(
-            postalCodeField,
-            "You must include a ZIP code in the format 00000.");
-        return;  
-      }
+        errors.rejectValue(postalCodeField, "You must include a ZIP code in the format 00000.");
+      } 
       else {
-        errors.rejectValue(
-            postalCodeField,
-            "You must include a postal code.");
-        return;  
+        errors.rejectValue(postalCodeField, "You must include a postal code.");
       }
+      return;
     }
 
     if (StringUtils.isBlank(country)) {
@@ -131,25 +115,27 @@ public class ClientAddressDtoValidator implements Validator {
     }
 
     if ("CA".equalsIgnoreCase(country)) {
-      //For CA, postal code should be up to 7 characters
+      // For CA, postal code should be up to 7 characters
       if (StringUtils.length(address.postalCode()) > 6) {
         errors.rejectValue(postalCodeField, "has more than 7 characters");
       }
-      //CA postal code format is A9A9A9
+      // CA postal code format is A9A9A9
       if (!CA_POSTAL_CODE_FORMAT.matcher(address.postalCode()).matches()) {
         errors.rejectValue(postalCodeField, "invalid Canada postal code format");
       }
-    } else if ("US".equalsIgnoreCase(country)) {
-      //For US, postal code should be digits (numbers only)
+    } 
+    else if ("US".equalsIgnoreCase(country)) {
+      // For US, postal code should be digits (numbers only)
       if (!StringUtils.isNumeric(address.postalCode())) {
         errors.rejectValue(postalCodeField, "should be numeric");
       }
-      //For US, postal code should be up to 5 digits
+      // For US, postal code should be up to 5 digits
       if (StringUtils.length(address.postalCode()) > 5) {
         errors.rejectValue(postalCodeField, "has more than 5 characters");
       }
-    } else {
-      //For other countries postal code should be up to 10 characters
+    } 
+    else {
+      // For other countries postal code should be up to 10 characters
       if (StringUtils.length(address.postalCode()) > 10) {
         errors.rejectValue(postalCodeField, "has more than 10 characters");
       }
