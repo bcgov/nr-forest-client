@@ -29,8 +29,6 @@ public class ClientLocationDtoValidator implements Validator {
 
     validateAddresses(errors, location);
     validateContacts(errors, location);
-
-
   }
 
   private void validateAddresses(Errors errors, ClientLocationDto location) {

@@ -16,27 +16,27 @@ public class ClientValidationUtils {
 
   public static void validateEmail(String email, String field, Errors errors) {
     if (StringUtils.isBlank(email)) {
-      errors.rejectValue(field, fieldIsMissingErrorMessage(field));
+      errors.rejectValue(field, "You must enter an email address");
       return;
     }
 
     if (!emailValidator.isValid(email)) {
-      errors.rejectValue(field, "Invalid format");
+      errors.rejectValue(field, "You must enter an email address in a valid format. For example: name@example.com");
     }
   }
 
   public static void validatePhoneNumber(String phoneNumber, String field, Errors errors) {
     if (StringUtils.isBlank(phoneNumber)) {
-      errors.rejectValue(field, fieldIsMissingErrorMessage(field));
+      errors.rejectValue(field, "The phone number must be a 10-digit number");
       return;
     }
 
     if (!StringUtils.isNumeric(phoneNumber)) {
-      errors.rejectValue(field, field + " has an invalid format");
+      errors.rejectValue(field, "The phone number must be a 10-digit number");
     }
 
     if (StringUtils.length(phoneNumber) != 10) {
-      errors.rejectValue(field, field + " has to be 10 digits");
+      errors.rejectValue(field, "The phone number must be 10 digits");
     }
   }
 

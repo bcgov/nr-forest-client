@@ -1,13 +1,14 @@
 package ca.bc.gov.app.validator.client;
 
 import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
-import static ca.bc.gov.app.util.ClientValidationUtils.isValidEnum;
 
 import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -45,14 +46,20 @@ public class ClientSubmitRequestValidator implements Validator {
           fieldIsMissingErrorMessage(businessInformationField));
       return;
     }
-
-    String businessType = businessInformation.businessType();
-
     errors.pushNestedPath(businessInformationField);
-    if (!isValidEnum(businessType, "businessType", BusinessTypeEnum.class, errors)) {
+    
+    String businessType = businessInformation.businessType();
+    if (StringUtils.isAllBlank(businessType)) {
+      errors.rejectValue("businessType", "You must choose an option");
       errors.popNestedPath();
       return;
     }
+    else if (!EnumUtils.isValidEnum(BusinessTypeEnum.class, businessType)) {
+      errors.rejectValue("businessType", String.format("%s has an invalid value", "Business type"));
+      errors.popNestedPath();
+      return;
+    }
+    
     errors.popNestedPath();
 
     if (BusinessTypeEnum.U.toString().equals(businessType)) {

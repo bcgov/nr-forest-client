@@ -1,18 +1,13 @@
 package ca.bc.gov.app.validator.client;
 
-import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
-
 import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.entity.client.ProvinceCodeEntity;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
-import java.util.List;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -20,8 +15,7 @@ import org.springframework.validation.Validator;
 @Component
 @RequiredArgsConstructor
 public class ClientAddressDtoValidator implements Validator {
-  private final ClientContactDtoValidator contactDtoValidator;
-
+  
   private final ProvinceCodeRepository provinceCodeRepository;
 
   private static final Pattern CA_POSTAL_CODE_FORMAT =
@@ -36,10 +30,10 @@ public class ClientAddressDtoValidator implements Validator {
   public void validate(Object target, Errors errors) {
 
     ValidationUtils.rejectIfEmptyOrWhitespace(errors, "streetAddress",
-        fieldIsMissingErrorMessage("streetAddress"));
+        "You must enter a street address or PO box number");
 
     ValidationUtils.rejectIfEmptyOrWhitespace(errors, "city",
-        fieldIsMissingErrorMessage("city"));
+        "You must enter the name of a city or town.");
 
     ClientAddressDto address = (ClientAddressDto) target;
 
@@ -48,8 +42,6 @@ public class ClientAddressDtoValidator implements Validator {
     validatePostalCode(address, country, errors);
 
     validateProvince(address, country, errors);
-
-    /*validateContacts(address.contacts(), errors);*/
   }
 
   private String validateCountry(ClientAddressDto address, Errors errors) {
@@ -57,7 +49,7 @@ public class ClientAddressDtoValidator implements Validator {
 
     if (StringUtils.isBlank(country)) {
       String countryField = "country";
-      errors.rejectValue(countryField, fieldIsMissingErrorMessage(countryField));
+      errors.rejectValue(countryField, "You must select a country from the list.");
       return StringUtils.EMPTY;
     }
 
@@ -73,10 +65,24 @@ public class ClientAddressDtoValidator implements Validator {
     String province = address.province().value();
 
     if (StringUtils.isBlank(province)) {
-      errors.rejectValue(
-          provinceField,
-          fieldIsMissingErrorMessage(provinceField));
-      return;
+      if ("CA".equalsIgnoreCase(country)) {
+        errors.rejectValue(
+            provinceField,
+            "You must select a province or territory.");
+        return;  
+      }
+      else if ("US".equalsIgnoreCase(country)) {
+        errors.rejectValue(
+            provinceField,
+            "You must select a state.");
+        return;  
+      }
+      else {
+        errors.rejectValue(
+            provinceField,
+            "You must select a province, territory or state.");
+        return;  
+      }
     }
 
     //Validate that province is from the correct country, only if country is US or CA
@@ -100,8 +106,24 @@ public class ClientAddressDtoValidator implements Validator {
     String postalCodeField = "postalCode";
 
     if (StringUtils.isBlank(address.postalCode())) {
-      errors.rejectValue(postalCodeField, fieldIsMissingErrorMessage(postalCodeField));
-      return;
+      if ("CA".equalsIgnoreCase(country)) {
+        errors.rejectValue(
+            postalCodeField,
+            "You must include a postal code in the format A9A9A9.");
+        return;  
+      }
+      else if ("US".equalsIgnoreCase(country)) {
+        errors.rejectValue(
+            postalCodeField,
+            "You must include a ZIP code in the format 00000.");
+        return;  
+      }
+      else {
+        errors.rejectValue(
+            postalCodeField,
+            "You must include a postal code.");
+        return;  
+      }
     }
 
     if (StringUtils.isBlank(country)) {
@@ -134,20 +156,4 @@ public class ClientAddressDtoValidator implements Validator {
     }
   }
 
-  private void validateContacts(List<ClientContactDto> contacts, Errors errors) {
-    if (CollectionUtils.isEmpty(contacts)) {
-      errors.rejectValue("contacts", fieldIsMissingErrorMessage("contacts"));
-      return;
-    }
-
-    for (int i = 0; i < contacts.size(); ++i) {
-      try {
-        errors.pushNestedPath("contacts[" + i + "]");
-        ValidationUtils
-            .invokeValidator(contactDtoValidator, contacts.get(i), errors);
-      } finally {
-        errors.popNestedPath();
-      }
-    }
-  }
 }
