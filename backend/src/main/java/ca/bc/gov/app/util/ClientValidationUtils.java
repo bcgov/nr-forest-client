@@ -21,8 +21,8 @@ public class ClientValidationUtils {
     }
 
     if (!emailValidator.isValid(email)) {
-      errors.rejectValue(field, "You must enter an email address in a valid format. " + 
-                                "For example: name@example.com");
+      errors.rejectValue(field, "You must enter an email address in a valid format. " 
+                                + "For example: name@example.com");
     }
   }
 

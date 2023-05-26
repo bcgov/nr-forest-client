@@ -96,8 +96,18 @@ public class ClientAddressDtoValidator implements Validator {
 
   private void validatePostalCode(ClientAddressDto address, String country, Errors errors) {
     String postalCodeField = "postalCode";
+    
+    if (StringUtils.isBlank(country)) {
+      return;
+    }
+    
+    handleBlankPostalCode(address.postalCode(), country, postalCodeField, errors);
 
-    if (StringUtils.isBlank(address.postalCode())) {
+    handlePostalCodeLengthAndFormat(address.postalCode(), country, postalCodeField, errors);
+  }
+
+  private void handleBlankPostalCode(String postalCode, String country, String postalCodeField, Errors errors) {
+    if (StringUtils.isBlank(postalCode)) {
       if ("CA".equalsIgnoreCase(country)) {
         errors.rejectValue(postalCodeField, "You must include a postal code in the format A9A9A9.");
       } 
@@ -107,36 +117,34 @@ public class ClientAddressDtoValidator implements Validator {
       else {
         errors.rejectValue(postalCodeField, "You must include a postal code.");
       }
-      return;
     }
-
-    if (StringUtils.isBlank(country)) {
-      return;
-    }
-
+  }
+  
+  private void handlePostalCodeLengthAndFormat(String postalCode, String country,
+      String postalCodeField, Errors errors) {
     if ("CA".equalsIgnoreCase(country)) {
       // For CA, postal code should be up to 7 characters
-      if (StringUtils.length(address.postalCode()) > 6) {
+      if (StringUtils.length(postalCode) > 6) {
         errors.rejectValue(postalCodeField, "has more than 7 characters");
       }
       // CA postal code format is A9A9A9
-      if (!CA_POSTAL_CODE_FORMAT.matcher(address.postalCode()).matches()) {
+      if (!CA_POSTAL_CODE_FORMAT.matcher(postalCode).matches()) {
         errors.rejectValue(postalCodeField, "invalid Canada postal code format");
       }
     } 
     else if ("US".equalsIgnoreCase(country)) {
       // For US, postal code should be digits (numbers only)
-      if (!StringUtils.isNumeric(address.postalCode())) {
+      if (!StringUtils.isNumeric(postalCode)) {
         errors.rejectValue(postalCodeField, "should be numeric");
       }
       // For US, postal code should be up to 5 digits
-      if (StringUtils.length(address.postalCode()) > 5) {
+      if (StringUtils.length(postalCode) > 5) {
         errors.rejectValue(postalCodeField, "has more than 5 characters");
       }
     } 
     else {
       // For other countries postal code should be up to 10 characters
-      if (StringUtils.length(address.postalCode()) > 10) {
+      if (StringUtils.length(postalCode) > 10) {
         errors.rejectValue(postalCodeField, "has more than 10 characters");
       }
     }
