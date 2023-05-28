@@ -1,0 +1,24 @@
+<testExecutions version="1">
+  <file path="tests/unittests/MainHeader.spec.ts">
+    <testCase name="MainHeader - component defined" duration="18" />
+    <testCase name="MainHeader - renders find expected text successfully" duration="3" />
+  </file>
+  <file path="tests/unittests/components/forms/AutoCompleteInputComponent.spec.ts">
+    <testCase name="Text Input Component - renders the input field with the provided id" duration="37" />
+    <testCase name="Text Input Component - emits the &quot;update&quot; event with the updated value" duration="7" />
+    <testCase name="Text Input Component - emits the &quot;error&quot; event when there is a validation error" duration="4" />
+    <testCase name="Text Input Component - emits the &quot;empty&quot; event when the input field is empty" duration="3" />
+  </file>
+  <file path="tests/unittests/components/forms/RadioInputComponent.spec.ts">
+    <testCase name="Radio Input Component - renders the input field with the provided id" duration="44" />
+    <testCase name="Radio Input Component - emits the &quot;error&quot; event when there is a validation error" duration="20" />
+    <testCase name="Radio Input Component - emits the &quot;update&quot; event when selected" duration="11" />
+    <testCase name="Radio Input Component - emits the &quot;error&quot; then no error" duration="14" />
+  </file>
+  <file path="tests/unittests/components/forms/TextInputComponent.spec.ts">
+    <testCase name="Text Input Component - renders the input field with the provided id" duration="37" />
+    <testCase name="Text Input Component - emits the &quot;update&quot; event with the updated value" duration="12" />
+    <testCase name="Text Input Component - emits the &quot;error&quot; event when there is a validation error" duration="7" />
+    <testCase name="Text Input Component - emits the &quot;empty&quot; event when the input field is empty" duration="3" />
+  </file>
+</testExecutions>

@@ -1,0 +1,205 @@
+{
+  "numTotalTestSuites": 8,
+  "numPassedTestSuites": 8,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 14,
+  "numPassedTests": 14,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "startTime": 1684967620507,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "",
+            "MainHeader"
+          ],
+          "fullName": " MainHeader component defined",
+          "status": "passed",
+          "title": "component defined",
+          "duration": 18,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": [
+            "",
+            "MainHeader"
+          ],
+          "fullName": " MainHeader renders find expected text successfully",
+          "status": "passed",
+          "title": "renders find expected text successfully",
+          "duration": 3,
+          "failureMessages": []
+        }
+      ],
+      "startTime": 1684967621775,
+      "endTime": 1684967621796,
+      "status": "passed",
+      "message": "",
+      "name": "/home/derek/Repos/nr-forest-client/frontend/tests/unittests/MainHeader.spec.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "",
+            "Text Input Component"
+          ],
+          "fullName": " Text Input Component renders the input field with the provided id",
+          "status": "passed",
+          "title": "renders the input field with the provided id",
+          "duration": 37,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": [
+            "",
+            "Text Input Component"
+          ],
+          "fullName": " Text Input Component emits the \"update\" event with the updated value",
+          "status": "passed",
+          "title": "emits the \"update\" event with the updated value",
+          "duration": 7,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": [
+            "",
+            "Text Input Component"
+          ],
+          "fullName": " Text Input Component emits the \"error\" event when there is a validation error",
+          "status": "passed",
+          "title": "emits the \"error\" event when there is a validation error",
+          "duration": 4,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": [
+            "",
+            "Text Input Component"
+          ],
+          "fullName": " Text Input Component emits the \"empty\" event when the input field is empty",
+          "status": "passed",
+          "title": "emits the \"empty\" event when the input field is empty",
+          "duration": 3,
+          "failureMessages": []
+        }
+      ],
+      "startTime": 1684967621717,
+      "endTime": 1684967621768,
+      "status": "passed",
+      "message": "",
+      "name": "/home/derek/Repos/nr-forest-client/frontend/tests/unittests/components/forms/AutoCompleteInputComponent.spec.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "",
+            "Radio Input Component"
+          ],
+          "fullName": " Radio Input Component renders the input field with the provided id",
+          "status": "passed",
+          "title": "renders the input field with the provided id",
+          "duration": 44,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": [
+            "",
+            "Radio Input Component"
+          ],
+          "fullName": " Radio Input Component emits the \"error\" event when there is a validation error",
+          "status": "passed",
+          "title": "emits the \"error\" event when there is a validation error",
+          "duration": 20,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": [
+            "",
+            "Radio Input Component"
+          ],
+          "fullName": " Radio Input Component emits the \"update\" event when selected",
+          "status": "passed",
+          "title": "emits the \"update\" event when selected",
+          "duration": 11,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": [
+            "",
+            "Radio Input Component"
+          ],
+          "fullName": " Radio Input Component emits the \"error\" then no error",
+          "status": "passed",
+          "title": "emits the \"error\" then no error",
+          "duration": 14,
+          "failureMessages": []
+        }
+      ],
+      "startTime": 1684967621762,
+      "endTime": 1684967621851,
+      "status": "passed",
+      "message": "",
+      "name": "/home/derek/Repos/nr-forest-client/frontend/tests/unittests/components/forms/RadioInputComponent.spec.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "",
+            "Text Input Component"
+          ],
+          "fullName": " Text Input Component renders the input field with the provided id",
+          "status": "passed",
+          "title": "renders the input field with the provided id",
+          "duration": 37,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": [
+            "",
+            "Text Input Component"
+          ],
+          "fullName": " Text Input Component emits the \"update\" event with the updated value",
+          "status": "passed",
+          "title": "emits the \"update\" event with the updated value",
+          "duration": 12,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": [
+            "",
+            "Text Input Component"
+          ],
+          "fullName": " Text Input Component emits the \"error\" event when there is a validation error",
+          "status": "passed",
+          "title": "emits the \"error\" event when there is a validation error",
+          "duration": 7,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": [
+            "",
+            "Text Input Component"
+          ],
+          "fullName": " Text Input Component emits the \"empty\" event when the input field is empty",
+          "status": "passed",
+          "title": "emits the \"empty\" event when the input field is empty",
+          "duration": 3,
+          "failureMessages": []
+        }
+      ],
+      "startTime": 1684967621772,
+      "endTime": 1684967621831,
+      "status": "passed",
+      "message": "",
+      "name": "/home/derek/Repos/nr-forest-client/frontend/tests/unittests/components/forms/TextInputComponent.spec.ts"
+    }
+  ]
+}
