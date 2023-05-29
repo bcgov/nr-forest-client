@@ -68,6 +68,7 @@ jobs:
 
   pr-greeting:
     name: PR Greeting
+    if: github.event.action == 'opened' || github.event.action == 'reopened'
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
       PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
