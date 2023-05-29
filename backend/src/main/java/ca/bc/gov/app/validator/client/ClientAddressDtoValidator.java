@@ -106,7 +106,8 @@ public class ClientAddressDtoValidator implements Validator {
     handlePostalCodeLengthAndFormat(address.postalCode(), country, postalCodeField, errors);
   }
 
-  private void handleBlankPostalCode(String postalCode, String country, String postalCodeField, Errors errors) {
+  private void handleBlankPostalCode(String postalCode, String country, String postalCodeField,
+      Errors errors) {
     if (StringUtils.isBlank(postalCode)) {
       if ("CA".equalsIgnoreCase(country)) {
         errors.rejectValue(postalCodeField, "You must include a postal code in the format A9A9A9.");
