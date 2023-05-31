@@ -5,10 +5,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import ca.bc.gov.app.dto.client.ClientTypeEnum;
 import ca.bc.gov.app.dto.client.LegalTypeEnum;
 import java.util.stream.Stream;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.validation.Errors;
+import org.springframework.validation.MapBindingResult;
 
 @DisplayName("Unit Test | Client Validation")
 class ClientValidationUtilsTest {
@@ -48,6 +53,30 @@ class ClientValidationUtilsTest {
             Arguments.of(LegalTypeEnum.XP,ClientTypeEnum.L),
             Arguments.of(null,null)
         );
+  }
+  
+  @Test
+  void testValidatePhoneNumber() {
+    String phoneNumber = "1234567890";
+    String field = "phoneNumber";
+    Map<String, Object> target = new HashMap<>();
+    Errors errors = new MapBindingResult(target, "");
+
+    ClientValidationUtils.validatePhoneNumber(phoneNumber, field, errors);
+
+    assertEquals(0, errors.getErrorCount());
+  }
+
+  @Test
+  void testValidateEmail() {
+    String email = "test@example.com";
+    String field = "email";
+    Map<String, Object> target = new HashMap<>();
+    Errors errors = new MapBindingResult(target, "objectName");
+
+    ClientValidationUtils.validateEmail(email, field, errors);
+
+    assertEquals(0, errors.getErrorCount());
   }
 
 }
