@@ -1,27 +1,22 @@
-userId,businessInformationNull,incorporationNumber,businessName,clientType,businessType,legalType,goodStanding,locationNull,addressNull,addressEmpty,streetAddress,country,province,city,postalCode,contactsNull,contactsEmpty,contactType,contactFirstName,contactLastName,contactPhoneNumber,contactEmail,
-,TRUE,1234,Auric Enterprises,A,R,GP,Y,TRUE,TRUE,TRUE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,TRUE,TRUE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,TRUE,1234,Auric Enterprises,C,R,GP,Y,TRUE,TRUE,TRUE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,TRUE,TRUE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,TRUE,1234,Auric Enterprises,C,R,GP,Y,TRUE,TRUE,TRUE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,TRUE,TRUE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,TRUE,TRUE,TRUE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,TRUE,TRUE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,TRUE,TRUE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,TRUE,TRUE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,TRUE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,TRUE,TRUE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,TRUE,TRUE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,FALSE,TRUE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,FALSE,FALSE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 Vancouver Street,CA,BC,Vancouver,A9A9A99,FALSE,FALSE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vegas,A89109,FALSE,FALSE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vegas,289109,FALSE,FALSE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 Av Paulista,BR,SP,Sao Paul,1234567891,FALSE,FALSE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 Vancouver Street,CA,AA,Vancouver,A9A9A9,FALSE,FALSE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,BC,Las Vegas,89109,FALSE,FALSE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,FALSE,FALSE,LP,James,Bond,987654321,bond_james_bond@.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,
-userIdTest,FALSE,1234,Auric Enterprises,ABC,DEF,GHI,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,U,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vega,89109,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,FALSE
-userIdTest,FALSE,1234,,A,U,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vega,89109,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,
-,FALSE,,,,,,,FALSE,FALSE,FALSE,,,,,,FALSE,FALSE,,,,,,FALSE
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,,Las Vegas,AAA,FALSE,FALSE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,CA,,Las Vegas,89109,FALSE,FALSE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,ZZ,,Las Vegas,89109,FALSE,FALSE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,,Las Vegas,,FALSE,FALSE,LP,James,Bond,987654321,bond_james_bond@007.com,
-userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,CA,,Las Vegas,,FALSE,FALSE,LP,James,Bond,987654321,bond_james_bond@007.com,
+userId,businessInformationNull,incorporationNumber,businessName,clientType,businessType,legalType,goodStanding,locationNull,addressNull,addressEmpty,streetAddress,country,province,city,postalCode,contactsNull,contactsEmpty,contactType,contactFirstName,contactLastName,contactPhoneNumber,contactEmail
+,true,1234,Auric Enterprises,A,R,GP,Y,true,true,true,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,true,true,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,true,1234,Auric Enterprises,C,R,GP,Y,true,true,true,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,true,true,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,true,1234,Auric Enterprises,C,R,GP,Y,true,true,true,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,true,true,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,true,true,true,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,true,true,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,true,true,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,true,true,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,true,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,true,true,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,true,true,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,false,true,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,false,false,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 Vancouver Street,CA,BC,Vancouver,A9A9A99,false,false,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vegas,A89109,false,false,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vegas,289109,false,false,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 Av Paulista,BR,SP,Sao Paul,01234567891,false,false,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 Vancouver Street,CA,AA,Vancouver,A9A9A9,false,false,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,BC,Las Vegas,89109,false,false,LP,James,Bond,987654321,bond_james_bond@007.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,false,false,LP,James,Bond,987654321,bond_james_bond@.com
+userIdTest,false,1234,Auric Enterprises,A,R,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,false,false,LP,James,Bond,98765432101,bond_james_bond@.com
+userIdTest,false,1234,Auric Enterprises,ABC,DEF,GHI,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,false,false,LP,James,Bond,98765432101,bond_james_bond@.com
+userIdTest,false,1234,Auric Enterprises,A,U,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vega,89109,false,false,LP,James,Bond,98765432101,bond_james_bond@.com,false
+userIdTest,false,1234,,A,U,GP,Y,false,false,false,3570 S Las Vegas Blvd,US,NV,Las Vega,89109,false,false,LP,James,Bond,98765432101,bond_james_bond@.com
+,false,,,,,,,false,false,false,,,,,,false,false,,,,,,false,,,,
