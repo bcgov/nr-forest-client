@@ -22,11 +22,11 @@ class ClientValidationUtilsTest {
   @MethodSource("getClientType")
   @DisplayName("getClientType and it's values")
   void shouldGetClientType(LegalTypeEnum legal, ClientTypeEnum client) {
-    if(client != null){
+    if (client != null) {
       ClientTypeEnum clientResult = ClientValidationUtils.getClientType(legal);
       assertNotNull(clientResult);
       assertEquals(client, clientResult);
-    }else{
+    } else {
       assertNull(ClientValidationUtils.getClientType(legal));
     }
   }
