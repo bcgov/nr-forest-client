@@ -1,5 +1,5 @@
 import { createApp } from "vue";
-import VueTheMask from 'vue-the-mask';
+import VueTheMask from "vue-the-mask";
 import App from "./App.vue";
 import VueKeycloakJs from "@dsb-norge/vue-keycloak-js";
 import type { KeycloakInstance } from "keycloak-js";
@@ -9,6 +9,11 @@ import { keycloakUrl, keycloakClientId, nodeEnv } from "./core/CoreConstants";
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue-3/dist/bootstrap-vue-3.css";
+
+//Import Carbon WebComponents
+import "@carbon/web-components/es";
+import "carbon-components/css/carbon-components.min.css";
+import "@/assets/theme/components-overrides.scss";
 
 const app = createApp(App);
 app.use(VueTheMask);

@@ -14,7 +14,13 @@ export default defineConfig(({ command, mode }) => {
 
   return {
     plugins: [
-      vue(),
+      vue({
+        template: {
+          compilerOptions: {
+            isCustomElement: (tag) => tag.includes("bx-"),
+          },
+        },
+      }),
       Components({
         resolvers: [BootstrapVue3Resolver(), IconsResolver()],
       }),
@@ -32,10 +38,10 @@ export default defineConfig(({ command, mode }) => {
       globals: true,
       reporters: ["verbose"],
       coverage: {
-        provider: 'c8',
-        reporter: ['text', 'json', 'lcov']
+        provider: "c8",
+        reporter: ["text", "json", "lcov"],
       },
-      environment: "jsdom"
-    }
+      environment: "jsdom",
+    },
   };
 });

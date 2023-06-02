@@ -1,42 +1,50 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 
 import { mount } from "@vue/test-utils";
-import RadioInputComponent from '@/components/forms/RadioInputComponent.vue';
+import RadioInputComponent from "@/components/forms/RadioInputComponent.vue";
 
 describe("Radio Input Component", () => {
-
   const id = "my-input";
   const values = [
-    { value: 'A', text: 'First' }, { value: 'B', text: 'Second' }
+    { value: "A", text: "First" },
+    { value: "B", text: "Second" },
   ];
-  const validations = [(value: any) => (value && value === 'A' ? "Can't select A" : "")];
+  const validations = [
+    (value: any) => (value && value === "A" ? "Can't select A" : ""),
+  ];
 
   it("renders the input field with the provided id", () => {
-
     const wrapper = mount(RadioInputComponent, {
       props: {
         id,
+        label: "Options",
         modelValue: values,
         validations: [],
       },
     });
 
-    expect(wrapper.find(`#${id}_A`).exists()).toBe(true);
-    expect(wrapper.find(`#${id}_B`).exists()).toBe(true);
+    for (let value of values) {
+      expect(wrapper.html()).toContain(
+        `<bx-radio-button label-text="${value.text}" value="${value.value}"></bx-radio-button>`
+      );
+    }
   });
 
   it('emits the "error" event when there is a validation error', async () => {
-
     const wrapper = mount(RadioInputComponent, {
       props: {
         id,
+        label: "Options",
         modelValue: values,
         validations,
       },
     });
 
-    await wrapper.find('input[type=radio][value=A]').setValue();
-    await wrapper.find('input[type=radio][value=A]').trigger('change');
+    await wrapper
+      .findComponent(`[name=${id}rb]`)
+      .trigger("bx-radio-button-group-changed", {
+        detail: { value: "A" },
+      });
 
     const event = wrapper.emitted("error");
 
@@ -46,39 +54,45 @@ describe("Radio Input Component", () => {
   });
 
   it('emits the "update" event when selected', async () => {
-
     const wrapper = mount(RadioInputComponent, {
       props: {
         id,
+        label: "Options",
         modelValue: values,
         validations,
       },
     });
 
-    await wrapper.find('input[type=radio][value=B]').setValue();
-    await wrapper.find('input[type=radio][value=B]').trigger('change');
+    await wrapper
+      .findComponent(`[name=${id}rb]`)
+      .trigger("bx-radio-button-group-changed", {
+        detail: { value: "B" },
+      });
 
-    const event = wrapper.emitted("update:modelValue");
+    const event = wrapper.emitted("update:model-value");
     expect(event).toBeTruthy();
     expect(event).toHaveLength(1);
-    expect(event[0]).toStrictEqual(['B']);
+    expect(event[0]).toStrictEqual(["B"]);
   });
 
   it('emits the "error" then no error', async () => {
-
     const wrapper = mount(RadioInputComponent, {
       props: {
         id,
+        label: "Options",
         modelValue: values,
         validations,
       },
     });
 
-    await wrapper.find('input[type=radio][value=A]').setValue();
-    await wrapper.find('input[type=radio][value=A]').trigger('change');
+    await wrapper
+      .findComponent(`[name=${id}rb]`)
+      .trigger("bx-radio-button-group-changed", {
+        detail: { value: "A" },
+      });
 
     const errorEvent = wrapper.emitted("error");
-    const updateEvent = wrapper.emitted("update:modelValue");
+    const updateEvent = wrapper.emitted("update:model-value");
 
     expect(errorEvent).toBeTruthy();
     expect(errorEvent).toHaveLength(1);
@@ -86,16 +100,18 @@ describe("Radio Input Component", () => {
 
     expect(updateEvent).toBeTruthy();
     expect(updateEvent).toHaveLength(1);
-    expect(updateEvent[0]).toStrictEqual(['A']);
+    expect(updateEvent[0]).toStrictEqual(["A"]);
 
-    await wrapper.find('input[type=radio][value=B]').setValue();
-    await wrapper.find('input[type=radio][value=B]').trigger('change');
+    await wrapper
+      .findComponent(`[name=${id}rb]`)
+      .trigger("bx-radio-button-group-changed", {
+        detail: { value: "B" },
+      });
 
     expect(errorEvent).toHaveLength(2);
-    expect(errorEvent[0][1]).toBeUndefined()
+    expect(errorEvent[0][1]).toBeUndefined();
 
     expect(updateEvent).toHaveLength(2);
-    expect(updateEvent[1]).toStrictEqual(['B']);
-
+    expect(updateEvent[1]).toStrictEqual(["B"]);
   });
 });

@@ -1,10 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 
 import { mount } from "@vue/test-utils";
 import AutoCompleteInputComponent from "@/components/forms/AutoCompleteInputComponent.vue";
+import { wrap } from "module";
 
-describe("Text Input Component", () => {
+//TODO: Implement later the click functionality
 
+describe("Auto Complete Input Component", () => {
   const id = "my-input";
   const validations = [(value: any) => (value ? "" : "Field is required")];
   const contents = [
@@ -21,52 +23,49 @@ describe("Text Input Component", () => {
         modelValue: "",
         contents,
         validations: [],
+        label: id,
       },
     });
 
     expect(wrapper.find(`#${id}`).exists()).toBe(true);
-    expect(wrapper.find('datalist').exists()).toBe(true);
+    expect(wrapper.find(`#${id}list`).exists()).toBe(true);
 
-    const options = wrapper.findAll('option');
+    const options = wrapper.findAll(".autocomplete-items-cell");
 
     expect(options.length).toBe(contents.length);
     for (let index = 0; index < contents.length; index++) {
-      expect(options[index].attributes('value')).toBe(contents[index].name);
+      expect(options[index].text()).toContain(contents[index].name);
     }
-
   });
 
   it('emits the "update" event with the updated value', async () => {
-
     const wrapper = mount(AutoCompleteInputComponent, {
       props: {
         id,
         modelValue: "",
         contents,
         validations: [],
+        label: id,
+        tip: "",
       },
     });
 
-    wrapper.find(`#${id}`).setValue("TANGO");
-
+    await wrapper.setProps({ modelValue: "TANGO" });
     await wrapper.find(`#${id}`).trigger("blur");
     await wrapper.find(`#${id}`).trigger("input");
 
-    expect(wrapper.emitted("update:modelValue")).toBeTruthy();
-    expect(wrapper.emitted("update:modelValue")![0][0]).toEqual("TANGO");
-
-    expect(wrapper.emitted("update:selectedValue")).toBeTruthy();
-    expect(wrapper.emitted("update:selectedValue")![0][0]).toStrictEqual(contents[0]);
+    expect(wrapper.emitted("update:model-value")).toBeTruthy();
+    expect(wrapper.emitted("update:model-value")![0][0]).toEqual("TANGO");
   });
 
   it('emits the "error" event when there is a validation error', async () => {
-
     const wrapper = mount(AutoCompleteInputComponent, {
       props: {
         id,
         modelValue: "",
         contents,
         validations,
+        label: id,
       },
     });
 
@@ -84,6 +83,7 @@ describe("Text Input Component", () => {
         modelValue: "",
         contents,
         validations: [],
+        label: id,
       },
     });
 
@@ -93,5 +93,4 @@ describe("Text Input Component", () => {
     expect(wrapper.emitted("empty")).toBeTruthy();
     expect(wrapper.emitted("empty")![0][0]).toBe(true);
   });
-
 });

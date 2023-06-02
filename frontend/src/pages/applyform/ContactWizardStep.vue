@@ -1,0 +1,128 @@
+<template>
+  <h4>Contacts</h4>
+  <br />
+  <h5>Add authorized people to the account</h5>
+  <Note
+    note="Your first name, last name and email address are from your BCeID. If they're incorrect, go to BCeID to update them"
+  />
+  <Note
+    note="before submitting your form. Be sure to add your phone number, location and role."
+  />
+  <br /><br />
+  <Note
+    note="To add another contact to the account, select '+ Add another contact' button below."
+  />
+  <br /><br /><br />
+
+  <contact-group-component
+    :id="0"
+    v-model="formData.location.contacts[0]"
+    :roleList="roleList"
+    :addressList="addresses"
+    :validations="[]"
+    :enabled="false"
+    @update:model-value="updateContact($event, 0)"
+    @valid="updateValidState(0, $event)"
+  />
+
+  <br /><br />
+
+  <div v-show="otherContacts.length > 0">
+    <h5>Additional address</h5>
+    <br />
+    <Note note="Provide a name to identify your additional address" />
+    <br /><br /><br />
+  </div>
+
+  <contact-group-component
+    v-for="(contact, index) in otherContacts"
+    :key="index + 1"
+    :id="index + 1"
+    v-bind:modelValue="contact"
+    :roleList="roleList"
+    :addressList="addresses"
+    :validations="[]"
+    :enabled="true"
+    @update:model-value="updateContact($event, index + 1)"
+    @valid="updateValidState(index + 1, $event)"
+  />
+
+  <div v-show="otherContacts.length > 0"><br /><br /><br /></div>
+
+  <bx-btn kind="tertiary" icon-layout="regular" @click="addContact"
+    >Add another contact +</bx-btn
+  >
+</template>
+
+<script setup lang="ts">
+import { watch, ref, computed, reactive } from "vue";
+
+import {
+  type FormDataDto,
+  type Contact,
+  emptyContact,
+} from "@/dto/ApplyClientNumberDto";
+import { useFetchTo } from "@/services/ForestClientService";
+
+import type { CodeNameType } from "@/core/CommonTypes";
+
+import Note from "@/common/NoteComponent.vue";
+
+//Defining the props and emiter to reveice the data and emit an update
+const props = defineProps<{ data: FormDataDto; active: boolean }>();
+
+const emit = defineEmits<{
+  (e: "update:data", value: FormDataDto): void;
+  (e: "valid", value: boolean): void;
+}>();
+
+//Set the prop as a ref, and then emit when it changes
+const formData = reactive<FormDataDto>(props.data);
+watch([formData], () => emit("update:data", formData));
+
+const updateContact = (value: Contact | undefined, index: number) => {
+  if (value && index < formData.location.contacts.length)
+    formData.location.contacts[index] = value;
+};
+
+//Role related data
+const roleList = ref([]);
+const fetch = () => {
+  if (props.active)
+    useFetchTo("/api/clients/activeContactTypeCodes?page=0&size=250", roleList);
+};
+
+watch(() => props.active, fetch);
+fetch();
+
+//Addresses Related data
+const addresses = computed<CodeNameType[]>(() =>
+  formData.location.addresses.map((address, index) => {
+    return { code: index + "", name: address.locationName } as CodeNameType;
+  })
+);
+
+//New contact being added
+const otherContacts = computed(() => formData.location.contacts.slice(1));
+const addContact = () =>
+  formData.location.contacts.push(JSON.parse(JSON.stringify(emptyContact)));
+
+//Validation
+const validation = reactive<Record<string, boolean>>({
+  0: false,
+});
+
+const checkValid = () =>
+  Object.values(validation).reduce(
+    (accumulator: boolean, currentValue: boolean) =>
+      accumulator && currentValue,
+    true
+  );
+
+watch([validation], () => emit("valid", checkValid()));
+emit("valid", false);
+
+const updateValidState = (index: number, valid: boolean) => {
+  validation[index] = valid;
+};
+</script>

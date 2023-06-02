@@ -7,10 +7,8 @@
       },
       "response": {
         "status": 200,
-        "body": "[{\"code\": \"XX0000000\",\"name\": \"{{request.path.[3]}}\",\"status\": \"ACTIVE\",\"legalType\": \"SP\"},{\"code\": \"XX0000001\",\"name\": \"{{request.path.[3]}} SECOND\",\"status\": \"ACTIVE\",\"legalType\": \"SP\"}]",
-        "transformers": [
-          "response-template"
-        ]
+        "bodyFileName": "response-autocomplete.json",
+        "transformers": ["response-template"]
       }
     },
     {
@@ -21,9 +19,7 @@
       "response": {
         "status": 200,
         "body": "{\"name\":\"SAMPLE DATA\",\"id\":\"{{request.path.[2]}}\",\"goodStanding\":true,\"addresses\":[{\"streetAddress\":\"123 Fake DR\",\"country\":{\"value\":\"CA\",\"text\":\"Canada\"},\"province\":{\"value\":\"BC\",\"text\":\"British Columbia\"},\"city\":\"Fakest City\",\"postalCode\":\"AAA000\",\"index\":0,\"locationName\":\"Mailing Address\"}],\"contacts\":[{\"contactType\":{\"value\":\"P\",\"text\":\"Person\"},\"firstName\":\"Jhon\",\"lastName\":\"Wick\",\"phoneNumber\":\"0000000000\",\"email\":\"babayaga@theguild.ca\",\"index\":0,\"locations\":[{\"value\":\"0\",\"text\":\"Mailing Address\"}]}]}",
-        "transformers": [
-          "response-template"
-        ]
+        "transformers": ["response-template"]
       }
     },
 
@@ -34,7 +30,7 @@
       },
       "response": {
         "status": 200,
-        "body": "[{\"code\":\"CA\",\"name\":\"Canada\"}]"
+        "bodyFileName": "response-countries.json"
       }
     },
     {
@@ -49,12 +45,13 @@
     },
     {
       "request": {
-        "url": "/api/clients/activeCountryCodes/CA?page=0&size=250",
+        "urlPattern": "/api/clients/activeCountryCodes/(.*)?page=0&size=250",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "body": "[{\"code\":\"BC\",\"name\":\"British Columbia\"}]"
+        "transformers": ["response-template"],
+        "bodyFileName": "response-provinces-{{request.path.[3]}}.json"
       }
     }
   ]

@@ -2,17 +2,17 @@ import type { CodeDescrType } from "@/core/CommonTypes";
 
 export interface FormDataDto {
   businessInformation: {
-    businessType: string,
-    legalType: string,
+    businessType: string;
+    legalType: string;
     clientType: string;
     incorporationNumber: string;
-    businessName: null | string;
+    businessName: string;
     goodStandingInd: string;
-  },
+  };
   location: {
     addresses: Address[];
     contacts: Contact[];
-  },
+  };
 }
 
 export interface Address {
@@ -43,7 +43,34 @@ export const formDataDto: FormDataDto = {
     goodStandingInd: "",
   },
   location: {
-    addresses: [],
+    addresses: [
+      {
+        locationName: "Mailing Address",
+        streetAddress: "",
+        country: { value: "CA", text: "Canada" },
+        province: { value: "BC", text: "British Columbia" },
+        city: "",
+        postalCode: "",
+      },
+    ],
     contacts: [],
-  }
+  },
+};
+
+export const emptyAddress: Address = {
+  locationName: "",
+  streetAddress: "",
+  country: { value: "CA", text: "Canada" },
+  province: { value: "BC", text: "British Columbia" },
+  city: "",
+  postalCode: "",
+};
+
+export const emptyContact: Contact = {
+  locationNames: [],
+  contactType: { value: "", text: "" },
+  firstName: "",
+  lastName: "",
+  phoneNumber: "",
+  email: "",
 };

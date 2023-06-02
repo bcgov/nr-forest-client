@@ -1,0 +1,92 @@
+[
+  {
+    "code": "XX9016140",
+    "name": "Abercrombie & Fitch Company",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX9753423",
+    "name": "Vanguard Global ex-U.S. Real Estate ETF",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX7944564",
+    "name": "Attunity Ltd.",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX5057462",
+    "name": "Templeton Global Income Fund, Inc.",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX4127933",
+    "name": "ICF International, Inc.",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX2819468",
+    "name": "AU Optronics Corp",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX2648185",
+    "name": "{{request.path.[3]}}",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX3478189",
+    "name": "Reynolds American Inc",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX3524492",
+    "name": "Novan, Inc.",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX4977884",
+    "name": "Ecopetrol S.A.",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX4665734",
+    "name": "Washington Prime Group Inc.",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX2013410",
+    "name": "White Mountains Insurance Group, Ltd.",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX8507037",
+    "name": "PowerShares DWA Momentum Portfolio",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX8201962",
+    "name": "Sunrun Inc.",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX5199142",
+    "name": "TD Ameritrade Holding Corporation",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  }
+]

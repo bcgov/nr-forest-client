@@ -8,9 +8,11 @@
           :title="tab.title"
           :key="index"
           :active="index == 0"
-          >
-          <component :is="tab.content" 
-                     :submitterInformation="submitterInformation" />
+        >
+          <component
+            :is="tab.content"
+            :submitterInformation="submitterInformation"
+          />
         </b-tab>
       </b-tabs>
     </div>
@@ -31,18 +33,34 @@ let tabs: Ref<Array<{ title: string; content: DefineComponent }>> = ref([]);
 
 let submitterInformation = ref({});
 
-if (keycloak && 
-    keycloak.tokenParsed && 
-    keycloak.tokenParsed.identity_provider === "idir") {
-  tabs.value = [{ title: "Review Applications", content: ReviewApplicationPage }];
-} 
-else {
-  tabs.value = [{ title: "Request a client number", content: ApplyClientNumber }];
-  submitterInformation.value.bceidBusinessName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.displayed : "Dev Test Client Name";
-  submitterInformation.value.userId = keycloak && keycloak.tokenParsed ? keycloak.subject : "testUserId";
-  submitterInformation.value.submitterFirstName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : "";
-  submitterInformation.value.submitterLastName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.family_name : "";
-  submitterInformation.value.submitterEmail = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.email : "fsa_donotreply@gov.bc.ca";
+if (
+  keycloak &&
+  keycloak.tokenParsed &&
+  keycloak.tokenParsed.identity_provider === "idir"
+) {
+  tabs.value = [
+    { title: "Review Applications", content: ReviewApplicationPage },
+  ];
+} else {
+  tabs.value = [
+    { title: "Request a client number", content: ApplyClientNumber },
+  ];
+  submitterInformation.value.bceidBusinessName =
+    keycloak && keycloak.tokenParsed
+      ? keycloak.tokenParsed.displayed
+      : "Dev Test Client Name";
+  submitterInformation.value.userId =
+    keycloak && keycloak.tokenParsed ? keycloak.subject : "testUserId";
+  submitterInformation.value.submitterFirstName =
+    keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : "Dev";
+  submitterInformation.value.submitterLastName =
+    keycloak && keycloak.tokenParsed
+      ? keycloak.tokenParsed.family_name
+      : "Test";
+  submitterInformation.value.submitterEmail =
+    keycloak && keycloak.tokenParsed
+      ? keycloak.tokenParsed.email
+      : "fsa_donotreply@gov.bc.ca";
 }
 </script>
 

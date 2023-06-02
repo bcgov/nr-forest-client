@@ -1,0 +1,106 @@
+<script setup lang="ts">
+import { reactive, watch } from "vue";
+import type { CodeNameType } from "@/core/CommonTypes";
+import type { Contact } from "@/dto/ApplyClientNumberDto";
+
+//Define the input properties for this component
+const props = defineProps<{
+  id: number;
+  modelValue: Contact;
+  enabled?: boolean;
+  roleList: Array<CodeNameType>;
+  addressList: Array<CodeNameType>;
+  validations: Array<Function>;
+}>();
+
+//Events we emit during component lifecycle
+const emit = defineEmits<{
+  (e: "valid", value: boolean): void;
+  (e: "update:modelValue", value: Contact | undefined): void;
+}>();
+
+//We set it as a separated ref due to props not being updatable
+const selectedValue = reactive<Contact>(props.modelValue);
+
+//Watch for changes on the input
+watch([selectedValue], () => emit("update:modelValue", selectedValue));
+
+//Validations
+const validation = reactive<Record<string, boolean>>({});
+
+const checkValid = () =>
+  Object.values(validation).reduce(
+    (accumulator: boolean, currentValue: boolean) =>
+      accumulator && currentValue,
+    true
+  );
+
+watch([validation], () => emit("valid", checkValid()));
+emit("valid", false);
+</script>
+
+<template>
+  <multiselect-input-component
+    id="address"
+    label="Address name"
+    tip="Select an address name for the contact. A contact can have more than one address"
+    :initial-value="''"
+    :model-value="addressList"
+    :validations="[]"
+    @update:selected-value="selectedValue.locationNames = $event"
+    @empty="validation.locationNames = !$event"
+  />
+
+  <dropdown-input-component
+    id="role"
+    label="Primary role"
+    tip="Choose the primary role for this contact"
+    :initial-value="''"
+    :model-value="roleList"
+    :validations="[]"
+    @update:selected-value="
+      selectedValue.contactType = $event ? $event : selectedValue.contactType
+    "
+    @empty="validation.contactType = !$event"
+  />
+
+  <text-input-component
+    id="firstName"
+    label="First name"
+    placeholder="First name"
+    v-model="selectedValue.firstName"
+    :validations="[]"
+    :enabled="enabled"
+    @empty="validation.firstName = !$event"
+  />
+
+  <text-input-component
+    id="lastName"
+    label="Last name"
+    placeholder="Last name"
+    v-model="selectedValue.lastName"
+    :validations="[]"
+    :enabled="enabled"
+    @empty="validation.lastName = !$event"
+  />
+
+  <text-input-component
+    id="email"
+    label="Email address"
+    placeholder="Email"
+    v-model="selectedValue.email"
+    :validations="[]"
+    :enabled="enabled"
+    @empty="validation.email = !$event"
+  />
+
+  <text-input-component
+    id="phoneNumber"
+    label="Phone number"
+    placeholder="( ) ___-____"
+    v-model="selectedValue.phoneNumber"
+    :enabled="true"
+    :validations="[]"
+    @empty="validation.phoneNumber = !$event"
+  />
+</template>

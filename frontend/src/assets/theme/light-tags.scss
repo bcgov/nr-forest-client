@@ -1,0 +1,30 @@
+@use './colors.scss' as colors;
+
+/// Carbon doesn't have native pink and violet tags,
+/// so we override the magenta and purple tokens instead
+$light-tag-token-overrides: (
+  tag-background-blue: colors.$blue-10,
+  tag-color-blue: colors.$blue-80,
+  tag-hover-blue: colors.$blue-15,
+  tag-background-cyan: colors.$cyan-20,
+  tag-color-cyan: colors.$cyan-100,
+  tag-hover-cyan: colors.$cyan-30,
+  tag-background-green: colors.$green-10,
+  tag-color-green: colors.$green-90,
+  tag-hover-green: colors.$green-20,
+  tag-background-magenta: colors.$pink-10,
+  tag-color-magenta: colors.$pink-80,
+  tag-hover-magenta: colors.$pink-20,
+  tag-background-purple: colors.$violet-10,
+  tag-color-purple: colors.$violet-80,
+  tag-hover-purple: colors.$violet-20,
+  tag-background-red: colors.$red-20,
+  tag-color-red: colors.$red-80,
+  tag-hover-red: colors.$red-30,
+  tag-background-teal: colors.$teal-20,
+  tag-color-teal: colors.$teal-90,
+  tag-hover-teal: colors.$teal-30,
+  tag-background-gray: colors.$gray-20,
+  tag-color-gray: colors.$gray-100,
+  tag-hover-gray: colors.$gray-25,
+);

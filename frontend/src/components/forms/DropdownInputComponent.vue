@@ -1,33 +1,29 @@
 <template>
-  <bx-form-item>
-    <bx-input
-      :id="id"
-      :data-id="'input-' + id"
-      :placeholder="placeholder"
-      :value="selectedValue"
-      :label-text="label"
-      :helper-text="tip"
-      :disabled="!enabled"
-      :color-scheme="enabled ? '' : 'light'"
-      @blur="(event:any) => validateInput(event.target.value)"
-      @input="(event:any) => selectedValue = event.target.value"
-    />
-  </bx-form-item>
-  <span v-if="error" class="error-message">{{ error }}</span>
+  <bx-dropdown
+    :value="selectedValue"
+    :label-text="label"
+    :helper-text="tip"
+    @bx-dropdown-beingselected="(target:any) => selectedValue = target.detail.item.__value"
+  >
+    <bx-dropdown-item
+      v-for="option in modelValue"
+      :key="option.code"
+      :value="option.code"
+      >{{ option.name }}</bx-dropdown-item
+    >
+  </bx-dropdown>
 </template>
-
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { isEmpty } from "@/core/CommonTypes";
+import { type CodeNameType, isEmpty } from "@/core/CommonTypes";
 
 //Define the input properties for this component
 const props = defineProps<{
   id: string;
   label: string;
-  tip?: string;
-  enabled?: boolean;
-  placeholder: string;
-  modelValue: string;
+  tip: string;
+  modelValue: Array<CodeNameType>;
+  initialValue: string;
   validations: Array<Function>;
 }>();
 
@@ -35,7 +31,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "error", value: string | undefined): void;
   (e: "empty", value: boolean): void;
-  (e: "update:model-value", value: string): void;
+  (e: "update:modelValue", value: string | undefined): void;
+  (e: "update:selectedValue", value: CodeNameType | undefined): void;
 }>();
 
 //We initialize the error message handling for validation
@@ -45,25 +42,27 @@ const error = ref<string | undefined>("");
 watch(error, () => emit("error", error.value));
 
 //We set it as a separated ref due to props not being updatable
-const selectedValue = ref<string>(props.modelValue);
-
+const selectedValue = ref("");
 //We set the value prop as a reference for update reason
 emit("empty", isEmpty(props.modelValue));
-watch(
-  () => props.modelValue,
-  () => (selectedValue.value = props.modelValue)
-);
-
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
-  emit("update:model-value", newValue);
+  const reference = newValue
+    ? props.modelValue.find((entry) => entry.code === newValue)
+    : undefined;
+
+  emit("update:modelValue", newValue);
+  emit("update:selectedValue", reference);
   emit("empty", isEmpty(newValue));
 };
 //Watch for changes on the input
-watch([selectedValue], () => emitValueChange(selectedValue.value));
+watch([selectedValue], () => {
+  validateInput(selectedValue.value);
+  emitValueChange(selectedValue.value);
+});
 
 //We call all the validations
-const validateInput = (newValue: string) => {
+const validateInput = (newValue: any) => {
   if (props.validations) {
     error.value =
       props.validations
@@ -75,4 +74,8 @@ const validateInput = (newValue: string) => {
         .shift() ?? "";
   }
 };
+watch(
+  () => props.modelValue,
+  () => (selectedValue.value = props.initialValue)
+);
 </script>
