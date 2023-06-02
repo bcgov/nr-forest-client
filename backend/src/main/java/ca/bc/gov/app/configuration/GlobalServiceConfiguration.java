@@ -9,11 +9,13 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryIdentificationDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
+import ca.bc.gov.app.dto.client.AddressCompleteFindDto;
+import ca.bc.gov.app.dto.client.AddressCompleteFindListDto;
+import ca.bc.gov.app.dto.client.AddressCompleteRetrieveDto;
+import ca.bc.gov.app.dto.client.AddressCompleteRetrieveListDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
-import ca.bc.gov.app.dto.client.ClientCodeTypeDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
-import ca.bc.gov.app.dto.client.ClientDetailsAddressDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
@@ -35,11 +37,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Slf4j
 @RegisterReflectionForBinding({
     ValidationError.class,
+    AddressCompleteFindDto.class,
+    AddressCompleteFindListDto.class,
+    AddressCompleteRetrieveDto.class,
+    AddressCompleteRetrieveListDto.class,
     ClientAddressDto.class,
     ClientBusinessInformationDto.class,
-    ClientCodeTypeDto.class,
     ClientContactDto.class,
-    ClientDetailsAddressDto.class,
     ClientLocationDto.class,
     ClientLookUpDto.class,
     ClientNameCodeDto.class,
@@ -55,7 +59,6 @@ import org.springframework.web.reactive.function.client.WebClient;
     ClientDetailsDto.class
 })
 public class GlobalServiceConfiguration {
-
   /**
    * Returns a configured instance of WebClient to communicate with the CHES API
    * based on the provided configuration.
@@ -113,4 +116,14 @@ public class GlobalServiceConfiguration {
         .build();
   }
 
+  /**
+   * Returns a configured instance of WebClient for accessing the Canada Post AddressComplete API.
+   *
+   * @param configuration The configuration for the ForestClient.
+   * @return A configured instance of WebClient for accessing the AddressComplete API.
+   */
+  @Bean
+  public WebClient addressCompleteApi(ForestClientConfiguration configuration) {
+    return WebClient.builder().baseUrl(configuration.getAddressComplete().getUrl()).build();
+  }
 }
