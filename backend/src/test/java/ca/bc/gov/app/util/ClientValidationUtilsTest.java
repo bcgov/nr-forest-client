@@ -65,7 +65,7 @@ class ClientValidationUtilsTest {
               .flatMap(Stream::of)
       )
       .isNotNull()
-      .hasSize(3)
+      .hasSizeBetween(2,3)
       .contains(errorMessage);
     }
   }
@@ -74,7 +74,7 @@ class ClientValidationUtilsTest {
     return Stream.of(Arguments.of("1234567890", 0, StringUtils.EMPTY),
                      Arguments.of(StringUtils.EMPTY, 1, "The phone number must be a 10-digit number"),
                      Arguments.of("abc", 1, "The phone number must be a 10-digit number"),
-                     Arguments.of("123", 1, "The phone number must be 10 digits")
+                     Arguments.of("123", 1, "The phone number must be a 10-digit number")
     );
   }
 

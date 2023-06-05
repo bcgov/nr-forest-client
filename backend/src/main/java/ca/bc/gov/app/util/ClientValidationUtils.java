@@ -21,23 +21,15 @@ public class ClientValidationUtils {
     }
 
     if (!emailValidator.isValid(email)) {
-      errors.rejectValue(field, "You must enter an email address in a valid format. " 
-                                + "For example: name@example.com");
+      errors.rejectValue(field, "You must enter an email address in a valid format. "
+          + "For example: name@example.com");
     }
   }
 
   public static void validatePhoneNumber(String phoneNumber, String field, Errors errors) {
-    if (StringUtils.isBlank(phoneNumber)) {
+    if (StringUtils.isBlank(phoneNumber) || !StringUtils.isNumeric(phoneNumber) ||
+        StringUtils.length(phoneNumber) != 10) {
       errors.rejectValue(field, "The phone number must be a 10-digit number");
-      return;
-    }
-
-    if (!StringUtils.isNumeric(phoneNumber)) {
-      errors.rejectValue(field, "The phone number must be a 10-digit number");
-    }
-
-    if (StringUtils.length(phoneNumber) != 10) {
-      errors.rejectValue(field, "The phone number must be 10 digits");
     }
   }
 
@@ -60,8 +52,9 @@ public class ClientValidationUtils {
   }
 
   public static ClientTypeEnum getClientType(LegalTypeEnum legalType) {
-    if(legalType == null)
+    if (legalType == null) {
       return null;
+    }
     return switch (legalType) {
       case A, B, BC, C, CP, EPR, FOR, LIC, REG -> ClientTypeEnum.C;
       case S, XS -> ClientTypeEnum.S;
