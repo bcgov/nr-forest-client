@@ -1,6 +1,6 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.service.ClientSearchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

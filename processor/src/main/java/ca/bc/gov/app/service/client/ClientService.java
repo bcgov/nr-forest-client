@@ -1,10 +1,10 @@
 package ca.bc.gov.app.service.client;
 
-import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.ChannelConstant;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
+import ca.bc.gov.app.dto.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
-import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
@@ -29,8 +29,8 @@ public class ClientService {
   private final SubmissionMatchDetailRepository submissionMatchDetailRepository;
 
   @ServiceActivator(
-      inputChannel = ApplicationConstant.SUBMISSION_LIST_CHANNEL,
-      outputChannel = ApplicationConstant.MATCH_CHECKING_CHANNEL,
+      inputChannel = ChannelConstant.SUBMISSION_LIST_CHANNEL,
+      outputChannel = ChannelConstant.MATCH_CHECKING_CHANNEL,
       async = "true"
   )
   public Mono<Message<SubmissionInformationDto>> loadSubmissionDetails(Integer submissionId) {
@@ -51,30 +51,30 @@ public class ClientService {
             .map(event ->
                 MessageBuilder
                     .withPayload(event)
-                    .setHeader(ApplicationConstant.SUBMISSION_ID, submissionId)
+                    .setHeader(ChannelConstant.SUBMISSION_ID, submissionId)
                     .build()
             );
   }
 
-  @ServiceActivator(inputChannel = ApplicationConstant.AUTO_APPROVE_CHANNEL)
+  @ServiceActivator(inputChannel = ChannelConstant.AUTO_APPROVE_CHANNEL)
   public void approved(Message<List<MatcherResult>> message) {
     persistData(
-        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class),
+        message.getHeaders().get(ChannelConstant.SUBMISSION_ID, Integer.class),
         SubmissionTypeCodeEnum.AAC
     );
     log.info("Request {} was approved",
-        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class));
+        message.getHeaders().get(ChannelConstant.SUBMISSION_ID, Integer.class));
   }
 
-  @ServiceActivator(inputChannel = ApplicationConstant.REVIEW_CHANNEL)
+  @ServiceActivator(inputChannel = ChannelConstant.REVIEW_CHANNEL)
   public void reviewed(Message<List<MatcherResult>> message) {
     persistData(
-        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class),
+        message.getHeaders().get(ChannelConstant.SUBMISSION_ID, Integer.class),
         SubmissionTypeCodeEnum.RNC
     );
 
     log.info("Request {} was put into review",
-        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class));
+        message.getHeaders().get(ChannelConstant.SUBMISSION_ID, Integer.class));
 
     submissionMatchDetailRepository
         .save(
@@ -86,7 +86,7 @@ public class ClientService {
                     .collect(Collectors.toMap(MatcherResult::fieldName, MatcherResult::value))
                 )
                 .submissionId(
-                    message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class))
+                    message.getHeaders().get(ChannelConstant.SUBMISSION_ID, Integer.class))
                 .build()
         )
         .subscribe(entity -> log.info(
@@ -98,7 +98,7 @@ public class ClientService {
 
 
     log.info("Request {} was put into review",
-        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class));
+        message.getHeaders().get(ChannelConstant.SUBMISSION_ID, Integer.class));
   }
 
   private void persistData(Integer submissionId, SubmissionTypeCodeEnum typeCode) {

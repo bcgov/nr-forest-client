@@ -1,11 +1,11 @@
 package ca.bc.gov.app;
 
+import ca.bc.gov.app.dto.ValueTextDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import java.util.List;
 
 public class TestConstants {
@@ -397,8 +397,8 @@ public class TestConstants {
               List.of(
                   new ClientAddressDto(
                       "3570 S Las Vegas Blvd",
-                      new ClientValueTextDto("US", ""),
-                      new ClientValueTextDto("NV", ""),
+                      new ValueTextDto("US", ""),
+                      new ValueTextDto("NV", ""),
                       "Las Vegas", "89109",
                       0,
                       "Billing Address"
@@ -406,14 +406,14 @@ public class TestConstants {
               ),
               List.of(
                   new ClientContactDto(
-                      new ClientValueTextDto("LP", "LP"),
+                      new ValueTextDto("LP", "LP"),
                       "James",
                       "Bond",
                       "9876543210",
                       "bond_james_bond@007.com",
                       0,
                       List.of(
-                          new ClientValueTextDto(
+                          new ValueTextDto(
                               "0",
                               "Billing Address"
                           )
@@ -437,8 +437,8 @@ public class TestConstants {
               List.of(
                   new ClientAddressDto(
                       "3570 S Las Vegas Blvd",
-                      new ClientValueTextDto("US", ""),
-                      new ClientValueTextDto("NV", ""),
+                      new ValueTextDto("US", ""),
+                      new ValueTextDto("NV", ""),
                       "Las Vegas", "89109",
                       0,
                       "Billing Address"
@@ -446,14 +446,14 @@ public class TestConstants {
               ),
               List.of(
                   new ClientContactDto(
-                      new ClientValueTextDto("LP", "LP"),
+                      new ValueTextDto("LP", "LP"),
                       "James",
                       "Bond",
                       "9876543210",
                       "bond_james_bond@007.com",
                       0,
                       List.of(
-                          new ClientValueTextDto(
+                          new ValueTextDto(
                               "0",
                               "Billing Address"
                           )

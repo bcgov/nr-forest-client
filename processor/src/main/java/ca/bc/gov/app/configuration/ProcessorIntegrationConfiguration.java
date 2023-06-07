@@ -1,6 +1,6 @@
 package ca.bc.gov.app.configuration;
 
-import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.ChannelConstant;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,7 +61,7 @@ public class ProcessorIntegrationConfiguration {
   @Bean
   public IntegrationFlow integrationFlow(
       @Value("${ca.bc.gov.nrs.processor.poolTime:1M}") Duration poolingTime,
-      @Qualifier(ApplicationConstant.SUBMISSION_LIST_CHANNEL) FluxMessageChannel inputChannel,
+      @Qualifier(ChannelConstant.SUBMISSION_LIST_CHANNEL) FluxMessageChannel inputChannel,
       R2dbcMessageSource messageSource
   ) {
     return IntegrationFlow
@@ -70,5 +70,4 @@ public class ProcessorIntegrationConfiguration {
         .channel(inputChannel)
         .get();
   }
-
 }

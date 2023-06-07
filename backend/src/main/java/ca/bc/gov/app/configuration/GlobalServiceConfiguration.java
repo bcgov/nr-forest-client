@@ -1,6 +1,7 @@
 package ca.bc.gov.app.configuration;
 
 import ca.bc.gov.app.dto.ValidationError;
+import ca.bc.gov.app.dto.ValueTextDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
@@ -18,9 +19,7 @@ import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
-import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +36,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Slf4j
 @RegisterReflectionForBinding({
     ValidationError.class,
+    ValueTextDto.class,
     AddressCompleteFindDto.class,
     AddressCompleteFindListDto.class,
     AddressCompleteRetrieveDto.class,
@@ -46,9 +46,7 @@ import org.springframework.web.reactive.function.client.WebClient;
     ClientContactDto.class,
     ClientLocationDto.class,
     ClientLookUpDto.class,
-    ClientNameCodeDto.class,
     ClientSubmissionDto.class,
-    ClientValueTextDto.class,
     BcRegistryAddressDto.class,
     BcRegistryBusinessAdressesDto.class,
     BcRegistryBusinessDto.class,

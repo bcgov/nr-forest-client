@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.ChannelConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
@@ -35,7 +35,7 @@ class LegacyServiceTest {
     List<MatcherResult> matchers = new ArrayList<>();
     Message<List<MatcherResult>> message = MessageBuilder
         .withPayload(matchers)
-        .setHeader(ApplicationConstant.SUBMISSION_ID, 1)
+        .setHeader(ChannelConstant.SUBMISSION_ID, 1)
         .build();
 
     assertEquals(message, service.approved(message));
@@ -49,7 +49,7 @@ class LegacyServiceTest {
         .matchCheck(
             MessageBuilder
                 .withPayload(input)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 1)
+                .setHeader(ChannelConstant.SUBMISSION_ID, 1)
                 .build()
         )
         .as(StepVerifier::create)
@@ -65,7 +65,7 @@ class LegacyServiceTest {
                 .containsKey("id")
                 .containsKey("timestamp")
                 .containsEntry(MessageHeaders.REPLY_CHANNEL, responseChannel)
-                .containsEntry(ApplicationConstant.SUBMISSION_ID, 1)
+                .containsEntry(ChannelConstant.SUBMISSION_ID, 1)
         )
         .verifyComplete();
   }
@@ -75,11 +75,11 @@ class LegacyServiceTest {
         Stream.of(
             Arguments.of(
                 TestConstants.SUBMISSION_INFORMATION,
-                ApplicationConstant.AUTO_APPROVE_CHANNEL
+                ChannelConstant.AUTO_APPROVE_CHANNEL
             ),
             Arguments.of(
                 TestConstants.SUBMISSION_INFORMATION.withGoodStanding("N"),
-                ApplicationConstant.REVIEW_CHANNEL
+                ChannelConstant.REVIEW_CHANNEL
             )
         );
   }
@@ -99,6 +99,4 @@ class LegacyServiceTest {
           .map(value -> new MatcherResult("test",value));
     }
   }
-
-
 }

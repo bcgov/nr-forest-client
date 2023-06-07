@@ -2,7 +2,7 @@ package ca.bc.gov.app.predicates;
 
 import static org.springframework.data.relational.core.query.Criteria.where;
 
-import ca.bc.gov.app.models.client.SubmissionStatusEnum;
+import ca.bc.gov.app.dto.client.SubmissionStatusEnum;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Stream;

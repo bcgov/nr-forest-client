@@ -1,11 +1,11 @@
 package ca.bc.gov.app.utils;
 
+import ca.bc.gov.app.dto.ValueTextDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import java.util.List;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
@@ -73,8 +73,8 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     String postalCode = accessor.getString(15);
 
     return new ClientAddressDto(
-        streetAddress, new ClientValueTextDto(country, country),
-        new ClientValueTextDto(province, ""), city, postalCode, 0, "test");
+        streetAddress, new ValueTextDto(country, country),
+        new ValueTextDto(province, ""), city, postalCode, 0, "test");
   }
 
   private static ClientContactDto createContact(ArgumentsAccessor accessor) {
@@ -85,8 +85,7 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     String contactEmail = accessor.getString(22);
 
     return new ClientContactDto(
-        new ClientValueTextDto(contactType, contactType), contactFirstName, contactLastName,
+        new ValueTextDto(contactType, contactType), contactFirstName, contactLastName,
         contactPhoneNumber, contactEmail, 0, List.of());
   }
-
 }

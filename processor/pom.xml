@@ -68,6 +68,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>ca.bc.gov.nrs-commons</groupId>
+            <artifactId>forest-client-spring</artifactId>
+            <version>0.1.0.PR7</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
@@ -513,4 +519,22 @@
         </profile>
     </profiles>
 
+    <repositories>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>github</id>
+            <name>Github Packages</name>
+            <url>https://maven.pkg.github.com/bcgov/nr-forest-client-commons</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

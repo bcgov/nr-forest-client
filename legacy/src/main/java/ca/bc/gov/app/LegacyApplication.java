@@ -26,5 +26,4 @@ public class LegacyApplication {
     SLF4JBridgeHandler.install();
     SpringApplication.run(LegacyApplication.class, args);
   }
-
 }

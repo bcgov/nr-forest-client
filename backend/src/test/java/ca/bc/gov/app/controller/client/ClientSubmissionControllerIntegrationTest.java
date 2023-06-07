@@ -9,6 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.BcRegistryConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;

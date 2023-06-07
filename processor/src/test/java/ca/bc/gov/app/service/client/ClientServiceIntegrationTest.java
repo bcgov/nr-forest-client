@@ -7,7 +7,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.ChannelConstant;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
@@ -44,7 +44,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainer {
         .approved(
             MessageBuilder
                 .withPayload(matchers)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 1)
+                .setHeader(ChannelConstant.SUBMISSION_ID, 1)
                 .build()
         );
 
@@ -73,7 +73,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainer {
         .reviewed(
             MessageBuilder
                 .withPayload(matchers)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 1)
+                .setHeader(ChannelConstant.SUBMISSION_ID, 1)
                 .build()
         );
 
@@ -100,6 +100,4 @@ class ClientServiceIntegrationTest extends AbstractTestContainer {
                 any(SubmissionMatchDetailEntity.class))
         );
   }
-
-
 }

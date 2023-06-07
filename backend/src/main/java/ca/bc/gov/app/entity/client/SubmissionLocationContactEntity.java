@@ -9,7 +9,9 @@ import lombok.With;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table(name = "submission_location_contact_xref", schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
+@Table(
+    name = "submission_location_contact_xref",
+    schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
 @Data
 @Builder
 @NoArgsConstructor

@@ -1,5 +1,6 @@
 package ca.bc.gov.app.dto.client;
 
+import ca.bc.gov.app.dto.ValueTextDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Map;
 import lombok.With;
@@ -33,13 +34,13 @@ public record ClientAddressDto(
           "value": "CA",
           "text": "Canada"
         }""")
-    ClientValueTextDto country,
+    ValueTextDto country,
     @Schema(description = "The province or state for this address", example = """
         {
             "value": "ON",
             "text": "Ontario"
         }""")
-    ClientValueTextDto province,
+    ValueTextDto province,
     @Schema(description = "The city for this address", example = "Toronto")
     String city,
     @Schema(description = "The postal code or zip code for this address", example = "M5V2L7")

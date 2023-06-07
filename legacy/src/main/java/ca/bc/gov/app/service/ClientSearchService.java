@@ -1,12 +1,14 @@
 package ca.bc.gov.app.service;
 
-import ca.bc.gov.app.dto.ForestClientDto;
+import static ca.bc.gov.app.util.LogUtil.logContent;
+
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
-import ca.bc.gov.app.repository.ForestClientRepository;
-import ca.bc.gov.app.util.MonoUtil;
+import ca.bc.gov.app.repository.legacy.ForestClientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.event.Level;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -29,7 +31,7 @@ public class ClientSearchService {
     return
         forestClientRepository
             .findClientByIncorporationOrName(incorporationNumber, companyName)
-            .doOnNext(MonoUtil.logContent(log))
+            .doOnNext(logContent(log, Level.INFO))
             .map(entity ->
                 new ForestClientDto(
                     entity.getClientNumber(),
@@ -48,7 +50,7 @@ public class ClientSearchService {
                     entity.getClientComment()
                 )
             )
-            .doOnNext(MonoUtil.logContent(log));
+            .doOnNext(logContent(log, Level.INFO));
   }
 
 }

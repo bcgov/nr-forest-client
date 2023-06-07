@@ -39,6 +39,4 @@ public class IncorporationNumberProcessorMatcher implements ProcessorMatcher {
                 new MatcherResult("incorporationNumber", String.join(",", values))
             );
   }
-
 }
-

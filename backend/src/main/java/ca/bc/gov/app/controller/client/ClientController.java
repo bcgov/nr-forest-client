@@ -1,9 +1,9 @@
 package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.ValueTextDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
-import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -105,15 +105,15 @@ public class ClientController {
                   mediaType = MediaType.APPLICATION_JSON_VALUE,
                   array = @ArraySchema(
                       schema = @Schema(
-                          name = "NameCode",
-                          implementation = ClientNameCodeDto.class
+                          name = "ValueText",
+                          implementation = ValueTextDto.class
                       )
                   )
               )
           )
       }
   )
-  public Flux<ClientNameCodeDto> listCountries(
+  public Flux<ValueTextDto> listCountries(
       @Parameter(description = "The one index page number, defaults to 0", example = "0")
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
@@ -138,15 +138,15 @@ public class ClientController {
                   mediaType = MediaType.APPLICATION_JSON_VALUE,
                   array = @ArraySchema(
                       schema = @Schema(
-                          name = "NameCode",
-                          implementation = ClientNameCodeDto.class
+                          name = "ValueText",
+                          implementation = ValueTextDto.class
                       )
                   )
               )
           )
       }
   )
-  public Flux<ClientNameCodeDto> listProvinces(
+  public Flux<ValueTextDto> listProvinces(
       @Parameter(
           description = """
               The code of the country.
@@ -178,15 +178,15 @@ public class ClientController {
                   mediaType = MediaType.APPLICATION_JSON_VALUE,
                   array = @ArraySchema(
                       schema = @Schema(
-                          name = "NameCode",
-                          implementation = ClientNameCodeDto.class
+                          name = "ValueText",
+                          implementation = ValueTextDto.class
                       )
                   )
               )
           )
       }
   )
-  public Flux<ClientNameCodeDto> findActiveClientTypeCodes() {
+  public Flux<ValueTextDto> findActiveClientTypeCodes() {
     return clientService
         .findActiveClientTypeCodes(LocalDate.now());
   }
@@ -202,15 +202,15 @@ public class ClientController {
                   mediaType = MediaType.APPLICATION_JSON_VALUE,
                   array = @ArraySchema(
                       schema = @Schema(
-                          name = "NameCode",
-                          implementation = ClientNameCodeDto.class
+                          name = "ValueText",
+                          implementation = ValueTextDto.class
                       )
                   )
               )
           )
       }
   )
-  public Flux<ClientNameCodeDto> listClientContactTypeCodes(
+  public Flux<ValueTextDto> listClientContactTypeCodes(
       @Parameter(description = "The one index page number, defaults to 0", example = "0")
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,

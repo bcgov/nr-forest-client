@@ -17,7 +17,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-
 @DisplayName("Unit Test | Incorporation Number Matcher")
 class IncorporationNumberProcessorMatcherTest {
 
@@ -74,5 +73,4 @@ class IncorporationNumberProcessorMatcherTest {
             )
         );
   }
-
 }

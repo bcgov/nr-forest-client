@@ -1,5 +1,6 @@
 package ca.bc.gov.app.dto.client;
 
+import ca.bc.gov.app.dto.ValueTextDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ import lombok.With;
 public record ClientContactDto(
     @Schema(description = "The type of contact",
         example = "person")
-    ClientValueTextDto contactType,
+    ValueTextDto contactType,
 
     @Schema(description = "The first name of the contact",
         example = "JAMES")
@@ -55,7 +56,7 @@ public record ClientContactDto(
               "value": "1",
               "text": "Billing Address"
             }""")
-    List<ClientValueTextDto> locations
+    List<ValueTextDto> locations
 ) {
   public Map<String, Object> description() {
     final String indexFormatted = String.format("contact.[%d]", index);

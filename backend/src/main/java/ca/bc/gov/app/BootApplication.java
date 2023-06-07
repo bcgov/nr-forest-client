@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
     description = "${info.app.description}")
 )
 public class BootApplication {
-
   public static void main(String[] args) {
     SpringApplication.run(BootApplication.class, args);
   }

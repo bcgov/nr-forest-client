@@ -4,7 +4,6 @@ import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import ca.bc.gov.app.entity.client.SubmissionEntity;
@@ -13,7 +12,6 @@ import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.repository.legacy.ForestClientRepository;
 import java.time.Duration;
-import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,17 +42,23 @@ class ProcessorIntegrationTest extends AbstractTestContainer {
     await()
         .alias("Load details")
         .atMost(Duration.ofSeconds(5))
-        .untilAsserted(() -> verify(detailRepository, atLeastOnce()).findBySubmissionId(eq(1)));
+        .untilAsserted(() -> verify(
+            detailRepository,
+            atLeastOnce()).findBySubmissionId(eq(1)));
 
     await()
         .alias("Fuzzy Search")
         .atMost(Duration.ofSeconds(5))
-        .untilAsserted(() -> verify(forestClientRepository, atLeastOnce()).matchBy(any(String.class)));
+        .untilAsserted(() -> verify(
+            forestClientRepository,
+            atLeastOnce()).matchBy(any(String.class)));
 
     await()
         .alias("Incorporation Search")
         .atMost(Duration.ofSeconds(5))
-        .untilAsserted(() -> verify(forestClientRepository, atLeastOnce()).findByIncorporationNumber(any(String.class)));
+        .untilAsserted(() -> verify(
+            forestClientRepository,
+            atLeastOnce()).findByIncorporationNumber(any(String.class)));
 
     await()
         .alias("Submission lookup")
@@ -69,7 +73,5 @@ class ProcessorIntegrationTest extends AbstractTestContainer {
         .untilAsserted(() ->
             verify(submissionRepository, atLeastOnce()).save(any(SubmissionEntity.class))
         );
-
-
   }
 }

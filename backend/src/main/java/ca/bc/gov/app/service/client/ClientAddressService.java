@@ -1,12 +1,11 @@
 package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
+import ca.bc.gov.app.dto.ValueTextDto;
 import ca.bc.gov.app.dto.client.AddressCompleteFindListDto;
 import ca.bc.gov.app.dto.client.AddressCompleteRetrieveListDto;
 import ca.bc.gov.app.dto.client.AddressError;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientNameCodeDto;
-import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.exception.AddressLookupException;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,7 @@ public class ClientAddressService {
     this.addressCompleteApi = addressCompleteApi;
   }
 
-  public Flux<ClientNameCodeDto> findPossibleAddresses(
+  public Flux<ValueTextDto> findPossibleAddresses(
       String country, Integer maxSuggestions, String searchTerm) {
     log.info("Searching for address {} for country {}", searchTerm, country);
     return
@@ -95,7 +94,7 @@ public class ClientAddressService {
             })
             .flatMapMany(Flux::fromIterable)
             .filter(address -> "Retrieve" .equalsIgnoreCase(address.next()))
-            .map(address -> new ClientNameCodeDto(
+            .map(address -> new ValueTextDto(
                     address.id(),
                     String.format("%s %s", address.text(), address.description())
                 )
@@ -138,8 +137,8 @@ public class ClientAddressService {
                     String.format("%s %s %s %s %s", address.line1(), address.line2(),
                         address.line3(), address.line4(), address.line5()
                     ),
-                    new ClientValueTextDto(address.countryIso2(), address.countryName()),
-                    new ClientValueTextDto(address.province(), address.provinceName()),
+                    new ValueTextDto(address.countryIso2(), address.countryName()),
+                    new ValueTextDto(address.province(), address.provinceName()),
                     address.city(),
                     address.postalCode(),
                     0,

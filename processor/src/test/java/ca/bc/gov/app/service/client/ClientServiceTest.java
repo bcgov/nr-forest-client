@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.ChannelConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
@@ -25,7 +25,6 @@ class ClientServiceTest {
   private final ClientService service =
       new ClientService(mock(SubmissionRepository.class), submissionDetailRepository, mock(
           SubmissionMatchDetailRepository.class));
-
 
   @Test
   @DisplayName("get submission as message")
@@ -48,11 +47,9 @@ class ClientServiceTest {
                 .isNotEmpty()
                 .containsKey("id")
                 .containsKey("timestamp")
-                .containsEntry(ApplicationConstant.SUBMISSION_ID, 1)
+                .containsEntry(ChannelConstant.SUBMISSION_ID, 1)
         )
         .verifyComplete();
 
   }
-
-
 }

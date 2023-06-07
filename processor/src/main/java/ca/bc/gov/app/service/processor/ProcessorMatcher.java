@@ -8,5 +8,4 @@ public interface ProcessorMatcher {
 
   String name();
   Mono<MatcherResult> matches(SubmissionInformationDto submission);
-
 }

@@ -1,6 +1,6 @@
 package ca.bc.gov.app.service.bcregistry;
 
-import static ca.bc.gov.app.ApplicationConstant.BUSINESS_SUMMARY_FILING_HISTORY;
+import static ca.bc.gov.app.BcRegistryConstant.BUSINESS_SUMMARY_FILING_HISTORY;
 
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestDocumentDto;

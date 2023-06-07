@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.client;
 
+import ca.bc.gov.app.dto.ValueTextDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
@@ -8,8 +9,6 @@ import ca.bc.gov.app.dto.ches.ChesRequest;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
-import ca.bc.gov.app.dto.client.ClientNameCodeDto;
-import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
@@ -56,14 +55,14 @@ public class ClientService {
    * <p>The order is by description.</p>
    *
    * @param targetDate The date to be used as reference.
-   * @return A list of {@link ClientNameCodeDto}
+   * @return A list of {@link ValueTextDto}
    */
-  public Flux<ClientNameCodeDto> findActiveClientTypeCodes(LocalDate targetDate) {
+  public Flux<ValueTextDto> findActiveClientTypeCodes(LocalDate targetDate) {
 
     return
         clientTypeCodeRepository
             .findActiveAt(targetDate)
-            .map(entity -> new ClientNameCodeDto(
+            .map(entity -> new ValueTextDto(
                     entity.getCode(),
                     entity.getDescription()
                 )
@@ -78,12 +77,12 @@ public class ClientService {
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
-   * @return A list of {@link ClientNameCodeDto} entries.
+   * @return A list of {@link ValueTextDto} entries.
    */
-  public Flux<ClientNameCodeDto> listCountries(int page, int size) {
+  public Flux<ValueTextDto> listCountries(int page, int size) {
     return countryCodeRepository
         .findBy(PageRequest.of(page, size, Sort.by("order", "description")))
-        .map(entity -> new ClientNameCodeDto(entity.getCountryCode(), entity.getDescription()));
+        .map(entity -> new ValueTextDto(entity.getCountryCode(), entity.getDescription()));
   }
 
   /**
@@ -94,12 +93,12 @@ public class ClientService {
    * @param countryCode The code of the country to list provinces from.
    * @param page        The page number, it is a 0-index base.
    * @param size        The amount of entries per page.
-   * @return A list of {@link ClientNameCodeDto} entries.
+   * @return A list of {@link ValueTextDto} entries.
    */
-  public Flux<ClientNameCodeDto> listProvinces(String countryCode, int page, int size) {
+  public Flux<ValueTextDto> listProvinces(String countryCode, int page, int size) {
     return provinceCodeRepository
         .findByCountryCode(countryCode, PageRequest.of(page, size, Sort.by("description")))
-        .map(entity -> new ClientNameCodeDto(entity.getProvinceCode(), entity.getDescription()));
+        .map(entity -> new ValueTextDto(entity.getProvinceCode(), entity.getDescription()));
   }
 
   /**
@@ -108,12 +107,12 @@ public class ClientService {
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
-   * @return A list of {@link ClientNameCodeDto} entries.
+   * @return A list of {@link ValueTextDto} entries.
    */
-  public Flux<ClientNameCodeDto> listClientContactTypeCodes(int page, int size) {
+  public Flux<ValueTextDto> listClientContactTypeCodes(int page, int size) {
     return contactTypeCodeRepository
         .findBy(PageRequest.of(page, size))
-        .map(entity -> new ClientNameCodeDto(
+        .map(entity -> new ValueTextDto(
             entity.getContactTypeCode(),
             entity.getDescription()));
   }
@@ -205,8 +204,8 @@ public class ClientService {
             .map(addressDto ->
                 new ClientAddressDto(
                     addressDto.streetAddress(),
-                    new ClientValueTextDto("", addressDto.addressCountry()),
-                    new ClientValueTextDto(addressDto.addressRegion(), ""),
+                    new ValueTextDto("", addressDto.addressCountry()),
+                    new ValueTextDto(addressDto.addressRegion(), ""),
                     addressDto.addressCity(),
                     addressDto.postalCode(),
                     index.getAndIncrement(),
@@ -225,7 +224,7 @@ public class ClientService {
                     .filter(BcRegistryPartyDto::isValid)
                     .map(party ->
                         new ClientContactDto(
-                            new ClientValueTextDto(party.officer().partyType(), ""),
+                            new ValueTextDto(party.officer().partyType(), ""),
                             party.officer().firstName(),
                             party.officer().lastName(),
                             "",
@@ -246,7 +245,7 @@ public class ClientService {
             );
   }
 
-  private static List<ClientValueTextDto> matchAddress(List<ClientAddressDto> addresses,
+  private static List<ValueTextDto> matchAddress(List<ClientAddressDto> addresses,
                                                        BcRegistryPartyDto party) {
     return addresses
         .stream()
@@ -259,7 +258,7 @@ public class ClientService {
                 address.streetAddress()
             )
         )
-        .map(address -> new ClientValueTextDto(
+        .map(address -> new ValueTextDto(
                 String.valueOf(address.index()),
                 address.locationName()
             )
@@ -267,36 +266,36 @@ public class ClientService {
         .toList();
   }
 
-  private Mono<ClientValueTextDto> loadContactType(String contactCode) {
+  private Mono<ValueTextDto> loadContactType(String contactCode) {
     return
         contactTypeCodeRepository
             .findById(contactCode)
             .map(
-                entity -> new ClientValueTextDto(
+                entity -> new ValueTextDto(
                     entity.getContactTypeCode(),
                     entity.getDescription()
                 )
-            ).defaultIfEmpty(new ClientValueTextDto(contactCode, contactCode));
+            ).defaultIfEmpty(new ValueTextDto(contactCode, contactCode));
   }
 
-  private Mono<ClientValueTextDto> loadCountry(String countryCode) {
+  private Mono<ValueTextDto> loadCountry(String countryCode) {
     return
         countryCodeRepository
             .findByDescription(countryCode)
             .map(
-                entity -> new ClientValueTextDto(entity.getCountryCode(), entity.getDescription())
+                entity -> new ValueTextDto(entity.getCountryCode(), entity.getDescription())
             )
-            .defaultIfEmpty(new ClientValueTextDto(StringUtils.EMPTY, countryCode));
+            .defaultIfEmpty(new ValueTextDto(StringUtils.EMPTY, countryCode));
   }
 
-  private Mono<ClientValueTextDto> loadProvince(String countryCode, String province) {
+  private Mono<ValueTextDto> loadProvince(String countryCode, String province) {
     return
         provinceCodeRepository
             .findByCountryCodeAndProvinceCode(countryCode, province)
             .map(
-                entity -> new ClientValueTextDto(entity.getProvinceCode(), entity.getDescription())
+                entity -> new ValueTextDto(entity.getProvinceCode(), entity.getDescription())
             )
-            .defaultIfEmpty(new ClientValueTextDto(province, province));
+            .defaultIfEmpty(new ValueTextDto(province, province));
   }
 
   private Predicate<ForestClientDto> isMatchWith(BcRegistryDocumentDto document) {

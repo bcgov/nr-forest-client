@@ -30,5 +30,4 @@ public interface QueryPredicates {
     }
     return Criteria.empty();
   }
-
 }

@@ -15,6 +15,4 @@ public class AbstractController<T, V extends Validator> {
   protected <S> void validate(S target) {
     ValidationUtil.validate(target,contentClass,validator);
   }
-
-
 }

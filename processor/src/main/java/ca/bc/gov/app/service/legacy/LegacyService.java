@@ -1,6 +1,6 @@
 package ca.bc.gov.app.service.legacy;
 
-import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.ChannelConstant;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.service.processor.ProcessorMatcher;
@@ -25,8 +25,8 @@ public class LegacyService {
   private final List<ProcessorMatcher> matchers;
 
   @ServiceActivator(
-      inputChannel = ApplicationConstant.MATCH_CHECKING_CHANNEL,
-      outputChannel = ApplicationConstant.FORWARD_CHANNEL,
+      inputChannel = ChannelConstant.MATCH_CHECKING_CHANNEL,
+      outputChannel = ChannelConstant.FORWARD_CHANNEL,
       async = "true"
   )
   public Mono<Message<List<MatcherResult>>> matchCheck(
@@ -36,8 +36,8 @@ public class LegacyService {
     Function<Boolean, String> replier =
         value -> BooleanUtils.toString(
             value,
-            ApplicationConstant.AUTO_APPROVE_CHANNEL,
-            ApplicationConstant.REVIEW_CHANNEL
+            ChannelConstant.AUTO_APPROVE_CHANNEL,
+            ChannelConstant.REVIEW_CHANNEL
         );
 
     return
@@ -63,7 +63,7 @@ public class LegacyService {
         .collectList();
   }
 
-  @ServiceActivator(inputChannel = ApplicationConstant.FORWARD_CHANNEL)
+  @ServiceActivator(inputChannel = ChannelConstant.FORWARD_CHANNEL)
   public Message<List<MatcherResult>> approved(Message<List<MatcherResult>> eventMono) {
     return eventMono;
   }

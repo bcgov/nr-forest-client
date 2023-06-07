@@ -47,5 +47,4 @@ public class LegalNameProcessorMatcher implements ProcessorMatcher {
             .doOnNext(entity -> log.info("Found a match {}", entity));
 
   }
-
 }

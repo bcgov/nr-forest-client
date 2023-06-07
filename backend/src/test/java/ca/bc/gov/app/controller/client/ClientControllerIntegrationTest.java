@@ -11,6 +11,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.BcRegistryConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
@@ -483,5 +484,4 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             Arguments.of(22, 1, "TP", "EDI Trading Partner")
         );
   }
-
 }
