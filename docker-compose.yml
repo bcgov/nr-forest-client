@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: default
       POSTGRES_DB: default
     hostname: database
-    image: postgres:15@sha256:50a96a21f2992518c2cb4601467cf27c7ac852542d8913c1872fe45cd6449947
+    image: postgres:15
     ports:
       - "5432:5432"
     restart: always    
@@ -70,7 +70,7 @@ services:
       retries: 3
       start_period: 40s
     hostname: frontend
-    image: ghcr.io/bcgov/nr-forest-client/frontend:396@sha256:62e0f9e3c4b04002f42155e7f76810c2504277d9ccbd9b1cc7ed3bb5561308e4
+    image: ghcr.io/bcgov/nr-forest-client/frontend:396
     links:
       - backend
     ports:
@@ -88,7 +88,7 @@ services:
       APP_USER: THE
       ORACLE_RANDOM_PASSWORD: yes
     hostname: legacydb
-    image: gvenzl/oracle-xe:21.3.0-slim-faststart@sha256:d0ed1cedc2ec2248c1daa6d25fbc0140570e6f1f040b8f3de56ca1366277373f
+    image: gvenzl/oracle-xe:21.3.0-slim-faststart
     ports:
       - 1521:1521
     restart: always
