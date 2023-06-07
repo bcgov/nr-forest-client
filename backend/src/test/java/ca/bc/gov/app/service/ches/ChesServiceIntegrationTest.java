@@ -6,9 +6,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.unauthorized;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.ches.ChesRequest;
@@ -24,10 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.oltu.oauth2.client.OAuthClient;
-import org.apache.oltu.oauth2.client.response.OAuthJSONAccessTokenResponse;
-import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
-import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -56,7 +49,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Test
   @DisplayName("Send email when authorized")
-  void shouldSendMailWhenAuth() throws OAuthProblemException, OAuthSystemException {
+  void shouldSendMailWhenAuth() {
 
     mockOAuthSuccess();
 
@@ -79,19 +72,19 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Test
   @DisplayName("Do not send emails when not authorized")
-  void shoulNotSendMailWhenNotAuth() throws OAuthProblemException, OAuthSystemException {
+  void shoulNotSendMailWhenNotAuth() {
     mockOAuthFail();
 
     service
         .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"))
         .as(StepVerifier::create)
-        .expectError(CannotExtractTokenException.class)
+        .expectError(InvalidAccessTokenException.class)
         .verify();
   }
 
   @Test
   @DisplayName("Do not send emails when token is invalid")
-  void shouldNotSendMailWhenTokenInvalid() throws OAuthProblemException, OAuthSystemException {
+  void shouldNotSendMailWhenTokenInvalid() {
     mockOAuthSuccess();
 
     wireMockExtension
@@ -107,7 +100,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Test
   @DisplayName("Do not send emails when you have no role")
-  void shouldNotSendMailWhenNoRoleInvalid() throws OAuthProblemException, OAuthSystemException {
+  void shouldNotSendMailWhenNoRoleInvalid() {
     mockOAuthSuccess();
 
     wireMockExtension
@@ -123,7 +116,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Test
   @DisplayName("Send an email with an HTML body")
-  void shouldSendMailWithHTMLBody() throws OAuthProblemException, OAuthSystemException {
+  void shouldSendMailWithHTMLBody() {
 
     mockOAuthSuccess();
 
@@ -145,7 +138,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Test
   @DisplayName("Send an email with text body")
-  void shouldSendMailWithTextBody() throws OAuthProblemException, OAuthSystemException {
+  void shouldSendMailWithTextBody() {
 
     mockOAuthSuccess();
 
@@ -169,7 +162,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Test
   @DisplayName("Fail with 422")
-  void shouldFailWith422() throws OAuthProblemException, OAuthSystemException {
+  void shouldFailWith422() {
     mockOAuthSuccess();
 
     wireMockExtension
@@ -192,7 +185,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Test
   @DisplayName("Fail when no body is provided")
-  void shouldSendMailWithNoBody() throws OAuthProblemException, OAuthSystemException {
+  void shouldSendMailWithNoBody() {
     mockOAuthSuccess();
 
     wireMockExtension
@@ -215,7 +208,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Test
   @DisplayName("Fail with 500")
-  void shouldFailWith500() throws OAuthProblemException, OAuthSystemException {
+  void shouldFailWith500() {
     mockOAuthSuccess();
 
     wireMockExtension
@@ -239,8 +232,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
   @ParameterizedTest
   @MethodSource("invalidBodies")
   @DisplayName("Fail when body is invalid")
-  void shouldFailWhenInvalidBodyProvided(ChesRequest request)
-      throws OAuthProblemException, OAuthSystemException {
+  void shouldFailWhenInvalidBodyProvided(ChesRequest request) {
 
     mockOAuthSuccess();
 
@@ -263,7 +255,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Test
   @DisplayName("Send an email with more than one emailTo provided")
-  void shouldSendMailMultipleDestination() throws OAuthProblemException, OAuthSystemException {
+  void shouldSendMailMultipleDestination() {
 
     mockOAuthSuccess();
 
@@ -286,7 +278,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
   @Test
   @DisplayName("Template was built")
   void shouldBuildTemplate() {
-    Map<String, Object> variables = Map.of("business",Map.of(
+    Map<String, Object> variables = Map.of("business", Map.of(
         "name", "John",
         "incorporation", "john@example.com")
     );
@@ -319,20 +311,26 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
   }
 
 
-  private void mockOAuthSuccess() throws OAuthSystemException, OAuthProblemException {
-    OAuthClient oauth = mock(OAuthClient.class);
-    OAuthJSONAccessTokenResponse res = mock(OAuthJSONAccessTokenResponse.class);
-    when(oauth.accessToken(any(), any(), any())).thenReturn(res);
-    when(res.getAccessToken()).thenReturn("res");
-    service.setOauthClient(oauth);
+  private void mockOAuthSuccess() {
+    wireMockExtension
+        .stubFor(
+            post("/token/uri")
+                .willReturn(
+                    ok(TestConstants.CHES_TOKEN_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
   }
 
-  private void mockOAuthFail() throws OAuthSystemException, OAuthProblemException {
-    OAuthClient oauth = mock(OAuthClient.class);
-
-    when(oauth.accessToken(any(), any(), any())).thenThrow(OAuthProblemException.error("Oh oh"));
-
-    service.setOauthClient(oauth);
+  private void mockOAuthFail() {
+    wireMockExtension
+        .stubFor(
+            post("/token/uri")
+                .willReturn(
+                    unauthorized()
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
   }
 
 

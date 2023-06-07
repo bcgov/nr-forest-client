@@ -50,7 +50,7 @@ public class ClientContactDtoValidator implements Validator {
 	String contactTypeField = "contactType";
 	
     if (contact.contactType() == null || StringUtils.isBlank(contact.contactType().value())) {
-      errors.rejectValue(contactTypeField, fieldIsMissingErrorMessage("contactType"));
+      errors.rejectValue(contactTypeField, "You must select a role.");
       return;
     }
 

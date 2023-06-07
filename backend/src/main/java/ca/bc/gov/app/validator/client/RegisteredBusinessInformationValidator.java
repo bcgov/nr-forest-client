@@ -36,10 +36,10 @@ public class RegisteredBusinessInformationValidator implements Validator {
 
     String businessNameField = "businessName";
     ValidationUtils.rejectIfEmpty(errors, businessNameField,
-        fieldIsMissingErrorMessage(businessNameField));
+        "You must select your B.C. registered business name from the list.");
 
     ClientBusinessInformationDto businessInformation = (ClientBusinessInformationDto) target;
-
+    
     LegalTypeEnum legalType = isValidLegalType(businessInformation.legalType(), errors);
 
     validateClientType(businessInformation.clientType(), legalType, errors);
