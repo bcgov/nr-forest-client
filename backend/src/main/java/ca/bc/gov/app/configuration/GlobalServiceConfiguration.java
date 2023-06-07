@@ -9,6 +9,7 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryIdentificationDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
+import ca.bc.gov.app.dto.ches.CommonExposureJwtDto;
 import ca.bc.gov.app.dto.client.AddressCompleteFindDto;
 import ca.bc.gov.app.dto.client.AddressCompleteFindListDto;
 import ca.bc.gov.app.dto.client.AddressCompleteRetrieveDto;
@@ -26,6 +27,7 @@ import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -56,7 +58,8 @@ import org.springframework.web.reactive.function.client.WebClient;
     BcRegistryFacetSearchResultEntryDto.class,
     BcRegistryFacetSearchResultsDto.class,
     BcRegistryIdentificationDto.class,
-    ClientDetailsDto.class
+    ClientDetailsDto.class,
+    CommonExposureJwtDto.class
 })
 public class GlobalServiceConfiguration {
   /**
@@ -72,15 +75,20 @@ public class GlobalServiceConfiguration {
   }
 
   /**
-   * Creates a WebClient instance for making HTTP requests to the OpenMaps API based on the provided
+   * Creates a WebClient instance for making HTTP requests to the CHES Auth API on the provided
    * {@link ForestClientConfiguration}.
    *
    * @param configuration the configuration object for the Forest client
-   * @return a WebClient instance configured for the OpenMaps API
+   * @return a WebClient instance configured for the CHES Auth API
    */
   @Bean
-  public WebClient openMapsApi(ForestClientConfiguration configuration) {
-    return WebClient.builder().baseUrl(configuration.getOpenmaps().getUri()).build();
+  public WebClient authApi(ForestClientConfiguration configuration) {
+    return WebClient
+        .builder()
+        .baseUrl(configuration.getChes().getTokenUrl())
+        .filter(ExchangeFilterFunctions.basicAuthentication(configuration.getChes().getClientId(),
+            configuration.getChes().getClientSecret()))
+        .build();
   }
 
   /**
