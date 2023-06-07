@@ -165,8 +165,8 @@ public class ClientSubmissionService {
                                     .location()
                                     .contacts()
                             )
-                            .flatMap(contact -> saveAndAssociateContact(locations, contact,
-                                submission.getSubmissionId()))
+                            /*.flatMap(contact -> saveAndAssociateContact(locations, contact,
+                                submission.getSubmissionId()))*/
                     )
                     //Then grab all back as a list, to make all reactive flows complete
                     .collectList()
@@ -210,6 +210,7 @@ public class ClientSubmissionService {
       ClientSubmissionDto clientSubmissionDto,
       String email
   ) {
+    System.out.println(clientSubmissionDto);
     return
         chesService
             .buildTemplate(

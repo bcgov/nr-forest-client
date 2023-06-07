@@ -104,7 +104,8 @@ public class ChesCommonServicesService {
             .flatMap(request ->
                 webClient
                     .post()
-                    .uri(configuration.getChes().getUri())
+                    //.uri(configuration.getChes().getUri())
+                    .uri("https://ches.api.gov.bc.ca/api/v1/email")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + getToken())
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .body(Mono.just(request), ChesMailRequest.class)
@@ -188,12 +189,22 @@ public class ChesCommonServicesService {
 
     try {
 
-      OAuthClientRequest request =
+      System.out.println("Client ID = " + configuration.getChes().getClientId());
+      /*OAuthClientRequest request =
           OAuthClientRequest
               .tokenLocation(configuration.getChes().getTokenUrl())
               .setGrantType(GrantType.CLIENT_CREDENTIALS)
               .setClientId(configuration.getChes().getClientId())
               .setClientSecret(configuration.getChes().getClientSecret())
+              .setScope(configuration.getChes().getScope())
+              .buildBodyMessage();*/
+      
+      OAuthClientRequest request =
+          OAuthClientRequest
+              .tokenLocation("https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token")
+              .setGrantType(GrantType.CLIENT_CREDENTIALS)
+              .setClientId("0943A91E-26163FF5D3A")
+              .setClientSecret("cbND0fx0ODWKXlYzn52mUt10RRO1ju3s")
               .setScope(configuration.getChes().getScope())
               .buildBodyMessage();
 

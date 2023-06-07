@@ -285,7 +285,14 @@ function retrieveClientType(legalType: string): string {
     }
 };
 
-const { response, error, fetch: persistValidateData } = usePost('/api/clients/submissions', formData.value, { skip: true });
+const { response, error, fetch: persistValidateData } = usePost('/api/clients/submissions', 
+                                                                formData.value, 
+                                                                { skip: true, 
+                                                                  headers: {
+                                                                    'x-user-id': props.submitterInformation.userId,
+                                                                    'x-user-email': props.submitterInformation.submitterEmail
+                                                                  }
+                                                                });
 
 watch(
     [response],
