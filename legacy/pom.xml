@@ -60,7 +60,7 @@
 		</sonar.coverage.exclusions>
 		<sonar.java.checkstyle.reportPaths>target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
 
-		<testcontainers.version>1.18.1</testcontainers.version>
+		<testcontainers.version>1.18.3</testcontainers.version>
 
 		<junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
 		<junit-platform.version>1.9.1</junit-platform.version>
@@ -123,7 +123,7 @@
 		<dependency>
 			<groupId>org.dhatim</groupId>
 			<artifactId>fastexcel</artifactId>
-			<version>0.15.3</version>
+			<version>0.15.4</version>
 		</dependency>
 
 		<dependency>
@@ -159,7 +159,7 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>oracle-xe</artifactId>
-			<version>1.18.1</version>
+			<version>1.18.3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -241,7 +241,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.1.2</version>
 				<executions>
 					<execution>
 						<id>integration-tests</id>
@@ -264,7 +264,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.1.2</version>
 				<configuration>
 					<argLine>@{argLine}</argLine>
 					<skipTests>${skip.unit.tests}</skipTests>
