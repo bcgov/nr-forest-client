@@ -78,7 +78,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
     service
         .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"))
         .as(StepVerifier::create)
-        .expectError(CannotExtractTokenException.class)
+        .expectError(InvalidAccessTokenException.class)
         .verify();
   }
 
