@@ -67,10 +67,9 @@
             <span v-if="'' !== formData.businessInformation.incorporationNumber &&
                         !formData.businessInformation.goodStandingInd &&
                         '' !== formData.businessInformation.goodStandingInd">
-                <strong>Your business is not in good standing with BC Registries. You must go to
-                        <a href="https://www.bcregistry.ca/business/auth/home/decide-business" target="_blank">BC Registries </a>
-                        to resolve this before you can apply for a client number.
-                </strong>
+                <strong>Not in good standing with BC Registries</strong>
+                <p>Your request for a client number cannot go ahead because {{ formData.businessInformation.businessName }} is not in good standing with BC Registries.</p> 
+                <p>Go to your <a href="https://www.bcregistry.ca/business/auth/home/decide-business" target="_blank">BC Registries </a>account to find out why.</p>
             </span> 
         </CollapseCard>
 
@@ -290,6 +289,7 @@ const { response, error, fetch: persistValidateData } = usePost('/api/clients/su
                                                                 { skip: true, 
                                                                   headers: {
                                                                     'x-user-id': props.submitterInformation.userId,
+
                                                                     'x-user-email': props.submitterInformation.submitterEmail,
                                                                     'x-user-name': props.submitterInformation.submitterFirstName + ' ' +
                                                                                    props.submitterInformation.submitterLastName
