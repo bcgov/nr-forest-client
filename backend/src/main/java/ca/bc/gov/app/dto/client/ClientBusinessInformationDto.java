@@ -21,7 +21,7 @@ public record ClientBusinessInformationDto(
     );*/
     return Map.of(
         "incorporation", "",
-        "name", "",
+        "name", businessName,
         "businessType", "",
         "clientType", "",
         "legalType", "",

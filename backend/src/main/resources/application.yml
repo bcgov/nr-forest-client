@@ -107,6 +107,7 @@ ca:
               - x-sub-id
               - x-user-id
               - x-user-email
+              - x-user-name
             methods:
               - OPTIONS
               - GET

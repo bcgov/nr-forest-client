@@ -26,9 +26,13 @@ public class TestConstants {
 
   public static final String CHES_TOKEN_MESSAGE = """      
       {
-         "access_token": "dummy_access_token",
-         "token_type": "Bearer",         
-       }""";
+          "access_token": "a.b.c",
+          "expires_in": 300,
+          "refresh_expires_in": 0,
+          "token_type": "Bearer",
+          "not-before-policy": 0,
+          "scope": ""
+      }""";
 
   public static final String CHES_400_MESSAGE = """
       {

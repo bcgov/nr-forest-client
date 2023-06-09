@@ -91,7 +91,7 @@ public class ChesCommonServicesService {
                     ChesMailEncoding.UTF_8,
                     "FSA_donotreply@gov.bc.ca",
                     ChesMailPriority.NORMAL,
-                    "Forest Client Application Confirmation",
+                    "Client number application received",
                     null,
                     request.emailTo()
                 )

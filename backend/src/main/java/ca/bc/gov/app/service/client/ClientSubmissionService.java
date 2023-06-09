@@ -129,7 +129,8 @@ public class ClientSubmissionService {
   public Mono<Integer> submit(
       ClientSubmissionDto clientSubmissionDto,
       String userId,
-      String userEmail
+      String userEmail,
+      String userName
   ) {
 
     return
@@ -173,7 +174,7 @@ public class ClientSubmissionService {
                     //Return what we need only
                     .thenReturn(submission.getSubmissionId())
             )
-            .flatMap(submissionId -> sendEmail(submissionId, clientSubmissionDto, userEmail));
+            .flatMap(submissionId -> sendEmail(submissionId, clientSubmissionDto, userEmail, userName));
   }
 
   private Mono<SubmissionLocationContactEntity> saveAndAssociateContact(
@@ -208,14 +209,14 @@ public class ClientSubmissionService {
   private Mono<Integer> sendEmail(
       Integer submissionId,
       ClientSubmissionDto clientSubmissionDto,
-      String email
+      String email,
+      String userName
   ) {
-    System.out.println(clientSubmissionDto);
     return
         chesService
             .buildTemplate(
                 "registration",
-                clientSubmissionDto.description()
+                clientSubmissionDto.description(userName)
             )
             .flatMap(body ->
                 chesService

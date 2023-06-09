@@ -16,6 +16,7 @@ public final class ApplicationConstant {
 
   public static final String USERID_HEADER = "x-user-id";
   public static final String USERMAIL_HEADER = "x-user-email";
+  public static final String USERNAME_HEADER = "x-user-name";
   public static final BcRegistryDocumentRequestBodyDto
       BUSINESS_SUMMARY_FILING_HISTORY =
       new BcRegistryDocumentRequestBodyDto(

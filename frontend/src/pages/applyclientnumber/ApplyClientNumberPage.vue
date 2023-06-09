@@ -173,7 +173,7 @@ async function populateBusinessList(event: any) {
                     method:'get', 
                     headers:{
                         'x-user-id': props.submitterInformation.userId,
-                        'x-user-email': props.submitterInformation.submitterEmail
+                        'x-user-email': props.submitterInformation.submitterEmail,
                    } 
                   });
         filterSearchData(event);
@@ -194,7 +194,7 @@ function filterSearchData(event: any) {
                                                         method:'get',
                                                         headers:{                                                         
                                                             'x-user-id': props.submitterInformation.userId,
-                                                            'x-user-email': props.submitterInformation.submitterEmail                                                    
+                                                            'x-user-email': props.submitterInformation.submitterEmail,
                                                         } 
                                                     });
         watch(
@@ -290,7 +290,9 @@ const { response, error, fetch: persistValidateData } = usePost('/api/clients/su
                                                                 { skip: true, 
                                                                   headers: {
                                                                     'x-user-id': props.submitterInformation.userId,
-                                                                    'x-user-email': props.submitterInformation.submitterEmail
+                                                                    'x-user-email': props.submitterInformation.submitterEmail,
+                                                                    'x-user-name': props.submitterInformation.submitterFirstName + ' ' +
+                                                                                   props.submitterInformation.submitterLastName
                                                                   }
                                                                 });
 
