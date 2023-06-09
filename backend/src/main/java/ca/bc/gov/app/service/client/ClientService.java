@@ -325,7 +325,8 @@ public class ClientService {
                         new ChesRequest(
                             List.of(email),
                             body
-                        )
+                        ),
+                        "Client number application can’t go ahead"
                     )
             )
             .doOnNext(mailId -> log.info("Mail sent, transaction ID is {}", mailId))

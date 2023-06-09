@@ -224,7 +224,8 @@ public class ClientSubmissionService {
                         new ChesRequest(
                             List.of(email),
                             body
-                        )
+                        ),
+                        "Client number application received"
                     )
             )
             .doOnNext(mailId -> log.info("Mail sent, transaction ID is {}", mailId))
