@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,7 +42,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
-@Slf4j
 @DisplayName("Integrated Test | FSA Client Submission Controller")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ClientSubmissionControllerIntegrationTest
@@ -122,7 +120,8 @@ class ClientSubmissionControllerIntegrationTest
         .post()
         .uri("/api/clients/submissions")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+        .header(ApplicationConstant.USERNAME_HEADER,"Test User")
         .body(Mono.just(REGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
@@ -139,7 +138,8 @@ class ClientSubmissionControllerIntegrationTest
         .post()
         .uri("/api/clients/submissions")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+        .header(ApplicationConstant.USERNAME_HEADER,"Test User")
         .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
@@ -158,7 +158,8 @@ class ClientSubmissionControllerIntegrationTest
         .post()
         .uri("/api/clients/submissions")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+        .header(ApplicationConstant.USERNAME_HEADER,"Test User")
         .body(Mono.just(clientSubmissionDto), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isBadRequest()
@@ -196,7 +197,8 @@ class ClientSubmissionControllerIntegrationTest
         .get()
         .uri(uri)
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+        .header(ApplicationConstant.USERNAME_HEADER,"Test User")
         .exchange()
         .expectStatus().isOk()
         .expectBody()

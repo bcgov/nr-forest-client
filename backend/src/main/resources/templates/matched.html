@@ -1,4 +1,36 @@
-<html>
-<body><p>Hi ${name},</p>
-<p>Thanks for registering with us. We'll be in touch at ${identifier}.</p></body>
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:v="urn:schemas-microsoft-com:vml"
+	xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<#include "emailHead.html">
+
+<body width="100%"
+	style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly;">
+
+	<div class="text" style="padding: 0 2.5em; text-align: left;">
+		
+		<#include "emailLogo.html">
+
+		<p>
+			Dear <b>${userName}</b>,
+		</p>
+		<br />
+
+		<p>
+			Your application for a client number can't go ahead because <b>${name}</b>
+			already has one.
+		</p>
+		<p>The number is ${number}. Be sure to keep it for your records.</p>
+		<br />
+		<p>
+			If you need to contact us, email <a
+				href="mailto:FORHVAP.CLIADMIN@gov.bc.ca">FORHVAP.CLIADMIN@gov.bc.ca.</a>
+		</p>
+		<br />
+		<p>Thank you,</p>
+		<p>The CLIENT Team</p>
+	</div>
+
+</body>
 </html>

@@ -71,7 +71,7 @@ public class ChesCommonServicesService {
    * @throws InvalidAccessTokenException if the authorization token is invalid or expired
    * @throws InvalidRoleException        if does not have the required role to perform the requested action
    */
-  public Mono<String> sendEmail(ChesRequest requestContent) {
+  public Mono<String> sendEmail(ChesRequest requestContent, String subject) {
 
     if (requestContent == null) {
       return Mono.error(new InvalidRequestObjectException("no request body was provided"));
@@ -91,7 +91,7 @@ public class ChesCommonServicesService {
                     ChesMailEncoding.UTF_8,
                     "FSA_donotreply@gov.bc.ca",
                     ChesMailPriority.NORMAL,
-                    "Forest Client Application Confirmation",
+                    subject,
                     null,
                     request.emailTo()
                 )

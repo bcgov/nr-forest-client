@@ -129,7 +129,8 @@ public class ClientSubmissionService {
   public Mono<Integer> submit(
       ClientSubmissionDto clientSubmissionDto,
       String userId,
-      String userEmail
+      String userEmail,
+      String userName
   ) {
 
     return
@@ -165,15 +166,15 @@ public class ClientSubmissionService {
                                     .location()
                                     .contacts()
                             )
-                            .flatMap(contact -> saveAndAssociateContact(locations, contact,
-                                submission.getSubmissionId()))
+                            /*.flatMap(contact -> saveAndAssociateContact(locations, contact,
+                                submission.getSubmissionId()))*/
                     )
                     //Then grab all back as a list, to make all reactive flows complete
                     .collectList()
                     //Return what we need only
                     .thenReturn(submission.getSubmissionId())
             )
-            .flatMap(submissionId -> sendEmail(submissionId, clientSubmissionDto, userEmail));
+            .flatMap(submissionId -> sendEmail(submissionId, clientSubmissionDto, userEmail, userName));
   }
 
   private Mono<SubmissionLocationContactEntity> saveAndAssociateContact(
@@ -208,13 +209,14 @@ public class ClientSubmissionService {
   private Mono<Integer> sendEmail(
       Integer submissionId,
       ClientSubmissionDto clientSubmissionDto,
-      String email
+      String email,
+      String userName
   ) {
     return
         chesService
             .buildTemplate(
                 "registration",
-                clientSubmissionDto.description()
+                clientSubmissionDto.description(userName)
             )
             .flatMap(body ->
                 chesService
@@ -222,7 +224,8 @@ public class ClientSubmissionService {
                         new ChesRequest(
                             List.of(email),
                             body
-                        )
+                        ),
+                        "Client number application received"
                     )
             )
             .doOnNext(mailId -> log.info("Mail sent, transaction ID is {}", mailId))

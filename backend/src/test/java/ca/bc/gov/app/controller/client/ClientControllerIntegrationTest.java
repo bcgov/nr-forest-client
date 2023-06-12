@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriBuilder;
 
-@Slf4j
 @DisplayName("Integrated Test | FSA Client Controller")
 class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTest {
 
@@ -271,6 +269,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             .uri("/api/clients/{clientNumber}", Map.of("clientNumber", clientNumber))
             .header(ApplicationConstant.USERID_HEADER,"testUserId")
             .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
+            .header(ApplicationConstant.USERNAME_HEADER,"Test User")
             .exchange()
             .expectStatus().isEqualTo(HttpStatus.valueOf(responseStatus))
             .expectBody()
@@ -351,6 +350,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .uri("/api/clients/name/Power")
         .header(ApplicationConstant.USERID_HEADER,"testUserId")
         .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
+        .header(ApplicationConstant.USERNAME_HEADER,"Test User")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
@@ -376,6 +376,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .uri("/api/clients/name/Jhon")
         .header(ApplicationConstant.USERID_HEADER,"testUserId")
         .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
+        .header(ApplicationConstant.USERNAME_HEADER,"Test User")
         .exchange()
         .expectStatus().isOk()
         .expectBody()

@@ -1,4 +1,39 @@
-<html>
-<body><p>Hi ${business.name},</p>
-<p>Thanks for registering with us. We'll be in touch at ${business.incorporation}.</p></body>
+<!DOCTYPE html>
+<html 
+	lang="en" 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:v="urn:schemas-microsoft-com:vml"
+	xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<#include "emailHead.html">
+
+<body 
+	width="100%"
+	style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly;">
+
+	<div style="text-align: left;">
+
+		<#include "emailLogo.html">
+
+		<p>
+			Dear <b>${userName}</b>,
+		</p>
+		<br />
+
+		<p>
+			We’ve received your application for a client number for <b>${business.name}</b>.
+		</p>
+		<p>We’ll email your client number once we confirm the information
+			you provided.</p>
+		<br />
+		<p>
+			If you need to contact us before then, email <a
+				href="mailto:FORHVAP.CLIADMIN@gov.bc.ca">FORHVAP.CLIADMIN@gov.bc.ca.</a>
+		</p>
+		<br />
+		<p>Thank you,</p>
+		<p>The CLIENT Team</p>
+	</div>
+
+</body>
 </html>
