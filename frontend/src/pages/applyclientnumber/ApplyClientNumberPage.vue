@@ -173,6 +173,8 @@ async function populateBusinessList(event: any) {
                     headers:{
                         'x-user-id': props.submitterInformation.userId,
                         'x-user-email': props.submitterInformation.submitterEmail,
+                        'x-user-name': props.submitterInformation.submitterFirstName + ' ' +
+                                       props.submitterInformation.submitterLastName
                    } 
                   });
         filterSearchData(event);
@@ -194,6 +196,8 @@ function filterSearchData(event: any) {
                                                         headers:{                                                         
                                                             'x-user-id': props.submitterInformation.userId,
                                                             'x-user-email': props.submitterInformation.submitterEmail,
+                                                            'x-user-name': props.submitterInformation.submitterFirstName + ' ' +
+                                                                           props.submitterInformation.submitterLastName
                                                         } 
                                                     });
         watch(

@@ -128,7 +128,8 @@ public class ClientService {
    */
   public Mono<ClientDetailsDto> getClientDetails(
       String clientNumber,
-      String userEmail
+      String userEmail,
+      String userName
       ) {
     log.info("Loading details for {}", clientNumber);
     return
@@ -140,7 +141,7 @@ public class ClientService {
                     .searchLegacy(document.business().identifier(), document.business().legalName())
                     .next()
                     .filter(isMatchWith(document))
-                    .flatMap(sendEmail(userEmail))
+                    .flatMap(sendEmail(userEmail, userName))
                     .flatMap(legacy -> Mono
                         .error(
                             new ClientAlreadyExistException(
@@ -312,12 +313,13 @@ public class ClientService {
             );
   }
 
-  private Function<ForestClientDto,Mono<ForestClientDto>> sendEmail(String email) {
+  private Function<ForestClientDto, 
+                   Mono<ForestClientDto>> sendEmail(String email, String userName) {
     return legacy ->
         chesService
             .buildTemplate(
                 "matched",
-                legacy.description()
+                legacy.description(userName)
             )
             .flatMap(body ->
                 chesService

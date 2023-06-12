@@ -36,9 +36,10 @@ public record ForestClientDto(
     return StringUtils.defaultString(clientName);
   }
 
-  public Map<String, Object> description() {
+  public Map<String, Object> description(String userName) {
     return
         Map.of(
+            "userName", userName,
             "number", clientNumber,
             "name", legalName(),
             "status", ClientStatusCodeEnum.valueOf(clientStatusCode),

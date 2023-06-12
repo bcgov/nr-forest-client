@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +28,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@Slf4j
 @Tag(
     name = "FSA Clients",
     description = "The FSA Client endpoint, responsible for handling client data"
@@ -89,9 +87,10 @@ public class ClientController {
           example = "00000002"
       )
       @PathVariable String clientNumber,
-      @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail
+      @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail,
+      @RequestHeader(ApplicationConstant.USERNAME_HEADER) String userName
   ) {
-    return clientService.getClientDetails(clientNumber,userEmail);
+    return clientService.getClientDetails(clientNumber, userEmail, userName);
   }
 
   @GetMapping("/activeCountryCodes")

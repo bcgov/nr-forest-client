@@ -7,7 +7,6 @@ public record ClientSubmissionDto(
     ClientLocationDto location) {
   public Map<String, Object> description(String userName) {
     Map<String, Object> descriptions = location.description();
-    // TODO: Add here other values
     descriptions.put("business", businessInformation.description());
     descriptions.put("userName", userName);
     return descriptions;
