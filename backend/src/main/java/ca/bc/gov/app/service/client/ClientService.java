@@ -126,8 +126,9 @@ public class ClientService {
    */
   public Mono<ClientDetailsDto> getClientDetails(
       String clientNumber,
-      String userEmail
-  ) {
+      String userEmail,
+      String userName
+      ) {
     log.info("Loading details for {}", clientNumber);
     return
         bcRegistryService
@@ -309,12 +310,13 @@ public class ClientService {
             );
   }
 
-  private Function<ForestClientDto, Mono<ForestClientDto>> sendEmail(String email) {
+  private Function<ForestClientDto, 
+                   Mono<ForestClientDto>> sendEmail(String email, String userName) {
     return legacy ->
         chesService
             .buildTemplate(
                 "matched",
-                legacy.description()
+                legacy.description(userName)
             )
             .flatMap(body ->
                 chesService
@@ -322,7 +324,8 @@ public class ClientService {
                         new ChesRequest(
                             List.of(email),
                             body
-                        )
+                        ),
+                        "Client number application can’t go ahead"
                     )
             )
             .doOnNext(mailId -> log.info("Mail sent, transaction ID is {}", mailId))

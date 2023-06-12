@@ -26,7 +26,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@Slf4j
 @Tag(
     name = "FSA Clients",
     description = "The FSA Client endpoint, responsible for handling client data"
@@ -86,9 +85,10 @@ public class ClientController {
           example = "00000002"
       )
       @PathVariable String clientNumber,
-      @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail
+      @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail,
+      @RequestHeader(ApplicationConstant.USERNAME_HEADER) String userName
   ) {
-    return clientService.getClientDetails(clientNumber,userEmail);
+    return clientService.getClientDetails(clientNumber, userEmail, userName);
   }
 
   @GetMapping("/activeCountryCodes")

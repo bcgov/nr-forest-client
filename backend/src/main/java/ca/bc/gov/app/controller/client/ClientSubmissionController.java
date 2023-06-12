@@ -122,6 +122,14 @@ public class ClientSubmissionController extends
                           implementation = String.class,
                           example = "joe.doe@gov.bc.ca"
                       )
+                  ),
+                  @Header(
+                      name = ApplicationConstant.USERNAME_HEADER,
+                      description = "The name of the submitter who is making the submission",
+                      schema = @Schema(
+                          implementation = String.class,
+                          example = "Joe Doe"
+                      )
                   )
               }
           )
@@ -132,13 +140,14 @@ public class ClientSubmissionController extends
       @RequestBody ClientSubmissionDto request,
       @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
       @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail,
+      @RequestHeader(ApplicationConstant.USERNAME_HEADER) String userName,
       ServerHttpResponse serverResponse) {
     return Mono.just(request)
         .switchIfEmpty(
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
         )
         .doOnNext(this::validate)
-        .flatMap(submissionDto -> clientService.submit(submissionDto,userId,userEmail))
+        .flatMap(submissionDto -> clientService.submit(submissionDto, userId, userEmail, userName))
         .doOnNext(submissionId ->
             serverResponse
                 .getHeaders()

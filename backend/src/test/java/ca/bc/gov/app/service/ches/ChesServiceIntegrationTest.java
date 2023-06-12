@@ -63,7 +63,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         );
 
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"))
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"),"Test")
         .as(StepVerifier::create)
         .expectNext("00000000-0000-0000-0000-000000000000")
         .verifyComplete();
@@ -76,7 +76,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
     mockOAuthFail();
 
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"))
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"),"Test")
         .as(StepVerifier::create)
         .expectError(InvalidAccessTokenException.class)
         .verify();
@@ -92,7 +92,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
 
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"))
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"),"Test")
         .as(StepVerifier::create)
         .expectError(InvalidAccessTokenException.class)
         .verify();
@@ -107,7 +107,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         .stubFor(post("/chess/uri").willReturn(forbidden()));
 
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"))
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"),"Test")
         .as(StepVerifier::create)
         .expectError(InvalidRoleException.class)
         .verify();
@@ -130,7 +130,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         );
 
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "<p>I am an HTML</p>"))
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "<p>I am an HTML</p>"),"Test")
         .as(StepVerifier::create)
         .expectNext("00000000-0000-0000-0000-000000000000")
         .verifyComplete();
@@ -154,7 +154,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
     service
         .sendEmail(
             new ChesRequest(List.of("jhon@mail.ca"),
-                "Thanks for your email\nYou will hear from us soon"))
+                "Thanks for your email\nYou will hear from us soon"),"Test")
         .as(StepVerifier::create)
         .expectNext("00000000-0000-0000-0000-000000000000")
         .verifyComplete();
@@ -177,7 +177,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
     service
         .sendEmail(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon"))
+            "Thanks for your email\nYou will hear from us soon"),"Test")
         .as(StepVerifier::create)
         .expectError(UnableToProcessRequestException.class)
         .verify();
@@ -200,7 +200,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
     service
         .sendEmail(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon"))
+            "Thanks for your email\nYou will hear from us soon"),"Test")
         .as(StepVerifier::create)
         .expectError(BadRequestException.class)
         .verify();
@@ -223,7 +223,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
     service
         .sendEmail(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon"))
+            "Thanks for your email\nYou will hear from us soon"),"Test")
         .as(StepVerifier::create)
         .expectError(UnexpectedErrorException.class)
         .verify();
@@ -246,7 +246,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         );
 
     service
-        .sendEmail(request)
+        .sendEmail(request,"Test")
         .as(StepVerifier::create)
         .expectError()
         .verify();
@@ -269,7 +269,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         );
 
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca", "james@mail.ca"), "simple body"))
+        .sendEmail(new ChesRequest(List.of("jhon@mail.ca", "james@mail.ca"), "simple body"),"Test")
         .as(StepVerifier::create)
         .expectNext("00000000-0000-0000-0000-000000000000")
         .verifyComplete();
