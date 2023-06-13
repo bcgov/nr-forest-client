@@ -133,8 +133,8 @@ create table if not exists nrfc.province_code (
     constraint province_code_country_code_fk foreign key (country_code) references nrfc.country_code(country_code)
 );
 
-comment on table nrfc.province_code is 'A list of provinces, serving as a reference for province-specific data.';
-comment on column nrfc.province_code.province_code is 'A code representing the code of a province.';
+comment on table nrfc.province_code is 'A list of provinces, states, departments or territories, serving as a reference for province-specific data.';
+comment on column nrfc.province_code.province_code is 'A code representing the code of a province, state, department or territory.';
 comment on column nrfc.province_code.country_code is 'A code representing the country in which the province is located.';
 comment on column nrfc.province_code.description is 'The description of the code value.';
 comment on column nrfc.province_code.effective_date is 'The date that the code value has become or is expected to become effective. Default is the data that the code value is created.';
@@ -222,8 +222,7 @@ create table if not exists nrfc.submission_detail (
 	constraint submission_detail_id_pk primary key (submission_detail_id),
 	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
     constraint submission_detail_business_type_code_fk foreign key (business_type_code) references nrfc.business_type_code(business_type_code),
-    constraint submission_detail_client_type_code_fk foreign key (client_type_code) references nrfc.client_type_code(client_type_code),
-    constraint submission_detail_submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id)
+    constraint submission_detail_client_type_code_fk foreign key (client_type_code) references nrfc.client_type_code(client_type_code)
 );
 
 comment on table nrfc.submission_detail is 'The details of a submission request to create a client.';
@@ -270,7 +269,7 @@ comment on column nrfc.submission_location.submission_location_id is 'Incrementa
 comment on column nrfc.submission_location.submission_id is 'Incremental id generated for a submission of a client.';
 comment on column nrfc.submission_location.street_address is 'The address of a client, including the street number and street name.';
 comment on column nrfc.submission_location.country_code is 'A code representing the code of a country.';
-comment on column nrfc.submission_location.province_code is 'A code representing the code of a province.';
+comment on column nrfc.submission_location.province_code is 'A code representing the code of a province, state, department or territory.';
 comment on column nrfc.submission_location.city_name is 'The name of the city of the location.';
 comment on column nrfc.submission_location.location_name is 'The location name of an address. Examples of location names include, but are not limited to, Mailing Address, Billing Address among others.';
 
