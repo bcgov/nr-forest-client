@@ -6,6 +6,7 @@ import type { KeycloakInstance } from "keycloak-js";
 import type { VueKeycloakInstance } from "@dsb-norge/vue-keycloak-js/dist/types";
 import { keycloakUrl, keycloakClientId, nodeEnv } from "./core/CoreConstants";
 
+
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue-3/dist/bootstrap-vue-3.css";
@@ -14,6 +15,8 @@ import "bootstrap-vue-3/dist/bootstrap-vue-3.css";
 import "@carbon/web-components/es";
 import "carbon-components/css/carbon-components.min.css";
 import "@/assets/theme/components-overrides.scss";
+
+import "@/assets/global.css";
 
 const app = createApp(App);
 app.use(VueTheMask);

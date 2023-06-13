@@ -24,31 +24,39 @@
     note='All fields must be filled out correctly to enable the "Next" button below'
   /><br /><br />
 
-  <b-button
-    squared
-    class="chefsBlue"
+  <bx-btn
+  v-show="!isFirst"
+    kind="secondary"
+    iconLayout=""
+    class="bx--btn"
     :disabled="isFirst"
     @click.prevent="onBack"
   >
-    Back
-  </b-button>
+  <span>Back</span>
+  </bx-btn>
 
-  <b-button
-    squared
-    class="chefsBlue"
+ 
+  <bx-btn
+    kind="primary"
+    iconLayout=""
+    class="bx--btn"
     :disabled="isNextAvailable"
-    v-if="!isLast"
+    v-show="!isLast"
     @click.prevent="onNext"
+    size="field"
   >
-    Next
-  </b-button>
+    <span>Next</span>
+    <arrowRight16 slot="icon"/>    
+  </bx-btn>
 
-  <b-button squared class="chefsBlue" v-if="isLast"> Submit </b-button>
+  <bx-btn kind="primary"
+    iconLayout=""
+    class="bx--btn" v-show="isLast"> Submit </bx-btn>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, useSlots, provide, reactive } from "vue";
-
+import arrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 import Note from "@/common/NoteComponent.vue";
 
 defineProps<{
@@ -57,7 +65,7 @@ defineProps<{
 }>();
 
 //Start from the first tab of the wizard
-const currentTab = ref(0);
+const currentTab = ref(1);
 
 //Slot control to handle data from active slot
 const slots = useSlots();
@@ -107,7 +115,7 @@ const onNext = () => {
 
 <style scoped>
 .chefsBlue {
-  background: #003366;
+  background: #0073E6;
 }
 .wizard-header {
   align-items: flex-start;

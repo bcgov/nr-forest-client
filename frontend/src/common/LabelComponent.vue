@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import BiQuestionCircleFill from "~icons/bi/question-circle-fill";
+import BiQuestionCircleFill from "~icons/carbon/help-filled";
 
 const props = defineProps({
   label: {
