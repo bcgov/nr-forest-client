@@ -55,6 +55,18 @@ watch([autoCompleteResult], () => {
       autoCompleteResult.value.legalType;
   }
 });
+
+// -- Unregistered Proprietorship
+watch([showAutoComplete],() =>{
+  if(formData.value.businessInformation.businessType === "U"){
+    const {firstName, lastName} = formData.value.location.contacts[0];
+    formData.value.businessInformation.businessName = `${firstName} ${lastName}`;
+    validation.business = true;
+  }else{
+    formData.value.businessInformation.businessName = "";
+    validation.business = false;
+  }
+});
 </script>
 
 <template>
@@ -113,4 +125,14 @@ watch([autoCompleteResult], () => {
       @update:selected-value="autoCompleteResult = $event"
     />
   </data-fetcher>
+
+  <text-input-component
+    v-if="!showAutoComplete"
+    id="businessName"
+    label="Unregistered Priprietorship"
+    placeholder=""
+    v-model="formData.businessInformation.businessName"
+    :validations="[]"
+    :enabled="false"
+  />
 </template>
