@@ -100,11 +100,7 @@ formData.location.contacts = [
 
 watch([formData], () => {});
 
-const debug = (x: any) => console.log("DEBUG MAIN", JSON.stringify(x));
 </script>
 
 <style scoped>
-.chefsBlue {
-  background: #003366;
-}
 </style>
