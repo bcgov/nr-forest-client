@@ -1,0 +1,36 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint",
+		"eslint.enable": true,
+		"editor.formatOnPaste": true,
+		"editor.formatOnSave": true,
+		"editor.codeActionsOnSave": {
+			"source.fixAll.eslint": true
+		},
+		"vs-code-prettier-eslint.prettierLast": true,
+		"eslint.validate": [
+			"javascript",
+			"typescript"
+		],
+		"editor.tabSize": 2,
+		"workbench.tree.indent": 20,
+		"workbench.iconTheme": "material-icon-theme"
+	},
+	"recommendations": [
+		"Vue.volar",
+		"Vue.vscode-typescript-vue-plugin",
+		"ms-vscode.vscode-typescript-next",
+		"antfu.vite",
+		"ZixuanChen.vitest-explorer",
+		"esbenp.prettier-vscode",
+		"rvest.vs-code-prettier-eslint",
+		"wayou.vscode-todo-highlight",
+		"pmneo.tsimporter",
+		"dbaeumer.vscode-eslint"
+	]
+}

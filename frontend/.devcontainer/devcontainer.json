@@ -1,0 +1,32 @@
+{
+	"name": "Node.js & TypeScript",
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:0-18",
+	"features": {
+		"ghcr.io/devcontainers-contrib/features/vue-cli:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/java:1": {
+			"version": "17"
+		}
+	},
+	"forwardPorts": [
+		8080
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"Vue.volar",
+				"Vue.vscode-typescript-vue-plugin",
+				"ms-vscode.vscode-typescript-next",
+				"antfu.vite",
+				"ZixuanChen.vitest-explorer",
+				"esbenp.prettier-vscode",
+				"rvest.vs-code-prettier-eslint",
+				"wayou.vscode-todo-highlight",
+				"pmneo.tsimporter",
+				"dbaeumer.vscode-eslint"
+			]
+		}
+	},
+	"remoteUser": "${localEnv:USER}"
+}
