@@ -166,18 +166,23 @@ public class ClientSubmissionService {
                                     .location()
                                     .contacts()
                             )
-                            /*.flatMap(contact -> saveAndAssociateContact(locations, contact,
-                                submission.getSubmissionId()))*/
+                    /*.flatMap(contact -> saveAndAssociateContact(
+                                            locations, 
+                                            contact,
+                                            submission.getSubmissionId()))*/
                     )
                     //Then grab all back as a list, to make all reactive flows complete
                     .collectList()
                     //Return what we need only
                     .thenReturn(submission.getSubmissionId())
             )
-            .flatMap(submissionId -> sendEmail(submissionId, clientSubmissionDto, userEmail, userName));
+            .flatMap(submissionId -> sendEmail(submissionId, 
+                                               clientSubmissionDto, 
+                                               userEmail, 
+                                               userName));
   }
 
-  private Mono<SubmissionLocationContactEntity> saveAndAssociateContact(
+  /*private Mono<SubmissionLocationContactEntity> saveAndAssociateContact(
       List<SubmissionLocationEntity> locations,
       ClientContactDto contact,
       Integer submissionId
@@ -192,7 +197,7 @@ public class ClientSubmissionService {
                 .build()
         )
         .flatMap(submissionLocationContactRepository::save);
-  }
+  }*/
 
   private Mono<List<SubmissionLocationEntity>> saveAddresses(
       ClientSubmissionDto clientSubmissionDto,
