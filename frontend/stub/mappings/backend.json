@@ -13,12 +13,23 @@
     },
     {
       "request": {
-        "urlPattern": "/api/clients/XX(.*)",
+        "urlPattern": "/api/clients/(XX|YY)(.*)",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "body": "{\"name\":\"SAMPLE DATA\",\"id\":\"{{request.path.[2]}}\",\"goodStanding\":true,\"addresses\":[{\"streetAddress\":\"123 Fake DR\",\"country\":{\"value\":\"CA\",\"text\":\"Canada\"},\"province\":{\"value\":\"BC\",\"text\":\"British Columbia\"},\"city\":\"Fakest City\",\"postalCode\":\"AAA000\",\"index\":0,\"locationName\":\"Mailing Address\"}],\"contacts\":[{\"contactType\":{\"value\":\"P\",\"text\":\"Person\"},\"firstName\":\"Jhon\",\"lastName\":\"Wick\",\"phoneNumber\":\"0000000000\",\"email\":\"babayaga@theguild.ca\",\"index\":0,\"locations\":[{\"value\":\"0\",\"text\":\"Mailing Address\"}]}]}",
+        "bodyFileName": "response-details-{{regexExtract request.path.[2] '(XX|YY)(.*)' 'parts'}}{{parts.0}}.json",
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/api/clients/ZZ(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 409,
+        "body": "The Dupped Company already exists with the Incorporation number {{request.path.[2]}} and client number 999999",
         "transformers": ["response-template"]
       }
     },
