@@ -1,11 +1,13 @@
 <template>
-  <bx-form-item>
-    <bx-input
+  <div>
+  <label v-if="!enabled" :for="id" class="bx--label">{{label}}</label>
+  <bx-form-item>    
+    <bx-input      
       :id="id"
       :data-id="'input-' + id"
       :placeholder="placeholder"
       :value="selectedValue"
-      :label-text="label"
+      :label-text="enabled ? label : null"
       :helper-text="tip"
       :disabled="!enabled"
       :color-scheme="enabled ? '' : 'light'"
@@ -14,6 +16,7 @@
     />
   </bx-form-item>
   <span v-if="error" class="error-message">{{ error }}</span>
+  </div>
 </template>
 
 <script setup lang="ts">

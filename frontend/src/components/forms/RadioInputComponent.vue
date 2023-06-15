@@ -1,18 +1,22 @@
 <template>
-  <bx-radio-button-group
-    label-position="right"
-    orientation="vertical"
-    :name="id + 'rb'"
-    v-model="selectedValue"
-    @bx-radio-button-group-changed="updateSelectedValue"
-  >
-    <bx-radio-button
-      v-for="option in modelValue"
-      :key="id + 'rb' + option.value"
-      :label-text="option.text"
-      :value="option.value"
-    />
-  </bx-radio-button-group>
+  <div>
+    <label :for="id + 'rb'" class="bx--label">{{label}}</label>
+    <bx-radio-button-group
+      label-position="right"
+      orientation="vertical"
+      :name="id + 'rb'"
+      :id="id + 'rb'"
+      v-model="selectedValue"
+      @bx-radio-button-group-changed="updateSelectedValue"
+    >
+      <bx-radio-button
+        v-for="option in modelValue"
+        :key="id + 'rb' + option.value"
+        :label-text="option.text"
+        :value="option.value"
+      />
+    </bx-radio-button-group>
+  </div>
 </template>
 
 <script setup lang="ts">
