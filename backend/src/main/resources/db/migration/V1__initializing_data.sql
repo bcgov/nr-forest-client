@@ -281,6 +281,7 @@ create table if not exists nrfc.submission_contact (
 	last_name                  varchar(100)     null,
     business_phone_number      varchar(20)      not null,
     email_address              varchar(100)     not null,
+    idp_user_id                varchar(50)      null,
     constraint submission_contact_id_pk primary key (submission_contact_id),
     constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
     constraint submission_contact_contact_type_code_fk foreign key (contact_type_code) references nrfc.contact_type_code(contact_type_code)
@@ -294,6 +295,7 @@ comment on column nrfc.submission_contact.first_name is 'The first name of the c
 comment on column nrfc.submission_contact.last_name is 'The last name of the client''s contact.';
 comment on column nrfc.submission_contact.business_phone_number is 'The phone number of the client''s contact.';
 comment on column nrfc.submission_contact.email_address is 'The email address of the client''s contact.';
+comment on column nrfc.submission_contact.idp_user_id is 'The unique identifier assigned to a user by the Identity Provider.';
 
 create table if not exists nrfc.submission_location_contact_xref (
     submission_location_id      integer			not null,
