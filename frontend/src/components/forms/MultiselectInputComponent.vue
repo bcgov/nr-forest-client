@@ -30,6 +30,7 @@ const props = defineProps<{
   label: string;
   tip: string;
   modelValue: Array<CodeNameType>;
+  selectedValues: Array<string>;
   initialValue: string;
   validations: Array<Function>;
 }>();
@@ -77,20 +78,27 @@ watch(
 //Controls the selected values
 const items = ref<string[]>([]);
 
-const addFromSelection = (itemCode: string) => {
-  const reference = props.modelValue.find((entry) => entry.code === itemCode);
-  if (reference) items.value.push(reference.name);
-};
 
-const removeFromSelection = (itemName: string) =>
-  (items.value = items.value.filter((entry) => entry !== itemName));
-
-watch([items], () => {
-  const reference = props.modelValue.filter((entry) =>
-    items.value.includes(entry.name)
-  );
+const emitChange = () => {
+  const reference = props.modelValue.filter((entry) => items.value.includes(entry.name));
   emit("update:modelValue", items.value);
   emit("update:selectedValue", reference);
   emit("empty", reference.length === 0);
-});
+}
+
+const addFromSelection = (itemCode: string) => {
+  const reference = props.modelValue.find((entry) => entry.code === itemCode);
+  if (reference) items.value.push(reference.name);
+  emitChange();
+};
+
+const removeFromSelection = (itemName: string) => {
+  items.value = items.value.filter((entry) => entry !== itemName);
+  emitChange();
+}
+
+watch([items], () => emitChange());
+
+props.selectedValues?.forEach((value:string) => addFromSelection(value));
+
 </script>

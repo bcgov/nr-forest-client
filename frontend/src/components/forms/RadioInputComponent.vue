@@ -21,15 +21,13 @@
 import { ref, watch } from "vue";
 import { type CodeDescrType, isEmpty } from "@/core/CommonTypes";
 
-const props = defineProps({
-  id: { type: String, required: true },
-  label: { type: String, required: true },
-  modelValue: {
-    type: Array<CodeDescrType>,
-    required: true,
-  },
-  validations: { type: Array<Function>, required: true },
-});
+const props = defineProps<{
+  id: string;
+  label: string;
+  modelValue: Array<CodeDescrType>;
+  initialValue: string;
+  validations: Array<Function>;
+}>();
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
@@ -38,7 +36,7 @@ const emit = defineEmits<{
   (e: "update:model-value", value: string | undefined): void;
 }>();
 
-const selectedValue = ref({});
+const selectedValue = ref<string>(props.initialValue);
 //We initialize the error message handling for validation
 const error = ref<string | undefined>("");
 
@@ -68,6 +66,7 @@ watch(selectedValue, () => {
   );
   emit("empty", isEmpty(selectedValue));
 });
+
 //We watch for error changes to emit events
 watch(error, () => emit("error", error.value));
 </script>
