@@ -1,20 +1,5 @@
 import type { CodeDescrType } from "@/core/CommonTypes";
 
-export interface FormDataDto {
-  businessInformation: {
-    businessType: string;
-    legalType: string;
-    clientType: string;
-    incorporationNumber: string;
-    businessName: string;
-    goodStandingInd: string;
-  };
-  location: {
-    addresses: Address[];
-    contacts: Contact[];
-  };
-}
-
 export interface Address {
   locationName: string;
   streetAddress: string;
@@ -32,6 +17,31 @@ export interface Contact {
   phoneNumber: string;
   email: string;
 }
+
+export interface FormDataDto {
+  businessInformation: {
+    businessType: string;
+    legalType: string;
+    clientType: string;
+    incorporationNumber: string;
+    businessName: string;
+    goodStandingInd: string;
+  };
+  location: {
+    addresses: Address[];
+    contacts: Contact[];
+  };
+}
+
+
+export interface ForestClientDetailsDto{
+  name: string;
+  id: string;
+  goodStanding: boolean;
+  addresses: Address[];
+  contacts: Contact[];
+}
+
 
 export const formDataDto: FormDataDto = {
   businessInformation: {

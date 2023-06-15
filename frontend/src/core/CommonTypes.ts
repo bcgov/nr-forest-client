@@ -26,3 +26,9 @@ export const isEmpty = (receivedValue: any): boolean => {
   const value = isRef(receivedValue) ? receivedValue.value : receivedValue;
   return value === undefined || value === null || value === "";
 };
+
+export enum ClientTypeEnum {
+  Unknow,
+  R,
+  U
+}
