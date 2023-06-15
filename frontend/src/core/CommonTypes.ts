@@ -32,3 +32,9 @@ export enum ClientTypeEnum {
   R,
   U
 }
+
+export interface ProgressData {
+  kind: string;
+  title: string;
+  subtitle: string;
+}

@@ -28,6 +28,7 @@ declare module '@vue/runtime-core' {
     MultiselectInputComponent: typeof import('./src/components/forms/MultiselectInputComponent.vue')['default']
     RadioInputComponent: typeof import('./src/components/forms/RadioInputComponent.vue')['default']
     TextInputComponent: typeof import('./src/components/forms/TextInputComponent.vue')['default']
+    WizardProgressIndicatorComponent: typeof import('./src/components/wizard/WizardProgressIndicatorComponent.vue')['default']
     WizardTabComponent: typeof import('./src/components/wizard/WizardTabComponent.vue')['default']
     WizardWrapperComponent: typeof import('./src/components/wizard/WizardWrapperComponent.vue')['default']
   }

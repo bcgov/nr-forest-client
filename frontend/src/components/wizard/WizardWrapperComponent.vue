@@ -1,68 +1,59 @@
 <template>
-  <header class="wizard-header">
-    <h4 class="wizard-title">{{ title }}</h4>
-    <span class="wizard-subtitle">{{ subtitle }}</span>
-
-    <bx-progress-indicator class="form-progress">
-      <bx-progress-step
-        class="form-progress-step"
-        v-for="aslot in currentSlots"
-        :key="aslot.props?.title"
-        :label-text="aslot.props?.title"
-        :secondary-label-text="'Step ' + (aslot.props?.index + 1)"
-        state="complete"
-      ></bx-progress-step>
-    </bx-progress-indicator>
-  </header>
+  <div class="wizard-wrap">
+     <div>
+        <h4 class="form-header">{{title}}</h4>  
+        <p class="inner-text" v-if="subtitle">{{subtitle}}</p>
+      </div>
+      
+      <wizard-progress-indicator-component :model-value="progressData" />
+  </div>
 
   <slot :processValidity="processValidity" />
+  <div class="wizard-wrap">
+    <hr />
 
-  <hr />
-
-  <Note
-    v-if="!isStateValid(currentTab)"
-    note='All fields must be filled out correctly to enable the "Next" button below'
-  /><br /><br />
-
-  <bx-btn
-    v-show="!isFirst"
-    kind="secondary"
-    iconLayout=""
-    class="bx--btn"
-    :disabled="isFirst"
-    @click.prevent="onBack"
-    size="field"
-  >
-  <span>Back</span>
-  </bx-btn>
-
+    <span class="inner-text" v-if="!isStateValid(currentTab)">All fields must be filled out correctly to enable the "Next" button below</span>
+  
+    <bx-btn
+      v-show="!isFirst"
+      kind="secondary"
+      iconLayout=""
+      class="bx--btn"
+      :disabled="isFirst"
+      @click.prevent="onBack"
+      size="field"
+    >
+    <span>Back</span>
+    </bx-btn>
  
-  <bx-btn
-    kind="primary"
-    iconLayout=""
-    class="bx--btn"
-    :disabled="isNextAvailable"
-    v-show="!isLast"
-    @click.prevent="onNext"
-    size="field"
-  >
-    <span>Next</span>
-    <arrowRight16 slot="icon"/>    
-  </bx-btn>
+    <bx-btn
+      kind="primary"
+      iconLayout=""
+      class="bx--btn"
+      :disabled="isNextAvailable"
+      v-show="!isLast"
+      @click.prevent="onNext"
+      size="field"
+    >
+      <span>Next</span>
+      <arrowRight16 slot="icon"/>    
+    </bx-btn>
 
-  <bx-btn 
-  kind="primary"
-    iconLayout=""
-    class="bx--btn"
-    :disabled="isNextAvailable"
-    size="field"
-  v-show="isLast"> Submit </bx-btn>
+    <bx-btn 
+      kind="primary"
+      iconLayout=""
+      class="bx--btn"
+      :disabled="isNextAvailable"
+      size="field"
+      v-show="isLast">
+      <span>Submit</span>
+    </bx-btn>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, useSlots, provide, reactive } from "vue";
 import arrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
-import Note from "@/common/NoteComponent.vue";
 
 defineProps<{
   title: string;
@@ -116,48 +107,30 @@ const onNext = () => {
     currentTab.value++;
   }
 };
+
+const stateIcon = (index: number) =>{
+  console.log(`Index ${index} is ${(currentTab.value == index)} ${(currentTab.value < index)}`)
+  if(currentTab.value == index) return "current";
+  if(currentTab.value > index) return "complete";
+  return "queued";
+}
+
+
+const progressData = computed(() => currentSlots.map((aSlot:any) => { return { title:aSlot.props?.title, subtitle:`Step ${aSlot.props?.index + 1}`, kind:stateIcon(aSlot.props?.index) } }));
+
 </script>
 
 <style scoped>
-.chefsBlue {
-  background: #0073E6;
-}
-.wizard-header {
-  align-items: flex-start;
-  flex-direction: column;
-  display: flex;
-  padding: 0;
-}
-.wizard-title {
-  /*Fixed heading styles/heading-05*/
-  font-family: "BC Sans";
-  font-size: 32px;
-  font-weight: 400;
-  line-height: 40px;
-  letter-spacing: 0px;
-  text-align: left;
-}
-.wizard-subtitle {
-  font-family: "BC Sans";
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  letter-spacing: 0.16px;
-  text-align: left;
-  margin-bottom: 24px;
-}
 .form-progress {
-  margin-bottom: 40px;
+  margin-bottom: 64px;
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: 0px 0px 40px 0px;
-  align-self: stretch;
+  justify-content: space-between;
 }
-.form-progress-step::before {
-  border-top: 2px solid #0073e6;
+.form-progress-step{
+  flex-grow: 1;
 }
-.form-progress-step:after {
-  border-top: 2px solid #dfdfe1;
+
+.form-progress-step > *{
+  overflow: initial;
 }
 </style>
