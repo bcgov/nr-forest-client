@@ -4,9 +4,7 @@
     orientation="vertical"
     :name="id + 'rb'"
     v-model="selectedValue"
-    @bx-radio-button-group-changed="
-      (event:any) => (selectedValue = event.detail.value)
-    "
+    @bx-radio-button-group-changed="updateSelectedValue"
   >
     <bx-radio-button
       v-for="option in modelValue"
@@ -18,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch  } from "vue";
 import { type CodeDescrType, isEmpty } from "@/core/CommonTypes";
 
 const props = defineProps<{
@@ -69,4 +67,7 @@ watch(selectedValue, () => {
 
 //We watch for error changes to emit events
 watch(error, () => emit("error", error.value));
+
+const updateSelectedValue = (event: any) =>(selectedValue.value = event.detail.value);
+
 </script>

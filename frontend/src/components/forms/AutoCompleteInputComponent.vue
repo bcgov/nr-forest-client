@@ -69,7 +69,7 @@ const error = ref<string | undefined>("");
 watch(error, () => emit("error", error.value));
 
 //We set the value prop as a reference for update reason
-const selectedValue = ref("");
+const selectedValue = ref(props.modelValue);
 
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
