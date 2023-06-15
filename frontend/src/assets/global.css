@@ -3,3 +3,18 @@
   padding: 3px;
 }
 
+.bulleted-list{
+  list-style: decimal;
+  margin-left: 1.5rem;
+}
+
+.bulleted-list li{
+  padding: 5px;
+}
+
+.notification{
+  max-width: 100%;
+}
+.bx--inline-notification__text-wrapper{
+  display: flex-root;
+}
