@@ -1,6 +1,6 @@
 <template>
   <header class="wizard-header">
-    <h5 class="wizard-title">{{ title }}</h5>
+    <h4 class="wizard-title">{{ title }}</h4>
     <span class="wizard-subtitle">{{ subtitle }}</span>
 
     <bx-progress-indicator class="form-progress">

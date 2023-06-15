@@ -1,22 +1,7 @@
 <template>
-  <h4>Contacts</h4>
-  <br />
-  <h5>Add authorized people to the account</h5>
-  <Note
-    note="Your first name, last name and email address are from your BCeID. If they're incorrect, go to BCeID to update them"
-  />
-  <Note
-    note="before submitting your form. Be sure to add your phone number, location and role."
-  />
-  <br /><br />
-  <Note
-    note="To add another contact to the account, select '+ Add another contact' button below."
-  />
-  <br /><br /><br />
-
   <contact-group-component
     :id="0"
-    v-model="formData.location.contacts[0]"
+    v-model="formData.location.contacts[0]" 
     :roleList="roleList"
     :addressList="addresses"
     :validations="[]"
@@ -25,13 +10,10 @@
     @valid="updateValidState(0, $event)"
   />
 
-  <br /><br />
-
   <div v-show="otherContacts.length > 0">
     <h5>Additional address</h5>
     <br />
-    <Note note="Provide a name to identify your additional address" />
-    <br /><br /><br />
+    <Note note="Provide a name to identify your additional address" />    
   </div>
 
   <contact-group-component
@@ -47,15 +29,21 @@
     @valid="updateValidState(index + 1, $event)"
   />
 
-  <div v-show="otherContacts.length > 0"><br /><br /><br /></div>
-
-  <bx-btn kind="tertiary" icon-layout="regular" @click="addContact"
-    >Add another contact +</bx-btn
+  <bx-btn    
+    kind="tertiary"
+    iconLayout=""
+    class="bx--btn"    
+    @click.prevent="addContact"
+    size="field"
   >
+  <span>Add another contact</span>
+  <add16 slot="icon"/>
+  </bx-btn>
 </template>
 
 <script setup lang="ts">
 import { watch, ref, computed, reactive } from "vue";
+import add16 from "@carbon/icons-vue/es/add/16";
 
 import {
   type FormDataDto,

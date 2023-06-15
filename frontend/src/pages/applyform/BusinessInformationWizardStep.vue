@@ -126,20 +126,6 @@ watch([selectedOption],() =>{
 </script>
 
 <template>
-  <h4>Before you begin</h4>
-  <Label
-    label="1. A registered business must be in good standing with BC Registries"
-    id="bil1"
-  />
-
-  <Label label="2. You must be able to receive email" id="bil2" />
-  <hr />
-  <br />
-
-  <h4>Business information</h4>
-  <Note note="Enter the business information" />
-  <br /><br /><br />
-
   <radio-input-component
     id="businessType"
     label="Type of business (choose one of these options)"
@@ -173,6 +159,35 @@ watch([selectedOption],() =>{
       :validations="[]"
       @update:selected-value="autoCompleteResult = $event"      
     />
+        
+    <display-block-component
+      kind="info"
+      title="B.C. registered business name"
+      v-show="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
+      id="business"
+    >
+    <div>    
+      <p>If the name of your registered business does not appear in the list, follow these steps:</p>
+      <ol type="1" class="bulleted-list">
+        <li>Log into Manage Account in <a href="https://www.bceid.ca/" target="_blank">BCeID</a> to find your business name</li>
+        <li>If your name isn’t there, call BC Registry toll free at <a href="tel:18775261526">1-877-526-1526</a> or email them at <a href="mailto:BCRegistries@gov.bc.ca">BCRegistries@gov.bc.ca</a>.</li>
+      </ol>    
+    </div>
+    </display-block-component>
+
+    <display-block-component
+    v-show="showGoodStandingError"
+    kind="error"
+    title="Not in good standing with BC Registries">
+    <p>Your request for a client number cannot go ahead because “{{formData.businessInformation.businessName}}” is not in good standing with BC Registries. Go to your <a href="https://www.bcregistry.gov.bc.ca/" target="_blank">BC Registries</a> account to find out why.</p>
+    </display-block-component>
+
+    <display-block-component
+    v-show="showDuplicatedError"
+    kind="error"
+    title="Client already exists">
+    <p>Your application for a client number can't go ahead because “{{formData.businessInformation.businessName}}” already has one. Check your email {{ formData.location.contacts[0].email }} to find out what it is</p>
+    </display-block-component>
   </data-fetcher>
 
   <text-input-component
@@ -186,33 +201,5 @@ watch([selectedOption],() =>{
   />
 <br />
   
-<display-block-component
-  kind="info"
-  title="B.C. registered business name"
-  v-show="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
-  id="business"
->
-<div>    
-  <p>If the name of your registered business does not appear in the list, follow these steps:</p>
-  <ol type="1" class="bulleted-list">
-    <li>Log into Manage Account in <a href="https://www.bceid.ca/" target="_blank">BCeID</a> to find your business name</li>
-    <li>If your name isn’t there, call BC Registry toll free at <a href="tel:18775261526">1-877-526-1526</a> or email them at <a href="mailto:BCRegistries@gov.bc.ca">BCRegistries@gov.bc.ca</a>.</li>
-  </ol>    
-</div>
-</display-block-component>
-
-<display-block-component
-v-show="showGoodStandingError"
-kind="error"
-title="Not in good standing with BC Registries">
-<p>Your request for a client number cannot go ahead because “{{formData.businessInformation.businessName}}” is not in good standing with BC Registries. Go to your <a href="https://www.bcregistry.gov.bc.ca/" target="_blank">BC Registries</a> account to find out why.</p>
-</display-block-component>
-
-<display-block-component
-v-show="showDuplicatedError"
-kind="error"
-title="Client already exists">
-<p>Your application for a client number can't go ahead because “{{formData.businessInformation.businessName}}” already has one. Check your email {{ formData.location.contacts[0].email }} to find out what it is</p>
-</display-block-component>
   
 </template>

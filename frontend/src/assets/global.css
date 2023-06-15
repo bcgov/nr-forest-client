@@ -1,6 +1,7 @@
 .bx--btn{  
   width: 243px;  
   padding: 3px;
+  border-radius: 4px; 
 }
 
 .bulleted-list{
@@ -17,4 +18,35 @@
 }
 .bx--inline-notification__text-wrapper{
   display: flex-root;
+}
+
+.inner-heading{
+  font-size: 20px;
+  line-height: 28px;
+  margin-bottom: 8px;
+}
+
+.inner-text {    
+  font-style: normal;    
+  font-size: 16px;
+  line-height: 24px;
+  color: #606062;  
+}
+.inner-text-spaced{
+  margin-bottom: 32px;
+}
+
+.form-header{
+  font-size: 28px; 
+}
+
+.visible-disabled{
+  color: #525252;
+}
+
+.wizard-wrap{
+  display: flex;
+  flex-direction: column;
+  padding: 0px 32px;
+  gap: 40px;
 }

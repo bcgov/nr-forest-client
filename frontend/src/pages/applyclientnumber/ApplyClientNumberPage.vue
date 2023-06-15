@@ -7,18 +7,28 @@
     >
       <wizard-tab-component
         title="Business Information"
+        sub-title="Enter the business information"
         :index="0"
         :valid="false"
-        :wizard="slotProps"
-        v-slot="{ validateStep, active }"
+        :wizard="slotProps"        
       >
-        <business-information-wizard-step
-          v-if="active"
-          v-model:data="formData"
-          :active="active"
-          @valid="validateStep"
-          @update:data="update($event,'business')"
-        />
+        <template v-slot:pre-header>
+          <h4 class="form-header">Before you begin</h4>
+          <ol type="1" class="bulleted-list">
+            <li>A registered business must be in good standing with BC Registries</li>
+            <li>You must be able to receive email to {{ submitterContact.email }}</li>
+          </ol>
+        <hr />
+        </template>
+        <template v-slot="{ validateStep, active }">
+          <business-information-wizard-step
+            v-if="active"
+            v-model:data="formData"
+            :active="active"
+            @valid="validateStep"
+            @update:data="update($event,'business')"
+          />
+        </template>
       </wizard-tab-component>
 
       <wizard-tab-component
@@ -26,8 +36,13 @@
         :index="1"
         :valid="false"
         :wizard="slotProps"
-        v-slot="{ validateStep, active }"
       >
+      <template v-slot:header>      
+        <h3 class="inner-heading">Mailing address</h3>
+        <p class="inner-text inner-text-spaced">This is the primary address you will receive mail.</p>
+        <p class="inner-text inner-text-spaced">If you’d like another address, for example a seed orchard or if your street address is different from your mailing address, select the ”Add another address” button below.</p>
+      </template>
+      <template v-slot="{ validateStep, active }">
         <address-wizard-step
           v-if="active"
           v-model:data="formData"
@@ -35,15 +50,22 @@
           @valid="validateStep"
           @update:data="update($event,'address')"
         />
+      </template>
       </wizard-tab-component>
 
       <wizard-tab-component
         title="Contacts"
         :index="2"
         :valid="false"
-        :wizard="slotProps"
-        v-slot="{ validateStep, active }"
+        :wizard="slotProps"        
       >
+      <template v-slot:header>
+        <h3 class="inner-heading">Add authorized people to the account</h3>
+        <p class="inner-text inner-text-spaced">Your first name, last name and email address are from your BCeID. If they're incorrect, <a href="https://bceid.ca" target="_blank">go to BCeID</a> to update them
+        before submitting your form. Be sure to add your phone number, location and role.</p>
+        <p class="inner-text inner-text-spaced">To add another contact to the account, select "Add another contact" button below.</p>
+      </template>
+      <template v-slot="{ validateStep, active }">
         <contact-wizard-step
           v-if="active"
           v-model:data="formData"
@@ -51,10 +73,12 @@
           @valid="validateStep"
           @update:data="update($event,'contact')"
         />
+        </template>
       </wizard-tab-component>
 
       <wizard-tab-component
         title="Review Application"
+        sub-title='Review the content and make any changes by navigating through the steps above or using the "Edit" buttons in each section below.'
         :index="3"
         :valid="false"
         :wizard="slotProps"

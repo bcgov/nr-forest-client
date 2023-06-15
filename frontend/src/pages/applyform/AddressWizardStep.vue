@@ -1,18 +1,4 @@
 <template>
-  <h4>Address</h4>
-  <br />
-  <h5>Mailing address</h5>
-  <Note note="This is the primary address where you'll receive mail." />
-  <br /><br />
-  <Note
-    note="If you'd like another location, for example a seed orchard or if your street"
-  />
-  <Note
-    note="address is different from your mailing address, please select the ”+ Add"
-  />
-  <Note note="another address” button below." />
-  <br /><br /><br />
-
   <address-group-component
     :id="0"
     v-model="formData.location.addresses[0]"
@@ -22,13 +8,10 @@
     @valid="updateValidState(0, $event)"
   />
 
-  <br /><br />
-
   <div v-show="otherAddresses.length > 0">
     <h5>Additional address</h5>
     <br />
     <Note note="Provide a name to identify your additional address" />
-    <br /><br /><br />
   </div>
 
   <address-group-component
@@ -42,16 +25,21 @@
     @valid="updateValidState(index + 1, $event)"
   />
 
-  <div v-show="otherAddresses.length > 0"><br /><br /><br /></div>
-
-  <bx-btn kind="tertiary" icon-layout="regular" @click="addAddress"
-    >Add another address +</bx-btn
+  <bx-btn    
+    kind="tertiary"
+    iconLayout=""
+    class="bx--btn"    
+    @click.prevent="addAddress"
+    size="field"
   >
+  <span>Add another address</span>
+  <add16 slot="icon"/>
+  </bx-btn>
 </template>
 
 <script setup lang="ts">
 import { watch, ref, computed, reactive } from "vue";
-
+import add16 from "@carbon/icons-vue/es/add/16";
 import {
   type FormDataDto,
   type Address,
