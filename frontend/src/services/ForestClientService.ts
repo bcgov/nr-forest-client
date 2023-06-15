@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import axios from "axios";
+import axios, { type AxiosError } from "axios";
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
 import type { CodeDescrType } from "@/core/CommonTypes";
 import { backendUrl, frontendUrl } from "@/core/CoreConstants";
@@ -22,9 +22,9 @@ export const useFetch = (url: string, config: any = {}) => {
 
 export const useFetchTo = (url: string, data: any, config: any = {}) => {
 
-  const response = ref({});
-  const error = ref({});
-  const loading = ref(false);
+  const response = ref<any>({});
+  const error = ref<AxiosError>({});
+  const loading = ref<boolean>(false);
 
   const parameters = {
     ...config,
@@ -57,10 +57,11 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
 }
 
 export const usePost = (url: string, body: any, config: any = {}) => {
-  const response: any = ref({});
+  
   const responseBody: any = ref({});
-  const error: any = ref({});
-  const loading: any = ref(false);
+  const response = ref<any>({});
+  const error = ref<AxiosError>({});
+  const loading = ref<boolean>(false);
 
   const parameters = {
     ...config,
