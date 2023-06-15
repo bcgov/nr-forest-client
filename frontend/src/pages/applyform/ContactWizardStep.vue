@@ -83,6 +83,7 @@ watch([formData], () => emit("update:data", formData));
 const updateContact = (value: Contact | undefined, index: number) => {
   if (value && index < formData.location.contacts.length)
     formData.location.contacts[index] = value;
+    emit("update:data", formData)
 };
 
 //Role related data

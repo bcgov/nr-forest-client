@@ -23,6 +23,7 @@ declare module '@vue/runtime-core' {
     BTabs: typeof import('bootstrap-vue-3')['BTabs']
     ContactGroupComponent: typeof import('./src/components/grouping/ContactGroupComponent.vue')['default']
     DataFetcher: typeof import('./src/components/DataFetcher.vue')['default']
+    DisplayBlockComponent: typeof import('./src/components/visuals/DisplayBlockComponent.vue')['default']
     DropdownInputComponent: typeof import('./src/components/forms/DropdownInputComponent.vue')['default']
     MultiselectInputComponent: typeof import('./src/components/forms/MultiselectInputComponent.vue')['default']
     RadioInputComponent: typeof import('./src/components/forms/RadioInputComponent.vue')['default']

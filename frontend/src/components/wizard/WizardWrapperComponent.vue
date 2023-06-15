@@ -25,12 +25,13 @@
   /><br /><br />
 
   <bx-btn
-  v-show="!isFirst"
+    v-show="!isFirst"
     kind="secondary"
     iconLayout=""
     class="bx--btn"
     :disabled="isFirst"
     @click.prevent="onBack"
+    size="field"
   >
   <span>Back</span>
   </bx-btn>
@@ -49,9 +50,13 @@
     <arrowRight16 slot="icon"/>    
   </bx-btn>
 
-  <bx-btn kind="primary"
+  <bx-btn 
+  kind="primary"
     iconLayout=""
-    class="bx--btn" v-show="isLast"> Submit </bx-btn>
+    class="bx--btn"
+    :disabled="isNextAvailable"
+    size="field"
+  v-show="isLast"> Submit </bx-btn>
 </template>
 
 <script setup lang="ts">
@@ -65,7 +70,7 @@ defineProps<{
 }>();
 
 //Start from the first tab of the wizard
-const currentTab = ref(1);
+const currentTab = ref(0);
 
 //Slot control to handle data from active slot
 const slots = useSlots();

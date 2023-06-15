@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, watch } from "vue";
-import type { CodeNameType } from "@/core/CommonTypes";
+import type { CodeDescrType, CodeNameType } from "@/core/CommonTypes";
 import type { Contact } from "@/dto/ApplyClientNumberDto";
 
 //Define the input properties for this component
@@ -37,6 +37,20 @@ const checkValid = () =>
 
 watch([validation], () => emit("valid", checkValid()));
 emit("valid", false);
+
+//Data conversion
+
+const nameTypeToCodeDescr = (value: CodeNameType | undefined) : CodeDescrType =>{
+  if(value)
+    return { value: value.code, text: value.name };
+  return {value:"",text:""};
+}
+
+const nameTypesToCodeDescr = (values: CodeNameType[] | undefined) : CodeDescrType[] =>{
+  if(values) return values.map(nameTypeToCodeDescr);  
+  return [];
+}
+
 </script>
 
 <template>
@@ -46,8 +60,9 @@ emit("valid", false);
     tip="Select an address name for the contact. A contact can have more than one address"
     :initial-value="''"
     :model-value="addressList"
-    :validations="[]"
-    @update:selected-value="selectedValue.locationNames = $event"
+    :selectedValues="selectedValue.locationNames?.map((location:CodeDescrType) => location?.value)"
+    :validations="[]"    
+    @update:selected-value="selectedValue.locationNames = nameTypesToCodeDescr($event)"
     @empty="validation.locationNames = !$event"
   />
 
@@ -55,12 +70,10 @@ emit("valid", false);
     id="role"
     label="Primary role"
     tip="Choose the primary role for this contact"
-    :initial-value="''"
-    :model-value="roleList"
+    :initial-value="selectedValue.contactType.value"
+    :model-value="roleList"    
     :validations="[]"
-    @update:selected-value="
-      selectedValue.contactType = $event ? $event : selectedValue.contactType
-    "
+    @update:selected-value="selectedValue.contactType = nameTypeToCodeDescr($event)"
     @empty="validation.contactType = !$event"
   />
 

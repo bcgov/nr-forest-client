@@ -13,9 +13,11 @@
         v-slot="{ validateStep, active }"
       >
         <business-information-wizard-step
+          v-if="active"
           v-model:data="formData"
           :active="active"
           @valid="validateStep"
+          @update:data="update($event,'business')"
         />
       </wizard-tab-component>
 
@@ -27,9 +29,11 @@
         v-slot="{ validateStep, active }"
       >
         <address-wizard-step
+          v-if="active"
           v-model:data="formData"
           :active="active"
           @valid="validateStep"
+          @update:data="update($event,'address')"
         />
       </wizard-tab-component>
 
@@ -41,9 +45,11 @@
         v-slot="{ validateStep, active }"
       >
         <contact-wizard-step
+          v-if="active"
           v-model:data="formData"
           :active="active"
           @valid="validateStep"
+          @update:data="update($event,'contact')"
         />
       </wizard-tab-component>
 
@@ -55,9 +61,11 @@
         v-slot="{ validateStep, active }"
       >
         <review-wizard-step
+          v-if="active"
           v-model:data="formData"
           :active="active"
           @valid="validateStep"
+          @update:data="update($event,'review')"
         />
       </wizard-tab-component>
     </wizard-wrapper-component>
@@ -66,7 +74,7 @@
 
 <script setup lang="ts">
 import { reactive, watch } from "vue";
-import { formDataDto, type FormDataDto } from "@/dto/ApplyClientNumberDto";
+import { formDataDto, type FormDataDto, type Contact } from "@/dto/ApplyClientNumberDto";
 
 import WizardWrapperComponent from "@/components/wizard/WizardWrapperComponent.vue";
 import WizardTabComponent from "@/components/wizard/WizardTabComponent.vue";
@@ -83,22 +91,46 @@ const props = defineProps({
   },
 });
 
-//---- Form Data ----//
-let formData = reactive<FormDataDto>(formDataDto);
-
-formData.location.contacts = [
-  {
+const submitterContact: Contact = {
     locationNames: [],
     contactType: { value: "", text: "" },
     phoneNumber: "",
     firstName: props.submitterInformation.submitterFirstName,
     lastName: props.submitterInformation.submitterLastName,
     email: props.submitterInformation.submitterEmail,
-  },
-  ...formData.location.contacts,
-];
+  };
 
-watch([formData], () => {});
+//---- Form Data ----//
+let formData = reactive<FormDataDto>({...formDataDto,location:{ addresses:formDataDto.location.addresses,contacts:[submitterContact]} });
+
+function getObjectDiff<T>(obj1: T, obj2: T): Partial<T> {
+  function isObject(value: any): boolean {
+    return typeof value === "object" && value !== null;
+  }
+
+  const diff: Partial<T> = {};
+
+  for (let key in obj1) {
+    if (obj1.hasOwnProperty(key)) {
+      if (isObject(obj1[key]) && isObject(obj2[key])) {
+        const nestedDiff = getObjectDiff(obj1[key], obj2[key]);
+        if (Object.keys(nestedDiff).length > 0) {
+          diff[key] = nestedDiff;
+        }
+      } else if (obj1[key] !== obj2[key]) {
+        diff[key] = obj2[key];
+      }
+    }
+  }
+
+  return diff;
+}
+
+watch([formData],() => {});
+
+
+const update = (value: any,who:string) => {
+}
 
 </script>
 
