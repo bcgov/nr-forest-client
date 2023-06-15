@@ -22,19 +22,20 @@ watch(() => formData.value, () => emit("update:data", formData.value));
 
 // -- Validation of the component --
 const validation = reactive<Record<string, boolean>>({
-  businessType: false,
-  business: false,
+  businessType: formData.value.businessInformation.businessType ? true : false,
+  business: formData.value.businessInformation.businessName ? true : false,
 });
 
 const checkValid = () =>
-  Object.values(validation).reduce(
+ Object.values(validation).reduce(
     (accumulator: boolean, currentValue: boolean) =>
       accumulator && currentValue,
     true
   );
 
 watch([validation], () => emit("valid", checkValid()));
-emit("valid", false);
+emit("valid", checkValid());
+
 
 // -- Auto completion --
 const selectedOption = computed(
@@ -142,7 +143,7 @@ watch([selectedOption],() =>{
   <radio-input-component
     id="businessType"
     label="Type of business (choose one of these options)"
-    :selectedValue="formData?.businessInformation?.businessType"
+    :initialValue="formData?.businessInformation?.businessType"
     :modelValue="[
       {
         value: 'R',
@@ -183,13 +184,13 @@ watch([selectedOption],() =>{
     :validations="[]"
     :enabled="false"
   />
-
+<br />
   
 <display-block-component
-kind="info"
-title="B.C. registered business name"
-v-show="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
-id="business"
+  kind="info"
+  title="B.C. registered business name"
+  v-show="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
+  id="business"
 >
 <div>    
   <p>If the name of your registered business does not appear in the list, follow these steps:</p>
