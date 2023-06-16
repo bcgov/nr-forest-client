@@ -35,6 +35,9 @@
 .#{variables.$bcgov-prefix}--btn {
   border-radius: 4px !important;
 };
+.#{variables.$bcgov-prefix}--btn--field {
+  border-radius: 4px !important;
+};
 .#{variables.$bcgov-prefix}--btn--primary {
   background-color: colors.$blue-60 !important;
 };

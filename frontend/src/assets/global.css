@@ -1,7 +1,18 @@
+* {
+  font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
+}
+
 .bx--btn{  
   width: 243px;  
-  padding: 3px;
-  border-radius: 4px; 
+  padding: 3px;  
+}
+
+.rounded > button{
+  border-radius: 4px !important;
+}
+
+.bx--btn > button{  
+  border-radius: 4px !important;
 }
 
 .bulleted-list{
@@ -32,6 +43,7 @@
   line-height: 24px;
   color: #606062;  
 }
+
 .inner-text-spaced{
   margin-bottom: 32px;
 }
@@ -49,4 +61,23 @@
   flex-direction: column;
   padding: 0px 32px;
   gap: 40px;
+}
+
+.inner-spotlight-topic{
+  line-height: 24px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.inner-spotlight-group{
+  display: flex;
+  flex-direction: column;  
+  gap: 12px;
+  align-items: stretch;
+  width:100%;
+}
+
+.inner-spotlight-group-markup{ 
+  border-bottom: solid 1px #DFDFE1;
 }

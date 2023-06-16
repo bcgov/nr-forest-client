@@ -6,6 +6,8 @@ import type { KeycloakInstance } from "keycloak-js";
 import type { VueKeycloakInstance } from "@dsb-norge/vue-keycloak-js/dist/types";
 import { keycloakUrl, keycloakClientId, nodeEnv } from "./core/CoreConstants";
 
+//Importing BC typography
+import '@bcgov/bc-sans/css/BCSans.css'
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import "bootstrap/dist/css/bootstrap.css";
