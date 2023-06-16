@@ -12,7 +12,7 @@
     </div>
 
     <div class="wizard-wrap">
-    <slot :validateStep="validateStep" :active="index == selectedContent" />
+    <slot :validateStep="validateStep" :active="index == selectedContent" :goToStep="goToStep" />
     </div>
   </div>
 </template>
@@ -39,6 +39,8 @@ const validateStep = (valid: boolean) => {
 };
 
 emit("update:valid", { index: props.index, valid: false });
+
+const goToStep = (index: number) => props.wizard.goToStep(index);
 </script>
 
 <style scoped>

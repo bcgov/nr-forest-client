@@ -8,17 +8,17 @@
       <wizard-progress-indicator-component :model-value="progressData" />
   </div>
 
-  <slot :processValidity="processValidity" />
+  <slot :processValidity="processValidity" :goToStep="goToStep" />
   <div class="wizard-wrap">
     <hr />
 
     <span class="inner-text" v-if="!isStateValid(currentTab)">All fields must be filled out correctly to enable the "Next" button below</span>
-  
+  <div>
     <bx-btn
       v-show="!isFirst"
       kind="secondary"
       iconLayout=""
-      class="bx--btn"
+      class="bx--btn rounded"
       :disabled="isFirst"
       @click.prevent="onBack"
       size="field"
@@ -29,7 +29,7 @@
     <bx-btn
       kind="primary"
       iconLayout=""
-      class="bx--btn"
+      class="bx--btn rounded"
       :disabled="isNextAvailable"
       v-show="!isLast"
       @click.prevent="onNext"
@@ -42,12 +42,13 @@
     <bx-btn 
       kind="primary"
       iconLayout=""
-      class="bx--btn"
-      :disabled="isNextAvailable"
+      class="bx--btn rounded"
+      :disabled="!isFormValid"
       size="field"
       v-show="isLast">
       <span>Submit</span>
     </bx-btn>
+    </div>
   </div>
 </template>
 
@@ -94,6 +95,7 @@ const isFirst = computed(() => currentTab.value === 0);
 const isLast = computed(() => currentTab.value === validTabs.length - 1);
 const isCurrentValid = computed(() => isStateValid(currentTab.value));
 const isNextAvailable = computed(() => !isCurrentValid.value || isLast.value);
+const isFormValid = computed(() => validTabs.every((entry:any) => entry.valid));
 
 //Button Actions
 const onBack = () => {
@@ -108,15 +110,17 @@ const onNext = () => {
   }
 };
 
+const goToStep = (index: number) => currentTab.value = index;
+
 const stateIcon = (index: number) =>{
-  console.log(`Index ${index} is ${(currentTab.value == index)} ${(currentTab.value < index)}`)
   if(currentTab.value == index) return "current";
-  if(currentTab.value > index) return "complete";
+  if(currentTab.value > index || validTabs[index].valid) return "complete";
   return "queued";
 }
 
-
 const progressData = computed(() => currentSlots.map((aSlot:any) => { return { title:aSlot.props?.title, subtitle:`Step ${aSlot.props?.index + 1}`, kind:stateIcon(aSlot.props?.index) } }));
+
+
 
 </script>
 

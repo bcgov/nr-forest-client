@@ -82,7 +82,7 @@
         :index="3"
         :valid="false"
         :wizard="slotProps"
-        v-slot="{ validateStep, active }"
+        v-slot="{ validateStep, active, goToStep }"
       >
         <review-wizard-step
           v-if="active"
@@ -90,6 +90,7 @@
           :active="active"
           @valid="validateStep"
           @update:data="update($event,'review')"
+          :goToStep="goToStep"
         />
       </wizard-tab-component>
     </wizard-wrapper-component>
