@@ -34,6 +34,7 @@
     "stub": "wiremock --enable-stub-cors --port 3000 --preserve-host-header --root-dir ./stub --verbose --global-response-templating"
   },
   "dependencies": {
+    "@bcgov/bc-sans": "^1.0.1",
     "@carbon/ibmdotcom-web-components": "^1.32.0",
     "@carbon/icons": "^11.20.0",
     "@carbon/icons-vue": "^10.49.1",
