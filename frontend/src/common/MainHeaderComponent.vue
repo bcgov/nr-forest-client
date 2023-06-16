@@ -5,9 +5,10 @@
         <img
           src="/img/bc_for_logo.png"
           alt="Go to the Government of British Columbia website"
+          width="150"
         />
       </a>
-      <h1>Client Management System</h1>
+      <h1>Ministry of Forests</h1>
     </div>
     <b-button
       v-if="$keycloak"
@@ -33,8 +34,7 @@ export default defineComponent({
 
 <style scoped>
 header {
-  background-color: v-bind(headerBlue);
-  border-bottom: 2px solid #fcba19;
+  background-color: #0073E6;
   padding: 0 30px 0 30px;
   color: #fff;
   display: flex;

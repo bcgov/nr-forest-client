@@ -34,6 +34,7 @@
     "stub": "wiremock --enable-stub-cors --port 3000 --preserve-host-header --root-dir ./stub --verbose --global-response-templating"
   },
   "dependencies": {
+    "@bcgov-nr/nr-fsa-theme": "^1.0.7",
     "@bcgov/bc-sans": "^1.0.1",
     "@carbon/ibmdotcom-web-components": "^1.32.0",
     "@carbon/icons": "^11.20.0",
@@ -85,7 +86,8 @@
     "eslint-plugin-vue": "^9.0.0",
     "jsdom": "^21.1.0",
     "prettier": "^2.8.8",
-    "sass": "^1.62.1",
+    "sass": "^1.63.4",
+    "sass-loader": "^13.3.2",
     "start-server-and-test": "^2.0.0",
     "typescript": "~4.8.0",
     "vitest": "^0.31.0",
