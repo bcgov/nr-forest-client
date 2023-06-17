@@ -24,7 +24,7 @@ defineProps<{ modelValue: Array<ProgressData>; }>();
 import Checkmark16 from "@carbon/icons-vue/es/checkmark--outline/16";
 import Error16 from "@carbon/icons-vue/es/error--outline/16";
 import Circle16 from "@carbon/icons-vue/es/circle-dash/16";
-import Info16 from "@carbon/icons-vue/es/circle--solid/16";
+import Info16 from "@carbon/icons-vue/es/incomplete/16";
 
 const iconsForKinds : Record<string,any> = {
   ["complete"]: Checkmark16,
