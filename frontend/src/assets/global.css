@@ -81,3 +81,8 @@
 .inner-spotlight-group-markup{ 
   border-bottom: solid 1px #DFDFE1;
 }
+
+.bx-tag{
+  background-color: #00478F;
+    color: white;
+}
