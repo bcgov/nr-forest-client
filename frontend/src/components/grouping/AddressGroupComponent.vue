@@ -2,6 +2,7 @@
 import { reactive, watch, computed } from "vue";
 import type { CodeNameType } from "@/core/CommonTypes";
 import type { Address } from "@/dto/ApplyClientNumberDto";
+import { isNotEmpty,isCanadianPostalCode,isUsZipCode,isOnlyNumbers,isMaxSize,isMinSize } from "@/helpers/validators/GlobalValidators";
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -61,6 +62,18 @@ const checkValid = () =>
 
 watch([validation], () => emit("valid", checkValid()));
 emit("valid", false);
+
+const postalCodeValidators = computed(() => {
+switch (selectedValue.country.value) {
+  case "CA":
+    return [isCanadianPostalCode];
+  case "US":
+    return [isUsZipCode];
+  default:
+    return [isOnlyNumbers, isMaxSize(10)];
+}
+});
+
 </script>
 
 <template>
@@ -71,8 +84,9 @@ emit("valid", false);
     tip="For example, 'Campbell River Region' or 'Castlegar Woods Division'"
     v-model="selectedValue.locationName"
     :enabled="true"
-    :validations="[]"
+    :validations="[isNotEmpty,isMinSize(3),isMaxSize(50)]"
     @empty="validation.locationName = !$event"
+    v-if="props.id !== 0"
   />
 
   <dropdown-input-component
@@ -92,7 +106,7 @@ emit("valid", false);
     placeholder="Start typing to search for your address or PO box"
     v-model="selectedValue.streetAddress"
     :enabled="true"
-    :validations="[]"
+    :validations="[isNotEmpty,isMinSize(3),isMaxSize(50)]"
     @empty="validation.streetAddress = !$event"
   />
 
@@ -102,7 +116,7 @@ emit("valid", false);
     placeholder="City"
     v-model="selectedValue.city"
     :enabled="true"
-    :validations="[]"
+    :validations="[isNotEmpty,isMinSize(3),isMaxSize(50)]"
     @empty="validation.city = !$event"
   />
 
@@ -131,7 +145,7 @@ emit("valid", false);
     placeholder="A1A1A1"
     :enabled="true"
     v-model="modelValue.postalCode"
-    :validations="[]"
+    :validations="postalCodeValidators"
     @empty="validation.postalCode = !$event"
   />
 </template>

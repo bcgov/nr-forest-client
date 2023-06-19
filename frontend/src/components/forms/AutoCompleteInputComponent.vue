@@ -10,6 +10,8 @@
       :label-text="label"
       :helper-text="tip"
       @focus="autoCompleteVisible = true"
+      :invalid="error ? true : false"
+      :validityMessage="error"
       @blur="(event:any) => validateInput(event.target.value)"
       @input="(event:any) => selectedValue = event.target.value"
     />
@@ -34,8 +36,6 @@
       </div>
     </div>
   </bx-form-item>
-
-  <span v-if="error" class="error-message">{{ error }}</span>
 </template>
 
 <script setup lang="ts">
@@ -86,7 +86,7 @@ watch(
 watch([selectedValue], () => emitValueChange(selectedValue.value));
 
 //We call all the validations
-const validateInput = (newValue: string) => {
+const validateInput = (newValue: string) => {  
   if (props.validations) {
     error.value =
       props.validations

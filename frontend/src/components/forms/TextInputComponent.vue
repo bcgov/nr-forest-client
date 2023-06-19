@@ -11,11 +11,12 @@
       :helper-text="tip"
       :disabled="!enabled"
       :color-scheme="enabled ? '' : 'light'"
+      :invalid="error ? true : false"
+      :validityMessage="error"
       @blur="(event:any) => validateInput(event.target.value)"
-      @input="(event:any) => selectedValue = event.target.value"
+      @input="(event:any) => selectedValue = event.target.value"      
     />
   </bx-form-item>
-  <span v-if="error" class="error-message">{{ error }}</span>
   </div>
 </template>
 

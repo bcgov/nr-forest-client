@@ -14,7 +14,7 @@
         >{{ option.name }}</bx-dropdown-item
       >
     </bx-dropdown>
-    <bx-tag v-for="tag in items" type="gray" title="Clear selection">
+    <bx-tag v-for="tag in items" type="blue" title="Clear selection">
       {{ tag }} <closeOutline16 @click="removeFromSelection(tag)" />
     </bx-tag>
   </div>

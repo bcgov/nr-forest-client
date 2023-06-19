@@ -4,8 +4,7 @@ import { useFetchTo } from "@/services/ForestClientService";
 import { type BusinessSearchResult, ClientTypeEnum } from "@/core/CommonTypes";
 import type { FormDataDto, ForestClientDetailsDto } from "@/dto/ApplyClientNumberDto";
 import RadioInputComponent from "@/components/forms/RadioInputComponent.vue";
-import Label from "@/common/LabelComponent.vue";
-import Note from "@/common/NoteComponent.vue";
+import { isNotEmpty, isMinSize } from "@/helpers/validators/GlobalValidators";
 
 
 //Defining the props and emiter to reveice the data and emit an update
@@ -156,7 +155,7 @@ watch([selectedOption],() =>{
       tip="The name must be exactly the same as in BC Registries"
       v-model="formData.businessInformation.businessName"
       :contents="content"
-      :validations="[]"
+      :validations="[isNotEmpty,isMinSize(3)]"
       @update:selected-value="autoCompleteResult = $event"      
     />
         

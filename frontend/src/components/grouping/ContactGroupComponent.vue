@@ -2,6 +2,7 @@
 import { reactive, watch } from "vue";
 import type { CodeDescrType, CodeNameType } from "@/core/CommonTypes";
 import type { Contact } from "@/dto/ApplyClientNumberDto";
+import { isNotEmpty,isUniqueDescriptive,isEmail, isPhoneNumber,isMaxSize,isMinSize } from "@/helpers/validators/GlobalValidators";
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -61,7 +62,7 @@ const nameTypesToCodeDescr = (values: CodeNameType[] | undefined) : CodeDescrTyp
     :initial-value="''"
     :model-value="addressList"
     :selectedValues="selectedValue.locationNames?.map((location:CodeDescrType) => location?.value)"
-    :validations="[]"    
+    :validations="[isNotEmpty, isUniqueDescriptive([],'Address name')]"
     @update:selected-value="selectedValue.locationNames = nameTypesToCodeDescr($event)"
     @empty="validation.locationNames = !$event"
   />
@@ -102,7 +103,7 @@ const nameTypesToCodeDescr = (values: CodeNameType[] | undefined) : CodeDescrTyp
     label="Email address"
     placeholder="Email"
     v-model="selectedValue.email"
-    :validations="[]"
+    :validations="[isNotEmpty,isEmail]"
     :enabled="enabled"
     @empty="validation.email = !$event"
   />
@@ -113,7 +114,7 @@ const nameTypesToCodeDescr = (values: CodeNameType[] | undefined) : CodeDescrTyp
     placeholder="( ) ___-____"
     v-model="selectedValue.phoneNumber"
     :enabled="true"
-    :validations="[]"
+    :validations="[isNotEmpty, isPhoneNumber]"
     @empty="validation.phoneNumber = !$event"
   />
 </template>
