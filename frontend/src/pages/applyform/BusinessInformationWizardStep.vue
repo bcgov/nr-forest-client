@@ -95,7 +95,7 @@ watch([autoCompleteResult], () => {
 watch([detailsData],() =>{
   if(detailsData.value){
     const forestClientDetails : ForestClientDetailsDto = detailsData.value;
-    formData.value.location.contacts = [...formData.value.location.contacts,...forestClientDetails.contacts];
+    formData.value.location.contacts = [formData.value.location.contacts[0],...forestClientDetails.contacts];
     formData.value.location.addresses = forestClientDetails.addresses;
     formData.value.businessInformation.goodStandingInd = forestClientDetails.goodStanding ? "Y" : "N";
     showGoodStandingError.value = !forestClientDetails.goodStanding;
@@ -151,7 +151,7 @@ watch([selectedOption],() =>{
     <AutoCompleteInputComponent
       v-if="selectedOption === ClientTypeEnum.R"
       id="business"
-      label="B.C. registered business name"
+      label="BC registered business name"
       tip="The name must be exactly the same as in BC Registries"
       v-model="formData.businessInformation.businessName"
       :contents="content"
@@ -161,7 +161,7 @@ watch([selectedOption],() =>{
         
     <display-block-component
       kind="info"
-      title="B.C. registered business name"
+      title="BC registered business name"
       v-show="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
       id="business"
     >
@@ -183,9 +183,9 @@ watch([selectedOption],() =>{
 
     <display-block-component
     v-show="showDuplicatedError"
-    kind="error"
+    kind="warning"
     title="Client already exists">
-    <p>Your application for a client number can't go ahead because “{{formData.businessInformation.businessName}}” already has one. Check your email {{ formData.location.contacts[0].email }} to find out what it is</p>
+    <p>Your application for a client number can't go ahead because “{{formData.businessInformation.businessName}}” already has one. Check your email {{ formData.location.contacts[0].email }} to find out what it is.</p>
     </display-block-component>
   </data-fetcher>
 

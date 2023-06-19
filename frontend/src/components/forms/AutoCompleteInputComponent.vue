@@ -43,14 +43,15 @@ import { ref, watch } from "vue";
 import { isEmpty, type BusinessSearchResult } from "@/core/CommonTypes";
 
 //Define the input properties for this component
-const props = defineProps({
-  id: { type: String, required: true },
-  label: { type: String, required: true },
-  tip: { type: String, required: false },
-  modelValue: { type: String, required: true },
-  contents: { type: Array<BusinessSearchResult>, required: true },
-  validations: { type: Array<Function>, required: true },
-});
+const props = defineProps<{
+  id: string;
+  label: string;
+  tip?: string;
+  modelValue: string;
+  contents: Array<BusinessSearchResult>;
+  validations: Array<Function>;
+  errorMessage?: string;
+}>();
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
@@ -63,10 +64,11 @@ const emit = defineEmits<{
 const autoCompleteVisible = ref(false);
 
 //We initialize the error message handling for validation
-const error = ref<string | undefined>("");
+const error = ref<string | undefined>(props.errorMessage || "");
 
 //We watch for error changes to emit events
 watch(error, () => emit("error", error.value));
+watch(() => props.errorMessage, () => (error.value = props.errorMessage));
 
 //We set the value prop as a reference for update reason
 const selectedValue = ref(props.modelValue);
@@ -95,7 +97,7 @@ const validateInput = (newValue: string) => {
           if (errorMessage) return true;
           return false;
         })
-        .shift() ?? "";
+        .shift() ?? props.errorMessage;
   }
   setTimeout(() => (autoCompleteVisible.value = false), 150);
 };

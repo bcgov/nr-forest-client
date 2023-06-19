@@ -4,7 +4,8 @@
     v-model="formData.location.contacts[0]" 
     :roleList="roleList"
     :addressList="addresses"
-    :validations="[]"
+    :validations="[uniqueValues]"
+    :revalidate="revalidate"
     :enabled="false"
     @update:model-value="updateContact($event, 0)"
     @valid="updateValidState(0, $event)"
@@ -23,8 +24,9 @@
     v-bind:modelValue="contact"
     :roleList="roleList"
     :addressList="addresses"
-    :validations="[]"
+    :validations="[uniqueValues]"
     :enabled="true"
+    :revalidate="revalidate"
     @update:model-value="updateContact($event, index + 1)"
     @valid="updateValidState(index + 1, $event)"
   />
@@ -56,6 +58,8 @@ import type { CodeNameType } from "@/core/CommonTypes";
 
 import Note from "@/common/NoteComponent.vue";
 
+import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
+
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>();
 
@@ -66,12 +70,14 @@ const emit = defineEmits<{
 
 //Set the prop as a ref, and then emit when it changes
 const formData = reactive<FormDataDto>(props.data);
+const revalidate = ref(false);
 watch([formData], () => emit("update:data", formData));
 
-const updateContact = (value: Contact | undefined, index: number) => {
+const updateContact = (value: Contact | undefined, index: number) => {  
+  revalidate.value = !revalidate.value;
   if (value && index < formData.location.contacts.length)
     formData.location.contacts[index] = value;
-    emit("update:data", formData)
+  emit("update:data", formData)
 };
 
 //Role related data
@@ -114,4 +120,7 @@ emit("valid", false);
 const updateValidState = (index: number, valid: boolean) => {
   validation[index] = valid;
 };
+
+const uniqueValues = isUniqueDescriptive();
+
 </script>

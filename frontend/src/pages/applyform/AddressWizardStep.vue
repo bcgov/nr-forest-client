@@ -3,7 +3,8 @@
     :id="0"
     v-model="formData.location.addresses[0]"
     :countryList="countryList"
-    :validations="[]"
+    :validations="[uniqueValues]"
+    :revalidate="revalidate"
     @update:model-value="updateAddress($event, 0)"
     @valid="updateValidState(0, $event)"
   />
@@ -20,7 +21,8 @@
     :id="index + 1"
     v-bind:model-value="address"
     :countryList="countryList"
-    :validations="[]"
+    :validations="[uniqueValues]"
+    :revalidate="revalidate"
     @update:model-value="updateAddress($event, index + 1)"
     @valid="updateValidState(index + 1, $event)"
   />
@@ -48,6 +50,7 @@ import {
 import { useFetchTo } from "@/services/ForestClientService";
 
 import Note from "@/common/NoteComponent.vue";
+import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>();
@@ -59,11 +62,14 @@ const emit = defineEmits<{
 
 //Set the prop as a ref, and then emit when it changes
 const formData = reactive<FormDataDto>(props.data);
+const revalidate = ref(false);
 watch([formData], () => emit("update:data", formData));
 
 const updateAddress = (value: Address | undefined, index: number) => {
+  revalidate.value = !revalidate.value;
   if (value && index < formData.location.addresses.length)
     formData.location.addresses[index] = value;
+    emit("update:data", formData)
 };
 
 //Country related data
@@ -100,4 +106,6 @@ emit("valid", false);
 const updateValidState = (index: number, valid: boolean) => {
   validation[index] = valid;
 };
+
+const uniqueValues = isUniqueDescriptive();
 </script>

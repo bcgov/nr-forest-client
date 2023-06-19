@@ -33,6 +33,7 @@ const props = defineProps<{
   placeholder: string;
   modelValue: string;
   validations: Array<Function>;
+  errorMessage?: string;
 }>();
 
 //Events we emit during component lifecycle
@@ -43,10 +44,11 @@ const emit = defineEmits<{
 }>();
 
 //We initialize the error message handling for validation
-const error = ref<string | undefined>("");
+const error = ref<string | undefined>(props.errorMessage || "");
 
 //We watch for error changes to emit events
 watch(error, () => emit("error", error.value));
+watch(() => props.errorMessage, () => (error.value = props.errorMessage));
 
 //We set it as a separated ref due to props not being updatable
 const selectedValue = ref<string>(props.modelValue);
@@ -76,7 +78,7 @@ const validateInput = (newValue: string) => {
           if (errorMessage) return true;
           return false;
         })
-        .shift() ?? "";
+        .shift() ?? props.errorMessage;
   }
 };
 </script>

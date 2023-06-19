@@ -6,7 +6,7 @@
       v-slot="slotProps"
     >
       <wizard-tab-component
-        title="Business Information"
+        title="Business information"
         sub-title="Enter the business information"
         :index="0"
         :valid="false"
@@ -16,7 +16,7 @@
           <h4 class="form-header">Before you begin</h4>
           <ol type="1" class="bulleted-list">
             <li>A registered business must be in good standing with BC Registries</li>
-            <li>You must be able to receive email to {{ submitterContact.email }}</li>
+            <li>You must be able to receive email at {{ submitterContact.email }}</li>
           </ol>
         <hr />
         </template>
@@ -77,7 +77,7 @@
       </wizard-tab-component>
 
       <wizard-tab-component
-        title="Review Application"
+        title="Review application"
         sub-title='Review the content and make any changes by navigating through the steps above or using the "Edit" buttons in each section below.'
         :index="3"
         :valid="false"

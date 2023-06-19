@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { reactive, watch, ref } from "vue";
 import type { CodeDescrType, CodeNameType } from "@/core/CommonTypes";
 import type { Contact } from "@/dto/ApplyClientNumberDto";
-import { isNotEmpty,isUniqueDescriptive,isEmail, isPhoneNumber,isMaxSize,isMinSize } from "@/helpers/validators/GlobalValidators";
+import { isNotEmpty,isEmail, isPhoneNumber,isMaxSize,isMinSize } from "@/helpers/validators/GlobalValidators";
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -12,19 +12,29 @@ const props = defineProps<{
   roleList: Array<CodeNameType>;
   addressList: Array<CodeNameType>;
   validations: Array<Function>;
+  revalidate?: boolean;
 }>();
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
   (e: "valid", value: boolean): void;
-  (e: "update:modelValue", value: Contact | undefined): void;
+  (e: "update:model-value", value: Contact | undefined): void;
 }>();
 
 //We set it as a separated ref due to props not being updatable
 const selectedValue = reactive<Contact>(props.modelValue);
+const validateData = props.validations[0]('Name',props.id+'');
+const error = ref<string | undefined>("");
 
 //Watch for changes on the input
-watch([selectedValue], () => emit("update:modelValue", selectedValue));
+watch([selectedValue], () => {
+  error.value = validateData(`${selectedValue.firstName} ${selectedValue.lastName}`);  
+  emit("update:model-value", selectedValue);
+});
+
+watch(() => props.revalidate,() =>{
+  error.value = validateData(`${selectedValue.firstName} ${selectedValue.lastName}`);
+});
 
 //Validations
 const validation = reactive<Record<string, boolean>>({});
@@ -56,19 +66,19 @@ const nameTypesToCodeDescr = (values: CodeNameType[] | undefined) : CodeDescrTyp
 
 <template>
   <multiselect-input-component
-    id="address"
+    :id="'address_'+id"
     label="Address name"
     tip="Select an address name for the contact. A contact can have more than one address"
     :initial-value="''"
     :model-value="addressList"
     :selectedValues="selectedValue.locationNames?.map((location:CodeDescrType) => location?.value)"
-    :validations="[isNotEmpty, isUniqueDescriptive([],'Address name')]"
+    :validations="[isNotEmpty]"
     @update:selected-value="selectedValue.locationNames = nameTypesToCodeDescr($event)"
     @empty="validation.locationNames = !$event"
   />
 
   <dropdown-input-component
-    id="role"
+    :id="'role_'+id"
     label="Primary role"
     tip="Choose the primary role for this contact"
     :initial-value="selectedValue.contactType.value"
@@ -79,27 +89,29 @@ const nameTypesToCodeDescr = (values: CodeNameType[] | undefined) : CodeDescrTyp
   />
 
   <text-input-component
-    id="firstName"
+    :id="'firstName_'+id"
     label="First name"
     placeholder="First name"
     v-model="selectedValue.firstName"
     :validations="[]"
     :enabled="enabled"
+    :error-message="error"
     @empty="validation.firstName = !$event"
   />
 
   <text-input-component
-    id="lastName"
+    :id="'lastName_'+id"
     label="Last name"
     placeholder="Last name"
     v-model="selectedValue.lastName"
     :validations="[]"
     :enabled="enabled"
+    :error-message="error"
     @empty="validation.lastName = !$event"
   />
 
   <text-input-component
-    id="email"
+    :id="'email_'+id"
     label="Email address"
     placeholder="Email"
     v-model="selectedValue.email"
@@ -109,7 +121,7 @@ const nameTypesToCodeDescr = (values: CodeNameType[] | undefined) : CodeDescrTyp
   />
 
   <text-input-component
-    id="phoneNumber"
+    :id="'phoneNumber_'+id"
     label="Phone number"
     placeholder="( ) ___-____"
     v-model="selectedValue.phoneNumber"

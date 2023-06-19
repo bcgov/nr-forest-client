@@ -143,20 +143,31 @@ export const isOnlyNumbers = (value: string) => {
 }
 
 /**
- * Checks if the value is unique in an array of values
- * @param values - The array of values
- * @param name - The name of the field
- * @returns A function that returns an empty string if the value is unique in the array of values, error message otherwise
+ * Check if value is unique in the group of entries 
+ * @param key - The key of the group of entries
+ * @param field - The field of the group of entries, this is kind of a unique reference per field
+ * @returns A function that returns an empty string if the value is unique in the group of entries, error message otherwise
  * @example
- * isUnique(['a', 'b', 'c'])('') // true
- * isUnique(['a', 'b', 'c'])('a') // false
- * isUnique(['a', 'b', 'c'])('b') // false
- * isUnique(['a', 'b', 'c'])('c') // false
- * isUnique(['a', 'b', 'c'])('d') // true 
- */
-export const isUniqueDescriptive = (name: string, values: string[]) => {
-  return (value: string) => {
-    if (value && !values.includes(value)) return "";
-    return `${value} is alredy being used in another ${name}`;
-  }
-}
+ * const isUnique = isUniqueDescriptive();
+ * isUnique('key', 'field')('value'); // true
+ * isUnique('key', 'field')('value'); // false
+ **/
+export const isUniqueDescriptive = (): ((key: string, field: string) => (value: string) => string) => {
+  const record: Record<string, Record<string,string>> = {};
+
+  return (key: string, fieldId: string) => (value: string) => {
+    
+    //if the record contains the key and the fieldId is not the same as mine, check all the values, except the one if my fieldId to see if it includes my value
+    const fieldsToCheck = Object.keys(record[key] || {}).filter((field) => field !== fieldId);
+
+    //Get all the values of the fields to check, except the one of my fieldId
+    const values = fieldsToCheck.map((field:string) => record[key][field]);
+    record[key] = { ...record[key], [fieldId]: value };
+
+    if (values.includes(value)) {
+      return "This value is already in use";
+    }   
+
+    return "";
+  };
+};

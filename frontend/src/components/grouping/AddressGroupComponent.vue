@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch, computed } from "vue";
+import { reactive, watch, computed, ref } from "vue";
 import type { CodeNameType } from "@/core/CommonTypes";
 import type { Address } from "@/dto/ApplyClientNumberDto";
 import { isNotEmpty,isCanadianPostalCode,isUsZipCode,isOnlyNumbers,isMaxSize,isMinSize } from "@/helpers/validators/GlobalValidators";
@@ -10,19 +10,33 @@ const props = defineProps<{
   modelValue: Address;
   countryList: Array<CodeNameType>;
   validations: Array<Function>;
+  revalidate?: boolean;
 }>();
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
   (e: "valid", value: boolean): void;
-  (e: "update:modelValue", value: Address | undefined): void;
+  (e: "update:model-value", value: Address | undefined): void;
 }>();
 
 //We set it as a separated ref due to props not being updatable
 const selectedValue = reactive<Address>(props.modelValue);
+const validateAddressData = props.validations[0]('Address',props.id+'');
+const validateAddressNameData = props.validations[0]('Names',props.id+'');
+const addressError = ref<string | undefined>("");
+const nameError = ref<string | undefined>("");
 
 //Watch for changes on the input
-watch([selectedValue], () => emit("update:modelValue", selectedValue));
+watch([selectedValue], () => {
+  addressError.value = validateAddressData(`${selectedValue.streetAddress} ${selectedValue.country.value} ${selectedValue.province.value} ${selectedValue.city} ${selectedValue.city} ${selectedValue.postalCode}`);
+  nameError.value = validateAddressNameData(selectedValue.locationName);
+  emit("update:model-value", selectedValue);
+});
+
+watch(() => props.revalidate,() =>{
+  addressError.value = validateAddressData(`${selectedValue.streetAddress} ${selectedValue.country.value} ${selectedValue.province.value} ${selectedValue.city} ${selectedValue.city} ${selectedValue.postalCode}`);
+  nameError.value = validateAddressNameData(selectedValue.locationName);
+});
 
 const updateStateProvince = (
   value: CodeNameType | undefined,
@@ -85,6 +99,7 @@ switch (selectedValue.country.value) {
     v-model="selectedValue.locationName"
     :enabled="true"
     :validations="[isNotEmpty,isMinSize(3),isMaxSize(50)]"
+    :error-message="nameError"
     @empty="validation.locationName = !$event"
     v-if="props.id !== 0"
   />
@@ -95,6 +110,7 @@ switch (selectedValue.country.value) {
     :initial-value="selectedValue.country.value"
     :model-value="countryList"
     :validations="[]"
+    :error-message="addressError"
     @update:selected-value="updateStateProvince($event, 'country')"
     @update:model-value="resetProvinceOnChange"
     @empty="validation.country = !$event"
@@ -106,6 +122,7 @@ switch (selectedValue.country.value) {
     placeholder="Start typing to search for your address or PO box"
     v-model="selectedValue.streetAddress"
     :enabled="true"
+    :error-message="addressError"
     :validations="[isNotEmpty,isMinSize(3),isMaxSize(50)]"
     @empty="validation.streetAddress = !$event"
   />
@@ -116,6 +133,7 @@ switch (selectedValue.country.value) {
     placeholder="City"
     v-model="selectedValue.city"
     :enabled="true"
+    :error-message="addressError"
     :validations="[isNotEmpty,isMinSize(3),isMaxSize(50)]"
     @empty="validation.city = !$event"
   />
@@ -134,6 +152,7 @@ switch (selectedValue.country.value) {
       :initial-value="selectedValue.province.value"
       :model-value="content"
       :validations="[]"
+      :error-message="addressError"
       @update:selected-value="updateStateProvince($event, 'province')"
       @empty="validation.province = !$event"
     />
@@ -144,6 +163,7 @@ switch (selectedValue.country.value) {
     label="Postal code"
     placeholder="A1A1A1"
     :enabled="true"
+    :error-message="addressError"
     v-model="modelValue.postalCode"
     :validations="postalCodeValidators"
     @empty="validation.postalCode = !$event"
