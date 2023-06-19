@@ -166,7 +166,7 @@ export const isUniqueDescriptive = (): ((key: string, field: string) => (value: 
     const values = fieldsToCheck.map((field:string) => record[key][field]);
     record[key] = { ...record[key], [fieldId]: value };
 
-    if (values.includes(value)) {
+    if (values.some((entry: string) => entry.toLowerCase() === value.toLowerCase())) {
       return "This value is already in use";
     }   
 
