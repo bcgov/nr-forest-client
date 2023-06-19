@@ -2,7 +2,7 @@
 import { reactive, watch, computed, ref } from "vue";
 import type { CodeNameType } from "@/core/CommonTypes";
 import type { Address } from "@/dto/ApplyClientNumberDto";
-import { isNotEmpty,isCanadianPostalCode,isUsZipCode,isOnlyNumbers,isMaxSize,isMinSize } from "@/helpers/validators/GlobalValidators";
+import { isNotEmpty,isCanadianPostalCode,isUsZipCode,isOnlyNumbers,isMaxSize,isMinSize, isNoSpecialCharacters } from "@/helpers/validators/GlobalValidators";
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -84,9 +84,23 @@ switch (selectedValue.country.value) {
   case "US":
     return [isUsZipCode];
   default:
-    return [isOnlyNumbers, isMaxSize(10)];
+    return [isOnlyNumbers,isMinSize(5), isMaxSize(10)];
 }
 });
+
+const provinceNaming = computed(() =>{
+  switch(selectedValue.country.value){
+    case "CA":
+      return "Province or territory"
+    case "US":
+      return "State"
+    default:
+      return "Province/terrytory or state"
+  }
+});
+
+const postalCodeNaming = computed(() =>(
+  selectedValue.country.value === "US" ? "Zip code" : "Postal code"));
 
 </script>
 
@@ -98,7 +112,7 @@ switch (selectedValue.country.value) {
     tip="For example, 'Campbell River Region' or 'Castlegar Woods Division'"
     v-model="selectedValue.locationName"
     :enabled="true"
-    :validations="[isNotEmpty,isMinSize(3),isMaxSize(50)]"
+    :validations="[isNotEmpty,isMinSize(3),isMaxSize(50),isNoSpecialCharacters]"
     :error-message="nameError"
     @empty="validation.locationName = !$event"
     v-if="props.id !== 0"
@@ -123,7 +137,7 @@ switch (selectedValue.country.value) {
     v-model="selectedValue.streetAddress"
     :enabled="true"
     :error-message="addressError"
-    :validations="[isNotEmpty,isMinSize(3),isMaxSize(50)]"
+    :validations="[isNotEmpty,isMinSize(5),isMaxSize(50)]"
     @empty="validation.streetAddress = !$event"
   />
 
@@ -134,7 +148,7 @@ switch (selectedValue.country.value) {
     v-model="selectedValue.city"
     :enabled="true"
     :error-message="addressError"
-    :validations="[isNotEmpty,isMinSize(3),isMaxSize(50)]"
+    :validations="[isNotEmpty,isMinSize(3),isMaxSize(50),isNoSpecialCharacter]"
     @empty="validation.city = !$event"
   />
 
@@ -148,7 +162,7 @@ switch (selectedValue.country.value) {
   >
     <dropdown-input-component
       id="province"
-      label="Province or territory"
+      :label="provinceNaming"
       :initial-value="selectedValue.province.value"
       :model-value="content"
       :validations="[]"
@@ -160,7 +174,7 @@ switch (selectedValue.country.value) {
 
   <text-input-component
     id="postalCode"
-    label="Postal code"
+    :label="postalCodeNaming"
     placeholder="A1A1A1"
     :enabled="true"
     :error-message="addressError"

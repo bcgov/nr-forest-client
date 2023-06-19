@@ -2,7 +2,7 @@
 import { reactive, watch, ref } from "vue";
 import type { CodeDescrType, CodeNameType } from "@/core/CommonTypes";
 import type { Contact } from "@/dto/ApplyClientNumberDto";
-import { isNotEmpty,isEmail, isPhoneNumber,isMaxSize,isMinSize } from "@/helpers/validators/GlobalValidators";
+import { isNotEmpty,isEmail, isPhoneNumber,isMaxSize,isMinSize,isNoSpecialCharacters } from "@/helpers/validators/GlobalValidators";
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -93,7 +93,7 @@ const nameTypesToCodeDescr = (values: CodeNameType[] | undefined) : CodeDescrTyp
     label="First name"
     placeholder="First name"
     v-model="selectedValue.firstName"
-    :validations="[]"
+    :validations="[isMinSize(1), isMaxSize(25),isNotEmpty,isNoSpecialCharacters]"
     :enabled="enabled"
     :error-message="error"
     @empty="validation.firstName = !$event"
@@ -104,7 +104,7 @@ const nameTypesToCodeDescr = (values: CodeNameType[] | undefined) : CodeDescrTyp
     label="Last name"
     placeholder="Last name"
     v-model="selectedValue.lastName"
-    :validations="[]"
+    :validations="[isMinSize(1), isMaxSize(25),isNotEmpty,isNoSpecialCharacters]"
     :enabled="enabled"
     :error-message="error"
     @empty="validation.lastName = !$event"
@@ -115,7 +115,7 @@ const nameTypesToCodeDescr = (values: CodeNameType[] | undefined) : CodeDescrTyp
     label="Email address"
     placeholder="Email"
     v-model="selectedValue.email"
-    :validations="[isNotEmpty,isEmail]"
+    :validations="[isNotEmpty,isEmail,isMinSize(6),isMaxSize(50)]"
     :enabled="enabled"
     @empty="validation.email = !$event"
   />
@@ -126,7 +126,7 @@ const nameTypesToCodeDescr = (values: CodeNameType[] | undefined) : CodeDescrTyp
     placeholder="( ) ___-____"
     v-model="selectedValue.phoneNumber"
     :enabled="true"
-    :validations="[isNotEmpty, isPhoneNumber]"
+    :validations="[isNotEmpty, isPhoneNumber,isMaxSize(15),isMinSize(10)]"
     @empty="validation.phoneNumber = !$event"
   />
 </template>

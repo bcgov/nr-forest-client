@@ -1,5 +1,7 @@
-//Defines the email regular expression
+//Defines the used regular expressions
 const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const specialCharacters: RegExp = /^[a-zA-Z0-9\sÀ-ÖØ-öø-ÿ]+$/;
+const e164Regex: RegExp = /^\+?[1-9]\d{1,14}$/;
 
 /**
  * Checks if the value is not empty
@@ -35,7 +37,7 @@ export const isEmail = (value: string) => {
 }
 
 export const isPhoneNumber = (value: string) => {
-  if (isNotEmpty(value) === "" && value.match(/^[0-9]{10}$/)) return "";
+  if (isNotEmpty(value) === "" && e164Regex.test(value)) return "";
   return "This field must be a valid phone number";
 }
 
@@ -171,3 +173,9 @@ export const isUniqueDescriptive = (): ((key: string, field: string) => (value: 
     return "";
   };
 };
+
+
+export const isNoSpecialCharacters = (value: string) => {
+  if (isNotEmpty(value) === "" && specialCharacters.test(value)) return "";
+  return "No special characters allowed";
+}
