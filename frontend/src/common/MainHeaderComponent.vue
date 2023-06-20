@@ -34,7 +34,7 @@ export default defineComponent({
 
 <style scoped>
 header {
-  background-color: #0073E6;
+  background-color: #0073e6;
   padding: 0 30px 0 30px;
   color: #fff;
   display: flex;
@@ -49,6 +49,11 @@ header h1 {
   font-weight: normal; /* 400 */
   margin: 5px 5px 0 18px;
   visibility: hidden;
+
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 700;
+  letter-spacing: 0.16px;
 }
 
 header .banner {
@@ -74,7 +79,6 @@ header .banner {
 
 @media screen and (min-width: 900px) {
   header h1 {
-    font-size: 2em;
     visibility: visible;
   }
 }

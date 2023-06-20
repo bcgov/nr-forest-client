@@ -1,22 +1,14 @@
 <template>
-  <div>
-    <MainHeader />
-    <div>
-      <b-tabs pills card>
-        <b-tab
-          v-for="(tab, index) in tabs"
-          :title="tab.title"
-          :key="index"
-          :active="index == 0"
-        >
-          <component
-            :is="tab.content"
-            :submitterInformation="submitterInformation"
-          />
-        </b-tab>
-      </b-tabs>
-    </div>
-  </div>
+  <MainHeader />
+  <ApplyClientNumber
+    v-if="showForm"
+    :submitterInformation="submitterInformation"
+  />
+
+  <ReviewApplicationPage
+    v-if="showReview"
+    :submitterInformation="submitterInformation"
+  />
 </template>
 
 <script setup lang="ts">
@@ -32,19 +24,20 @@ const keycloak: KeycloakInstance | undefined = inject("keycloak");
 let tabs: Ref<Array<{ title: string; content: DefineComponent }>> = ref([]);
 
 let submitterInformation = ref({});
+const showForm = ref(false);
+const showReview = ref(false);
 
 if (
   keycloak &&
   keycloak.tokenParsed &&
   keycloak.tokenParsed.identity_provider === "idir"
 ) {
-  tabs.value = [
-    { title: "Review Applications", content: ReviewApplicationPage },
-  ];
+  showForm.value = false;
+  showReview.value = true;
 } else {
-  tabs.value = [
-    { title: "Request a client number", content: ApplyClientNumber },
-  ];
+  showForm.value = true;
+  showReview.value = false;
+
   submitterInformation.value.bceidBusinessName =
     keycloak && keycloak.tokenParsed
       ? keycloak.tokenParsed.displayed

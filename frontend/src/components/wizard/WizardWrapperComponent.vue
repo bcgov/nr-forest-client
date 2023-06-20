@@ -177,21 +177,28 @@ const progressData = computed(() =>
 
 const modalContent = ref({ active: false });
 const toastContent = ref({ active: false, name: "", kind: "" });
-const showToast = ref(false);
 
 const openModal = (event: any) => (modalContent.value = event);
 const closeModal = () =>
   (modalContent.value = { ...modalContent.value, active: false });
+const openToast = (event: any) => {
+  toastContent.value = event;
+  setTimeout(() => (toastContent.value.active = false), 8000);
+};
+
 provide("modalContent", openModal);
 
 const deleteContentModal = () => {
-  toastContent.value.active = true;
-  toastContent.value.name = modalContent.value.name;
-  toastContent.value.kind = modalContent.value.kind;
+  openToast({
+    name: modalContent.value.name,
+    kind: modalContent.value.kind,
+    active: true,
+  });
   modalContent.value.handler();
   closeModal();
-  setTimeout(() => (toastContent.value.active = false), 8000);
 };
+
+provide("toastContent", openToast);
 </script>
 
 <style scoped>
