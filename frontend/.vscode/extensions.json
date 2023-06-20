@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "Vue.volar",
+		"Vue.vscode-typescript-vue-plugin",
+		"ms-vscode.vscode-typescript-next",
+		"antfu.vite",
+		"ZixuanChen.vitest-explorer",
+		"esbenp.prettier-vscode",
+		"rvest.vs-code-prettier-eslint",
+		"wayou.vscode-todo-highlight",
+		"pmneo.tsimporter",
+		"dbaeumer.vscode-eslint"
+  ]
+}
