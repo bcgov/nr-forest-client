@@ -1,7 +1,7 @@
 <template>
   <div class="wizard-wrap-indicator">
     <div
-      v-for="step in modelValue"
+      v-for="(step, index) in modelValue"
       :class="{
         'wizard-wrap-item': true,
         [`wizard-wrap-item-${step.kind}`]: true,
@@ -16,7 +16,15 @@
         }"
       />
       <div class="wizard-wrap-item-text">
-        <p>{{ step.title }}</p>
+        <p>
+          <a
+            v-if="canShowLink(step)"
+            :href="'#' + index"
+            @click.prevent="emit('go-to', index)"
+            >{{ step.title }}</a
+          >
+          <span v-else>{{ step.title }}</span>
+        </p>
         <span class="inner-text">{{ step.subtitle }}</span>
       </div>
     </div>
@@ -28,6 +36,8 @@ import type { ProgressData } from "@/core/CommonTypes";
 
 defineProps<{ modelValue: Array<ProgressData> }>();
 
+const emit = defineEmits<{ (e: "go-to", value: number): void }>();
+
 import Checkmark16 from "@carbon/icons-vue/es/checkmark--outline/16";
 import Error16 from "@carbon/icons-vue/es/error--outline/16";
 import Circle16 from "@carbon/icons-vue/es/circle-dash/16";
@@ -38,6 +48,10 @@ const iconsForKinds: Record<string, any> = {
   ["current"]: Info16,
   ["queued"]: Circle16,
   ["error"]: Error16,
+};
+
+const canShowLink = (step: ProgressData) => {
+  return step.kind === "current" || step.kind === "complete";
 };
 </script>
 
@@ -63,6 +77,14 @@ const iconsForKinds: Record<string, any> = {
 }
 .wizard-wrap-item-text p {
   font-size: 14px;
+}
+.wizard-wrap-item-text p a {
+  text-decoration: none;
+  color: inherit;
+}
+.wizard-wrap-item-text p a:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }
 .wizard-wrap-item-text span {
   font-size: 12px;

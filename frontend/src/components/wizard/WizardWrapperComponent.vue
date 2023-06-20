@@ -22,7 +22,10 @@
       >
       </bx-toast-notification>
     </div>
-    <wizard-progress-indicator-component :model-value="progressData" />
+    <wizard-progress-indicator-component
+      :model-value="progressData"
+      @go-to="goToStep"
+    />
   </div>
 
   <slot :processValidity="processValidity" :goToStep="goToStep" />
