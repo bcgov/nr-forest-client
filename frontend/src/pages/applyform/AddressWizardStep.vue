@@ -25,22 +25,23 @@
     :revalidate="revalidate"
     @update:model-value="updateAddress($event, index + 1)"
     @valid="updateValidState(index + 1, $event)"
+    @remove="handleRemove(index + 1)"
   />
 
-  <bx-btn    
+  <bx-btn
     kind="tertiary"
     iconLayout=""
-    class="bx--btn"    
+    class="bx--btn"
     @click.prevent="addAddress"
     size="field"
   >
-  <span>Add another address</span>
-  <add16 slot="icon"/>
+    <span>Add another address</span>
+    <add16 slot="icon" />
   </bx-btn>
 </template>
 
 <script setup lang="ts">
-import { watch, ref, computed, reactive } from "vue";
+import { watch, ref, computed, reactive, inject } from "vue";
 import add16 from "@carbon/icons-vue/es/add/16";
 import {
   type FormDataDto,
@@ -69,7 +70,7 @@ const updateAddress = (value: Address | undefined, index: number) => {
   revalidate.value = !revalidate.value;
   if (value && index < formData.location.addresses.length)
     formData.location.addresses[index] = value;
-    emit("update:data", formData)
+  emit("update:data", formData);
 };
 
 //Country related data
@@ -83,10 +84,17 @@ const fetch = () => {
 watch(() => props.active, fetch);
 fetch();
 
+const modalContentEvent = inject("modalContent");
+
 //New address being added
 const otherAddresses = computed(() => formData.location.addresses.slice(1));
 const addAddress = () =>
   formData.location.addresses.push(JSON.parse(JSON.stringify(emptyAddress)));
+
+const removeAddress = (index: number) => () => {
+  formData.location.addresses = formData.location.addresses.splice(index, 1);
+  modalContentEvent({ active: false });
+};
 
 //Validation
 const validation = reactive<Record<string, boolean>>({
@@ -108,4 +116,14 @@ const updateValidState = (index: number, valid: boolean) => {
 };
 
 const uniqueValues = isUniqueDescriptive();
+
+const handleRemove = (index: number) => {
+  const selectedAddress = formData.location.addresses[index];
+  modalContentEvent({
+    name: selectedAddress.locationName || "this",
+    kind: "address",
+    handler: removeAddress(index),
+    active: true,
+  });
+};
 </script>

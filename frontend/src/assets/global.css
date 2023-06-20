@@ -86,3 +86,15 @@
   background-color: #00478F;
     color: white;
 }
+
+.wizard-head{
+  display: flex;
+}
+.wizard-head-text{
+  flex-grow: 1;
+}
+.wizard-head-toast{
+  position: fixed;
+    top: 80px;
+    right: 25px;
+}

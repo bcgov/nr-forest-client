@@ -1,7 +1,7 @@
 <template>
   <contact-group-component
     :id="0"
-    v-model="formData.location.contacts[0]" 
+    v-model="formData.location.contacts[0]"
     :roleList="roleList"
     :addressList="addresses"
     :validations="[uniqueValues]"
@@ -14,7 +14,7 @@
   <div v-show="otherContacts.length > 0">
     <h5>Additional address</h5>
     <br />
-    <Note note="Provide a name to identify your additional address" />    
+    <Note note="Provide a name to identify your additional address" />
   </div>
 
   <contact-group-component
@@ -29,22 +29,23 @@
     :revalidate="revalidate"
     @update:model-value="updateContact($event, index + 1)"
     @valid="updateValidState(index + 1, $event)"
+    @remove="handleRemove(index + 1)"
   />
 
-  <bx-btn    
+  <bx-btn
     kind="tertiary"
     iconLayout=""
-    class="bx--btn"    
+    class="bx--btn"
     @click.prevent="addContact"
     size="field"
   >
-  <span>Add another contact</span>
-  <add16 slot="icon"/>
+    <span>Add another contact</span>
+    <add16 slot="icon" />
   </bx-btn>
 </template>
 
 <script setup lang="ts">
-import { watch, ref, computed, reactive } from "vue";
+import { watch, ref, computed, reactive, inject } from "vue";
 import add16 from "@carbon/icons-vue/es/add/16";
 
 import {
@@ -59,6 +60,7 @@ import type { CodeNameType } from "@/core/CommonTypes";
 import Note from "@/common/NoteComponent.vue";
 
 import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
+import { remove } from "lodash";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>();
@@ -73,11 +75,11 @@ const formData = reactive<FormDataDto>(props.data);
 const revalidate = ref(false);
 watch([formData], () => emit("update:data", formData));
 
-const updateContact = (value: Contact | undefined, index: number) => {  
+const updateContact = (value: Contact | undefined, index: number) => {
   revalidate.value = !revalidate.value;
   if (value && index < formData.location.contacts.length)
     formData.location.contacts[index] = value;
-  emit("update:data", formData)
+  emit("update:data", formData);
 };
 
 //Role related data
@@ -90,6 +92,8 @@ const fetch = () => {
 watch(() => props.active, fetch);
 fetch();
 
+const modalContentEvent = inject("modalContent");
+
 //Addresses Related data
 const addresses = computed<CodeNameType[]>(() =>
   formData.location.addresses.map((address, index) => {
@@ -101,6 +105,10 @@ const addresses = computed<CodeNameType[]>(() =>
 const otherContacts = computed(() => formData.location.contacts.slice(1));
 const addContact = () =>
   formData.location.contacts.push(JSON.parse(JSON.stringify(emptyContact)));
+const removeContact = (index: number) => {
+  formData.location.contacts = formData.location.contacts.splice(index, 1);
+  modalContentEvent({ active: false });
+};
 
 //Validation
 const validation = reactive<Record<string, boolean>>({
@@ -123,4 +131,13 @@ const updateValidState = (index: number, valid: boolean) => {
 
 const uniqueValues = isUniqueDescriptive();
 
+const handleRemove = (index: number) => {
+  const selectedContact = formData.location.contacts[index];
+  modalContentEvent({
+    name: selectedContact.firstName || "this",
+    kind: "address",
+    handler: removeContact(index),
+    active: true,
+  });
+};
 </script>

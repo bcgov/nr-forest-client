@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, watch, computed, ref } from "vue";
+import delete16 from "@carbon/icons-vue/es/trash-can/16";
 import type { CodeNameType } from "@/core/CommonTypes";
 import type { Address } from "@/dto/ApplyClientNumberDto";
 import { isNotEmpty,isCanadianPostalCode,isUsZipCode,isOnlyNumbers,isMaxSize,isMinSize, isNoSpecialCharacters } from "@/helpers/validators/GlobalValidators";
@@ -17,6 +18,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "valid", value: boolean): void;
   (e: "update:model-value", value: Address | undefined): void;
+  (e: "remove", value: number): void;
 }>();
 
 //We set it as a separated ref due to props not being updatable
@@ -182,4 +184,16 @@ const postalCodeNaming = computed(() =>(
     :validations="postalCodeValidators"
     @empty="validation.postalCode = !$event"
   />
+
+  <bx-btn    
+    v-show="id > 0"
+    kind="danger-ghost"
+    iconLayout=""
+    class="bx--btn"    
+    @click.prevent="emit('remove',id)"
+    size="field"
+  >
+  <span>Delete address</span>
+  <delete16 slot="icon"/>
+  </bx-btn>
 </template>

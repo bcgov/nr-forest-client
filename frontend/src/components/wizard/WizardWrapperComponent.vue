@@ -1,59 +1,104 @@
 <template>
   <div class="wizard-wrap">
-     <div>
-        <h4 class="form-header">{{title}}</h4>  
-        <p class="inner-text" v-if="subtitle">{{subtitle}}</p>
+    <div class="wizard-head">
+      <div class="wizard-head-text">
+        <h4 class="form-header">{{ title }}</h4>
+        <p class="inner-text" v-if="subtitle">{{ subtitle }}</p>
       </div>
-      
-      <wizard-progress-indicator-component :model-value="progressData" />
+
+      <bx-toast-notification
+        v-if="toastContent.active"
+        class="wizard-head-toast"
+        timeout="8000"
+        kind="success"
+        title="Success"
+        :subtitle="
+          '“' +
+          toastContent.name +
+          '” additional ' +
+          toastContent.kind +
+          ' was deleted successfully'
+        "
+      >
+      </bx-toast-notification>
+    </div>
+    <wizard-progress-indicator-component :model-value="progressData" />
   </div>
 
   <slot :processValidity="processValidity" :goToStep="goToStep" />
+
   <div class="wizard-wrap">
     <hr />
 
-    <span class="inner-text" v-if="!isStateValid(currentTab)">All fields must be filled out correctly to enable the "Next" button below</span>
-  <div>
-    <bx-btn
-      v-show="!isFirst"
-      kind="secondary"
-      iconLayout=""
-      class="bx--btn rounded"
-      :disabled="isFirst"
-      @click.prevent="onBack"
-      size="field"
+    <span class="inner-text" v-if="!isStateValid(currentTab)"
+      >All fields must be filled out correctly to enable the "Next" button
+      below</span
     >
-    <span>Back</span>
-    </bx-btn>
- 
-    <bx-btn
-      kind="primary"
-      iconLayout=""
-      class="bx--btn rounded"
-      :disabled="isNextAvailable"
-      v-show="!isLast"
-      @click.prevent="onNext"
-      size="field"
-    >
-      <span>Next</span>
-      <arrowRight16 slot="icon"/>    
-    </bx-btn>
+    <div>
+      <bx-btn
+        v-show="!isFirst"
+        kind="secondary"
+        iconLayout=""
+        class="bx--btn rounded"
+        :disabled="isFirst"
+        @click.prevent="onBack"
+        size="field"
+      >
+        <span>Back</span>
+      </bx-btn>
 
-    <bx-btn 
-      kind="primary"
-      iconLayout=""
-      class="bx--btn rounded"
-      :disabled="!isFormValid"
-      size="field"
-      v-show="isLast">
-      <span>Submit</span>
-    </bx-btn>
+      <bx-btn
+        kind="primary"
+        iconLayout=""
+        class="bx--btn rounded"
+        :disabled="isNextAvailable"
+        v-show="!isLast"
+        @click.prevent="onNext"
+        size="field"
+      >
+        <span>Next</span>
+        <arrowRight16 slot="icon" />
+      </bx-btn>
+
+      <bx-btn
+        kind="primary"
+        iconLayout=""
+        class="bx--btn rounded"
+        :disabled="!isFormValid"
+        size="field"
+        v-show="isLast"
+      >
+        <span>Submit</span>
+      </bx-btn>
     </div>
   </div>
+
+  <bx-modal
+    id="modal-example"
+    :open="modalContent.active"
+    @bx-modal-closed="closeModal"
+  >
+    <bx-modal-header>
+      <bx-modal-close-button></bx-modal-close-button>
+      <bx-modal-label>Delete additional {{ modalContent.kind }}</bx-modal-label>
+      <bx-modal-heading
+        >Are you sure you want to delete "{{ modalContent.name }}" additional
+        {{ modalContent.kind }}</bx-modal-heading
+      >
+    </bx-modal-header>
+    <bx-modal-body><p></p></bx-modal-body>
+
+    <bx-modal-footer>
+      <bx-btn kind="secondary" data-modal-close>Cancel</bx-btn>
+      <bx-btn kind="danger" @click.prevent="deleteContentModal"
+        >Delete additional {{ modalContent.kind }}</bx-btn
+      >
+    </bx-modal-footer>
+  </bx-modal>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, useSlots, provide, reactive } from "vue";
+import { ref, computed, useSlots, provide, reactive, inject, watch } from "vue";
 import arrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 
 defineProps<{
@@ -95,7 +140,9 @@ const isFirst = computed(() => currentTab.value === 0);
 const isLast = computed(() => currentTab.value === validTabs.length - 1);
 const isCurrentValid = computed(() => isStateValid(currentTab.value));
 const isNextAvailable = computed(() => !isCurrentValid.value || isLast.value);
-const isFormValid = computed(() => validTabs.every((entry:any) => entry.valid));
+const isFormValid = computed(() =>
+  validTabs.every((entry: any) => entry.valid)
+);
 
 //Button Actions
 const onBack = () => {
@@ -110,18 +157,41 @@ const onNext = () => {
   }
 };
 
-const goToStep = (index: number) => currentTab.value = index;
+const goToStep = (index: number) => (currentTab.value = index);
 
-const stateIcon = (index: number) =>{
-  if(currentTab.value == index) return "current";
-  if(currentTab.value > index || validTabs[index].valid) return "complete";
+const stateIcon = (index: number) => {
+  if (currentTab.value == index) return "current";
+  if (currentTab.value > index || validTabs[index].valid) return "complete";
   return "queued";
-}
+};
 
-const progressData = computed(() => currentSlots.map((aSlot:any) => { return { title:aSlot.props?.title, subtitle:`Step ${aSlot.props?.index + 1}`, kind:stateIcon(aSlot.props?.index) } }));
+const progressData = computed(() =>
+  currentSlots.map((aSlot: any) => {
+    return {
+      title: aSlot.props?.title,
+      subtitle: `Step ${aSlot.props?.index + 1}`,
+      kind: stateIcon(aSlot.props?.index),
+    };
+  })
+);
 
+const modalContent = ref({ active: false });
+const toastContent = ref({ active: false, name: "", kind: "" });
+const showToast = ref(false);
 
+const openModal = (event: any) => (modalContent.value = event);
+const closeModal = () =>
+  (modalContent.value = { ...modalContent.value, active: false });
+provide("modalContent", openModal);
 
+const deleteContentModal = () => {
+  toastContent.value.active = true;
+  toastContent.value.name = modalContent.value.name;
+  toastContent.value.kind = modalContent.value.kind;
+  modalContent.value.handler();
+  closeModal();
+  setTimeout(() => (toastContent.value.active = false), 8000);
+};
 </script>
 
 <style scoped>
@@ -130,11 +200,11 @@ const progressData = computed(() => currentSlots.map((aSlot:any) => { return { t
   display: flex;
   justify-content: space-between;
 }
-.form-progress-step{
+.form-progress-step {
   flex-grow: 1;
 }
 
-.form-progress-step > *{
+.form-progress-step > * {
   overflow: initial;
 }
 </style>
