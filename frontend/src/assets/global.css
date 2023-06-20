@@ -1,100 +1,132 @@
 * {
-  font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
+  font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
 }
 
-.bx--btn{  
-  width: 243px;  
-  padding: 3px;  
+.bx--btn {
+  width: 243px;
+  padding: 3px;
 }
 
-.rounded > button{
+.rounded > button {
   border-radius: 4px !important;
 }
 
-.bx--btn > button{  
+.bx--btn > button {
   border-radius: 4px !important;
 }
 
-.bulleted-list{
+.bulleted-list {
   list-style: decimal;
   margin-left: 1.5rem;
 }
 
-.bulleted-list li{
+.bulleted-list li {
   padding: 5px;
 }
 
-.notification{
+.notification {
   max-width: 100%;
 }
-.bx--inline-notification__text-wrapper{
+.bx--inline-notification__text-wrapper {
   display: flex-root;
 }
 
-.inner-heading{
+.inner-heading {
   font-size: 20px;
   line-height: 28px;
   margin-bottom: 8px;
 }
 
-.inner-text {    
-  font-style: normal;    
+.inner-text {
+  font-style: normal;
   font-size: 16px;
   line-height: 24px;
-  color: #606062;  
+  color: #606062;
 }
 
-.inner-text-spaced{
+.inner-text-spaced {
   margin-bottom: 32px;
 }
 
-.form-header{
-  font-size: 28px; 
+.form-header {
+  font-size: 28px;
 }
 
-.visible-disabled{
+.visible-disabled {
   color: #525252;
 }
 
-.wizard-wrap{
+.wizard-wrap {
   display: flex;
   flex-direction: column;
   padding: 0px 32px;
   gap: 40px;
 }
 
-.inner-spotlight-topic{
+.inner-spotlight-topic {
   line-height: 24px;
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 4px;
 }
 
-.inner-spotlight-group{
+.inner-spotlight-group {
   display: flex;
-  flex-direction: column;  
+  flex-direction: column;
   gap: 12px;
   align-items: stretch;
-  width:100%;
+  width: 100%;
 }
 
-.inner-spotlight-group-markup{ 
-  border-bottom: solid 1px #DFDFE1;
+.inner-spotlight-group-markup {
+  border-bottom: solid 1px #dfdfe1;
 }
 
-.bx-tag{
-  background-color: #00478F;
-    color: white;
+.bx-tag {
+  background-color: #00478f;
+  color: white;
 }
 
-.wizard-head{
+.wizard-head {
   display: flex;
 }
-.wizard-head-text{
+.wizard-head-text {
   flex-grow: 1;
 }
-.wizard-head-toast{
+.wizard-head-toast {
   position: fixed;
-    top: 80px;
-    right: 25px;
+  top: 80px;
+  right: 25px;
+}
+
+.submission-head {
+  display: flex;
+  margin: 90px 0px;
+  gap: 209px;
+}
+.submission-text {
+  flex-grow: 1;
+  padding-top: 52px;
+}
+
+.submission-text h1 {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 60px;
+  line-height: 70px;
+}
+
+.submission-text p {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 40px;
+  padding: 24px 0px;
+  color: #606062;
+}
+
+.submission-badge {
+  width: 414px;
+  height: 414px;
+  padding-left: 40px;
 }

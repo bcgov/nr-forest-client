@@ -1,29 +1,26 @@
 <template>
   <MainHeader />
-  <ApplyClientNumber
-    v-if="showForm"
-    :submitterInformation="submitterInformation"
-  />
-
-  <ReviewApplicationPage
-    v-if="showReview"
-    :submitterInformation="submitterInformation"
-  />
+  <router-view></router-view>
 </template>
 
 <script setup lang="ts">
-import { inject, ref } from "vue";
-import MainHeader from "./common/MainHeaderComponent.vue";
-import ReviewApplicationPage from "./pages/ReviewApplicationPage.vue";
-import ApplyClientNumber from "./pages/applyclientnumber/ApplyClientNumberPage.vue";
-import type { Ref, DefineComponent } from "vue";
+import { inject, provide, ref } from "vue";
 import type { KeycloakInstance } from "keycloak-js";
-import { navBlue, navSelectBlue } from "./utils/color";
+
+import MainHeader from "@/common/MainHeaderComponent.vue";
+import type { Submitter } from "@/core/CommonTypes";
+import { navBlue, navSelectBlue } from "@/utils/color";
+
 
 const keycloak: KeycloakInstance | undefined = inject("keycloak");
-let tabs: Ref<Array<{ title: string; content: DefineComponent }>> = ref([]);
 
-let submitterInformation = ref({});
+let submitterInformation = ref<Submitter>({
+  firstName: '',
+  lastName: '',
+  email: '',
+  bceidBusinessName: '',
+  userId: '',
+});
 const showForm = ref(false);
 const showReview = ref(false);
 
@@ -44,24 +41,19 @@ if (
       : "Dev Test Client Name";
   submitterInformation.value.userId =
     keycloak && keycloak.tokenParsed ? keycloak.subject : "testUserId";
-  submitterInformation.value.submitterFirstName =
+  submitterInformation.value.firstName =
     keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : "Dev";
-  submitterInformation.value.submitterLastName =
+  submitterInformation.value.lastName =
     keycloak && keycloak.tokenParsed
       ? keycloak.tokenParsed.family_name
       : "Test";
-  submitterInformation.value.submitterEmail =
+  submitterInformation.value.email =
     keycloak && keycloak.tokenParsed
       ? keycloak.tokenParsed.email
       : "fsa_donotreply@gov.bc.ca";
 }
-</script>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-export default defineComponent({
-  name: "App",
-});
+provide("submitterInformation",submitterInformation.value);
 </script>
 
 <style>

@@ -116,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { reactive, watch, inject } from 'vue';
 import {
   formDataDto,
   type FormDataDto,
@@ -130,21 +130,19 @@ import BusinessInformationWizardStep from "@/pages/applyform/BusinessInformation
 import AddressWizardStep from "@/pages/applyform/AddressWizardStep.vue";
 import ContactWizardStep from "@/pages/applyform/ContactWizardStep.vue";
 import ReviewWizardStep from "@/pages/applyform/ReviewWizardStep.vue";
+import type { Submitter } from '@/core/CommonTypes';
 
-const props = defineProps({
-  submitterInformation: {
-    type: Object,
-    required: true,
-  },
-});
+
+const submitterInformation = inject<Submitter>("submitterInformation");
+
 
 const submitterContact: Contact = {
   locationNames: [],
   contactType: { value: "", text: "" },
   phoneNumber: "",
-  firstName: props.submitterInformation.submitterFirstName,
-  lastName: props.submitterInformation.submitterLastName,
-  email: props.submitterInformation.submitterEmail,
+  firstName: submitterInformation?.firstName || "",
+  lastName: submitterInformation?.lastName || "",
+  email: submitterInformation?.email || "",
 };
 
 //---- Form Data ----//

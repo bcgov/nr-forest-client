@@ -1,10 +1,12 @@
 import { createApp } from "vue";
 import VueTheMask from "vue-the-mask";
-import App from "./App.vue";
 import VueKeycloakJs from "@dsb-norge/vue-keycloak-js";
 import type { KeycloakInstance } from "keycloak-js";
 import type { VueKeycloakInstance } from "@dsb-norge/vue-keycloak-js/dist/types";
-import { keycloakUrl, keycloakClientId, nodeEnv } from "./core/CoreConstants";
+
+import App from "@/App.vue";
+import {router} from "@/routes";
+import { keycloakUrl, keycloakClientId, nodeEnv } from "@/core/CoreConstants";
 
 //Importing BC typography
 import '@bcgov/bc-sans/css/BCSans.css'
@@ -21,7 +23,11 @@ import "@/assets/theme/components-overrides.scss";
 import "@/assets/global.css";
 
 const app = createApp(App);
+
+
 app.use(VueTheMask);
+app.use(router);
+
 
 if (nodeEnv && nodeEnv == "openshift-dev") {
   // disable the login authentication for the deployment in the openshift dev namespace

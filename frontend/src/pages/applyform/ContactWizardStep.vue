@@ -105,7 +105,7 @@ const addresses = computed<CodeNameType[]>(() =>
 const otherContacts = computed(() => formData.location.contacts.slice(1));
 const addContact = () =>
   formData.location.contacts.push(JSON.parse(JSON.stringify(emptyContact)));
-const removeContact = (index: number) => {
+const removeContact = (index: number) => () => {
   formData.location.contacts = formData.location.contacts.splice(index, 1);
   modalContentEvent({ active: false });
 };

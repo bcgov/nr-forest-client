@@ -38,3 +38,11 @@ export interface ProgressData {
   title: string;
   subtitle: string;
 }
+
+export interface Submitter {
+  firstName: string;
+  lastName: string;
+  email: string;
+  bceidBusinessName: string;
+  userId: string | undefined;
+}

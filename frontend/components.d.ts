@@ -20,6 +20,8 @@ declare module '@vue/runtime-core' {
     DropdownInputComponent: typeof import('./src/components/forms/DropdownInputComponent.vue')['default']
     MultiselectInputComponent: typeof import('./src/components/forms/MultiselectInputComponent.vue')['default']
     RadioInputComponent: typeof import('./src/components/forms/RadioInputComponent.vue')['default']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
     TextInputComponent: typeof import('./src/components/forms/TextInputComponent.vue')['default']
     WizardProgressIndicatorComponent: typeof import('./src/components/wizard/WizardProgressIndicatorComponent.vue')['default']
     WizardTabComponent: typeof import('./src/components/wizard/WizardTabComponent.vue')['default']
