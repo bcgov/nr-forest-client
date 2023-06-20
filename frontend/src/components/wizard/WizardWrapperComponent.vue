@@ -30,7 +30,27 @@
 
   <slot :processValidity="processValidity" :goToStep="goToStep" />
 
-  <div class="wizard-wrap">
+  <div class="wizard-wrap" v-if="isLast">
+    <hr />
+
+    <div>
+      <bx-btn
+        kind="secondary"
+        iconLayout=""
+        class="bx--btn rounded"
+        @click.prevent="onBack"
+        size="field"
+      >
+        <span>Back</span>
+      </bx-btn>
+
+      <bx-btn kind="primary" iconLayout="" class="bx--btn rounded" size="field">
+        <span>Submit</span>
+      </bx-btn>
+    </div>
+  </div>
+
+  <div class="wizard-wrap" v-if="!isLast && !isFormValid">
     <hr />
 
     <span class="inner-text" v-if="!isStateValid(currentTab)"
@@ -62,16 +82,23 @@
         <span>Next</span>
         <arrowRight16 slot="icon" />
       </bx-btn>
+    </div>
+  </div>
 
+  <div class="wizard-wrap" v-if="!isLast && isFormValid">
+    <hr />
+    <div>
       <bx-btn
         kind="primary"
         iconLayout=""
         class="bx--btn rounded"
-        :disabled="!isFormValid"
+        :disabled="isNextAvailable"
+        v-show="!isLast"
+        @click.prevent="goToStep(3)"
         size="field"
-        v-show="isLast"
       >
-        <span>Submit</span>
+        <span>Save</span>
+        <save16 slot="icon" />
       </bx-btn>
     </div>
   </div>
@@ -103,6 +130,7 @@
 <script setup lang="ts">
 import { ref, computed, useSlots, provide, reactive, inject, watch } from "vue";
 import arrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
+import save16 from "@carbon/icons-vue/es/save/16";
 
 defineProps<{
   title: string;
