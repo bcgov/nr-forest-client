@@ -101,32 +101,33 @@
 
 .submission-head {
   display: flex;
-  margin: 90px 0px;
-  gap: 209px;
+  margin: 96px 40px;
 }
 .submission-text {
+  width: 620px;
   flex-grow: 1;
-  padding-top: 52px;
 }
 
 .submission-text h1 {
   font-style: normal;
   font-weight: 400;
-  font-size: 60px;
+  font-size: 48px;
   line-height: 70px;
 }
 
 .submission-text p {
   font-style: normal;
   font-weight: 400;
-  font-size: 32px;
+  font-size: 26px;
   line-height: 40px;
   padding: 24px 0px;
   color: #606062;
+  width: 620px;
 }
 
 .submission-badge {
   width: 414px;
   height: 414px;
-  padding-left: 40px;
+  flex-grow: 1;
+  color: var(--cds-hover-primary, #0353e9);
 }
