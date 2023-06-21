@@ -1,132 +1,132 @@
 <script setup lang="ts">
-import { watch, computed, ref, reactive } from "vue";
-import { useFetchTo } from "@/services/ForestClientService";
-import { type BusinessSearchResult, ClientTypeEnum } from "@/core/CommonTypes";
+import { watch, computed, ref, reactive } from 'vue'
+import { useFetchTo } from '@/services/ForestClientService'
+import { type BusinessSearchResult, ClientTypeEnum } from '@/core/CommonTypes'
 import type {
   FormDataDto,
-  ForestClientDetailsDto,
-} from "@/dto/ApplyClientNumberDto";
-import RadioInputComponent from "@/components/forms/RadioInputComponent.vue";
-import { isNotEmpty, isMinSize } from "@/helpers/validators/GlobalValidators";
+  ForestClientDetailsDto
+} from '@/dto/ApplyClientNumberDto'
+import RadioInputComponent from '@/components/forms/RadioInputComponent.vue'
+import { isNotEmpty, isMinSize } from '@/helpers/validators/GlobalValidators'
 
 //Defining the props and emiter to reveice the data and emit an update
-const props = defineProps<{ data: FormDataDto; active: boolean }>();
+const props = defineProps<{ data: FormDataDto; active: boolean }>()
 
 const emit = defineEmits<{
-  (e: "update:data", value: FormDataDto): void;
-  (e: "valid", value: boolean): void;
-}>();
+  (e: 'update:data', value: FormDataDto): void
+  (e: 'valid', value: boolean): void
+}>()
 
 //Set the prop as a ref, and then emit when it changes
-const formData = ref<FormDataDto>(props.data);
+const formData = ref<FormDataDto>(props.data)
 watch(
   () => formData.value,
-  () => emit("update:data", formData.value)
-);
+  () => emit('update:data', formData.value)
+)
 
 // -- Validation of the component --
 const validation = reactive<Record<string, boolean>>({
   businessType: formData.value.businessInformation.businessType ? true : false,
-  business: formData.value.businessInformation.businessName ? true : false,
-});
+  business: formData.value.businessInformation.businessName ? true : false
+})
 
 const checkValid = () =>
   Object.values(validation).reduce(
     (accumulator: boolean, currentValue: boolean) =>
       accumulator && currentValue,
     true
-  );
+  )
 
-watch([validation], () => emit("valid", checkValid()));
-emit("valid", checkValid());
+watch([validation], () => emit('valid', checkValid()))
+emit('valid', checkValid())
 
 // -- Auto completion --
 const selectedOption = computed(() => {
   switch (formData.value.businessInformation.businessType) {
-    case "R":
-      return ClientTypeEnum.R;
-    case "U":
-      return ClientTypeEnum.U;
+    case 'R':
+      return ClientTypeEnum.R
+    case 'U':
+      return ClientTypeEnum.U
     default:
-      return ClientTypeEnum.Unknow;
+      return ClientTypeEnum.Unknow
   }
-});
+})
 
 const autoCompleteUrl = computed(
   () => `/api/clients/name/${formData.value.businessInformation.businessName}`
-);
+)
 
-const showAutoCompleteInfo = ref<boolean>(false);
-const showGoodStandingError = ref<boolean>(false);
-const showDuplicatedError = ref<boolean>(false);
-const detailsData = ref(null);
+const showAutoCompleteInfo = ref<boolean>(false)
+const showGoodStandingError = ref<boolean>(false)
+const showDuplicatedError = ref<boolean>(false)
+const detailsData = ref(null)
 
 //Using this as we have to handle the selected result to get
 //incorporation number and client type
-const autoCompleteResult = ref<BusinessSearchResult>();
+const autoCompleteResult = ref<BusinessSearchResult>()
 watch([autoCompleteResult], () => {
   if (autoCompleteResult.value) {
-    showDuplicatedError.value = false;
-    showGoodStandingError.value = false;
+    showDuplicatedError.value = false
+    showGoodStandingError.value = false
 
     formData.value.businessInformation.incorporationNumber =
-      autoCompleteResult.value.code;
+      autoCompleteResult.value.code
     formData.value.businessInformation.clientType =
-      autoCompleteResult.value.legalType;
-    showAutoCompleteInfo.value = false;
+      autoCompleteResult.value.legalType
+    showAutoCompleteInfo.value = false
 
-    emit("update:data", formData.value);
+    emit('update:data', formData.value)
 
     const config = {
       headers: {
-        "x-user-email": formData.value.location.contacts[0].email,
-        "x-user-id": formData.value.location.contacts[0].firstName,
-      },
-    };
+        'x-user-email': formData.value.location.contacts[0].email,
+        'x-user-id': formData.value.location.contacts[0].firstName
+      }
+    }
 
     //Also, we will load the backend data to fill all the other information as well
     const { error } = useFetchTo(
       `/api/clients/${autoCompleteResult.value.code}`,
       detailsData,
       config
-    );
+    )
     watch([error], () => {
-      if (error.value.response.status === 409) showDuplicatedError.value = true;
-    });
+      if (error.value.response.status === 409) showDuplicatedError.value = true
+    })
   }
-});
+})
 
 watch([detailsData], () => {
   if (detailsData.value) {
-    const forestClientDetails: ForestClientDetailsDto = detailsData.value;
+    const forestClientDetails: ForestClientDetailsDto = detailsData.value
     formData.value.location.contacts = [
       formData.value.location.contacts[0],
-      ...forestClientDetails.contacts,
-    ];
-    formData.value.location.addresses = forestClientDetails.addresses;
+      ...forestClientDetails.contacts
+    ]
+    formData.value.location.addresses = forestClientDetails.addresses
     formData.value.businessInformation.goodStandingInd =
-      forestClientDetails.goodStanding ? "Y" : "N";
-    showGoodStandingError.value = !forestClientDetails.goodStanding;
-    validation.business = forestClientDetails.goodStanding;
+      forestClientDetails.goodStanding ? 'Y' : 'N'
+    showGoodStandingError.value = !forestClientDetails.goodStanding
+    validation.business = forestClientDetails.goodStanding
 
-    emit("update:data", formData.value);
+    emit('update:data', formData.value)
   }
-});
+})
 
 // -- Unregistered Proprietorship
 watch([selectedOption], () => {
   if (selectedOption.value === ClientTypeEnum.U) {
-    formData.value.businessInformation.businessType = "U";
-    const { firstName, lastName } = formData.value.location.contacts[0];
-    formData.value.businessInformation.businessName = `${firstName} ${lastName}`;
-    validation.business = true;
-    emit("update:data", formData.value);
+    formData.value.businessInformation.businessType = 'U'
+    const { firstName, lastName } = formData.value.location.contacts[0]
+    formData.value.businessInformation.businessName = `${firstName} ${lastName}`
+    validation.business = true
+    emit('update:data', formData.value)
   } else {
-    formData.value.businessInformation.businessName = "";
-    validation.business = false;
-    showAutoCompleteInfo.value = true;
+    formData.value.businessInformation.businessName = ''
+    validation.business = false
+    showAutoCompleteInfo.value = true
   }
-});
+})
 </script>
 
 <template>
@@ -137,9 +137,9 @@ watch([selectedOption], () => {
     :modelValue="[
       {
         value: 'R',
-        text: 'I have a BC registered business (corporation, sole proprietorship, society, etc.)',
+        text: 'I have a BC registered business (corporation, sole proprietorship, society, etc.)'
       },
-      { value: 'U', text: 'I have an unregistered sole proprietorship' },
+      { value: 'U', text: 'I have an unregistered sole proprietorship' }
     ]"
     :validations="[]"
     @update:model-value="

@@ -116,70 +116,47 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, inject } from 'vue';
+import { reactive, watch, inject } from 'vue'
 import {
   formDataDto,
   type FormDataDto,
-  type Contact,
-} from "@/dto/ApplyClientNumberDto";
+  type Contact
+} from '@/dto/ApplyClientNumberDto'
 
-import WizardWrapperComponent from "@/components/wizard/WizardWrapperComponent.vue";
-import WizardTabComponent from "@/components/wizard/WizardTabComponent.vue";
+import WizardWrapperComponent from '@/components/wizard/WizardWrapperComponent.vue'
+import WizardTabComponent from '@/components/wizard/WizardTabComponent.vue'
 
-import BusinessInformationWizardStep from "@/pages/applyform/BusinessInformationWizardStep.vue";
-import AddressWizardStep from "@/pages/applyform/AddressWizardStep.vue";
-import ContactWizardStep from "@/pages/applyform/ContactWizardStep.vue";
-import ReviewWizardStep from "@/pages/applyform/ReviewWizardStep.vue";
-import type { Submitter } from '@/core/CommonTypes';
+import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformationWizardStep.vue'
+import AddressWizardStep from '@/pages/applyform/AddressWizardStep.vue'
+import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue'
+import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue'
+import type { Submitter } from '@/core/CommonTypes'
 
-
-const submitterInformation = inject<Submitter>("submitterInformation");
-
+const submitterInformation = inject<Submitter>('submitterInformation')
 
 const submitterContact: Contact = {
   locationNames: [],
-  contactType: { value: "", text: "" },
-  phoneNumber: "",
-  firstName: submitterInformation?.firstName || "",
-  lastName: submitterInformation?.lastName || "",
-  email: submitterInformation?.email || "",
-};
+  contactType: { value: '', text: '' },
+  phoneNumber: '',
+  firstName: submitterInformation?.firstName || '',
+  lastName: submitterInformation?.lastName || '',
+  email: submitterInformation?.email || ''
+}
 
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
   ...formDataDto,
   location: {
     addresses: formDataDto.location.addresses,
-    contacts: [submitterContact],
-  },
-});
-
-function getObjectDiff<T>(obj1: T, obj2: T): Partial<T> {
-  function isObject(value: any): boolean {
-    return typeof value === "object" && value !== null;
+    contacts: [submitterContact]
   }
+})
 
-  const diff: Partial<T> = {};
+watch([formData], () => {})
 
-  for (let key in obj1) {
-    if (obj1.hasOwnProperty(key)) {
-      if (isObject(obj1[key]) && isObject(obj2[key])) {
-        const nestedDiff = getObjectDiff(obj1[key], obj2[key]);
-        if (Object.keys(nestedDiff).length > 0) {
-          diff[key] = nestedDiff;
-        }
-      } else if (obj1[key] !== obj2[key]) {
-        diff[key] = obj2[key];
-      }
-    }
-  }
-
-  return diff;
+const update = (value: any, who: string) => {
+  console.log(who, value)
 }
-
-watch([formData], () => {});
-
-const update = (value: any, who: string) => {};
 </script>
 
 <style scoped></style>
