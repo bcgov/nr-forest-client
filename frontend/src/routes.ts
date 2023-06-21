@@ -18,24 +18,23 @@ const routes = [
     name:'form',
     component: ApplyClientNumber,
     props: true
-   },
-  { 
-    path: '/submissions',
-    name:'internal',
-    component: ReviewApplicationPage,
-    props: true
-   },
+  },
   { 
     path: '/form-submitted',
     name:'confirmation',
     component: FormSubmittedPage,
     props: true
-   },
+  },
+  { 
+    path: '/submissions',
+    name:'internal',
+    component: ReviewApplicationPage,
+    props: true
+  },
 ];
 
 
-export const router = createRouter({
-  // 4. Provide the history implementation to use. We are using the hash history for simplicity here.
+export const router = createRouter({  
   history: createWebHashHistory(),
-  routes, // short for `routes: routes`
+  routes,
 });
