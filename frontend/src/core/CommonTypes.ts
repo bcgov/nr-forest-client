@@ -46,3 +46,10 @@ export interface Submitter {
   bceidBusinessName: string;
   userId: string | undefined;
 }
+
+export interface ModalNotification {
+  name: string;
+  kind: string;
+  active: boolean;
+  handler: () => void;
+}

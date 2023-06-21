@@ -45,7 +45,8 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref, computed, reactive, inject } from "vue";
+import { watch, ref, computed, reactive } from "vue";
+import { useEventBus } from '@vueuse/core';
 import add16 from "@carbon/icons-vue/es/add/16";
 
 import {
@@ -55,12 +56,11 @@ import {
 } from "@/dto/ApplyClientNumberDto";
 import { useFetchTo } from "@/services/ForestClientService";
 
-import type { CodeNameType } from "@/core/CommonTypes";
+import type { CodeNameType, ModalNotification } from "@/core/CommonTypes";
 
 import Note from "@/common/NoteComponent.vue";
 
 import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
-import { remove } from "lodash";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>();
@@ -69,6 +69,9 @@ const emit = defineEmits<{
   (e: "update:data", value: FormDataDto): void;
   (e: "valid", value: boolean): void;
 }>();
+
+//Defining the event bus to send notifications up
+const bus = useEventBus<ModalNotification>("modal-notification");
 
 //Set the prop as a ref, and then emit when it changes
 const formData = reactive<FormDataDto>(props.data);
@@ -92,7 +95,6 @@ const fetch = () => {
 watch(() => props.active, fetch);
 fetch();
 
-const modalContentEvent = inject("modalContent");
 
 //Addresses Related data
 const addresses = computed<CodeNameType[]>(() =>
@@ -107,7 +109,7 @@ const addContact = () =>
   formData.location.contacts.push(JSON.parse(JSON.stringify(emptyContact)));
 const removeContact = (index: number) => () => {
   formData.location.contacts = formData.location.contacts.splice(index, 1);
-  modalContentEvent({ active: false });
+  bus.emit({ active: false,name:"",kind:"",handler:() =>{}});
 };
 
 //Validation
@@ -133,7 +135,7 @@ const uniqueValues = isUniqueDescriptive();
 
 const handleRemove = (index: number) => {
   const selectedContact = formData.location.contacts[index];
-  modalContentEvent({
+  bus.emit({
     name: selectedContact.firstName || "this",
     kind: "address",
     handler: removeContact(index),

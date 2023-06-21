@@ -128,14 +128,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, useSlots, provide, reactive, inject, watch } from "vue";
+import { ref, computed, useSlots, reactive, provide } from "vue";
+import { useEventBus } from '@vueuse/core';
 import arrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 import save16 from "@carbon/icons-vue/es/save/16";
+
+import type { ModalNotification } from "@/core/CommonTypes";
 
 defineProps<{
   title: string;
   subtitle: string;
 }>();
+
+//Defining the event bus to receive notifications
+const modalBus = useEventBus<ModalNotification>("modal-notification");
+const toastBus = useEventBus<ModalNotification>("toast-notification");
 
 //Start from the first tab of the wizard
 const currentTab = ref(0);
@@ -206,30 +213,36 @@ const progressData = computed(() =>
   })
 );
 
-const modalContent = ref({ active: false });
-const toastContent = ref({ active: false, name: "", kind: "" });
+//Toast opening and closing
+const toastContent = ref<ModalNotification>({ active: false,name:"",kind:"",handler:() =>{}});
 
-const openModal = (event: any) => (modalContent.value = event);
-const closeModal = () =>
-  (modalContent.value = { ...modalContent.value, active: false });
-const openToast = (event: any) => {
+const openToast = (event: ModalNotification) => {
   toastContent.value = event;
   setTimeout(() => (toastContent.value.active = false), 8000);
 };
 
-provide("modalContent", openModal);
+toastBus.on(openToast);
+
+//Modal opening and closing
+const modalContent = ref<ModalNotification>({ active: false,name:"",kind:"",handler:() =>{}});
+
+const openModal = (event: ModalNotification) => (modalContent.value = event);
+
+const closeModal = () => (modalContent.value = { ...modalContent.value, active: false });
 
 const deleteContentModal = () => {
   openToast({
     name: modalContent.value.name,
     kind: modalContent.value.kind,
     active: true,
+    handler: () =>{}
   });
   modalContent.value.handler();
   closeModal();
 };
 
-provide("toastContent", openToast);
+modalBus.on(openModal);
+
 </script>
 
 <style scoped>

@@ -41,7 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref, computed, reactive, inject } from "vue";
+import { watch, ref, computed, reactive } from "vue";
+import { useEventBus } from '@vueuse/core';
 import add16 from "@carbon/icons-vue/es/add/16";
 import {
   type FormDataDto,
@@ -49,6 +50,7 @@ import {
   emptyAddress,
 } from "@/dto/ApplyClientNumberDto";
 import { useFetchTo } from "@/services/ForestClientService";
+import type { ModalNotification } from "@/core/CommonTypes";
 
 import Note from "@/common/NoteComponent.vue";
 import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
@@ -60,6 +62,9 @@ const emit = defineEmits<{
   (e: "update:data", value: FormDataDto): void;
   (e: "valid", value: boolean): void;
 }>();
+
+//Defining the event bus to send notifications up
+const bus = useEventBus<ModalNotification>("modal-notification");
 
 //Set the prop as a ref, and then emit when it changes
 const formData = reactive<FormDataDto>(props.data);
@@ -84,8 +89,6 @@ const fetch = () => {
 watch(() => props.active, fetch);
 fetch();
 
-const modalContentEvent = inject("modalContent");
-
 //New address being added
 const otherAddresses = computed(() => formData.location.addresses.slice(1));
 const addAddress = () =>
@@ -93,7 +96,7 @@ const addAddress = () =>
 
 const removeAddress = (index: number) => () => {
   formData.location.addresses = formData.location.addresses.splice(index, 1);
-  modalContentEvent({ active: false });
+  bus.emit({ active: false,name:"",kind:"",handler:() =>{}});
 };
 
 //Validation
@@ -119,7 +122,7 @@ const uniqueValues = isUniqueDescriptive();
 
 const handleRemove = (index: number) => {
   const selectedAddress = formData.location.addresses[index];
-  modalContentEvent({
+  bus.emit({
     name: selectedAddress.locationName || "this",
     kind: "address",
     handler: removeAddress(index),
