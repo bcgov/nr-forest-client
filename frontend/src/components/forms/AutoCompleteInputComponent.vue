@@ -18,7 +18,9 @@
     <div
       class="autocomplete-items"
       :id="id + 'list'"
-      v-show="autoCompleteVisible && selectedValue.length > 2"
+      v-show="
+        autoCompleteVisible && selectedValue.length > 2 && contents.length > 0
+      "
     >
       <div class="autocomplete-items-ct">
         <div
@@ -39,76 +41,79 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { isEmpty, type BusinessSearchResult } from "@/core/CommonTypes";
+import { ref, watch } from 'vue'
+import { isEmpty, type BusinessSearchResult } from '@/core/CommonTypes'
 
 //Define the input properties for this component
 const props = defineProps<{
-  id: string;
-  label: string;
-  tip?: string;
-  modelValue: string;
-  contents: Array<BusinessSearchResult>;
-  validations: Array<Function>;
-  errorMessage?: string;
-}>();
+  id: string
+  label: string
+  tip?: string
+  modelValue: string
+  contents: Array<BusinessSearchResult>
+  validations: Array<Function>
+  errorMessage?: string
+}>()
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: "error", value: string | undefined): void;
-  (e: "empty", value: boolean): void;
-  (e: "update:model-value", value: string): void;
-  (e: "update:selected-value", value: BusinessSearchResult | undefined): void;
-}>();
+  (e: 'error', value: string | undefined): void
+  (e: 'empty', value: boolean): void
+  (e: 'update:model-value', value: string): void
+  (e: 'update:selected-value', value: BusinessSearchResult | undefined): void
+}>()
 
-const autoCompleteVisible = ref(false);
+const autoCompleteVisible = ref(false)
 
 //We initialize the error message handling for validation
-const error = ref<string | undefined>(props.errorMessage || "");
+const error = ref<string | undefined>(props.errorMessage || '')
 
 //We watch for error changes to emit events
-watch(error, () => emit("error", error.value));
-watch(() => props.errorMessage, () => (error.value = props.errorMessage));
+watch(error, () => emit('error', error.value))
+watch(
+  () => props.errorMessage,
+  () => (error.value = props.errorMessage)
+)
 
 //We set the value prop as a reference for update reason
-const selectedValue = ref(props.modelValue);
+const selectedValue = ref(props.modelValue)
 
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
-  const reference = props.contents.find((entry) => entry.name === newValue);
-  emit("update:model-value", newValue);
-  emit("empty", isEmpty(reference));
-};
+  const reference = props.contents.find((entry) => entry.name === newValue)
+  emit('update:model-value', newValue)
+  emit('empty', isEmpty(reference))
+}
 
-emit("empty", true);
+emit('empty', true)
 watch(
   () => props.modelValue,
   () => (selectedValue.value = props.modelValue)
-);
-watch([selectedValue], () => emitValueChange(selectedValue.value));
+)
+watch([selectedValue], () => emitValueChange(selectedValue.value))
 
 //We call all the validations
-const validateInput = (newValue: string) => {  
+const validateInput = (newValue: string) => {
   if (props.validations) {
     error.value =
       props.validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
-          if (errorMessage) return true;
-          return false;
+          if (errorMessage) return true
+          return false
         })
-        .shift() ?? props.errorMessage;
+        .shift() ?? props.errorMessage
   }
-  setTimeout(() => (autoCompleteVisible.value = false), 150);
-};
+  setTimeout(() => (autoCompleteVisible.value = false), 150)
+}
 
 const selectAutocompleteItem = (event: any) => {
-  const newValue = event.target.getAttribute("data-value");
-  const reference = props.contents.find((entry) => entry.name === newValue);
-  selectedValue.value = newValue;
-  emit("update:selected-value", reference);
-  autoCompleteVisible.value = false;
-};
+  const newValue = event.target.getAttribute('data-value')
+  const reference = props.contents.find((entry) => entry.name === newValue)
+  selectedValue.value = newValue
+  emit('update:selected-value', reference)
+  autoCompleteVisible.value = false
+}
 </script>
 <style scoped>
 .autocomplete {

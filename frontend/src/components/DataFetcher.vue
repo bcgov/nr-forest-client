@@ -1,23 +1,35 @@
 <script setup lang="ts">
-import { useFetchTo } from "@/services/ForestClientService";
-import { ref, watch } from "vue";
+import { useFetchTo } from '@/services/ForestClientService'
+import { ref, watch } from 'vue'
 
-const props = defineProps({
-  url: { type: String, required: true },
-  params: { type: Object, required: false },
-  minLength: { type: Number, required: true },
-  initValue: { type: Object, required: true },
-  initFetch: { type: Boolean, required: false },
-});
+const props = defineProps<{
+  url: string
+  params?: object
+  minLength: number
+  initValue: object
+  initFetch?: boolean
+}>()
 
 //Set the initial value to the content
-const content = ref<any>(props.initValue);
+const content = ref<any>(props.initValue)
 
-const initialValue = props.url;
+const initialUrlValue = props.url
+
+const fetchContent = () => useFetchTo(props.url, content, props.params)
+
+const calculateStringDifference = (
+  initial: string,
+  current: string
+): number => {
+  if (initial === current) return 0
+  if (initial.length > current.length)
+    return calculateStringDifference(current, initial)
+  return current.replace(initial, '').length
+}
 
 //If initial fetch is required, fetch
 if (props.initFetch) {
-  useFetchTo(props.url, content, props.params);
+  fetchContent()
 }
 
 //If there is a watcher, watch for changes
@@ -25,11 +37,13 @@ if (props.initFetch) {
 watch(
   () => props.url,
   () => {
-    if (props.url.length - initialValue.length >= props.minLength) {
-      useFetchTo(props.url, content, props.params);
+    if (
+      calculateStringDifference(initialUrlValue, props.url) >= props.minLength
+    ) {
+      fetchContent()
     }
   }
-);
+)
 </script>
 <template>
   <slot :content="content"></slot>
