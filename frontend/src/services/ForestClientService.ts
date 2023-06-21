@@ -1,10 +1,10 @@
-import { ref } from "vue";
-import axios, { type AxiosError } from "axios";
-import type { Address, Contact } from "../dto/ApplyClientNumberDto";
-import type { CodeDescrType } from "@/core/CommonTypes";
-import { backendUrl, frontendUrl } from "@/core/CoreConstants";
+import { ref } from 'vue'
+import axios, { type AxiosError } from 'axios'
+import type { Address, Contact } from '../dto/ApplyClientNumberDto'
+import type { CodeDescrType } from '@/core/CommonTypes'
+import { backendUrl, frontendUrl } from '@/core/CoreConstants'
 
-axios.defaults.headers.common['Access-Control-Allow-Origin'] = frontendUrl;
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = frontendUrl
 
 /**
  * Fetch data from external resource
@@ -13,18 +13,16 @@ axios.defaults.headers.common['Access-Control-Allow-Origin'] = frontendUrl;
  * @returns the data fetched
  */
 export const useFetch = (url: string, config: any = {}) => {
-
-  const data: any = ref(config.initialData || {});
-  const info = useFetchTo(url, data, config);
+  const data: any = ref(config.initialData || {})
+  const info = useFetchTo(url, data, config)
 
   return { ...info, data }
 }
 
 export const useFetchTo = (url: string, data: any, config: any = {}) => {
-
-  const response = ref<any>({});
-  const error = ref<AxiosError>({});
-  const loading = ref<boolean>(false);
+  const response = ref<any>({})
+  const error = ref<AxiosError>({})
+  const loading = ref<boolean>(false)
 
   const parameters = {
     ...config,
@@ -32,36 +30,35 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
       'Content-Type': 'application/json',
       ...config.headers
     }
-  };
+  }
 
   const fetch = async () => {
-    loading.value = true;
+    loading.value = true
     try {
       const result = await axios.request({
         ...parameters,
         url,
         baseURL: backendUrl
-      });
-      response.value = result;
-      data.value = result.data;
+      })
+      response.value = result
+      data.value = result.data
     } catch (ex) {
-      error.value = ex;
+      error.value = ex
     } finally {
-      loading.value = false;
+      loading.value = false
     }
-  };
+  }
 
-  !config.skip && fetch();
+  !config.skip && fetch()
 
   return { response, error, data, loading, fetch }
 }
 
 export const usePost = (url: string, body: any, config: any = {}) => {
-  
-  const responseBody: any = ref({});
-  const response = ref<any>({});
-  const error = ref<AxiosError>({});
-  const loading = ref<boolean>(false);
+  const responseBody: any = ref({})
+  const response = ref<any>({})
+  const error = ref<AxiosError>({})
+  const loading = ref<boolean>(false)
 
   const parameters = {
     ...config,
@@ -69,10 +66,10 @@ export const usePost = (url: string, body: any, config: any = {}) => {
       'Content-Type': 'application/json',
       ...config.headers
     }
-  };
+  }
 
   const fetch = async () => {
-    loading.value = true;
+    loading.value = true
     try {
       const result = await axios.request({
         ...parameters,
@@ -80,44 +77,44 @@ export const usePost = (url: string, body: any, config: any = {}) => {
         baseURL: backendUrl,
         method: 'POST',
         data: body
-      });
-      response.value = result;
-      responseBody.value = result.data;
+      })
+      response.value = result
+      responseBody.value = result.data
     } catch (ex: any) {
-      error.value = ex.response;
+      error.value = ex.response
     } finally {
-      loading.value = false;
+      loading.value = false
     }
-  };
-  !config.skip && fetch();
+  }
+  !config.skip && fetch()
 
   return { response, error, responseBody, loading, fetch }
 }
 
 export const addNewAddress = (addresses: Address[]) => {
   const blankAddress: Address = {
-    locationName: "",
-    streetAddress: "",
-    country: { value: "", text: "" } as CodeDescrType,
-    province: { value: "", text: "" } as CodeDescrType,
-    city: "",
-    postalCode: "",
-  };
+    locationName: '',
+    streetAddress: '',
+    country: { value: '', text: '' } as CodeDescrType,
+    province: { value: '', text: '' } as CodeDescrType,
+    city: '',
+    postalCode: ''
+  }
 
-  let newAddresses = addresses.push(blankAddress);
-  return newAddresses;
+  const newAddresses = addresses.push(blankAddress)
+  return newAddresses
 }
 
 export const addNewContact = (contacts: Contact[]) => {
   const blankContact: Contact = {
-    locationNames: { value: "", text: "" } as CodeDescrType[],
-    contactType: { value: "", text: "" } as CodeDescrType,
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    email: "",
-  };
+    locationNames: { value: '', text: '' } as CodeDescrType[],
+    contactType: { value: '', text: '' } as CodeDescrType,
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    email: ''
+  }
 
-  let newContacts = contacts.push(blankContact);
-  return newContacts;
+  const newContacts = contacts.push(blankContact)
+  return newContacts
 }

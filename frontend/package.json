@@ -39,6 +39,7 @@
     "@carbon/ibmdotcom-web-components": "^1.32.0",
     "@carbon/icons": "^11.20.0",
     "@carbon/icons-vue": "^10.49.1",
+    "@carbon/pictograms": "^12.18.0",
     "@carbon/styles": "^1.30.0",
     "@carbon/web-components": "^1.28.0",
     "@dsb-norge/vue-keycloak-js": "^2.2.0",
@@ -93,6 +94,7 @@
     "vitest": "^0.31.0",
     "volar-service-vetur": "latest",
     "vue-eslint-parser": "^9.3.1",
+    "vue-svg-loader": "^0.16.0",
     "wiremock": "^2.35.0"
   }
 }

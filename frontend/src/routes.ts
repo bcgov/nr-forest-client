@@ -1,40 +1,38 @@
-import {createRouter,createWebHashHistory} from "vue-router";
+import { createRouter, createWebHashHistory } from 'vue-router'
 
-import HomePage from "@/pages/HomePage.vue";
-import ReviewApplicationPage from "@/pages/ReviewApplicationPage.vue";
-import ApplyClientNumber from "@/pages/ApplyClientNumberPage.vue";
-import FormSubmittedPage from "@/pages/FormSubmittedPage.vue";
-
+import HomePage from '@/pages/HomePage.vue'
+import ReviewApplicationPage from '@/pages/ReviewApplicationPage.vue'
+import ApplyClientNumber from '@/pages/ApplyClientNumberPage.vue'
+import FormSubmittedPage from '@/pages/FormSubmittedPage.vue'
 
 const routes = [
-  { 
-    path: '/', 
-    name:'home', 
+  {
+    path: '/',
+    name: 'home',
     component: HomePage,
     props: true
   },
-  { 
+  {
     path: '/new-client',
-    name:'form',
+    name: 'form',
     component: ApplyClientNumber,
     props: true
   },
-  { 
+  {
     path: '/form-submitted',
-    name:'confirmation',
+    name: 'confirmation',
     component: FormSubmittedPage,
     props: true
   },
-  { 
+  {
     path: '/submissions',
-    name:'internal',
+    name: 'internal',
     component: ReviewApplicationPage,
     props: true
-  },
-];
+  }
+]
 
-
-export const router = createRouter({  
+export const router = createRouter({
   history: createWebHashHistory(),
-  routes,
-});
+  routes
+})
