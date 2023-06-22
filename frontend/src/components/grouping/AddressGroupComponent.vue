@@ -105,6 +105,28 @@ const postalCodeValidators = computed(() => {
   }
 })
 
+const postalCodeMask = computed(() => {
+  switch (selectedValue.country.value) {
+    case 'CA':
+      return 'A#A#A#'
+    case 'US':
+      return '#####'
+    default:
+      return '##########'
+  }
+})
+
+const postalCodePlaceholder = computed(() => {
+  switch (selectedValue.country.value) {
+    case 'CA':
+      return 'A1A1A1'
+    case 'US':
+      return '99999'
+    default:
+      return '12345'
+  }
+})
+
 const provinceNaming = computed(() => {
   switch (selectedValue.country.value) {
     case 'CA':
@@ -208,11 +230,12 @@ const postalCodeNaming = computed(() =>
   <text-input-component
     id="postalCode"
     :label="postalCodeNaming"
-    placeholder="A1A1A1"
+    :placeholder="postalCodePlaceholder"
     :enabled="true"
     tip=""
     :error-message="addressError"
     v-model="modelValue.postalCode"
+    :mask="postalCodeMask"
     :validations="postalCodeValidators"
     @empty="validation.postalCode = !$event"
   />

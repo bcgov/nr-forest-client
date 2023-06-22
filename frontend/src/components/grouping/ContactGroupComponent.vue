@@ -1,85 +1,85 @@
 <script setup lang="ts">
-import { reactive, watch, ref } from "vue";
-import delete16 from "@carbon/icons-vue/es/trash-can/16";
-import type { CodeDescrType, CodeNameType } from "@/core/CommonTypes";
-import type { Contact } from "@/dto/ApplyClientNumberDto";
+import { reactive, watch, ref } from 'vue'
+import delete16 from '@carbon/icons-vue/es/trash-can/16'
+import type { CodeDescrType, CodeNameType } from '@/core/CommonTypes'
+import type { Contact } from '@/dto/ApplyClientNumberDto'
 import {
   isNotEmpty,
   isEmail,
   isPhoneNumber,
   isMaxSize,
   isMinSize,
-  isNoSpecialCharacters,
-} from "@/helpers/validators/GlobalValidators";
+  isNoSpecialCharacters
+} from '@/helpers/validators/GlobalValidators'
 
 //Define the input properties for this component
 const props = defineProps<{
-  id: number;
-  modelValue: Contact;
-  enabled?: boolean;
-  roleList: Array<CodeNameType>;
-  addressList: Array<CodeNameType>;
-  validations: Array<Function>;
-  revalidate?: boolean;
-}>();
+  id: number
+  modelValue: Contact
+  enabled?: boolean
+  roleList: Array<CodeNameType>
+  addressList: Array<CodeNameType>
+  validations: Array<Function>
+  revalidate?: boolean
+}>()
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: "valid", value: boolean): void;
-  (e: "update:model-value", value: Contact | undefined): void;
-  (e: "remove", value: number): void;
-}>();
+  (e: 'valid', value: boolean): void
+  (e: 'update:model-value', value: Contact | undefined): void
+  (e: 'remove', value: number): void
+}>()
 
 //We set it as a separated ref due to props not being updatable
-const selectedValue = reactive<Contact>(props.modelValue);
-const validateData = props.validations[0]("Name", props.id + "");
-const error = ref<string | undefined>("");
+const selectedValue = reactive<Contact>(props.modelValue)
+const validateData = props.validations[0]('Name', props.id + '')
+const error = ref<string | undefined>('')
 
 //Watch for changes on the input
 watch([selectedValue], () => {
   error.value = validateData(
     `${selectedValue.firstName} ${selectedValue.lastName}`
-  );
-  emit("update:model-value", selectedValue);
-});
+  )
+  emit('update:model-value', selectedValue)
+})
 
 watch(
   () => props.revalidate,
   () => {
     error.value = validateData(
       `${selectedValue.firstName} ${selectedValue.lastName}`
-    );
+    )
   }
-);
+)
 
 //Validations
-const validation = reactive<Record<string, boolean>>({});
+const validation = reactive<Record<string, boolean>>({})
 
 const checkValid = () =>
   Object.values(validation).reduce(
     (accumulator: boolean, currentValue: boolean) =>
       accumulator && currentValue,
     true
-  );
+  )
 
-watch([validation], () => emit("valid", checkValid()));
-emit("valid", false);
+watch([validation], () => emit('valid', checkValid()))
+emit('valid', false)
 
 //Data conversion
 
 const nameTypeToCodeDescr = (
   value: CodeNameType | undefined
 ): CodeDescrType => {
-  if (value) return { value: value.code, text: value.name };
-  return { value: "", text: "" };
-};
+  if (value) return { value: value.code, text: value.name }
+  return { value: '', text: '' }
+}
 
 const nameTypesToCodeDescr = (
   values: CodeNameType[] | undefined
 ): CodeDescrType[] => {
-  if (values) return values.map(nameTypeToCodeDescr);
-  return [];
-};
+  if (values) return values.map(nameTypeToCodeDescr)
+  return []
+}
 </script>
 
 <template>
@@ -119,7 +119,7 @@ const nameTypesToCodeDescr = (
       isMinSize(1),
       isMaxSize(25),
       isNotEmpty,
-      isNoSpecialCharacters,
+      isNoSpecialCharacters
     ]"
     :enabled="enabled"
     :error-message="error"
@@ -135,7 +135,7 @@ const nameTypesToCodeDescr = (
       isMinSize(1),
       isMaxSize(25),
       isNotEmpty,
-      isNoSpecialCharacters,
+      isNoSpecialCharacters
     ]"
     :enabled="enabled"
     :error-message="error"
@@ -156,6 +156,7 @@ const nameTypesToCodeDescr = (
     :id="'phoneNumber_' + id"
     label="Phone number"
     placeholder="( ) ___-____"
+    mask="(###) ###-####"
     v-model="selectedValue.phoneNumber"
     :enabled="true"
     :validations="[isNotEmpty, isPhoneNumber, isMaxSize(15), isMinSize(10)]"
