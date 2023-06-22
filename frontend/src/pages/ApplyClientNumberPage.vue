@@ -3,6 +3,7 @@
     <wizard-wrapper-component
       title="New client application"
       subtitle="All fields are mandatory unless noted"
+      :submit="submit"
       v-slot="slotProps"
     >
       <wizard-tab-component
@@ -30,7 +31,6 @@
             v-model:data="formData"
             :active="active"
             @valid="validateStep"
-            @update:data="update($event, 'business')"
           />
         </template>
       </wizard-tab-component>
@@ -58,7 +58,6 @@
             v-model:data="formData"
             :active="active"
             @valid="validateStep"
-            @update:data="update($event, 'address')"
           />
         </template>
       </wizard-tab-component>
@@ -89,7 +88,6 @@
             v-model:data="formData"
             :active="active"
             @valid="validateStep"
-            @update:data="update($event, 'contact')"
           />
         </template>
       </wizard-tab-component>
@@ -107,7 +105,6 @@
           v-model:data="formData"
           :active="active"
           @valid="validateStep"
-          @update:data="update($event, 'review')"
           :goToStep="goToStep"
         />
       </wizard-tab-component>
@@ -116,7 +113,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, inject } from 'vue'
+import { reactive, watch, inject, toRef } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   formDataDto,
   type FormDataDto,
@@ -131,8 +129,10 @@ import AddressWizardStep from '@/pages/applyform/AddressWizardStep.vue'
 import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue'
 import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue'
 import type { Submitter } from '@/core/CommonTypes'
+import { usePost } from '@/services/ForestClientService'
 
 const submitterInformation = inject<Submitter>('submitterInformation')
+const router = useRouter()
 
 const submitterContact: Contact = {
   locationNames: [],
@@ -152,10 +152,27 @@ let formData = reactive<FormDataDto>({
   }
 })
 
-watch([formData], () => {})
+const { response, error, fetch } = usePost(
+  '/api/clients/submissions',
+  toRef(formData),
+  { skip: true }
+)
 
-const update = (value: any, who: string) => {
-  console.log(who, value)
+watch([response], () => {
+  if (response.value.status === 201) {
+    router.push({ name: 'confirmation' })
+  }
+})
+
+watch([error], () => {
+  if (error.status === 400) {
+    console.log(error)
+  }
+})
+
+const submit = () => {
+  console.log('submit', JSON.stringify(formData))
+  fetch()
 }
 </script>
 

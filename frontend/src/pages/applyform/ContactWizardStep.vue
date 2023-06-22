@@ -45,101 +45,100 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref, computed, reactive } from "vue";
-import { useEventBus } from '@vueuse/core';
-import add16 from "@carbon/icons-vue/es/add/16";
+import { watch, ref, computed, reactive } from 'vue'
+import { useEventBus } from '@vueuse/core'
+import add16 from '@carbon/icons-vue/es/add/16'
 
 import {
   type FormDataDto,
   type Contact,
-  emptyContact,
-} from "@/dto/ApplyClientNumberDto";
-import { useFetchTo } from "@/services/ForestClientService";
+  emptyContact
+} from '@/dto/ApplyClientNumberDto'
+import { useFetchTo } from '@/services/ForestClientService'
 
-import type { CodeNameType, ModalNotification } from "@/core/CommonTypes";
+import type { CodeNameType, ModalNotification } from '@/core/CommonTypes'
 
-import Note from "@/common/NoteComponent.vue";
+import Note from '@/common/NoteComponent.vue'
 
-import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
+import { isUniqueDescriptive } from '@/helpers/validators/GlobalValidators'
 
 //Defining the props and emiter to reveice the data and emit an update
-const props = defineProps<{ data: FormDataDto; active: boolean }>();
+const props = defineProps<{ data: FormDataDto; active: boolean }>()
 
 const emit = defineEmits<{
-  (e: "update:data", value: FormDataDto): void;
-  (e: "valid", value: boolean): void;
-}>();
+  (e: 'update:data', value: FormDataDto): void
+  (e: 'valid', value: boolean): void
+}>()
 
 //Defining the event bus to send notifications up
-const bus = useEventBus<ModalNotification>("modal-notification");
+const bus = useEventBus<ModalNotification>('modal-notification')
 
 //Set the prop as a ref, and then emit when it changes
-const formData = reactive<FormDataDto>(props.data);
-const revalidate = ref(false);
-watch([formData], () => emit("update:data", formData));
+const formData = reactive<FormDataDto>(props.data)
+const revalidate = ref(false)
+watch([formData], () => emit('update:data', formData))
 
 const updateContact = (value: Contact | undefined, index: number) => {
-  revalidate.value = !revalidate.value;
+  revalidate.value = !revalidate.value
   if (value && index < formData.location.contacts.length)
-    formData.location.contacts[index] = value;
-  emit("update:data", formData);
-};
+    formData.location.contacts[index] = value
+  emit('update:data', formData)
+}
 
 //Role related data
-const roleList = ref([]);
+const roleList = ref([])
 const fetch = () => {
   if (props.active)
-    useFetchTo("/api/clients/activeContactTypeCodes?page=0&size=250", roleList);
-};
+    useFetchTo('/api/clients/activeContactTypeCodes?page=0&size=250', roleList)
+}
 
-watch(() => props.active, fetch);
-fetch();
-
+watch(() => props.active, fetch)
+fetch()
 
 //Addresses Related data
 const addresses = computed<CodeNameType[]>(() =>
   formData.location.addresses.map((address, index) => {
-    return { code: index + "", name: address.locationName } as CodeNameType;
+    return { code: index + '', name: address.locationName } as CodeNameType
   })
-);
+)
 
 //New contact being added
-const otherContacts = computed(() => formData.location.contacts.slice(1));
+const otherContacts = computed(() => formData.location.contacts.slice(1))
 const addContact = () =>
-  formData.location.contacts.push(JSON.parse(JSON.stringify(emptyContact)));
+  formData.location.contacts.push(JSON.parse(JSON.stringify(emptyContact)))
 const removeContact = (index: number) => () => {
-  formData.location.contacts = formData.location.contacts.splice(index, 1);
-  bus.emit({ active: false,name:"",kind:"",handler:() =>{}});
-};
+  formData.location.contacts = formData.location.contacts.splice(index, 1)
+  bus.emit({ active: false, message: '', kind: '', handler: () => {} })
+}
 
 //Validation
 const validation = reactive<Record<string, boolean>>({
-  0: false,
-});
+  0: false
+})
 
 const checkValid = () =>
   Object.values(validation).reduce(
     (accumulator: boolean, currentValue: boolean) =>
       accumulator && currentValue,
     true
-  );
+  )
 
-watch([validation], () => emit("valid", checkValid()));
-emit("valid", false);
+watch([validation], () => emit('valid', checkValid()))
+emit('valid', false)
 
 const updateValidState = (index: number, valid: boolean) => {
-  validation[index] = valid;
-};
+  validation[index] = valid
+}
 
-const uniqueValues = isUniqueDescriptive();
+const uniqueValues = isUniqueDescriptive()
 
 const handleRemove = (index: number) => {
-  const selectedContact = formData.location.contacts[index];
+  const selectedContact = formData.location.contacts[index]
   bus.emit({
-    name: selectedContact.firstName || "this",
-    kind: "address",
+    message: selectedContact.firstName || 'this',
+    kind: 'Contact deleted',
     handler: removeContact(index),
-    active: true,
-  });
-};
+    active: true
+  })
+}
 </script>

@@ -1,31 +1,31 @@
-import { isRef } from "vue";
+import { isRef } from 'vue'
 
 export interface CodeDescrType {
-  value: string;
-  text: string;
+  value: string
+  text: string
 }
 
 export interface CodeNameType {
-  code: string;
-  name: string;
+  code: string
+  name: string
 }
 
 export interface BusinessSearchResult {
-  code: string;
-  name: string;
-  status: string;
-  legalType: string;
+  code: string
+  name: string
+  status: string
+  legalType: string
 }
 
 export interface ValidationMessageType {
-  fieldId: string;
-  errorMsg: string;
+  fieldId: string
+  errorMsg: string
 }
 
 export const isEmpty = (receivedValue: any): boolean => {
-  const value = isRef(receivedValue) ? receivedValue.value : receivedValue;
-  return value === undefined || value === null || value === "";
-};
+  const value = isRef(receivedValue) ? receivedValue.value : receivedValue
+  return value === undefined || value === null || value === ''
+}
 
 export enum ClientTypeEnum {
   Unknow,
@@ -34,22 +34,22 @@ export enum ClientTypeEnum {
 }
 
 export interface ProgressData {
-  kind: string;
-  title: string;
-  subtitle: string;
+  kind: string
+  title: string
+  subtitle: string
 }
 
 export interface Submitter {
-  firstName: string;
-  lastName: string;
-  email: string;
-  bceidBusinessName: string;
-  userId: string | undefined;
+  firstName: string
+  lastName: string
+  email: string
+  bceidBusinessName: string
+  userId: string | undefined
 }
 
 export interface ModalNotification {
-  name: string;
-  kind: string;
-  active: boolean;
-  handler: () => void;
+  message: string
+  kind: string
+  active: boolean
+  handler: () => void
 }
