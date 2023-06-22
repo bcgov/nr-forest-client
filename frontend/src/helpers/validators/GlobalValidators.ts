@@ -1,7 +1,9 @@
-//Defines the used regular expressions
-const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const specialCharacters: RegExp = /^[a-zA-Z0-9\sÀ-ÖØ-öø-ÿ]+$/;
-const e164Regex: RegExp = /^\+?[1-9]\d{1,14}$/;
+// Defines the used regular expressions
+const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const specialCharacters: RegExp = /^[a-zA-Z0-9\sÀ-ÖØ-öø-ÿ]+$/
+const e164Regex: RegExp = /^(\+?[1-9]\d{1,14})|(\(\d{3}\) \d{3}-\d{4})$/
+const canadianPostalCodeRegex: RegExp = /^[A-Z]\d[A-Z][ -]?\d[A-Z]\d$/
+const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/
 
 /**
  * Checks if the value is not empty
@@ -14,8 +16,8 @@ const e164Regex: RegExp = /^\+?[1-9]\d{1,14}$/;
  * isNotEmpty(' a ') // true
  **/
 export const isNotEmpty = (value: string) => {
-  if (value && value.trim().length > 0) return "";
-  return "This field is required and cannot be empty";
+  if (value && value.trim().length > 0) return ''
+  return 'This field is required and cannot be empty'
 }
 
 /**
@@ -32,15 +34,14 @@ export const isNotEmpty = (value: string) => {
  * isEmail('mail@mail.com') // true
  **/
 export const isEmail = (value: string) => {
-  if (isNotEmpty(value) === "" && emailRegex.test(value)) return "";
-  return "This field must be a valid email";
+  if (isNotEmpty(value) === '' && emailRegex.test(value)) return ''
+  return 'This field must be a valid email'
 }
 
 export const isPhoneNumber = (value: string) => {
-  if (isNotEmpty(value) === "" && e164Regex.test(value)) return "";
-  return "This field must be a valid phone number";
+  if (isNotEmpty(value) === '' && e164Regex.test(value)) return ''
+  return 'This field must be a valid phone number'
 }
-
 
 /**
  * Checks if the value is a canadian postal code
@@ -61,8 +62,8 @@ export const isPhoneNumber = (value: string) => {
  * isCanadianPostalCode('A1A-1A1') // true
  **/
 export const isCanadianPostalCode = (value: string) => {
-  if (isNotEmpty(value) === "" && value.match(/^[A-Z]\d[A-Z][ -]?\d[A-Z]\d$/)) return "";
-  return "This field must be a valid Canadian postal code";
+  if (isNotEmpty(value) === '' && canadianPostalCodeRegex.test(value)) return ''
+  return 'This field must be a valid Canadian postal code'
 }
 
 /**
@@ -85,8 +86,10 @@ export const isCanadianPostalCode = (value: string) => {
  * isUsZipCode("ABCDE") // false
  **/
 export const isUsZipCode = (value: string) => {
-  if (isNotEmpty(value) === "" && value.match(/^\d{5}(?:[-\s]\d{4})?$/)) return "";
-  return "This field must be a valid US zip code";
+  if (isNotEmpty(value) === '' && usZipCodeRegex.test(value)) {
+    return ''
+  }
+  return 'This field must be a valid US zip code'
 }
 
 /**
@@ -103,8 +106,8 @@ export const isUsZipCode = (value: string) => {
  **/
 export const isMaxSize = (maxSize: number) => {
   return (value: string) => {
-    if (isNotEmpty(value) === "" && value.length <= maxSize) return "";
-    return `This field must be at most ${maxSize} characters long`;
+    if (isNotEmpty(value) === '' && value.length <= maxSize) return ''
+    return `This field must be at most ${maxSize} characters long`
   }
 }
 
@@ -122,8 +125,8 @@ export const isMaxSize = (maxSize: number) => {
  **/
 export const isMinSize = (minSize: number) => {
   return (value: string) => {
-    if (isNotEmpty(value) === "" && value.length >= minSize) return "";
-    return `This field must be at least ${minSize} characters long`;
+    if (isNotEmpty(value) === '' && value.length >= minSize) return ''
+    return `This field must be at least ${minSize} characters long`
   }
 }
 
@@ -140,12 +143,12 @@ export const isMinSize = (minSize: number) => {
  * isOnlyNumbers('123a') // false
  **/
 export const isOnlyNumbers = (value: string) => {
-  if (isNotEmpty(value) === "" && value.match(/^[0-9]*$/)) return "";
-  return "This field must be composed of only numbers";
+  if (isNotEmpty(value) === '' && value.match(/^[0-9]*$/)) return ''
+  return 'This field must be composed of only numbers'
 }
 
 /**
- * Check if value is unique in the group of entries 
+ * Check if value is unique in the group of entries
  * @param key - The key of the group of entries
  * @param field - The field of the group of entries, this is kind of a unique reference per field
  * @returns A function that returns an empty string if the value is unique in the group of entries, error message otherwise
@@ -154,28 +157,35 @@ export const isOnlyNumbers = (value: string) => {
  * isUnique('key', 'field')('value'); // true
  * isUnique('key', 'field')('value'); // false
  **/
-export const isUniqueDescriptive = (): ((key: string, field: string) => (value: string) => string) => {
-  const record: Record<string, Record<string,string>> = {};
+export const isUniqueDescriptive = (): ((
+  key: string,
+  field: string
+) => (value: string) => string) => {
+  const record: Record<string, Record<string, string>> = {}
 
   return (key: string, fieldId: string) => (value: string) => {
-    
-    //if the record contains the key and the fieldId is not the same as mine, check all the values, except the one if my fieldId to see if it includes my value
-    const fieldsToCheck = Object.keys(record[key] || {}).filter((field) => field !== fieldId);
+    // if the record contains the key and the fieldId is not the same as mine, check all the values, except the one if my fieldId to see if it includes my value
+    const fieldsToCheck = Object.keys(record[key] || {}).filter(
+      (field) => field !== fieldId
+    )
 
-    //Get all the values of the fields to check, except the one of my fieldId
-    const values = fieldsToCheck.map((field:string) => record[key][field]);
-    record[key] = { ...record[key], [fieldId]: value };
+    // Get all the values of the fields to check, except the one of my fieldId
+    const values = fieldsToCheck.map((field: string) => record[key][field])
+    record[key] = { ...record[key], [fieldId]: value }
 
-    if (values.some((entry: string) => entry.toLowerCase() === value.toLowerCase())) {
-      return "This value is already in use";
-    }   
+    if (
+      values.some(
+        (entry: string) => entry.toLowerCase() === value.toLowerCase()
+      )
+    ) {
+      return 'This value is already in use'
+    }
 
-    return "";
-  };
-};
-
+    return ''
+  }
+}
 
 export const isNoSpecialCharacters = (value: string) => {
-  if (isNotEmpty(value) === "" && specialCharacters.test(value)) return "";
-  return "No special characters allowed";
+  if (isNotEmpty(value) === '' && specialCharacters.test(value)) return ''
+  return 'No special characters allowed'
 }
