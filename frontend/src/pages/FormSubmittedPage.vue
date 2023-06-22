@@ -23,10 +23,11 @@
 </template>
 
 <script setup lang="ts">
-import { inject, h, defineComponent } from 'vue'
-import badgePictogram from '@carbon/pictograms/es/badge'
-import type { Submitter } from '@/core/CommonTypes'
+import { inject } from 'vue'
 import { useRouter } from 'vue-router'
+import badgePictogram from '@carbon/pictograms/es/badge'
+
+import type { Submitter } from '@/core/CommonTypes'
 import { buildFromSvg } from '@/services/GeneralServices'
 
 const submitterInformation = inject<Submitter>('submitterInformation')
