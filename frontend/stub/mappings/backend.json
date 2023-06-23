@@ -108,6 +108,24 @@
           "x-sub-id": "123456"
         }
       }
+    },
+
+    {
+      "request": {
+        "url": "/api/clients/mail",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.incorporation",
+              "contains": "ZZ"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 202
+      }
     }
   ]
 }
