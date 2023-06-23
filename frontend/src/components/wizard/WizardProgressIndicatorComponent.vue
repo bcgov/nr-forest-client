@@ -37,7 +37,7 @@
             'inner-text': true,
             'inner-text-disabled': !step.enabled
           }"
-          >{{ step.subtitle }} {{ step.enabled }}</span
+          >{{ step.subtitle }}</span
         >
       </div>
     </div>
