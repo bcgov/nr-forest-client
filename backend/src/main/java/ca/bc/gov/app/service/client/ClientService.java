@@ -16,14 +16,6 @@ import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import ca.bc.gov.app.service.ches.ChesCommonServicesService;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-import java.util.function.Predicate;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +25,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Service
 @RequiredArgsConstructor
@@ -128,7 +127,7 @@ public class ClientService {
       String clientNumber,
       String userEmail,
       String userName
-      ) {
+  ) {
     log.info("Loading details for {}", clientNumber);
     return
         bcRegistryService
@@ -310,8 +309,8 @@ public class ClientService {
             );
   }
 
-  private Function<ForestClientDto, 
-                   Mono<ForestClientDto>> sendEmail(String email, String userName) {
+  private Function<ForestClientDto,
+      Mono<ForestClientDto>> sendEmail(String email, String userName) {
     return legacy ->
         chesService
             .buildTemplate(
@@ -337,7 +336,7 @@ public class ClientService {
         legacyService
             .searchLegacy(sendMailRequestDto.incorporation(), sendMailRequestDto.name())
             .next()
-            .flatMap(sendEmail(sendMailRequestDto.mail()))
+            .flatMap(sendEmail(sendMailRequestDto.mail(), sendMailRequestDto.userName()))
             .then();
   }
 }
