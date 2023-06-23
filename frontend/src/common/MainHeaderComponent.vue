@@ -10,26 +10,23 @@
       </a>
       <h1>Ministry of Forests</h1>
     </div>
-    <b-button
+    <bx-btn
       v-if="$keycloak"
-      @click="$keycloak.logoutFn"
-      variant="primary"
-      style="margin: 12px"
+      id="logout-btn"
+      kind="tertiary"
+      iconLayout=""
+      class="bx--btn"
+      @click.prevent="$keycloak.logoutFn"
+      size="field"
     >
-      Log Out
-    </b-button>
+      <span>Logout</span>
+      <logout16 slot="icon" />
+    </bx-btn>
   </header>
 </template>
 
 <script setup lang="ts">
-import { headerBlue } from "../utils/color";
-</script>
-
-<script lang="ts">
-import { defineComponent } from "vue";
-export default defineComponent({
-  name: "MainHeader",
-});
+import logout16 from '@carbon/icons-vue/es/logout/16'
 </script>
 
 <style scoped>
