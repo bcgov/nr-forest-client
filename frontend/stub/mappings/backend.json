@@ -13,7 +13,7 @@
     },
     {
       "request": {
-        "urlPattern": "/api/clients/(XX|YY)(.*)",
+        "urlPattern": "/api/clients/(XX|YY|UU|JJ)(.*)",
         "method": "GET"
       },
       "response": {
@@ -46,6 +46,18 @@
     },
     {
       "request": {
+        "urlPattern": "/api/clients/activeCountryCodes/(.*)?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "bodyFileName": "response-provinces-{{request.path.[3]}}.json"
+      }
+    },
+
+    {
+      "request": {
         "url": "/api/clients/activeContactTypeCodes?page=0&size=250",
         "method": "GET"
       },
@@ -54,15 +66,47 @@
         "body": "[{\"code\":\"P\",\"name\":\"Person\"}]"
       }
     },
+
     {
       "request": {
-        "urlPattern": "/api/clients/activeCountryCodes/(.*)?page=0&size=250",
-        "method": "GET"
+        "url": "/api/clients/submissions",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.incorporationNumber",
+              "contains": "XX"
+            }
+          }
+        ]
       },
       "response": {
-        "status": 200,
-        "transformers": ["response-template"],
-        "bodyFileName": "response-provinces-{{request.path.[3]}}.json"
+        "status": 201,
+        "headers": {
+          "Location": "/api/clients/123456",
+          "x-sub-id": "123456"
+        }
+      }
+    },
+    {
+      "request": {
+        "url": "/api/clients/submissions",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.incorporationNumber",
+              "contains": "UU"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Location": "/api/clients/123456",
+          "x-sub-id": "123456"
+        }
       }
     }
   ]

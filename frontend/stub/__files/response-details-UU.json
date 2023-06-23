@@ -1,10 +1,10 @@
 {
-  "name": "The Shady Company",
+  "name": "Ministry of Forests, Lands and Natural Resource Operations",
   "id": "{{request.path.[2]}}",
-  "goodStanding": false,
+  "goodStanding": true,
   "addresses": [
     {
-      "streetAddress": "123 Fake DR",
+      "streetAddress": "2975 Jutland Rd",
       "country": {
         "value": "CA",
         "text": "Canada"
@@ -13,8 +13,23 @@
         "value": "BC",
         "text": "British Columbia"
       },
-      "city": "Fakest City",
-      "postalCode": "A0A0A0",
+      "city": "Victoria",
+      "postalCode": "V8T5J9",
+      "index": 0,
+      "locationName": "Mailing Address"
+    },
+    {
+      "streetAddress": "42000 Loggers Ln Suite 101",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "BC",
+        "text": "British Columbia"
+      },
+      "city": "Squamish",
+      "postalCode": "V8B0H3",
       "index": 0,
       "locationName": "Mailing Address"
     }

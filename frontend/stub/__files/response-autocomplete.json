@@ -18,17 +18,17 @@
     "legalType": "SP"
   },
   {
-    "code": "XX2648185",
+    "code": "UU2648185",
     "name": "{{request.path.[3]}}",
     "status": "ACTIVE",
     "legalType": "SP"
   },
   {
-    "code": "XX3478189",
+    "code": "JJ3478189",
     "name": "Dum-Gondor Cultural Association of Middle Earth",
     "status": "ACTIVE",
     "legalType": "SP"
-  },    
+  },
   {
     "code": "ZZ8201962",
     "name": "Totally Duplicated Company",

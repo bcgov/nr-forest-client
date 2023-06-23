@@ -1,7 +1,7 @@
 {
-  "name": "The Shady Company",
+  "name": "Dum-Gondor Cultural Association of Middle Earth",
   "id": "{{request.path.[2]}}",
-  "goodStanding": false,
+  "goodStanding": true,
   "addresses": [
     {
       "streetAddress": "123 Fake DR",
