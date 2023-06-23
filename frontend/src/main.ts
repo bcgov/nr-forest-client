@@ -1,12 +1,12 @@
 import { createApp } from 'vue'
 import VueKeycloakJs from '@dsb-norge/vue-keycloak-js'
-import type { KeycloakInstance } from 'keycloak-js'
+import type { Keycloak, KeycloakPromise } from 'keycloak-js'
 import type { VueKeycloakInstance } from '@dsb-norge/vue-keycloak-js/dist/types'
 
 import App from '@/App.vue'
 import { router } from '@/routes'
 import { keycloakUrl, keycloakClientId, nodeEnv } from '@/core/CoreConstants'
-import masking from '@/helpers/InputMask'
+import { masking } from '@/helpers/InputMask'
 
 // Importing BC typography
 import '@bcgov/bc-sans/css/BCSans.css'
@@ -31,6 +31,16 @@ app.directive('mask', masking('.bx--text-input__field-wrapper input'))
 if (nodeEnv && nodeEnv == 'openshift-dev') {
   // disable the login authentication for the deployment in the openshift dev namespace
   // cause the url in the dev namespace is not stable
+
+  const fakeKeycloak = {
+    authenticated: true,
+    login: () => {},
+    logout: () => {},
+    register: () => {},
+    logoutFn: (options?: any): KeycloakPromise<void, void> | void => {}
+  }
+
+  app.provide('keycloak', fakeKeycloak)
   app.mount('#app')
 } else {
   app.use(VueKeycloakJs, {
@@ -47,7 +57,7 @@ if (nodeEnv && nodeEnv == 'openshift-dev') {
       realm: 'standard',
       clientId: keycloakClientId
     },
-    onReady(keycloak: KeycloakInstance) {
+    onReady(keycloak: Keycloak) {
       console.log('Keycloak ready', keycloak)
       // provde global property keycloak to read login information
       app.provide('keycloak', keycloak)

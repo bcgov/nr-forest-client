@@ -3,11 +3,11 @@
 }
 
 .bx--btn {
-  width: 243px;
+  width: 261px;
   padding: 3px;
 }
 
-.rounded > button {
+.rounded {
   border-radius: 4px !important;
 }
 
@@ -42,6 +42,12 @@
   font-size: 16px;
   line-height: 24px;
   color: #606062;
+  opacity: 1;
+}
+
+.inner-text-disabled {
+  color: #131315;
+  opacity: 0.4;
 }
 
 .inner-text-spaced {
@@ -130,4 +136,13 @@
   height: 414px;
   flex-grow: 1;
   fill: var(--cds-hover-primary, #0353e9);
+}
+
+bx-btn::part(button) {
+  border-radius: 4px !important;
+}
+
+bx-btn#logout-btn::part(button) {
+  border: solid 1px white;
+  color: white;
 }

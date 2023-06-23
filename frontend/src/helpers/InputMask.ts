@@ -1,6 +1,6 @@
 import { mask } from 'vue-the-mask'
 
-export default (shadowSelector: string) => (el: any, binding: any) => {
+export const masking = (shadowSelector: string) => (el: any, binding: any) => {
   if (el.shadowRoot && binding.value) {
     const input = el.shadowRoot.querySelector(shadowSelector)
     if (input) {

@@ -37,6 +37,7 @@ export interface ProgressData {
   kind: string
   title: string
   subtitle: string
+  enabled: boolean
 }
 
 export interface Submitter {

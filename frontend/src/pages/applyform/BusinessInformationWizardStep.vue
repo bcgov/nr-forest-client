@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { watch, computed, ref, reactive } from 'vue'
+import { useEventBus } from '@vueuse/core'
 import { useFetchTo } from '@/services/ForestClientService'
 import { type BusinessSearchResult, ClientTypeEnum } from '@/core/CommonTypes'
 import type {
@@ -16,6 +17,10 @@ const emit = defineEmits<{
   (e: 'update:data', value: FormDataDto): void
   (e: 'valid', value: boolean): void
 }>()
+
+//Defining the event bus to send notifications up
+const navigationBus = useEventBus<boolean>('navigation-notification')
+const exitBus = useEventBus<Record<string, boolean | null>>('exit-notification')
 
 //Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data)
@@ -61,13 +66,28 @@ const showGoodStandingError = ref<boolean>(false)
 const showDuplicatedError = ref<boolean>(false)
 const detailsData = ref(null)
 
+const toggleErrorMessages = (
+  goodStanding: boolean | null,
+  duplicated: boolean | null
+) => {
+  showGoodStandingError.value = goodStanding ? goodStanding : false
+  showDuplicatedError.value = duplicated ? duplicated : false
+
+  if (goodStanding || duplicated) {
+    navigationBus.emit(false)
+    exitBus.emit({ goodStanding, duplicated })
+  } else {
+    navigationBus.emit(true)
+    exitBus.emit({ goodStanding: false, goodStanding: false })
+  }
+}
+
 //Using this as we have to handle the selected result to get
 //incorporation number and client type
 const autoCompleteResult = ref<BusinessSearchResult>()
 watch([autoCompleteResult], () => {
   if (autoCompleteResult.value) {
-    showDuplicatedError.value = false
-    showGoodStandingError.value = false
+    toggleErrorMessages(false, false)
 
     formData.value.businessInformation.incorporationNumber =
       autoCompleteResult.value.code
@@ -91,7 +111,7 @@ watch([autoCompleteResult], () => {
       config
     )
     watch([error], () => {
-      if (error.value.response.status === 409) showDuplicatedError.value = true
+      if (error.value.response.status === 409) toggleErrorMessages(null, true)
     })
   }
 })
@@ -106,7 +126,7 @@ watch([detailsData], () => {
     formData.value.location.addresses = forestClientDetails.addresses
     formData.value.businessInformation.goodStandingInd =
       forestClientDetails.goodStanding ? 'Y' : 'N'
-    showGoodStandingError.value = !forestClientDetails.goodStanding
+    toggleErrorMessages(!forestClientDetails.goodStanding, null)
     validation.business = forestClientDetails.goodStanding
 
     emit('update:data', formData.value)
@@ -210,14 +230,13 @@ watch([selectedOption], () => {
 
     <display-block-component
       v-show="showDuplicatedError"
-      kind="warning"
+      kind="error"
       title="Client already exists"
     >
       <p>
-        Your application for a client number can't go ahead because “{{
-          formData.businessInformation.businessName
-        }}” already has one. Check your email
-        {{ formData.location.contacts[0].email }} to find out what it is.
+        Looks like “{{ formData.businessInformation.businessName }}” has a
+        client number. Select the 'Receive email and logout' button below to
+        have it sent to you at {{ formData.location.contacts[0].email }}
       </p>
     </display-block-component>
   </data-fetcher>

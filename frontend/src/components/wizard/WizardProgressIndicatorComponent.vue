@@ -1,10 +1,10 @@
 <template>
   <div class="wizard-wrap-indicator">
     <div
-      v-for="(step, index) in modelValue"
+      v-for="(step, index) in values"
       :class="{
         'wizard-wrap-item': true,
-        [`wizard-wrap-item-${step.kind}`]: true,
+        [`wizard-wrap-item-${step.kind}`]: true
       }"
     >
       <component
@@ -12,7 +12,7 @@
         :alt="step.kind"
         :class="{
           'wizard-wrap-item-icon': true,
-          [`wizard-wrap-item-icon-${step.kind}`]: true,
+          [`wizard-wrap-item-icon-${step.kind}`]: true
         }"
       />
       <div class="wizard-wrap-item-text">
@@ -23,36 +23,70 @@
             @click.prevent="emit('go-to', index)"
             >{{ step.title }}</a
           >
-          <span v-else>{{ step.title }}</span>
+          <span
+            v-else
+            :class="{
+              'inner-text': true,
+              'inner-text-disabled': !step.enabled
+            }"
+            >{{ step.title }}</span
+          >
         </p>
-        <span class="inner-text">{{ step.subtitle }}</span>
+        <span
+          :class="{
+            'inner-text': true,
+            'inner-text-disabled': !step.enabled
+          }"
+          >{{ step.subtitle }} {{ step.enabled }}</span
+        >
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { ProgressData } from "@/core/CommonTypes";
+import { toRef, watch } from 'vue'
+import { useEventBus } from '@vueuse/core'
+import type { ProgressData } from '@/core/CommonTypes'
 
-defineProps<{ modelValue: Array<ProgressData> }>();
+import Checkmark16 from '@carbon/icons-vue/es/checkmark--outline/16'
+import Error16 from '@carbon/icons-vue/es/error--outline/16'
+import Circle16 from '@carbon/icons-vue/es/circle-dash/16'
+import Info16 from '@carbon/icons-vue/es/incomplete/16'
 
-const emit = defineEmits<{ (e: "go-to", value: number): void }>();
+const props = defineProps<{ modelValue: Array<ProgressData> }>()
 
-import Checkmark16 from "@carbon/icons-vue/es/checkmark--outline/16";
-import Error16 from "@carbon/icons-vue/es/error--outline/16";
-import Circle16 from "@carbon/icons-vue/es/circle-dash/16";
-import Info16 from "@carbon/icons-vue/es/incomplete/16";
+const emit = defineEmits<{ (e: 'go-to', value: number): void }>()
+
+const bus = useEventBus<boolean>('navigation-notification')
+
+const values = toRef(props.modelValue)
+watch(
+  () => props.modelValue,
+  () => {
+    values.value = props.modelValue
+  }
+)
+bus.on(
+  (value: boolean) =>
+    (values.value = values.value.map((item: ProgressData) => {
+      if (item.kind === 'queued') {
+        item.enabled = value
+      }
+      return item
+    }))
+)
 
 const iconsForKinds: Record<string, any> = {
-  ["complete"]: Checkmark16,
-  ["current"]: Info16,
-  ["queued"]: Circle16,
-  ["error"]: Error16,
-};
+  ['complete']: Checkmark16,
+  ['current']: Info16,
+  ['queued']: Circle16,
+  ['error']: Error16
+}
 
 const canShowLink = (step: ProgressData) => {
-  return step.kind === "current" || step.kind === "complete";
-};
+  return step.kind === 'current' || step.kind === 'complete'
+}
 </script>
 
 <style scoped>
