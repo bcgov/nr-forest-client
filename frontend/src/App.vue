@@ -38,7 +38,7 @@ if (keycloak &&
 } 
 else {
   tabs.value = [{ title: "Request a client number", content: ApplyClientNumber }];
-  submitterInformation.value.bceidBusinessName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.displayed : "Dev Test Client Name";
+  submitterInformation.value.bceidBusinessName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.display_name : "Dev Test Client Name";
   submitterInformation.value.userId = keycloak && keycloak.tokenParsed ? keycloak.subject : "testUserId";
   submitterInformation.value.submitterFirstName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : "Maria";
   submitterInformation.value.submitterLastName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.family_name : "Martinez";
