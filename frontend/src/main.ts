@@ -6,7 +6,7 @@ import type { VueKeycloakInstance } from '@dsb-norge/vue-keycloak-js/dist/types'
 import App from '@/App.vue'
 import { router } from '@/routes'
 import { keycloakUrl, keycloakClientId, nodeEnv } from '@/core/CoreConstants'
-import { masking } from '@/helpers/InputMask'
+import { masking } from '@/helpers/CustomDirectives'
 
 // Importing BC typography
 import '@bcgov/bc-sans/css/BCSans.css'
