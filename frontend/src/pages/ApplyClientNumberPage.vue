@@ -193,8 +193,9 @@ const sendEmail = () => {
     {
       incorporation: formData.businessInformation.incorporationNumber,
       name: formData.businessInformation.businessName,
-      userId: submitterInformation?.userId,
-      mail: submitterInformation?.email
+      userName: submitterInformation?.firstName || '',
+      userId: submitterInformation?.userId || '',
+      mail: submitterInformation?.email || ''
     },
     {}
   )

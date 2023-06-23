@@ -4,6 +4,7 @@ public record SendMailRequestDto(
     String incorporation,
     String name,
     String userId,
+    String userName,
     String mail
 ) {
 }
