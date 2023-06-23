@@ -4,6 +4,8 @@
       title="New client application"
       subtitle="All fields are mandatory unless noted"
       :submit="submit"
+      :mail="sendEmail"
+      :end="logOut"
       v-slot="slotProps"
     >
       <wizard-tab-component
@@ -154,7 +156,7 @@ let formData = reactive<FormDataDto>({
 
 const { response, error, fetch } = usePost(
   '/api/clients/submissions',
-  toRef(formData),
+  toRef(formData).value,
   { skip: true }
 )
 
@@ -173,6 +175,14 @@ watch([error], () => {
 const submit = () => {
   console.log('submit', JSON.stringify(formData))
   fetch()
+}
+
+const sendEmail = () => {
+  console.log('sendEmail')
+}
+
+const logOut = () => {
+  console.log('logOut')
 }
 </script>
 

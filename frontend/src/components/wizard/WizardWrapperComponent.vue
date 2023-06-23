@@ -24,14 +24,14 @@
 
   <slot :processValidity="processValidity" :goToStep="goToStep" />
 
-  <div class="wizard-wrap" v-if="isLast">
+  <div class="wizard-wrap" v-if="isLast && !endAndLogOut && !mailAndLogOut">
     <hr />
 
     <div>
       <bx-btn
         kind="secondary"
         iconLayout=""
-        class="bx--btn rounded"
+        class="bx--btn"
         @click.prevent="onBack"
         size="field"
       >
@@ -41,7 +41,7 @@
       <bx-btn
         kind="primary"
         iconLayout=""
-        class="bx--btn rounded"
+        class="bx--btn"
         size="field"
         @click.prevent="submit"
       >
@@ -50,7 +50,10 @@
     </div>
   </div>
 
-  <div class="wizard-wrap" v-if="!isLast && !isFormValid">
+  <div
+    class="wizard-wrap"
+    v-if="!isLast && !isFormValid && !endAndLogOut && !mailAndLogOut"
+  >
     <hr />
 
     <span class="inner-text" v-if="!isStateValid(currentTab)"
@@ -62,7 +65,7 @@
         v-show="!isFirst"
         kind="secondary"
         iconLayout=""
-        class="bx--btn rounded"
+        class="bx--btn"
         :disabled="isFirst"
         @click.prevent="onBack"
         size="field"
@@ -73,7 +76,7 @@
       <bx-btn
         kind="primary"
         iconLayout=""
-        class="bx--btn rounded"
+        class="bx--btn"
         :disabled="isNextAvailable"
         v-show="!isLast"
         @click.prevent="onNext"
@@ -85,13 +88,16 @@
     </div>
   </div>
 
-  <div class="wizard-wrap" v-if="!isLast && isFormValid">
+  <div
+    class="wizard-wrap"
+    v-if="!isLast && isFormValid && !endAndLogOut && !mailAndLogOut"
+  >
     <hr />
     <div>
       <bx-btn
         kind="primary"
         iconLayout=""
-        class="bx--btn rounded"
+        class="bx--btn"
         :disabled="isNextAvailable"
         v-show="!isLast"
         @click.prevent="saveChange"
@@ -99,6 +105,25 @@
       >
         <span>Save</span>
         <save16 slot="icon" />
+      </bx-btn>
+    </div>
+  </div>
+
+  <div class="wizard-wrap" v-if="endAndLogOut || mailAndLogOut">
+    <div>
+      <bx-btn
+        kind="primary"
+        iconLayout=""
+        class="bx--btn"
+        v-show="!isLast"
+        @click.prevent="processAndLogOut"
+        size="field"
+      >
+        <span
+          >{{ endAndLogOut ? 'End application' : 'Receive email' }} and
+          logout</span
+        >
+        <logout16 slot="icon" />
       </bx-btn>
     </div>
   </div>
@@ -128,22 +153,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, useSlots, reactive, provide } from 'vue'
+import { ref, computed, useSlots, reactive, provide, watch } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import arrowRight16 from '@carbon/icons-vue/es/arrow--right/16'
 import save16 from '@carbon/icons-vue/es/save/16'
+import logout16 from '@carbon/icons-vue/es/logout/16'
 
 import type { ModalNotification } from '@/core/CommonTypes'
 
-defineProps<{
+const props = defineProps<{
   title: string
   subtitle: string
   submit: () => void
+  mail: () => void
+  end: () => void
 }>()
 
 //Defining the event bus to receive notifications
 const modalBus = useEventBus<ModalNotification>('modal-notification')
 const toastBus = useEventBus<ModalNotification>('toast-notification')
+const exitBus = useEventBus<Record<string, boolean | null>>('exit-notification')
 
 //Start from the first tab of the wizard
 const currentTab = ref(0)
@@ -184,6 +213,8 @@ const currentTabName = computed(
   () => currentSlots[currentTab.value].props?.title
 )
 
+const ddd = ref<boolean>(false)
+
 //Button Actions
 const onBack = () => {
   if (currentTab.value - 1 >= 0) {
@@ -210,7 +241,8 @@ const progressData = computed(() =>
     return {
       title: aSlot.props?.title,
       subtitle: `Step ${aSlot.props?.index + 1}`,
-      kind: stateIcon(aSlot.props?.index)
+      kind: stateIcon(aSlot.props?.index),
+      enabled: true
     }
   })
 )
@@ -264,6 +296,21 @@ const saveChange = () => {
     handler: () => {}
   })
   goToStep(3)
+}
+
+const endAndLogOut = ref<boolean>(false)
+const mailAndLogOut = ref<boolean>(false)
+
+exitBus.on((event: Record<string, boolean | null>) => {
+  endAndLogOut.value = event.goodStanding ? event.goodStanding : false
+  mailAndLogOut.value = event.duplicated ? event.duplicated : false
+})
+
+const processAndLogOut = () => {
+  if (mailAndLogOut.value) {
+    props.mail()
+  }
+  props.end()
 }
 </script>
 
