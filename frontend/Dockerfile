@@ -5,7 +5,7 @@ RUN dnf module install -y nodejs:18
 # Install packages, build and keep only prod packages
 WORKDIR /app
 COPY . ./
-RUN npm ci --omit=dev && npm run build
+RUN npm ci && npm run build
 
 # Deployment container
 FROM caddy:2.4.6-alpine
