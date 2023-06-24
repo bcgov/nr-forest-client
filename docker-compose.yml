@@ -47,7 +47,7 @@ services:
       retries: 3
       start_period: 10s
     hostname: backend
-    image: ghcr.io/bcgov/nr-forest-client/backend:0
+    image: ghcr.io/bcgov/nr-forest-client/backend:500
     depends_on:
       - database
     links:
