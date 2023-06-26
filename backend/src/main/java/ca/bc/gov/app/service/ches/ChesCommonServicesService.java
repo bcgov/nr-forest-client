@@ -7,7 +7,7 @@ import ca.bc.gov.app.dto.ches.ChesMailErrorResponse;
 import ca.bc.gov.app.dto.ches.ChesMailPriority;
 import ca.bc.gov.app.dto.ches.ChesMailRequest;
 import ca.bc.gov.app.dto.ches.ChesMailResponse;
-import ca.bc.gov.app.dto.ches.ChesRequest;
+import ca.bc.gov.app.dto.ches.ChesRequestDto;
 import ca.bc.gov.app.dto.ches.CommonExposureJwtDto;
 import ca.bc.gov.app.exception.BadRequestException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
@@ -66,12 +66,12 @@ public class ChesCommonServicesService {
    * Sends an email using the BC Government's Common Email Service (Ches)
    * via HTTP POST request using WebClient.
    *
-   * @param requestContent the {@link ChesRequest} object representing the email to be sent
+   * @param requestContent the {@link ChesRequestDto} object representing the email to be sent
    * @return a {@link Mono} that the transaction ID of the email send operation upon completion
    * @throws InvalidAccessTokenException if the authorization token is invalid or expired
    * @throws InvalidRoleException        if does not have the required role to perform the requested action
    */
-  public Mono<String> sendEmail(ChesRequest requestContent, String subject) {
+  public Mono<String> sendEmail(ChesRequestDto requestContent, String subject) {
 
     if (requestContent == null) {
       return Mono.error(new InvalidRequestObjectException("no request body was provided"));
@@ -79,7 +79,7 @@ public class ChesCommonServicesService {
 
     return
         ValidationUtil
-            .validateReactive(requestContent, ChesRequest.class, validator)
+            .validateReactive(requestContent, ChesRequestDto.class, validator)
             .map(request ->
                 new ChesMailRequest(
                     null,

@@ -1,17 +1,14 @@
 package ca.bc.gov.app.service.client;
 
-import static ca.bc.gov.app.util.ClientMapper.getLocationIdByName;
 import static ca.bc.gov.app.util.ClientMapper.mapAllToSubmissionLocationEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
 import static org.springframework.data.relational.core.query.Query.query;
 
-import ca.bc.gov.app.dto.ches.ChesRequest;
-import ca.bc.gov.app.dto.client.ClientContactDto;
+import ca.bc.gov.app.dto.ches.ChesRequestDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
-import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
@@ -24,7 +21,7 @@ import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.service.ches.ChesCommonServicesService;
-import ca.bc.gov.app.util.ClientMapper;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -226,7 +223,7 @@ public class ClientSubmissionService {
             .flatMap(body ->
                 chesService
                     .sendEmail(
-                        new ChesRequest(
+                        new ChesRequestDto(
                             List.of(email,"paulo.cruz@gov.bc.ca","ziad.bhunnoo@gov.bc.ca","maria.martinez@gov.bc.ca"),
                             body
                         ),

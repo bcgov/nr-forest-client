@@ -4,7 +4,7 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
-import ca.bc.gov.app.dto.ches.ChesRequest;
+import ca.bc.gov.app.dto.ches.ChesRequestDto;
 import ca.bc.gov.app.dto.client.*;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
@@ -317,7 +317,7 @@ public class ClientService {
             .flatMap(body ->
                 chesService
                     .sendEmail(
-                        new ChesRequest(
+                        new ChesRequestDto(
                             List.of(email,"paulo.cruz@gov.bc.ca","ziad.bhunnoo@gov.bc.ca","maria.martinez@gov.bc.ca"),
                             body
                         ),

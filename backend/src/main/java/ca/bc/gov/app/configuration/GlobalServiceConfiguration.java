@@ -2,6 +2,7 @@ package ca.bc.gov.app.configuration;
 
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.bcregistry.*;
+import ca.bc.gov.app.dto.ches.ChesRequestDto;
 import ca.bc.gov.app.dto.ches.CommonExposureJwtDto;
 import ca.bc.gov.app.dto.client.AddressCompleteFindDto;
 import ca.bc.gov.app.dto.client.AddressCompleteFindListDto;
@@ -53,7 +54,8 @@ import org.springframework.web.reactive.function.client.WebClient;
     BcRegistryIdentificationDto.class,
     BcRegistryExceptionMessageDto.class,
     ClientDetailsDto.class,
-    CommonExposureJwtDto.class
+    CommonExposureJwtDto.class,
+    ChesRequestDto.class,
 })
 public class GlobalServiceConfiguration {
   /**
