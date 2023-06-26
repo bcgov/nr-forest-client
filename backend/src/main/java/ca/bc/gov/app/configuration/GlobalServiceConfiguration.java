@@ -1,14 +1,7 @@
 package ca.bc.gov.app.configuration;
 
 import ca.bc.gov.app.dto.ValidationError;
-import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
-import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
-import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
-import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetResponseDto;
-import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
-import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
-import ca.bc.gov.app.dto.bcregistry.BcRegistryIdentificationDto;
-import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
+import ca.bc.gov.app.dto.bcregistry.*;
 import ca.bc.gov.app.dto.ches.CommonExposureJwtDto;
 import ca.bc.gov.app.dto.client.AddressCompleteFindDto;
 import ca.bc.gov.app.dto.client.AddressCompleteFindListDto;
@@ -58,6 +51,7 @@ import org.springframework.web.reactive.function.client.WebClient;
     BcRegistryFacetSearchResultEntryDto.class,
     BcRegistryFacetSearchResultsDto.class,
     BcRegistryIdentificationDto.class,
+    BcRegistryExceptionMessageDto.class,
     ClientDetailsDto.class,
     CommonExposureJwtDto.class
 })
