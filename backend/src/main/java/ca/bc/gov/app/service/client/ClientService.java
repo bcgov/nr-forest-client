@@ -202,7 +202,7 @@ public class ClientService {
                     new ClientValueTextDto("", addressDto.addressCountry()),
                     new ClientValueTextDto(addressDto.addressRegion(), ""),
                     addressDto.addressCity(),
-                    addressDto.postalCode().trim().replaceceAll("\\s+", "")
+                    addressDto.postalCode().trim().replaceAll("\\s+", ""),
                     index.getAndIncrement(),
                     WordUtils.capitalize(addressDto.addressType()).concat(" Address")
                 )
