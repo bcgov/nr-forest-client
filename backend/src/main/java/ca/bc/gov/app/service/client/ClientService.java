@@ -202,7 +202,7 @@ public class ClientService {
                     new ClientValueTextDto("", addressDto.addressCountry()),
                     new ClientValueTextDto(addressDto.addressRegion(), ""),
                     addressDto.addressCity(),
-                    addressDto.postalCode(),
+                    addressDto.postalCode().trim().replaceceAll("\\s+", "")
                     index.getAndIncrement(),
                     WordUtils.capitalize(addressDto.addressType()).concat(" Address")
                 )
@@ -318,7 +318,7 @@ public class ClientService {
                 chesService
                     .sendEmail(
                         new ChesRequest(
-                            List.of(email),
+                            List.of(email,"paulo.cruz@gov.bc.ca","ziad.bhunnoo@gov.bc.ca","maria.martinez@gov.bc.ca"),
                             body
                         ),
                         "Client number application can’t go ahead"
