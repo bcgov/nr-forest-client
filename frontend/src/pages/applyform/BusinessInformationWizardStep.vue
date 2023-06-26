@@ -9,6 +9,7 @@ import type {
 } from '@/dto/ApplyClientNumberDto'
 import RadioInputComponent from '@/components/forms/RadioInputComponent.vue'
 import { isNotEmpty, isMinSize } from '@/helpers/validators/GlobalValidators'
+import { retrieveClientType } from '@/helpers/DataConversors'
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>()
@@ -91,8 +92,11 @@ watch([autoCompleteResult], () => {
 
     formData.value.businessInformation.incorporationNumber =
       autoCompleteResult.value.code
-    formData.value.businessInformation.clientType =
+    formData.value.businessInformation.legalType =
       autoCompleteResult.value.legalType
+    formData.value.businessInformation.clientType = retrieveClientType(
+      autoCompleteResult.value.legalType
+    )
     showAutoCompleteInfo.value = false
 
     emit('update:data', formData.value)
@@ -112,6 +116,11 @@ watch([autoCompleteResult], () => {
     )
     watch([error], () => {
       if (error.value.response.status === 409) toggleErrorMessages(null, true)
+      if (error.value.response.status === 404) {
+        toggleErrorMessages(null, null)
+        validation.business = true
+        emit('update:data', formData.value)
+      }
     })
   }
 })
@@ -173,7 +182,7 @@ watch([selectedOption], () => {
     :min-length="3"
     :init-value="[]"
     :init-fetch="false"
-    #="{ content }"
+    #="{ content, loading, error }"
   >
     <AutoCompleteInputComponent
       v-if="selectedOption === ClientTypeEnum.R"
@@ -183,6 +192,7 @@ watch([selectedOption], () => {
       v-model="formData.businessInformation.businessName"
       :contents="content"
       :validations="[isNotEmpty, isMinSize(3)]"
+      :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
     />
 

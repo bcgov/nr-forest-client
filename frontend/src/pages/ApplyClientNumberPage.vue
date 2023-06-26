@@ -153,7 +153,6 @@ let formDataDto = ref<FormDataDto>({ ...newFormDataDto })
 
 onMounted(() => {
   formDataDto.value = { ...newFormDataDto }
-  console.log('formDataDto', newFormDataDto)
 })
 
 //---- Form Data ----//

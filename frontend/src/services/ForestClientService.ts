@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import axios, { type AxiosError } from 'axios'
 import type { Address, Contact } from '../dto/ApplyClientNumberDto'
 import type { CodeDescrType } from '@/core/CommonTypes'
@@ -12,14 +12,18 @@ axios.defaults.headers.common['Access-Control-Allow-Origin'] = frontendUrl
  * @param config axios configuration
  * @returns the data fetched
  */
-export const useFetch = (url: string, config: any = {}) => {
+export const useFetch = (url: string | Ref, config: any = {}) => {
   const data: any = ref(config.initialData || {})
   const info = useFetchTo(url, data, config)
 
   return { ...info, data }
 }
 
-export const useFetchTo = (url: string, data: any, config: any = {}) => {
+export const useFetchTo = (
+  url: string | Ref<string>,
+  data: any,
+  config: any = {}
+) => {
   const response = ref<any>({})
   const error = ref<AxiosError>({})
   const loading = ref<boolean>(false)
@@ -34,10 +38,11 @@ export const useFetchTo = (url: string, data: any, config: any = {}) => {
 
   const fetch = async () => {
     loading.value = true
+    const actualURL = typeof url === 'string' ? url : url.value
     try {
       const result = await axios.request({
         ...parameters,
-        url,
+        url: actualURL,
         baseURL: backendUrl
       })
       response.value = result
