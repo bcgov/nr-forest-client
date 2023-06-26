@@ -291,6 +291,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs:
       - deploy-frontend
+      - deploy-backend
     environment: dev
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
