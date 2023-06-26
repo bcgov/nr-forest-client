@@ -168,7 +168,14 @@ let formData = reactive<FormDataDto>({
 const { response, error, fetch } = usePost(
   '/api/clients/submissions',
   toRef(formData).value,
-  { skip: true }
+  {
+    skip: true,
+    headers: {
+      'x-user-id': submitterInformation?.userId || '',
+      'x-user-email': submitterInformation?.email || '',
+      'x-user-name': submitterInformation?.firstName || ''
+    }
+  }
 )
 
 watch([response], () => {
