@@ -146,3 +146,7 @@ bx-btn#logout-btn::part(button) {
   border: solid 1px white;
   color: white;
 }
+
+hr {
+  width: 100%;
+}
