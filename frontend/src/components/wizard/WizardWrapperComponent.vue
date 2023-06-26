@@ -22,112 +22,114 @@
     />
   </div>
 
-  <slot :processValidity="processValidity" :goToStep="goToStep" />
-
-  <div class="wizard-wrap" v-if="isLast && !endAndLogOut && !mailAndLogOut">
-    <hr />
-
-    <div>
-      <bx-btn
-        kind="secondary"
-        iconLayout=""
-        class="bx--btn"
-        @click.prevent="onBack"
-        size="field"
-      >
-        <span>Back</span>
-      </bx-btn>
-
-      <bx-btn
-        kind="primary"
-        iconLayout=""
-        class="bx--btn"
-        size="field"
-        @click.prevent="submit"
-      >
-        <span>Submit</span>
-      </bx-btn>
-    </div>
+  <div class="wizard-body wizard-mid-content">
+    <slot :processValidity="processValidity" :goToStep="goToStep" />
   </div>
+  <div class="wizard-footer wizard-mid-content">
+    <div class="wizard-wrap" v-if="isLast && !endAndLogOut && !mailAndLogOut">
+      <hr />
 
-  <div
-    class="wizard-wrap"
-    v-if="!isLast && !isFormValid && !endAndLogOut && !mailAndLogOut"
-  >
-    <hr />
-
-    <span class="inner-text" v-if="!isStateValid(currentTab)"
-      >All fields must be filled out correctly to enable the "Next" button
-      below</span
-    >
-    <div>
-      <bx-btn
-        v-show="!isFirst"
-        kind="secondary"
-        iconLayout=""
-        class="bx--btn"
-        :disabled="isFirst"
-        @click.prevent="onBack"
-        size="field"
-      >
-        <span>Back</span>
-      </bx-btn>
-
-      <bx-btn
-        kind="primary"
-        iconLayout=""
-        class="bx--btn"
-        :disabled="isNextAvailable"
-        v-show="!isLast"
-        @click.prevent="onNext"
-        size="field"
-      >
-        <span>Next</span>
-        <arrowRight16 slot="icon" />
-      </bx-btn>
-    </div>
-  </div>
-
-  <div
-    class="wizard-wrap"
-    v-if="!isLast && isFormValid && !endAndLogOut && !mailAndLogOut"
-  >
-    <hr />
-    <div>
-      <bx-btn
-        kind="primary"
-        iconLayout=""
-        class="bx--btn"
-        :disabled="isNextAvailable"
-        v-show="!isLast"
-        @click.prevent="saveChange"
-        size="field"
-      >
-        <span>Save</span>
-        <save16 slot="icon" />
-      </bx-btn>
-    </div>
-  </div>
-
-  <div class="wizard-wrap" v-if="endAndLogOut || mailAndLogOut">
-    <div>
-      <bx-btn
-        kind="primary"
-        iconLayout=""
-        class="bx--btn"
-        v-show="!isLast"
-        @click.prevent="processAndLogOut"
-        size="field"
-      >
-        <span
-          >{{ endAndLogOut ? 'End application' : 'Receive email' }} and
-          logout</span
+      <div>
+        <bx-btn
+          kind="secondary"
+          iconLayout=""
+          class="bx--btn"
+          @click.prevent="onBack"
+          size="field"
         >
-        <logout16 slot="icon" />
-      </bx-btn>
+          <span>Back</span>
+        </bx-btn>
+
+        <bx-btn
+          kind="primary"
+          iconLayout=""
+          class="bx--btn"
+          size="field"
+          @click.prevent="submit"
+        >
+          <span>Submit</span>
+        </bx-btn>
+      </div>
+    </div>
+
+    <div
+      class="wizard-wrap"
+      v-if="!isLast && !isFormValid && !endAndLogOut && !mailAndLogOut"
+    >
+      <hr />
+
+      <span class="inner-text" v-if="!isStateValid(currentTab)"
+        >All fields must be filled out correctly to enable the "Next" button
+        below</span
+      >
+      <div>
+        <bx-btn
+          v-show="!isFirst"
+          kind="secondary"
+          iconLayout=""
+          class="bx--btn"
+          :disabled="isFirst"
+          @click.prevent="onBack"
+          size="field"
+        >
+          <span>Back</span>
+        </bx-btn>
+
+        <bx-btn
+          kind="primary"
+          iconLayout=""
+          class="bx--btn"
+          :disabled="isNextAvailable"
+          v-show="!isLast"
+          @click.prevent="onNext"
+          size="field"
+        >
+          <span>Next</span>
+          <arrowRight16 slot="icon" />
+        </bx-btn>
+      </div>
+    </div>
+
+    <div
+      class="wizard-wrap"
+      v-if="!isLast && isFormValid && !endAndLogOut && !mailAndLogOut"
+    >
+      <hr />
+      <div>
+        <bx-btn
+          kind="primary"
+          iconLayout=""
+          class="bx--btn"
+          :disabled="isNextAvailable"
+          v-show="!isLast"
+          @click.prevent="saveChange"
+          size="field"
+        >
+          <span>Save</span>
+          <save16 slot="icon" />
+        </bx-btn>
+      </div>
+    </div>
+
+    <div class="wizard-wrap" v-if="endAndLogOut || mailAndLogOut">
+      <div>
+        <bx-btn
+          kind="primary"
+          iconLayout=""
+          class="bx--btn"
+          v-show="!isLast"
+          @click.prevent="processAndLogOut"
+          size="field"
+        >
+          <span
+            >{{ endAndLogOut ? 'End application' : 'Receive email' }} and
+            logout</span
+          >
+          <logout16 slot="icon" />
+        </bx-btn>
+      </div>
     </div>
   </div>
-
   <bx-modal
     id="modal-example"
     :open="modalContent.active"

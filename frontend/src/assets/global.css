@@ -150,3 +150,7 @@ bx-btn#logout-btn::part(button) {
 hr {
   width: 100%;
 }
+
+.wizard-mid-content {
+  width: 50%;
+}
