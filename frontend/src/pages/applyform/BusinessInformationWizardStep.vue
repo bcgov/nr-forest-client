@@ -194,6 +194,7 @@ watch([selectedOption], () => {
       :validations="[isNotEmpty, isMinSize(3)]"
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
+      @update:model-value="validation.business = false"
     />
 
     <display-block-component
