@@ -70,7 +70,7 @@ services:
       retries: 3
       start_period: 40s
     hostname: frontend
-    image: ghcr.io/bcgov/nr-forest-client/frontend:396
+    image: ghcr.io/bcgov/nr-forest-client/frontend:500
     links:
       - backend
     ports:
