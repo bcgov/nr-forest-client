@@ -108,6 +108,9 @@ ca:
               - x-user-id
               - x-user-email
               - x-user-name
+              - X-User-Email
+              - X-User-Id
+              - X-User-Name
             methods:
               - OPTIONS
               - GET
