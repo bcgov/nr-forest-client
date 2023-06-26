@@ -11,10 +11,6 @@ import { masking } from '@/helpers/CustomDirectives'
 // Importing BC typography
 import '@bcgov/bc-sans/css/BCSans.css'
 
-// Import Bootstrap an BootstrapVue CSS files (order is important)
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
-
 // Import Carbon WebComponents
 import '@carbon/web-components/es'
 import 'carbon-components/css/carbon-components.min.css'

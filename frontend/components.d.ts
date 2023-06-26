@@ -11,9 +11,6 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AddressGroupComponent: typeof import('./src/components/grouping/AddressGroupComponent.vue')['default']
     AutoCompleteInputComponent: typeof import('./src/components/forms/AutoCompleteInputComponent.vue')['default']
-    BButton: typeof import('bootstrap-vue-3')['BButton']
-    BTab: typeof import('bootstrap-vue-3')['BTab']
-    BTabs: typeof import('bootstrap-vue-3')['BTabs']
     ContactGroupComponent: typeof import('./src/components/grouping/ContactGroupComponent.vue')['default']
     DataFetcher: typeof import('./src/components/DataFetcher.vue')['default']
     DisplayBlockComponent: typeof import('./src/components/visuals/DisplayBlockComponent.vue')['default']
