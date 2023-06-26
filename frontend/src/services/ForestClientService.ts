@@ -32,6 +32,7 @@ export const useFetchTo = (
     ...config,
     headers: {
       'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': frontendUrl,
       ...config.headers
     }
   }
@@ -69,6 +70,7 @@ export const usePost = (url: string, body: any, config: any = {}) => {
     ...config,
     headers: {
       'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': frontendUrl,
       ...config.headers
     }
   }
