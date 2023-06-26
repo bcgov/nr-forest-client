@@ -27,8 +27,12 @@ public class ClientValidationUtils {
   }
 
   public static void validatePhoneNumber(String phoneNumber, String field, Errors errors) {
-    if (StringUtils.isBlank(phoneNumber) || !StringUtils.isNumeric(phoneNumber)
-        || StringUtils.length(phoneNumber) != 10) {
+
+    if (StringUtils.isBlank(phoneNumber))
+      errors.rejectValue(field, "The phone number must be a 10-digit number");
+    //This is just to make sure we removed the mask from FE
+    String localPhoneNumber = phoneNumber.replaceAll("[^0-9]", "");
+    if (!StringUtils.isNumeric(localPhoneNumber) || StringUtils.length(localPhoneNumber) != 10) {
       errors.rejectValue(field, "The phone number must be a 10-digit number");
     }
   }
