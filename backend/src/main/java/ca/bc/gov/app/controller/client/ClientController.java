@@ -37,127 +37,25 @@ public class ClientController {
   private final ClientService clientService;
 
   @GetMapping("/{clientNumber}")
-  @Operation(
-      summary = "Get the details of a client",
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "Returns a client data based on it's number",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  schema = @Schema(
-                      name = "ClientDetails",
-                      implementation = ClientDetailsDto.class
-                  )
-              )
-          ),
-          @ApiResponse(
-              responseCode = "404",
-              description = "No client found based on the provided ID",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  schema = @Schema(implementation = String.class),
-                  examples = {
-                      @ExampleObject(
-                          value =
-                              "No data found for client number 00000002")
-                  }
-              )
-          ),
-          @ApiResponse(
-              responseCode = "401",
-              description = "Provided access token is missing or invalid",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  schema = @Schema(implementation = String.class),
-                  examples = {
-                      @ExampleObject(
-                          value =
-                              "Provided access token is missing or invalid")
-                  }
-              )
-          )
-      }
-  )
-  public Mono<ClientDetailsDto> getClientDetails(
-      @Parameter(
-          description = "The client number to look for",
-          example = "00000002"
-      )
-      @PathVariable String clientNumber,
-      @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail,
-      @RequestHeader(ApplicationConstant.USERNAME_HEADER) String userName
-  ) {
-    return clientService.getClientDetails(clientNumber, userEmail, userName);
+  public Mono<ClientDetailsDto> getClientDetails(@PathVariable String clientNumber) {
+    return clientService.getClientDetails(clientNumber);
   }
 
   @GetMapping("/activeCountryCodes")
-  @Operation(
-      summary = "List countries",
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "OK - List a page of countries with name and code",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  array = @ArraySchema(
-                      schema = @Schema(
-                          name = "NameCode",
-                          implementation = ClientNameCodeDto.class
-                      )
-                  )
-              )
-          )
-      }
-  )
   public Flux<ClientNameCodeDto> listCountries(
-      @Parameter(description = "The one index page number, defaults to 0", example = "0")
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
-
-      @Parameter(description = "The amount of data to be returned per page, defaults to 10",
-          example = "10")
       @RequestParam(value = "size", required = false, defaultValue = "10")
-      Integer size,
-      ServerHttpResponse serverResponse) {
+      Integer size) {
     return clientService
         .listCountries(page, size);
   }
 
   @GetMapping("/activeCountryCodes/{countryCode}")
-  @Operation(
-      summary = "List provinces",
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "OK - List a page of provinces with name and code",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  array = @ArraySchema(
-                      schema = @Schema(
-                          name = "NameCode",
-                          implementation = ClientNameCodeDto.class
-                      )
-                  )
-              )
-          )
-      }
-  )
   public Flux<ClientNameCodeDto> listProvinces(
-      @Parameter(
-          description = """
-              The code of the country.
-               The code can be obtained through <b>/api/client/country<b> endpoint""",
-          example = "CA"
-      )
       @PathVariable String countryCode,
-
-      @Parameter(description = "The one index page number, defaults to 0", example = "0")
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
-
-      @Parameter(description = "The amount of data to be returned per page, defaults to 10",
-          example = "10")
       @RequestParam(value = "size", required = false, defaultValue = "10")
       Integer size) {
     return clientService
@@ -165,55 +63,15 @@ public class ClientController {
   }
 
   @GetMapping("/activeClientTypeCodes")
-  @Operation(
-      summary = "List active clients with their type codes",
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "OK - List a page of active clients with name and code",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  array = @ArraySchema(
-                      schema = @Schema(
-                          name = "NameCode",
-                          implementation = ClientNameCodeDto.class
-                      )
-                  )
-              )
-          )
-      }
-  )
   public Flux<ClientNameCodeDto> findActiveClientTypeCodes() {
     return clientService
         .findActiveClientTypeCodes(LocalDate.now());
   }
 
   @GetMapping("/activeContactTypeCodes")
-  @Operation(
-      summary = "List contact type codes",
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "OK - List a page of contact type codes",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  array = @ArraySchema(
-                      schema = @Schema(
-                          name = "NameCode",
-                          implementation = ClientNameCodeDto.class
-                      )
-                  )
-              )
-          )
-      }
-  )
   public Flux<ClientNameCodeDto> listClientContactTypeCodes(
-      @Parameter(description = "The one index page number, defaults to 0", example = "0")
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
-
-      @Parameter(description = "The amount of data to be returned per page, defaults to 10",
-          example = "10")
       @RequestParam(value = "size", required = false, defaultValue = "10")
       Integer size
   ) {
@@ -222,29 +80,7 @@ public class ClientController {
   }
 
   @GetMapping(value = "/name/{name}")
-  @Operation(
-      summary = "Search the Bc Registry based on the name",
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "OK - Data was found based on the provided name",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  array = @ArraySchema(
-                      schema = @Schema(
-                          name = "ClientLookup",
-                          implementation = ClientLookUpDto.class
-                      )
-                  )
-              )
-          )
-      }
-  )
   public Flux<ClientLookUpDto> findByClientName(
-      @Parameter(
-          description = "The name to lookup",
-          example = "Power Corp"
-      )
       @PathVariable String name
   ) {
     return clientService
@@ -252,27 +88,7 @@ public class ClientController {
   }
 
   @GetMapping(value = "/incorporation/{incorporationId}")
-  @Operation(
-      summary = "Search the BcRegistry based on the incorporation id",
-      responses = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "OK - Data was found based on the provided incorporation",
-              content = @Content(
-                  mediaType = MediaType.APPLICATION_JSON_VALUE,
-                  schema = @Schema(
-                      name = "ClientLookup",
-                      implementation = ClientLookUpDto.class
-                  )
-              )
-          )
-      }
-  )
   public Mono<ClientLookUpDto> findByIncorporationNumber(
-      @Parameter(
-          description = "The incorporation ID to lookup",
-          example = "BC0772006"
-      )
       @PathVariable String incorporationId) {
     return clientService
         .findByClientNameOrIncorporation(incorporationId)

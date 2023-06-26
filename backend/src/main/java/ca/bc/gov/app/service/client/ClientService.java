@@ -120,13 +120,10 @@ public class ClientService {
    * The details include the company standing and addresses.
    *
    * @param clientNumber the client number for which to retrieve details
-   * @param userEmail    the email of the user who triggered this request
    * @return a Mono that emits a ClientDetailsDto object representing the details of the client
    */
   public Mono<ClientDetailsDto> getClientDetails(
-      String clientNumber,
-      String userEmail,
-      String userName
+      String clientNumber
   ) {
     log.info("Loading details for {}", clientNumber);
     return
