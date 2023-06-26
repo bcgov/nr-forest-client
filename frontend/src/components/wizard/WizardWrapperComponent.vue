@@ -221,12 +221,14 @@ const ddd = ref<boolean>(false)
 const onBack = () => {
   if (currentTab.value - 1 >= 0) {
     currentTab.value--
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
 
 const onNext = () => {
   if (currentTab.value + 1 < currentSlots.length) {
     currentTab.value++
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
 
