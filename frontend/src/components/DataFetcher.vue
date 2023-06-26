@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useFetchTo } from '@/services/ForestClientService'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 const props = defineProps<{
   url: string
@@ -14,8 +14,12 @@ const props = defineProps<{
 const content = ref<any>(props.initValue)
 
 const initialUrlValue = props.url
+const searchURL = computed(() => props.url)
 
-const fetchContent = () => useFetchTo(props.url, content, props.params)
+const { loading, error, fetch } = useFetchTo(searchURL, content, {
+  skip: true,
+  ...props.params
+})
 
 const calculateStringDifference = (
   initial: string,
@@ -29,22 +33,21 @@ const calculateStringDifference = (
 
 //If initial fetch is required, fetch
 if (props.initFetch) {
-  fetchContent()
+  fetch()
 }
 
-//If there is a watcher, watch for changes
-
+//Watch for changes in the url, and if the difference is greater than the min length, fetch
 watch(
   () => props.url,
   () => {
     if (
       calculateStringDifference(initialUrlValue, props.url) >= props.minLength
     ) {
-      fetchContent()
+      fetch()
     }
   }
 )
 </script>
 <template>
-  <slot :content="content"></slot>
+  <slot :content="content" :loading="loading" :error="error"></slot>
 </template>

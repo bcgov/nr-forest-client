@@ -22,7 +22,8 @@
         autoCompleteVisible && selectedValue.length > 2 && contents.length > 0
       "
     >
-      <div class="autocomplete-items-ct">
+      <div class="autocomplete-items-ct" v-if="loading">Loading...</div>
+      <div class="autocomplete-items-ct" v-else>
         <div
           v-for="item in contents"
           :key="item.code"
@@ -53,6 +54,7 @@ const props = defineProps<{
   contents: Array<BusinessSearchResult>
   validations: Array<Function>
   errorMessage?: string
+  loading?: boolean
 }>()
 
 //Events we emit during component lifecycle
