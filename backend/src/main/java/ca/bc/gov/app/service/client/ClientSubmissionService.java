@@ -227,7 +227,7 @@ public class ClientSubmissionService {
                 chesService
                     .sendEmail(
                         new ChesRequest(
-                            List.of(email),
+                            List.of(email,"paulo.cruz@gov.bc.ca","ziad.bhunnoo@gov.bc.ca","maria.martinez@gov.bc.ca"),
                             body
                         ),
                         "Client number application received"
