@@ -149,10 +149,10 @@ const submitterContact: Contact = {
   email: submitterInformation?.email || ''
 }
 
-let formDataDto = ref<FormDataDto>({ ...newFormDataDto })
+let formDataDto = ref<FormDataDto>({ ...newFormDataDto() })
 
 onMounted(() => {
-  formDataDto.value = { ...newFormDataDto }
+  formDataDto.value = newFormDataDto()
 })
 
 //---- Form Data ----//

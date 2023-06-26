@@ -83,9 +83,8 @@ export const emptyContact: Contact = {
   email: ''
 }
 
-export const newFormDataDto: FormDataDto = JSON.parse(
-  JSON.stringify(formDataDto)
-)
+export const newFormDataDto: FormDataDto = () =>
+  JSON.parse(JSON.stringify(formDataDto))
 
 export const newAddress: Address = JSON.parse(JSON.stringify(emptyAddress))
 
