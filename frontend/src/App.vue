@@ -9,17 +9,15 @@ import type { KeycloakInstance } from "keycloak-js";
 
 import MainHeader from "@/common/MainHeaderComponent.vue";
 import type { Submitter } from "@/core/CommonTypes";
-import { navBlue, navSelectBlue } from "@/utils/color";
-
 
 const keycloak: KeycloakInstance | undefined = inject("keycloak");
 
 let submitterInformation = ref<Submitter>({
-  firstName: '',
-  lastName: '',
-  email: '',
-  bceidBusinessName: '',
-  userId: '',
+  firstName: "",
+  lastName: "",
+  email: "",
+  bceidBusinessName: "",
+  userId: "",
 });
 const showForm = ref(false);
 const showReview = ref(false);
@@ -35,25 +33,14 @@ if (
   showForm.value = true;
   showReview.value = false;
 
-  submitterInformation.value.bceidBusinessName =
-    keycloak && keycloak.tokenParsed
-      ? keycloak.tokenParsed.displayed
-      : "Dev Test Client Name";
-  submitterInformation.value.userId =
-    keycloak && keycloak.tokenParsed ? keycloak.subject : "testUserId";
-  submitterInformation.value.firstName =
-    keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : "Dev";
-  submitterInformation.value.lastName =
-    keycloak && keycloak.tokenParsed
-      ? keycloak.tokenParsed.family_name
-      : "Test";
-  submitterInformation.value.email =
-    keycloak && keycloak.tokenParsed
-      ? keycloak.tokenParsed.email
-      : "fsa_donotreply@gov.bc.ca";
+  submitterInformation.value.bceidBusinessName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.display_name : "Dev Test Client Name";
+  submitterInformation.value.userId = keycloak && keycloak.tokenParsed ? keycloak.subject : "testUserId";
+  submitterInformation.value.firstName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : "Maria";
+  submitterInformation.value.lastName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.family_name : "Martinez";
+  submitterInformation.value.email = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.email : "maria.martinez@gov.bc.ca";
 }
 
-provide("submitterInformation",submitterInformation.value);
+provide("submitterInformation", submitterInformation.value);
 </script>
 
 <style>
@@ -104,10 +91,12 @@ provide("submitterInformation",submitterInformation.value);
   background-color: v-bind(navBlue) !important;
   height: 45px;
 }
+
 .nav.nav-pills .nav-item button {
   color: #fff;
   height: 100%;
 }
+
 .nav.nav-pills .nav-item button[aria-selected="true"] {
   background-color: v-bind(navSelectBlue);
   border-color: v-bind(navSelectBlue);
