@@ -146,6 +146,7 @@ watch([detailsData], () => {
 watch([selectedOption], () => {
   if (selectedOption.value === ClientTypeEnum.U) {
     formData.value.businessInformation.businessType = 'U'
+    formData.value.businessInformation.clientType = 'U'
     const { firstName, lastName } = formData.value.location.contacts[0]
     formData.value.businessInformation.businessName = `${firstName} ${lastName}`
     validation.business = true
