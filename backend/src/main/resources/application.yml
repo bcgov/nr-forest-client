@@ -105,11 +105,12 @@ ca:
               - Location
               - location
               - x-sub-id
+              - X-Sub-Id
               - x-user-id
-              - x-user-email
-              - x-user-name
-              - X-User-Email
               - X-User-Id
+              - x-user-email
+              - X-User-Email
+              - x-user-name
               - X-User-Name
             methods:
               - OPTIONS
