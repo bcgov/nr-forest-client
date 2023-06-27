@@ -255,7 +255,7 @@ watch([selectedOption], () => {
   <text-input-component
     v-if="selectedOption === ClientTypeEnum.U"
     id="businessName"
-    label="Unregistered Priprietorship"
+    label="Unregistered proprietorship"
     placeholder=""
     v-model="formData.businessInformation.businessName"
     :validations="[]"
