@@ -117,6 +117,8 @@ public class ChesCommonServicesService {
                                 get422ErrorMessage())
                             .onStatus(HttpStatusCode::isError, get500ErrorMessage())
                             .bodyToMono(ChesMailResponse.class)
+                            .doOnNext(response -> log.info("Email sent successfully"))
+                            .doOnError(error -> log.error("Failed to send email", error))
                     )
             )
             .map(response -> response.txId().toString())
@@ -150,6 +152,7 @@ public class ChesCommonServicesService {
     return response ->
         response
             .bodyToMono(ChesMailErrorResponse.class)
+            .doOnNext(error -> log.error("Failed to send email: {}", error))
             .flatMap(errorMessageDetail -> Mono.error(
                 new UnexpectedErrorException(errorMessageDetail.status(),
                     errorMessageDetail.detail())));
@@ -159,6 +162,7 @@ public class ChesCommonServicesService {
     return response ->
         response
             .bodyToMono(ChesMailErrorResponse.class)
+            .doOnNext(error -> log.error("Failed to send email: {}", error))
             .map(details ->
                 Optional
                     .ofNullable(details.errors())
@@ -180,6 +184,7 @@ public class ChesCommonServicesService {
         response
             .bodyToMono(ChesMailErrorResponse.class)
             .map(ChesMailErrorResponse::detail)
+            .doOnNext(error -> log.error("Failed to send email: {}", error))
             .flatMap(errorMessageDetail -> Mono.error(
                 new BadRequestException(errorMessageDetail)));
   }
@@ -201,7 +206,8 @@ public class ChesCommonServicesService {
             .onStatus(httpStatusCode -> httpStatusCode.value() == 422, get422ErrorMessage())
             .onStatus(HttpStatusCode::isError, get500ErrorMessage())
             .bodyToMono(CommonExposureJwtDto.class)
-            .map(CommonExposureJwtDto::accessToken);
+            .map(CommonExposureJwtDto::accessToken)
+            .doOnNext(token -> log.info("Successfully retrieved access token"));
   }
 
 }
