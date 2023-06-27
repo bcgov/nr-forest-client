@@ -6,11 +6,13 @@
 <script setup lang="ts">
 import { inject, provide, ref } from "vue";
 import type { KeycloakInstance } from "keycloak-js";
+import { useRouter } from 'vue-router'
 
 import MainHeader from "@/common/MainHeaderComponent.vue";
 import type { Submitter } from "@/core/CommonTypes";
 
 const keycloak: KeycloakInstance | undefined = inject("keycloak");
+const router = useRouter();
 
 let submitterInformation = ref<Submitter>({
   firstName: "",
@@ -19,25 +21,22 @@ let submitterInformation = ref<Submitter>({
   bceidBusinessName: "",
   userId: "",
 });
-const showForm = ref(false);
-const showReview = ref(false);
 
 if (
   keycloak &&
   keycloak.tokenParsed &&
   keycloak.tokenParsed.identity_provider === "idir"
 ) {
-  showForm.value = false;
-  showReview.value = true;
+  router.push({ name: 'internal' });
 } else {
-  showForm.value = true;
-  showReview.value = false;
 
   submitterInformation.value.bceidBusinessName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.display_name : "Dev Test Client Name";
   submitterInformation.value.userId = keycloak && keycloak.tokenParsed ? keycloak.subject : "testUserId";
   submitterInformation.value.firstName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : "Maria";
   submitterInformation.value.lastName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.family_name : "Martinez";
   submitterInformation.value.email = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.email : "maria.martinez@gov.bc.ca";
+
+  router.push({ name: 'form' });
 }
 
 provide("submitterInformation", submitterInformation.value);
