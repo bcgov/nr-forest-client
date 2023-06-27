@@ -237,8 +237,8 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}
-            -p CHES_TOKEN_URL='https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
-            -p CHES_API_URL='https://ches-dev.api.gov.bc.ca/api/v1'
+            -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
+            -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1/email'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
