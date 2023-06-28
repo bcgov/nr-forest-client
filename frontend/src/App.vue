@@ -4,52 +4,41 @@
 </template>
 
 <script setup lang="ts">
-import { inject, provide, ref } from 'vue'
-import type { KeycloakInstance } from 'keycloak-js'
-import { useRouter } from 'vue-router'
+import { inject, provide, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-import type { Submitter } from '@/core/CommonTypes'
+import type { KeycloakInstance } from 'keycloak-js';
+import type { Submitter } from '@/core/CommonTypes';
 
-const keycloak: KeycloakInstance | undefined = inject('keycloak')
-const router = useRouter()
+const keycloak: KeycloakInstance | undefined = inject('keycloak');
+const router = useRouter();
 
 let submitterInformation = ref<Submitter>({
   firstName: '',
   lastName: '',
   email: '',
   bceidBusinessName: '',
-  userId: ''
-})
+  userId: '',
+});
 
 const submitAndRedirect = (page: string) => {
-  provide('submitterInformation', submitterInformation.value)
-  router.push({ name: 'form' })
-}
+  provide('submitterInformation', submitterInformation.value);
+  router.push({ name: 'form' });
+};
 
 if (
   keycloak &&
   keycloak.tokenParsed &&
   keycloak.tokenParsed.identity_provider === 'idir'
 ) {
-  submitAndRedirect('internal')
+  submitAndRedirect('internal');
 } else {
-  submitterInformation.value.bceidBusinessName =
-    keycloak && keycloak.tokenParsed
-      ? keycloak.tokenParsed.display_name
-      : 'Dev Test Client Name'
-  submitterInformation.value.userId =
-    keycloak && keycloak.tokenParsed ? keycloak.subject : 'testUserId'
-  submitterInformation.value.firstName =
-    keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : 'Maria'
-  submitterInformation.value.lastName =
-    keycloak && keycloak.tokenParsed
-      ? keycloak.tokenParsed.family_name
-      : 'Martinez'
-  submitterInformation.value.email =
-    keycloak && keycloak.tokenParsed
-      ? keycloak.tokenParsed.email
-      : 'maria.martinez@gov.bc.ca'
-  submitAndRedirect('form')
+  submitterInformation.value.bceidBusinessName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.display_name : "Dev Test Client Name";
+  submitterInformation.value.userId = keycloak && keycloak.tokenParsed ? keycloak.subject : "testUserId";
+  submitterInformation.value.firstName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : "Maria";
+  submitterInformation.value.lastName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.family_name : "Martinez";
+  submitterInformation.value.email = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.email : "maria.martinez@gov.bc.ca";
+  submitAndRedirect('form');
 }
 </script>
 
