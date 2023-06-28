@@ -85,6 +85,7 @@ const selectedValue = ref(props.modelValue)
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
   const reference = props.contents.find((entry) => entry.name === newValue)
+  console.log(reference, newValue)
   emit('update:model-value', newValue)
   emit('empty', isEmpty(reference))
 }

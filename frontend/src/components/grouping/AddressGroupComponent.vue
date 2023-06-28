@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, watch, computed, ref } from 'vue'
 import delete16 from '@carbon/icons-vue/es/trash-can/16'
-import type { CodeNameType } from '@/core/CommonTypes'
+import type { CodeNameType, BusinessSearchResult } from '@/core/CommonTypes'
 import type { Address } from '@/dto/ApplyClientNumberDto'
 import {
   isNotEmpty,
@@ -13,6 +13,7 @@ import {
   isNoSpecialCharacters
 } from '@/helpers/validators/GlobalValidators'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
+import { useFetchTo } from '@/services/ForestClientService'
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -153,6 +154,40 @@ const provinceNaming = computed(() => {
 const postalCodeNaming = computed(() =>
   selectedValue.country.value === 'US' ? 'Zip code' : 'Postal code'
 )
+
+const autoCompleteUrl = computed(
+  () =>
+    `/api/clients/addresses?country=${selectedValue.country.value}&maxSuggestions=10&searchTerm=${selectedValue.streetAddress}`
+)
+const autoCompleteResult = ref<BusinessSearchResult>({} as BusinessSearchResult)
+const detailsData = ref(null)
+
+watch([autoCompleteResult], () => {
+  if (autoCompleteResult.value) {
+    const { error } = useFetchTo(
+      `/api/clients/addresses/${encodeURIComponent(
+        autoCompleteResult.value.code
+      )}`,
+      detailsData,
+      {}
+    )
+  }
+})
+
+watch([detailsData], () => {
+  if (detailsData.value) {
+    selectedValue.streetAddress = detailsData.value.streetAddress
+    selectedValue.city = detailsData.value.city
+    selectedValue.province = detailsData.value.province
+    selectedValue.postalCode = detailsData.value.postalCode
+    /*
+    validation.streetAddress = selectedValue.streetAddress ? true : false
+    validation.country = selectedValue.country ? true : false
+    validation.province = selectedValue.province ? true : false
+    validation.city = selectedValue.city ? true : false
+    validation.postalCode = selectedValue.postalCode ? true : false*/
+  }
+})
 </script>
 
 <template>
@@ -189,22 +224,34 @@ const postalCodeNaming = computed(() =>
     @empty="validation.country = !$event"
   />
 
-  <text-input-component
-    :id="'addr_' + id"
-    label="Street address or PO box"
-    placeholder="Start typing to search for your address or PO box"
-    tip=""
-    v-model="selectedValue.streetAddress"
-    :enabled="true"
-    :error-message="addressError"
-    :validations="[
-      isNotEmpty,
-      isMinSize(5),
-      isMaxSize(50),
-      submissionValidation(`location.adresses[${id}].streetAddress`)
-    ]"
-    @empty="validation.streetAddress = !$event"
-  />
+  <data-fetcher
+    v-model:url="autoCompleteUrl"
+    :min-length="3"
+    :init-value="[]"
+    :init-fetch="false"
+    #="{ content, loading, error }"
+  >
+    <AutoCompleteInputComponent
+      :id="'addr_' + id"
+      label="Street address or PO box"
+      placeholder="Start typing to search for your address or PO box"
+      tip=""
+      v-model="selectedValue.streetAddress"
+      :contents="content"
+      :validations="[
+        isNotEmpty,
+        isMinSize(5),
+        isMaxSize(50),
+        submissionValidation(`location.adresses[${id}].streetAddress`)
+      ]"
+      :loading="loading"
+      @update:selected-value="autoCompleteResult = $event"
+      @update:model-value="validation.streetAddress = false"
+      @empty="
+        validation.streetAddress = selectedValue.streetAddress ? true : false
+      "
+    />
+  </data-fetcher>
 
   <text-input-component
     :id="'city_' + id"
