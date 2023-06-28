@@ -123,6 +123,39 @@
       "response": {
         "status": 202
       }
+    },
+
+    {
+      "request": {
+        "urlPath": "/api/clients/addresses",
+        "method": "GET",
+        "queryParameters": {
+          "country": {
+            "equalTo": "CA"
+          },
+          "maxSuggestions": {
+            "equalTo": "10"
+          },
+          "searchTerm": {
+            "matches": ".*"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-address-search.json"
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/api/clients/addresses/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-address-detail.json",
+        "transformers": ["response-template"]
+      }
     }
   ]
 }
