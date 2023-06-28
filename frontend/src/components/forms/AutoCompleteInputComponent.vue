@@ -12,7 +12,7 @@
       @focus="autoCompleteVisible = true"
       :invalid="error ? true : false"
       :validityMessage="error"
-      @blur="(event:any) => validateInput(event.target.value)"
+      @blur="(event:any) => blur(event.target.value)"
       @input="(event:any) => selectedValue = event.target.value"
     />
     <div
@@ -94,8 +94,15 @@ watch(
   () => props.modelValue,
   () => (selectedValue.value = props.modelValue)
 )
-watch([selectedValue], () => emitValueChange(selectedValue.value))
+watch([selectedValue], () => {
+  validateInput(selectedValue.value)
+  emitValueChange(selectedValue.value)
+})
 
+const blur = (newValue: string) => {
+  validateInput(newValue)
+  setTimeout(() => (autoCompleteVisible.value = false), 150)
+}
 //We call all the validations
 const validateInput = (newValue: string) => {
   if (props.validations) {
@@ -108,7 +115,6 @@ const validateInput = (newValue: string) => {
         })
         .shift() ?? props.errorMessage
   }
-  setTimeout(() => (autoCompleteVisible.value = false), 150)
 }
 
 const selectAutocompleteItem = (event: any) => {

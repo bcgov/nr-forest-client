@@ -62,7 +62,10 @@ const selectedValue = ref<string>(props.modelValue)
 emit('empty', isEmpty(props.modelValue))
 watch(
   () => props.modelValue,
-  () => (selectedValue.value = props.modelValue)
+  () => {
+    selectedValue.value = props.modelValue
+    validateInput(selectedValue.value)
+  }
 )
 
 //This function emits the events on update
