@@ -72,7 +72,7 @@ public class ClientAddressController {
         .findPossibleAddresses(country, maxSuggestions, searchTerm);
   }
 
-  @GetMapping("/address/{addressId}")
+  @GetMapping("/addresses/{addressId}")
   @Operation(
       summary = "Retrieve address",
       responses = {

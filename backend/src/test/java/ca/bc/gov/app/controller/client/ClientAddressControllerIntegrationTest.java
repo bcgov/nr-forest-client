@@ -187,7 +187,7 @@ class ClientAddressControllerIntegrationTest  extends AbstractTestContainerInteg
 
     client
         .get()
-        .uri("/api/clients/address/CA|CP|B|0000001")
+        .uri("/api/clients/addresses/CA|CP|B|0000001")
         .exchange()
         .expectStatus()
         .isBadRequest();
@@ -206,7 +206,7 @@ class ClientAddressControllerIntegrationTest  extends AbstractTestContainerInteg
 
     client
         .get()
-        .uri("/api/clients/address/CA|CP|B|0000001")
+        .uri("/api/clients/addresses/CA|CP|B|0000001")
         .exchange()
         .expectStatus()
         .isOk();
