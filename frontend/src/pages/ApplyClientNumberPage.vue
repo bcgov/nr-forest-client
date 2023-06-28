@@ -154,10 +154,6 @@ const submitterContact: Contact = {
 
 let formDataDto = ref<FormDataDto>({ ...newFormDataDto() })
 
-onMounted(() => {
-  formDataDto.value = newFormDataDto()
-})
-
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
   ...formDataDto.value,

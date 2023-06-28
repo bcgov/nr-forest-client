@@ -91,8 +91,7 @@ fetch()
 
 //New address being added
 const otherAddresses = computed(() => formData.location.addresses.slice(1))
-const addAddress = () =>
-  formData.location.addresses.push(JSON.parse(JSON.stringify(emptyAddress)))
+const addAddress = () => formData.location.addresses.push(emptyAddress())
 
 const removeAddress = (index: number) => () => {
   formData.location.addresses = formData.location.addresses.splice(index, 1)

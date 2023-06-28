@@ -65,14 +65,17 @@ export const formDataDto: FormDataDto = {
   }
 }
 
-export const emptyAddress: Address = {
-  locationName: '',
-  streetAddress: '',
-  country: { value: 'CA', text: 'Canada' },
-  province: { value: 'BC', text: 'British Columbia' },
-  city: '',
-  postalCode: ''
-}
+export const emptyAddress: Address = () =>
+  JSON.parse(
+    JSON.stringify({
+      locationName: '',
+      streetAddress: '',
+      country: { value: 'CA', text: 'Canada' },
+      province: { value: 'BC', text: 'British Columbia' },
+      city: '',
+      postalCode: ''
+    })
+  )
 
 export const emptyContact: Contact = {
   locationNames: [],
@@ -85,7 +88,3 @@ export const emptyContact: Contact = {
 
 export const newFormDataDto: FormDataDto = () =>
   JSON.parse(JSON.stringify(formDataDto))
-
-export const newAddress: Address = JSON.parse(JSON.stringify(emptyAddress))
-
-export const newContact: FormDataDto = JSON.parse(JSON.stringify(emptyContact))
