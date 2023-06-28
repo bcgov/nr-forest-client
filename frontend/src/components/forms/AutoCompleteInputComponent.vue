@@ -116,6 +116,7 @@ const selectAutocompleteItem = (event: any) => {
   emit('update:selected-value', reference)
   autoCompleteVisible.value = false
 }
+validateInput(selectedValue.value)
 </script>
 <style scoped>
 .autocomplete {

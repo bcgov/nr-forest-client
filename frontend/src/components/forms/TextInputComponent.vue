@@ -86,4 +86,6 @@ const validateInput = (newValue: string) => {
         .shift() ?? props.errorMessage
   }
 }
+
+validateInput(selectedValue.value)
 </script>
