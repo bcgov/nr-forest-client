@@ -128,13 +128,6 @@ import {
   type Contact
 } from '@/dto/ApplyClientNumberDto'
 
-import WizardWrapperComponent from '@/components/wizard/WizardWrapperComponent.vue'
-import WizardTabComponent from '@/components/wizard/WizardTabComponent.vue'
-
-import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformationWizardStep.vue'
-import AddressWizardStep from '@/pages/applyform/AddressWizardStep.vue'
-import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue'
-import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue'
 import type { Submitter, ValidationMessageType } from '@/core/CommonTypes'
 import { usePost } from '@/services/ForestClientService'
 

@@ -1,5 +1,5 @@
 <template>
-  <MainHeader />
+  <main-header-component></main-header-component>
   <router-view></router-view>
 </template>
 
@@ -8,7 +8,6 @@ import { inject, provide, ref } from 'vue'
 import type { KeycloakInstance } from 'keycloak-js'
 import { useRouter } from 'vue-router'
 
-import MainHeader from '@/common/MainHeaderComponent.vue'
 import type { Submitter } from '@/core/CommonTypes'
 
 const keycloak: KeycloakInstance | undefined = inject('keycloak')
