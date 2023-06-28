@@ -43,7 +43,6 @@
           iconLayout=""
           class="bx--btn"
           @click.prevent="onBack"
-          size="field"
         >
           <span>Back</span>
         </bx-btn>
@@ -52,7 +51,6 @@
           kind="primary"
           iconLayout=""
           class="bx--btn"
-          size="field"
           @click.prevent="submit"
         >
           <span>Submit</span>
@@ -78,7 +76,6 @@
           class="bx--btn"
           :disabled="isFirst"
           @click.prevent="onBack"
-          size="field"
         >
           <span>Back</span>
         </bx-btn>
@@ -90,7 +87,6 @@
           :disabled="isNextAvailable"
           v-show="!isLast"
           @click.prevent="onNext"
-          size="field"
         >
           <span>Next</span>
           <arrowRight16 slot="icon" />
@@ -111,7 +107,6 @@
           :disabled="isNextAvailable"
           v-show="!isLast"
           @click.prevent="saveChange"
-          size="field"
         >
           <span>Save</span>
           <save16 slot="icon" />
@@ -127,7 +122,6 @@
           class="bx--btn"
           v-show="!isLast"
           @click.prevent="processAndLogOut"
-          size="field"
         >
           <span
             >{{ endAndLogOut ? 'End application' : 'Receive email' }} and
