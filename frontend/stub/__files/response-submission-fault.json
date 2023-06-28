@@ -1,0 +1,4 @@
+[
+  { "fieldId": "businessInformation.legalType", "errorMsg": "Fault" },
+  { "fieldId": "location.adresses[0].streetAddress", "errorMsg": "Magic word" }
+]
