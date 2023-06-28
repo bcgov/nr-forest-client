@@ -547,3 +547,4 @@ frontend/yarn-error.log
 # End of https://www.toptal.com/developers/gitignore/api/vue,vuejs,node
 
 frontend/nr-forest-client-report.*
+.DS_Store
