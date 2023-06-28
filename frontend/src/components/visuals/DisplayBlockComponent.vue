@@ -58,9 +58,9 @@ const iconsForKinds: Record<string, any> = {
 
 .display-block-wrapper-info {
   background: #c2e0ff;
-  border: 1px solid #0043ce;
+  border: 1px solid #0073e6;
   border-radius: 4px;
-  border-left: 4px solid #0043ce;
+  border-left: 4px solid #0073e6;
 }
 
 .display-block-wrapper-success {
@@ -72,9 +72,9 @@ const iconsForKinds: Record<string, any> = {
 
 .display-block-wrapper-error {
   background: #fff1f1;
-  border: 1px solid #da1e28;
+  border: 1px solid #e72000;
   border-radius: 4px;
-  border-left: 4px solid #da1e28;
+  border-left: 4px solid #e72000;
 }
 
 .display-block-wrapper-warning {
@@ -85,13 +85,13 @@ const iconsForKinds: Record<string, any> = {
 }
 
 .display-block-icon-info {
-  color: #0043ce;
+  color: #0073e6;
 }
 .display-block-icon-success {
   color: #198038;
 }
 .display-block-icon-error {
-  color: #da1e28;
+  color: #e72000;
 }
 .display-block-icon-warning {
   color: #f1c21b;

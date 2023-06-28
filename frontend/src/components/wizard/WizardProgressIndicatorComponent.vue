@@ -125,7 +125,7 @@ const canShowLink = (step: ProgressData) => {
 }
 
 .wizard-wrap-item-current {
-  border-color: #0043ce;
+  border-color: #0073e6;
 }
 
 .wizard-wrap-item-queued {
@@ -133,15 +133,15 @@ const canShowLink = (step: ProgressData) => {
 }
 
 .wizard-wrap-item-error {
-  border-color: #da1e28;
+  border-color: #e72000;
 }
 
 .wizard-wrap-item-complete {
-  border-color: #0043ce;
+  border-color: #0073e6;
 }
 
 .wizard-wrap-item-icon-current {
-  color: #0043ce;
+  color: #0073e6;
 }
 
 .wizard-wrap-item-icon-queued {
@@ -149,10 +149,10 @@ const canShowLink = (step: ProgressData) => {
 }
 
 .wizard-wrap-item-icon-error {
-  color: #da1e28;
+  color: #e72000;
 }
 
 .wizard-wrap-item-icon-complete {
-  color: #0043ce;
+  color: #0073e6;
 }
 </style>
