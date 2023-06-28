@@ -1,5 +1,5 @@
 <template>
-  <form ref="clientForm" @reset="resetForm">
+  <form>
     <div>
       <wizard-wrapper-component
         title="New client application"
@@ -234,14 +234,6 @@ const sendEmail = () => {
 
 const logOut = () => {
   console.log('logOut')
-}
-
-const clientForm = ref<HTMLFormElement | null>(null)
-
-const resetForm = () => {
-  if (clientForm.value) {
-    clientForm.value.reset()
-  }
 }
 </script>
 
