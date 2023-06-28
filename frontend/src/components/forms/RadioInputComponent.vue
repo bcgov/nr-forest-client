@@ -82,5 +82,5 @@ watch(error, () => emit('error', error.value))
 
 const updateSelectedValue = (event: any) =>
   (selectedValue.value = event.detail.value)
-validateInput()
+//validateInput()
 </script>

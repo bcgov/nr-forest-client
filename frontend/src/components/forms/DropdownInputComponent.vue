@@ -50,7 +50,7 @@ watch(
 )
 
 //We set it as a separated ref due to props not being updatable
-const selectedValue = ref(props.initialValue)
+const selectedValue = ref('')
 //We set the value prop as a reference for update reason
 emit('empty', isEmpty(props.modelValue))
 //This function emits the events on update
@@ -87,5 +87,5 @@ watch(
   () => (selectedValue.value = props.initialValue)
 )
 
-validateInput(selectedValue.value)
+//validateInput(selectedValue.value)
 </script>

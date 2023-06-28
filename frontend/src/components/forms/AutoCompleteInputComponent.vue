@@ -22,7 +22,9 @@
         autoCompleteVisible && selectedValue.length > 2 && contents.length > 0
       "
     >
-      <div class="autocomplete-items-ct" v-if="loading">Loading...</div>
+      <div class="autocomplete-items-ct" v-if="loading">
+        <bx-loading></bx-loading>
+      </div>
       <div class="autocomplete-items-ct" v-else>
         <div
           v-for="item in contents"

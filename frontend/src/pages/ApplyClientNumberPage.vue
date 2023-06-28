@@ -119,6 +119,10 @@
 </template>
 
 <script setup lang="ts">
+import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformationWizardStep.vue'
+import AddressWizardStep from '@/pages/applyform/AddressWizardStep.vue'
+import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue'
+import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue'
 import { reactive, watch, inject, toRef, onMounted, ref } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import { useRouter } from 'vue-router'
