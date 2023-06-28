@@ -20,6 +20,14 @@
       :model-value="progressData"
       @go-to="goToStep"
     />
+
+    <display-block-component
+      v-if="globalErrorMessage"
+      kind="error"
+      title="There was an error submitting your application."
+      :subtitle="globalErrorMessage"
+    >
+    </display-block-component>
   </div>
 
   <div class="wizard-body wizard-mid-content">
@@ -175,6 +183,7 @@ const props = defineProps<{
 const modalBus = useEventBus<ModalNotification>('modal-notification')
 const toastBus = useEventBus<ModalNotification>('toast-notification')
 const exitBus = useEventBus<Record<string, boolean | null>>('exit-notification')
+const generalErrorBus = useEventBus<string>('general-error-notification')
 
 //Start from the first tab of the wizard
 const currentTab = ref(0)
@@ -316,6 +325,9 @@ const processAndLogOut = () => {
   }
   props.end()
 }
+
+const globalErrorMessage = ref<string>('')
+generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
 </script>
 
 <style scoped>

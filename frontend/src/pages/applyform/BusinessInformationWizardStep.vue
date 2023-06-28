@@ -9,6 +9,7 @@ import type {
 } from '@/dto/ApplyClientNumberDto'
 import RadioInputComponent from '@/components/forms/RadioInputComponent.vue'
 import { isNotEmpty, isMinSize } from '@/helpers/validators/GlobalValidators'
+import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
 import { retrieveClientType } from '@/helpers/DataConversors'
 
 //Defining the props and emiter to reveice the data and emit an update
@@ -171,7 +172,7 @@ watch([selectedOption], () => {
       },
       { value: 'U', text: 'I have an unregistered sole proprietorship' }
     ]"
-    :validations="[]"
+    :validations="[submissionValidation('businessInformation.businessType')]"
     @update:model-value="
       formData.businessInformation.businessType = $event ?? ''
     "
@@ -192,7 +193,11 @@ watch([selectedOption], () => {
       tip="The name must be exactly the same as in BC Registries"
       v-model="formData.businessInformation.businessName"
       :contents="content"
-      :validations="[isNotEmpty, isMinSize(3)]"
+      :validations="[
+        isNotEmpty,
+        isMinSize(3),
+        submissionValidation('businessInformation.businessName')
+      ]"
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
       @update:model-value="validation.business = false"

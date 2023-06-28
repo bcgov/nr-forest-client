@@ -33,7 +33,7 @@
       class="inner-spotlight-group"
       :class="{
         'inner-spotlight-group-markup':
-          index < formData.location.contacts.length - 1,
+          index < formData.location.contacts.length - 1
       }"
     >
       <p class="inner-spotlight-topic">{{ address.locationName }}</p>
@@ -64,7 +64,7 @@
       class="inner-spotlight-group"
       :class="{
         'inner-spotlight-group-markup':
-          index < formData.location.contacts.length - 1,
+          index < formData.location.contacts.length - 1
       }"
     >
       <p class="inner-spotlight-topic">
@@ -74,7 +74,7 @@
         {{
           contact.locationNames
             .map((codeDesc: CodeDescrType) => codeDesc.text)
-            .join(", ")
+            .join(', ')
         }}
       </p>
       <p>{{ contact.contactType.text }}</p>
@@ -96,36 +96,37 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref } from "vue";
+import { watch, ref } from 'vue'
 
-import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
-import edit16 from "@carbon/icons-vue/es/edit/16";
-import type { CodeDescrType } from "@/core/CommonTypes";
+import type { FormDataDto } from '@/dto/ApplyClientNumberDto'
+import edit16 from '@carbon/icons-vue/es/edit/16'
+import type { CodeDescrType } from '@/core/CommonTypes'
+import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
-  data: FormDataDto;
-  active: boolean;
-  goToStep: Function;
-}>();
+  data: FormDataDto
+  active: boolean
+  goToStep: Function
+}>()
 
 const emit = defineEmits<{
-  (e: "update:data", value: FormDataDto): void;
-  (e: "valid", value: boolean): void;
-}>();
+  (e: 'update:data', value: FormDataDto): void
+  (e: 'valid', value: boolean): void
+}>()
 
 //Set the prop as a ref, and then emit when it changes
-const formData = ref<FormDataDto>(props.data);
-watch([formData], () => emit("update:data", formData.value));
+const formData = ref<FormDataDto>(props.data)
+watch([formData], () => emit('update:data', formData.value))
 
 //So far, hardcoded the value but should be coming from somewhere else
 const companyBusinessTypes: Record<string, string> = {
-  R: "B.C. Registered Business - Corporation",
-  U: "Sole Proprietorship",
-};
+  R: 'B.C. Registered Business - Corporation',
+  U: 'Sole Proprietorship'
+}
 
 //We emit valid here because there is nothing else to be done here apart from showing information
-emit("valid", true);
+emit('valid', true)
 </script>
 
 <style scoped>

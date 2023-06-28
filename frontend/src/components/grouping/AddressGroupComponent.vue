@@ -12,6 +12,7 @@ import {
   isMinSize,
   isNoSpecialCharacters
 } from '@/helpers/validators/GlobalValidators'
+import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -97,11 +98,22 @@ emit('valid', false)
 const postalCodeValidators = computed(() => {
   switch (selectedValue.country.value) {
     case 'CA':
-      return [isCanadianPostalCode]
+      return [
+        isCanadianPostalCode,
+        submissionValidation(`location.adresses[${props.id}].postalCode`)
+      ]
     case 'US':
-      return [isUsZipCode]
+      return [
+        isUsZipCode,
+        submissionValidation(`location.adresses[${props.id}].postalCode`)
+      ]
     default:
-      return [isOnlyNumbers, isMinSize(5), isMaxSize(10)]
+      return [
+        isOnlyNumbers,
+        isMinSize(5),
+        isMaxSize(10),
+        submissionValidation(`location.adresses[${props.id}].postalCode`)
+      ]
   }
 })
 
@@ -145,7 +157,7 @@ const postalCodeNaming = computed(() =>
 
 <template>
   <text-input-component
-    id="name"
+    :id="'name_' + id"
     label="Location or address name"
     placeholder="Kamloops office"
     tip="For example, 'Campbell River Region' or 'Castlegar Woods Division'"
@@ -155,7 +167,8 @@ const postalCodeNaming = computed(() =>
       isNotEmpty,
       isMinSize(3),
       isMaxSize(50),
-      isNoSpecialCharacters
+      isNoSpecialCharacters,
+      submissionValidation(`location.adresses[${id}].locationName`)
     ]"
     :error-message="nameError"
     @empty="validation.locationName = !$event"
@@ -163,13 +176,13 @@ const postalCodeNaming = computed(() =>
   />
 
   <dropdown-input-component
-    id="country"
+    :id="'country_' + id"
     label="Country"
     :initial-value="selectedValue.country.value"
     tip=""
     :enabled="true"
     :model-value="countryList"
-    :validations="[]"
+    :validations="[submissionValidation(`location.adresses[${id}].country`)]"
     :error-message="addressError"
     @update:selected-value="updateStateProvince($event, 'country')"
     @update:model-value="resetProvinceOnChange"
@@ -177,19 +190,24 @@ const postalCodeNaming = computed(() =>
   />
 
   <text-input-component
-    id="addr"
+    :id="'addr_' + id"
     label="Street address or PO box"
     placeholder="Start typing to search for your address or PO box"
     tip=""
     v-model="selectedValue.streetAddress"
     :enabled="true"
     :error-message="addressError"
-    :validations="[isNotEmpty, isMinSize(5), isMaxSize(50)]"
+    :validations="[
+      isNotEmpty,
+      isMinSize(5),
+      isMaxSize(50),
+      submissionValidation(`location.adresses[${id}].streetAddress`)
+    ]"
     @empty="validation.streetAddress = !$event"
   />
 
   <text-input-component
-    id="city"
+    :id="'city_' + id"
     label="City"
     placeholder="City"
     v-model="selectedValue.city"
@@ -200,7 +218,8 @@ const postalCodeNaming = computed(() =>
       isNotEmpty,
       isMinSize(3),
       isMaxSize(50),
-      isNoSpecialCharacters
+      isNoSpecialCharacters,
+      submissionValidation(`location.adresses[${id}].city`)
     ]"
     @empty="validation.city = !$event"
   />
@@ -214,13 +233,13 @@ const postalCodeNaming = computed(() =>
     #="{ content }"
   >
     <dropdown-input-component
-      id="province"
+      :id="'province_' + id"
       :label="provinceNaming"
       :initial-value="selectedValue.province.value"
       :model-value="content"
       :enabled="true"
       tip=""
-      :validations="[]"
+      :validations="[submissionValidation(`location.adresses[${id}].province`)]"
       :error-message="addressError"
       @update:selected-value="updateStateProvince($event, 'province')"
       @empty="validation.province = !$event"
@@ -228,7 +247,7 @@ const postalCodeNaming = computed(() =>
   </data-fetcher>
 
   <text-input-component
-    id="postalCode"
+    :id="'postalCode_' + id"
     :label="postalCodeNaming"
     :placeholder="postalCodePlaceholder"
     :enabled="true"

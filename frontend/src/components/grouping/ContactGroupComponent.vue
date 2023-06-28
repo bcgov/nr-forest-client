@@ -11,6 +11,7 @@ import {
   isMinSize,
   isNoSpecialCharacters
 } from '@/helpers/validators/GlobalValidators'
+import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -90,7 +91,10 @@ const nameTypesToCodeDescr = (
     :initial-value="''"
     :model-value="addressList"
     :selectedValues="selectedValue.locationNames?.map((location:CodeDescrType) => location?.value)"
-    :validations="[isNotEmpty]"
+    :validations="[
+      isNotEmpty,
+      submissionValidation(`location.contacts[${id}].province`)
+    ]"
     @update:selected-value="
       selectedValue.locationNames = nameTypesToCodeDescr($event)
     "
@@ -103,7 +107,9 @@ const nameTypesToCodeDescr = (
     tip="Choose the primary role for this contact"
     :initial-value="selectedValue.contactType.value"
     :model-value="roleList"
-    :validations="[]"
+    :validations="[
+      submissionValidation(`location.contacts[${id}].contactType`)
+    ]"
     @update:selected-value="
       selectedValue.contactType = nameTypeToCodeDescr($event)
     "
@@ -119,7 +125,8 @@ const nameTypesToCodeDescr = (
       isMinSize(1),
       isMaxSize(25),
       isNotEmpty,
-      isNoSpecialCharacters
+      isNoSpecialCharacters,
+      submissionValidation(`location.contacts[${id}].firstName`)
     ]"
     :enabled="enabled"
     :error-message="error"
@@ -135,7 +142,8 @@ const nameTypesToCodeDescr = (
       isMinSize(1),
       isMaxSize(25),
       isNotEmpty,
-      isNoSpecialCharacters
+      isNoSpecialCharacters,
+      submissionValidation(`location.contacts[${id}].lastName`)
     ]"
     :enabled="enabled"
     :error-message="error"
@@ -147,7 +155,13 @@ const nameTypesToCodeDescr = (
     label="Email address"
     placeholder="Email"
     v-model="selectedValue.email"
-    :validations="[isNotEmpty, isEmail, isMinSize(6), isMaxSize(50)]"
+    :validations="[
+      isNotEmpty,
+      isEmail,
+      isMinSize(6),
+      isMaxSize(50),
+      submissionValidation(`location.contacts[${id}].email`)
+    ]"
     :enabled="enabled"
     @empty="validation.email = !$event"
   />
@@ -159,7 +173,13 @@ const nameTypesToCodeDescr = (
     mask="(###) ###-####"
     v-model="selectedValue.phoneNumber"
     :enabled="true"
-    :validations="[isNotEmpty, isPhoneNumber, isMaxSize(15), isMinSize(10)]"
+    :validations="[
+      isNotEmpty,
+      isPhoneNumber,
+      isMaxSize(15),
+      isMinSize(10),
+      submissionValidation(`location.contacts[${id}].phoneNumber`)
+    ]"
     @empty="validation.phoneNumber = !$event"
   />
 

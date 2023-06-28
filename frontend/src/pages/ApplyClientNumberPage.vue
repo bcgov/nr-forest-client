@@ -120,6 +120,7 @@
 
 <script setup lang="ts">
 import { reactive, watch, inject, toRef, onMounted, ref } from 'vue'
+import { useEventBus } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import {
   newFormDataDto,
@@ -134,10 +135,15 @@ import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformation
 import AddressWizardStep from '@/pages/applyform/AddressWizardStep.vue'
 import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue'
 import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue'
-import type { Submitter } from '@/core/CommonTypes'
+import type { Submitter, ValidationMessageType } from '@/core/CommonTypes'
 import { usePost } from '@/services/ForestClientService'
 
 const submitterInformation = inject<Submitter>('submitterInformation')
+const errorBus = useEventBus<ValidationMessageType[]>(
+  'submission-error-notification'
+)
+const generalErrorBus = useEventBus<string>('general-error-notification')
+
 const router = useRouter()
 
 const submitterContact: Contact = {
@@ -185,12 +191,34 @@ watch([response], () => {
 })
 
 watch([error], () => {
-  if (error.status === 400) {
-    console.log(error)
+  if (error.value.status === 400) {
+    const validationErrors: ValidationMessageType[] = error.value.data
+    const fieldIds = [
+      'businessInformation.businessType',
+      'businessInformation.legalType',
+      'businessInformation.clientType'
+    ]
+
+    const matchingFields = validationErrors.find((item) =>
+      fieldIds.includes(item.fieldId)
+    )
+    if (matchingFields) {
+      generalErrorBus.emit(
+        `There was an error submitting your application. ${matchingFields.errorMsg}`
+      )
+    }
+  } else {
+    generalErrorBus.emit(
+      `There was an error submitting your application. ${error.value.data}}`
+    )
   }
 })
 
-const submit = fetch
+const submit = () => {
+  errorBus.emit([])
+  generalErrorBus.emit('')
+  fetch()
+}
 
 const sendEmail = () => {
   console.log('sendEmail')
