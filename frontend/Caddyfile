@@ -30,4 +30,5 @@ encode {
 
 log {
 	output stdout
+	level {$LOG_LEVEL}
 }
