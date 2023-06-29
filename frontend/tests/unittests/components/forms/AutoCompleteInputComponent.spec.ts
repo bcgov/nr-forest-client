@@ -142,8 +142,19 @@ describe("Auto Complete Input Component", () => {
       await wrapper.setProps({ modelValue: "TANGOZ" });
 
       expect(wrapper.emitted("update:selected-value")).toHaveLength(2);
-      expect(wrapper.emitted("update:selected-value")![0][1]).toEqual(
+      expect(wrapper.emitted("update:selected-value")![1][0]).toEqual(
         undefined
+      );
+    });
+
+    it('emits the "update:selected-value" with the newly selected value', async () => {
+      const options = wrapper.findAll(".autocomplete-items-cell");
+      const secondOption = options[1];
+      await secondOption.trigger("click");
+
+      expect(wrapper.emitted("update:selected-value")).toHaveLength(2);
+      expect(wrapper.emitted("update:selected-value")![1][0]).toEqual(
+        contents[1]
       );
     });
   });
