@@ -8,7 +8,7 @@
 		"editor.inlineSuggest.enabled": true,
   	"git.openRepositoryInParentFolders": "always",
 		"editor.defaultFormatter": "rvest.vs-code-prettier-eslint",		
-		"editor.formatOnPaste": true,
+		"editor.formatOnPaste": false,
 		"editor.formatOnSave": true,
 		"editor.codeActionsOnSave": {
 			"source.fixAll.eslint": true
