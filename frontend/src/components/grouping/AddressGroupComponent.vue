@@ -72,9 +72,10 @@ const provinceUrl = computed(
     `/api/clients/activeCountryCodes/${selectedValue.country.value}?page=0&size=250`
 )
 
-const resetProvinceOnChange = (receivedCountry: any) =>
-  selectedValue.country.value !== receivedCountry &&
-  (selectedValue.province = { value: '', text: '' })
+const resetProvinceOnChange = (receivedCountry: any) => {
+  if (selectedValue.country.value !== receivedCountry && receivedCountry)
+    selectedValue.province = { value: '', text: '' }
+}
 
 //Validations
 const validation = reactive<Record<string, boolean>>({
@@ -180,12 +181,6 @@ watch([detailsData], () => {
     selectedValue.city = detailsData.value.city
     selectedValue.province = detailsData.value.province
     selectedValue.postalCode = detailsData.value.postalCode
-    /*
-    validation.streetAddress = selectedValue.streetAddress ? true : false
-    validation.country = selectedValue.country ? true : false
-    validation.province = selectedValue.province ? true : false
-    validation.city = selectedValue.city ? true : false
-    validation.postalCode = selectedValue.postalCode ? true : false*/
   }
 })
 </script>
