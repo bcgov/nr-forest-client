@@ -45,7 +45,7 @@ parameters:
   - name: VITE_KEYCLOAK_CLIENT_ID
     value: ""
   - name: LOG_LEVEL
-    decription: Caddy logging level
+    description: Caddy log level (debug, info, warn, error, panic, fatal)
     value: "info"
 objects:
   - apiVersion: v1
