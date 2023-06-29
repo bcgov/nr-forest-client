@@ -66,6 +66,7 @@ const autoCompleteUrl = computed(
 const showAutoCompleteInfo = ref<boolean>(false)
 const showGoodStandingError = ref<boolean>(false)
 const showDuplicatedError = ref<boolean>(false)
+const showDetailsLoading = ref<boolean>(false)
 const detailsData = ref(null)
 
 const toggleErrorMessages = (
@@ -110,11 +111,13 @@ watch([autoCompleteResult], () => {
     }
 
     //Also, we will load the backend data to fill all the other information as well
-    const { error } = useFetchTo(
+    const { error, loading: detailsLoading } = useFetchTo(
       `/api/clients/${autoCompleteResult.value.code}`,
       detailsData,
       config
     )
+
+    showDetailsLoading.value = true
     watch([error], () => {
       if (error.value.response.status === 409) toggleErrorMessages(null, true)
       if (error.value.response.status === 404) {
@@ -123,6 +126,11 @@ watch([autoCompleteResult], () => {
         emit('update:data', formData.value)
       }
     })
+
+    watch(
+      [detailsLoading],
+      () => (showDetailsLoading.value = detailsLoading.value)
+    )
   }
 })
 
@@ -195,7 +203,6 @@ watch([selectedOption], () => {
       :contents="content"
       :validations="[
         isNotEmpty,
-        isMinSize(3),
         submissionValidation('businessInformation.businessName')
       ]"
       :loading="loading"
@@ -203,6 +210,10 @@ watch([selectedOption], () => {
       @update:model-value="validation.business = false"
     />
 
+    <div class="spinner-block" v-if="showDetailsLoading">
+      <bx-loading type="small"> </bx-loading>
+      <span>Loading client details...</span>
+    </div>
     <display-block-component
       kind="info"
       title="BC registered business name"

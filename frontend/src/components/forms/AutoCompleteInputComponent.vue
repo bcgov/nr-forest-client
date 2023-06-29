@@ -23,7 +23,7 @@
       "
     >
       <div class="autocomplete-items-ct" v-if="loading">
-        <bx-loading></bx-loading>
+        <bx-loading type="small"> </bx-loading>
       </div>
       <div class="autocomplete-items-ct" v-else>
         <div
@@ -85,7 +85,6 @@ const selectedValue = ref(props.modelValue)
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
   const reference = props.contents.find((entry) => entry.name === newValue)
-  console.log(reference, newValue)
   emit('update:model-value', newValue)
   emit('empty', isEmpty(reference))
 }
@@ -93,7 +92,10 @@ const emitValueChange = (newValue: string): void => {
 emit('empty', true)
 watch(
   () => props.modelValue,
-  () => (selectedValue.value = props.modelValue)
+  () => {
+    selectedValue.value = props.modelValue
+    validateInput(selectedValue.value)
+  }
 )
 watch([selectedValue], () => {
   validateInput(selectedValue.value)
@@ -125,7 +127,6 @@ const selectAutocompleteItem = (event: any) => {
   emit('update:selected-value', reference)
   autoCompleteVisible.value = false
 }
-validateInput(selectedValue.value)
 </script>
 <style scoped>
 .autocomplete {

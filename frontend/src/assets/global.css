@@ -154,3 +154,10 @@ hr {
 .wizard-mid-content {
   width: 50%;
 }
+
+.spinner-block {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  max-height: 0.5rem;
+}
