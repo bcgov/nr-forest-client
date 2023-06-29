@@ -1,5 +1,6 @@
 <template>
   <bx-dropdown
+    :id="id"
     :value="selectedValue"
     :label-text="label"
     :helper-text="tip"
@@ -84,8 +85,10 @@ const validateInput = (newValue: any) => {
 }
 watch(
   () => props.modelValue,
-  () => (selectedValue.value = props.initialValue)
+  () => {
+    selectedValue.value = ''
+    setTimeout(() => (selectedValue.value = props.initialValue), 400)
+  }
 )
-
 //validateInput(selectedValue.value)
 </script>
