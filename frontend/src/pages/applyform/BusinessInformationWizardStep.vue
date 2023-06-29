@@ -90,6 +90,9 @@ const toggleErrorMessages = (
 //incorporation number and client type
 const autoCompleteResult = ref<BusinessSearchResult>()
 watch([autoCompleteResult], () => {
+  // reset business validation state
+  validation.business = false
+
   if (autoCompleteResult.value) {
     toggleErrorMessages(false, false)
 
@@ -213,7 +216,6 @@ watch([selectedOption], () => {
       ]"
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
-      @update:model-value="validation.business = false"
     />
 
     <div class="spinner-block" v-if="showDetailsLoading">

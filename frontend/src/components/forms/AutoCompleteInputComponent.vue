@@ -6,20 +6,20 @@
       type="text"
       :data-id="'input-' + id"
       :placeholder="'Start typing to search for your ' + label"
-      :value="selectedValue"
+      :value="inputValue"
       :label-text="label"
       :helper-text="tip"
       @focus="autoCompleteVisible = true"
       :invalid="error ? true : false"
       :validityMessage="error"
       @blur="(event:any) => blur(event.target.value)"
-      @input="(event:any) => selectedValue = event.target.value"
+      @input="(event:any) => inputValue = event.target.value"
     />
     <div
       class="autocomplete-items"
       :id="id + 'list'"
       v-show="
-        autoCompleteVisible && selectedValue.length > 2 && contents.length > 0
+        autoCompleteVisible && inputValue.length > 2 && contents.length > 0
       "
     >
       <div class="autocomplete-items-ct" v-if="loading">
@@ -80,26 +80,42 @@ watch(
 )
 
 //We set the value prop as a reference for update reason
-const selectedValue = ref(props.modelValue)
+const inputValue = ref(props.modelValue)
+
+let selectedValue: BusinessSearchResult | undefined = undefined
 
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
   const reference = props.contents.find((entry) => entry.name === newValue)
   emit('update:model-value', newValue)
   emit('empty', isEmpty(reference))
+  
+  /* 
+  Fire the update:selected-value with undefined when:
+  - there was an item previously selected (clicked);
+  - and the value in the input was changed by typing or removing some
+  characters.
+  Note: we know the change was not due to selecting (clicking) a new item
+  because otherwise the newValue would already correspond to the
+  selectedValue.name.
+  */
+  if (selectedValue && newValue !== selectedValue.name) {
+    selectedValue = undefined
+    emit('update:selected-value', selectedValue)
+  }
 }
 
 emit('empty', true)
 watch(
   () => props.modelValue,
   () => {
-    selectedValue.value = props.modelValue
-    validateInput(selectedValue.value)
+    inputValue.value = props.modelValue
+    validateInput(inputValue.value)
   }
 )
-watch([selectedValue], () => {
-  validateInput(selectedValue.value)
-  emitValueChange(selectedValue.value)
+watch([inputValue], () => {
+  validateInput(inputValue.value)
+  emitValueChange(inputValue.value)
 })
 
 const blur = (newValue: string) => {
@@ -122,9 +138,9 @@ const validateInput = (newValue: string) => {
 
 const selectAutocompleteItem = (event: any) => {
   const newValue = event.target.getAttribute('data-value')
-  const reference = props.contents.find((entry) => entry.name === newValue)
-  selectedValue.value = newValue
-  emit('update:selected-value', reference)
+  selectedValue = props.contents.find((entry) => entry.name === newValue)
+  inputValue.value = newValue
+  emit('update:selected-value', selectedValue)
   autoCompleteVisible.value = false
 }
 </script>
