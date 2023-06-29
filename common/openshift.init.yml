@@ -44,6 +44,9 @@ parameters:
   - name: CHES_CLIENT_SECRET
     description: CHES service client secret
     required: true
+  - name: ADDRESS_COMPLETE_KEY
+    description: Canada Post API key
+    required: true
   - name: VITE_KEYCLOAK_CLIENT_ID
     value: ""
   - name: IDX_PVC_SIZE
@@ -77,6 +80,7 @@ objects:
       ches-client-secret: ${CHES_CLIENT_SECRET}
       bcregistry-key: ${BCREGISTRY_KEY}
       bcregistry-account: ${BCREGISTRY_ACCOUNT}
+      address-complete-key: ${ADDRESS_COMPLETE_KEY}
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:

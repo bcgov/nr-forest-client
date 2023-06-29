@@ -138,6 +138,11 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
                       key: bcregistry-account
+                - name: ADDRESS_COMPLETE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: address-complete-key
                 
               ports:
                 - containerPort: 3000
