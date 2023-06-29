@@ -23,6 +23,7 @@ const emit = defineEmits<{
 //Defining the event bus to send notifications up
 const navigationBus = useEventBus<boolean>('navigation-notification')
 const exitBus = useEventBus<Record<string, boolean | null>>('exit-notification')
+const generalErrorBus = useEventBus<string>('general-error-notification')
 
 //Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data)
@@ -119,12 +120,17 @@ watch([autoCompleteResult], () => {
 
     showDetailsLoading.value = true
     watch([error], () => {
-      if (error.value.response.status === 409) toggleErrorMessages(null, true)
+      if (error.value.response.status === 409) {
+        toggleErrorMessages(null, true)
+        return
+      }
       if (error.value.response.status === 404) {
         toggleErrorMessages(null, null)
         validation.business = true
         emit('update:data', formData.value)
+        return
       }
+      generalErrorBus.emit(error.value.response.data.message)
     })
 
     watch(

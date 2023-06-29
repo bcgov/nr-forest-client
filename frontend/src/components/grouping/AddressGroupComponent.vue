@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, watch, computed, ref } from 'vue'
+import { useEventBus } from '@vueuse/core'
 import delete16 from '@carbon/icons-vue/es/trash-can/16'
 import type { CodeNameType, BusinessSearchResult } from '@/core/CommonTypes'
 import type { Address } from '@/dto/ApplyClientNumberDto'
@@ -31,12 +32,15 @@ const emit = defineEmits<{
   (e: 'remove', value: number): void
 }>()
 
+const generalErrorBus = useEventBus<string>('general-error-notification')
+
 //We set it as a separated ref due to props not being updatable
 const selectedValue = reactive<Address>(props.modelValue)
 const validateAddressData = props.validations[0]('Address', props.id + '')
 const validateAddressNameData = props.validations[0]('Names', props.id + '')
 const addressError = ref<string | undefined>('')
 const nameError = ref<string | undefined>('')
+const showDetailsLoading = ref<boolean>(false)
 
 //Watch for changes on the input
 watch([selectedValue], () => {
@@ -161,16 +165,26 @@ const autoCompleteUrl = computed(
     `/api/clients/addresses?country=${selectedValue.country.value}&maxSuggestions=10&searchTerm=${selectedValue.streetAddress}`
 )
 const autoCompleteResult = ref<BusinessSearchResult>({} as BusinessSearchResult)
-const detailsData = ref(null)
+const detailsData = ref<Address | null>(null)
 
 watch([autoCompleteResult], () => {
   if (autoCompleteResult.value) {
-    const { error } = useFetchTo(
+    showDetailsLoading.value = true
+    const { error, loading: detailsLoading } = useFetchTo(
       `/api/clients/addresses/${encodeURIComponent(
         autoCompleteResult.value.code
       )}`,
       detailsData,
       {}
+    )
+
+    watch([error], () => {
+      generalErrorBus.emit(error.value.response.data.message)
+    })
+
+    watch(
+      [detailsLoading],
+      () => (showDetailsLoading.value = detailsLoading.value)
     )
   }
 })
@@ -246,6 +260,10 @@ watch([detailsData], () => {
         validation.streetAddress = selectedValue.streetAddress ? true : false
       "
     />
+    <div class="spinner-block" v-if="showDetailsLoading">
+      <bx-loading type="small"> </bx-loading>
+      <span>Loading address details...</span>
+    </div>
   </data-fetcher>
 
   <text-input-component
