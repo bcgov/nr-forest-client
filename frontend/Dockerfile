@@ -10,7 +10,7 @@ RUN npm ci --omit=dev && npm run build && \
 FROM caddy:2.6.4-alpine
 
 # Copy static files and config
-COPY --from=builder /app/dist /srv
+COPY --from=build /app/dist /srv
 COPY Caddyfile /etc/caddy/Caddyfile
 
 # Packages and caddy format
