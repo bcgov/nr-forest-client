@@ -1,10 +1,8 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 
-import { mount } from "@vue/test-utils";
+import { VueWrapper, mount } from "@vue/test-utils";
 import AutoCompleteInputComponent from "@/components/forms/AutoCompleteInputComponent.vue";
 import { wrap } from "module";
-
-//TODO: Implement later the click functionality
 
 describe("Auto Complete Input Component", () => {
   const id = "my-input";
@@ -92,5 +90,61 @@ describe("Auto Complete Input Component", () => {
 
     expect(wrapper.emitted("empty")).toBeTruthy();
     expect(wrapper.emitted("empty")![0][0]).toBe(true);
+  });
+
+  it('emits the "update:selected-value" event when an option from the list is clicked', async () => {
+    const wrapper = mount(AutoCompleteInputComponent, {
+      props: {
+        id,
+        modelValue: "",
+        contents,
+        validations: [],
+        label: id,
+      },
+    });
+
+    const options = wrapper.findAll(".autocomplete-items-cell");
+    const firstOption = options[0];
+    await firstOption.trigger("click");
+    expect(wrapper.emitted("update:selected-value")).toBeTruthy();
+    expect(wrapper.emitted("update:selected-value")![0][0]).toEqual(
+      contents[0]
+    );
+  });
+
+  describe("when an option was previously selected", () => {
+    let wrapper: VueWrapper<any, any>;
+
+    beforeEach(async () => {
+      wrapper = mount(AutoCompleteInputComponent, {
+        props: {
+          id,
+          modelValue: "",
+          contents,
+          validations: [],
+          label: id,
+        },
+      });
+
+      const options = wrapper.findAll(".autocomplete-items-cell");
+      const firstOption = options[0];
+      await firstOption.trigger("click");
+
+      // Now an option is effectively selected
+      expect(wrapper.emitted("update:selected-value")).toBeTruthy();
+      expect(wrapper.emitted("update:selected-value")![0][0]).toEqual(
+        contents[0]
+      );
+    });
+
+    it('emits the "update:selected-value" with undefined when user types something in the input field', async () => {
+      // adding a 'Z' character to the end of the original value so to trigger an update:model-value
+      await wrapper.setProps({ modelValue: "TANGOZ" });
+
+      expect(wrapper.emitted("update:selected-value")).toHaveLength(2);
+      expect(wrapper.emitted("update:selected-value")![0][1]).toEqual(
+        undefined
+      );
+    });
   });
 });
