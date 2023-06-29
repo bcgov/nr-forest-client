@@ -44,6 +44,9 @@ parameters:
     value: https://loginproxy.gov.bc.ca/auth
   - name: VITE_KEYCLOAK_CLIENT_ID
     value: ""
+  - name: LOG_LEVEL
+    decription: Caddy logging level
+    value: "info"
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -111,6 +114,9 @@ objects:
               securityContext:
                 capabilities:
                   add: ["NET_BIND_SERVICE"]
+              env:
+                - name: LOG_LEVEL
+                  value: ${LOG_LEVEL}
               imagePullPolicy: Always
               name: ${NAME}
               volumeMounts:
