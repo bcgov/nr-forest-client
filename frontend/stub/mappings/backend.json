@@ -19,7 +19,8 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-details-{{regexExtract request.path.[2] '(XX|YY|UU|JJ)(.*)' 'parts'}}{{parts.0}}.json",
-        "transformers": ["response-template"]
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 2500
       }
     },
     {
@@ -154,7 +155,8 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-address-detail.json",
-        "transformers": ["response-template"]
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 2500
       }
     }
   ]
