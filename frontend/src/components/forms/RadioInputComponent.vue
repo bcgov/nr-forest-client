@@ -77,9 +77,6 @@ watch(selectedValue, () => {
   emit('empty', isEmpty(selectedValue))
 })
 
-//We watch for error changes to emit events
-watch(error, () => emit('error', error.value))
-
 const updateSelectedValue = (event: any) =>
   (selectedValue.value = event.detail.value)
 //validateInput()
