@@ -42,24 +42,7 @@
 
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-
-        <sonar.organization>bcgov-sonarcloud</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.projectKey>forest-client-backend</sonar.projectKey>
-        <sonar.coverage.jacoco.xmlReportPaths>target/coverage-reports/merged-test-report/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.coverage.exclusions>
-            **/configuration/**,
-            **/exception/**,
-            **/dto/**,
-            **/entity/**,
-            **/models/**,
-            **/repository/**,
-            **/*$*Builder*,
-            **/BootApplication*
-        </sonar.coverage.exclusions>
-        <sonar.java.checkstyle.reportPaths>target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
-
+        
         <testcontainers.version>1.18.3</testcontainers.version>
 
         <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
