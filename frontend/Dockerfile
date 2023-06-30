@@ -1,17 +1,23 @@
-# RedHat UBI 8 with nodejs 14
-FROM registry.access.redhat.com/ubi8/ubi:8.7-1112 AS builder
-RUN dnf module install -y nodejs:18
+# Build static files
+FROM node:alpine3.16 AS build
 
-# Install packages, build and keep only prod packages
 WORKDIR /app
-COPY . ./
-RUN npm ci --omit=dev && npm run build
+COPY . .
+RUN npm ci --omit=dev && \
+    npm run build
 
-# Deployment container
-FROM caddy:2.4.6-alpine
+# Caddy
+FROM caddy:2.6.4-alpine
+
+# Copy static files and config
+COPY --from=build /app/dist /srv
+COPY Caddyfile /etc/caddy/Caddyfile
+
+# Packages and caddy format
+RUN apk add --no-cache ca-certificates && \
+    caddy fmt --overwrite /etc/caddy/Caddyfile
+
+# Port, health check and non-root user
 EXPOSE 3000
-COPY --from=builder /app/Caddyfile /etc/caddy/Caddyfile
-COPY --from=builder /app/dist /srv
-
-USER 1001
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3000/
+USER 1001
