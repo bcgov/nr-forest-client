@@ -41,7 +41,7 @@ describe("Radio Input Component", () => {
     });
 
     await wrapper
-      .findComponent(`[name=${id}rb]`)
+      .find(`[name=${id}rb]`)
       .trigger("bx-radio-button-group-changed", {
         detail: { value: "A" },
       });
@@ -64,7 +64,7 @@ describe("Radio Input Component", () => {
     });
 
     await wrapper
-      .findComponent(`[name=${id}rb]`)
+      .find(`[name=${id}rb]`)
       .trigger("bx-radio-button-group-changed", {
         detail: { value: "B" },
       });
@@ -86,7 +86,7 @@ describe("Radio Input Component", () => {
     });
 
     await wrapper
-      .findComponent(`[name=${id}rb]`)
+      .find(`[name=${id}rb]`)
       .trigger("bx-radio-button-group-changed", {
         detail: { value: "A" },
       });
@@ -103,7 +103,7 @@ describe("Radio Input Component", () => {
     expect(updateEvent[0]).toStrictEqual(["A"]);
 
     await wrapper
-      .findComponent(`[name=${id}rb]`)
+      .find(`[name=${id}rb]`)
       .trigger("bx-radio-button-group-changed", {
         detail: { value: "B" },
       });
