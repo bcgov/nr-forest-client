@@ -123,7 +123,7 @@ import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformation
 import AddressWizardStep from '@/pages/applyform/AddressWizardStep.vue'
 import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue'
 import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue'
-import { reactive, watch, inject, toRef, onMounted, ref } from 'vue'
+import { reactive, watch, inject, toRef, ref } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import {
@@ -133,7 +133,7 @@ import {
 } from '@/dto/ApplyClientNumberDto'
 
 import type { Submitter, ValidationMessageType } from '@/core/CommonTypes'
-import { usePost } from '@/services/ForestClientService'
+import { usePost } from '@/composables/useFetch'
 
 const submitterInformation = inject<Submitter>('submitterInformation')
 const errorBus = useEventBus<ValidationMessageType[]>(

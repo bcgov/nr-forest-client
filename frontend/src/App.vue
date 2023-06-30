@@ -98,7 +98,7 @@ if (
 
 /* ------------ nav bar ------------------- */
 .nav.nav-pills {
-  background-color: v-bind(#38598a) !important;
+  background-color: #38598a !important;
   height: 45px;
 }
 
@@ -108,7 +108,7 @@ if (
 }
 
 .nav.nav-pills .nav-item button[aria-selected='true'] {
-  background-color: v-bind(rgba(84, 117, 167, 1));
-  border-color: v-bind(rgba(84, 117, 167, 1));
+  background-color: rgba(84, 117, 167, 1);
+  border-color: rgba(84, 117, 167, 1);
 }
 </style>

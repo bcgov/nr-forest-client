@@ -14,7 +14,7 @@ import {
   isNoSpecialCharacters
 } from '@/helpers/validators/GlobalValidators'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
-import { useFetchTo } from '@/services/ForestClientService'
+import { useFetchTo } from '@/composables/useFetch'
 
 //Define the input properties for this component
 const props = defineProps<{
