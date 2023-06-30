@@ -54,7 +54,7 @@ import {
   type Contact,
   emptyContact
 } from '@/dto/ApplyClientNumberDto'
-import { useFetchTo } from '@/services/ForestClientService'
+import { useFetchTo } from '@/composables/useFetch'
 
 import type { CodeNameType, ModalNotification } from '@/core/CommonTypes'
 

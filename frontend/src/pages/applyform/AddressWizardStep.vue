@@ -49,7 +49,7 @@ import {
   type Address,
   emptyAddress
 } from '@/dto/ApplyClientNumberDto'
-import { useFetchTo } from '@/services/ForestClientService'
+import { useFetchTo } from '@/composables/useFetch'
 import type { ModalNotification } from '@/core/CommonTypes'
 
 import Note from '@/common/NoteComponent.vue'

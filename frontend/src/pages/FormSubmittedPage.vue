@@ -28,7 +28,7 @@ import { useRouter } from 'vue-router'
 import badgePictogram from '@carbon/pictograms/es/badge'
 
 import type { Submitter } from '@/core/CommonTypes'
-import { buildFromSvg } from '@/services/GeneralServices'
+import useSvg from '@/composables/useSvg'
 
 const submitterInformation = inject<Submitter>('submitterInformation')
 
@@ -38,7 +38,5 @@ const newFormSubmission = () => {
   router.push({ name: 'form' })
 }
 
-const SVG = buildFromSvg(badgePictogram)
+const SVG = useSvg(badgePictogram)
 </script>
-
-<style scoped></style>

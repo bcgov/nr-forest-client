@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { watch, computed, ref, reactive } from 'vue'
 import { useEventBus } from '@vueuse/core'
-import { useFetchTo } from '@/services/ForestClientService'
+import { useFetchTo } from '@/composables/useFetch'
 import { type BusinessSearchResult, ClientTypeEnum } from '@/core/CommonTypes'
 import type {
   FormDataDto,
   ForestClientDetailsDto
 } from '@/dto/ApplyClientNumberDto'
 import RadioInputComponent from '@/components/forms/RadioInputComponent.vue'
-import { isNotEmpty, isMinSize } from '@/helpers/validators/GlobalValidators'
+import { isNotEmpty } from '@/helpers/validators/GlobalValidators'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
 import { retrieveClientType } from '@/helpers/DataConversors'
 

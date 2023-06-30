@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useFetchTo } from '@/services/ForestClientService'
+import { useFetchTo } from '@/composables/useFetch'
 import { ref, watch, computed } from 'vue'
 
 const props = defineProps<{
