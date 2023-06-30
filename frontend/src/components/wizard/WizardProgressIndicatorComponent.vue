@@ -91,17 +91,36 @@ const canShowLink = (step: ProgressData) => {
 </script>
 
 <style scoped>
+@media screen and (max-width: 671px) {
+  .wizard-wrap-indicator {
+    flex-direction: column;
+  }
+  .wizard-wrap-item {
+    border-left: solid 2px;
+    flex: none;
+  }
+}
+
+@media screen and (min-width: 672px) {
+  .wizard-wrap-indicator {
+    flex-direction: row;
+  }
+  .wizard-wrap-item {
+    border-top: solid 2px;
+    flex: 1;
+  }
+}
+
 .wizard-wrap-indicator {
   display: flex;
   justify-content: space-between;
   margin-bottom: 48px;
 }
 .wizard-wrap-item {
-  flex: 1;
   display: flex;
   justify-content: space-between;
-  border-top: solid 2px;
   overflow: hidden;
+  height: 58px;
 }
 
 .wizard-wrap-item-icon {
