@@ -97,21 +97,30 @@ const canShowLink = (step: ProgressData) => {
   margin-bottom: 48px;
 }
 .wizard-wrap-item {
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   justify-content: space-between;
   border-top: solid 2px;
+  overflow: hidden;
 }
 
 .wizard-wrap-item-icon {
   margin: 4px 10px 0px 0px;
+  flex-shrink: 0;
 }
 
 .wizard-wrap-item-text {
   flex-grow: 1;
+  overflow: hidden;
 }
 .wizard-wrap-item-text p {
   font-size: 14px;
+}
+.wizard-wrap-item-text a, .wizard-wrap-item-text span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
 }
 .wizard-wrap-item-text p a {
   text-decoration: none;
