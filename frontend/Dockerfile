@@ -3,7 +3,7 @@ FROM node:alpine3.16 AS build
 
 WORKDIR /app
 COPY . .
-RUN npm ci --omit=dev && \
+RUN npm ci && \
     npm run build
 
 # Caddy
