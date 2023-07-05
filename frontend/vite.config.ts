@@ -38,7 +38,10 @@ export default defineConfig(({ command, mode }) => {
       reporters: ['verbose'],
       coverage: {
         provider: 'v8',
-        reporter: ['text', 'json', 'lcov']
+        reporter: ['text', 'json', 'lcov'],
+        all: true,
+        clean: true,
+        src: 'src'
       },
       environment: 'jsdom'
     }
