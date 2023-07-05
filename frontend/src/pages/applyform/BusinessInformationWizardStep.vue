@@ -236,8 +236,13 @@ watch([selectedOption], () => {
         <ol type="1" class="bulleted-list">
           <li>
             Log into Manage Account in
-            <a href="https://www.bceid.ca/" target="_blank">BCeID</a> to find
-            your business name
+            <a
+              href="https://www.bceid.ca/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >BCeID</a
+            >
+            to find your business name
           </li>
           <li>
             If your name isn’t there, call BC Registry toll free at
@@ -257,7 +262,10 @@ watch([selectedOption], () => {
         Your request for a client number cannot go ahead because “{{
           formData.businessInformation.businessName
         }}” is not in good standing with BC Registries. Go to your
-        <a href="https://www.bcregistry.gov.bc.ca/" target="_blank"
+        <a
+          href="https://www.bcregistry.gov.bc.ca/"
+          target="_blank"
+          rel="noopener noreferrer"
           >BC Registries</a
         >
         account to find out why.

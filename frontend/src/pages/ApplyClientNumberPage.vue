@@ -78,9 +78,14 @@
             <p class="inner-text inner-text-spaced">
               Your first name, last name and email address are from your BCeID.
               If they're incorrect,
-              <a href="https://bceid.ca" target="_blank">go to BCeID</a> to
-              update them before submitting your form. Be sure to add your phone
-              number, location and role.
+              <a
+                href="https://bceid.ca"
+                target="_blank"
+                rel="noopener noreferrer"
+                >go to BCeID</a
+              >
+              to update them before submitting your form. Be sure to add your
+              phone number, location and role.
             </p>
             <p class="inner-text inner-text-spaced">
               To add another contact to the account, select "Add another

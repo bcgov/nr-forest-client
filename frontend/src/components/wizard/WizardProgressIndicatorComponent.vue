@@ -19,8 +19,8 @@
         <p>
           <a
             v-if="canShowLink(step)"
-            :href="'#' + index"
             @click.prevent="emit('go-to', index)"
+            rel="noopener noreferrer"
             >{{ step.title }}</a
           >
           <span
