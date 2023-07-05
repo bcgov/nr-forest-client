@@ -7,10 +7,10 @@
 import { inject, provide, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import type { KeycloakInstance } from 'keycloak-js'
+import type Keycloak from 'keycloak-js'
 import type { Submitter } from '@/core/CommonTypes'
 
-const keycloak: KeycloakInstance | undefined = inject('keycloak')
+const keycloak: Keycloak | undefined = inject('keycloak')
 const router = useRouter()
 
 let submitterInformation = ref<Submitter>({
@@ -33,41 +33,37 @@ if (
 ) {
   submitAndRedirect('internal')
 } else {
-  submitterInformation.value.bceidBusinessName =
-    keycloak && keycloak.tokenParsed
-      ? keycloak.tokenParsed.display_name
-      : 'Dev Test Client Name'
-  submitterInformation.value.userId =
-    keycloak && keycloak.tokenParsed ? keycloak.subject : 'testUserId'
-  submitterInformation.value.firstName =
-    keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : 'Maria'
-  submitterInformation.value.lastName =
-    keycloak && keycloak.tokenParsed
-      ? keycloak.tokenParsed.family_name
-      : 'Martinez'
-  submitterInformation.value.email =
-    keycloak && keycloak.tokenParsed
-      ? keycloak.tokenParsed.email
-      : 'maria.martinez@gov.bc.ca'
+  submitterInformation.value.bceidBusinessName = keycloak?.tokenParsed
+    ? keycloak.tokenParsed.display_name
+    : 'Dev Test Client Name'
+
+  submitterInformation.value.userId = keycloak?.tokenParsed
+    ? keycloak.subject
+    : 'testUserId'
+
+  submitterInformation.value.firstName = keycloak?.tokenParsed
+    ? keycloak.tokenParsed.given_name
+    : 'Maria'
+
+  submitterInformation.value.lastName = keycloak?.tokenParsed
+    ? keycloak.tokenParsed.family_name
+    : 'Martinez'
+
+  submitterInformation.value.email = keycloak?.tokenParsed
+    ? keycloak.tokenParsed.email
+    : 'maria.martinez@gov.bc.ca'
   submitAndRedirect('form')
 }
 </script>
 
 <style>
 #app {
-  /* font-family: Avenir, Helvetica, Arial, sans-serif; */
   font-family: -apple-system, BlinkMacSystemFont, BCSans, Roboto, Verdana, Arial,
     sans-serif;
   font-size: 0.875rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* text-align: center; */
-  /* color: #2c3e50; */
   color: rgba(0, 0, 0, 0.87);
-}
-
-.card-header {
-  /*padding: 0.5rem 0.5rem 0.5rem 0.5rem !important;*/
 }
 
 .row {

@@ -20,13 +20,13 @@
       size="field"
     >
       <span>Logout</span>
-      <logout16 slot="icon" />
+      <Logout16 slot="icon" />
     </bx-btn>
   </header>
 </template>
 
 <script setup lang="ts">
-import logout16 from '@carbon/icons-vue/es/logout/16'
+import Logout16 from '@carbon/icons-vue/es/logout/16'
 </script>
 
 <style scoped>

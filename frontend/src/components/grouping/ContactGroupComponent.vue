@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, watch, ref } from 'vue'
-import delete16 from '@carbon/icons-vue/es/trash-can/16'
+import Delete16 from '@carbon/icons-vue/es/trash-can/16'
 import type { CodeDescrType, CodeNameType } from '@/core/CommonTypes'
 import type { Contact } from '@/dto/ApplyClientNumberDto'
 import {
@@ -192,6 +192,6 @@ const nameTypesToCodeDescr = (
     size="field"
   >
     <span>Delete contact</span>
-    <delete16 slot="icon" />
+    <Delete16 slot="icon" />
   </bx-btn>
 </template>

@@ -17,14 +17,14 @@
       >
     </bx-dropdown>
     <bx-tag v-for="tag in items" title="Clear selection" class="bx-tag">
-      {{ tag }} <closeOutline16 @click="removeFromSelection(tag)" />
+      {{ tag }} <CloseOutline16 @click="removeFromSelection(tag)" />
     </bx-tag>
   </div>
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { type CodeNameType, isEmpty } from '@/core/CommonTypes'
-import closeOutline16 from '@carbon/icons-vue/es/close/16'
+import CloseOutline16 from '@carbon/icons-vue/es/close/16'
 
 //Define the input properties for this component
 const props = defineProps<{

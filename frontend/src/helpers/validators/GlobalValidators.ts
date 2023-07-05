@@ -143,7 +143,7 @@ export const isMinSize = (minSize: number) => {
  * isOnlyNumbers('123a') // false
  **/
 export const isOnlyNumbers = (value: string) => {
-  if (isNotEmpty(value) === '' && value.match(/^[0-9]*$/)) return ''
+  if (isNotEmpty(value) === '' && /^\d*$/.exec(value)) return ''
   return 'This field must be composed of only numbers'
 }
 

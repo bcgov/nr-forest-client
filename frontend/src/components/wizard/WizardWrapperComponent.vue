@@ -89,7 +89,7 @@
           @click.prevent="onNext"
         >
           <span>Next</span>
-          <arrowRight16 slot="icon" />
+          <ArrowRight16 slot="icon" />
         </bx-btn>
       </div>
     </div>
@@ -109,7 +109,7 @@
           @click.prevent="saveChange"
         >
           <span>Save</span>
-          <save16 slot="icon" />
+          <Save16 slot="icon" />
         </bx-btn>
       </div>
     </div>
@@ -127,7 +127,7 @@
             >{{ endAndLogOut ? 'End application' : 'Receive email' }} and
             logout</span
           >
-          <logout16 slot="icon" />
+          <LogOut16 slot="icon" />
         </bx-btn>
       </div>
     </div>
@@ -157,11 +157,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, useSlots, reactive, provide, watch } from 'vue'
+import { ref, computed, useSlots, reactive, provide } from 'vue'
 import { useEventBus } from '@vueuse/core'
-import arrowRight16 from '@carbon/icons-vue/es/arrow--right/16'
-import save16 from '@carbon/icons-vue/es/save/16'
-import logout16 from '@carbon/icons-vue/es/logout/16'
+import ArrowRight16 from '@carbon/icons-vue/es/arrow--right/16'
+import Save16 from '@carbon/icons-vue/es/save/16'
+import LogOut16 from '@carbon/icons-vue/es/logout/16'
 
 import type { ModalNotification } from '@/core/CommonTypes'
 

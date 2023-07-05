@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, watch, computed, ref } from 'vue'
 import { useEventBus } from '@vueuse/core'
-import delete16 from '@carbon/icons-vue/es/trash-can/16'
+import Delete16 from '@carbon/icons-vue/es/trash-can/16'
 import type { CodeNameType, BusinessSearchResult } from '@/core/CommonTypes'
 import type { Address } from '@/dto/ApplyClientNumberDto'
 import {
@@ -328,6 +328,6 @@ watch([detailsData], () => {
     size="field"
   >
     <span>Delete address</span>
-    <delete16 slot="icon" />
+    <Delete16 slot="icon" />
   </bx-btn>
 </template>

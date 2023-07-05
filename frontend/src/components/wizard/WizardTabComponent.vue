@@ -44,5 +44,3 @@ emit('update:valid', { index: props.index, valid: false })
 
 const goToStep = (index: number) => props.wizard.goToStep(index)
 </script>
-
-<style scoped></style>

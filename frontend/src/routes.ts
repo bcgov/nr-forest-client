@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-import HomePage from '@/pages/HomePage.vue'
 import ReviewApplicationPage from '@/pages/ReviewApplicationPage.vue'
 import ApplyClientNumber from '@/pages/ApplyClientNumberPage.vue'
 import FormSubmittedPage from '@/pages/FormSubmittedPage.vue'
@@ -9,7 +8,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: ApplyClientNumber,
+    component: ApplyClientNumber, // Should be HomePage in the future
     props: true
   },
   {
