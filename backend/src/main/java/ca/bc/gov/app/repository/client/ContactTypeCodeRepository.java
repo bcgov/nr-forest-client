@@ -14,5 +14,6 @@ public interface ContactTypeCodeRepository
     ReactiveSortingRepository<ContactTypeCodeEntity, String> {
 
   Flux<ContactTypeCodeEntity> findBy(Pageable pageable);
-  Mono<ContactTypeCodeEntity> findByOrDescription(String id,String description);
+
+  Mono<ContactTypeCodeEntity> findByOrDescription(String id, String description);
 }

@@ -1,6 +1,9 @@
 package ca.bc.gov.app.service.client;
 
-import static ca.bc.gov.app.util.ClientMapper.*;
+import static ca.bc.gov.app.util.ClientMapper.getLocationIdByName;
+import static ca.bc.gov.app.util.ClientMapper.mapAllToSubmissionLocationEntity;
+import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionContactEntity;
+import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
 import static org.springframework.data.relational.core.query.Query.query;
 
 import ca.bc.gov.app.dto.ches.ChesRequestDto;
@@ -22,12 +25,10 @@ import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.service.ches.ChesCommonServicesService;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -226,7 +227,8 @@ public class ClientSubmissionService {
                 chesService
                     .sendEmail(
                         new ChesRequestDto(
-                            List.of(email,"paulo.cruz@gov.bc.ca","ziad.bhunnoo@gov.bc.ca","maria.martinez@gov.bc.ca"),
+                            List.of(email, "paulo.cruz@gov.bc.ca", "ziad.bhunnoo@gov.bc.ca",
+                                "maria.martinez@gov.bc.ca"),
                             body
                         ),
                         "Client number application received"

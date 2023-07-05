@@ -131,7 +131,7 @@ public class ChesCommonServicesService {
    * @param variables    a map of variable names and their corresponding values to be used when
    *                     processing the template
    * @return a Mono that emits the String representation of the processed template, or an error if
-   * an exception occurs during template processing
+   *         an exception occurs during template processing
    */
   public Mono<String> buildTemplate(String templateName, Map<String, Object> variables) {
     StringWriter writer = new StringWriter();

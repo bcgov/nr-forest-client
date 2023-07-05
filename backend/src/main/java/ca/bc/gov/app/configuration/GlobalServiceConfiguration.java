@@ -1,8 +1,20 @@
 package ca.bc.gov.app.configuration;
 
 import ca.bc.gov.app.dto.ValidationError;
-import ca.bc.gov.app.dto.bcregistry.*;
-import ca.bc.gov.app.dto.ches.*;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryExceptionMessageDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetResponseDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryIdentificationDto;
+import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
+import ca.bc.gov.app.dto.ches.ChesMailErrorResponse;
+import ca.bc.gov.app.dto.ches.ChesMailRequest;
+import ca.bc.gov.app.dto.ches.ChesMailResponse;
+import ca.bc.gov.app.dto.ches.ChesRequestDto;
+import ca.bc.gov.app.dto.ches.CommonExposureJwtDto;
 import ca.bc.gov.app.dto.client.AddressCompleteFindDto;
 import ca.bc.gov.app.dto.client.AddressCompleteFindListDto;
 import ca.bc.gov.app.dto.client.AddressCompleteRetrieveDto;
@@ -25,8 +37,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * <p><b>Global Service Configuration</b></p>
- * This class is responsible for configuring basic beans to be used by the services.
- * It creates and holds the external API webclients and the cors filter.
+ * This class is responsible for configuring basic beans to be used by the services. It creates and
+ * holds the external API webclients and the cors filter.
  */
 @Configuration
 @Slf4j
@@ -60,9 +72,10 @@ import org.springframework.web.reactive.function.client.WebClient;
     ChesMailErrorResponse.class
 })
 public class GlobalServiceConfiguration {
+
   /**
-   * Returns a configured instance of WebClient to communicate with the CHES API
-   * based on the provided configuration.
+   * Returns a configured instance of WebClient to communicate with the CHES API based on the
+   * provided configuration.
    *
    * @param configuration the ForestClientConfiguration containing the CHES API base URI
    * @return a WebClient instance configured with the CHES API base URI
@@ -106,8 +119,8 @@ public class GlobalServiceConfiguration {
   }
 
   /**
-   * Creates a WebClient instance for making HTTP requests to the Oracle Legacy API
-   * based on the provided {@link ForestClientConfiguration}.
+   * Creates a WebClient instance for making HTTP requests to the Oracle Legacy API based on the
+   * provided {@link ForestClientConfiguration}.
    *
    * @param configuration the configuration object for the Forest client
    * @return a WebClient instance configured for the Oracle Legacy API

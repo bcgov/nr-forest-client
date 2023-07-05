@@ -5,7 +5,6 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.ches.ChesRequestDto;
-
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
@@ -22,6 +21,12 @@ import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import ca.bc.gov.app.service.ches.ChesCommonServicesService;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,13 +36,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 @Service
 @RequiredArgsConstructor
@@ -178,6 +176,22 @@ public class ClientService {
         );
   }
 
+
+  /**
+   * <p><b>Send Email</b></p>
+   * <p>Send email to the client when entry already exists.</p>
+   * @param sendMailRequestDto The request data containing user and client details.
+   * @return A {@link Mono} of {@link Void}.
+   */
+  public Mono<Void> sendEmail(SendMailRequestDto sendMailRequestDto) {
+    return
+        legacyService
+            .searchLegacy(sendMailRequestDto.incorporation(), sendMailRequestDto.name())
+            .next()
+            .flatMap(triggerEmail(sendMailRequestDto.mail(), sendMailRequestDto.userName()))
+            .then();
+  }
+
   private Function<BcRegistryDocumentDto, Mono<ClientDetailsDto>> buildDetails() {
     return document ->
         buildAddress(document,
@@ -271,7 +285,7 @@ public class ClientService {
   private Mono<ClientValueTextDto> loadContactType(String contactCode) {
     return
         contactTypeCodeRepository
-            .findByOrDescription(contactCode,contactCode)
+            .findByOrDescription(contactCode, contactCode)
             .map(
                 entity -> new ClientValueTextDto(
                     entity.getContactTypeCode(),
@@ -336,12 +350,4 @@ public class ClientService {
             .thenReturn(legacy);
   }
 
-  public Mono<Void> sendEmail(SendMailRequestDto sendMailRequestDto) {
-    return
-        legacyService
-            .searchLegacy(sendMailRequestDto.incorporation(), sendMailRequestDto.name())
-            .next()
-            .flatMap(triggerEmail(sendMailRequestDto.mail(), sendMailRequestDto.userName()))
-            .then();
-  }
 }

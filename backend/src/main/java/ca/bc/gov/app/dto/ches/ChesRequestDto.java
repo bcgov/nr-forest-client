@@ -1,14 +1,17 @@
 package ca.bc.gov.app.dto.ches;
 
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-
 import java.util.List;
 
-@Schema(name = "MailRequest")
+/**
+ * The type Ches request dto.
+ *
+ * @param emailTo   list of emails to send message to
+ * @param emailBody body of the email, can be html
+ */
 public record ChesRequestDto(
     @NotNull
     @Min(1)
@@ -17,4 +20,5 @@ public record ChesRequestDto(
     @NotNull
     String emailBody
 ) {
+
 }
