@@ -6,9 +6,11 @@ import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
+import ca.bc.gov.app.dto.client.SendMailRequestDto;
 import java.util.List;
 
 public class TestConstants {
+
   public static final String CHES_SUCCESS_MESSAGE = """      
       {
          "messages": [
@@ -220,12 +222,30 @@ public class TestConstants {
         "goodStanding": true,
         "addresses": [
           {
+            "locationName": "Mailing Address",
             "streetAddress": "501 Belleville Street",
             "country": {"value":"CA","text":"Canada"},
             "province": {"value":"BC","text":"British Columbia"},
             "city": "VICTORIA",
             "postalCode": "V8V1X4",
             "index": 0
+          }
+        ],
+        "contacts": [
+          {
+            "contactType": {
+                "value": "DI",
+                "text": "Director"
+            },
+            "firstName": "JAMES",
+            "lastName": "BAXTER",
+            "phoneNumber": "",
+            "email": "",
+            "index": 1,
+            "locationNames": [{
+            "text": "Mailing Address",
+            "value": "0"
+            }]
           }
         ]
       }""";
@@ -327,13 +347,13 @@ public class TestConstants {
                       "firstName": "JAMES",
                       "lastName": "BAXTER",
                       "middleInitial": "JAMES",
-                      "partyType": "person"
+                      "partyType": "Director"
                   },
                   "roles": [
                       {
                           "appointmentDate": "2005-07-27",
                           "cessationDate": null,
-                          "roleType": "Proprietor"
+                          "roleType": "Director"
                       }
                   ]
               }
@@ -461,4 +481,11 @@ public class TestConstants {
               )
           )
       );
+  public static final SendMailRequestDto EMAIL_REQUEST =
+      new SendMailRequestDto(
+          "XX1234567",
+          "Example Inc.",
+          "12345",
+          "John Doe",
+          "johndoe@example.com");
 }

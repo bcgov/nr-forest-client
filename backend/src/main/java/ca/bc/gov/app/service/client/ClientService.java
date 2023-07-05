@@ -5,7 +5,13 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.ches.ChesRequestDto;
-import ca.bc.gov.app.dto.client.*;
+
+import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientContactDto;
+import ca.bc.gov.app.dto.client.ClientLookUpDto;
+import ca.bc.gov.app.dto.client.ClientNameCodeDto;
+import ca.bc.gov.app.dto.client.ClientValueTextDto;
+import ca.bc.gov.app.dto.client.SendMailRequestDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
@@ -37,6 +43,7 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 @Slf4j
 public class ClientService {
+
   private final ClientTypeCodeRepository clientTypeCodeRepository;
   private final CountryCodeRepository countryCodeRepository;
   private final ProvinceCodeRepository provinceCodeRepository;
@@ -48,8 +55,8 @@ public class ClientService {
   /**
    * <p><b>Find Active Client Type Codes</b></p>
    * <p>List client type code based on it's effective and expiration date.
-   * The rule used for it is the expiration date must not be set or should be bigger than
-   * provided date and the effective date bust be before or equal to the provided date.</p>
+   * The rule used for it is the expiration date must not be set or should be bigger than provided
+   * date and the effective date bust be before or equal to the provided date.</p>
    * <p>The order is by description.</p>
    *
    * @param targetDate The date to be used as reference.
@@ -70,8 +77,8 @@ public class ClientService {
   /**
    * <p><b>List countries</b></p>
    * <p>List countries by page with a defined size.
-   * The list will be sorted by order and country name.</p>
-   * List countries by page with a defined size. The list will be sorted by order and country name.
+   * The list will be sorted by order and country name.</p> List countries by page with a defined
+   * size. The list will be sorted by order and country name.
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
@@ -150,12 +157,12 @@ public class ClientService {
   }
 
   /**
-   * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances
-   * matching the given value and maps them to {@link ClientLookUpDto} instances.
+   * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances matching
+   * the given value and maps them to {@link ClientLookUpDto} instances.
    *
    * @param value the value to search for
-   * @return a {@link Flux} of {@link ClientLookUpDto} instances representing
-   * matching BC Registry entries
+   * @return a {@link Flux} of {@link ClientLookUpDto} instances representing matching BC Registry
+   * entries
    * @throws NoClientDataFound           if no matching data is found
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
@@ -241,7 +248,7 @@ public class ClientService {
   }
 
   private static List<ClientValueTextDto> matchAddress(List<ClientAddressDto> addresses,
-                                                       BcRegistryPartyDto party) {
+      BcRegistryPartyDto party) {
     return addresses
         .stream()
         .filter(address ->
@@ -264,7 +271,7 @@ public class ClientService {
   private Mono<ClientValueTextDto> loadContactType(String contactCode) {
     return
         contactTypeCodeRepository
-            .findById(contactCode)
+            .findByOrDescription(contactCode,contactCode)
             .map(
                 entity -> new ClientValueTextDto(
                     entity.getContactTypeCode(),
@@ -307,7 +314,7 @@ public class ClientService {
   }
 
   private Function<ForestClientDto,
-      Mono<ForestClientDto>> sendEmail(String email, String userName) {
+      Mono<ForestClientDto>> triggerEmail(String email, String userName) {
     return legacy ->
         chesService
             .buildTemplate(
@@ -318,7 +325,8 @@ public class ClientService {
                 chesService
                     .sendEmail(
                         new ChesRequestDto(
-                            List.of(email,"paulo.cruz@gov.bc.ca","ziad.bhunnoo@gov.bc.ca","maria.martinez@gov.bc.ca"),
+                            List.of(email, "paulo.cruz@gov.bc.ca", "ziad.bhunnoo@gov.bc.ca",
+                                "maria.martinez@gov.bc.ca"),
                             body
                         ),
                         "Client number application can’t go ahead"
@@ -333,7 +341,7 @@ public class ClientService {
         legacyService
             .searchLegacy(sendMailRequestDto.incorporation(), sendMailRequestDto.name())
             .next()
-            .flatMap(sendEmail(sendMailRequestDto.mail(), sendMailRequestDto.userName()))
+            .flatMap(triggerEmail(sendMailRequestDto.mail(), sendMailRequestDto.userName()))
             .then();
   }
 }

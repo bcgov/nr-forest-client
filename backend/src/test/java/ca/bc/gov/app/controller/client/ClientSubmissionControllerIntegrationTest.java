@@ -51,7 +51,7 @@ class ClientSubmissionControllerIntegrationTest
   protected WebTestClient client;
 
   @RegisterExtension
-  static WireMockExtension wireMockExtensionBcReg = WireMockExtension
+  static WireMockExtension bcRegistryStub = WireMockExtension
       .newInstance()
       .options(
           wireMockConfig()
@@ -64,7 +64,7 @@ class ClientSubmissionControllerIntegrationTest
       .build();
 
   @RegisterExtension
-  static WireMockExtension wireMockExtensionChes = WireMockExtension
+  static WireMockExtension chesStub = WireMockExtension
       .newInstance()
       .options(
           wireMockConfig()
@@ -78,8 +78,8 @@ class ClientSubmissionControllerIntegrationTest
 
   @BeforeEach
   public void init() {
-    wireMockExtensionBcReg.resetAll();
-    wireMockExtensionBcReg
+    bcRegistryStub.resetAll();
+    bcRegistryStub
         .stubFor(post(
             urlPathEqualTo("/registry-search/api/v1/businesses/1234/documents/requests"))
             .willReturn(
@@ -89,7 +89,7 @@ class ClientSubmissionControllerIntegrationTest
             )
         );
 
-    wireMockExtensionChes
+    chesStub
         .stubFor(
             post("/chess/uri")
                 .willReturn(
@@ -98,7 +98,7 @@ class ClientSubmissionControllerIntegrationTest
                 )
         );
 
-    wireMockExtensionChes
+    chesStub
         .stubFor(
             post("/token/uri")
                 .willReturn(

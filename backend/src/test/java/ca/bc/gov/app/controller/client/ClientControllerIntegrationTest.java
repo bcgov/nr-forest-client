@@ -12,6 +12,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.dto.client.SendMailRequestDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -33,6 +34,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriBuilder;
+import reactor.core.publisher.Mono;
 
 @DisplayName("Integrated Test | FSA Client Controller")
 class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTest {
@@ -41,7 +43,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
   protected WebTestClient client;
 
   @RegisterExtension
-  static WireMockExtension wireMockExtension = WireMockExtension
+  static WireMockExtension bcRegistryStub = WireMockExtension
       .newInstance()
       .options(
           wireMockConfig()
@@ -54,7 +56,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
       .build();
 
   @RegisterExtension
-  static WireMockExtension wireMockExtensionChes = WireMockExtension
+  static WireMockExtension chesStub = WireMockExtension
       .newInstance()
       .options(
           wireMockConfig()
@@ -66,11 +68,24 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
       .configureStaticDsl(true)
       .build();
 
+  @RegisterExtension
+  static WireMockExtension legacyStub = WireMockExtension
+      .newInstance()
+      .options(
+          wireMockConfig()
+              .port(10060)
+              .notifier(new WiremockLogNotifier())
+              .asynchronousResponseEnabled(true)
+              .stubRequestLoggingDisabled(false)
+      )
+      .configureStaticDsl(true)
+      .build();
+
   @BeforeEach
   public void reset() {
-    wireMockExtension.resetAll();
+    bcRegistryStub.resetAll();
 
-    wireMockExtensionChes
+    chesStub
         .stubFor(
             post("/chess/uri")
                 .willReturn(
@@ -79,7 +94,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 )
         );
 
-    wireMockExtensionChes
+    chesStub
         .stubFor(
             post("/token/uri")
                 .willReturn(
@@ -230,7 +245,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     reset();
 
-    wireMockExtension
+    bcRegistryStub
         .stubFor(post(urlPathEqualTo(
             "/registry-search/api/v1/businesses/" + clientNumber + "/documents/requests"))
             .withHeader("x-apikey", equalTo("abc1234"))
@@ -243,7 +258,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             )
         );
 
-    wireMockExtension
+    bcRegistryStub
         .stubFor(get(urlPathEqualTo(
             "/registry-search/api/v1/businesses/" + clientNumber + "/documents/aa0a00a0a"))
             .withHeader("x-apikey", equalTo("abc1234"))
@@ -255,7 +270,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             )
         );
 
-    wireMockExtension
+    legacyStub
         .stubFor(
             get(urlPathEqualTo("/search/incorporationOrName"))
             .withQueryParam("incorporationNumber", equalTo("AA0000001"))
@@ -287,7 +302,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
   @DisplayName("Look for Incorporation with ID 'BC0772006'")
   void shouldGetDataFromIncorporation() {
 
-    wireMockExtension
+    bcRegistryStub
         .stubFor(
             get(urlPathEqualTo("/registry-search/api/v1/businesses/search/facets"))
                 .withQueryParam("category", equalTo("status:Active"))
@@ -311,7 +326,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
   @DisplayName("Look for Incorporation with ID 'BC0000000'")
   void shouldGetNoDataFromIncorporation() {
 
-    wireMockExtension
+    bcRegistryStub
         .stubFor(
             get(urlPathEqualTo("/registry-search/api/v1/businesses/search/facets"))
                 .withQueryParam("category", equalTo("status:Active"))
@@ -335,7 +350,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
   @DisplayName("Look for name 'Power Corp'")
   void shouldGetDataFromNameLookup() {
 
-    wireMockExtension
+    bcRegistryStub
         .stubFor(
             get(urlPathEqualTo("/registry-search/api/v1/businesses/search/facets"))
                 .withQueryParam("category", equalTo("status:Active"))
@@ -361,7 +376,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
   @DisplayName("Look for name 'Jhon'")
   void shouldGetNoDataFromNameLookup() {
 
-    wireMockExtension
+    bcRegistryStub
         .stubFor(
             get(urlPathEqualTo("/registry-search/api/v1/businesses/search/facets"))
                 .withQueryParam("category", equalTo("status:Active"))
@@ -381,6 +396,46 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .expectStatus().isOk()
         .expectBody()
         .json(TestConstants.BCREG_NAMELOOKUP_EMPTY);
+  }
+
+  @Test
+  @DisplayName("Send an email for already existing client")
+  void shouldSendEmail(){
+    chesStub
+        .stubFor(
+            post("/chess/uri")
+                .willReturn(
+                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
+
+    chesStub
+        .stubFor(
+            post("/token/uri")
+                .willReturn(
+                    ok(TestConstants.CHES_TOKEN_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
+
+    ///search/incorporationOrName?incorporationNumber=XX1234567&companyName=Example%20Inc.
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/search/incorporationOrName"))
+                .withQueryParam("incorporationNumber", equalTo(TestConstants.EMAIL_REQUEST.incorporation()))
+                .withQueryParam("companyName", equalTo(TestConstants.EMAIL_REQUEST.name()))
+                .willReturn(okJson(TestConstants.LEGACY_OK))
+        );
+
+    client
+        .post()
+        .uri("/api/clients/mail")
+        .body(Mono.just(TestConstants.EMAIL_REQUEST), SendMailRequestDto.class)
+        .exchange()
+        .expectStatus().isAccepted()
+        .expectBody().isEmpty();
+
   }
 
   private static Stream<Arguments> clientDetailing() {
