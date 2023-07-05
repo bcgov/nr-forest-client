@@ -271,6 +271,8 @@ jobs:
     needs:
       - deploy-init
     environment: dev
+    env:
+      ZONE: dev
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
@@ -285,7 +287,7 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
-            -p VITE_NODE_ENV=openshift-dev
+            -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
 
   cypress-run:
     name: "User flow test"
