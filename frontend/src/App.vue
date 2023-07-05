@@ -14,44 +14,21 @@ const keycloak: Keycloak | undefined = inject('keycloak')
 const router = useRouter()
 
 let submitterInformation = ref<Submitter>({
-  firstName: '',
-  lastName: '',
-  email: '',
-  bceidBusinessName: '',
-  userId: ''
+  firstName: keycloak?.tokenParsed?.given_name,
+  lastName: keycloak?.tokenParsed?.family_name,
+  email: keycloak?.tokenParsed?.email,
+  bceidBusinessName: keycloak?.tokenParsed?.display_name,
+  userId: keycloak?.subject
 })
 
 const submitAndRedirect = (page: string) => {
   provide('submitterInformation', submitterInformation.value)
-  router.push({ name: 'form' })
+  router.push({ name: page })
 }
 
-if (
-  keycloak &&
-  keycloak.tokenParsed &&
-  keycloak.tokenParsed.identity_provider === 'idir'
-) {
+if (keycloak?.tokenParsed?.identity_provider === 'idir') {
   submitAndRedirect('internal')
 } else {
-  submitterInformation.value.bceidBusinessName = keycloak?.tokenParsed
-    ? keycloak.tokenParsed.display_name
-    : 'Dev Test Client Name'
-
-  submitterInformation.value.userId = keycloak?.tokenParsed
-    ? keycloak.subject
-    : 'testUserId'
-
-  submitterInformation.value.firstName = keycloak?.tokenParsed
-    ? keycloak.tokenParsed.given_name
-    : 'Maria'
-
-  submitterInformation.value.lastName = keycloak?.tokenParsed
-    ? keycloak.tokenParsed.family_name
-    : 'Martinez'
-
-  submitterInformation.value.email = keycloak?.tokenParsed
-    ? keycloak.tokenParsed.email
-    : 'maria.martinez@gov.bc.ca'
   submitAndRedirect('form')
 }
 </script>

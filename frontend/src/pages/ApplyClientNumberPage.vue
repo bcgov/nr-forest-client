@@ -124,13 +124,13 @@
 </template>
 
 <script setup lang="ts">
+import { reactive, watch, inject, toRef, ref, getCurrentInstance } from 'vue'
+import { useEventBus } from '@vueuse/core'
+import { useRouter } from 'vue-router'
 import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformationWizardStep.vue'
 import AddressWizardStep from '@/pages/applyform/AddressWizardStep.vue'
 import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue'
 import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue'
-import { reactive, watch, inject, toRef, ref } from 'vue'
-import { useEventBus } from '@vueuse/core'
-import { useRouter } from 'vue-router'
 import {
   newFormDataDto,
   type FormDataDto,
@@ -147,6 +147,8 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 const generalErrorBus = useEventBus<string>('general-error-notification')
 
 const router = useRouter()
+
+const instance = getCurrentInstance()
 
 const submitterContact: Contact = {
   locationNames: [],
@@ -234,8 +236,6 @@ const sendEmail = () => {
 }
 
 const logOut = () => {
-  console.log('logOut')
+  instance?.appContext.config.globalProperties.$keycloak?.logoutFn?.()
 }
 </script>
-
-<style scoped></style>
