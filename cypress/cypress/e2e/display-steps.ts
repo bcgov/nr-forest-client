@@ -1,4 +1,4 @@
-import { Then, Given, When } from "@badeball/cypress-cucumber-preprocessor";
+import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
 
 Given("I am on the form page", () => {
   cy.visit("/");
