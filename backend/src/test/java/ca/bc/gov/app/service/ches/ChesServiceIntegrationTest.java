@@ -18,12 +18,16 @@ import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import reactor.test.StepVerifier;
@@ -43,28 +47,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
       .configureStaticDsl(true)
       .build();
 
-  @Test
-  @DisplayName("Send email when authorized")
-  void shouldSendMailWhenAuth() {
 
-    mockOAuthSuccess();
-
-    wireMockExtension
-        .stubFor(
-            post("/chess/uri")
-                .willReturn(
-                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                )
-        );
-
-    service
-        .sendEmail(new ChesRequestDto(List.of("jhon@mail.ca"), "simple body"), "Test")
-        .as(StepVerifier::create)
-        .expectNext("00000000-0000-0000-0000-000000000000")
-        .verifyComplete();
-
-  }
 
   @Test
   @DisplayName("Do not send emails when not authorized")
@@ -109,9 +92,11 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
   }
 
 
-  @Test
-  @DisplayName("Send an email with an HTML body")
-  void shouldSendMailWithHTMLBody() {
+
+  @ParameterizedTest
+  @MethodSource("mailIsOk")
+  @DisplayName("Send OK email")
+  void shouldSendMailWhenAuth(ChesRequestDto body) {
 
     mockOAuthSuccess();
 
@@ -125,34 +110,11 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         );
 
     service
-        .sendEmail(new ChesRequestDto(List.of("jhon@mail.ca"), "<p>I am an HTML</p>"), "Test")
+        .sendEmail(body, "Test")
         .as(StepVerifier::create)
         .expectNext("00000000-0000-0000-0000-000000000000")
         .verifyComplete();
-  }
 
-  @Test
-  @DisplayName("Send an email with text body")
-  void shouldSendMailWithTextBody() {
-
-    mockOAuthSuccess();
-
-    wireMockExtension
-        .stubFor(
-            post("/chess/uri")
-                .willReturn(
-                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                )
-        );
-
-    service
-        .sendEmail(
-            new ChesRequestDto(List.of("jhon@mail.ca"),
-                "Thanks for your email\nYou will hear from us soon"), "Test")
-        .as(StepVerifier::create)
-        .expectNext("00000000-0000-0000-0000-000000000000")
-        .verifyComplete();
   }
 
   @Test
@@ -303,6 +265,16 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 )
         );
+  }
+
+  private static Stream<ChesRequestDto> mailIsOk(){
+    return Stream.of(
+        new ChesRequestDto(List.of("jhon@mail.ca"),
+            "Thanks for your email\nYou will hear from us soon"),
+        new ChesRequestDto(List.of("jhon@mail.ca"), "<p>I am an HTML</p>"),
+        new ChesRequestDto(List.of("jhon@mail.ca"), "simple body")
+        );
+
   }
 
 }

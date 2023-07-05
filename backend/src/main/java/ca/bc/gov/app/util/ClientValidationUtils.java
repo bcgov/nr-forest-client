@@ -33,7 +33,7 @@ public class ClientValidationUtils {
       return;
     }
     //This is just to make sure we removed the mask from FE
-    String localPhoneNumber = phoneNumber.replaceAll("[^0-9]", "");
+    String localPhoneNumber = phoneNumber.replaceAll("\\D", "");
     if (!StringUtils.isNumeric(localPhoneNumber) || StringUtils.length(localPhoneNumber) != 10) {
       errors.rejectValue(field, "The phone number must be a 10-digit number");
     }

@@ -39,6 +39,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class ChesCommonServicesService {
 
+  public static final String FAILED_TO_SEND_EMAIL = "Failed to send email: {}";
   private final ForestClientConfiguration configuration;
   private final WebClient chesApi;
 
@@ -148,7 +149,7 @@ public class ChesCommonServicesService {
     return response ->
         response
             .bodyToMono(ChesMailErrorResponse.class)
-            .doOnNext(error -> log.error("Failed to send email: {}", error))
+            .doOnNext(error -> log.error(FAILED_TO_SEND_EMAIL, error))
             .flatMap(errorMessageDetail -> Mono.error(
                 new UnexpectedErrorException(errorMessageDetail.status(),
                     errorMessageDetail.detail())));
@@ -158,7 +159,7 @@ public class ChesCommonServicesService {
     return response ->
         response
             .bodyToMono(ChesMailErrorResponse.class)
-            .doOnNext(error -> log.error("Failed to send email: {}", error))
+            .doOnNext(error -> log.error(FAILED_TO_SEND_EMAIL, error))
             .map(details ->
                 Optional
                     .ofNullable(details.errors())
@@ -180,7 +181,7 @@ public class ChesCommonServicesService {
         response
             .bodyToMono(ChesMailErrorResponse.class)
             .map(ChesMailErrorResponse::detail)
-            .doOnNext(error -> log.error("Failed to send email: {}", error))
+            .doOnNext(error -> log.error(FAILED_TO_SEND_EMAIL, error))
             .flatMap(errorMessageDetail -> Mono.error(
                 new BadRequestException(errorMessageDetail)));
   }
