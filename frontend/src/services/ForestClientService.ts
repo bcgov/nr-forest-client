@@ -1,7 +1,7 @@
 import type { Address, Contact } from '../dto/ApplyClientNumberDto'
 import type { CodeDescrType } from '@/core/CommonTypes'
 
-export const addNewAddress = (addresses: Address[]) => {
+export const addNewAddress = (addresses: Address[]): number => {
   const blankAddress: Address = {
     locationName: '',
     streetAddress: '',
@@ -15,9 +15,9 @@ export const addNewAddress = (addresses: Address[]) => {
   return newAddresses
 }
 
-export const addNewContact = (contacts: Contact[]) => {
+export const addNewContact = (contacts: Contact[]): number => {
   const blankContact: Contact = {
-    locationNames: { value: '', text: '' } as CodeDescrType[],
+    locationNames: [{ value: '', text: '' }] as CodeDescrType[],
     contactType: { value: '', text: '' } as CodeDescrType,
     firstName: '',
     lastName: '',

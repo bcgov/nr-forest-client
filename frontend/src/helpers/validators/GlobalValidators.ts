@@ -2,7 +2,7 @@
 const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const specialCharacters: RegExp = /^[a-zA-Z0-9\sÀ-ÖØ-öø-ÿ]+$/
 const e164Regex: RegExp = /^((\+?[1-9]\d{1,14})|(\(\d{3}\) \d{3}-\d{4}))$/
-const canadianPostalCodeRegex: RegExp = /^[A-Z]\d[A-Z][ -]?\d[A-Z]\d$/
+const canadianPostalCodeRegex: RegExp = /^(([A-Z]\d){3})$/i
 const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/
 
 /**
@@ -56,10 +56,11 @@ export const isPhoneNumber = (value: string) => {
  * isCanadianPostalCode('a1a1') // false
  * isCanadianPostalCode('a1a1a') // false
  * isCanadianPostalCode(' a1a1a ') // false
- * isCanadianPostalCode('a1a1a1') // false
+ * isCanadianPostalCode('a1a1a1') // true
+ * isCanadianPostalCode('a1A1a1') // true
  * isCanadianPostalCode('A1A1A1') // true
- * isCanadianPostalCode('A1A 1A1') // true
- * isCanadianPostalCode('A1A-1A1') // true
+ * isCanadianPostalCode('A1A 1A1') // false
+ * isCanadianPostalCode('A1A-1A1') // false
  **/
 export const isCanadianPostalCode = (value: string) => {
   if (isNotEmpty(value) === '' && canadianPostalCodeRegex.test(value)) return ''
@@ -106,7 +107,7 @@ export const isUsZipCode = (value: string) => {
  **/
 export const isMaxSize = (maxSize: number) => {
   return (value: string) => {
-    if (isNotEmpty(value) === '' && value.length <= maxSize) return ''
+    if (value && value.length <= maxSize) return ''
     return `This field must be at most ${maxSize} characters long`
   }
 }
@@ -186,6 +187,6 @@ export const isUniqueDescriptive = (): ((
 }
 
 export const isNoSpecialCharacters = (value: string) => {
-  if (isNotEmpty(value) === '' && specialCharacters.test(value)) return ''
+  if (specialCharacters.test(value)) return ''
   return 'No special characters allowed'
 }
