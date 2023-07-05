@@ -30,6 +30,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
+  /* eslint-disable typescript:S6598 */
   (e: 'update:valid', value: { index: number; valid: boolean }): void
 }>()
 

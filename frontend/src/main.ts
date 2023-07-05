@@ -67,6 +67,7 @@ if (!nodeEnv || nodeEnv === 'openshift-dev') {
       realm: 'standard',
       clientId: keycloakClientId
     },
+    /* eslint-disable typescript:S1874 */
     onReady: (keycloak: Keycloak) => {
       app.provide('keycloak', keycloak)
       app.mount('#app')

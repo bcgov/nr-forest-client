@@ -56,6 +56,7 @@ import Info16 from '@carbon/icons-vue/es/incomplete/16'
 
 const props = defineProps<{ modelValue: Array<ProgressData> }>()
 
+/* eslint-disable typescript:S6598 */
 const emit = defineEmits<{ (e: 'go-to', value: number): void }>()
 
 const bus = useEventBus<boolean>('navigation-notification')

@@ -10,6 +10,7 @@ import { useRouter } from 'vue-router'
 import type Keycloak from 'keycloak-js'
 import type { Submitter } from '@/core/CommonTypes'
 
+/* eslint-disable typescript:S1874 */
 const keycloak: Keycloak | undefined = inject('keycloak')
 const router = useRouter()
 
