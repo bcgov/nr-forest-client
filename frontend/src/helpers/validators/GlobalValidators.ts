@@ -1,7 +1,7 @@
 // Defines the used regular expressions
 const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const specialCharacters: RegExp = /^[a-zA-Z0-9\sÀ-ÖØ-öø-ÿ]+$/
-const e164Regex: RegExp = /^(\+?[1-9]\d{1,14})|(\(\d{3}\) \d{3}-\d{4})$/
+const e164Regex: RegExp = /^((\+?[1-9]\d{1,14})|(\(\d{3}\) \d{3}-\d{4}))$/
 const canadianPostalCodeRegex: RegExp = /^[A-Z]\d[A-Z][ -]?\d[A-Z]\d$/
 const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/
 
