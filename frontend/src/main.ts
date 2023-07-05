@@ -15,9 +15,12 @@ import '@bcgov/bc-sans/css/BCSans.css'
 // Import Carbon WebComponents
 import '@carbon/web-components/es'
 import 'carbon-components/css/carbon-components.min.css'
-import '@/assets/theme/components-overrides.scss'
 
 import '@/assets/global.css'
+
+import '@/assets/theme/components-overrides.scss'
+//import '@/assets/theme/variables.scss'
+//import '@bcgov-nr/nr-fsa-theme/style-sheets/carbon-components-overrides.scss';
 
 const app = createApp(App)
 

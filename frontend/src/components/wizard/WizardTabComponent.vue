@@ -3,8 +3,9 @@
     <div class="wizard-wrap">
       <slot name="pre-header"></slot>
       <div>
-        <h4 class="form-header">{{ title }}</h4>
+        <label class="bx--title">{{ title }}</label>
         <p class="inner-text" v-if="subTitle">{{ subTitle }}</p>
+        <br />
       </div>
       <slot name="header"></slot>
     </div>

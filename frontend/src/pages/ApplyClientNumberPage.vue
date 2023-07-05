@@ -17,7 +17,7 @@
           :wizard="slotProps"
         >
           <template v-slot:pre-header>
-            <h4 class="form-header">Before you begin</h4>
+            <label class="bx--title">Before you begin</label>
             <ol type="1" class="bulleted-list">
               <li>
                 A registered business must be in good standing with BC
@@ -47,7 +47,7 @@
           :wizard="slotProps"
         >
           <template v-slot:header>
-            <h3 class="inner-heading">Mailing address</h3>
+            <label class="bx--title">Mailing address</label>
             <p class="inner-text inner-text-spaced">
               This is the primary address you will receive mail.
             </p>
@@ -74,7 +74,7 @@
           :wizard="slotProps"
         >
           <template v-slot:header>
-            <h3 class="inner-heading">Add authorized people to the account</h3>
+            <label class="bx--title">Add authorized people to the account</label>
             <p class="inner-text inner-text-spaced">
               Your first name, last name and email address are from your BCeID.
               If they're incorrect,

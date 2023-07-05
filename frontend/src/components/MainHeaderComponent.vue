@@ -12,10 +12,9 @@
     </div>
     <bx-btn
       v-if="$keycloak"
-      id="logout-btn"
       kind="tertiary"
       iconLayout=""
-      class="bx--btn"
+      class="bx--btn bx--btn-header"
       @click.prevent="$keycloak.logoutFn"
       size="field"
     >

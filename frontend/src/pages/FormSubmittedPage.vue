@@ -12,7 +12,7 @@
       <bx-btn
         kind="primary"
         iconLayout=""
-        class="bx--btn rounded"
+        class="bx--btn"
         @click.prevent="newFormSubmission()"
         size="field"
       >

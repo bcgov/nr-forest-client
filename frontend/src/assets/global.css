@@ -2,17 +2,8 @@
   font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
 }
 
-.bx--btn {
-  width: 261px;
-  padding: 3px;
-}
-
-.rounded {
-  border-radius: 4px !important;
-}
-
-.bx--btn > button {
-  border-radius: 4px !important;
+hr {
+  width: 100%;
 }
 
 .bulleted-list {
@@ -22,19 +13,6 @@
 
 .bulleted-list li {
   padding: 5px;
-}
-
-.notification {
-  max-width: 100%;
-}
-.bx--inline-notification__text-wrapper {
-  display: flex-root;
-}
-
-.inner-heading {
-  font-size: 20px;
-  line-height: 28px;
-  margin-bottom: 8px;
 }
 
 .inner-text {
@@ -136,19 +114,6 @@
   height: 414px;
   flex-grow: 1;
   fill: var(--cds-hover-primary, #0353e9);
-}
-
-bx-btn::part(button) {
-  border-radius: 4px !important;
-}
-
-bx-btn#logout-btn::part(button) {
-  border: solid 1px white;
-  color: white;
-}
-
-hr {
-  width: 100%;
 }
 
 .wizard-mid-content {

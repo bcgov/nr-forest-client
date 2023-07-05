@@ -1,6 +1,6 @@
 <template>
   <div class="bordered">
-    <h3 class="inner-heading">Business information</h3>
+    <label class="bx--title">Business information</label>
     <div>
       <p class="inner-spotlight-topic">
         {{ formData.businessInformation.businessName }}
@@ -25,7 +25,7 @@
   </div>
 
   <div class="bordered">
-    <h3 class="inner-heading">Address</h3>
+    <label class="bx--title">Address</label>
 
     <div
       v-for="(address, index) in formData.location.addresses"
@@ -56,7 +56,7 @@
   </div>
 
   <div class="bordered">
-    <h3 class="inner-heading">Contacts</h3>
+    <label class="bx--title">Contacts</label>
 
     <div
       v-for="(contact, index) in formData.location.contacts"
