@@ -10,8 +10,8 @@ Feature: Steps are displayed correctly
 
     Examples:
       | width |
-      |   672 |
-      |  1200 |
+      | 672   |
+      | 1200  |
 
   # screen width below 672
   Scenario Outline: Steps are displayed vertically
@@ -21,5 +21,5 @@ Feature: Steps are displayed correctly
 
     Examples:
       | width |
-      |   671 |
-      |   400 |
+      | 671   |
+      | 400   |
