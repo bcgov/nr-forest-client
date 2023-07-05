@@ -41,7 +41,15 @@ export default defineConfig(({ command, mode }) => {
         reporter: ['text', 'json', 'lcov'],
         all: true,
         clean: true,
-        src: 'src'
+        exclude: [
+          '**/node_modules/**',
+          '**/tests/**',
+          '**/public/**',
+          '.eslintrc.cjs',
+          '.eslintrc.js',
+          'components.d.ts',
+          'env.d.ts'
+        ]
       },
       environment: 'jsdom'
     }
