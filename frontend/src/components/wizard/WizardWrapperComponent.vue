@@ -315,7 +315,8 @@ exitBus.on((event: Record<string, boolean | null>) => {
 
 const processAndLogOut = () => {
   if (mailAndLogOut.value) {
-    props.mail()
+    props.mail();
+    $keycloak.logoutFn;
   }
   props.end()
 }
