@@ -53,7 +53,7 @@ watch(
 //We set it as a separated ref due to props not being updatable
 const selectedValue = ref(props.initialValue)
 //We set the value prop as a reference for update reason
-emit('empty', isEmpty(props.modelValue))
+emit('empty', isEmpty(props.initialValue))
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
   const reference = newValue
