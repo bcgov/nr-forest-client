@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
 import TextInputComponent from '@/components/forms/TextInputComponent.vue'
+import { mask } from 'vue-the-mask'
 
 describe('Text Input Component', () => {
   const id = 'my-input'
@@ -15,6 +16,9 @@ describe('Text Input Component', () => {
         placeholder: '',
         modelValue: '',
         validations: []
+      },
+      directives: {
+        mask: () => {}
       }
     })
 
@@ -29,6 +33,9 @@ describe('Text Input Component', () => {
         placeholder: '',
         modelValue: '',
         validations: []
+      },
+      directives: {
+        mask: () => {}
       }
     })
 
@@ -48,6 +55,9 @@ describe('Text Input Component', () => {
         placeholder: '',
         modelValue: '',
         validations
+      },
+      directives: {
+        mask: () => {}
       }
     })
 
@@ -66,6 +76,9 @@ describe('Text Input Component', () => {
         placeholder: '',
         modelValue: '',
         validations: []
+      },
+      directives: {
+        mask: () => {}
       }
     })
 

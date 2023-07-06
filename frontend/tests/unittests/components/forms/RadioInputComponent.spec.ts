@@ -19,7 +19,8 @@ describe('Radio Input Component', () => {
         id,
         label: 'Options',
         modelValue: values,
-        validations: []
+        validations: [],
+        initialValue: ''
       }
     })
 
@@ -36,7 +37,8 @@ describe('Radio Input Component', () => {
         id,
         label: 'Options',
         modelValue: values,
-        validations
+        validations,
+        initialValue: ''
       }
     })
 
@@ -59,7 +61,8 @@ describe('Radio Input Component', () => {
         id,
         label: 'Options',
         modelValue: values,
-        validations
+        validations,
+        initialValue: ''
       }
     })
 
@@ -81,7 +84,8 @@ describe('Radio Input Component', () => {
         id,
         label: 'Options',
         modelValue: values,
-        validations
+        validations,
+        initialValue: ''
       }
     })
 
