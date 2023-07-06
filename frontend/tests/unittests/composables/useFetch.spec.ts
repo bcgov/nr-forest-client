@@ -16,7 +16,7 @@ describe('useFetch', () => {
       .spyOn(axios, 'request')
       .mockImplementation(() => Promise.resolve({ data: 'Mock data' }))
 
-    const responseData = ref(null)
+    const responseData = ref('')
 
     const TestComponent = {
       template: '<div></div>',
@@ -50,17 +50,17 @@ describe('useFetch', () => {
     axiosMock = vi
       .spyOn(axios, 'request')
       .mockImplementation(() => Promise.resolve({ data: 'Mock data' }))
-    const responseData = ref(null)
+    const responseData = ref('')
 
     const TestComponent = {
       template: '<div></div>',
       setup: () => {
-        const { fetch, data } = usePost(
+        const { fetch, responseBody } = usePost(
           '/api/data',
           { name: 'test' },
           { skip: true }
         )
-        watch(data, (value) => (responseData.value = value))
+        watch(responseBody, (value) => (responseData.value = value))
         fetch()
       }
     }
