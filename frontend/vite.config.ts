@@ -48,7 +48,9 @@ export default defineConfig(({ command, mode }) => {
           '.eslintrc.cjs',
           '.eslintrc.js',
           'components.d.ts',
-          'env.d.ts'
+          'env.d.ts',
+          'src/routes.ts',
+          'src/shims-vue.d.ts '
         ]
       },
       environment: 'jsdom'
