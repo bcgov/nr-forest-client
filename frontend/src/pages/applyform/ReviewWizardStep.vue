@@ -20,7 +20,7 @@
       @click.prevent="goToStep(0)"
     >
       <span>Edit business information</span>
-      <edit16 slot="icon" />
+      <Edit16 slot="icon" />
     </bx-btn>
   </div>
 
@@ -51,7 +51,7 @@
       @click.prevent="goToStep(1)"
     >
       <span>Edit address</span>
-      <edit16 slot="icon" />
+      <Edit16 slot="icon" />
     </bx-btn>
   </div>
 
@@ -71,11 +71,7 @@
         {{ contact.firstName }} {{ contact.lastName }}
       </p>
       <p>
-        {{
-          contact.locationNames
-            .map((codeDesc: CodeDescrType) => codeDesc.text)
-            .join(', ')
-        }}
+        {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
       </p>
       <p>{{ contact.contactType.text }}</p>
       <p>{{ contact.email }}</p>
@@ -90,7 +86,7 @@
       @click.prevent="goToStep(2)"
     >
       <span>Edit contacts</span>
-      <edit16 slot="icon" />
+      <Edit16 slot="icon" />
     </bx-btn>
   </div>
 </template>
@@ -99,9 +95,7 @@
 import { watch, ref } from 'vue'
 
 import type { FormDataDto } from '@/dto/ApplyClientNumberDto'
-import edit16 from '@carbon/icons-vue/es/edit/16'
-import type { CodeDescrType } from '@/core/CommonTypes'
-import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
+import Edit16 from '@carbon/icons-vue/es/edit/16'
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{

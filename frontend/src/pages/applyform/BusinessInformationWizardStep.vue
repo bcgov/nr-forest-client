@@ -82,7 +82,7 @@ const toggleErrorMessages = (
     exitBus.emit({ goodStanding, duplicated })
   } else {
     navigationBus.emit(true)
-    exitBus.emit({ goodStanding: false, goodStanding: false })
+    exitBus.emit({ goodStanding: false, duplicated: false })
   }
 }
 

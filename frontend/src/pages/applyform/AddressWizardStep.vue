@@ -36,14 +36,14 @@
     size="field"
   >
     <span>Add another address</span>
-    <add16 slot="icon" />
+    <Add16 slot="icon" />
   </bx-btn>
 </template>
 
 <script setup lang="ts">
 import { watch, ref, computed, reactive } from 'vue'
 import { useEventBus } from '@vueuse/core'
-import add16 from '@carbon/icons-vue/es/add/16'
+import Add16 from '@carbon/icons-vue/es/add/16'
 import {
   type FormDataDto,
   type Address,

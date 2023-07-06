@@ -19,8 +19,6 @@ import 'carbon-components/css/carbon-components.min.css'
 import '@/assets/global.css'
 
 import '@/assets/theme/components-overrides.scss'
-//import '@/assets/theme/variables.scss'
-//import '@bcgov-nr/nr-fsa-theme/style-sheets/carbon-components-overrides.scss';
 
 const app = createApp(App)
 
