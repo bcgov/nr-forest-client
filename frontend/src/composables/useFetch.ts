@@ -2,8 +2,6 @@ import { ref, type Ref } from 'vue'
 import axios, { type AxiosError } from 'axios'
 import { backendUrl, frontendUrl } from '@/CoreConstants'
 
-axios.defaults.headers.common['Access-Control-Allow-Origin'] = frontendUrl
-
 /**
  * Fetch data from external resource
  * @param url resource URI
