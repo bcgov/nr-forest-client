@@ -193,8 +193,8 @@ watch([response], () => {
 })
 
 watch([error], () => {
-  if (error.value.status === 400) {
-    const validationErrors: ValidationMessageType[] = error.value.data
+  if (error.value.response.status === 400) {
+    const validationErrors: ValidationMessageType[] = error.value.response.data
     const fieldIds = [
       'businessInformation.businessType',
       'businessInformation.legalType',

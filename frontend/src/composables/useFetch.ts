@@ -98,7 +98,7 @@ export const usePost = (url: string, body: any, config: any = {}) => {
       response.value = result
       responseBody.value = result.data
     } catch (ex: any) {
-      error.value = ex.response
+      error.value = ex
     } finally {
       loading.value = false
     }
