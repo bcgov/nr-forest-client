@@ -52,7 +52,7 @@ import {
 import { useFetchTo } from '@/composables/useFetch'
 import type { ModalNotification } from '@/dto/CommonTypesDto'
 
-import Note from '@/common/NoteComponent.vue'
+import Note from '@/components/NoteComponent.vue'
 import { isUniqueDescriptive } from '@/helpers/validators/GlobalValidators'
 
 //Defining the props and emiter to reveice the data and emit an update

@@ -58,7 +58,7 @@ import { useFetchTo } from '@/composables/useFetch'
 
 import type { CodeNameType, ModalNotification } from '@/dto/CommonTypesDto'
 
-import Note from '@/common/NoteComponent.vue'
+import Note from '@/components/NoteComponent.vue'
 
 import { isUniqueDescriptive } from '@/helpers/validators/GlobalValidators'
 
