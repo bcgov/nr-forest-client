@@ -48,10 +48,10 @@
         >
           <template v-slot:header>
             <label class="bx--title">Mailing address</label>
-            <p class="inner-text inner-text-spaced">
+            <p class="bx--description bx--description-spaced">
               This is the primary address you will receive mail.
             </p>
-            <p class="inner-text inner-text-spaced">
+            <p class="bx--description bx--description-spaced">
               If you’d like another address, for example a seed orchard or if
               your street address is different from your mailing address, select
               the ”Add another address” button below.
@@ -77,7 +77,7 @@
             <label class="bx--title"
               >Add authorized people to the account</label
             >
-            <p class="inner-text inner-text-spaced">
+            <p class="bx--description bx--description-spaced">
               Your first name, last name and email address are from your BCeID.
               If they're incorrect,
               <a
@@ -89,7 +89,7 @@
               to update them before submitting your form. Be sure to add your
               phone number, location and role.
             </p>
-            <p class="inner-text inner-text-spaced">
+            <p class="bx--description bx--description-spaced">
               To add another contact to the account, select "Add another
               contact" button below.
             </p>

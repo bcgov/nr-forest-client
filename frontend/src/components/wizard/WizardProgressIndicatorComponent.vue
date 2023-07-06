@@ -26,16 +26,16 @@
           <span
             v-else
             :class="{
-              'inner-text': true,
-              'inner-text-disabled': !step.enabled
+              'bx--description': true,
+              'bx--description-disabled': !step.enabled
             }"
             >{{ step.title }}</span
           >
         </p>
         <span
           :class="{
-            'inner-text': true,
-            'inner-text-disabled': !step.enabled
+            'bx--description': true,
+            'bx--description-disabled': !step.enabled
           }"
           >{{ step.subtitle }}</span
         >

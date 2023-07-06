@@ -3,7 +3,7 @@
     <div class="wizard-head">
       <div class="wizard-head-text">
         <h4 class="form-header">{{ title }}</h4>
-        <p class="inner-text" v-if="subtitle">{{ subtitle }}</p>
+        <p class="bx--description" v-if="subtitle">{{ subtitle }}</p>
       </div>
 
       <bx-toast-notification
@@ -64,7 +64,7 @@
     >
       <hr />
 
-      <span class="inner-text" v-if="!isStateValid(currentTab)"
+      <span class="bx--description" v-if="!isStateValid(currentTab)"
         >All fields must be filled out correctly to enable the "Next" button
         below</span
       >

@@ -96,13 +96,6 @@
   border-radius: 0.25rem !important;
 }
 
-.#{variables.$bcgov-prefix}--title {
-  font-weight: 400;
-  font-size: 1.75rem;
-  line-height: 2.25rem;
-  color: colors.$gray-100;
-}
-
 .#{variables.$bcgov-prefix}--pagination .#{variables.$bcgov-prefix}--select__item-count .#{variables.$bcgov-prefix}--select-input__wrapper select.#{variables.$bcgov-prefix}--select-input,
 .#{variables.$bcgov-prefix}--pagination .#{variables.$bcgov-prefix}--select__page-number .#{variables.$bcgov-prefix}--select-input__wrapper select.#{variables.$bcgov-prefix}--select-input {
   border-radius: 0.25rem;
@@ -249,4 +242,22 @@ li.#{variables.$bcgov-prefix}--overflow-menu-options__option:first-child {
 
 li.#{variables.$bcgov-prefix}--overflow-menu-options__option:last-child {
   border-radius: 0 0 0.25rem 0.25rem;
+}
+
+.#{variables.$bcgov-prefix}--title {
+  font-weight: 400;
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  color: colors.$gray-100;
+}
+
+.#{variables.$bcgov-prefix}--description {
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: colors.$gray-70;
+}
+
+.#{variables.$bcgov-prefix}--description-disabled {
+  color: colors.$gray-100;
 }

@@ -11,7 +11,6 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AddressGroupComponent: typeof import('./src/components/grouping/AddressGroupComponent.vue')['default']
     AutoCompleteInputComponent: typeof import('./src/components/forms/AutoCompleteInputComponent.vue')['default']
-    BusinessInformationWizardStep: typeof import('./src/pages/applyform/BusinessInformationWizardStep.vue')['default']
     ContactGroupComponent: typeof import('./src/components/grouping/ContactGroupComponent.vue')['default']
     DataFetcher: typeof import('./src/components/DataFetcher.vue')['default']
     DisplayBlockComponent: typeof import('./src/components/visuals/DisplayBlockComponent.vue')['default']

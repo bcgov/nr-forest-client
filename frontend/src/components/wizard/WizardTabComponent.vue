@@ -4,7 +4,7 @@
       <slot name="pre-header"></slot>
       <div>
         <label class="bx--title">{{ title }}</label>
-        <p class="inner-text" v-if="subTitle">{{ subTitle }}</p>
+        <p class="bx--description" v-if="subTitle">{{ subTitle }}</p>
         <br />
       </div>
       <slot name="header"></slot>
