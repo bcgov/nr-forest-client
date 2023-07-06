@@ -16,14 +16,23 @@
         >{{ option.name }}</bx-dropdown-item
       >
     </bx-dropdown>
-    <bx-tag v-for="tag in items" title="Clear selection" class="bx-tag">
-      {{ tag }} <CloseOutline16 @click="removeFromSelection(tag)" />
+    <bx-tag
+      v-for="(tag, index) in items"
+      title="Clear selection"
+      class="bx-tag"
+      :key="index"
+    >
+      {{ tag }}
+      <CloseOutline16
+        :id="'close_' + index"
+        @click="removeFromSelection(tag)"
+      />
     </bx-tag>
   </div>
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { type CodeNameType, isEmpty } from '@/dto/CommonTypesDto'
+import { type CodeNameType } from '@/dto/CommonTypesDto'
 import CloseOutline16 from '@carbon/icons-vue/es/close/16'
 
 //Define the input properties for this component
@@ -32,7 +41,7 @@ const props = defineProps<{
   label: string
   tip: string
   modelValue: Array<CodeNameType>
-  selectedValues: Array<string>
+  selectedValues?: Array<string>
   initialValue: string
   validations: Array<Function>
   errorMessage?: string
@@ -59,14 +68,14 @@ watch(
 //We set it as a separated ref due to props not being updatable
 const selectedValue = ref(props.initialValue)
 //We set the value prop as a reference for update reason
-emit('empty', isEmpty(props.modelValue))
+emit('empty', props.selectedValues ? props.initialValue.length === 0 : true)
 
 //Watch for changes on the input
 watch([selectedValue], () => validateInput(selectedValue.value))
 
 //We call all the validations
 const validateInput = (newValue: any) => {
-  if (props.validations) {
+  if (props.validations && props.validations.length > 0) {
     error.value =
       props.validations
         .map((validation) => validation(newValue))
