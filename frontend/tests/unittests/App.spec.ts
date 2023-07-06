@@ -65,6 +65,9 @@ describe('App.vue', () => {
   it('should set submitter information and redirect for idir identity provider', async () => {
     const wrapper = mount(App, {
       global: {
+        stubs: {
+          MainHeaderComponent: TestComponent
+        },
         plugins: [router],
         provide: {
           keycloak: mockKeycloak
@@ -73,8 +76,6 @@ describe('App.vue', () => {
     })
 
     await wrapper.vm.$nextTick()
-
-    console.log(wrapper.html())
 
     const span = await wrapper.find('#provide-test')
 
@@ -89,6 +90,9 @@ describe('App.vue', () => {
     mockKeycloak.tokenParsed.identity_provider = 'bceid'
     const wrapper = mount(App, {
       global: {
+        stubs: {
+          MainHeaderComponent: TestComponent
+        },
         plugins: [router],
         provide: {
           keycloak: mockKeycloak
@@ -97,8 +101,6 @@ describe('App.vue', () => {
     })
 
     await wrapper.vm.$nextTick()
-
-    console.log(wrapper.html())
 
     const span = await wrapper.find('#provide-test')
 
