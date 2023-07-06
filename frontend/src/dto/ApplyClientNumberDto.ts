@@ -1,4 +1,4 @@
-import type { CodeDescrType } from '@/core/CommonTypesDto'
+import type { CodeDescrType } from '@/dto/CommonTypesDto'
 
 export interface Address {
   locationName: string

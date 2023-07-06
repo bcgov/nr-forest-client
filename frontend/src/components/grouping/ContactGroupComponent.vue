@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, watch, ref } from 'vue'
 import Delete16 from '@carbon/icons-vue/es/trash-can/16'
-import type { CodeDescrType, CodeNameType } from '@/core/CommonTypesDto'
+import type { CodeDescrType, CodeNameType } from '@/dto/CommonTypesDto'
 import type { Contact } from '@/dto/ApplyClientNumberDto'
 import {
   isNotEmpty,

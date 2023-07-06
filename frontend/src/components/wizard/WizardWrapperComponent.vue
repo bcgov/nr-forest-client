@@ -163,7 +163,7 @@ import ArrowRight16 from '@carbon/icons-vue/es/arrow--right/16'
 import Save16 from '@carbon/icons-vue/es/save/16'
 import LogOut16 from '@carbon/icons-vue/es/logout/16'
 
-import type { ModalNotification } from '@/core/CommonTypesDto'
+import type { ModalNotification } from '@/dto/CommonTypesDto'
 
 const props = defineProps<{
   title: string

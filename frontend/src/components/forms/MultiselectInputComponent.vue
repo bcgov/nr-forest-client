@@ -23,7 +23,7 @@
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { type CodeNameType, isEmpty } from '@/core/CommonTypesDto'
+import { type CodeNameType, isEmpty } from '@/dto/CommonTypesDto'
 import CloseOutline16 from '@carbon/icons-vue/es/close/16'
 
 //Define the input properties for this component

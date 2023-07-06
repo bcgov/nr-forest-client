@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { isEmpty, type BusinessSearchResult } from '@/core/CommonTypesDto'
+import { isEmpty, type BusinessSearchResult } from '@/dto/CommonTypesDto'
 
 //Define the input properties for this component
 const props = defineProps<{

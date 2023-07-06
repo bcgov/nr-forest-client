@@ -139,7 +139,7 @@ import {
   type Contact
 } from '@/dto/ApplyClientNumberDto'
 
-import type { Submitter, ValidationMessageType } from '@/core/CommonTypesDto'
+import type { Submitter, ValidationMessageType } from '@/dto/CommonTypesDto'
 import { usePost } from '@/composables/useFetch'
 
 const submitterInformation = inject<Submitter>('submitterInformation')

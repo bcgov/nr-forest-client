@@ -2,7 +2,7 @@
 import { reactive, watch, computed, ref } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import Delete16 from '@carbon/icons-vue/es/trash-can/16'
-import type { CodeNameType, BusinessSearchResult } from '@/core/CommonTypesDto'
+import type { CodeNameType, BusinessSearchResult } from '@/dto/CommonTypesDto'
 import type { Address } from '@/dto/ApplyClientNumberDto'
 import {
   isNotEmpty,

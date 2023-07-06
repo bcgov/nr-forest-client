@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { type CodeDescrType, isEmpty } from '@/core/CommonTypesDto'
+import { type CodeDescrType, isEmpty } from '@/dto/CommonTypesDto'
 
 const props = defineProps<{
   id: string

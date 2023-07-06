@@ -19,7 +19,7 @@
  * @see {@link SubmissionValidators.spec.ts}
  */
 import { useEventBus } from '@vueuse/core'
-import type { ValidationMessageType } from '@/core/CommonTypesDto'
+import type { ValidationMessageType } from '@/dto/CommonTypesDto'
 
 /**
  * Event bus for submission error notifications.
