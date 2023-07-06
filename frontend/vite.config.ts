@@ -52,7 +52,8 @@ export default defineConfig(({ command, mode }) => {
           'src/routes.ts',
           'src/shims-vue.d.ts ',
           'vite.config.ts',
-          '**/*Dto.ts'
+          '**/*Dto.ts',
+          'src/CoreConstants.ts'
         ]
       },
       environment: 'jsdom'
