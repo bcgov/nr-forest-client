@@ -47,7 +47,7 @@
 <script setup lang="ts">
 import { toRef, watch } from 'vue'
 import { useEventBus } from '@vueuse/core'
-import type { ProgressData } from '@/core/CommonTypes'
+import type { ProgressData } from '@/core/CommonTypesDto'
 
 import Checkmark16 from '@carbon/icons-vue/es/checkmark--outline/16'
 import Error16 from '@carbon/icons-vue/es/error--outline/16'

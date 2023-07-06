@@ -1,5 +1,5 @@
 import type { Address, Contact } from '../dto/ApplyClientNumberDto'
-import type { CodeDescrType } from '@/core/CommonTypes'
+import type { CodeDescrType } from '@/core/CommonTypesDto'
 
 export const addNewAddress = (addresses: Address[]): number => {
   const blankAddress: Address = {

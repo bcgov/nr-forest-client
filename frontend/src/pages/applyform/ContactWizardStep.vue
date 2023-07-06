@@ -56,7 +56,7 @@ import {
 } from '@/dto/ApplyClientNumberDto'
 import { useFetchTo } from '@/composables/useFetch'
 
-import type { CodeNameType, ModalNotification } from '@/core/CommonTypes'
+import type { CodeNameType, ModalNotification } from '@/core/CommonTypesDto'
 
 import Note from '@/common/NoteComponent.vue'
 

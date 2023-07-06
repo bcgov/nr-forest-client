@@ -50,7 +50,9 @@ export default defineConfig(({ command, mode }) => {
           'components.d.ts',
           'env.d.ts',
           'src/routes.ts',
-          'src/shims-vue.d.ts '
+          'src/shims-vue.d.ts ',
+          'vite.config.ts',
+          '**/*Dto.ts'
         ]
       },
       environment: 'jsdom'

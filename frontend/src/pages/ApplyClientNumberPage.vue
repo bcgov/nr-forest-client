@@ -74,7 +74,9 @@
           :wizard="slotProps"
         >
           <template v-slot:header>
-            <label class="bx--title">Add authorized people to the account</label>
+            <label class="bx--title"
+              >Add authorized people to the account</label
+            >
             <p class="inner-text inner-text-spaced">
               Your first name, last name and email address are from your BCeID.
               If they're incorrect,
@@ -137,7 +139,7 @@ import {
   type Contact
 } from '@/dto/ApplyClientNumberDto'
 
-import type { Submitter, ValidationMessageType } from '@/core/CommonTypes'
+import type { Submitter, ValidationMessageType } from '@/core/CommonTypesDto'
 import { usePost } from '@/composables/useFetch'
 
 const submitterInformation = inject<Submitter>('submitterInformation')

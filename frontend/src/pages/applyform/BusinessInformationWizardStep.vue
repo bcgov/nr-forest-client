@@ -2,7 +2,10 @@
 import { watch, computed, ref, reactive } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import { useFetchTo } from '@/composables/useFetch'
-import { type BusinessSearchResult, ClientTypeEnum } from '@/core/CommonTypes'
+import {
+  type BusinessSearchResult,
+  ClientTypeEnum
+} from '@/core/CommonTypesDto'
 import type {
   FormDataDto,
   ForestClientDetailsDto

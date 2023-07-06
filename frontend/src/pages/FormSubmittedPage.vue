@@ -27,7 +27,7 @@ import { inject } from 'vue'
 import { useRouter } from 'vue-router'
 import badgePictogram from '@carbon/pictograms/es/badge'
 
-import type { Submitter } from '@/core/CommonTypes'
+import type { Submitter } from '@/core/CommonTypesDto'
 import useSvg from '@/composables/useSvg'
 
 const submitterInformation = inject<Submitter>('submitterInformation')

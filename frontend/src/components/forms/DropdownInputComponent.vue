@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { type CodeNameType, isEmpty } from '@/core/CommonTypes'
+import { type CodeNameType, isEmpty } from '@/core/CommonTypesDto'
 
 //Define the input properties for this component
 const props = defineProps<{

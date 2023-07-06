@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { isEmpty, type BusinessSearchResult } from '@/core/CommonTypes'
+import { isEmpty, type BusinessSearchResult } from '@/core/CommonTypesDto'
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -89,7 +89,7 @@ const emitValueChange = (newValue: string): void => {
   const reference = props.contents.find((entry) => entry.name === newValue)
   emit('update:model-value', newValue)
   emit('empty', isEmpty(reference))
-  
+
   /* 
   Fire the update:selected-value with undefined when:
   - there was an item previously selected (clicked);

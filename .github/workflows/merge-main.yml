@@ -80,7 +80,7 @@ jobs:
           dir: frontend
           sonar_args: >
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.exclusions=**/coverage/**/*,**/dist/**/*,**/tests/**/*,**/public/**/*,**/node_modules/**,.eslintrc.cjs,.eslintrc.js,components.d.ts,env.d.ts,src/routes.ts,src/shims-vue.d.ts
+            -Dsonar.exclusions=**/coverage/**/*,**/dist/**/*,**/tests/**/*,**/public/**/*,**/node_modules/**,.eslintrc.cjs,.eslintrc.js,components.d.ts,env.d.ts,src/routes.ts,src/shims-vue.d.ts,vite.config.ts,**/*Dto.ts
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-frontend
           sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}

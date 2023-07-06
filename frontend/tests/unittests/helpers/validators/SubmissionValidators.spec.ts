@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useEventBus } from '@vueuse/core'
-import type { ValidationMessageType } from '@/core/CommonTypes'
+import type { ValidationMessageType } from '@/core/CommonTypesDto'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
 
 describe('SubmissionValidators', () => {

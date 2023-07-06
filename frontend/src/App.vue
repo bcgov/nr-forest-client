@@ -8,7 +8,7 @@ import { inject, provide, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import type Keycloak from 'keycloak-js'
-import type { Submitter } from '@/core/CommonTypes'
+import type { Submitter } from '@/core/CommonTypesDto'
 
 /* eslint-disable typescript:S1874 */
 const keycloak: Keycloak | undefined = inject('keycloak')

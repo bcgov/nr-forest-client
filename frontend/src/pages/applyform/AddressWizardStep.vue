@@ -50,7 +50,7 @@ import {
   emptyAddress
 } from '@/dto/ApplyClientNumberDto'
 import { useFetchTo } from '@/composables/useFetch'
-import type { ModalNotification } from '@/core/CommonTypes'
+import type { ModalNotification } from '@/core/CommonTypesDto'
 
 import Note from '@/common/NoteComponent.vue'
 import { isUniqueDescriptive } from '@/helpers/validators/GlobalValidators'
