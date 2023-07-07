@@ -552,3 +552,18 @@ frontend/yarn-error.log
 
 frontend/nr-forest-client-report.*
 .DS_Store
+
+cypress/results/*
+cypress/reports/*
+cypress/screenshots/*
+cypress/videos/*
+
+cypress/cypress/results/*
+cypress/cypress/reports/*
+cypress/cypress/screenshots/*
+cypress/cypress/videos/*
+
+frontend/cypress/results/*
+frontend/cypress/reports/*
+frontend/cypress/screenshots/*
+frontend/cypress/videos/*
