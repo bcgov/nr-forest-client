@@ -1,6 +1,6 @@
 <template>
   <form>
-    <div>
+    <div class="bx--content">
       <wizard-wrapper-component
         title="New client application"
         subtitle="All fields are mandatory unless noted"
@@ -48,14 +48,15 @@
         >
           <template v-slot:header>
             <label class="bx--title">Mailing address</label>
-            <p class="bx--description bx--description-spaced">
+            <p class="bx--description">
               This is the primary address you will receive mail.
             </p>
-            <p class="bx--description bx--description-spaced">
+            <p class="bx--description">
               If you’d like another address, for example a seed orchard or if
               your street address is different from your mailing address, select
               the ”Add another address” button below.
             </p>
+            <br />
           </template>
           <template v-slot="{ validateStep, active }">
             <address-wizard-step
@@ -77,7 +78,7 @@
             <label class="bx--title"
               >Add authorized people to the account</label
             >
-            <p class="bx--description bx--description-spaced">
+            <p class="bx--description">
               Your first name, last name and email address are from your BCeID.
               If they're incorrect,
               <a
@@ -89,7 +90,7 @@
               to update them before submitting your form. Be sure to add your
               phone number, location and role.
             </p>
-            <p class="bx--description bx--description-spaced">
+            <p class="bx--description">
               To add another contact to the account, select "Add another
               contact" button below.
             </p>

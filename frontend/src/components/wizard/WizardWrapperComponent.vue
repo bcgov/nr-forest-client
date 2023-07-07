@@ -2,7 +2,7 @@
   <div class="wizard-wrap">
     <div class="wizard-head">
       <div class="wizard-head-text">
-        <h4 class="form-header">{{ title }}</h4>
+        <label class="bx--title">{{ title }}</label>
         <p class="bx--description" v-if="subtitle">{{ subtitle }}</p>
       </div>
 

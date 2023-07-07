@@ -15,22 +15,9 @@ hr {
   padding-bottom: 0.625rem;
 }
 
-.bx--description-spaced {
-  margin-bottom: 32px;
-}
-
-.form-header {
-  font-size: 28px;
-}
-
-.visible-disabled {
-  color: #525252;
-}
-
 .wizard-wrap {
   display: flex;
   flex-direction: column;
-  padding: 0px 32px;
   gap: 40px;
 }
 
@@ -61,9 +48,11 @@ hr {
 .wizard-head {
   display: flex;
 }
+
 .wizard-head-text {
   flex-grow: 1;
 }
+
 .wizard-head-toast {
   position: fixed;
   top: 80px;
@@ -72,8 +61,8 @@ hr {
 
 .submission-head {
   display: flex;
-  margin: 96px 40px;
 }
+
 .submission-text {
   width: 620px;
   flex-grow: 1;

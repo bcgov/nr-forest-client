@@ -38,7 +38,6 @@ header {
   top: 0px;
   position: static;
   width: 100%;
-  margin-bottom: 24px;
 }
 
 header h1 {

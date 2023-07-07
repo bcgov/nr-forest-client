@@ -66,6 +66,7 @@
   margin-top: 1rem;
   border-radius: 0.25rem;
 }
+
 .#{variables.$bcgov-prefix}--modal-footer {
   height: auto;
   margin: 0 1rem 1rem;
@@ -85,7 +86,7 @@
   border-radius: 0.25rem !important;
   width: 15.188rem !important;
   padding: 0.188rem;
-};
+}
 
 .#{variables.$bcgov-prefix}--btn-header::part(button) {
   border: solid 0.063rem colors.$white;
@@ -167,6 +168,7 @@ nav.#{variables.$bcgov-prefix}--side-nav {
 }
 
 .#{variables.$bcgov-prefix}--content {
+  margin: 2.5rem;
   padding: 0 !important;
 }
 
