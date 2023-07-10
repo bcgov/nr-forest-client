@@ -127,8 +127,9 @@ jobs:
           commands: |
             npm ci
             npm run coverage
+            ls coverage/lcov.info
           dir: frontend
-          sonar_args: >            
+          sonar_args: >
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info            
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-frontend
