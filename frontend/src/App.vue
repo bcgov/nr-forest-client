@@ -1,5 +1,5 @@
 <template>
-  <main-header-component></main-header-component>
+  <main-header-component v-if="!$route.meta.hideHeader"></main-header-component>
   <router-view></router-view>
 </template>
 

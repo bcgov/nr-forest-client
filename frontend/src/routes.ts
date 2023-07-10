@@ -1,18 +1,24 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import {
+  createRouter,
+  createWebHashHistory,
+  type RouteRecordRaw
+} from 'vue-router'
 
 import ReviewApplicationPage from '@/pages/ReviewApplicationPage.vue'
 import ApplyClientNumber from '@/pages/ApplyClientNumberPage.vue'
 import FormSubmittedPage from '@/pages/FormSubmittedPage.vue'
+import LandingPage from '@/pages/LandingPage.vue'
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: '/landing', // Should be the root path in the future
     name: 'home',
-    component: ApplyClientNumber, // Should be HomePage in the future
+    component: LandingPage,
     props: true
   },
   {
     path: '/new-client',
+    alias: '/',
     name: 'form',
     component: ApplyClientNumber,
     props: true
