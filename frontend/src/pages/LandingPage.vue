@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import authService from '@/services/AuthService'
 import Seeding from '../assets/images/seeding.png'
 import logo from '../assets/images/bc-gov-logo.png'
 import login16 from '@carbon/icons-vue/es/login/16'
