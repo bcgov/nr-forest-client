@@ -32,7 +32,7 @@
     "pretest:component": "rm -rf .nyc_output .nyc_report && mkdir -p .nyc_output/processinfo",
     "test:unit": "vitest run --coverage",
     "test:component": "cypress run --component --headless",
-    "posttest:component": "istanbul-combine -d coverage -p both -r lcov -r html .vite_report/coverage-final.json .nyc_report/coverage-final.json",
+    "posttest:component": "istanbul-combine -x \".nyc_report/**\" -d coverage -p both -r lcov -r html .vite_report/coverage-final.json .nyc_report/coverage-final.json",
     "test:e2e": "cypress run --headless",
     "typecheck": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --fix --ignore-path .gitignore",

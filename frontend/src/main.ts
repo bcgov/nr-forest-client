@@ -9,16 +9,8 @@ import { router } from '@/routes'
 import { keycloakUrl, keycloakClientId, nodeEnv } from '@/CoreConstants'
 import { masking } from '@/helpers/CustomDirectives'
 
-// Importing BC typography
-import '@bcgov/bc-sans/css/BCSans.css'
-
-// Import Carbon WebComponents
-import '@carbon/web-components/es'
-import 'carbon-components/css/carbon-components.min.css'
-
-import '@/assets/global.css'
-
-import '@/assets/theme/components-overrides.scss'
+// Importing Styles
+import '@/styles'
 
 const app = createApp(App)
 

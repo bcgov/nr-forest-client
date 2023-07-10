@@ -2,6 +2,7 @@ import './commands'
 
 import { mount } from 'cypress/vue'
 import '@cypress/code-coverage/support'
+import '@/styles'
 
 declare global {
   namespace Cypress {

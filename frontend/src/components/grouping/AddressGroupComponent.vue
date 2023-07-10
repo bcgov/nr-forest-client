@@ -34,10 +34,18 @@ const emit = defineEmits<{
 
 const generalErrorBus = useEventBus<string>('general-error-notification')
 
+const noValidation = (value: string) => ''
+
 //We set it as a separated ref due to props not being updatable
 const selectedValue = reactive<Address>(props.modelValue)
-const validateAddressData = props.validations[0]('Address', props.id + '')
-const validateAddressNameData = props.validations[0]('Names', props.id + '')
+const validateAddressData =
+  props.validations.length === 0
+    ? noValidation
+    : props.validations[0]('Address', props.id + '')
+const validateAddressNameData =
+  props.validations.length === 0
+    ? noValidation
+    : props.validations[0]('Names', props.id + '')
 const addressError = ref<string | undefined>('')
 const nameError = ref<string | undefined>('')
 const showDetailsLoading = ref<boolean>(false)
@@ -216,7 +224,7 @@ watch([detailsData], () => {
     ]"
     :error-message="nameError"
     @empty="validation.locationName = !$event"
-    v-if="props.id !== 0"
+    v-if="id !== 0"
   />
 
   <dropdown-input-component

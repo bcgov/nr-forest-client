@@ -1,7 +1,20 @@
 import { defineConfig } from 'cypress'
 
 export default defineConfig({
-  env: { coverage: true },
+  env: {
+    coverage: true,
+    codeCoverage: {
+      exclude: [
+        '**/services/**/*',
+        '**/helpers/**/*',
+        '**/dto/**/*',
+        '**/core/**/*',
+        '**/composables/**/*',
+        '**/.nyc*/**/*',
+        '**/coverage/**/*'
+      ]
+    }
+  },
   component: {
     specPattern: 'tests/**/*.cy.{ts,tsx}',
     devServer: {

@@ -1,11 +1,13 @@
 <template>
   <div
+    data-testid="display-block-wrapper"
     :class="{
       'display-block-wrapper': true,
       [`display-block-wrapper-${kind}`]: true
     }"
   >
     <component
+      data-testid="display-block-icon"
       :is="iconsForKinds[kind]"
       :class="{
         'display-block-icon': true,

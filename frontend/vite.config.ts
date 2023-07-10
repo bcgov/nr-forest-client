@@ -47,6 +47,8 @@ export default defineConfig(({ command, mode }) => {
           '**/node_modules/**',
           '**/tests/**',
           '**/public/**',
+          '**/.nyc*/**/*',
+          '**/coverage/**/*',
           '.eslintrc.cjs',
           '.eslintrc.js',
           'components.d.ts',
@@ -54,7 +56,8 @@ export default defineConfig(({ command, mode }) => {
           'src/routes.ts',
           'src/shims-vue.d.ts ',
           'vite.config.ts',
-          '**/*Dto.ts',
+          '**/dto/**/*',
+          '**/core/**/*',
           'src/CoreConstants.ts',
           'src/main.ts'
         ]
