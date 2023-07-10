@@ -11,7 +11,11 @@ export default defineConfig({
         '**/core/**/*',
         '**/composables/**/*',
         '**/.nyc*/**/*',
-        '**/coverage/**/*'
+        '**/coverage/**/*',
+        '**/src/routes.ts',
+        '**/src/shims-vue.d.ts ',
+        '**/src/CoreConstants.ts',
+        '**/src/main.ts'
       ]
     }
   },
