@@ -5,7 +5,8 @@ import MultiselectInputComponent from '@/components/forms/MultiselectInputCompon
 
 describe('MultiselectInputComponent', () => {
   const validations = [
-    (value: any) => (value === 'A' ? 'A is not supported' : '')
+    (value: any) =>
+      value === 'A' || value === 'Value A' ? 'A is not supported' : ''
   ]
 
   it('should render', () => {
@@ -238,7 +239,7 @@ describe('MultiselectInputComponent', () => {
       }
     ])
 
-    const close = wrapper.find('#close_0')
+    const close = wrapper.find('#close_test_0')
 
     await close.trigger('click')
 

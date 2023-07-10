@@ -184,3 +184,5 @@ cypress/screenshots/*
 cypress/videos/*
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,vue,vuejs,node,cypressio
+
+reports/

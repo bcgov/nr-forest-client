@@ -6,8 +6,10 @@
         'wizard-wrap-item': true,
         [`wizard-wrap-item-${step.kind}`]: true
       }"
+      :data-test="'step-' + index"
     >
       <component
+        name="icon"
         :is="iconsForKinds[step.kind]"
         :alt="step.kind"
         :class="{

@@ -31,9 +31,14 @@ const emit = defineEmits<{
   (e: 'remove', value: number): void
 }>()
 
+const noValidation = (value: string) => ''
+
 //We set it as a separated ref due to props not being updatable
 const selectedValue = reactive<Contact>(props.modelValue)
-const validateData = props.validations[0]('Name', props.id + '')
+const validateData =
+  props.validations.length === 0
+    ? noValidation
+    : props.validations[0]('Name', props.id + '')
 const error = ref<string | undefined>('')
 
 //Watch for changes on the input

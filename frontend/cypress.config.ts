@@ -19,12 +19,22 @@ export default defineConfig({
       ]
     }
   },
+
   component: {
-    specPattern: 'tests/**/*.cy.{ts,tsx}',
+    specPattern: 'tests/components/**/*.cy.{ts,tsx}',
     devServer: {
       framework: 'vue',
       bundler: 'vite'
     },
+    setupNodeEvents: (on, config) => {
+      require('@cypress/code-coverage/task')(on, config)
+      return config
+    }
+  },
+
+  e2e: {
+    specPattern: 'tests/e2e/**/*.cy.{ts,tsx}',
+    baseUrl: 'http://127.0.0.1:5050/',
     setupNodeEvents: (on, config) => {
       require('@cypress/code-coverage/task')(on, config)
       return config

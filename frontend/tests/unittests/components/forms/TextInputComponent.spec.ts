@@ -1,8 +1,6 @@
 import { describe, it, expect } from 'vitest'
-
 import { mount } from '@vue/test-utils'
 import TextInputComponent from '@/components/forms/TextInputComponent.vue'
-import { mask } from 'vue-the-mask'
 
 describe('Text Input Component', () => {
   const id = 'my-input'

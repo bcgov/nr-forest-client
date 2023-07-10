@@ -39,6 +39,7 @@
 
       <div>
         <bx-btn
+          data-test="wizard-back-button"
           kind="secondary"
           iconLayout=""
           class="bx--btn"
@@ -48,6 +49,7 @@
         </bx-btn>
 
         <bx-btn
+          data-test="wizard-submit-button"
           kind="primary"
           iconLayout=""
           class="bx--btn"
@@ -70,6 +72,7 @@
       >
       <div>
         <bx-btn
+          data-test="wizard-back-button"
           v-show="!isFirst"
           kind="secondary"
           iconLayout=""
@@ -81,6 +84,7 @@
         </bx-btn>
 
         <bx-btn
+          data-test="wizard-next-button"
           kind="primary"
           iconLayout=""
           class="bx--btn"
@@ -101,6 +105,7 @@
       <hr />
       <div>
         <bx-btn
+          data-test="wizard-save-button"
           kind="primary"
           iconLayout=""
           class="bx--btn"
@@ -117,6 +122,7 @@
     <div class="wizard-wrap" v-if="endAndLogOut || mailAndLogOut">
       <div>
         <bx-btn
+          data-test="wizard-logout-button"
           kind="primary"
           iconLayout=""
           class="bx--btn"

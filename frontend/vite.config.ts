@@ -38,7 +38,7 @@ export default defineConfig(({ command, mode }) => {
       globals: true,
       reporters: ['verbose'],
       coverage: {
-        reportsDirectory: '.vite_report',
+        reportsDirectory: 'reports/.vite_report',
         provider: 'istanbul',
         reporter: ['text', 'json', 'lcov'],
         all: true,

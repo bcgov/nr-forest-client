@@ -567,3 +567,6 @@ frontend/cypress/results/*
 frontend/cypress/reports/*
 frontend/cypress/screenshots/*
 frontend/cypress/videos/*
+
+reports/
+frontend/reports/

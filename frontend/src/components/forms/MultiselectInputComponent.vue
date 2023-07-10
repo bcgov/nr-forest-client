@@ -1,6 +1,7 @@
 <template>
   <div>
     <bx-dropdown
+      :id="id"
       :value="selectedValue"
       :label-text="label"
       :helper-text="tip"
@@ -20,11 +21,12 @@
       v-for="(tag, index) in items"
       title="Clear selection"
       class="bx-tag"
+      :id="'tag_' + id + '_' + index"
       :key="index"
     >
       {{ tag }}
       <CloseOutline16
-        :id="'close_' + index"
+        :id="'close_' + id + '_' + index"
         @click="removeFromSelection(tag)"
       />
     </bx-tag>
@@ -73,16 +75,26 @@ emit('empty', props.selectedValues ? props.initialValue.length === 0 : true)
 //Watch for changes on the input
 watch([selectedValue], () => validateInput(selectedValue.value))
 
+//Controls the selected values
+const items = ref<string[]>([])
+
 //We call all the validations
 const validateInput = (newValue: any) => {
   if (props.validations && props.validations.length > 0) {
-    error.value =
+    const hasError = (message: string) => {
+      if (message) return true
+      return false
+    }
+    const validate = (value: string) =>
       props.validations
-        .map((validation) => validation(newValue))
-        .filter((errorMessage) => {
-          if (errorMessage) return true
-          return false
-        })
+        .map((validation) => validation(value))
+        .filter(hasError)
+        .shift() ?? props.errorMessage
+
+    error.value =
+      items.value
+        .map((item: string) => validate(item))
+        .filter(hasError)
         .shift() ?? props.errorMessage
   }
 }
@@ -90,9 +102,6 @@ watch(
   () => props.modelValue,
   () => (selectedValue.value = props.initialValue)
 )
-
-//Controls the selected values
-const items = ref<string[]>([])
 
 const emitChange = () => {
   const reference = props.modelValue.filter((entry) =>
