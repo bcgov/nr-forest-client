@@ -91,27 +91,55 @@ const canShowLink = (step: ProgressData) => {
 </script>
 
 <style scoped>
+@media screen and (max-width: 671px) {
+  .wizard-wrap-indicator {
+    flex-direction: column;
+  }
+  .wizard-wrap-item {
+    border-left: solid 0.125rem;
+    flex: none;
+  }
+}
+
+@media screen and (min-width: 672px) {
+  .wizard-wrap-indicator {
+    flex-direction: row;
+  }
+  .wizard-wrap-item {
+    border-top: solid 0.125rem;
+    flex: 1;
+  }
+}
+
 .wizard-wrap-indicator {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 48px;
+  margin-bottom: 3rem;
 }
 .wizard-wrap-item {
-  flex-grow: 1;
   display: flex;
   justify-content: space-between;
-  border-top: solid 2px;
+  overflow: hidden;
+  height: 3.625rem;
 }
 
 .wizard-wrap-item-icon {
-  margin: 4px 10px 0px 0px;
+  margin: 0.25rem 0.625rem 0 0;
+  flex-shrink: 0;
 }
 
 .wizard-wrap-item-text {
   flex-grow: 1;
+  overflow: hidden;
 }
 .wizard-wrap-item-text p {
-  font-size: 14px;
+  font-size: 0.875rem;
+}
+.wizard-wrap-item-text a, .wizard-wrap-item-text span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
 }
 .wizard-wrap-item-text p a {
   text-decoration: none;
@@ -122,7 +150,7 @@ const canShowLink = (step: ProgressData) => {
   cursor: pointer;
 }
 .wizard-wrap-item-text span {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .wizard-wrap-item-current {
