@@ -6,8 +6,8 @@ import login16 from '@carbon/icons-vue/es/login/16'
 
 <template>
   <div class="full-width">
-    <div class="row landing-grid bx--row">
-      <div class="bx--col-sm-8 bx--col-md-9 bx--col-lg-9">
+    <div class="row bx--row landing-grid">
+      <div class="bx--col-sm-8 bx--col-md-10 bx--col-lg-10">
         <img :src="logo" alt="BCGov Logo" width="160" class="logo" />
         <h1 id="landing-title" class="landing-title">Welcome to CLIENT</h1>
         <h2 id="landing-subtitle" class="landing-subtitle">
@@ -25,7 +25,7 @@ import login16 from '@carbon/icons-vue/es/login/16'
           <login16 slot="icon" />
         </bx-btn>
       </div>
-      <div class="bx--col-sm-8 bx--col-md-7 bx--col-lg-7 landing-img-column">
+      <div class="bx--col-sm-8 bx--col-md-6 bx--col-lg-6 landing-img-column">
         <img
           :src="Seeding"
           alt="Small green seedling on the dirt and watered"
