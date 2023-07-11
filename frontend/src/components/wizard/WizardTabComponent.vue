@@ -1,6 +1,6 @@
 <template>
   <div v-if="index == selectedContent">
-    <div class="wizard-wrap">
+    <div class="bx--breadcrumb">
       <slot name="pre-header"></slot>
       <div>
         <label class="bx--title">{{ title }}</label>
@@ -10,7 +10,7 @@
       <slot name="header"></slot>
     </div>
 
-    <div class="wizard-wrap">
+    <div class="bx--breadcrumb">
       <slot
         :validateStep="validateStep"
         :active="index == selectedContent"

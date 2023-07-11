@@ -30,7 +30,7 @@ import Logout16 from '@carbon/icons-vue/es/logout/16'
 
 <style scoped>
 header {
-  background-color: #0073e6;
+  background-color: #0073E6;
   padding: 0 30px 0 30px;
   color: #fff;
   display: flex;

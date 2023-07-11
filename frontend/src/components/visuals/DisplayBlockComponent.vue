@@ -60,9 +60,9 @@ const iconsForKinds: Record<string, any> = {
 
 .display-block-wrapper-info {
   background: #c2e0ff;
-  border: 1px solid #0073e6;
+  border: 1px solid #0073E6;
   border-radius: 4px;
-  border-left: 4px solid #0073e6;
+  border-left: 4px solid #0073E6;
 }
 
 .display-block-wrapper-success {
@@ -87,7 +87,7 @@ const iconsForKinds: Record<string, any> = {
 }
 
 .display-block-icon-info {
-  color: #0073e6;
+  color: #0073E6;
 }
 .display-block-icon-success {
   color: #198038;

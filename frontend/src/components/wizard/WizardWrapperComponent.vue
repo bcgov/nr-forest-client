@@ -1,5 +1,5 @@
 <template>
-  <div class="wizard-wrap">
+  <div class="bx--breadcrumb">
     <div class="wizard-head">
       <div class="wizard-head-text">
         <label class="bx--title">{{ title }}</label>
@@ -34,7 +34,7 @@
     <slot :processValidity="processValidity" :goToStep="goToStep" />
   </div>
   <div class="wizard-footer wizard-mid-content">
-    <div class="wizard-wrap" v-if="isLast && !endAndLogOut && !mailAndLogOut">
+    <div class="bx--breadcrumb" v-if="isLast && !endAndLogOut && !mailAndLogOut">
       <hr />
 
       <div>
@@ -61,7 +61,7 @@
     </div>
 
     <div
-      class="wizard-wrap"
+      class="bx--breadcrumb"
       v-if="!isLast && !isFormValid && !endAndLogOut && !mailAndLogOut"
     >
       <hr />
@@ -99,7 +99,7 @@
     </div>
 
     <div
-      class="wizard-wrap"
+      class="bx--breadcrumb"
       v-if="!isLast && isFormValid && !endAndLogOut && !mailAndLogOut"
     >
       <hr />
@@ -119,7 +119,7 @@
       </div>
     </div>
 
-    <div class="wizard-wrap" v-if="endAndLogOut || mailAndLogOut">
+    <div class="bx--breadcrumb" v-if="endAndLogOut || mailAndLogOut">
       <div>
         <bx-btn
           data-test="wizard-logout-button"

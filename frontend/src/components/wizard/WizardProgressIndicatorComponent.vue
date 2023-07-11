@@ -1,5 +1,5 @@
 <template>
-  <div class="wizard-wrap-indicator">
+  <div class="bx--breadcrumb-indicator">
     <div
       v-for="(step, index) in values"
       :class="{
@@ -94,7 +94,7 @@ const canShowLink = (step: ProgressData) => {
 
 <style scoped>
 @media screen and (max-width: 671px) {
-  .wizard-wrap-indicator {
+  .bx--breadcrumb-indicator {
     flex-direction: column;
   }
   .wizard-wrap-item {
@@ -104,7 +104,7 @@ const canShowLink = (step: ProgressData) => {
 }
 
 @media screen and (min-width: 672px) {
-  .wizard-wrap-indicator {
+  .bx--breadcrumb-indicator {
     flex-direction: row;
   }
   .wizard-wrap-item {
@@ -113,7 +113,7 @@ const canShowLink = (step: ProgressData) => {
   }
 }
 
-.wizard-wrap-indicator {
+.bx--breadcrumb-indicator {
   display: flex;
   justify-content: space-between;
   margin-bottom: 3rem;

@@ -263,3 +263,9 @@ li.#{variables.$bcgov-prefix}--overflow-menu-options__option:last-child {
 .#{variables.$bcgov-prefix}--description-disabled {
   color: colors.$gray-100;
 }
+
+.#{variables.$bcgov-prefix}--breadcrumb {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
