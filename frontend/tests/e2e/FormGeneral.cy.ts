@@ -88,10 +88,6 @@ describe('General Form', () => {
 
     cy.wait('@selectCompany')
 
-    cy.get('div.wizard-wrap')
-      .should('be.visible')
-      .find('[data-test="wizard-next-button"]')
-      .should('be.visible')
-      .click()
+    cy.get('[data-test="wizard-next-button"]').should('be.visible').click()
   })
 })

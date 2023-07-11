@@ -31,17 +31,14 @@
     "precoverage": "npm run test:report:clean",
     "coverage": "npm run test:unit && npm run test:component && npm run test:e2e",
     "postcoverage": "npm run test:report:merge",
-    "pretest:component": "rm -rf reports/.nyc_*",
     "test:component": "cypress run --component --headless",
     "posttest:component": "mv reports/.nyc_report reports/component",
-    "pretest:unit": "rm -rf reports/.vite_report",
     "test:unit": "vitest run --coverage",
     "posttest:unit": "mv reports/.vite_report reports/unit",
-    "pretest:e2e": "rm -rf reports/.nyc_*",
     "test:e2e": "start-server-and-test preview http://127.0.0.1:5050/ 'cypress run --headless'",
     "posttest:e2e": "mv reports/.nyc_report reports/e2e",
     "test:report:merge": "lcov-result-merger 'reports/*/lcov.info' 'coverage/lcov.info'",
-    "test:report:clean": "rm -rf coverage reports && mkdir -p reports/.nyc_output/processinfo && mkdir -p coverage"
+    "test:report:clean": "mkdir -p reports/.nyc_output/processinfo && mkdir -p coverage"
   },
   "dependencies": {
     "@bcgov-nr/nr-fsa-theme": "^1.0.7",
