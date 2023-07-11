@@ -191,7 +191,7 @@ objects:
                 timeoutSeconds: 5
               livenessProbe:
                 successThreshold: 1
-                failureThreshold: 12
+                failureThreshold: 15
                 httpGet:
                   path: /health
                   port: 9000

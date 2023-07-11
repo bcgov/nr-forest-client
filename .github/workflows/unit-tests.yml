@@ -117,16 +117,22 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: bcgov-nr/action-test-and-analyse@v0.0.1
+        env:
+          VITE_BACKEND_URL: http://localhost:3000
+          VITE_FRONTEND_URL: http://localhost:8080
+          VITE_KEYCLOAK_URL: 
+          VITE_KEYCLOAK_CLIENT_ID: 1234
+          VITE_NODE_ENV: openshift-dev
         with:
           commands: |
             npm ci
-            npm run test
+            npm run coverage
+            ls coverage/lcov.info
           dir: frontend
           sonar_args: >
-            -Dsonar.exclusions=**/coverage/**,**/examples/**,**/pages/**
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info            
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-frontend
-            -Dsonar.tests=src/tests
           sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
   
   trivy:

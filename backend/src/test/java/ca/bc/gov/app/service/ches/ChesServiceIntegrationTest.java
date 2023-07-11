@@ -8,9 +8,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.unauthorized;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.dto.ches.ChesRequest;
+import ca.bc.gov.app.dto.ches.ChesRequestDto;
 import ca.bc.gov.app.exception.BadRequestException;
-import ca.bc.gov.app.exception.CannotExtractTokenException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.InvalidRoleException;
 import ca.bc.gov.app.exception.UnableToProcessRequestException;
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -47,28 +47,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
       .configureStaticDsl(true)
       .build();
 
-  @Test
-  @DisplayName("Send email when authorized")
-  void shouldSendMailWhenAuth() {
 
-    mockOAuthSuccess();
-
-    wireMockExtension
-        .stubFor(
-            post("/chess/uri")
-                .willReturn(
-                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                )
-        );
-
-    service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"),"Test")
-        .as(StepVerifier::create)
-        .expectNext("00000000-0000-0000-0000-000000000000")
-        .verifyComplete();
-
-  }
 
   @Test
   @DisplayName("Do not send emails when not authorized")
@@ -76,7 +55,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
     mockOAuthFail();
 
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"),"Test")
+        .sendEmail(new ChesRequestDto(List.of("jhon@mail.ca"), "simple body"), "Test")
         .as(StepVerifier::create)
         .expectError(InvalidAccessTokenException.class)
         .verify();
@@ -90,9 +69,8 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
     wireMockExtension
         .stubFor(post("/chess/uri").willReturn(unauthorized()));
 
-
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"),"Test")
+        .sendEmail(new ChesRequestDto(List.of("jhon@mail.ca"), "simple body"), "Test")
         .as(StepVerifier::create)
         .expectError(InvalidAccessTokenException.class)
         .verify();
@@ -107,16 +85,18 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         .stubFor(post("/chess/uri").willReturn(forbidden()));
 
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "simple body"),"Test")
+        .sendEmail(new ChesRequestDto(List.of("jhon@mail.ca"), "simple body"), "Test")
         .as(StepVerifier::create)
         .expectError(InvalidRoleException.class)
         .verify();
   }
 
 
-  @Test
-  @DisplayName("Send an email with an HTML body")
-  void shouldSendMailWithHTMLBody() {
+
+  @ParameterizedTest
+  @MethodSource("mailIsOk")
+  @DisplayName("Send OK email")
+  void shouldSendMailWhenAuth(ChesRequestDto body) {
 
     mockOAuthSuccess();
 
@@ -130,34 +110,11 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         );
 
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"), "<p>I am an HTML</p>"),"Test")
+        .sendEmail(body, "Test")
         .as(StepVerifier::create)
         .expectNext("00000000-0000-0000-0000-000000000000")
         .verifyComplete();
-  }
 
-  @Test
-  @DisplayName("Send an email with text body")
-  void shouldSendMailWithTextBody() {
-
-    mockOAuthSuccess();
-
-    wireMockExtension
-        .stubFor(
-            post("/chess/uri")
-                .willReturn(
-                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                )
-        );
-
-    service
-        .sendEmail(
-            new ChesRequest(List.of("jhon@mail.ca"),
-                "Thanks for your email\nYou will hear from us soon"),"Test")
-        .as(StepVerifier::create)
-        .expectNext("00000000-0000-0000-0000-000000000000")
-        .verifyComplete();
   }
 
   @Test
@@ -176,8 +133,8 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         );
 
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon"),"Test")
+        .sendEmail(new ChesRequestDto(List.of("jhon@mail.ca"),
+            "Thanks for your email\nYou will hear from us soon"), "Test")
         .as(StepVerifier::create)
         .expectError(UnableToProcessRequestException.class)
         .verify();
@@ -199,8 +156,8 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         );
 
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon"),"Test")
+        .sendEmail(new ChesRequestDto(List.of("jhon@mail.ca"),
+            "Thanks for your email\nYou will hear from us soon"), "Test")
         .as(StepVerifier::create)
         .expectError(BadRequestException.class)
         .verify();
@@ -222,35 +179,11 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         );
 
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca"),
-            "Thanks for your email\nYou will hear from us soon"),"Test")
+        .sendEmail(new ChesRequestDto(List.of("jhon@mail.ca"),
+            "Thanks for your email\nYou will hear from us soon"), "Test")
         .as(StepVerifier::create)
         .expectError(UnexpectedErrorException.class)
         .verify();
-  }
-
-  @ParameterizedTest
-  @MethodSource("invalidBodies")
-  @DisplayName("Fail when body is invalid")
-  void shouldFailWhenInvalidBodyProvided(ChesRequest request) {
-
-    mockOAuthSuccess();
-
-    wireMockExtension
-        .stubFor(
-            post("/chess/uri")
-                .willReturn(
-                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                )
-        );
-
-    service
-        .sendEmail(request,"Test")
-        .as(StepVerifier::create)
-        .expectError()
-        .verify();
-
   }
 
   @Test
@@ -269,7 +202,8 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         );
 
     service
-        .sendEmail(new ChesRequest(List.of("jhon@mail.ca", "james@mail.ca"), "simple body"),"Test")
+        .sendEmail(new ChesRequestDto(List.of("jhon@mail.ca", "james@mail.ca"), "simple body"),
+            "Test")
         .as(StepVerifier::create)
         .expectNext("00000000-0000-0000-0000-000000000000")
         .verifyComplete();
@@ -333,17 +267,14 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         );
   }
 
+  private static Stream<ChesRequestDto> mailIsOk(){
+    return Stream.of(
+        new ChesRequestDto(List.of("jhon@mail.ca"),
+            "Thanks for your email\nYou will hear from us soon"),
+        new ChesRequestDto(List.of("jhon@mail.ca"), "<p>I am an HTML</p>"),
+        new ChesRequestDto(List.of("jhon@mail.ca"), "simple body")
+        );
 
-  private static Stream<ChesRequest> invalidBodies() {
-    return
-        Stream
-            .of(
-                null,
-                new ChesRequest(null, null),
-                new ChesRequest(null, "goat"),
-                new ChesRequest(List.of(), null),
-                new ChesRequest(List.of(), "goat"),
-                new ChesRequest(List.of("jhon@mail.ca"), null)
-            );
   }
+
 }

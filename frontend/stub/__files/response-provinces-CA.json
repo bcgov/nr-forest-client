@@ -1,0 +1,15 @@
+[
+  { "code": "NL", "name": "Newfoundland and Labrador" },
+  { "code": "PE", "name": "Prince Edward Island" },
+  { "code": "NS", "name": "Nova Scotia" },
+  { "code": "NB", "name": "New Brunswick" },
+  { "code": "QC", "name": "Quebec" },
+  { "code": "ON", "name": "Ontario" },
+  { "code": "MB", "name": "Manitoba" },
+  { "code": "SK", "name": "Saskatchewan" },
+  { "code": "AB", "name": "Alberta" },
+  { "code": "BC", "name": "British Columbia" },
+  { "code": "YT", "name": "Yukon" },
+  { "code": "NT", "name": "Northwest Territories" },
+  { "code": "NU", "name": "Nunavut" }
+]

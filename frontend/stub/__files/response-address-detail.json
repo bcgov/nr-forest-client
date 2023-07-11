@@ -1,0 +1,9 @@
+{
+  "streetAddress": "1234 Nowhere St    ",
+  "country": { "value": "CA", "text": "Canada" },
+  "province": { "value": "BC", "text": "British Columbia" },
+  "city": "Victoria",
+  "postalCode": "V8V 8V8",
+  "index": 0,
+  "locationName": null
+}

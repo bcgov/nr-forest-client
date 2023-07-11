@@ -1,1 +1,98 @@
+* {
+  font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
+}
 
+hr {
+  width: 100%;
+}
+
+.bulleted-list {
+  list-style: decimal;
+  margin-left: 1.5rem;
+}
+
+.bulleted-list li {
+  padding-bottom: 0.625rem;
+}
+
+.inner-spotlight-topic {
+  line-height: 24px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.inner-spotlight-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.inner-spotlight-group-markup {
+  border-bottom: solid 1px #dfdfe1;
+}
+
+.bx-tag {
+  background-color: #00478f;
+  color: white;
+}
+
+.wizard-head {
+  display: flex;
+}
+
+.wizard-head-text {
+  flex-grow: 1;
+}
+
+.wizard-head-toast {
+  position: fixed;
+  top: 80px;
+  right: 25px;
+}
+
+.submission-head {
+  display: flex;
+}
+
+.submission-text {
+  width: 620px;
+  flex-grow: 1;
+}
+
+.submission-text h1 {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 70px;
+}
+
+.submission-text p {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 40px;
+  padding: 24px 0px;
+  color: #606062;
+  width: 620px;
+}
+
+.submission-badge {
+  width: 414px;
+  height: 414px;
+  flex-grow: 1;
+  fill: var(--cds-hover-primary, #0353e9);
+}
+
+.wizard-mid-content {
+  width: 50%;
+}
+
+.spinner-block {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  max-height: 0.5rem;
+}

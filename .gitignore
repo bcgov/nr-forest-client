@@ -24,6 +24,8 @@ coverage
 
 # nyc test coverage
 .nyc_output
+.nyc_report
+.vite_report
 
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
@@ -427,6 +429,8 @@ frontend/*.lcov
 
 # nyc test coverage
 frontend/.nyc_output
+frontend/.nyc_report
+frontend/.vite_report
 
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
 frontend/.grunt
@@ -547,3 +551,22 @@ frontend/yarn-error.log
 # End of https://www.toptal.com/developers/gitignore/api/vue,vuejs,node
 
 frontend/nr-forest-client-report.*
+.DS_Store
+
+cypress/results/*
+cypress/reports/*
+cypress/screenshots/*
+cypress/videos/*
+
+cypress/cypress/results/*
+cypress/cypress/reports/*
+cypress/cypress/screenshots/*
+cypress/cypress/videos/*
+
+frontend/cypress/results/*
+frontend/cypress/reports/*
+frontend/cypress/screenshots/*
+frontend/cypress/videos/*
+
+reports/
+frontend/reports/

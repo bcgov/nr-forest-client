@@ -7,7 +7,7 @@ import ca.bc.gov.app.dto.ches.ChesMailErrorResponse;
 import ca.bc.gov.app.dto.ches.ChesMailPriority;
 import ca.bc.gov.app.dto.ches.ChesMailRequest;
 import ca.bc.gov.app.dto.ches.ChesMailResponse;
-import ca.bc.gov.app.dto.ches.ChesRequest;
+import ca.bc.gov.app.dto.ches.ChesRequestDto;
 import ca.bc.gov.app.dto.ches.CommonExposureJwtDto;
 import ca.bc.gov.app.exception.BadRequestException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
@@ -15,8 +15,6 @@ import ca.bc.gov.app.exception.InvalidRequestObjectException;
 import ca.bc.gov.app.exception.InvalidRoleException;
 import ca.bc.gov.app.exception.UnableToProcessRequestException;
 import ca.bc.gov.app.exception.UnexpectedErrorException;
-import ca.bc.gov.app.util.ValidationUtil;
-import ca.bc.gov.app.validator.ches.ChesRequestValidator;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -41,8 +39,8 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class ChesCommonServicesService {
 
+  public static final String FAILED_TO_SEND_EMAIL = "Failed to send email: {}";
   private final ForestClientConfiguration configuration;
-  private final ChesRequestValidator validator;
   private final WebClient chesApi;
 
   private final WebClient authApi;
@@ -51,35 +49,34 @@ public class ChesCommonServicesService {
   public ChesCommonServicesService(
       ForestClientConfiguration configuration,
       @Qualifier("chesApi") WebClient chesApi,
-      @Qualifier("authApi") WebClient authApi,
-      ChesRequestValidator validator
+      @Qualifier("authApi") WebClient authApi
   ) {
     this.configuration = configuration;
     this.chesApi = chesApi;
     this.authApi = authApi;
-    this.validator = validator;
     this.freeMarkerConfiguration = new Configuration(Configuration.VERSION_2_3_31);
     freeMarkerConfiguration.setClassForTemplateLoading(this.getClass(), "/templates");
   }
 
   /**
-   * Sends an email using the BC Government's Common Email Service (Ches)
-   * via HTTP POST request using WebClient.
+   * Sends an email using the BC Government's Common Email Service (Ches) via HTTP POST request
+   * using WebClient.
    *
-   * @param requestContent the {@link ChesRequest} object representing the email to be sent
+   * @param requestContent the {@link ChesRequestDto} object representing the email to be sent
    * @return a {@link Mono} that the transaction ID of the email send operation upon completion
    * @throws InvalidAccessTokenException if the authorization token is invalid or expired
-   * @throws InvalidRoleException        if does not have the required role to perform the requested action
+   * @throws InvalidRoleException        if does not have the required role to perform the requested
+   *                                     action
    */
-  public Mono<String> sendEmail(ChesRequest requestContent, String subject) {
+  public Mono<String> sendEmail(ChesRequestDto requestContent, String subject) {
 
     if (requestContent == null) {
       return Mono.error(new InvalidRequestObjectException("no request body was provided"));
     }
 
     return
-        ValidationUtil
-            .validateReactive(requestContent, ChesRequest.class, validator)
+        Mono
+            .just(requestContent)
             .map(request ->
                 new ChesMailRequest(
                     null,
@@ -117,6 +114,8 @@ public class ChesCommonServicesService {
                                 get422ErrorMessage())
                             .onStatus(HttpStatusCode::isError, get500ErrorMessage())
                             .bodyToMono(ChesMailResponse.class)
+                            .doOnNext(response -> log.info("Email sent successfully"))
+                            .doOnError(error -> log.error("Failed to send email", error))
                     )
             )
             .map(response -> response.txId().toString())
@@ -125,14 +124,14 @@ public class ChesCommonServicesService {
   }
 
   /**
-   * Builds a String representation of an HTML email template by applying a map of variables
-   * to the FreeMarker template identified by the given template name.
+   * Builds a String representation of an HTML email template by applying a map of variables to the
+   * FreeMarker template identified by the given template name.
    *
    * @param templateName the name of the FreeMarker template, without the ".html" extension
-   * @param variables    a map of variable names and their corresponding values to be used
-   *                     when processing the template
-   * @return a Mono that emits the String representation of the processed template, or
-   * an error if an exception occurs during template processing
+   * @param variables    a map of variable names and their corresponding values to be used when
+   *                     processing the template
+   * @return a Mono that emits the String representation of the processed template, or an error if
+   *         an exception occurs during template processing
    */
   public Mono<String> buildTemplate(String templateName, Map<String, Object> variables) {
     StringWriter writer = new StringWriter();
@@ -150,6 +149,7 @@ public class ChesCommonServicesService {
     return response ->
         response
             .bodyToMono(ChesMailErrorResponse.class)
+            .doOnNext(error -> log.error(FAILED_TO_SEND_EMAIL, error))
             .flatMap(errorMessageDetail -> Mono.error(
                 new UnexpectedErrorException(errorMessageDetail.status(),
                     errorMessageDetail.detail())));
@@ -159,6 +159,7 @@ public class ChesCommonServicesService {
     return response ->
         response
             .bodyToMono(ChesMailErrorResponse.class)
+            .doOnNext(error -> log.error(FAILED_TO_SEND_EMAIL, error))
             .map(details ->
                 Optional
                     .ofNullable(details.errors())
@@ -180,6 +181,7 @@ public class ChesCommonServicesService {
         response
             .bodyToMono(ChesMailErrorResponse.class)
             .map(ChesMailErrorResponse::detail)
+            .doOnNext(error -> log.error(FAILED_TO_SEND_EMAIL, error))
             .flatMap(errorMessageDetail -> Mono.error(
                 new BadRequestException(errorMessageDetail)));
   }
@@ -201,7 +203,8 @@ public class ChesCommonServicesService {
             .onStatus(httpStatusCode -> httpStatusCode.value() == 422, get422ErrorMessage())
             .onStatus(HttpStatusCode::isError, get500ErrorMessage())
             .bodyToMono(CommonExposureJwtDto.class)
-            .map(CommonExposureJwtDto::accessToken);
+            .map(CommonExposureJwtDto::accessToken)
+            .doOnNext(token -> log.info("Successfully retrieved access token"));
   }
 
 }

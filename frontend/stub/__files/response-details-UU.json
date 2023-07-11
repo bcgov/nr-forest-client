@@ -1,0 +1,56 @@
+{
+  "name": "Ministry of Forests, Lands and Natural Resource Operations",
+  "id": "{{request.path.[2]}}",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "2975 Jutland Rd",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "BC",
+        "text": "British Columbia"
+      },
+      "city": "Victoria",
+      "postalCode": "V8T5J9",
+      "index": 0,
+      "locationName": "Mailing Address"
+    },
+    {
+      "streetAddress": "42000 Loggers Ln Suite 101",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "BC",
+        "text": "British Columbia"
+      },
+      "city": "Squamish",
+      "postalCode": "V8B0H3",
+      "index": 0,
+      "locationName": "Office Address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "P",
+        "text": "Person"
+      },
+      "firstName": "Jhon",
+      "lastName": "Wick",
+      "phoneNumber": "(111) 222-3344",
+      "email": "babayaga@theguild.ca",
+      "index": 0,
+      "locationNames": [
+        {
+          "value": "0",
+          "text": "Mailing Address"
+        }
+      ]
+    }
+  ]
+}

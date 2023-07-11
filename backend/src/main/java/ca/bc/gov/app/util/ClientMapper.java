@@ -122,7 +122,7 @@ public class ClientMapper {
             .stream()
             .filter(location ->
                 contactDto
-                    .locations()
+                    .locationNames()
                     .stream()
                     .anyMatch(valueText -> valueText.text().equals(location.getName()))
             )

@@ -1,0 +1,163 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "urlPattern": "/api/clients/name/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-autocomplete.json",
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/api/clients/(XX|YY|UU|JJ)(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-details-{{regexExtract request.path.[2] '(XX|YY|UU|JJ)(.*)' 'parts'}}{{parts.0}}.json",
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 2500
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/api/clients/ZZ(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 409,
+        "body": "The Dupped Company already exists with the Incorporation number {{request.path.[2]}} and client number 999999",
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "request": {
+        "url": "/api/clients/activeCountryCodes?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-countries.json"
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/api/clients/activeCountryCodes/(.*)?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "bodyFileName": "response-provinces-{{request.path.[3]}}.json"
+      }
+    },
+
+    {
+      "request": {
+        "url": "/api/clients/activeContactTypeCodes?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"code\":\"P\",\"name\":\"Person\"}]"
+      }
+    },
+
+    {
+      "request": {
+        "url": "/api/clients/submissions",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.incorporationNumber",
+              "contains": "XX"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Location": "/api/clients/123456",
+          "x-sub-id": "123456"
+        }
+      }
+    },
+    {
+      "request": {
+        "url": "/api/clients/submissions",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.incorporationNumber",
+              "contains": "UU"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 400,
+        "bodyFileName": "response-submission-fault.json"
+      }
+    },
+
+    {
+      "request": {
+        "url": "/api/clients/mail",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.incorporation",
+              "contains": "ZZ"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 202
+      }
+    },
+
+    {
+      "request": {
+        "urlPath": "/api/clients/addresses",
+        "method": "GET",
+        "queryParameters": {
+          "country": {
+            "equalTo": "CA"
+          },
+          "maxSuggestions": {
+            "equalTo": "10"
+          },
+          "searchTerm": {
+            "matches": ".*"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-address-search.json"
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/api/clients/addresses/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-address-detail.json",
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 2500
+      }
+    }
+  ]
+}
