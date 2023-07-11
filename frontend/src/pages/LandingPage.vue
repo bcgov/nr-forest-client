@@ -9,12 +9,12 @@ import login16 from '@carbon/icons-vue/es/login/16'
     <div class="row landing-grid bx--row">
       <div class="bx--col-sm-8 bx--col-md-9 bx--col-lg-9">
         <img :src="logo" alt="BCGov Logo" width="160" class="logo" />
-        <h1 id="landing-title" class="landing-title">Welcome to FAM</h1>
+        <h1 id="landing-title" class="landing-title">Welcome to CLIENT</h1>
         <h2 id="landing-subtitle" class="landing-subtitle">
-          Forestry Access Management
+          The Ministry of Forests' client management system
         </h2>
 
-        <p id="landing-desc" class="landing-desc">Grant access to your users</p>
+        <p id="landing-desc" class="landing-desc">Check and manage client submissions</p>
 
         <bx-btn kind="primary" iconLayout="" class="landing-button">
           <span>Login with IDIR</span>
