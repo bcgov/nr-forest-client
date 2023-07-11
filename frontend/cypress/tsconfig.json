@@ -1,10 +1,21 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["./integration/**/*", "./support/**/*"],
+  "references": [
+    {
+      "path": "../tsconfig.app.json"
+    }
+  ],
   "compilerOptions": {
-    "isolatedModules": false,
-    "target": "es5",
-    "lib": ["es5", "dom"],
-    "types": ["cypress"]
+    "moduleResolution": "node",
+    "module": "es2020",
+    "lib": ["es6", "dom"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   }
 }

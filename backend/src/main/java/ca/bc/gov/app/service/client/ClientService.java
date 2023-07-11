@@ -4,12 +4,13 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
-import ca.bc.gov.app.dto.ches.ChesRequest;
+import ca.bc.gov.app.dto.ches.ChesRequestDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
+import ca.bc.gov.app.dto.client.SendMailRequestDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
@@ -40,6 +41,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Slf4j
 public class ClientService {
+
   private final ClientTypeCodeRepository clientTypeCodeRepository;
   private final CountryCodeRepository countryCodeRepository;
   private final ProvinceCodeRepository provinceCodeRepository;
@@ -51,8 +53,8 @@ public class ClientService {
   /**
    * <p><b>Find Active Client Type Codes</b></p>
    * <p>List client type code based on it's effective and expiration date.
-   * The rule used for it is the expiration date must not be set or should be bigger than
-   * provided date and the effective date bust be before or equal to the provided date.</p>
+   * The rule used for it is the expiration date must not be set or should be bigger than provided
+   * date and the effective date bust be before or equal to the provided date.</p>
    * <p>The order is by description.</p>
    *
    * @param targetDate The date to be used as reference.
@@ -73,8 +75,8 @@ public class ClientService {
   /**
    * <p><b>List countries</b></p>
    * <p>List countries by page with a defined size.
-   * The list will be sorted by order and country name.</p>
-   * List countries by page with a defined size. The list will be sorted by order and country name.
+   * The list will be sorted by order and country name.</p> List countries by page with a defined
+   * size. The list will be sorted by order and country name.
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
@@ -123,14 +125,11 @@ public class ClientService {
    * The details include the company standing and addresses.
    *
    * @param clientNumber the client number for which to retrieve details
-   * @param userEmail the email of the user who triggered this request
    * @return a Mono that emits a ClientDetailsDto object representing the details of the client
    */
   public Mono<ClientDetailsDto> getClientDetails(
-      String clientNumber,
-      String userEmail,
-      String userName
-      ) {
+      String clientNumber
+  ) {
     log.info("Loading details for {}", clientNumber);
     return
         bcRegistryService
@@ -141,7 +140,6 @@ public class ClientService {
                     .searchLegacy(document.business().identifier(), document.business().legalName())
                     .next()
                     .filter(isMatchWith(document))
-                    .flatMap(sendEmail(userEmail, userName))
                     .flatMap(legacy -> Mono
                         .error(
                             new ClientAlreadyExistException(
@@ -157,12 +155,12 @@ public class ClientService {
   }
 
   /**
-   * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances
-   * matching the given value and maps them to {@link ClientLookUpDto} instances.
+   * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances matching
+   * the given value and maps them to {@link ClientLookUpDto} instances.
    *
    * @param value the value to search for
-   * @return a {@link Flux} of {@link ClientLookUpDto} instances representing
-   * matching BC Registry entries
+   * @return a {@link Flux} of {@link ClientLookUpDto} instances representing matching BC Registry
+   * entries
    * @throws NoClientDataFound           if no matching data is found
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
@@ -176,6 +174,22 @@ public class ClientService {
                 entry.legalType()
             )
         );
+  }
+
+
+  /**
+   * <p><b>Send Email</b></p>
+   * <p>Send email to the client when entry already exists.</p>
+   * @param sendMailRequestDto The request data containing user and client details.
+   * @return A {@link Mono} of {@link Void}.
+   */
+  public Mono<Void> sendEmail(SendMailRequestDto sendMailRequestDto) {
+    return
+        legacyService
+            .searchLegacy(sendMailRequestDto.incorporation(), sendMailRequestDto.name())
+            .next()
+            .flatMap(triggerEmail(sendMailRequestDto.mail(), sendMailRequestDto.userName()))
+            .then();
   }
 
   private Function<BcRegistryDocumentDto, Mono<ClientDetailsDto>> buildDetails() {
@@ -209,7 +223,7 @@ public class ClientService {
                     new ClientValueTextDto("", addressDto.addressCountry()),
                     new ClientValueTextDto(addressDto.addressRegion(), ""),
                     addressDto.addressCity(),
-                    addressDto.postalCode(),
+                    addressDto.postalCode().trim().replaceAll("\\s+", ""),
                     index.getAndIncrement(),
                     WordUtils.capitalize(addressDto.addressType()).concat(" Address")
                 )
@@ -248,7 +262,7 @@ public class ClientService {
   }
 
   private static List<ClientValueTextDto> matchAddress(List<ClientAddressDto> addresses,
-                                                       BcRegistryPartyDto party) {
+      BcRegistryPartyDto party) {
     return addresses
         .stream()
         .filter(address ->
@@ -271,7 +285,7 @@ public class ClientService {
   private Mono<ClientValueTextDto> loadContactType(String contactCode) {
     return
         contactTypeCodeRepository
-            .findById(contactCode)
+            .findByOrDescription(contactCode, contactCode)
             .map(
                 entity -> new ClientValueTextDto(
                     entity.getContactTypeCode(),
@@ -313,8 +327,8 @@ public class ClientService {
             );
   }
 
-  private Function<ForestClientDto, 
-                   Mono<ForestClientDto>> sendEmail(String email, String userName) {
+  private Function<ForestClientDto,
+      Mono<ForestClientDto>> triggerEmail(String email, String userName) {
     return legacy ->
         chesService
             .buildTemplate(
@@ -324,8 +338,9 @@ public class ClientService {
             .flatMap(body ->
                 chesService
                     .sendEmail(
-                        new ChesRequest(
-                            List.of(email),
+                        new ChesRequestDto(
+                            List.of(email, "paulo.cruz@gov.bc.ca", "ziad.bhunnoo@gov.bc.ca",
+                                "maria.martinez@gov.bc.ca"),
                             body
                         ),
                         "Client number application can’t go ahead"
@@ -334,4 +349,5 @@ public class ClientService {
             .doOnNext(mailId -> log.info("Mail sent, transaction ID is {}", mailId))
             .thenReturn(legacy);
   }
+
 }

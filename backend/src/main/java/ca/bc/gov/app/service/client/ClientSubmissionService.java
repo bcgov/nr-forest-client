@@ -2,10 +2,11 @@ package ca.bc.gov.app.service.client;
 
 import static ca.bc.gov.app.util.ClientMapper.getLocationIdByName;
 import static ca.bc.gov.app.util.ClientMapper.mapAllToSubmissionLocationEntity;
+import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionContactEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
 import static org.springframework.data.relational.core.query.Query.query;
 
-import ca.bc.gov.app.dto.ches.ChesRequest;
+import ca.bc.gov.app.dto.ches.ChesRequestDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
@@ -24,7 +25,6 @@ import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.service.ches.ChesCommonServicesService;
-import ca.bc.gov.app.util.ClientMapper;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -77,8 +77,8 @@ public class ClientSubmissionService {
             .select(
                 query(
                     QueryPredicates
-                    .orEqualTo(requestType, "submissionType")
-                    .and(SubmissionPredicates.orStatus(requestStatus))
+                        .orEqualTo(requestType, "submissionType")
+                        .and(SubmissionPredicates.orStatus(requestStatus))
                         .and(SubmissionPredicates.orUpdatedAt(updatedAt))
                 )
                     .with(PageRequest.of(page, size)),
@@ -152,9 +152,9 @@ public class ClientSubmissionService {
                 clientSubmissionDto.businessInformation())
             )
             .flatMap(submissionDetailRepository::save)
-            //Save the locations and contacts and do the association
+            //Save the locationNames and contacts and do the association
             .flatMap(submission ->
-                //Save all locations
+                //Save all locationNames
                 saveAddresses(clientSubmissionDto, submission)
                     //For each contact, save it,
                     // then find the associated location and save the association
@@ -166,29 +166,29 @@ public class ClientSubmissionService {
                                     .location()
                                     .contacts()
                             )
-                    /*.flatMap(contact -> saveAndAssociateContact(
-                                            locations, 
-                                            contact,
-                                            submission.getSubmissionId()))*/
+                            .flatMap(contact -> saveAndAssociateContact(
+                                locations,
+                                contact,
+                                submission.getSubmissionId()))
                     )
                     //Then grab all back as a list, to make all reactive flows complete
                     .collectList()
                     //Return what we need only
                     .thenReturn(submission.getSubmissionId())
             )
-            .flatMap(submissionId -> sendEmail(submissionId, 
-                                               clientSubmissionDto, 
-                                               userEmail, 
-                                               userName));
+            .flatMap(submissionId -> sendEmail(submissionId,
+                clientSubmissionDto,
+                userEmail,
+                userName));
   }
 
-  /*private Mono<SubmissionLocationContactEntity> saveAndAssociateContact(
+  private Mono<SubmissionLocationContactEntity> saveAndAssociateContact(
       List<SubmissionLocationEntity> locations,
       ClientContactDto contact,
       Integer submissionId
   ) {
     return submissionContactRepository
-        .save(ClientMapper.mapToSubmissionContactEntity(contact).withSubmissionId(submissionId))
+        .save(mapToSubmissionContactEntity(contact).withSubmissionId(submissionId))
         .map(contactEntity ->
             SubmissionLocationContactEntity
                 .builder()
@@ -197,7 +197,7 @@ public class ClientSubmissionService {
                 .build()
         )
         .flatMap(submissionLocationContactRepository::save);
-  }*/
+  }
 
   private Mono<List<SubmissionLocationEntity>> saveAddresses(
       ClientSubmissionDto clientSubmissionDto,
@@ -226,8 +226,9 @@ public class ClientSubmissionService {
             .flatMap(body ->
                 chesService
                     .sendEmail(
-                        new ChesRequest(
-                            List.of(email),
+                        new ChesRequestDto(
+                            List.of(email, "paulo.cruz@gov.bc.ca", "ziad.bhunnoo@gov.bc.ca",
+                                "maria.martinez@gov.bc.ca"),
                             body
                         ),
                         "Client number application received"

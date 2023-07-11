@@ -6,6 +6,7 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface ContactTypeCodeRepository
@@ -13,4 +14,6 @@ public interface ContactTypeCodeRepository
     ReactiveSortingRepository<ContactTypeCodeEntity, String> {
 
   Flux<ContactTypeCodeEntity> findBy(Pageable pageable);
+
+  Mono<ContactTypeCodeEntity> findByOrDescription(String id, String description);
 }

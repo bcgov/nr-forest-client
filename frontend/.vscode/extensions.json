@@ -1,0 +1,23 @@
+{
+  "recommendations": [
+    "vue.volar",
+    "vue.vscode-typescript-vue-plugin",
+    "ms-vscode.vscode-typescript-next",
+    "antfu.vite",
+    "zixuanchen.vitest-explorer",
+    "esbenp.prettier-vscode",
+    "rvest.vs-code-prettier-eslint",
+    "wayou.vscode-todo-highlight",
+    "pmneo.tsimporter",
+    "dbaeumer.vscode-eslint",
+    "ms-azuretools.vscode-docker",
+    "github.vscode-github-actions",
+    "wallabyjs.console-ninja",
+    "wallabyjs.wallaby-vscode",
+    "helixquar.randomeverything",
+    "tal7aouy.indent-colorizer",
+    "wware.snippet-creator",
+    "redhat.vscode-xml",
+    "sonarsource.sonarlint-vscode"
+  ]
+}

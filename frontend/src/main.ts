@@ -1,48 +1,75 @@
-import { createApp } from "vue";
-import VueTheMask from 'vue-the-mask';
-import App from "./App.vue";
-import VueKeycloakJs from "@dsb-norge/vue-keycloak-js";
-import type { KeycloakInstance } from "keycloak-js";
-import type { VueKeycloakInstance } from "@dsb-norge/vue-keycloak-js/dist/types";
-import { keycloakUrl, keycloakClientId, nodeEnv } from "./core/CoreConstants";
+import { createApp } from 'vue'
+import VueKeyCloak from '@dsb-norge/vue-keycloak-js'
+import type Keycloak from 'keycloak-js'
+import type { KeycloakPromise } from 'keycloak-js'
+import type { VueKeycloakInstance } from '@dsb-norge/vue-keycloak-js/dist/types'
 
-// Import Bootstrap an BootstrapVue CSS files (order is important)
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue-3/dist/bootstrap-vue-3.css";
+import App from '@/App.vue'
+import { router } from '@/routes'
+import { keycloakUrl, keycloakClientId, nodeEnv } from '@/CoreConstants'
+import { masking } from '@/helpers/CustomDirectives'
 
-const app = createApp(App);
-app.use(VueTheMask);
+// Importing Styles
+import '@/styles'
 
-if (nodeEnv && nodeEnv == "openshift-dev") {
-  // disable the login authentication for the deployment in the openshift dev namespace
-  // cause the url in the dev namespace is not stable
-  app.mount("#app");
+const app = createApp(App)
+
+app.use(router)
+
+app.directive('mask', masking('.bx--text-input__field-wrapper input'))
+
+if (!nodeEnv || nodeEnv === 'openshift-dev') {
+  const fakeKeycloak = {
+    authenticated: true,
+    login: (options?: any): KeycloakPromise<void, void> | void => {
+      console.log('Mocked login')
+    },
+    logout: (options?: any): KeycloakPromise<void, void> | void => {
+      console.log('Mocked logout')
+      fakeKeycloak.authenticated = false
+    },
+    register: (options?: any): KeycloakPromise<void, void> | void => {
+      console.log('Mocked register')
+    },
+    logoutFn: (options?: any): KeycloakPromise<void, void> | void => {
+      console.log('Mocked logoutFn ', fakeKeycloak.authenticated)
+      fakeKeycloak.authenticated = false
+    },
+    token: 'fake-token',
+    tokenParsed: {
+      display_name: 'fake-user',
+      given_name: 'fake',
+      family_name: 'user',
+      email: 'fake-user@mail.com',
+      identity_provider: 'bceid'
+    },
+    subject: 'fake-user'
+  }
+
+  app.provide('keycloak', fakeKeycloak)
+  app.config.globalProperties.$keycloak = fakeKeycloak
+  app.mount('#app')
 } else {
-  app.use(VueKeycloakJs, {
+  app.use(VueKeyCloak, {
     init: {
-      // Use 'login-required' to always require authentication
-      // If using 'login-required', there is no need for the router guards in router.js
-      onLoad: "login-required",
-      pkceMethod: "S256",
-      // onLoad: "check-sso",
-      // silentCheckSsoRedirectUri: window.location.origin + "/index.html",
+      onLoad: 'login-required',
+      pkceMethod: 'S256'
     },
     config: {
       url: keycloakUrl,
-      realm: "standard",
-      clientId: keycloakClientId,
+      realm: 'standard',
+      clientId: keycloakClientId
     },
-    onReady(keycloak: KeycloakInstance) {
-      console.log("Keycloak ready", keycloak);
-      // provde global property keycloak to read login information
-      app.provide("keycloak", keycloak);
-      app.mount("#app");
-    },
-  });
+    /* eslint-disable typescript:S1874 */
+    onReady: (keycloak: Keycloak) => {
+      app.provide('keycloak', keycloak)
+      app.mount('#app')
+    }
+  })
 }
 
-declare module "@vue/runtime-core" {
+declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
-    $keycloak: VueKeycloakInstance;
+    $keycloak: VueKeycloakInstance
   }
 }

@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,vue,vuejs,node
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,vue,vuejs,node
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,vue,vuejs,node,cypressio
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,vue,vuejs,node,cypressio
 
 ### Node ###
 # Logs
@@ -29,6 +29,8 @@ coverage
 
 # nyc test coverage
 .nyc_output
+.nyc_report
+.vite_report
 
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
@@ -160,17 +162,6 @@ dist
 .history
 .ionide
 
-### Vue ###
-# gitignore template for Vue.js projects
-#
-# Recommended template: Node.gitignore
-
-# TODO: where does this rule come from?
-docs/_book
-
-# TODO: where does this rule come from?
-test/
-
 ### Vuejs ###
 # Recommended template: Node.gitignore
 
@@ -178,6 +169,20 @@ dist/
 npm-debug.log
 yarn-error.log
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,vue,vuejs,node
+# Personal
 
 nr-forest-client-report.*
+.DS_Store
+
+### CypressIO ###
+# gitignore template for the CypressIO, browser test framework
+# website: https://www.cypress.io/
+
+cypress/results/*
+cypress/reports/*
+cypress/screenshots/*
+cypress/videos/*
+
+# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,vue,vuejs,node,cypressio
+
+reports/

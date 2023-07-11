@@ -5,5 +5,5 @@ Given("I am on the form page", () => {
 });
 
 Then("I can see the title", () => {
-  cy.contains('Client Management System')
+  cy.contains('New client application')
 });

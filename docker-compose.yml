@@ -1,4 +1,3 @@
----
 version: "3.8"
 
 services:
@@ -88,6 +87,7 @@ services:
       APP_USER: THE
       ORACLE_RANDOM_PASSWORD: yes
     hostname: legacydb
+    platform: "linux/amd64"
     image: gvenzl/oracle-xe:21.3.0-slim-faststart
     ports:
       - 1521:1521

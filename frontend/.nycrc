@@ -1,0 +1,10 @@
+{
+  "temp-dir": "reports/.nyc_output",
+  "report-dir": "reports/.nyc_report",
+  "check-coverage": true,
+  "extension": [".ts", ".vue"],
+  "all": true,
+  "excludeAfterRemap": false,
+  "include": ["src/**/*.ts", "src/**/*.vue"],
+  "exclude": ["src/**/*.spec.ts"]
+}

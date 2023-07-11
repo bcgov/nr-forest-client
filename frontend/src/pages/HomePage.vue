@@ -1,14 +1,11 @@
 <template>
   <div style="margin: 24px">Welcome to forest client!</div>
+  <div>
+    <router-link :to="{ path: '/new-client' }">New Client</router-link><br />
+    <router-link :to="{ path: '/form-submission' }"
+      >Form Submission</router-link
+    >
+  </div>
 </template>
 
 <script setup lang="ts"></script>
-
-<script lang="ts">
-import { defineComponent } from "vue";
-export default defineComponent({
-  name: "HomePage",
-});
-</script>
-
-<style scoped></style>

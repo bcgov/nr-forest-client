@@ -1,73 +1,47 @@
 <template>
-  <div>
-    <MainHeader />
-    <div>
-      <b-tabs pills card>
-        <b-tab
-          v-for="(tab, index) in tabs"
-          :title="tab.title"
-          :key="index"
-          :active="index == 0"
-          >
-          <component :is="tab.content" 
-                     :submitterInformation="submitterInformation" />
-        </b-tab>
-      </b-tabs>
-    </div>
-  </div>
+  <main-header-component></main-header-component>
+  <router-view></router-view>
 </template>
 
 <script setup lang="ts">
-import { inject, ref } from "vue";
-import MainHeader from "./common/MainHeaderComponent.vue";
-import ReviewApplicationPage from "./pages/ReviewApplicationPage.vue";
-import ApplyClientNumber from "./pages/applyclientnumber/ApplyClientNumberPage.vue";
-import type { Ref, DefineComponent } from "vue";
-import type { KeycloakInstance } from "keycloak-js";
-import { navBlue, navSelectBlue } from "./utils/color";
+import { inject, provide, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-const keycloak: KeycloakInstance | undefined = inject("keycloak");
-let tabs: Ref<Array<{ title: string; content: DefineComponent }>> = ref([]);
+import type Keycloak from 'keycloak-js'
+import type { Submitter } from '@/dto/CommonTypesDto'
 
-let submitterInformation = ref({});
+/* eslint-disable typescript:S1874 */
+const keycloak: Keycloak | undefined = inject('keycloak')
+const router = useRouter()
 
-if (keycloak && 
-    keycloak.tokenParsed && 
-    keycloak.tokenParsed.identity_provider === "idir") {
-  tabs.value = [{ title: "Review Applications", content: ReviewApplicationPage }];
-} 
-else {
-  tabs.value = [{ title: "Request a client number", content: ApplyClientNumber }];
-  submitterInformation.value.bceidBusinessName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.display_name : "Dev Test Client Name";
-  submitterInformation.value.userId = keycloak && keycloak.tokenParsed ? keycloak.subject : "testUserId";
-  submitterInformation.value.submitterFirstName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.given_name : "Maria";
-  submitterInformation.value.submitterLastName = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.family_name : "Martinez";
-  submitterInformation.value.submitterEmail = keycloak && keycloak.tokenParsed ? keycloak.tokenParsed.email : "maria.martinez@gov.bc.ca";
+let submitterInformation = ref<Submitter>({
+  firstName: keycloak?.tokenParsed?.given_name,
+  lastName: keycloak?.tokenParsed?.family_name,
+  email: keycloak?.tokenParsed?.email,
+  bceidBusinessName: keycloak?.tokenParsed?.display_name,
+  userId: keycloak?.subject
+})
+
+const submitAndRedirect = (page: string) => {
+  provide('submitterInformation', submitterInformation.value)
+  router.push({ name: page })
 }
-</script>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-export default defineComponent({
-  name: "App",
-});
+if (keycloak?.tokenParsed?.identity_provider === 'idir') {
+  submitAndRedirect('internal')
+} else {
+  submitAndRedirect('form')
+}
 </script>
 
 <style>
 #app {
-  /* font-family: Avenir, Helvetica, Arial, sans-serif; */
   font-family: -apple-system, BlinkMacSystemFont, BCSans, Roboto, Verdana, Arial,
     sans-serif;
   font-size: 0.875rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* text-align: center; */
-  /* color: #2c3e50; */
   color: rgba(0, 0, 0, 0.87);
-}
-
-.card-header {
-  /*padding: 0.5rem 0.5rem 0.5rem 0.5rem !important;*/
 }
 
 .row {
@@ -98,15 +72,17 @@ export default defineComponent({
 
 /* ------------ nav bar ------------------- */
 .nav.nav-pills {
-  background-color: v-bind(navBlue) !important;
+  background-color: #38598a !important;
   height: 45px;
 }
+
 .nav.nav-pills .nav-item button {
   color: #fff;
   height: 100%;
 }
-.nav.nav-pills .nav-item button[aria-selected="true"] {
-  background-color: v-bind(navSelectBlue);
-  border-color: v-bind(navSelectBlue);
+
+.nav.nav-pills .nav-item button[aria-selected='true'] {
+  background-color: rgba(84, 117, 167, 1);
+  border-color: rgba(84, 117, 167, 1);
 }
 </style>

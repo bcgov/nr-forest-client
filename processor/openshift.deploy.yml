@@ -197,12 +197,12 @@ objects:
                   memory: ${MEMORY_REQUEST}
               readinessProbe:
                 successThreshold: 1
-                failureThreshold: 12
+                failureThreshold: 15
                 httpGet:
                   path: /health
                   port: 3100
                   scheme: HTTP
-                initialDelaySeconds: 180
+                initialDelaySeconds: 10
                 periodSeconds: 30
                 timeoutSeconds: 5
   - apiVersion: v1
