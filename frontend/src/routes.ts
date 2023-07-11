@@ -14,7 +14,10 @@ const routes: RouteRecordRaw[] = [
     path: '/landing', // Should be the root path in the future
     name: 'home',
     component: LandingPage,
-    props: true
+    props: true,
+    meta: {
+      hideHeader: true
+    }
   },
   {
     path: '/new-client',
