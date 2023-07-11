@@ -35,21 +35,8 @@ if (keycloak?.tokenParsed?.identity_provider === 'idir') {
 </script>
 
 <style>
-#app {
-  font-family: -apple-system, BlinkMacSystemFont, BCSans, Roboto, Verdana, Arial,
-    sans-serif;
-  font-size: 0.875rem;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: rgba(0, 0, 0, 0.87);
-}
 
 .row {
-  padding: 0px 0px 0px 0px !important;
-  margin: 0px 0px 0px 0px !important;
-}
-
-.row > * {
   padding: 0px 0px 0px 0px !important;
   margin: 0px 0px 0px 0px !important;
 }
