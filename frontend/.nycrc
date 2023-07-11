@@ -4,6 +4,7 @@
   "check-coverage": true,
   "extension": [".ts", ".vue"],
   "all": true,
+  "excludeAfterRemap": false,
   "include": ["src/**/*.ts", "src/**/*.vue"],
   "exclude": ["src/**/*.spec.ts"]
 }
