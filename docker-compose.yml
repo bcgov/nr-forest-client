@@ -60,7 +60,7 @@ services:
   frontend:
     container_name: frontend
     image: node:18-bullseye
-    entrypoint: sh -c "npm ci && npm run start"
+    entrypoint: sh -c "npm i && npm start"
     working_dir: /app
     environment:
       NODE_ENV: development
