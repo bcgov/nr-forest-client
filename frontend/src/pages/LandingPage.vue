@@ -20,10 +20,6 @@ import login16 from '@carbon/icons-vue/es/login/16'
           <span>Login with IDIR</span>
           <login16 slot="icon" />
         </bx-btn>
-        <bx-btn kind="tertiary" iconLayout="" class="landing-button">
-          <span>Login with Business BCeID</span>
-          <login16 slot="icon" />
-        </bx-btn>
       </div>
       <div class="bx--col-sm-8 bx--col-md-6 bx--col-lg-6 landing-img-column">
         <img
