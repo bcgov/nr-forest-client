@@ -243,4 +243,3 @@ const logOut = () => {
   session?.logOut()
 }
 </script>
-@/helpers/ForestClientUserSession
