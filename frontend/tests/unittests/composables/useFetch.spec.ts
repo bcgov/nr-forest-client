@@ -36,9 +36,9 @@ describe('useFetch', () => {
     await wrapper.vm.$nextTick()
 
     expect(axiosMock).toHaveBeenCalledWith({
-      baseURL: 'http://localhost:3000',
+      baseURL: 'http://localhost:8080',
       headers: {
-        'Access-Control-Allow-Origin': 'http://localhost:8080',
+        'Access-Control-Allow-Origin': 'http://localhost:3000',
         'Content-Type': 'application/json'
       },
       skip: true,
@@ -74,9 +74,9 @@ describe('useFetch', () => {
     await wrapper.vm.$nextTick()
 
     expect(axiosMock).toHaveBeenCalledWith({
-      baseURL: 'http://localhost:3000',
+      baseURL: 'http://localhost:8080',
       headers: {
-        'Access-Control-Allow-Origin': 'http://localhost:8080',
+        'Access-Control-Allow-Origin': 'http://localhost:3000',
         'Content-Type': 'application/json'
       },
       skip: true,
@@ -116,9 +116,9 @@ describe('useFetch', () => {
     await wrapper.vm.$nextTick()
 
     expect(axiosMock).toHaveBeenCalledWith({
-      baseURL: 'http://localhost:3000',
+      baseURL: 'http://localhost:8080',
       headers: {
-        'Access-Control-Allow-Origin': 'http://localhost:8080',
+        'Access-Control-Allow-Origin': 'http://localhost:3000',
         'Content-Type': 'application/json'
       },
       skip: true,
@@ -160,9 +160,9 @@ describe('useFetch', () => {
     await wrapper.vm.$nextTick()
 
     expect(axiosMock).toHaveBeenCalledWith({
-      baseURL: 'http://localhost:3000',
+      baseURL: 'http://localhost:8080',
       headers: {
-        'Access-Control-Allow-Origin': 'http://localhost:8080',
+        'Access-Control-Allow-Origin': 'http://localhost:3000',
         'Content-Type': 'application/json'
       },
       skip: true,

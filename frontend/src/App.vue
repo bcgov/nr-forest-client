@@ -30,12 +30,11 @@ const submitAndRedirect = (page: string) => {
 if (keycloak?.tokenParsed?.identity_provider === 'idir') {
   submitAndRedirect('internal')
 } else {
-  // submitAndRedirect('form')
+  submitAndRedirect('form')
 }
 </script>
 
 <style>
-
 .row {
   padding: 0px 0px 0px 0px !important;
   margin: 0px 0px 0px 0px !important;
