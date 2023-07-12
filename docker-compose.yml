@@ -31,6 +31,9 @@ services:
     volumes: [/pgdata]
     healthcheck:
       test: ["CMD", "pg_isready", "-U", *POSTGRES_USER]
+      interval: 5s
+      timeout: 10s
+      retries: 10
     <<: *defaults
 
   backend:
@@ -53,6 +56,10 @@ services:
     ports: [3000:3000]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     depends_on: [*POSTGRES_HOST]
     volumes: ["./backend:/app"]
     <<: *defaults
@@ -67,6 +74,10 @@ services:
       VITE_BACKEND_URL: backend
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     depends_on: [backend]
     ports: [8080:8080]
     volumes: ["./frontend:/app"]
@@ -84,4 +95,7 @@ services:
     volumes: [/opt/oracle/oradata gvenzl/oracle-xe]
     healthcheck:
       test: [ "CMD-SHELL", "healthcheck.sh" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
     <<: *defaults
