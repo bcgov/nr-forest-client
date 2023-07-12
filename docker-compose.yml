@@ -10,6 +10,13 @@ x-var:
   - &POSTGRES_HOST
     database
 
+x-defaults: &defaults
+  logging:
+    driver: "json-file"
+    options:
+      max-size: 10m
+      max-file: "3"
+
 services:
   database:
     container_name: *POSTGRES_HOST
@@ -22,6 +29,7 @@ services:
     volumes: [/pgdata]
     healthcheck:
       test: ["CMD", "pg_isready", "-U", *POSTGRES_USER]
+    <<: *defaults
 
   backend:
     container_name: backend
@@ -45,6 +53,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
     depends_on: [*POSTGRES_HOST]
     volumes: ["./backend:/app"]
+    <<: *defaults
 
   frontend:
     container_name: frontend
@@ -59,6 +68,7 @@ services:
     depends_on: [backend]
     ports: [8080:8080]
     volumes: ["./frontend:/app"]
+    <<: *defaults
 
   legacydb:
     container_name: oracle
@@ -72,3 +82,4 @@ services:
     volumes: [/opt/oracle/oradata gvenzl/oracle-xe]
     healthcheck:
       test: [ "CMD-SHELL", "healthcheck.sh" ]
+    <<: *defaults
