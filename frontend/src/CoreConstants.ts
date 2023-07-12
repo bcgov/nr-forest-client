@@ -6,6 +6,7 @@ export const frontendUrl = checkEnv('VITE_FRONTEND_URL')
 export const keycloakUrl = checkEnv('VITE_KEYCLOAK_URL')
 export const keycloakClientId = checkEnv('VITE_KEYCLOAK_CLIENT_ID')
 export const nodeEnv = checkEnv('VITE_NODE_ENV')
+export const cognitoEnv = checkEnv('VITE_AWS_ENV')
 
 // constant
 export const maxFileSizePerFile = 1000000 * 20 // 20 mb

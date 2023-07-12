@@ -18,7 +18,8 @@ const userLoggedIn = computedAsync(
 
 const loginRedirect = (userIsLogged: boolean) => {
   if (userIsLogged) {
-    AmplifyUserSession?.user?.provider === 'bceid'
+    console.log(AmplifyUserSession?.user)
+    AmplifyUserSession?.user?.provider === 'idir' //Needs to invert the logic here later
       ? router.push({ name: 'form' })
       : router.push({ name: 'internal' })
   }

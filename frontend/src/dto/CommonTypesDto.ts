@@ -45,6 +45,9 @@ export interface Submitter {
   email: string
   provider: string
   userId: string | undefined
+  firstName: string
+  lastName: string
+  businessName: string
 }
 
 export interface ModalNotification {
