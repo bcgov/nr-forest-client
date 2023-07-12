@@ -1,9 +1,0 @@
-# Base and envars
-FROM maven:3.9.3-eclipse-temurin-17
-ENV LANG=en_CA.UTF-8 LANGUAGE=en_CA.UTF-8 LC_ALL=en_CA.UTF-8
-
-# Workdir, port, healthcheck and entrypoint
-WORKDIR /app
-EXPOSE 3000
-HEALTHCHECK CMD curl -f http://localhost:3000
-CMD ./mvnw -B verify
