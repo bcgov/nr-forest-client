@@ -39,8 +39,7 @@ services:
   backend:
     container_name: backend
     image: maven:3.9.3-eclipse-temurin-17
-    entrypoint: ./mvnw -B verify
-    working_dir: /app
+    entrypoint: sh -c "cd /app && ./mvnw -B verify"
     environment:
       POSTGRESQL_HOST: *POSTGRES_HOST
       POSTGRESQL_USER: *POSTGRES_USER
@@ -67,8 +66,7 @@ services:
   frontend:
     container_name: frontend
     image: node:18-bullseye
-    entrypoint: sh -c "npm i && npm start"
-    working_dir: /app
+    entrypoint: sh -c "cd /app && npm i && npm start"
     environment:
       NODE_ENV: development
       VITE_BACKEND_URL: backend
