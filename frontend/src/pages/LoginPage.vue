@@ -5,7 +5,7 @@
     kind="tertiary"
     iconLayout=""
     class="bx--btn"
-    @click.prevent="$session?.logIn('bceid')"
+    @click.prevent="$session?.logIn('bceidbusiness')"
     size="field"
   >
     <span>Login with BCeID</span>
@@ -35,6 +35,6 @@ const { query } = router.currentRoute.value
 
 // check if a querystring parameter called ref exists and if it has a value of external
 if (query.ref && query.ref === 'external') {
-  AmplifyUserSession.logIn('bceid')
+  AmplifyUserSession.logIn('bceidbusiness')
 }
 </script>

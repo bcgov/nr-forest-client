@@ -159,8 +159,8 @@ const submitterContact: Contact = {
   locationNames: [],
   contactType: { value: '', text: '' },
   phoneNumber: '',
-  firstName: session?.user?.name || '',
-  lastName: session?.user?.name || '',
+  firstName: session?.user?.firstName || '',
+  lastName: session?.user?.lastName || '',
   email: session?.user?.email || ''
 }
 
@@ -191,7 +191,6 @@ const { response, error, fetch } = usePost(
 watch([response], () => {
   if (response.value.status === 201) {
     router.push({ name: 'confirmation' })
-    resetForm()
   }
 })
 

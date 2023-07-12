@@ -1,20 +1,13 @@
 import { version } from '../package.json'
 
-// env vars
-export const backendUrl =
-  window.localStorage.getItem('VITE_BACKEND_URL') ||
-  import.meta.env.VITE_BACKEND_URL
-export const frontendUrl =
-  window.localStorage.getItem('VITE_FRONTEND_URL') ||
-  import.meta.env.VITE_FRONTEND_URL
-export const keycloakUrl =
-  window.localStorage.getItem('VITE_KEYCLOAK_URL') ||
-  import.meta.env.VITE_KEYCLOAK_URL
-export const keycloakClientId =
-  window.localStorage.getItem('VITE_KEYCLOAK_CLIENT_ID') ||
-  import.meta.env.VITE_KEYCLOAK_CLIENT_ID
-export const nodeEnv =
-  window.localStorage.getItem('VITE_NODE_ENV') || import.meta.env.VITE_NODE_ENV
+export const checkEnv = (key: string) =>
+  window.localStorage.getItem(key) || import.meta.env[key]
+
+export const backendUrl = checkEnv('VITE_BACKEND_URL')
+export const frontendUrl = checkEnv('VITE_FRONTEND_URL')
+export const keycloakUrl = checkEnv('VITE_KEYCLOAK_URL')
+export const keycloakClientId = checkEnv('VITE_KEYCLOAK_CLIENT_ID')
+export const nodeEnv = checkEnv('VITE_NODE_ENV')
 
 export const appVersion = version
 

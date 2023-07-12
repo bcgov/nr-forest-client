@@ -11,6 +11,7 @@ import RadioInputComponent from '@/components/forms/RadioInputComponent.vue'
 import { isNotEmpty } from '@/helpers/validators/GlobalValidators'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
 import { retrieveClientType } from '@/helpers/DataConversors'
+import AmplifyUserSession from '@/helpers/AmplifyUserSession'
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>()
@@ -165,8 +166,10 @@ watch([selectedOption], () => {
   if (selectedOption.value === ClientTypeEnum.U) {
     formData.value.businessInformation.businessType = 'U'
     formData.value.businessInformation.clientType = 'U'
-    const { firstName, lastName } = formData.value.location.contacts[0]
-    formData.value.businessInformation.businessName = `${firstName} ${lastName}`
+    formData.value.businessInformation.businessName =
+      AmplifyUserSession.user?.businessName ??
+      `${AmplifyUserSession.user?.firstName} ${AmplifyUserSession.user?.lastName} ` ??
+      ''
     validation.business = true
     emit('update:data', formData.value)
   } else {
