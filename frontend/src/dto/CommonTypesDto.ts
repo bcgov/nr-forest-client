@@ -41,10 +41,9 @@ export interface ProgressData {
 }
 
 export interface Submitter {
-  firstName: string
-  lastName: string
+  name: string
   email: string
-  bceidBusinessName: string
+  provider: string
   userId: string | undefined
 }
 
@@ -53,4 +52,12 @@ export interface ModalNotification {
   kind: string
   active: boolean
   handler: () => void
+}
+
+export interface AmplifyCustomProperties {
+  user: Submitter | undefined
+  logIn: (provider: string) => Promise<void>
+  logOut: () => Promise<void>
+  isLoggedIn: () => Promise<boolean>
+  loadDetails: () => Promise<void>
 }
