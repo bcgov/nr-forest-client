@@ -11,11 +11,11 @@
       <h1>Ministry of Forests</h1>
     </div>
     <bx-btn
-      v-if="$keycloak"
+      v-if="$session?.user"
       kind="tertiary"
       iconLayout=""
       class="bx--btn bx--btn-header"
-      @click.prevent="$keycloak.logoutFn"
+      @click.prevent="$session?.logOut"
       size="field"
     >
       <span>Logout</span>
@@ -30,7 +30,7 @@ import Logout16 from '@carbon/icons-vue/es/logout/16'
 
 <style scoped>
 header {
-  background-color: #0073E6;
+  background-color: #0073e6;
   padding: 0 30px 0 30px;
   color: #fff;
   display: flex;
