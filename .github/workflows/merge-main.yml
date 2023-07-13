@@ -80,9 +80,10 @@ jobs:
           VITE_KEYCLOAK_CLIENT_ID: 1234
           VITE_NODE_ENV: 
         with:
+          node_version: 18
           commands: |
             npm ci
-            DEBUG=code-coverage npm run coverage
+            npm run coverage
           dir: frontend
           sonar_args: >
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
