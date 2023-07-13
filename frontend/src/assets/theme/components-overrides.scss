@@ -2,6 +2,9 @@
 
 @use '../design-tokens/colors.scss' as colors;
 
+@use 'sass:map';
+@use '@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss' as typeFamily;
+
 @use '@carbon/styles/scss/config' with (
   $prefix: variables.$bcgov-prefix
 );
@@ -9,6 +12,14 @@
 @use '@carbon/styles/scss/components/button/vars' with (
   $button-border-radius: 0.25rem
 );
+
+@use '@carbon/styles/scss/grid';
+
+@include grid.flex-grid();
+
+body {
+  font-family: map.get(typeFamily.$type-family, 'sans');
+}
 
 .#{variables.$bcgov-prefix}--data-table-header,
 .#{variables.$bcgov-prefix}--date-picker__input,

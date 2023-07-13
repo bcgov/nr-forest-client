@@ -80,6 +80,7 @@ jobs:
           VITE_KEYCLOAK_CLIENT_ID: 1234
           VITE_NODE_ENV: 
         with:
+          node_version: 18
           commands: |
             npm ci
             npm run coverage
