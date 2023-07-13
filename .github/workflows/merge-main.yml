@@ -82,7 +82,7 @@ jobs:
         with:
           commands: |
             npm ci
-            npm run coverage
+            DEBUG=code-coverage npm run coverage
           dir: frontend
           sonar_args: >
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
