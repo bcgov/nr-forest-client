@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@bcgov-nr/nr-fsa-theme": "^1.0.7",
-    "@bcgov/bc-sans": "^1.0.1",
+    "@bcgov/bc-sans": "^2.0.0",
     "@carbon/icons": "^11.20.0",
     "@carbon/icons-vue": "^10.49.1",
     "@carbon/pictograms": "^12.18.0",
