@@ -1,5 +1,9 @@
 <template>
-  <div>Temporary loading user placeholder</div>
+  <div class="bx--content">
+    <div class="waiting">
+      <bx-loading type="small"> </bx-loading>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -18,7 +22,6 @@ const userLoggedIn = computedAsync(
 
 const loginRedirect = (userIsLogged: boolean) => {
   if (userIsLogged) {
-    console.log(AmplifyUserSession?.user)
     AmplifyUserSession?.user?.provider === 'idir' //Needs to invert the logic here later
       ? router.push({ name: 'form' })
       : router.push({ name: 'internal' })
@@ -27,3 +30,15 @@ const loginRedirect = (userIsLogged: boolean) => {
 
 watch(userLoggedIn, loginRedirect)
 </script>
+
+<style scoped>
+.waiting {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.waiting bx-loading {
+  height: 5.5rem;
+}
+</style>

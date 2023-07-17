@@ -74,12 +74,17 @@ const router = createRouter({
 
 /* This is a global guard that will run before each route change
    It will check if the user is logged in and if the route requires auth
-  If the user is not logged in and the route requires auth, it will redirect to the home page for login
+   If the user is not logged in and the route requires auth, it will redirect to the home page for login
 */
+
 router.beforeEach(async (to, from, next) => {
-  const user = await AmplifyUserSession.isLoggedIn()
-  if (to.meta.requireAuth && !user) {
-    next({ name: 'home' })
+  if (to.meta.requireAuth) {
+    const user = await AmplifyUserSession.isLoggedIn()
+    if (!user) {
+      next({ name: 'home' })
+    } else {
+      next()
+    }
   } else {
     next()
   }
