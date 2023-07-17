@@ -11,7 +11,7 @@
       <h1>Ministry of Forests</h1>
     </div>
     <bx-btn
-      v-if="$session?.user"
+      v-if="logged"
       kind="tertiary"
       iconLayout=""
       class="bx--btn bx--btn-header"
@@ -26,6 +26,13 @@
 
 <script setup lang="ts">
 import Logout16 from '@carbon/icons-vue/es/logout/16'
+import { computedAsync } from '@vueuse/core'
+import AmplifyUserSession from '@/helpers/AmplifyUserSession'
+
+const logged = computedAsync(
+  async () => await AmplifyUserSession.isLoggedIn(),
+  false
+)
 </script>
 
 <style scoped>
