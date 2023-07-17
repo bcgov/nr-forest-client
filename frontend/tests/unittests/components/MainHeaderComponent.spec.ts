@@ -5,15 +5,15 @@ import MainHeaderComponent from '@/components/MainHeaderComponent.vue'
 
 describe('MainHeaderComponent.vue', () => {
   it('renders the component when authenticated', async () => {
-    const keycloak = {
-      authenticated: true,
-      logoutFn: vi.fn()
+    const mockSession = {
+      user: {},
+      logOut: vi.fn()
     }
 
     const wrapper = mount(MainHeaderComponent, {
       global: {
         mocks: {
-          $keycloak: keycloak
+          $session: mockSession
         }
       }
     })
@@ -27,7 +27,7 @@ describe('MainHeaderComponent.vue', () => {
     const wrapper = mount(MainHeaderComponent, {
       global: {
         mocks: {
-          $keycloak: null
+          $session: null
         }
       }
     })

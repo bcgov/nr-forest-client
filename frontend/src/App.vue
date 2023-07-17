@@ -3,16 +3,7 @@
   <router-view></router-view>
 </template>
 
-<script setup lang="ts">
-import { computedAsync } from '@vueuse/core'
-
-import AmplifyUserSession from '@/helpers/AmplifyUserSession'
-
-const userLoggedIn = computedAsync(
-  async () => AmplifyUserSession.isLoggedIn(),
-  false
-)
-</script>
+<script setup lang="ts"></script>
 
 <style>
 .row {
