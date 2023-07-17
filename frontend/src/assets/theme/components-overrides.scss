@@ -4,8 +4,6 @@
 
 @use 'sass:map';
 
-@use '@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss' as typeFamily;
-
 @use '@carbon/styles/scss/config' with (
   $prefix: variables.$bcgov-prefix
 );
@@ -19,7 +17,7 @@
 @include grid.flex-grid();
 
 body {
-  font-family: map.get(typeFamily.$type-family, 'sans');
+  font-family: ‘BCSans’, ‘Noto Sans’, Verdana, Arial, sans-serif;
 }
 
 .#{variables.$bcgov-prefix}--data-table-header,
