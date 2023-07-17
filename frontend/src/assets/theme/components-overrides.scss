@@ -390,7 +390,7 @@ li.#{variables.$bcgov-prefix}--overflow-menu-options__option:last-child {
   height: 3.5rem;
 }
 
-.bx--header-site-name {
+.#{variables.$bcgov-prefix}--header-site-name {
   font-family: ‘BCSans’, ‘Noto Sans’, Verdana, Arial, sans-serif;
   font-size: 0.875rem;
   font-weight: 700;
