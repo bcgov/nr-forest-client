@@ -62,5 +62,5 @@ export interface AmplifyCustomProperties {
   logIn: (provider: string) => Promise<void>
   logOut: () => Promise<void>
   isLoggedIn: () => Promise<boolean>
-  loadDetails: () => Promise<void>
+  loadDetails: () => Promise<Submitter | undefined>
 }
