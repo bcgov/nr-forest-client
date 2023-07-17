@@ -75,6 +75,7 @@ const amplifyUserSession: AmplifyCustomProperties = {
         this.user = undefined
       }
     }
+    return this.user
   },
   async isLoggedIn() {
     await this.loadDetails()
