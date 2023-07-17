@@ -91,5 +91,3 @@ const canShowLink = (step: ProgressData) => {
   return step.kind === 'current' || step.kind === 'complete'
 }
 </script>
-
-<style scoped></style>

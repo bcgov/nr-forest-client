@@ -1,6 +1,8 @@
+
+
 <template>
   <header>
-    <div class="banner">
+    <div class="bx--header">
       <a href="https://gov.bc.ca">
         <img
           src="/img/bc_for_logo.png"
@@ -8,19 +10,19 @@
           width="150"
         />
       </a>
-      <h1>Ministry of Forests</h1>
+      <label class="bx--header-site-name">Ministry of Forests</label>
+      <bx-btn
+        v-if="$keycloak"
+        kind="tertiary"
+        iconLayout=""
+        class="bx--btn bx--btn-header"
+        @click.prevent="$keycloak.logoutFn"
+        size="field"
+      >
+        <span>Logout</span>
+        <Logout16 slot="icon" />
+      </bx-btn>
     </div>
-    <bx-btn
-      v-if="$keycloak"
-      kind="tertiary"
-      iconLayout=""
-      class="bx--btn bx--btn-header"
-      @click.prevent="$keycloak.logoutFn"
-      size="field"
-    >
-      <span>Logout</span>
-      <Logout16 slot="icon" />
-    </bx-btn>
   </header>
 </template>
 
@@ -29,7 +31,7 @@ import Logout16 from '@carbon/icons-vue/es/logout/16'
 </script>
 
 <style scoped>
-header {
+/*header {
   background-color: #0073E6;
   padding: 0 30px 0 30px;
   color: #fff;
@@ -49,14 +51,22 @@ header h1 {
   line-height: 18px;
   font-weight: 700;
   letter-spacing: 0.16px;
+}*/
+
+
+.bx--header {
+  background-color: #0073E6 !important;
+  display: relative;
+  height: 3.5rem;
 }
 
-header .banner {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin: 0 10px 0 0;
-  flex-grow: 1;
+.bx--header-site-name {
+  font-family: ‘BCSans’, ‘Noto Sans’, Verdana, Arial, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #F3F3F5;
+  padding-left: 2rem;
+  display: inline-block;
 }
 
 /*
@@ -65,7 +75,7 @@ header .banner {
   size: phone, tablet, full.
 */
 
-@media screen and (min-width: 600px) and (max-width: 899px) {
+/*@media screen and (min-width: 600px) and (max-width: 899px) {
   header h1 {
     font-size: calc(7px + 2.2vw);
     visibility: visible;
@@ -76,5 +86,5 @@ header .banner {
   header h1 {
     visibility: visible;
   }
-}
+}*/
 </style>

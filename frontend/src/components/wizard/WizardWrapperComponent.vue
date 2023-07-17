@@ -329,18 +329,3 @@ const processAndLogOut = () => {
 const globalErrorMessage = ref<string>('')
 generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
 </script>
-
-<style scoped>
-.form-progress {
-  margin-bottom: 64px;
-  display: flex;
-  justify-content: space-between;
-}
-.form-progress-step {
-  flex-grow: 1;
-}
-
-.form-progress-step > * {
-  overflow: initial;
-}
-</style>
