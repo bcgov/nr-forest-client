@@ -27,6 +27,13 @@
 
 <script setup lang="ts">
 import Logout16 from '@carbon/icons-vue/es/logout/16'
+import { computedAsync } from '@vueuse/core'
+import AmplifyUserSession from '@/helpers/AmplifyUserSession'
+
+const logged = computedAsync(
+  async () => await AmplifyUserSession.isLoggedIn(),
+  false
+)
 </script>
 
 @/helpers/ForestClientUserSession
