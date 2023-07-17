@@ -385,7 +385,7 @@ li.#{variables.$bcgov-prefix}--overflow-menu-options__option:last-child {
 }
 
 .#{variables.$bcgov-prefix}--header {
-  background-color: var(--#{variables.$bcgov-prefix}-background-brand) !important;
+  background-color: colors.$blue-60 !important;
   display: relative;
   height: 3.5rem;
 }
