@@ -10,6 +10,8 @@ import FormSubmittedPage from '@/pages/FormSubmittedPage.vue'
 import UserLoadingPage from '@/pages/UserLoadingPage.vue'
 // The landing page
 import LandingPage from '@/pages/LandingPage.vue'
+// The generic error page
+import ErrorPage from '@/pages/ErrorPage.vue'
 
 import AmplifyUserSession from '@/helpers/AmplifyUserSession'
 
@@ -21,7 +23,13 @@ const routes: RouteRecordRaw[] = [
     props: true,
     meta: {
       hideHeader: true,
-      requireAuth: false
+      requireAuth: false,
+      showLoggedIn: false,
+      visibleTo: ['idir', 'bceidbusiness'],
+      redirectTo: {
+        idir: 'form',
+        bceidbusiness: 'internal'
+      }
     }
   },
   {
@@ -32,7 +40,9 @@ const routes: RouteRecordRaw[] = [
     props: true,
     meta: {
       hideHeader: false,
-      requireAuth: true
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ['idir', 'bceidbusiness']
     }
   },
   {
@@ -42,7 +52,9 @@ const routes: RouteRecordRaw[] = [
     props: true,
     meta: {
       hideHeader: false,
-      requireAuth: true
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ['idir', 'bceidbusiness']
     }
   },
   {
@@ -52,7 +64,9 @@ const routes: RouteRecordRaw[] = [
     props: true,
     meta: {
       hideHeader: false,
-      requireAuth: true
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ['idir', 'bceidbusiness']
     }
   },
   {
@@ -62,7 +76,25 @@ const routes: RouteRecordRaw[] = [
     props: true,
     meta: {
       hideHeader: true,
-      requireAuth: false
+      requireAuth: false,
+      showLoggedIn: true,
+      visibleTo: ['idir', 'bceidbusiness'],
+      redirectTo: {
+        idir: 'form',
+        bceidbusiness: 'internal'
+      }
+    }
+  },
+  {
+    path: '/error',
+    name: 'error',
+    component: ErrorPage,
+    props: true,
+    meta: {
+      hideHeader: false,
+      requireAuth: false,
+      showLoggedIn: true,
+      visibleTo: ['idir', 'bceidbusiness']
     }
   }
 ]
@@ -72,22 +104,37 @@ const router = createRouter({
   routes
 })
 
-/* This is a global guard that will run before each route change
-   It will check if the user is logged in and if the route requires auth
-   If the user is not logged in and the route requires auth, it will redirect to the home page for login
-*/
-
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requireAuth) {
-    const user = await AmplifyUserSession.isLoggedIn()
+    const user = await AmplifyUserSession.loadDetails()
     if (!user) {
       next({ name: 'home' })
     } else {
-      next()
+      to.meta.visibleTo.includes(user.provider)
+        ? next()
+        : next({ name: 'error' })
     }
   } else {
+    if (!to.meta.showLoggedIn) {
+      const user = await AmplifyUserSession.loadDetails()
+      if (user) {
+        next({ name: to.meta.redirectTo?.[user.provider] })
+        return
+      }
+    }
     next()
   }
 })
 
 export { routes, router }
+
+declare module 'vue-router' {
+  // eslint-disable-next-line no-unused-vars
+  interface RouteMeta {
+    hideHeader: boolean
+    requireAuth: boolean
+    showLoggedIn: boolean
+    visibleTo: Array<string>
+    redirectTo?: Record<string, string>
+  }
+}
