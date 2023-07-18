@@ -16,10 +16,6 @@
 
 @include grid.flex-grid();
 
-body {
-  font-family: ‘BCSans’, ‘Noto Sans’, Verdana, Arial, sans-serif;
-}
-
 .#{variables.$bcgov-prefix}--data-table-header,
 .#{variables.$bcgov-prefix}--date-picker__input,
 .#{variables.$bcgov-prefix}--list-box__field,
@@ -185,7 +181,7 @@ nav.#{variables.$bcgov-prefix}--side-nav {
 }
 
 .#{variables.$bcgov-prefix}--content {
-  margin: 5.5rem 2.5rem;
+  margin: 5.5rem 2rem;
   padding: 0 !important;
 }
 
@@ -389,7 +385,7 @@ li.#{variables.$bcgov-prefix}--overflow-menu-options__option:last-child {
 }
 
 .#{variables.$bcgov-prefix}--header-site-name {
-  font-family: ‘BCSans’, ‘Noto Sans’, Verdana, Arial, sans-serif;
+  font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
   font-size: 0.875rem;
   font-weight: 700;
   color: #F3F3F5;
