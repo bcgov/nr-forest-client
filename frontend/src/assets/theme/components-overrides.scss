@@ -2,8 +2,6 @@
 
 @use '../design-tokens/colors.scss' as colors;
 
-@use 'sass:map';
-
 @use '@carbon/styles/scss/config' with (
   $prefix: variables.$bcgov-prefix
 );

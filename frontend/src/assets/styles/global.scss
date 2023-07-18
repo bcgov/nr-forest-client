@@ -1,6 +1,6 @@
-@use '@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss' as typeFamily;
-
 @use 'sass:map';
+
+@use '@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss' as typeFamily;
 
 * {
   font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
