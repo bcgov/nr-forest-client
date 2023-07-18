@@ -6,5 +6,3 @@ import '@carbon/web-components/es'
 import 'carbon-components/css/carbon-components.min.css'
 
 import '@/assets/styles/global.scss'
-
-import '@/assets/theme/components-overrides.scss'

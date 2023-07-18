@@ -10,7 +10,7 @@ import { keycloakUrl, keycloakClientId, nodeEnv } from '@/CoreConstants'
 import { masking } from '@/helpers/CustomDirectives'
 
 // Importing Styles
-import '@/styles'
+import '@/styles';
 
 const app = createApp(App)
 

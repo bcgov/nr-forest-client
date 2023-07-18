@@ -41,7 +41,7 @@
     "test:report:clean": "mkdir -p reports/.nyc_output/processinfo && mkdir -p coverage"
   },
   "dependencies": {
-    "@bcgov-nr/nr-fsa-theme": "^1.0.7",
+    "@bcgov-nr/nr-fsa-theme": "^1.1.0",
     "@bcgov/bc-sans": "^1.0.1",
     "@carbon/icons": "^11.20.0",
     "@carbon/icons-vue": "^10.49.1",
