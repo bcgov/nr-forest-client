@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import axios from 'axios';
 import { useFetch, usePost } from '@/composables/useFetch';
 import { expect } from 'chai';
-import sinon from 'sinon';
+import sinon from 'sinon'; 
 
 describe('useFetch', () => {
   let axiosStub;
@@ -38,7 +38,7 @@ describe('useFetch', () => {
 
     await wrapper.vm.$nextTick();
 
-    expect(axiosStub).to.have.been.calledWithMatch({
+    expect(axiosStub.calledWithMatch({
       baseURL: 'http://localhost:8080',
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
@@ -46,7 +46,7 @@ describe('useFetch', () => {
       },
       skip: true,
       url: '/api/data',
-    });
+    })).to.be.true;
   });
 
   it('should make a POST request using Axios', async () => {
@@ -75,7 +75,7 @@ describe('useFetch', () => {
 
     await wrapper.vm.$nextTick();
 
-    expect(axiosStub).to.have.been.calledWithMatch({
+    expect(axiosStub.calledWithMatch({
       baseURL: 'http://localhost:8080',
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
@@ -85,7 +85,7 @@ describe('useFetch', () => {
       url: '/api/data',
       method: 'POST',
       data: { name: 'test' },
-    });
+    })).to.be.true;
   });
 
   it('should make a GET request using Axios and get an error', async () => {
@@ -114,7 +114,7 @@ describe('useFetch', () => {
 
     await wrapper.vm.$nextTick();
 
-    expect(axiosStub).to.have.been.calledWithMatch({
+    expect(axiosStub.calledWithMatch({
       baseURL: 'http://localhost:8080',
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
@@ -122,7 +122,7 @@ describe('useFetch', () => {
       },
       skip: true,
       url: '/api/data',
-    });
+    })).to.be.true;
   });
 
   it('should make a POST request using Axios and get an error', async () => {
@@ -155,7 +155,7 @@ describe('useFetch', () => {
 
     await wrapper.vm.$nextTick();
 
-    expect(axiosStub).to.have.been.calledWithMatch({
+    expect(axiosStub.calledWithMatch({
       baseURL: 'http://localhost:8080',
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
@@ -165,6 +165,6 @@ describe('useFetch', () => {
       url: '/api/data',
       method: 'POST',
       data: { name: 'test' },
-    });
+    })).to.be.true;
   });
 });
