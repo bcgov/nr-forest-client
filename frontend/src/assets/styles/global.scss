@@ -1,5 +1,7 @@
 @use 'sass:map';
 
+@use '@bcgov-nr/nr-fsa-theme/style-sheets/carbon-components-overrides.scss';
+
 @use '@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss' as typeFamily;
 
 * {
