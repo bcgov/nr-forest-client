@@ -3,6 +3,7 @@ import { ref, watch } from 'vue';
 import axios from 'axios';
 import { useFetch, usePost } from '@/composables/useFetch';
 import { expect } from 'chai';
+import sinon from 'sinon';
 
 describe('useFetch', () => {
   let axiosStub;
