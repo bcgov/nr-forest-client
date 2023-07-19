@@ -1,56 +1,58 @@
-import { describe, it, expect, afterEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
-import { ref, watch } from 'vue'
-import axios from 'axios'
-import { useFetch, usePost } from '@/composables/useFetch'
+import { mount } from '@vue/test-utils';
+import { ref, watch } from 'vue';
+import axios from 'axios';
+import { useFetch, usePost } from '@/composables/useFetch';
+import { expect } from 'chai';
+import sinon from 'sinon'; 
 
 describe('useFetch', () => {
-  let axiosMock
+  let axiosStub;
+
+  beforeEach(() => {
+    axiosStub = sinon.stub(axios, 'request');
+  });
 
   afterEach(() => {
-    axiosMock.mockRestore()
-  })
+    axiosStub.restore();
+  });
 
   it('should make a GET request using Axios', async () => {
-    axiosMock = vi
-      .spyOn(axios, 'request')
-      .mockImplementation(() => Promise.resolve({ data: 'Mock data' }))
+    const responseData = ref('');
 
-    const responseData = ref('')
+    axiosStub.resolves({ data: 'Mock data' });
 
     const TestComponent = {
       template: '<div></div>',
       setup: () => {
-        const { fetch, data } = useFetch('/api/data', { skip: true })
-        watch(data, (value) => (responseData.value = value))
-        fetch()
-      }
-    }
+        const { fetch, data } = useFetch('/api/data', { skip: true });
+        watch(data, (value) => (responseData.value = value));
+        fetch();
+      },
+    };
 
     watch(responseData, (value) => {
-      expect(value).toEqual('Mock data')
-    })
+      expect(value).to.equal('Mock data');
+    });
 
-    const wrapper = mount(TestComponent)
+    const wrapper = mount(TestComponent);
 
-    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick();
 
-    expect(axiosMock).toHaveBeenCalledWith({
+    expect(axiosStub.calledWithMatch({
       baseURL: 'http://localhost:8080',
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       skip: true,
-      url: '/api/data'
-    })
-  })
+      url: '/api/data',
+    })).to.be.true;
+  });
 
   it('should make a POST request using Axios', async () => {
-    axiosMock = vi
-      .spyOn(axios, 'request')
-      .mockImplementation(() => Promise.resolve({ data: 'Mock data' }))
-    const responseData = ref('')
+    const responseData = ref('');
+
+    axiosStub.resolves({ data: 'Mock data' });
 
     const TestComponent = {
       template: '<div></div>',
@@ -59,82 +61,76 @@ describe('useFetch', () => {
           '/api/data',
           { name: 'test' },
           { skip: true }
-        )
-        watch(responseBody, (value) => (responseData.value = value))
-        fetch()
-      }
-    }
+        );
+        watch(responseBody, (value) => (responseData.value = value));
+        fetch();
+      },
+    };
 
     watch(responseData, (value) => {
-      expect(value).toEqual('Mock data')
-    })
+      expect(value).to.equal('Mock data');
+    });
 
-    const wrapper = mount(TestComponent)
+    const wrapper = mount(TestComponent);
 
-    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick();
 
-    expect(axiosMock).toHaveBeenCalledWith({
+    expect(axiosStub.calledWithMatch({
       baseURL: 'http://localhost:8080',
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       skip: true,
       url: '/api/data',
       method: 'POST',
-      data: { name: 'test' }
-    })
-  })
+      data: { name: 'test' },
+    })).to.be.true;
+  });
 
   it('should make a GET request using Axios and get an error', async () => {
-    axiosMock = vi
-      .spyOn(axios, 'request')
-      .mockImplementation(() =>
-        Promise.reject(
-          new Error({ response: { status: 500, data: { message: 'Error' } } })
-        )
-      )
-    const responseData = ref(null)
+    const responseData = ref(null);
+
+    axiosStub.rejects(
+      new Error({ response: { status: 500, data: { message: 'Error' } } })
+    );
 
     const TestComponent = {
       template: '<div></div>',
       setup: () => {
-        const { fetch, error } = useFetch('/api/data', { skip: true })
-        watch(error, (value) => (responseData.value = value))
-        fetch()
-      }
-    }
+        const { fetch, error } = useFetch('/api/data', { skip: true });
+        watch(error, (value) => (responseData.value = value));
+        fetch();
+      },
+    };
 
     watch(responseData, (value) => {
-      expect(value).toStrictEqual(
+      expect(value).to.deep.equal(
         new Error({ response: { status: 500, data: { message: 'Error' } } })
-      )
-    })
+      );
+    });
 
-    const wrapper = mount(TestComponent)
+    const wrapper = mount(TestComponent);
 
-    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick();
 
-    expect(axiosMock).toHaveBeenCalledWith({
+    expect(axiosStub.calledWithMatch({
       baseURL: 'http://localhost:8080',
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       skip: true,
-      url: '/api/data'
-    })
-  })
+      url: '/api/data',
+    })).to.be.true;
+  });
 
   it('should make a POST request using Axios and get an error', async () => {
-    axiosMock = vi.spyOn(axios, 'request').mockImplementation(() =>
-      Promise.reject(
-        new Error({
-          response: { status: 500, data: { message: 'Error' } }
-        })
-      )
-    )
-    const responseData = ref(null)
+    const responseData = ref(null);
+
+    axiosStub.rejects(
+      new Error({ response: { status: 500, data: { message: 'Error' } } })
+    );
 
     const TestComponent = {
       template: '<div></div>',
@@ -143,32 +139,32 @@ describe('useFetch', () => {
           '/api/data',
           { name: 'test' },
           { skip: true }
-        )
-        watch(error, (value) => (responseData.value = value))
-        fetch()
-      }
-    }
+        );
+        watch(error, (value) => (responseData.value = value));
+        fetch();
+      },
+    };
 
     watch(responseData, (value) => {
-      expect(value).toStrictEqual(
+      expect(value).to.deep.equal(
         new Error({ response: { status: 500, data: { message: 'Error' } } })
-      )
-    })
+      );
+    });
 
-    const wrapper = mount(TestComponent)
+    const wrapper = mount(TestComponent);
 
-    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick();
 
-    expect(axiosMock).toHaveBeenCalledWith({
+    expect(axiosStub.calledWithMatch({
       baseURL: 'http://localhost:8080',
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       skip: true,
       url: '/api/data',
       method: 'POST',
-      data: { name: 'test' }
-    })
-  })
-})
+      data: { name: 'test' },
+    })).to.be.true;
+  });
+});
