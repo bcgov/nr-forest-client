@@ -1,5 +1,13 @@
+@use 'sass:map';
+
+@use '@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss' as typeFamily;
+
 * {
   font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
+}
+
+body {
+  font-family: map.get(typeFamily.$type-family, 'sans');
 }
 
 hr {
@@ -31,7 +39,7 @@ hr {
 }
 
 .inner-spotlight-group-markup {
-  border-bottom: solid 1px #dfdfe1;
+  border-bottom: solid 1px #DFDFE1;
 }
 
 .bx-tag {
