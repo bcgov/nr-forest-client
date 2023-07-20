@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import axios from 'axios';
 import { useFetch, usePost } from '@/composables/useFetch';
 import { expect } from 'chai';
-import sinon from 'sinon'; 
+import sinon from 'sinon';
 
 describe('useFetch', () => {
   let axiosStub;
@@ -46,7 +46,7 @@ describe('useFetch', () => {
       },
       skip: true,
       url: '/api/data',
-    })).to.equal(true);
+    })).to.be.equal(true);
   });
 
   it('should make a POST request using Axios', async () => {
@@ -85,7 +85,7 @@ describe('useFetch', () => {
       url: '/api/data',
       method: 'POST',
       data: { name: 'test' },
-    })).to.equal(true);
+    })).to.be.equal(true);
   });
 
   it('should make a GET request using Axios and get an error', async () => {
@@ -122,7 +122,7 @@ describe('useFetch', () => {
       },
       skip: true,
       url: '/api/data',
-    })).to.equal(true);
+    })).to.be.equal(true);
   });
 
   it('should make a POST request using Axios and get an error', async () => {
@@ -165,6 +165,6 @@ describe('useFetch', () => {
       url: '/api/data',
       method: 'POST',
       data: { name: 'test' },
-    })).to.equal(true);
+    })).to.be.equal(true);
   });
 });
