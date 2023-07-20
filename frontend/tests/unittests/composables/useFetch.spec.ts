@@ -46,7 +46,7 @@ describe('useFetch', () => {
       },
       skip: true,
       url: '/api/data',
-    })).to.be.true;
+    })).to.equal(true);
   });
 
   it('should make a POST request using Axios', async () => {
@@ -85,7 +85,7 @@ describe('useFetch', () => {
       url: '/api/data',
       method: 'POST',
       data: { name: 'test' },
-    })).to.be.true;
+    })).to.equal(true);
   });
 
   it('should make a GET request using Axios and get an error', async () => {
@@ -122,7 +122,7 @@ describe('useFetch', () => {
       },
       skip: true,
       url: '/api/data',
-    })).to.be.true;
+    })).to.equal(true);
   });
 
   it('should make a POST request using Axios and get an error', async () => {
@@ -165,6 +165,6 @@ describe('useFetch', () => {
       url: '/api/data',
       method: 'POST',
       data: { name: 'test' },
-    })).to.be.true;
+    })).to.equal(true);
   });
 });
