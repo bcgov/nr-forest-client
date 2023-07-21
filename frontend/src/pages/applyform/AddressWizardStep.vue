@@ -94,7 +94,9 @@ const otherAddresses = computed(() => formData.location.addresses.slice(1));
 const addAddress = () => formData.location.addresses.push(emptyAddress());
 
 const removeAddress = (index: number) => () => {
-  formData.location.addresses = formData.location.addresses.splice(index, 1);
+  const addressesCopy: Address[] = [...formData.location.addresses];
+  addressesCopy.splice(index, 1);
+  formData.location.addresses = addressesCopy;
   bus.emit({ active: false, message: '', kind: '', handler: () => {} });
 };
 
@@ -120,7 +122,6 @@ const updateValidState = (index: number, valid: boolean) => {
 const uniqueValues = isUniqueDescriptive();
 
 const handleRemove = (index: number) => {
-  console.log("index = " + index);
   const selectedAddress = formData.location.addresses[index].locationName.length !== 0
     ? formData.location.addresses[index].locationName
     : 'Address #' + index;
