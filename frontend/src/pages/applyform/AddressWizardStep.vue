@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref, computed, reactive } from 'vue'
+import { watch, ref, computed, reactive, defineProps, defineEmits } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import Add16 from '@carbon/icons-vue/es/add/16'
 import {
@@ -55,77 +55,81 @@ import type { ModalNotification } from '@/dto/CommonTypesDto'
 import Note from '@/components/NoteComponent.vue'
 import { isUniqueDescriptive } from '@/helpers/validators/GlobalValidators'
 
-//Defining the props and emiter to reveice the data and emit an update
+//Defining the props and emitter to receive the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>()
 
 const emit = defineEmits<{
-  (e: 'update:data', value: FormDataDto): void
-  (e: 'valid', value: boolean): void
+  (e: 'update:data', value: FormDataDto): void;
+  (e: 'valid', value: boolean): void;
 }>()
 
 //Defining the event bus to send notifications up
-const bus = useEventBus<ModalNotification>('modal-notification')
+const bus = useEventBus<ModalNotification>('modal-notification');
 
 //Set the prop as a ref, and then emit when it changes
-const formData = reactive<FormDataDto>(props.data)
-const revalidate = ref(false)
-watch([formData], () => emit('update:data', formData))
+const formData = reactive<FormDataDto>(props.data);
+const revalidate = ref(false);
+watch([formData], () => emit('update:data', formData));
 
 const updateAddress = (value: Address | undefined, index: number) => {
-  revalidate.value = !revalidate.value
+  revalidate.value = !revalidate.value;
   if (value && index < formData.location.addresses.length)
-    formData.location.addresses[index] = value
-  emit('update:data', formData)
-}
+    formData.location.addresses[index] = value;
+  emit('update:data', formData);
+};
 
 //Country related data
-const countryList = ref([])
+const countryList = ref([]);
 
 const fetch = () => {
   if (props.active)
-    useFetchTo('/api/clients/activeCountryCodes?page=0&size=250', countryList)
-}
+    useFetchTo('/api/clients/activeCountryCodes?page=0&size=250', countryList);
+};
 
-watch(() => props.active, fetch)
-fetch()
+watch(() => props.active, fetch);
+fetch();
 
 //New address being added
-const otherAddresses = computed(() => formData.location.addresses.slice(1))
-const addAddress = () => formData.location.addresses.push(emptyAddress())
+const otherAddresses = computed(() => formData.location.addresses.slice(1));
+const addAddress = () => formData.location.addresses.push(emptyAddress());
 
 const removeAddress = (index: number) => () => {
-  formData.location.addresses = formData.location.addresses.splice(index, 1)
-  bus.emit({ active: false, message: '', kind: '', handler: () => {} })
-}
+  const addressesCopy: Address[] = [...formData.location.addresses];
+  addressesCopy.splice(index, 1);
+  formData.location.addresses = addressesCopy;
+  bus.emit({ active: false, message: '', kind: '', handler: () => {} });
+};
 
 //Validation
 const validation = reactive<Record<string, boolean>>({
   0: false
-})
+});
 
 const checkValid = () =>
   Object.values(validation).reduce(
     (accumulator: boolean, currentValue: boolean) =>
       accumulator && currentValue,
     true
-  )
+  );
 
-watch([validation], () => emit('valid', checkValid()))
-emit('valid', false)
+watch([validation], () => emit('valid', checkValid()));
+emit('valid', false);
 
 const updateValidState = (index: number, valid: boolean) => {
-  validation[index] = valid
-}
+  validation[index] = valid;
+};
 
-const uniqueValues = isUniqueDescriptive()
+const uniqueValues = isUniqueDescriptive();
 
 const handleRemove = (index: number) => {
-  const selectedAddress = formData.location.addresses[index]
+  const selectedAddress = formData.location.addresses[index].locationName.length !== 0
+    ? formData.location.addresses[index].locationName
+    : 'Address #' + index;
   bus.emit({
-    message: selectedAddress.locationName || 'this',
+    message: selectedAddress,
     kind: 'Address deleted',
     handler: removeAddress(index),
     active: true
-  })
-}
+  });
+};
 </script>

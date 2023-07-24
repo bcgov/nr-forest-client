@@ -147,7 +147,7 @@
       <bx-modal-close-button></bx-modal-close-button>
       <bx-modal-label>Delete additional {{ modalContent.kind }}</bx-modal-label>
       <bx-modal-heading
-        >Are you sure you want to delete "{{ modalContent.name }}" additional
+        >Are you sure you want to delete "{{ modalContent.message }}" additional
         {{ modalContent.kind }}</bx-modal-heading
       >
     </bx-modal-header>
