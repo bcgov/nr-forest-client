@@ -126,7 +126,7 @@ emit('valid', true)
 <style scoped>
 .bordered {
   box-sizing: border-box;
-  border: 1px solid #dfdfe1;
+  border: 1px solid #DFDFE1;
   border-radius: 8px;
   display: flex;
   flex-direction: column;

@@ -147,7 +147,7 @@
       <bx-modal-close-button></bx-modal-close-button>
       <bx-modal-label>Delete additional {{ modalContent.kind }}</bx-modal-label>
       <bx-modal-heading
-        >Are you sure you want to delete "{{ modalContent.name }}" additional
+        >Are you sure you want to delete "{{ modalContent.message }}" additional
         {{ modalContent.kind }}</bx-modal-heading
       >
     </bx-modal-header>
@@ -329,18 +329,3 @@ const processAndLogOut = () => {
 const globalErrorMessage = ref<string>('')
 generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
 </script>
-
-<style scoped>
-.form-progress {
-  margin-bottom: 64px;
-  display: flex;
-  justify-content: space-between;
-}
-.form-progress-step {
-  flex-grow: 1;
-}
-
-.form-progress-step > * {
-  overflow: initial;
-}
-</style>

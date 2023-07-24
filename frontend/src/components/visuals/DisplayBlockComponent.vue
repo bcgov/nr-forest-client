@@ -74,9 +74,9 @@ const iconsForKinds: Record<string, any> = {
 
 .display-block-wrapper-error {
   background: #fff1f1;
-  border: 1px solid #e72000;
+  border: 1px solid #E72000;
   border-radius: 4px;
-  border-left: 4px solid #e72000;
+  border-left: 4px solid #E72000;
 }
 
 .display-block-wrapper-warning {
@@ -93,7 +93,7 @@ const iconsForKinds: Record<string, any> = {
   color: #198038;
 }
 .display-block-icon-error {
-  color: #e72000;
+  color: #E72000;
 }
 .display-block-icon-warning {
   color: #f1c21b;

@@ -9,7 +9,7 @@ import type { AmplifyCustomProperties } from '@/dto/CommonTypesDto'
 import AmplifyUserSession from '@/helpers/AmplifyUserSession'
 
 // Importing Styles
-import '@/styles'
+import '@/styles';
 
 const app = createApp(App)
 
