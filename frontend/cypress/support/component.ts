@@ -1,3 +1,6 @@
+/* eslint-disable import/no-unresolved */
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 import './commands'
 
 import { mount } from 'cypress/vue'

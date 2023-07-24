@@ -7,14 +7,27 @@ The frontend is written in [vue3](https://vuejs.org) composition api in typescri
 - Create a .env file inside this frontend folder with the following options:
 
   ```
-  VITE_BACKEND_URL=http://localhost:3000
-
-  // to enable the keycloak authentication, add the following:
-  VITE_KEYCLOAK_URL=https://dev.loginproxy.gov.bc.ca/auth
-  VITE_KEYCLOAK_CLIENT_ID=[keycloak client name]
-
-  // to disable the keycloak authentication, add this:
+  # Location of the backend url
+  VITE_BACKEND_URL=http://localhost:8080
+  # Used by CORS, must use the same port as your vite
+  VITE_FRONTEND_URL=http://localhost:3000
+  # Application environment
   VITE_NODE_ENV=openshift-dev
+  # Used only on dev and build, to enable coverage
+  VITE_COVERAGE=true
+
+  # Amplify / Cognito related configuration for authentication using FAM
+  # Cognito region
+  VITE_AWS_COGNITO_REGION=<VARY BY ENV>
+  # Cognito user pool
+  VITE_AWS_USER_POOLS_ID=<VARY BY ENV>
+  # Cognito domain
+  VITE_AWS_COGNITO_DOMAIN=<VARY BY ENV>
+  # Cognito user pool web client id
+  VITE_AWS_USER_POOLS_WEB_CLIENT_ID=<VARY BY ENV>
+  # Cognito logout redirect url
+  VITE_AWS_LOGOUT=http://localhost:3000/
+
   ```
 
 - Install all requirement packages: `npm install`
@@ -50,15 +63,13 @@ the existing ones by tweeking the content of the [stub](stub/) folder following 
 
 ### **Style**:
 
-[Bootstrap for vue3](https://www.npmjs.com/package/bootstrap-vue-3), installed through this [prefered installation method](https://cdmoro.github.io/bootstrap-vue-3/getting-started/#preferred-installation), so it can automatically importing components, to aviod the warn message that cannot find components when run unit tests
+TBD
 
-[Bootstrap icon for vue3](https://github.com/tommyip/bootstrap-icons-vue) doesn't work well with the bootstrap-vue-3 after installed bootstrap-vue-3 using the preferred method, so use [unplugin-icons for bootstrap](https://github.com/antfu/unplugin-icons) for now, until bootstrap-vue-3 adds all the icons. The problem of bootstrap-icons-vue library is that that its naming convention uses b-icon as prefix, so bootstrap-vue-3 will think it belongs to it, and then complains cannot found
-
-### **Unit Test**:
+### **Test**:
 
 [Vitest](https://vitest.dev/api/)  
 [Vue test util](https://test-utils.vuejs.org/api/)
-
+[Cypress](https://www.cypress.io/)
 
 ### **Vite vs vue cli**
 
