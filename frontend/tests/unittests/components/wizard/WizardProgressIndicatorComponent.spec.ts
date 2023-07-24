@@ -92,7 +92,7 @@ describe('WizardProgressIndicatorComponent.vue', () => {
     })
 
     const step0 = wrapper.find(
-      'div[data-test="step-0"] > div.bx--breadcrumb-step-text > p > a'
+      'div[data-test="step-0"] > div.bx--progress-step-text > p > a'
     )
     expect(step0.exists()).toBe(true)
 

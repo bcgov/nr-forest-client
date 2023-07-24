@@ -106,3 +106,108 @@ hr {
   align-items: center;
   max-height: 0.5rem;
 }
+
+.#{variables.$bcgov-prefix}--progress {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+@media screen and (max-width: 671px) {
+  .#{variables.$bcgov-prefix}--progress-indicator {
+    flex-direction: column;
+  }
+  .#{variables.$bcgov-prefix}--progress-step {
+    border-left: solid 0.125rem;
+    flex: none;
+  }
+}
+
+@media screen and (min-width: 672px) {
+  .#{variables.$bcgov-prefix}--progress-indicator {
+    flex-direction: row;
+  }
+  .#{variables.$bcgov-prefix}--progress-step {
+    border-top: solid 0.125rem;
+    flex: 1;
+  }
+}
+
+.#{variables.$bcgov-prefix}--progress-indicator {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+}
+
+.#{variables.$bcgov-prefix}--progress-step {
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  height: 3.625rem;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-icon {
+  margin: 0.25rem 0.625rem 0 0;
+  flex-shrink: 0;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-text {
+  flex-grow: 1;
+  overflow: hidden;
+}
+.#{variables.$bcgov-prefix}--progress-step-text p {
+  font-size: 0.875rem;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-text a, .#{variables.$bcgov-prefix}--progress-step-text span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-text p a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-text p a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-text span {
+  font-size: 0.75rem;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-current {
+  border-color: colors.$blue-60;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-queued {
+  border-color: colors.$gray-20;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-error {
+  border-color: colors.$red-60;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-complete {
+  border-color: colors.$blue-60;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-icon-current {
+  color: colors.$blue-60;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-icon-error {
+  color: colors.$red-60;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-icon-complete {
+  color: colors.$blue-60;
+}
+
+.#{variables.$bcgov-prefix}--progress-step-icon-queued {
+  color: colors.$gray-20;
+}
