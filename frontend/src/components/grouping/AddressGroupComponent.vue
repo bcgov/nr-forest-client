@@ -324,7 +324,8 @@ watch([detailsData], () => {
     v-model="modelValue.postalCode"
     :mask="postalCodeMask"
     :validations="postalCodeValidators"
-    @empty="validation.postalCode = !$event"
+    @error="validation.postalCode = !$event"
+    @empty="validation.province = !$event"
   />
 
   <bx-btn
