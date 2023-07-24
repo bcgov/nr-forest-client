@@ -127,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, inject, toRef, ref, getCurrentInstance } from 'vue'
+import { reactive, watch, toRef, ref, getCurrentInstance } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformationWizardStep.vue'

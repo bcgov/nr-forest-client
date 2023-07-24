@@ -20,21 +20,20 @@ export default defineConfig({
     }
   },
 
-  component: {
-    specPattern: 'tests/components/**/*.cy.{ts,tsx}',
-    devServer: {
-      framework: 'vue',
-      bundler: 'vite'
-    },
+  e2e: {
+    baseUrl: 'http://127.0.0.1:3000/',
     setupNodeEvents: (on, config) => {
       require('@cypress/code-coverage/task')(on, config)
+      // implement node event listeners here
       return config
     }
   },
 
-  e2e: {
-    specPattern: 'tests/e2e/**/*.cy.{ts,tsx}',
-    baseUrl: 'http://127.0.0.1:5050/',
+  component: {
+    devServer: {
+      framework: 'vue',
+      bundler: 'vite'
+    },
     setupNodeEvents: (on, config) => {
       require('@cypress/code-coverage/task')(on, config)
       return config
