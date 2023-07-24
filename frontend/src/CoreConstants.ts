@@ -15,15 +15,18 @@ export const appVersion = version
 export const maxFileSizePerFile = 1000000 * 20 // 20 mb
 export const maxTotalFileSize = 1000000 * 20 * 5 // 100 mb
 
+const wm_domain = 'localhost:8081'
+const cognito_domain = `${checkEnv('VITE_AWS_COGNITO_DOMAIN')}.auth.${checkEnv(
+  'VITE_AWS_COGNITO_REGION'
+)}.amazoncognito.com`
+
 export const amplifyConfig = {
   aws_cognito_region: checkEnv('VITE_AWS_COGNITO_REGION'),
   aws_user_pools_id: checkEnv('VITE_AWS_USER_POOLS_ID'),
   aws_user_pools_web_client_id: checkEnv('VITE_AWS_USER_POOLS_WEB_CLIENT_ID'),
   aws_mandatory_sign_in: 'enable',
   oauth: {
-    domain: `${checkEnv('VITE_AWS_COGNITO_DOMAIN')}.auth.${checkEnv(
-      'VITE_AWS_COGNITO_REGION'
-    )}.amazoncognito.com`,
+    domain: cognito_domain,
     scope: ['openid'],
     redirectSignIn: `${checkEnv('VITE_FRONTEND_URL')}/dashboard`,
     redirectSignOut: checkEnv('VITE_AWS_LOGOUT'),
