@@ -1,10 +1,10 @@
 <template>
-  <div class="bx--breadcrumb-indicator">
+  <div class="bx--progress-indicator">
     <div
       v-for="(step, index) in values"
       :class="{
-        'bx--breadcrumb-step': true,
-        [`bx--breadcrumb-step-${step.kind}`]: true
+        'bx--progress-step': true,
+        [`bx--progress-step-${step.kind}`]: true
       }"
       :data-test="'step-' + index"
     >
@@ -13,11 +13,11 @@
         :is="iconsForKinds[step.kind]"
         :alt="step.kind"
         :class="{
-          'bx--breadcrumb-step-icon': true,
-          [`bx--breadcrumb-step-icon-${step.kind}`]: true
+          'bx--progress-step-icon': true,
+          [`bx--progress-step-icon-${step.kind}`]: true
         }"
       />
-      <div class="bx--breadcrumb-step-text">
+      <div class="bx--progress-step-text">
         <p>
           <a
             v-if="canShowLink(step)"

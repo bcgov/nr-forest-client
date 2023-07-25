@@ -106,3 +106,108 @@ hr {
   align-items: center;
   max-height: 0.5rem;
 }
+
+.bx--progress {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+@media screen and (max-width: 671px) {
+  .bx--progress-indicator {
+    flex-direction: column;
+  }
+  .bx--progress-step {
+    border-left: solid 0.125rem;
+    flex: none;
+  }
+}
+
+@media screen and (min-width: 672px) {
+  .bx--progress-indicator {
+    flex-direction: row;
+  }
+  .bx--progress-step {
+    border-top: solid 0.125rem;
+    flex: 1;
+  }
+}
+
+.bx--progress-indicator {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+}
+
+.bx--progress-step {
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  height: 3.625rem;
+}
+
+.bx--progress-step-icon {
+  margin: 0.25rem 0.625rem 0 0;
+  flex-shrink: 0;
+}
+
+.bx--progress-step-text {
+  flex-grow: 1;
+  overflow: hidden;
+}
+.bx--progress-step-text p {
+  font-size: 0.875rem;
+}
+
+.bx--progress-step-text a, .bx--progress-step-text span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.bx--progress-step-text p a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.bx--progress-step-text p a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.bx--progress-step-text span {
+  font-size: 0.75rem;
+}
+
+.bx--progress-step-current {
+  border-color: #0073E6;
+}
+
+.bx--progress-step-queued {
+  border-color: #DFDFE1;
+}
+
+.bx--progress-step-error {
+  border-color: #E72000;
+}
+
+.bx--progress-step-complete {
+  border-color: #0073E6;
+}
+
+.bx--progress-step-icon-current {
+  color: #0073E6;
+}
+
+.bx--progress-step-icon-error {
+  color: #E72000;
+}
+
+.bx--progress-step-icon-complete {
+  color: #0073E6;
+}
+
+.bx--progress-step-icon-queued {
+  color: #DFDFE1;
+}
