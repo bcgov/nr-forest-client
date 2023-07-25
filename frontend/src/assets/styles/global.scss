@@ -181,33 +181,33 @@ hr {
 }
 
 .bx--progress-step-current {
-  border-color: colors.$blue-60;
+  border-color: #0073E6;
 }
 
 .bx--progress-step-queued {
-  border-color: colors.$gray-20;
+  border-color: #DFDFE1;
 }
 
 .bx--progress-step-error {
-  border-color: colors.$red-60;
+  border-color: #E72000;
 }
 
 .bx--progress-step-complete {
-  border-color: colors.$blue-60;
+  border-color: #0073E6;
 }
 
 .bx--progress-step-icon-current {
-  color: colors.$blue-60;
+  color: #0073E6;
 }
 
 .bx--progress-step-icon-error {
-  color: colors.$red-60;
+  color: #E72000;
 }
 
 .bx--progress-step-icon-complete {
-  color: colors.$blue-60;
+  color: #0073E6;
 }
 
 .bx--progress-step-icon-queued {
-  color: colors.$gray-20;
+  color: #DFDFE1;
 }
