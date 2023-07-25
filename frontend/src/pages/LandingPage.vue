@@ -38,6 +38,26 @@ if (query.ref && query.ref === 'external') {
           <span>Login with IDIR</span>
           <login16 slot="icon" />
         </bx-btn>
+        <bx-btn
+          v-if="$features.BCSC_LOGIN"
+          kind="primary"
+          iconLayout=""
+          class="landing-button"
+          @click.prevent="$session?.logIn('bcsc')"
+        >
+          <span>Login with BC Services Card</span>
+          <login16 slot="icon" />
+        </bx-btn>
+        <bx-btn
+          v-if="$features.BCEID_LOGIN"
+          kind="primary"
+          iconLayout=""
+          class="landing-button"
+          @click.prevent="$session?.logIn('bceidbusiness')"
+        >
+          <span>Login with BCeID</span>
+          <login16 slot="icon" />
+        </bx-btn>
       </div>
       <div class="bx--col-sm-8 bx--col-md-6 bx--col-lg-6 landing-img-column">
         <img
