@@ -16,7 +16,7 @@ Given("the width of screen is {int} pixels", (width: number) => {
 });
 
 Then("steps are displayed horizontally", () => {
-  cy.get(".bx--breadcrumb-step")
+  cy.get(".bx--progress-step")
     .then((elements) =>
       elements.map((_index, el) => el.getBoundingClientRect())
     )
@@ -37,7 +37,7 @@ Then("steps are displayed horizontally", () => {
 });
 
 Then("steps are displayed vertically", () => {
-  cy.get(".bx--breadcrumb-step")
+  cy.get(".bx--progress-step")
     .then((elements) =>
       elements.map(function () {
         return this.getBoundingClientRect();
