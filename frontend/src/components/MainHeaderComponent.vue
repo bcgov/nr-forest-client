@@ -16,13 +16,13 @@
        kind="tertiary"
         iconLayout=""
         class="bx--btn bx--btn-header"
-        @click.prevent="$keycloak.logoutFn"
+        @click.prevent="$session?.logOut"
         size="field"
       >
         <span>Logout</span>
         <Logout16 slot="icon" />
       </bx-btn>
-
+</div>
   </header>
 </template>
 
