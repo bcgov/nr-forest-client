@@ -1,0 +1,25 @@
+{
+	"name": "Cypress with Typescript",
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:0-18",
+	"features": {
+		"ghcr.io/devcontainers-contrib/features/vue-cli:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/java:1": {
+			"version": "17"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.vscode-typescript-next",
+				"esbenp.prettier-vscode",
+				"rvest.vs-code-prettier-eslint",
+				"wayou.vscode-todo-highlight",
+				"pmneo.tsimporter",
+				"dbaeumer.vscode-eslint"
+			]
+		}
+	},
+	"remoteUser": "${localEnv:USER}"
+}
