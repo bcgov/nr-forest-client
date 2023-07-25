@@ -65,7 +65,7 @@ services:
 
   frontend:
     container_name: frontend
-    image: node:18-bullseye
+    image: node:20-bullseye
     entrypoint: sh -c "cd /app && npm i && npm start"
     environment:
       NODE_ENV: development
