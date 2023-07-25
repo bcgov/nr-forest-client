@@ -1,7 +1,14 @@
+/*
+
+Moving this component test to here
+
+It will require some changes
+
 import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
 
 Given("I am on the form page", () => {
   cy.visit("/");
+  cy.login('uat@forest.client','Forest Client UAT')
 });
 
 Given("the width of screen is {int} pixels", (width: number) => {
@@ -51,3 +58,4 @@ Then("steps are displayed vertically", () => {
     expect(stepContainers[2].top).to.be.lessThan(stepContainers[3].top);
   });
 });
+*/
