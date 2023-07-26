@@ -59,8 +59,8 @@ export interface ModalNotification {
 
 export interface AmplifyCustomProperties {
   user: Submitter | undefined
-  logIn: (provider: string) => Promise<void>
-  logOut: () => Promise<void>
-  isLoggedIn: () => Promise<boolean>
-  loadDetails: () => Promise<Submitter | undefined>
+  logIn: (provider: string) => void
+  logOut: () => void
+  isLoggedIn: () => boolean
+  loadDetails: () => Submitter | undefined
 }

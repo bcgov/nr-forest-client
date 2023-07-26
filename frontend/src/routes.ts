@@ -106,17 +106,17 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requireAuth) {
-    const user = await AmplifyUserSession.loadDetails()
-    if (!user) {
+    if (!AmplifyUserSession.isLoggedIn()) {
       next({ name: 'home' })
     } else {
-      to.meta.visibleTo.includes(user.provider)
+      const user = AmplifyUserSession.loadDetails()
+      to.meta.visibleTo.includes(user!!.provider)
         ? next()
         : next({ name: 'error' })
     }
   } else {
     if (!to.meta.showLoggedIn) {
-      const user = await AmplifyUserSession.loadDetails()
+      const user = AmplifyUserSession.loadDetails()
       if (user) {
         next({ name: to.meta.redirectTo?.[user.provider] })
         return
