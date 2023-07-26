@@ -11,6 +11,10 @@
         />
       </a>
       <label class="bx--header-site-name">Ministry of Forests</label>
+      <label class="bx--header-env-and-rel" 
+             v-if="env !== 'Prod'">
+        Env. {{ env }} - Rel. 1.0.22.15
+      </label>
       <bx-btn
         v-if="$keycloak"
         kind="tertiary"
@@ -27,28 +31,19 @@
 </template>
 
 <script setup lang="ts">
-import Logout16 from '@carbon/icons-vue/es/logout/16'
+import Logout16 from '@carbon/icons-vue/es/logout/16';
+import { nodeEnv } from '@/CoreConstants';
+import { ref } from 'vue';
+
+const envPrefix = "openshift-";
+const env = ref(nodeEnv);
+env.value = env.value.slice(envPrefix.length);
+env.value = env.value.charAt(0).toUpperCase() + env.value.slice(1);
 </script>
 
 <style scoped>
-
-
-/*
-  These are sample media queries only. Media queries are quite subjective
-  but, in general, should be made for the three different classes of screen
-  size: phone, tablet, full.
-*/
-
-/*@media screen and (min-width: 600px) and (max-width: 899px) {
-  header h1 {
-    font-size: calc(7px + 2.2vw);
-    visibility: visible;
-  }
+.bx--header-env-and-rel {
+  padding-left: 2rem; 
+  color: white;
 }
-
-@media screen and (min-width: 900px) {
-  header h1 {
-    visibility: visible;
-  }
-}*/
 </style>
