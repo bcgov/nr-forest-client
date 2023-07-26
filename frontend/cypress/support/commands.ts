@@ -1,41 +1,5 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
 
 const generateRandomHex = (length: number): string => {
   const characters = '0123456789abcdef'
@@ -49,20 +13,20 @@ const generateRandomHex = (length: number): string => {
 
 Cypress.Commands.add('addCookie', (name: string, value: string) => {
   cy.setCookie(name, value, {
-    domain: 'localhost',
+    domain: '127.0.0.1',
     path: '/',
-    httpOnly: true,
-    secure: true,
+    httpOnly: false,
+    secure: false,
     expiry: Date.now() + 86400000
   })
 })
 
 Cypress.Commands.add('expireCookie', (name: string) => {
   cy.setCookie(name, '', {
-    domain: 'localhost',
+    domain: '127.0.0.1',
     path: '/',
-    httpOnly: true,
-    secure: true,
+    httpOnly: false,
+    secure: false,
     expiry: Date.now() - 86400000 * 2
   })
 })
@@ -93,14 +57,27 @@ Cypress.Commands.add('expireLocalStorage', (key: string) => {
 
 Cypress.Commands.add('login', (email: string, name: string) => {
   cy.get('.landing-button').should('be.visible')
-  cy.addToSessionStorage('user', {
-    name,
-    provider: 'idir',
-    userId: generateRandomHex(32),
+  const jwtBody = {
+    'custom:idp_display_name': name,
+    'custom:idp_name': 'idir',
+    'custom:idp_user_id': generateRandomHex(32),
     email,
     firstName: 'UAT',
     lastName: 'Test'
-  })
+  }
+
+  const payloadString = btoa(JSON.stringify(jwtBody))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '')
+  cy.addCookie('idToken', `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${payloadString}.`)
+  cy.reload()
+  cy.wait(1000)
+})
+
+Cypress.Commands.add('logout', () => {
+  cy.get('[data-id=logout-btn]').should('be.visible')
+  cy.expireCookie('idToken')
   cy.reload()
   cy.wait(1000)
 })

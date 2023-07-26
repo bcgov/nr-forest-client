@@ -46,14 +46,13 @@ describe('General Form', () => {
       .type('Valid Company')
     cy.wait('@searchCompany')
 
-    cy.get('div.autocomplete-items-ct')
-      .should('be.visible')
-      .find('div.autocomplete-items-cell[data-id="XX9016140"]')
-      .should('be.visible')
+    cy.get('div.autocomplete-items-cell[data-id="XX9016140"]')
       .click()
 
     cy.wait('@selectCompany')
 
     cy.get('[data-test="wizard-next-button"]').should('be.visible').click()
+
+    cy.logout()
   })
 })
