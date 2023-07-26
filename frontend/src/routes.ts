@@ -13,7 +13,7 @@ import LandingPage from '@/pages/LandingPage.vue'
 // The generic error page
 import ErrorPage from '@/pages/ErrorPage.vue'
 
-import AmplifyUserSession from '@/helpers/AmplifyUserSession'
+import ForestClientUserSession from '@/helpers/ForestClientUserSession'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -106,17 +106,17 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requireAuth) {
-    if (!AmplifyUserSession.isLoggedIn()) {
+    if (!ForestClientUserSession.isLoggedIn()) {
       next({ name: 'home' })
     } else {
-      const user = AmplifyUserSession.loadDetails()
+      const user = ForestClientUserSession.loadDetails()
       to.meta.visibleTo.includes(user!!.provider)
         ? next()
         : next({ name: 'error' })
     }
   } else {
     if (!to.meta.showLoggedIn) {
-      const user = AmplifyUserSession.loadDetails()
+      const user = ForestClientUserSession.loadDetails()
       if (user) {
         next({ name: to.meta.redirectTo?.[user.provider] })
         return

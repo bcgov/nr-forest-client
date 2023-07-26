@@ -142,9 +142,9 @@ import {
 
 import type { ValidationMessageType } from '@/dto/CommonTypesDto'
 import { usePost } from '@/composables/useFetch'
-import AmplifyUserSession from '@/helpers/AmplifyUserSession'
+import ForestClientUserSession from '@/helpers/ForestClientUserSession'
 
-const submitterInformation = AmplifyUserSession.user
+const submitterInformation = ForestClientUserSession.user
 const errorBus = useEventBus<ValidationMessageType[]>(
   'submission-error-notification'
 )
@@ -243,3 +243,4 @@ const logOut = () => {
   session?.logOut()
 }
 </script>
+@/helpers/ForestClientUserSession
