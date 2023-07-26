@@ -7,28 +7,12 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { computedAsync } from '@vueuse/core'
-
-import AmplifyUserSession from '@/helpers/AmplifyUserSession'
-
+import { backendUrl } from '@/CoreConstants'
 const router = useRouter()
 
-const userLoggedIn = computedAsync(
-  async () => AmplifyUserSession.isLoggedIn(),
-  false
-)
+window.location.href = `${backendUrl}/callback?code=${router.currentRoute.value.query.code}`
 
-const loginRedirect = (userIsLogged: boolean) => {
-  if (userIsLogged) {
-    AmplifyUserSession?.user?.provider === 'idir' //Needs to invert the logic here later
-      ? router.push({ name: 'form' })
-      : router.push({ name: 'internal' })
-  }
-}
-
-watch(userLoggedIn, loginRedirect)
 </script>
 
 <style scoped>

@@ -13,6 +13,7 @@
       <label class="bx--header-site-name">Ministry of Forests</label>
     <bx-btn
       v-if="logged"
+      data-id="logout-btn"
        kind="tertiary"
         iconLayout=""
         class="bx--btn bx--btn-header"
