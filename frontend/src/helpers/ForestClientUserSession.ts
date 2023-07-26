@@ -1,7 +1,7 @@
-import type { AmplifyCustomProperties, Submitter } from '@/dto/CommonTypesDto'
+import type { SessionProperties, Submitter } from '@/dto/CommonTypesDto'
 import { backendUrl } from '@/CoreConstants'
 
-class AmplifyUserSession implements AmplifyCustomProperties {
+class ForestClientUserSession implements SessionProperties {
   public user: Submitter | undefined
 
   public constructor () {
@@ -106,4 +106,4 @@ class AmplifyUserSession implements AmplifyCustomProperties {
   }
 }
 
-export default new AmplifyUserSession()
+export default new ForestClientUserSession()

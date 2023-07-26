@@ -57,7 +57,7 @@ export interface ModalNotification {
   handler: () => void
 }
 
-export interface AmplifyCustomProperties {
+export interface SessionProperties {
   user: Submitter | undefined
   logIn: (provider: string) => void
   logOut: () => void
