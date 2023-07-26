@@ -1,61 +1,29 @@
-import { Auth, Hub } from 'aws-amplify'
 import type { AmplifyCustomProperties, Submitter } from '@/dto/CommonTypesDto'
-import { cognitoEnv } from '@/CoreConstants'
+import { backendUrl } from '@/CoreConstants'
 
 class AmplifyUserSession implements AmplifyCustomProperties {
   public user: Submitter | undefined
 
   public constructor () {
-    Hub.listen('auth', this.handleAuthEvent)
     this.loadUser()
   }
 
-  logIn = async (provider: string): Promise<void> => {
-    try {
-      await Auth.federatedSignIn({
-        customProvider: `${cognitoEnv ?? 'DEV'}-${provider.toUpperCase()}`
-      })
-      await this.loadDetails()
-    } catch (e) {
-      this.clearUser()
-    }
+  logIn = (provider: string): void => {
+    window.location.href = `${backendUrl}/login?code=${provider}`
   }
 
-  logOut = async (): Promise<void> => {
-    try {
-      this.clearUser()
-      await Auth.signOut()
-    } catch (e) {}
+  logOut = (): void => {
+    this.user = undefined
+    window.location.href = `${backendUrl}/logout`
   }
 
-  isLoggedIn = async (): Promise<boolean> => {
-    return (await this.loadDetails()) !== undefined
+  isLoggedIn = (): boolean => {
+    return this.loadDetails() !== undefined
   }
 
-  loadDetails = async (): Promise<Submitter | undefined> => {
+  loadDetails = (): Submitter | undefined => {
     if (this.user === undefined) {
       this.loadUser()
-    }
-
-    if (this.user === undefined) {
-      try {
-        const response = await Auth.currentSession()
-        if (response) {
-          this.user = {
-            name: response.getIdToken().payload['custom:idp_display_name'],
-            provider: response.getIdToken().payload['custom:idp_name'],
-            userId: response.getIdToken().payload['custom:idp_user_id'],
-            email: response.getIdToken().payload.email,
-            ...this.processName(
-              response.getIdToken().payload,
-              response.getIdToken().payload['custom:idp_name']
-            )
-          }
-          sessionStorage.setItem('user', JSON.stringify(this.user))
-        }
-      } catch (e) {
-        this.clearUser()
-      }
     }
     return this.user
   }
@@ -99,22 +67,42 @@ class AmplifyUserSession implements AmplifyCustomProperties {
     return nameArrayWithoutSpaces
   }
 
-  private handleAuthEvent = async (data: any) => {
-    if (data.payload.event === 'signIn' || data.payload.event === 'signOut') {
-      await this.loadDetails()
-    }
-  }
-
-  private clearUser = (): void => {
-    this.user = undefined
-    sessionStorage.removeItem('user')
-  }
-
   private loadUser = (): void => {
-    const user = sessionStorage.getItem('user')
-    if (user) {
-      this.user = JSON.parse(user)
+    const accessToken = this.getCookie('idToken')
+    if (accessToken) {
+      const parsedUser = this.parseJwt(accessToken)
+      this.user = {
+        name: parsedUser['custom:idp_display_name'],
+        provider: parsedUser['custom:idp_name'],
+        userId: parsedUser['custom:idp_user_id'],
+        email: parsedUser.email,
+        ...this.processName(
+          parsedUser,
+          parsedUser['custom:idp_name']
+        )
+      }
     }
+  }
+
+  private getCookie = (name:string): string | null => {
+    const cookieString = document.cookie
+    if (cookieString !== '') {
+      const cookies = cookieString.split(';')
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.trim().split('=')
+        if (cookieName === name) {
+          return decodeURIComponent(cookieValue)
+        }
+      }
+    }
+    return null
+  }
+
+  private parseJwt = (token: string): any => {
+    const base64Url = token.split('.')[1]
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+    const decodedPayload = JSON.parse(atob(base64))
+    return decodedPayload
   }
 }
 
