@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,8 @@ public class ForestClientConfiguration {
   private BcRegistryConfiguration bcregistry;
   @NestedConfigurationProperty
   private AddressCompleteConfiguration addressComplete;
+  @NestedConfigurationProperty
+  private CognitoConfiguration cognito;
 
   @Data
   @Builder
@@ -108,5 +111,27 @@ public class ForestClientConfiguration {
   public static class AddressCompleteConfiguration {
     private String url;
     private String apiKey;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class CognitoConfiguration {
+    private String region;
+    private String clientId;
+    private String userPool;
+    private String domain;
+    private String url;
+    private String environment;
+    private String redirectUri;
+    private String logoutUri;
+
+    public String getUrl(){
+      if(StringUtils.isNotBlank(this.url)){
+        return this.url;
+      }
+      return "https://"+domain+".auth."+region+".amazoncognito.com";
+    }
   }
 }
