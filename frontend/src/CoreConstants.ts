@@ -1,3 +1,5 @@
+import { version } from '../package.json'
+
 // env vars
 export const backendUrl =
   window.localStorage.getItem('VITE_BACKEND_URL') ||
@@ -13,6 +15,8 @@ export const keycloakClientId =
   import.meta.env.VITE_KEYCLOAK_CLIENT_ID
 export const nodeEnv =
   window.localStorage.getItem('VITE_NODE_ENV') || import.meta.env.VITE_NODE_ENV
+
+export const appVersion = version
 
 // constant
 export const maxFileSizePerFile = 1000000 * 20 // 20 mb

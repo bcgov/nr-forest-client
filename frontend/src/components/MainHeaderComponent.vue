@@ -13,7 +13,7 @@
       <label class="bx--header-site-name">Ministry of Forests</label>
       <label class="bx--header-env-and-rel" 
              v-if="env !== 'Prod'">
-        Env. {{ env }} - Rel. 1.0.22.15
+        Env. {{ env }} - Rel. {{appVersion}}
       </label>
       <bx-btn
         v-if="$keycloak"
@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import Logout16 from '@carbon/icons-vue/es/logout/16';
-import { nodeEnv } from '@/CoreConstants';
+import { nodeEnv, appVersion } from '@/CoreConstants';
 import { ref } from 'vue';
 
 const envPrefix = "openshift-";
