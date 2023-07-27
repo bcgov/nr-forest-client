@@ -181,6 +181,7 @@ jobs:
     environment: dev
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
@@ -191,7 +192,7 @@ jobs:
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
+          overwrite: true
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
@@ -205,6 +206,14 @@ jobs:
             -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
+            -p DB_PASSWORD=$(echo ${{github.ref}}${{github.event.number}}|md5sum|cut -d' ' -f1)
+            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
+            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
+            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
+            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
+            -p COGNITO_ENVIRONMENT=DEV
+            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
+            -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/
 
   deploy-database:
     name: Deploy Database
