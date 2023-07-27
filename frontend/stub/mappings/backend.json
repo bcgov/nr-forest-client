@@ -163,7 +163,7 @@
       "name": "Health Ping",
       "request": {
         "url": "/",
-        "method": "GET"
+        "method": "HEAD"
       },
       "response": {
         "status": 200,
