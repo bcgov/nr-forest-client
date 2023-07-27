@@ -122,7 +122,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           triggers: ${{ matrix.triggers }}
           build_args: |
-            APP_VERSION=${{needs.pr-validation.outputs.version}}.${{ github.event.number }}
+            APP_VERSION=${{needs.pr-validation.outputs.version}}-${{ github.event.number }}
 
   build-native:
     needs: 
