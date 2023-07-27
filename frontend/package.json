@@ -25,10 +25,8 @@
     "start": "vite --host --port 3000",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "start-server-and-test stub http://127.0.0.1:8080/ 'vite --host --port 3000'",
-    "preview": "start-server-and-test stub http://127.0.0.1:8080/ 'vite --host --port 3000'",
     "typecheck": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --fix --ignore-path .gitignore",
-    "stub": "wiremock --enable-stub-cors --port 8080 --https-port 8081 --preserve-host-header --root-dir ./stub --verbose --global-response-templating",
     "stub": "wiremock --enable-stub-cors --port 8080 --https-port 8081 --preserve-host-header --root-dir ./stub --verbose --global-response-templating",
     "precoverage": "npm run test:report:clean",
     "coverage": "npm run test:unit && npm run test:component && npm run test:e2e",
@@ -60,7 +58,6 @@
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.10.8",
-    "@cypress/webpack-preprocessor": "^5.17.1",
     "@cypress/webpack-preprocessor": "^5.17.1",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@rushstack/eslint-patch": "^1.1.0",
