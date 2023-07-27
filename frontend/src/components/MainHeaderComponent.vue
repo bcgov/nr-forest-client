@@ -10,7 +10,7 @@
       </a>
       <label class="bx--header-site-name">Ministry of Forests</label>
     <bx-btn
-      v-if="$session.isLoggedIn()"
+      v-if="$session?.isLoggedIn()"
       data-id="logout-btn"
        kind="tertiary"
         iconLayout=""
