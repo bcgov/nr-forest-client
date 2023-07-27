@@ -12,6 +12,8 @@ jobs:
   pr-validation:
     name: Pull Request Validation
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.changelog.outputs.version }}
     permissions:
       contents: read
       pull-requests: write
@@ -38,9 +40,9 @@ jobs:
           ref: refs/heads/${{ github.head_ref }}
 
       - name: Conventional Changelog Update
+        id: changelog
         continue-on-error: true
         uses: TriPSs/conventional-changelog-action@v3
-        id: changelog
         with:
           github-token: ${{ github.token }}
           output-file: "CHANGELOG.md"
@@ -94,6 +96,8 @@ jobs:
   builds:
     name: Builds
     runs-on: ubuntu-22.04
+    needs: 
+      - pr-validation
     permissions:
       packages: write
     strategy:
@@ -110,15 +114,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
+      - uses: bcgov-nr/action-builder-ghcr@v1.2.0
         with:
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
           tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
           triggers: ${{ matrix.triggers }}
+          build_args: |
+            APP_VERSION=${{needs.pr-validation.outputs.version}}.${{ github.event.number }}
 
   build-native:
+    needs: 
+      - pr-validation
     permissions:
       contents: read
       packages: write
@@ -149,6 +157,8 @@ jobs:
         run: |
           cd ${{ matrix.package }}
           chmod +x ./mvnw
+          ./mvnw versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.${{ github.event.number }}' -f pom.xml -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
+          ./mvnw versions:commit -f pom.xml -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
           ./mvnw -Pnative clean spring-boot:build-image \
           -Dspring-boot.build-image.imageName="${{ env.NAME }}" \
           -Doci.revision=${{ github.event.number }} -q
