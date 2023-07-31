@@ -158,17 +158,6 @@
         "transformers": ["response-template"],
         "fixedDelayMilliseconds": 2500
       }
-    },
-    {
-      "name": "Health Ping",
-      "request": {
-        "url": "/",
-        "method": "HEAD"
-      },
-      "response": {
-        "status": 200,
-        "body": "OK"
-      }
     }
   ]
 }
