@@ -217,7 +217,7 @@ objects:
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
-        targetPort: 3000-tcp
+        targetPort: 8080-tcp
       to:
         kind: Service
         name: ${NAME}-${ZONE}-${COMPONENT}
