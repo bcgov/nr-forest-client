@@ -143,6 +143,36 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
                       key: address-complete-key
+                - name: COGNITO_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: cognito-client-id
+                - name: COGNITO_USER_POOL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: cognito-user-pool
+                - name: COGNITO_DOMAIN
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: cognito-domain
+                - name: COGNITO_ENVIRONMENT
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: cognito-environment
+                - name: COGNITO_REDIRECT_URI
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: cognito-redirect-uri
+                - name: COGNITO_LOGOUT_URI
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: cognito-logout-uri
                 
               ports:
                 - containerPort: 3000
