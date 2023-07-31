@@ -18,8 +18,6 @@ describe('MainHeaderComponent.vue', () => {
       }
     })
 
-    console.log(wrapper.html())
-
     expect(wrapper.find('header').exists()).toBe(true)
     expect(wrapper.find('bx-btn').exists()).toBe(true)
     expect(wrapper.html()).toContain('Ministry of Forests')
