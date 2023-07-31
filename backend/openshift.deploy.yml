@@ -189,7 +189,7 @@ objects:
                 failureThreshold: 15
                 httpGet:
                   path: /health
-                  port: 3000
+                  port: 8080
                   scheme: HTTP
                 initialDelaySeconds: 10
                 periodSeconds: 30
@@ -202,10 +202,10 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       ports:
-        - name: 3000-tcp
+        - name: 8080-tcp
           protocol: TCP
           port: 80
-          targetPort: 3000
+          targetPort: 8080
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: route.openshift.io/v1
