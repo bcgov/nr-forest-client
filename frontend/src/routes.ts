@@ -25,7 +25,7 @@ const routes: RouteRecordRaw[] = [
       hideHeader: true,
       requireAuth: false,
       showLoggedIn: false,
-      visibleTo: ['idir', 'bceidbusiness'],
+      visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
       redirectTo: {
         idir: 'form',
         bceidbusiness: 'internal'
@@ -42,7 +42,7 @@ const routes: RouteRecordRaw[] = [
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ['idir', 'bceidbusiness']
+      visibleTo: ['idir', 'bceidbusiness', 'bcsc']
     }
   },
   {
@@ -54,7 +54,7 @@ const routes: RouteRecordRaw[] = [
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ['idir', 'bceidbusiness']
+      visibleTo: ['idir', 'bceidbusiness', 'bcsc']
     }
   },
   {
@@ -66,7 +66,7 @@ const routes: RouteRecordRaw[] = [
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ['idir', 'bceidbusiness']
+      visibleTo: ['idir', 'bceidbusiness', 'bcsc']
     }
   },
   {
@@ -78,10 +78,11 @@ const routes: RouteRecordRaw[] = [
       hideHeader: true,
       requireAuth: false,
       showLoggedIn: true,
-      visibleTo: ['idir', 'bceidbusiness'],
+      visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
       redirectTo: {
         idir: 'form',
-        bceidbusiness: 'internal'
+        bceidbusiness: 'internal',
+        bcsc: 'form'
       }
     }
   },
@@ -94,7 +95,7 @@ const routes: RouteRecordRaw[] = [
       hideHeader: false,
       requireAuth: false,
       showLoggedIn: true,
-      visibleTo: ['idir', 'bceidbusiness']
+      visibleTo: ['idir', 'bceidbusiness', 'bcsc']
     }
   }
 ]
