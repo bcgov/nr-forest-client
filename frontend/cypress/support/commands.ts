@@ -55,11 +55,11 @@ Cypress.Commands.add('expireLocalStorage', (key: string) => {
   })
 })
 
-Cypress.Commands.add('login', (email: string, name: string) => {
+Cypress.Commands.add('login', (email: string, name: string, provider: string) => {
   cy.get('.landing-button').should('be.visible')
   const jwtBody = {
     'custom:idp_display_name': name,
-    'custom:idp_name': 'idir',
+    'custom:idp_name': provider,
     'custom:idp_user_id': generateRandomHex(32),
     email,
     firstName: 'UAT',

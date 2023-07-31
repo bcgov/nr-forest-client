@@ -24,7 +24,7 @@ describe('General Form', () => {
     cy.visit('/')
     cy.wait(500)
 
-    cy.login('uattest@forest.client', 'Test, UAT WLRS:EX')
+    cy.login('uattest@forest.client', 'Uat Test', 'bcsc')
 
     cy.get('bx-form-item > #business').should('not.exist')
 

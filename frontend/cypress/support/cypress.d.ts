@@ -7,7 +7,7 @@ declare namespace Cypress {
       addToSessionStorage(key: string, value: any): Chainable<void>;
       expireSessionStorage(key: string): Chainable<void>;
       expireCookie(name: string): Chainable<void>;
-      login(email: string, name: string): Chainable<void>;
+      login(email: string, name: string, provider: string): Chainable<void>;
       logout(): Chainable<void>;
   }
 }
