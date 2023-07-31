@@ -16,23 +16,26 @@ The frontend is written in [vue3](https://vuejs.org) composition api in typescri
   # Used only on dev and build, to enable coverage
   VITE_COVERAGE=true
 
-  # Amplify / Cognito related configuration for authentication using FAM
-  # Cognito region
-  VITE_AWS_COGNITO_REGION=<VARY BY ENV>
-  # Cognito user pool
-  VITE_AWS_USER_POOLS_ID=<VARY BY ENV>
-  # Cognito domain
-  VITE_AWS_COGNITO_DOMAIN=<VARY BY ENV>
-  # Cognito user pool web client id
-  VITE_AWS_USER_POOLS_WEB_CLIENT_ID=<VARY BY ENV>
-  # Cognito logout redirect url
-  VITE_AWS_LOGOUT=http://localhost:3000/
-
   ```
 
 - Install all requirement packages: `npm install`
 - Start the application: `npm start`
 - Run test: `npm test`
+
+### **Running with Stubs**
+
+If you don't want to rely on the backend for development (maybe you're just doing cosmetic changes), you can run the application with the stubs,
+for that you can run `npm run preview` and that will spin-up the stub server for you.
+
+For more information check the [stubs](#stubs) section.
+
+### **Feature Flags**
+
+We introduced feature flags to the application and it can be controlled by adding `VITE_FEATURE_FLAGS` property to your environment. The value should be a JSON stringified that will be consumed and are available as a global value `$features`.
+
+### **Authentication**
+
+Authentication is provided by FAM through our backend, and can be consumed both through `$session` global value or by importing `ForestClientUserSession` from `@/helpers/ForestClientUserSession`
 
 ## **Setup visual studio code**
 
