@@ -225,7 +225,6 @@ const submit = () => {
 }
 
 const sendEmail = () => {
-  console.log('sendEmail')
   usePost(
     '/api/clients/mail',
     {
