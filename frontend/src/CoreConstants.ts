@@ -3,6 +3,7 @@ import { version } from '../package.json'
 export const checkEnv = (key: string) =>
   window.localStorage.getItem(key) || import.meta.env[key]
 
+export const featureFlags = JSON.parse(checkEnv('VITE_FEATURE_FLAGS') || '{}')
 export const backendUrl = checkEnv('VITE_BACKEND_URL')
 export const frontendUrl = checkEnv('VITE_FRONTEND_URL')
 export const keycloakUrl = checkEnv('VITE_KEYCLOAK_URL')
