@@ -39,7 +39,7 @@
     "posttest:e2e": "[[ -d reports/.nyc_report ]] && mv reports/.nyc_report reports/e2e || mkdir -p reports/e2e",
     "test:report:merge": "lcov-result-merger 'reports/*/lcov.info' 'coverage/lcov.info'",
     "test:report:clean": "mkdir -p reports/.nyc_output/processinfo && mkdir -p coverage",
-    "test:build": "start-server-and-test preview http://127.0.0.1:5050/ 'cypress open'"
+    "test:build": "start-server-and-test preview http://127.0.0.1:3000/ 'cypress open'"
   },
   "dependencies": {
     "@bcgov-nr/nr-fsa-theme": "^1.1.2",
