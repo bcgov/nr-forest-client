@@ -60,8 +60,8 @@ parameters:
     required: true
     value: 256Mi
   - name: COGNITO_REGION
-  description: Cognito region information
-  required: true
+    description: Cognito region information
+    required: true
   - name: COGNITO_CLIENT_ID
     description: Cognito client id
     required: true
