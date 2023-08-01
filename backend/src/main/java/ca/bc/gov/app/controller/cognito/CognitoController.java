@@ -159,7 +159,7 @@ public class CognitoController {
 
   private ResponseCookie buildCookie(String cookieName, String cookieValue, int expiresInSeconds) {
     return ResponseCookie.from(cookieName, cookieValue)
-        .httpOnly(!isLocal())
+        .httpOnly(false)
         .sameSite("Lax")
         .path("/")
         .maxAge(Duration.ofSeconds(expiresInSeconds))
