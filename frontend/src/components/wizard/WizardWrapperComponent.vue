@@ -154,10 +154,15 @@
     <bx-modal-body><p></p></bx-modal-body>
 
     <bx-modal-footer>
-      <bx-btn kind="secondary" data-modal-close>Cancel</bx-btn>
-      <bx-btn kind="danger" @click.prevent="deleteContentModal"
-        >Delete additional {{ modalContent.kind }}</bx-btn
-      >
+      <bx-btn kind="secondary" 
+              data-modal-close>
+        Cancel
+      </bx-btn>
+      <span style="width: 0.5rem;"></span>
+      <bx-btn kind="danger" 
+              @click.prevent="deleteContentModal">
+        Delete additional {{ modalContent.kind }}
+      </bx-btn>
     </bx-modal-footer>
   </bx-modal>
 </template>
