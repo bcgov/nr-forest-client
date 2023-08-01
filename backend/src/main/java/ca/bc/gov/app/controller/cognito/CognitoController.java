@@ -46,6 +46,12 @@ public class CognitoController {
       @RequestParam(name = "code", required = false, defaultValue = "IDIR") String code,
       ServerHttpResponse serverResponse
   ) {
+    if (
+        Stream.of("idir", "bcsc", "bceidbusiness")
+            .noneMatch(provider -> provider.equalsIgnoreCase(code))
+    ) {
+      return Mono.error(new IllegalArgumentException("Invalid provider code."));
+    }
 
     String famUrl = String.format(
         "%s/oauth2/authorize" +
