@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * The Forest client configuration.
- * <p>
  * This file is a representation of the yml/properties file
  */
 @Data

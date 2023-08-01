@@ -17,7 +17,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 /**
- * CognitoService handles interactions with AWS Cognito
+ * CognitoService handles interactions with AWS Cognito.
  */
 @Service
 @Slf4j
@@ -25,14 +25,13 @@ import reactor.core.publisher.Mono;
 public class CognitoService {
 
   private final ForestClientConfiguration configuration;
-  private final Environment environment;
   private final WebClient webClient = WebClient
       .builder()
       .build();
   private final String codeVerify = PkceUtil.generateCodeVerifier();
 
   /**
-   * Handles auth code exchange with Cognito
+   * Handles auth code exchange with Cognito.
    *
    * @return the {@link AuthResponse} with the tokens
    */
@@ -49,16 +48,16 @@ public class CognitoService {
         .post()
         .uri(configuration.getCognito().getUrl() + "/oauth2/token")
         .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-        .header("Accept", "application/json")
+        .header("Accept", MediaType.APPLICATION_JSON_VALUE)
         .cookie("XSRF-TOKEN", UUID.randomUUID().toString())
         .bodyValue(requestBody)
         .exchangeToMono(clientResponse -> clientResponse.bodyToMono(AuthResponse.class));
   }
 
   /**
-   * Gets a code challenge for PKCE
+   * Gets a code challenge for Pkce.
    *
-   * @return the code challenge value optional or empty if an error occurs
+   * @return the code challenge value optional or empty if an error occurs.
    */
   public Optional<String> getCodeChallenge() {
     try {

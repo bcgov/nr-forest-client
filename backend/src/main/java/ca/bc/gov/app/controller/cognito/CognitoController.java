@@ -1,8 +1,8 @@
 package ca.bc.gov.app.controller.cognito;
 
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
+import ca.bc.gov.app.exception.UnableToProcessRequestException;
 import ca.bc.gov.app.service.cognito.CognitoService;
-import java.net.URI;
 import java.time.Duration;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -48,35 +48,36 @@ public class CognitoController {
   ) {
     if (
         Stream.of("idir", "bcsc", "bceidbusiness")
-            .noneMatch(provider -> provider.equalsIgnoreCase(code))
+            .anyMatch(provider -> provider.equalsIgnoreCase(code))
     ) {
-      return Mono.error(new IllegalArgumentException("Invalid provider code."));
+
+      String famUrl = String.format(
+          "%s/oauth2/authorize"
+              + "?client_id=%s"
+              + "&response_type=code"
+              + "&identity_provider=%s-%s"
+              + "&scope=openid"
+              + "&state=%s"
+              + "&code_challenge=%s"
+              + "&code_challenge_method=S256"
+              + "&redirect_uri=%s",
+          configuration.getCognito().getUrl(),
+          configuration.getCognito().getClientId(),
+          configuration.getCognito().getEnvironment(),
+          code.toUpperCase(),
+          UUID.randomUUID(),
+          service.getCodeChallenge().orElse(""),
+          configuration.getCognito().getRedirectUri()
+      );
+
+      serverResponse
+          .getHeaders()
+          .add(LOCATION, famUrl);
+
+      return Mono.empty();
+    } else {
+      return Mono.error(new UnableToProcessRequestException("Invalid provider code."));
     }
-
-    String famUrl = String.format(
-        "%s/oauth2/authorize" +
-            "?client_id=%s"
-            + "&response_type=code"
-            + "&identity_provider=%s-%s"
-            + "&scope=openid"
-            + "&state=%s"
-            + "&code_challenge=%s"
-            + "&code_challenge_method=S256"
-            + "&redirect_uri=%s",
-        configuration.getCognito().getUrl(),
-        configuration.getCognito().getClientId(),
-        configuration.getCognito().getEnvironment(),
-        code.toUpperCase(),
-        UUID.randomUUID(),
-        service.getCodeChallenge().orElse(""),
-        configuration.getCognito().getRedirectUri()
-    );
-
-    serverResponse
-        .getHeaders()
-        .add(LOCATION, famUrl);
-
-    return Mono.empty();
   }
 
   /**

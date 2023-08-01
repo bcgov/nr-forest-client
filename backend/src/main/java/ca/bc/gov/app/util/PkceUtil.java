@@ -16,6 +16,7 @@ public class PkceUtil {
 
   /**
    * Generates a random string of 43 characters (256 bits) for use as a code verifier.
+   *
    * @return a random string of 43 characters (256 bits)
    */
   public static String generateCodeVerifier() {
@@ -27,7 +28,9 @@ public class PkceUtil {
 
   /**
    * Generates a code challenge from the given code verifier.
+   *
    * @param codeVerifier the code verifier to generate a code challenge from
+   *
    * @return the code challenge
    * @throws NoSuchAlgorithmException if the SHA-256 algorithm is not available
    */
