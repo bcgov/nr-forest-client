@@ -20,15 +20,26 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+/**
+ * The Cognito/Authorization controller.
+ */
 @RestController
 @Slf4j
 @RequiredArgsConstructor
 public class CognitoController {
 
+  public static final String LOCATION = "Location";
   private final CognitoService service;
   private final Environment environment;
   private final ForestClientConfiguration configuration;
 
+  /**
+   * Execute the login by redirecting to aws cognito.
+   *
+   * @param code           the provider value
+   * @param serverResponse the server response to redirect to aws cognito
+   * @return nothing, but force a redirect
+   */
   @GetMapping("/login")
   @ResponseStatus(HttpStatus.FOUND)
   public Mono<Void> logon(
@@ -36,8 +47,16 @@ public class CognitoController {
       ServerHttpResponse serverResponse
   ) {
 
-    String famURL = String.format(
-        "%s/oauth2/authorize?client_id=%s&response_type=code&identity_provider=%s-%s&scope=openid&state=%s&code_challenge=%s&code_challenge_method=S256&redirect_uri=%s",
+    String famUrl = String.format(
+        "%s/oauth2/authorize" +
+            "?client_id=%s"
+            + "&response_type=code"
+            + "&identity_provider=%s-%s"
+            + "&scope=openid"
+            + "&state=%s"
+            + "&code_challenge=%s"
+            + "&code_challenge_method=S256"
+            + "&redirect_uri=%s",
         configuration.getCognito().getUrl(),
         configuration.getCognito().getClientId(),
         configuration.getCognito().getEnvironment(),
@@ -49,19 +68,30 @@ public class CognitoController {
 
     serverResponse
         .getHeaders()
-        .add("Location", famURL);
+        .add(LOCATION, famUrl);
 
     return Mono.empty();
   }
 
+  /**
+   * Execute the logout by redirecting to aws cognito.
+   *
+   * @param serverResponse the server response to redirect to aws cognito
+   * @return nothing, but force a redirect
+   */
   @GetMapping("/logout")
   @ResponseStatus(HttpStatus.FOUND)
   public Mono<Void> logout(
       ServerHttpResponse serverResponse
   ) {
 
-    String famURL = String.format(
-        "%s/logout?client_id=%s&response_type=code&scope=openid&redirect_uri=%s&logout_uri=%s",
+    final String famUrl = String.format(
+        "%s/logout"
+            + "?client_id=%s"
+            + "&response_type=code"
+            + "&scope=openid"
+            + "&redirect_uri=%s"
+            + "&logout_uri=%s",
         configuration.getCognito().getUrl(),
         configuration.getCognito().getClientId(),
         configuration.getCognito().getLogoutUri(),
@@ -69,20 +99,27 @@ public class CognitoController {
     );
 
     serverResponse
-        .addCookie(buildCookie("accessToken", StringUtils.EMPTY,-3600));
+        .addCookie(buildCookie("accessToken", StringUtils.EMPTY, -3600));
     serverResponse
         .addCookie(
             buildCookie("idToken", StringUtils.EMPTY, -3600));
     serverResponse
-        .addCookie(buildCookie("refreshToken", StringUtils.EMPTY,-3600));
+        .addCookie(buildCookie("refreshToken", StringUtils.EMPTY, -3600));
 
     serverResponse
         .getHeaders()
-        .add("Location", famURL);
+        .add(LOCATION, famUrl);
 
     return Mono.empty();
   }
 
+  /**
+   * Execute the callback by exchanging the authorization code for tokens.
+   *
+   * @param code           the authorization code
+   * @param serverResponse the server response to redirect to the frontend
+   * @return nothing, but force a redirect
+   */
   @GetMapping("/callback")
   public Mono<ServerHttpResponse> extractToken(
       @RequestParam("code") String code,
@@ -107,7 +144,7 @@ public class CognitoController {
                   .setStatusCode(HttpStatus.FOUND);
               serverResponse
                   .getHeaders()
-                  .add("Location", configuration.getFrontend().getUrl());
+                  .add(LOCATION, configuration.getFrontend().getUrl());
 
               return serverResponse;
             });

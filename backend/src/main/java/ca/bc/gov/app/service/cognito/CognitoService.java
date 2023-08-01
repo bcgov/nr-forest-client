@@ -2,7 +2,7 @@ package ca.bc.gov.app.service.cognito;
 
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.cognito.AuthResponse;
-import ca.bc.gov.app.util.PKCEUtil;
+import ca.bc.gov.app.util.PkceUtil;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,6 +16,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+/**
+ * CognitoService handles interactions with AWS Cognito
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -26,8 +29,13 @@ public class CognitoService {
   private final WebClient webClient = WebClient
       .builder()
       .build();
-  private final String codeVerify = PKCEUtil.generateCodeVerifier();
+  private final String codeVerify = PkceUtil.generateCodeVerifier();
 
+  /**
+   * Handles auth code exchange with Cognito
+   *
+   * @return the {@link AuthResponse} with the tokens
+   */
   public Mono<AuthResponse> exchangeAuthorizationCodeForTokens(String code) {
 
     MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
@@ -47,9 +55,14 @@ public class CognitoService {
         .exchangeToMono(clientResponse -> clientResponse.bodyToMono(AuthResponse.class));
   }
 
+  /**
+   * Gets a code challenge for PKCE
+   *
+   * @return the code challenge value optional or empty if an error occurs
+   */
   public Optional<String> getCodeChallenge() {
     try {
-      return Optional.of(PKCEUtil.generateCodeChallenge(codeVerify));
+      return Optional.of(PkceUtil.generateCodeChallenge(codeVerify));
     } catch (NoSuchAlgorithmException e) {
       log.error("Cannot generate code challenge", e);
     }
