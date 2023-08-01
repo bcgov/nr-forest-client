@@ -343,7 +343,7 @@ public class ClientService {
                                 "maria.martinez@gov.bc.ca"),
                             body
                         ),
-                        "Client number application can’t go ahead"
+                        "Client number submission can’t go ahead"
                     )
             )
             .doOnNext(mailId -> log.info("Mail sent, transaction ID is {}", mailId))

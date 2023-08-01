@@ -231,7 +231,7 @@ public class ClientSubmissionService {
                                 "maria.martinez@gov.bc.ca"),
                             body
                         ),
-                        "Client number application received"
+                        "Client number submission received"
                     )
             )
             .doOnNext(mailId -> log.info("Mail sent, transaction ID is {}", mailId))
