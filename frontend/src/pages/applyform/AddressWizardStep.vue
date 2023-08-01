@@ -127,7 +127,7 @@ const handleRemove = (index: number) => {
     : 'Address #' + index;
   bus.emit({
     message: selectedAddress,
-    kind: 'Address deleted',
+    kind: 'address',
     handler: removeAddress(index),
     active: true
   });

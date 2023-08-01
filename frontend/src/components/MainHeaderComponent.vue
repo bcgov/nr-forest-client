@@ -61,6 +61,15 @@ env.value = env.value.charAt(0).toUpperCase() + env.value.slice(1);
   left: 9rem;
 }
 
+.bx--header-site-name {
+  font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #F3F3F5;
+  padding-left: 2rem;
+  display: inline-block;
+}
+
 .bx--header-env-and-rel {
   padding-left: 2rem; 
   color: white;
