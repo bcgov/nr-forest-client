@@ -76,8 +76,8 @@ jobs:
         env:
           VITE_BACKEND_URL: http://localhost:8080
           VITE_FRONTEND_URL: http://localhost:3000
-          VITE_KEYCLOAK_URL:
-          VITE_KEYCLOAK_CLIENT_ID: 1234
+          VITE_COVERAGE: true
+          VITE_PORT: 3000
           VITE_NODE_ENV: openshift-dev
         with:
           node_version: 18
