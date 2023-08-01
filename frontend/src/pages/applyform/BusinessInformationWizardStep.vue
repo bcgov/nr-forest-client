@@ -164,12 +164,13 @@ watch([detailsData], () => {
 // -- Unregistered Proprietorship
 watch([selectedOption], () => {
   if (selectedOption.value === ClientTypeEnum.U) {
+
+    const fromName = `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`
+
     formData.value.businessInformation.businessType = 'U'
     formData.value.businessInformation.clientType = 'U'
     formData.value.businessInformation.businessName =
-      ForestClientUserSession.user?.businessName ??
-      `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName} ` ??
-      ''
+      ForestClientUserSession.user?.businessName ?? fromName
     validation.business = true
     emit('update:data', formData.value)
   } else {

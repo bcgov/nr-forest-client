@@ -159,9 +159,9 @@ const submitterContact: Contact = {
   locationNames: [],
   contactType: { value: '', text: '' },
   phoneNumber: '',
-  firstName: session?.user?.firstName || '',
-  lastName: session?.user?.lastName || '',
-  email: session?.user?.email || ''
+  firstName: session?.user?.firstName ?? '',
+  lastName: session?.user?.lastName ?? '',
+  email: session?.user?.email ?? ''
 }
 
 let formDataDto = ref<FormDataDto>({ ...newFormDataDto() })
