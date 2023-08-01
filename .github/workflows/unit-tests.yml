@@ -131,7 +131,7 @@ jobs:
           dir: frontend
           sonar_args: >
             -Dsonar.exclusions=**/coverage/**,**/tests/**,**/stubs/**,**/reports/**,**/cypress/**,,**/assets/**,,**/dto/**,**/CoreConstants.ts,**/main.ts,**/routes.ts,**/sims-vue.d.ts,**/styles.ts,**/components.d.ts
-            -Dsonar.javascript.lcov.reportPaths=**/lcov.info            
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info            
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-frontend
           sonar_project_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
