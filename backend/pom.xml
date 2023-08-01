@@ -205,7 +205,7 @@
                             <buildpack>gcr.io/paketo-buildpacks/image-labels</buildpack>
                         </buildpacks>
                         <env>
-                            <BP_JVM_VERSION>19.0.2</BP_JVM_VERSION>
+                            <BP_JVM_VERSION>20.0.2</BP_JVM_VERSION>
                             <BP_OCI_SOURCE>https://github.com/bcgov/nr-forest-client</BP_OCI_SOURCE>
                             <BP_OCI_VERSION>${project.version}</BP_OCI_VERSION>
                             <BP_OCI_DESCRIPTION>${project.description}</BP_OCI_DESCRIPTION>
@@ -514,6 +514,15 @@
                     <classifier>osx-aarch_64</classifier>
                 </dependency>
             </dependencies>
+        </profile>
+
+        <profile>
+            <id>native</id>
+            <properties>
+                <build.profile.id>native</build.profile.id>
+                <skip.integration.tests>true</skip.integration.tests>
+                <skip.unit.tests>true</skip.unit.tests>
+            </properties>
         </profile>
     </profiles>
 
