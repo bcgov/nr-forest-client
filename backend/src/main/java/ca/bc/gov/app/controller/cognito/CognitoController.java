@@ -42,6 +42,7 @@ public class CognitoController {
    */
   @GetMapping("/login")
   @ResponseStatus(HttpStatus.FOUND)
+  @SuppressWarnings("javasecurity:S5146")
   public Mono<Void> logon(
       @RequestParam(name = "code", required = false, defaultValue = "IDIR") String code,
       ServerHttpResponse serverResponse
