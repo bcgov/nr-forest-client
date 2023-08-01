@@ -44,6 +44,10 @@ parameters:
   - name: COGNITO_REGION
     description: Cognito region to be used
     required: true
+  - name: COGNITO_COOKIE_DOMAIN
+    description: Cognito cookie domain to be used
+    required: true
+    default: gov.bc.ca
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -178,6 +182,8 @@ objects:
                       key: cognito-logout-uri
                 - name: COGNITO_REGION
                   value: ${COGNITO_REGION}
+                - name: COGNITO_COOKIE_DOMAIN
+                  value: ${COGNITO_COOKIE_DOMAIN}
                 
               ports:
                 - containerPort: 8080

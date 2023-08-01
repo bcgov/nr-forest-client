@@ -164,7 +164,7 @@ public class CognitoController {
         .path("/")
         .maxAge(Duration.ofSeconds(expiresInSeconds))
         .secure(!isLocal())
-        .domain(URI.create(configuration.getFrontend().getUrl()).getHost())
+        .domain(configuration.getCognito().getCookieDomain())
         .build();
   }
 

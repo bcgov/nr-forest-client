@@ -84,6 +84,7 @@ ca:
           environment: ${COGNITO_ENVIRONMENT}
           redirect-uri: ${COGNITO_REDIRECT_URI}
           logout-uri: ${COGNITO_LOGOUT_URI}
+          cookie-domain: ${COGNITO_COOKIE_DOMAIN}
         frontend:
           url: ${FRONTEND_URL:*}
           cors:

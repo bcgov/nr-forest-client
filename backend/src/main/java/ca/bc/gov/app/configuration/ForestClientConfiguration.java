@@ -138,6 +138,7 @@ public class ForestClientConfiguration {
     private String environment;
     private String redirectUri;
     private String logoutUri;
+    private String cookieDomain;
 
     /**
      * Gets the cognito URL.
