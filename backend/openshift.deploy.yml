@@ -41,6 +41,9 @@ parameters:
   - name: BCREGISTRY_URI
     description: Bc Registry API address
     required: true
+  - name: COGNITO_REGION
+    description: Cognito region to be used
+    required: true
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -173,6 +176,8 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
                       key: cognito-logout-uri
+                - name: COGNITO_REGION
+                  value: ${COGNITO_REGION}
                 
               ports:
                 - containerPort: 8080
