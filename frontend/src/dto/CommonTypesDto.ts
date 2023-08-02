@@ -41,11 +41,13 @@ export interface ProgressData {
 }
 
 export interface Submitter {
+  name: string
+  email: string
+  provider: string
+  userId: string | undefined
   firstName: string
   lastName: string
-  email: string
-  bceidBusinessName: string
-  userId: string | undefined
+  businessName: string
 }
 
 export interface ModalNotification {
@@ -53,4 +55,12 @@ export interface ModalNotification {
   kind: string
   active: boolean
   handler: () => void
+}
+
+export interface SessionProperties {
+  user: Submitter | undefined
+  logIn: (provider: string) => void
+  logOut: () => void
+  isLoggedIn: () => boolean
+  loadDetails: () => Submitter | undefined
 }

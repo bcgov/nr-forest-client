@@ -7,6 +7,7 @@ import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.SendMailRequestDto;
+import ca.bc.gov.app.dto.cognito.AuthResponse;
 import java.util.List;
 
 public class TestConstants {
@@ -488,4 +489,22 @@ public class TestConstants {
           "12345",
           "John Doe",
           "johndoe@example.com");
+
+  public static final String AUTH_RESPONSE_OK = """
+      {
+        "access_token": "a.b.c",
+        "expires_in": 300,
+        "refresh_token": "d.e.f",
+        "token_type": "Bearer",
+        "id_token": "g.h.i"
+      }""";
+
+  public static final AuthResponse AUTH_RESPONSE = new AuthResponse(
+      "a.b.c",
+      300,
+
+      "Bearer",
+      "d.e.f",
+      "g.h.i"
+  );
 }

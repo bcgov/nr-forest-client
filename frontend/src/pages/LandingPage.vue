@@ -1,7 +1,17 @@
 <script setup lang="ts">
-import Seeding from '../assets/images/seeding.png'
-import logo from '../assets/images/bc-gov-logo.png'
+import { useRouter } from 'vue-router'
 import login16 from '@carbon/icons-vue/es/login/16'
+import { backendUrl } from '@/CoreConstants'
+import Seeding from '@/assets/images/seeding.png'
+import logo from '@/assets/images/bc-gov-logo.png'
+
+// extract the querystring parameters from the URL
+const router = useRouter()
+const { query } = router.currentRoute.value
+// check if a querystring parameter called ref exists and if it has a value of external
+if (query.ref && query.ref === 'external') {
+  window.location.href = `${backendUrl}/login?code=bceidbusiness`
+}
 </script>
 
 <template>
@@ -14,10 +24,37 @@ import login16 from '@carbon/icons-vue/es/login/16'
           The Ministry of Forests' client management system
         </h2>
 
-        <p id="landing-desc" class="landing-desc">Check and manage client submissions</p>
+        <p id="landing-desc" class="landing-desc">
+          Check and manage client submissions
+        </p>
 
-        <bx-btn kind="primary" iconLayout="" class="landing-button">
+        <bx-btn
+          kind="primary"
+          iconLayout=""
+          class="landing-button"
+          :href="$backend+'/login?code=idir'"
+        >
           <span>Login with IDIR</span>
+          <login16 slot="icon" />
+        </bx-btn>
+        <bx-btn
+          v-if="$features.BCSC_LOGIN"
+          kind="primary"
+          iconLayout=""
+          class="landing-button"
+          :href="$backend+'/login?code=bcsc'"
+        >
+          <span>Login with BC Services Card</span>
+          <login16 slot="icon" />
+        </bx-btn>
+        <bx-btn
+          v-if="$features.BCEID_LOGIN"
+          kind="primary"
+          iconLayout=""
+          class="landing-button"
+          :href="$backend+'/login?code=bceidbusiness'"
+        >
+          <span>Login with BCeID</span>
           <login16 slot="icon" />
         </bx-btn>
       </div>

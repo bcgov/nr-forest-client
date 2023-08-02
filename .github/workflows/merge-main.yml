@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths-ignore:
-      - '.github/ISSUE_TEMPLATE/*'
-      - '**.md'
+      - ".github/ISSUE_TEMPLATE/*"
+      - "**.md"
   workflow_dispatch:
 
 concurrency:
@@ -76,8 +76,8 @@ jobs:
         env:
           VITE_BACKEND_URL: http://localhost:8080
           VITE_FRONTEND_URL: http://localhost:3000
-          VITE_KEYCLOAK_URL: 
-          VITE_KEYCLOAK_CLIENT_ID: 1234
+          VITE_COVERAGE: true
+          VITE_PORT: 3000
           VITE_NODE_ENV: openshift-dev
         with:
           node_version: 18
@@ -115,9 +115,9 @@ jobs:
       - name: Set up JDK 17 and Caching maven dependencies
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'maven'
+          distribution: "temurin"
+          java-version: "17"
+          cache: "maven"
 
       - name: Build Backend
         run: |
@@ -147,6 +147,7 @@ jobs:
       DOMAIN: apps.silver.devops.gov.bc.ca
       BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
       VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ github.event.repository.name }}-test
     environment: test
     runs-on: ubuntu-22.04
     steps:
@@ -172,6 +173,14 @@ jobs:
             -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
+            -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
+            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
+            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
+            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
+            -p COGNITO_ENVIRONMENT=TEST
+            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
+            -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/
 
       - name: Conventional Changelog Update
         uses: TriPSs/conventional-changelog-action@v3
@@ -179,10 +188,10 @@ jobs:
         continue-on-error: true
         with:
           github-token: ${{ github.token }}
-          output-file: 'CHANGELOG.md'
-          skip-version-file: 'true'
-          skip-commit: 'true'
-          git-push: 'true'
+          output-file: "CHANGELOG.md"
+          skip-version-file: "true"
+          skip-commit: "true"
+          git-push: "true"
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -237,6 +246,8 @@ jobs:
             -p CHES_TOKEN_URL='https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+            -p COGNITO_REGION=ca-central-1
+            -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -305,6 +316,7 @@ jobs:
     env:
       ZONE: prod
       DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ github.event.repository.name }}-prod
     environment: prod
     runs-on: ubuntu-22.04
     steps:
@@ -330,6 +342,14 @@ jobs:
             -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
+            -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
+            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
+            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
+            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
+            -p COGNITO_ENVIRONMENT=PROD
+            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
+            -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/
 
   prod-deploy:
     name: PROD Deployment
@@ -373,6 +393,8 @@ jobs:
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+            -p COGNITO_REGION=ca-central-1
+            -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
