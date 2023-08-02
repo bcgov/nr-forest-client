@@ -211,12 +211,3 @@ hr {
 .bx--progress-step-icon-queued {
   color: #DFDFE1;
 }
-
-bx-modal::part(dialog) {
-  background-color: #F3F3F5;
-  border-radius: 0.5rem;
-}
-
-bx-modal-footer {
-  padding: 1rem;
-}
