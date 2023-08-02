@@ -1,19 +1,11 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createRouter, createWebHistory } from 'vue-router'
-import { inject } from 'vue'
 import App from '@/App.vue'
 
 describe('App.vue', () => {
-  let mockKeycloak
-  let push
-
   const TestComponent = {
-    template: '<span id="provide-test">{{value.email}}</span>',
-    setup: () => {
-      const value = inject('submitterInformation')
-      return { value }
-    }
+    template: '<span id="provide-test">Hello World</span>'
   }
 
   const router = createRouter({
@@ -40,38 +32,13 @@ describe('App.vue', () => {
     ]
   })
 
-  beforeEach(async () => {
-    // Mock the injected keycloak and router
-    mockKeycloak = {
-      tokenParsed: {
-        given_name: 'John',
-        family_name: 'Doe',
-        email: 'john.doe@example.com',
-        display_name: 'John Doe',
-        subject: '1234567890',
-        identity_provider: 'idir'
-      }
-    }
-
-    router.push('/')
-
-    await router.isReady()
-
-    push = vi.spyOn(router, 'push')
-  })
-
-  afterEach(() => {})
-
   it('should set submitter information and redirect for idir identity provider', async () => {
     const wrapper = mount(App, {
       global: {
         stubs: {
           MainHeaderComponent: TestComponent
         },
-        plugins: [router],
-        provide: {
-          keycloak: mockKeycloak
-        }
+        plugins: [router]
       }
     })
 
@@ -79,36 +46,6 @@ describe('App.vue', () => {
 
     const span = await wrapper.find('#provide-test')
 
-    expect(span.text()).toBe('john.doe@example.com')
-
-    expect(push).toHaveBeenCalledTimes(1)
-    expect(push).toHaveBeenCalledWith({
-      name: 'internal'
-    })
-  })
-  it('should set submitter information and redirect for bceid identity provider', async () => {
-    mockKeycloak.tokenParsed.identity_provider = 'bceid'
-    const wrapper = mount(App, {
-      global: {
-        stubs: {
-          MainHeaderComponent: TestComponent
-        },
-        plugins: [router],
-        provide: {
-          keycloak: mockKeycloak
-        }
-      }
-    })
-
-    await wrapper.vm.$nextTick()
-
-    const span = await wrapper.find('#provide-test')
-
-    expect(span.text()).toBe('john.doe@example.com')
-
-    expect(push).toHaveBeenCalledTimes(1)
-    expect(push).toHaveBeenCalledWith({
-      name: 'form'
-    })
+    expect(span.text()).toBe('Hello World')
   })
 })

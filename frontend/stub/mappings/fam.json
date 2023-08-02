@@ -1,0 +1,106 @@
+{
+  "mappings": [
+    {
+      "name": "Login IDIR",
+      "request": {
+        "urlPath": "/login",
+        "method": "GET",
+        "queryParameters": {
+          "code": {
+              "equalTo": "idir"
+          }
+      }
+      },
+      "response": {
+        "status": 302,
+        "transformers": ["response-template"],
+        "headers":{
+          "Location": "http://{{request.host}}:3000/dashboard",
+          "Set-Cookie": [
+            "idToken=eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiaWRpciIsImN1c3RvbTppZHBfZGlzcGxheV9uYW1lIjoiVGVzdCwgVUFUIFdMUlM6RVgiLCJnaXZlbl9uYW1lIjoiVWF0IiwiZmFtaWx5X25hbWUiOiJUZXN0IiwiZW1haWwiOiJ1YXR0ZXN0QHRlc3QubG9jYWwiLCJpZHBfYnVzaW5lc3NfbmFtZSI6IkF1dG9tYXRlZCBUZXN0In0.yqveACSQ0YoIg5tKWK6MGKmP6ixmVZjn9OGnuDxw1ms; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Login BCeID",
+      "request": {
+        "urlPath": "/login",
+        "method": "GET",
+        "queryParameters": {
+          "code": {
+              "equalTo": "bceidbusiness"
+          }
+      }
+      },
+      "response": {
+        "status": 302,
+        "transformers": ["response-template"],
+        "headers":{
+          "Location": "http://{{request.host}}:3000/dashboard",
+          "Set-Cookie": [
+            "idToken=eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiYmNlaWRidXNpbmVzcyIsImN1c3RvbTppZHBfZGlzcGxheV9uYW1lIjoiVWF0IFRlc3QiLCJnaXZlbl9uYW1lIjoiVWF0IiwiZmFtaWx5X25hbWUiOiJUZXN0IiwiZW1haWwiOiJ1YXR0ZXN0QHRlc3QubG9jYWwiLCJpZHBfYnVzaW5lc3NfbmFtZSI6IkF1dG9tYXRlZCBUZXN0In0.mXHXgIY6uxZ2OymBIoPVNjz-tSLS3uiSTKGDig0bAa4; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Login BCSC",
+      "request": {
+        "urlPath": "/login",
+        "method": "GET",
+        "queryParameters": {
+          "code": {
+              "equalTo": "bcsc"
+          }
+      }
+      },
+      "response": {
+        "status": 302,
+        "transformers": ["response-template"],
+        "headers":{
+          "Location": "http://{{request.host}}:3000/dashboard",
+          "Set-Cookie": [
+            "idToken=eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiYmNzYyIsImN1c3RvbTppZHBfZGlzcGxheV9uYW1lIjoiVWF0IFRlc3QiLCJnaXZlbl9uYW1lIjoiVWF0IiwiZmFtaWx5X25hbWUiOiJUZXN0IiwiZW1haWwiOiJ1YXR0ZXN0QHRlc3QubG9jYWwiLCJpZHBfYnVzaW5lc3NfbmFtZSI6IkF1dG9tYXRlZCBUZXN0In0.WxwJhq-wCTt-k2YL0ZXw83jWQ9JGotH4jt84gZM7VzQ; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "urlPath": "/logout",
+        "method": "GET"
+      },
+      "response": {
+        "status": 302,
+        "transformers": ["response-template"],
+        "headers":{
+          "Location": "http://{{request.host}}:3000/",
+          "Set-Cookie": [
+            "idToken=; sameSite=Lax; path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; domain={{request.host}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Callback",
+      "request": {
+        "urlPath": "/callback",
+        "method": "GET",
+        "queryParameters": {
+          "code": {
+              "matches": "(.*)"
+          }
+      }
+      },
+      "response": {
+        "status": 302,
+        "transformers": ["response-template"],
+        "headers":{
+          "Location": "http://{{request.host}}:3000/"
+        }
+      }
+    }
+  ]
+}

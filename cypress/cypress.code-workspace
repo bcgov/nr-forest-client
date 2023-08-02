@@ -1,0 +1,38 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"editor.inlineSuggest.enabled": true,
+  		"git.openRepositoryInParentFolders": "always",
+		"editor.defaultFormatter": "rvest.vs-code-prettier-eslint",		
+		"editor.formatOnPaste": false,
+		"editor.formatOnSave": true,
+		"editor.codeActionsOnSave": {
+			"source.fixAll.eslint": true
+		},
+		"editor.tabSize": 2,
+		"vs-code-prettier-eslint.prettierLast": true,
+		"eslint.enable": true,
+		"eslint.alwaysShowStatus": true,
+		"eslint.validate": [
+			"javascript",
+			"typescript",
+		],
+		"prettier.requireConfig": true,
+		
+		"workbench.tree.indent": 20,
+		"workbench.iconTheme": "material-icon-theme",
+		"[vue]": {
+			"editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+		},
+		"[typescript]": {
+			"editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+		},
+		"[xml]": {
+			"editor.defaultFormatter": "redhat.vscode-xml"
+		},
+	}
+}

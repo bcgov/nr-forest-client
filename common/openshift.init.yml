@@ -59,6 +59,27 @@ parameters:
     displayName: Database Backup Volume Capacity
     required: true
     value: 256Mi
+  - name: COGNITO_REGION
+    description: Cognito region information
+    required: true
+  - name: COGNITO_CLIENT_ID
+    description: Cognito client id
+    required: true
+  - name: COGNITO_USER_POOL
+    description: Cognito user pool id
+    required: true
+  - name: COGNITO_DOMAIN
+    description: Cognito domain
+    required: true
+  - name: COGNITO_ENVIRONMENT
+    description: Cognito environment
+    required: true
+  - name: COGNITO_REDIRECT_URI
+    description: Cognito redirect url once logged in
+    required: true
+  - name: COGNITO_LOGOUT_URI
+    description: Cognito redirect url once logged out
+    required: true
 objects:
   - apiVersion: v1
     kind: Secret
@@ -81,6 +102,13 @@ objects:
       bcregistry-key: ${BCREGISTRY_KEY}
       bcregistry-account: ${BCREGISTRY_ACCOUNT}
       address-complete-key: ${ADDRESS_COMPLETE_KEY}
+      cognito-region: ${COGNITO_REGION}
+      cognito-client-id: ${COGNITO_CLIENT_ID}
+      cognito-user-pool: ${COGNITO_USER_POOL}
+      cognito-domain: ${COGNITO_DOMAIN}
+      cognito-environment: ${COGNITO_ENVIRONMENT}
+      cognito-redirect-uri: ${COGNITO_REDIRECT_URI}
+      cognito-logout-uri: ${COGNITO_LOGOUT_URI}
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:

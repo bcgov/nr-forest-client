@@ -127,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, inject, toRef, ref, getCurrentInstance } from 'vue'
+import { reactive, watch, toRef, ref, getCurrentInstance } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformationWizardStep.vue'
@@ -140,10 +140,11 @@ import {
   type Contact
 } from '@/dto/ApplyClientNumberDto'
 
-import type { Submitter, ValidationMessageType } from '@/dto/CommonTypesDto'
+import type { ValidationMessageType } from '@/dto/CommonTypesDto'
 import { usePost } from '@/composables/useFetch'
+import ForestClientUserSession from '@/helpers/ForestClientUserSession'
 
-const submitterInformation = inject<Submitter>('submitterInformation')
+const submitterInformation = ForestClientUserSession.user
 const errorBus = useEventBus<ValidationMessageType[]>(
   'submission-error-notification'
 )
@@ -152,14 +153,15 @@ const generalErrorBus = useEventBus<string>('general-error-notification')
 const router = useRouter()
 
 const instance = getCurrentInstance()
+const session = instance?.appContext.config.globalProperties.$session
 
 const submitterContact: Contact = {
   locationNames: [],
   contactType: { value: '', text: '' },
   phoneNumber: '',
-  firstName: submitterInformation?.firstName || '',
-  lastName: submitterInformation?.lastName || '',
-  email: submitterInformation?.email || ''
+  firstName: session?.user?.firstName ?? '',
+  lastName: session?.user?.lastName ?? '',
+  email: session?.user?.email ?? ''
 }
 
 let formDataDto = ref<FormDataDto>({ ...newFormDataDto() })
@@ -189,7 +191,6 @@ const { response, error, fetch } = usePost(
 watch([response], () => {
   if (response.value.status === 201) {
     router.push({ name: 'confirmation' })
-    resetForm()
   }
 })
 
@@ -224,13 +225,12 @@ const submit = () => {
 }
 
 const sendEmail = () => {
-  console.log('sendEmail')
   usePost(
     '/api/clients/mail',
     {
       incorporation: formData.businessInformation.incorporationNumber,
       name: formData.businessInformation.businessName,
-      userName: submitterInformation?.firstName || '',
+      userName: submitterInformation?.name || '',
       userId: submitterInformation?.userId || '',
       mail: submitterInformation?.email || ''
     },
@@ -239,6 +239,6 @@ const sendEmail = () => {
 }
 
 const logOut = () => {
-  instance?.appContext.config.globalProperties.$keycloak?.logoutFn?.()
+  session?.logOut()
 }
 </script>

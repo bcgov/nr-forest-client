@@ -3,36 +3,7 @@
   <router-view></router-view>
 </template>
 
-<script setup lang="ts">
-import { inject, provide, ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-import type Keycloak from 'keycloak-js'
-import type { Submitter } from '@/dto/CommonTypesDto'
-
-/* eslint-disable typescript:S1874 */
-const keycloak: Keycloak | undefined = inject('keycloak')
-const router = useRouter()
-
-let submitterInformation = ref<Submitter>({
-  firstName: keycloak?.tokenParsed?.given_name,
-  lastName: keycloak?.tokenParsed?.family_name,
-  email: keycloak?.tokenParsed?.email,
-  bceidBusinessName: keycloak?.tokenParsed?.display_name,
-  userId: keycloak?.subject
-})
-
-const submitAndRedirect = (page: string) => {
-  provide('submitterInformation', submitterInformation.value)
-  router.push({ name: page })
-}
-
-if (keycloak?.tokenParsed?.identity_provider === 'idir') {
-  submitAndRedirect('internal')
-} else {
-  submitAndRedirect('form')
-}
-</script>
+<script setup lang="ts"></script>
 
 <style>
 .row {

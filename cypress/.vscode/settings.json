@@ -1,0 +1,8 @@
+{
+  "editor.inlineSuggest.enabled": true,
+  "git.openRepositoryInParentFolders": "always",
+  "sonarlint.connectedMode.project": {
+    "connectionId": "bcgov-sonarcloud",
+    "projectKey": "forest-client-frontend"
+  }
+}

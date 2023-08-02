@@ -1,9 +1,7 @@
-
-
 <template>
   <header>
     <div class="bx--header">
-      <div v-if="$keycloak?.tokenParsed?.identity_provider !== 'idir'">
+      <div v-if="$session?.user?.provider !== 'idir'">
         <a href="https://gov.bc.ca">
           <img
             src="/img/bc_for_logo.png"
@@ -21,18 +19,19 @@
           </label>
         </div>
         <bx-btn
-          v-if="$keycloak"
+          v-if="$session?.isLoggedIn()"
+          data-id="logout-btn"
           kind="tertiary"
           iconLayout=""
           class="bx--btn bx--btn-header"
-          @click.prevent="$keycloak.logoutFn"
+         @click.prevent="$session?.logOut"
           size="field"
         >
           <span>Logout</span>
           <Logout16 slot="icon" />
         </bx-btn>
       </div>
-      <div v-if="$keycloak?.tokenParsed?.identity_provider === 'idir'">
+      <div v-if="$session?.user?.provider === 'idir'">
         <label class="bx--header-site-name">Client Management System</label>
         <label class="bx--header-env-and-rel" 
               v-if="env !== 'Prod'">
