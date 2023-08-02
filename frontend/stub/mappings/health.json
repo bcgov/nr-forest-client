@@ -1,0 +1,26 @@
+{
+  "mappings": [
+    {
+      "name": "Health Ping",
+      "request": {
+        "url": "/",
+        "method": "HEAD"
+      },
+      "response": {
+        "status": 200,
+        "body": "OK"
+      }
+    },
+    {
+      "name": "Health Ping",
+      "request": {
+        "url": "/",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "body": "OK"
+      }
+    }
+  ]
+}

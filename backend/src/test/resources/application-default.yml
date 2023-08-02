@@ -13,10 +13,6 @@ ca:
           clientId: clientId
           clientSecret: secret
           scope: scope
-        orgbook:
-          uri: 'http://127.0.0.1:10020'
-        openmaps:
-          uri: 'http://127.0.0.1:10030/geo/pub/ows'
         bcregistry:
           uri: 'http://127.0.0.1:10040'
           apiKey: abc1234
@@ -26,6 +22,16 @@ ca:
         addressComplete:
           url: 'http://127.0.0.1:10050'
           apiKey: 'AB12-CD34-EF56-GH78'
+        cognito:
+          region: test
+          client-id: abc123
+          user-pool: test_pool
+          domain: domain
+          environment: UAT
+          redirect-uri: http://localhost:1234/dashboard
+          logout-uri: http://localhost:1234/
+          cookie-domain: localhost
+          url: http://localhost:10070
 
 
 logging:

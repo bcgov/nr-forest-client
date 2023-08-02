@@ -5,7 +5,7 @@ describe('<HomePage />', () => {
     cy.mount(HomePage)
   })
   it('should contain two links', () => {
-    cy.get('router-link').should('have.length', 2)
+    cy.get('router-link').should('have.length', 3)
   })
 
   it('should contain a link with text "New Client"', () => {

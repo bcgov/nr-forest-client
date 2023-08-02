@@ -11,6 +11,7 @@ import RadioInputComponent from '@/components/forms/RadioInputComponent.vue'
 import { isNotEmpty } from '@/helpers/validators/GlobalValidators'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
 import { retrieveClientType } from '@/helpers/DataConversors'
+import ForestClientUserSession from '@/helpers/ForestClientUserSession'
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>()
@@ -163,10 +164,13 @@ watch([detailsData], () => {
 // -- Unregistered Proprietorship
 watch([selectedOption], () => {
   if (selectedOption.value === ClientTypeEnum.U) {
+
+    const fromName = `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`
+
     formData.value.businessInformation.businessType = 'U'
     formData.value.businessInformation.clientType = 'U'
-    const { firstName, lastName } = formData.value.location.contacts[0]
-    formData.value.businessInformation.businessName = `${firstName} ${lastName}`
+    formData.value.businessInformation.businessName =
+      ForestClientUserSession.user?.businessName ?? fromName
     validation.business = true
     emit('update:data', formData.value)
   } else {
@@ -296,3 +300,4 @@ watch([selectedOption], () => {
   />
   <br />
 </template>
+@/helpers/ForestClientUserSession

@@ -27,6 +27,7 @@ import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
+import ca.bc.gov.app.dto.cognito.AuthResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.context.annotation.Bean;
@@ -69,7 +70,8 @@ import org.springframework.web.reactive.function.client.WebClient;
     ChesRequestDto.class,
     ChesMailRequest.class,
     ChesMailResponse.class,
-    ChesMailErrorResponse.class
+    ChesMailErrorResponse.class,
+    AuthResponse.class
 })
 public class GlobalServiceConfiguration {
 
