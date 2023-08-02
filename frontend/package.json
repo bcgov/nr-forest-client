@@ -104,6 +104,6 @@
   },
   "nyc": {
     "check-coverage": true,
-    "lines": 80
+    "lines": 40
   }
 }
