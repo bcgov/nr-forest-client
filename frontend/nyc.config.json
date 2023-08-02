@@ -2,12 +2,22 @@
   "extends": "@istanbuljs/nyc-config-typescript",
   "extension": [".ts", ".vue"],
   "reporter": ["html", "text-summary", "lcov"],
-  "report-dir": "./nyc",
+  
   "include": ["src/**/*.ts", "src/**/*.vue"],
   "exclude": ["src/**/*.spec.ts"],
   "all": true,
   "check-coverage": true,
   "hooks": {
-    "postreport": "nyc report --reporter=lcov > coverage/lcov.info"
+    "postreport": "mkdir -p .nyc_output && rm -rf coverage && nyc merge reports &&  mv coverage.json .nyc_output/out.json && nyc report --reporter lcov --reporter text-summary --report-dir coverage"
+  },
+  "branches": 80,
+  "lines": 80,
+  "functions": 80,
+  "statements": 80,
+  "watermarks": {
+    "lines": [70, 80],
+    "functions": [70, 80],
+    "branches": [70, 80],
+    "statements": [70, 80]
   }
 }
