@@ -110,6 +110,8 @@ jobs:
             triggers: ('common/')
           - package: frontend
             triggers: ('frontend/')
+          - package: legacy
+            triggers: ('legacy/')
 
     steps:
       - uses: actions/checkout@v3
