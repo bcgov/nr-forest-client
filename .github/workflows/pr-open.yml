@@ -148,18 +148,17 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: "22.3.0"
-          java-version: "17"
+          java-version: '17'
+          distribution: 'graalvm'
           components: "native-image"
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build App
         run: |
           cd ${{ matrix.package }}
-          chmod +x ./mvnw
-          ./mvnw versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.${{ github.event.number }}' -f pom.xml -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
-          ./mvnw versions:commit -f pom.xml -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
-          ./mvnw -Pnative clean spring-boot:build-image \
+          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.${{ github.event.number }}' -f pom.xml -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
+          mvn versions:commit -f pom.xml -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
+          mvn -Pnative clean spring-boot:build-image \
           -Dspring-boot.build-image.imageName="${{ env.NAME }}" \
           -Doci.revision=${{ github.event.number }} -q
 
