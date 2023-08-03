@@ -112,6 +112,8 @@ jobs:
             triggers: ('frontend/')
           - package: legacy
             triggers: ('legacy/')
+          - package: processor
+            triggers: ('processor/')
 
     steps:
       - uses: actions/checkout@v3
@@ -134,7 +136,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend, legacy, processor]
+        package: [backend]
 
     name: Builds (${{ matrix.package }})
     runs-on: ubuntu-latest
