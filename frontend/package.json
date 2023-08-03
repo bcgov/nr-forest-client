@@ -37,7 +37,7 @@
     "posttest:unit": "mv reports/.vite_report reports/unit",
     "test:e2e": "start-server-and-test preview http://127.0.0.1:3000/ 'cypress run --headless'",
     "posttest:e2e": "mv reports/.nyc_report reports/e2e",
-    "test:report:merge": "lcov-result-merger 'reports/*/lcov.info' 'coverage/lcov.info'",
+    "test:report:merge": "mkdir -p .nyc_output && rm -rf coverage && nyc --config nyc.config.json merge reports &&  mv coverage.json .nyc_output/out.json && nyc --config nyc.config.json report --reporter lcov --reporter text-summary --report-dir coverage",
     "test:report:clean": "mkdir -p reports/.nyc_output/processinfo && mkdir -p coverage",
     "test:build": "start-server-and-test preview http://127.0.0.1:3000/ 'cypress open'"
   },
@@ -101,5 +101,9 @@
     "vue-svg-loader": "^0.16.0",
     "vue-tsc": "^1.8.1",
     "wiremock": "^2.35.0"
+  },
+  "nyc": {
+    "check-coverage": true,
+    "lines": 40
   }
 }

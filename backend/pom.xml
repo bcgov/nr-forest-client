@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.1.2</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>ca.bc.gov.nrs</groupId>
@@ -42,7 +43,7 @@
 
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-        
+
         <testcontainers.version>1.18.3</testcontainers.version>
 
         <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
@@ -174,11 +175,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-			<dependency>
+            <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>2.0</version>
-			</dependency>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -205,7 +206,7 @@
                             <buildpack>gcr.io/paketo-buildpacks/image-labels</buildpack>
                         </buildpacks>
                         <env>
-                            <BP_JVM_VERSION>20.0.2</BP_JVM_VERSION>
+                            <BP_JVM_VERSION>17.0.8</BP_JVM_VERSION>
                             <BP_OCI_SOURCE>https://github.com/bcgov/nr-forest-client</BP_OCI_SOURCE>
                             <BP_OCI_VERSION>${project.version}</BP_OCI_VERSION>
                             <BP_OCI_DESCRIPTION>${project.description}</BP_OCI_DESCRIPTION>
@@ -399,7 +400,7 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <dependencyConvergence/>
+                                <dependencyConvergence />
                                 <requireMavenVersion>
                                     <version>[3.2,)</version>
                                     <message>Invalid Maven version. It should be at least 3.2</message>
@@ -422,7 +423,7 @@
                                     <message>No Snapshots Allowed in releases!</message>
                                     <onlyWhenRelease>true</onlyWhenRelease>
                                 </requireReleaseDeps>
-                                <banDuplicatePomDependencyVersions/>
+                                <banDuplicatePomDependencyVersions />
                             </rules>
                         </configuration>
                     </execution>
