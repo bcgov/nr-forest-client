@@ -102,7 +102,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [database, frontend, common]
+        package: [database, frontend, common, legacy, processor, backend]
         include:
           - package: database
             triggers: ('database/')
@@ -121,6 +121,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - uses: bcgov-nr/action-builder-ghcr@v1.2.0
+        name: Build (${{ matrix.package }})
         with:
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
