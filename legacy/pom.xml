@@ -179,6 +179,12 @@
 			<plugin>
 				<groupId>org.graalvm.buildtools</groupId>
 				<artifactId>native-maven-plugin</artifactId>
+				<configuration>
+					<skip>false</skip>
+					<buildArgs>
+						<buildArg>-march=x86_64</buildArg>
+					</buildArgs>
+				</configuration>
 			</plugin>
 
 			<plugin>
@@ -493,7 +499,6 @@
 				<build.profile.id>native</build.profile.id>
 				<skip.integration.tests>true</skip.integration.tests>
 				<skip.unit.tests>true</skip.unit.tests>
-				<native.image.march>x86_64</native.image.march>
 			</properties>
 		</profile>
 	</profiles>
