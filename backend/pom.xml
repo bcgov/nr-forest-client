@@ -198,7 +198,6 @@
                         <buildArg>--trace-class-initialization=org.apache.commons.logging.LogFactory</buildArg>
                         <buildArg>
                             --initialize-at-build-time=org.apache.commons.logging.LogFactoryService</buildArg>
-                        <buildArg>-march=x86_64</buildArg>
                     </buildArgs>
                 </configuration>
             </plugin>

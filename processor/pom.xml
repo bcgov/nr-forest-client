@@ -184,12 +184,6 @@
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <configuration>
-                    <skip>false</skip>
-                    <buildArgs>
-                        <buildArg>-march=x86_64</buildArg>
-                    </buildArgs>
-                </configuration>
             </plugin>
 
             <plugin>
