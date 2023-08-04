@@ -6,9 +6,12 @@ ARG APP_VERSION=0.0.1
 
 # Copy
 WORKDIR /app
-COPY pom.xml mvnw ./
+COPY pom.xml ./
+COPY mvnw ./mvnw
 COPY src ./src
 COPY .mvn/ ./.mvn
+
+RUN chmod +x mvnw
 
 # Setting app version
 RUN ./mvnw versions:set -DnewVersion=${APP_VERSION} -f pom.xml -DskipTests -Dtests.skip=true -Dskip.unit.tests=true && \
