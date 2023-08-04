@@ -201,6 +201,33 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
+      
+      - name: Deploy Processor
+        uses: bcgov-nr/action-deployer-openshift@v1.0.3
+        with:
+          file: processor/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          verification_path: health
+          parameters:
+            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/processor:${{ github.event.number }}
+            
+      - name: Deploy Legacy
+        uses: bcgov-nr/action-deployer-openshift@v1.0.3
+        with:
+          file: legacy/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          verification_path: health
+          parameters:
+            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
+
       - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
@@ -218,30 +245,6 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
-      - name: Deploy Processor
-        uses: bcgov-nr/action-deployer-openshift@v1.0.3
-        with:
-          file: processor/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          verification_path: health
-          parameters:
-            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/processor:${{ github.event.number }}
-      - name: Deploy Legacy
-        uses: bcgov-nr/action-deployer-openshift@v1.0.3
-        with:
-          file: legacy/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          verification_path: health
-          parameters:
-            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
 
   deploy-frontend:
     name: Deploy Frontend
