@@ -20,11 +20,11 @@ RUN ./mvnw -Pnative native:compile
 
 ### Deployer
 FROM gcr.io/distroless/java-base:nonroot AS deploy
-ARG PORT=9000
+ARG PORT=8080
 
 # Copy
 WORKDIR /app
-COPY --from=build /app/target/nr-forest-client-legacy ./nr-forest-client-legacy
+COPY --from=build /app/target/nr-forest-client-backend ./nr-forest-client-backend
 
 # User, port and health check
 USER 1001
@@ -32,4 +32,4 @@ EXPOSE ${PORT}
 HEALTHCHECK CMD curl -f http://localhost:${PORT}/actuator/health | grep '"status":"UP"'
 
 # Startup
-ENTRYPOINT ["/app/nr-forest-client-legacy"]
+ENTRYPOINT ["/app/nr-forest-client-backend"]
