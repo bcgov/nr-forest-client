@@ -131,18 +131,19 @@ jobs:
           build_args: |
             APP_VERSION=${{needs.pr-validation.outputs.version}}-${{ github.event.number }}
 
-  deploy-init:
-    name: Deploy Init
+  deploy:
+    name: Deploy Application
     needs:
       - builds
     environment: dev
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
       PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
+      ZONE: dev
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      - name: Deploys
+      - name: Initializing Deployment
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: common/openshift.init.yml
@@ -172,15 +173,7 @@ jobs:
             -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
             -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/
 
-  deploy-database:
-    name: Deploy Database
-    needs:
-      - deploy-init
-    environment: dev
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
+      - name: Deploy Database
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
           file: database/openshift.deploy.yml
@@ -191,16 +184,6 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
-
-  deploy-backend:
-    name: Deploy Backend
-    needs:
-      - deploy-init
-      - deploy-database
-    environment: dev
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
       
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
@@ -214,7 +197,7 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ github.event.number }}
-            
+
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
@@ -246,17 +229,7 @@ jobs:
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
 
-  deploy-frontend:
-    name: Deploy Frontend
-    needs:
-      - deploy-init
-    environment: dev
-    env:
-      ZONE: dev
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploys
+      - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
           file: frontend/openshift.deploy.yml
@@ -273,8 +246,7 @@ jobs:
     name: "User flow test"
     runs-on: ubuntu-22.04
     needs:
-      - deploy-frontend
-      - deploy-backend
+      - deploy
     environment: dev
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -308,6 +280,7 @@ jobs:
           job_name: User Journeys
 
       - uses: actions/upload-artifact@v3
+        name: Upload Cypress Screenshots with error
         if: failure()
         with:
           name: cypress-screenshots
@@ -315,7 +288,8 @@ jobs:
           retention-days: 7
 
       - uses: actions/upload-artifact@v3
-        if: always()
+        name: Upload Cypress Videos with error
+        if: failure()
         with:
           name: cypress-videos
           path: cypress/cypress/videos
