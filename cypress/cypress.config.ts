@@ -51,4 +51,5 @@ export default defineConfig({
     specPattern: "**/*.feature",
     setupNodeEvents,
   },
+  includeShadowDom: true,
 });
