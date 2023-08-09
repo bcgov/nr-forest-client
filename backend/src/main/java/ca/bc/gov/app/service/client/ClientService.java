@@ -175,26 +175,28 @@ public class ClientService {
         );
   }
 
-
-  
-  
-  
-  public Mono<Void> sendEmail(EmailRequestDto sendMailRequestDto) {
-    return triggerEmail(sendMailRequestDto).then();
+  /**
+   * <p><b>Send Email</b></p>
+   * <p>Send email to a client.</p>
+   * @param emailRequestDto The request data containing user and client details.
+   * @return A {@link Mono} of {@link Void}.
+   */
+  public Mono<Void> sendEmail(EmailRequestDto emailRequestDto) {
+    return triggerEmail(emailRequestDto).then();
   }
 
   /**
    * <p><b>Send Email</b></p>
    * <p>Send email to the client when entry already exists.</p>
-   * @param sendMailRequestDto The request data containing user and client details.
+   * @param emailRequestDto The request data containing user and client details.
    * @return A {@link Mono} of {@link Void}.
    */
-  public Mono<Void> triggerEmailDuplicatedClient(EmailRequestDto sendMailRequestDto) {
+  public Mono<Void> triggerEmailDuplicatedClient(EmailRequestDto emailRequestDto) {
     return
         legacyService
-            .searchLegacy(sendMailRequestDto.incorporation(), sendMailRequestDto.name())
+            .searchLegacy(emailRequestDto.incorporation(), emailRequestDto.name())
             .next()
-            .flatMap(triggerEmailDuplicatedClient(sendMailRequestDto.email(), sendMailRequestDto.userName()))
+            .flatMap(triggerEmailDuplicatedClient(emailRequestDto.email(), emailRequestDto.userName()))
             .then();
   }
 
@@ -343,11 +345,11 @@ public class ClientService {
                                 .thenReturn(legacy);
   }
 
-  private Mono<String> triggerEmail(EmailRequestDto sendMailRequestDto) {
-    return chesService.sendEmail(sendMailRequestDto.templateName(), 
-                                 sendMailRequestDto.email(),
-                                 sendMailRequestDto.subject(), 
-                                 sendMailRequestDto.variables());
+  private Mono<String> triggerEmail(EmailRequestDto emailRequestDto) {
+    return chesService.sendEmail(emailRequestDto.templateName(), 
+                                 emailRequestDto.email(),
+                                 emailRequestDto.subject(), 
+                                 emailRequestDto.variables());
   }
   
 }
