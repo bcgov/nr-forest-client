@@ -17,3 +17,4 @@ Feature: Business Information
     When I select the option that says I have a BC registered business
     And I type in the first 3 characters of the business name
     Then I am presented a list of business names filtered by the text typed in the business name field
+    And the button Next is disabled

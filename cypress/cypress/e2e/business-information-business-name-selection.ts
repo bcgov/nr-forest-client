@@ -43,6 +43,22 @@ Then("the button Next is enabled", () => {
   cy.contains("bx-btn", "Next").find("button").should("be.enabled");
 });
 
+Then("the button Next is hidden", () => {
+  cy.contains("bx-btn", "Next").should("not.exist");
+});
+
+Then("the button 'End application and logout' is displayed", () => {
+  cy.contains("bx-btn", "End application and logout")
+    .find("button")
+    .should("be.visible");
+});
+
+Then("the button 'Receive email and logout' is displayed", () => {
+  cy.contains("bx-btn", "Receive email and logout")
+    .find("button")
+    .should("be.visible");
+});
+
 When("I select the option that says I have a BC registered business", () => {
   cy.contains("I have a BC registered business").click();
 });
@@ -54,7 +70,18 @@ Then("a field to type in the business name is displayed", () => {
 });
 
 Then("a notification about 'Registered business name' is displayed", () => {
-  cy.contains("span", "BC registered business name");
+  cy.contains("span", "BC registered business name").should("be.visible");
+});
+
+Then(
+  "a notification for the business being 'Not in good standing' is displayed",
+  () => {
+    cy.contains("span", "Not in good standing").should("be.visible");
+  }
+);
+
+Then("a notification saying that 'Client already exists' is displayed", () => {
+  cy.contains("span", "Client already exists").should("be.visible");
 });
 
 When(
@@ -82,5 +109,19 @@ When(
   "I select the name of a business in good standing from the filtered list",
   function () {
     cy.get("div.autocomplete-items-cell").first().click();
+  }
+);
+
+When(
+  "I select the name of a business which is not in good standing from the filtered list",
+  function () {
+    cy.get("div.autocomplete-items-cell").contains("Shady").click();
+  }
+);
+
+When(
+  "I select the name of a business which already has a client number from the filtered list",
+  function () {
+    cy.get("div.autocomplete-items-cell").contains("Duplicated").click();
   }
 );
