@@ -27,8 +27,8 @@ const routes: RouteRecordRaw[] = [
       showLoggedIn: false,
       visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
       redirectTo: {
-        idir: 'form',
-        bceidbusiness: 'internal'
+        idir: 'internal',
+        bceidbusiness: 'form'
       }
     }
   },
@@ -81,8 +81,8 @@ const routes: RouteRecordRaw[] = [
       visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
       redirectTo: {
         idir: 'form',
-        bceidbusiness: 'internal',
-        bcsc: 'form'
+        bceidbusiness: 'form',
+        bcsc: 'internal'
       }
     }
   },
