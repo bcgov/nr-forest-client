@@ -11,6 +11,10 @@ import lombok.With;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ValidationError implements Serializable {
+
+  private static final long serialVersionUID = -3525306340782994707L;
+  
   private String fieldId;
   private String errorMsg;
+  
 }

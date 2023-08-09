@@ -2,7 +2,6 @@ package ca.bc.gov.app.utils;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
-import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
@@ -75,18 +74,6 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     return new ClientAddressDto(
         streetAddress, new ClientValueTextDto(country, country),
         new ClientValueTextDto(province, ""), city, postalCode, 0, "test");
-  }
-
-  private static ClientContactDto createContact(ArgumentsAccessor accessor) {
-    String contactType = accessor.getString(18);
-    String contactFirstName = accessor.getString(19);
-    String contactLastName = accessor.getString(20);
-    String contactPhoneNumber = accessor.getString(21);
-    String contactEmail = accessor.getString(22);
-
-    return new ClientContactDto(
-        new ClientValueTextDto(contactType, contactType), contactFirstName, contactLastName,
-        contactPhoneNumber, contactEmail, 0, List.of());
   }
 
 }

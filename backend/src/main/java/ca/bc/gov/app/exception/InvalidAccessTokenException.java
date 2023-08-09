@@ -6,7 +6,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
 public class InvalidAccessTokenException extends ResponseStatusException {
+
+  private static final long serialVersionUID = -1534366921974396495L;
+
   public InvalidAccessTokenException() {
     super(HttpStatus.UNAUTHORIZED, "Provided access token is missing or invalid");
   }
+  
 }
