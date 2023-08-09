@@ -3,7 +3,7 @@ package ca.bc.gov.app.controller.client;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
-import ca.bc.gov.app.dto.client.SendMailRequestDto;
+import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -95,7 +95,8 @@ public class ClientController {
 
   @PostMapping("/mail")
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public Mono<Void> sendEmail(@RequestBody SendMailRequestDto sendMailRequestDto) {
-    return clientService.sendEmail(sendMailRequestDto);
+  public Mono<Void> sendEmail(@RequestBody EmailRequestDto emailRequestDto) {
+    return clientService.triggerEmailDuplicatedClient(emailRequestDto);
   }
+  
 }

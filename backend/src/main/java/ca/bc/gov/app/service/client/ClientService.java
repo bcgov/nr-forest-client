@@ -4,13 +4,12 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
-import ca.bc.gov.app.dto.ches.ChesRequestDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
-import ca.bc.gov.app.dto.client.SendMailRequestDto;
+import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
@@ -20,7 +19,7 @@ import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
-import ca.bc.gov.app.service.ches.ChesCommonServicesService;
+import ca.bc.gov.app.service.ches.ChesService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +46,7 @@ public class ClientService {
   private final ProvinceCodeRepository provinceCodeRepository;
   private final ContactTypeCodeRepository contactTypeCodeRepository;
   private final BcRegistryService bcRegistryService;
-  private final ChesCommonServicesService chesService;
+  private final ChesService chesService;
   private final ClientLegacyService legacyService;
 
   /**
@@ -177,18 +176,25 @@ public class ClientService {
   }
 
 
+  
+  
+  
+  public Mono<Void> sendEmail(EmailRequestDto sendMailRequestDto) {
+    return triggerEmail(sendMailRequestDto).then();
+  }
+
   /**
    * <p><b>Send Email</b></p>
    * <p>Send email to the client when entry already exists.</p>
    * @param sendMailRequestDto The request data containing user and client details.
    * @return A {@link Mono} of {@link Void}.
    */
-  public Mono<Void> sendEmail(SendMailRequestDto sendMailRequestDto) {
+  public Mono<Void> triggerEmailDuplicatedClient(EmailRequestDto sendMailRequestDto) {
     return
         legacyService
             .searchLegacy(sendMailRequestDto.incorporation(), sendMailRequestDto.name())
             .next()
-            .flatMap(triggerEmail(sendMailRequestDto.mail(), sendMailRequestDto.userName()))
+            .flatMap(triggerEmailDuplicatedClient(sendMailRequestDto.email(), sendMailRequestDto.userName()))
             .then();
   }
 
@@ -327,27 +333,21 @@ public class ClientService {
             );
   }
 
-  private Function<ForestClientDto,
-      Mono<ForestClientDto>> triggerEmail(String email, String userName) {
-    return legacy ->
-        chesService
-            .buildTemplate(
-                "matched",
-                legacy.description(userName)
-            )
-            .flatMap(body ->
-                chesService
-                    .sendEmail(
-                        new ChesRequestDto(
-                            List.of(email, "paulo.cruz@gov.bc.ca", "ziad.bhunnoo@gov.bc.ca",
-                                "maria.martinez@gov.bc.ca"),
-                            body
-                        ),
-                        "Client number submission can’t go ahead"
-                    )
-            )
-            .doOnNext(mailId -> log.info("Mail sent, transaction ID is {}", mailId))
-            .thenReturn(legacy);
+  private Function<ForestClientDto, Mono<ForestClientDto>> triggerEmailDuplicatedClient(
+      String email, String userName) {
+
+    return legacy -> chesService.sendEmail("matched", 
+                                           email,
+                                           "Client number application can’t go ahead", 
+                                           legacy.description(userName))
+                                .thenReturn(legacy);
   }
 
+  private Mono<String> triggerEmail(EmailRequestDto sendMailRequestDto) {
+    return chesService.sendEmail(sendMailRequestDto.templateName(), 
+                                 sendMailRequestDto.email(),
+                                 sendMailRequestDto.subject(), 
+                                 sendMailRequestDto.variables());
+  }
+  
 }

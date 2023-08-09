@@ -19,26 +19,23 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import reactor.test.StepVerifier;
 
-@Slf4j
 @DisplayName("Integrated Test | Ches Service")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Autowired
-  private ChesCommonServicesService service;
+  private ChesService service;
 
   @RegisterExtension
   static WireMockExtension wireMockExtension = WireMockExtension

@@ -6,7 +6,6 @@ import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionContactEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
 import static org.springframework.data.relational.core.query.Query.query;
 
-import ca.bc.gov.app.dto.ches.ChesRequestDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
@@ -24,7 +23,7 @@ import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
-import ca.bc.gov.app.service.ches.ChesCommonServicesService;
+import ca.bc.gov.app.service.ches.ChesService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -49,7 +48,7 @@ public class ClientSubmissionService {
   private final SubmissionLocationRepository submissionLocationRepository;
   private final SubmissionContactRepository submissionContactRepository;
   private final SubmissionLocationContactRepository submissionLocationContactRepository;
-  private final ChesCommonServicesService chesService;
+  private final ChesService chesService;
   private final R2dbcEntityTemplate template;
 
   public Flux<ClientListSubmissionDto> listSubmissions(
@@ -217,25 +216,11 @@ public class ClientSubmissionService {
       String email,
       String userName
   ) {
-    return
-        chesService
-            .buildTemplate(
-                "registration",
-                clientSubmissionDto.description(userName)
-            )
-            .flatMap(body ->
-                chesService
-                    .sendEmail(
-                        new ChesRequestDto(
-                            List.of(email, "paulo.cruz@gov.bc.ca", "ziad.bhunnoo@gov.bc.ca",
-                                "maria.martinez@gov.bc.ca"),
-                            body
-                        ),
-                        "Client number submission received"
-                    )
-            )
-            .doOnNext(mailId -> log.info("Mail sent, transaction ID is {}", mailId))
-            .thenReturn(submissionId);
+        return chesService.sendEmail("registration", 
+                                     email, 
+                                     "Client number application received", 
+                                     clientSubmissionDto.description(userName))
+                          .thenReturn(submissionId);
   }
 
 }
