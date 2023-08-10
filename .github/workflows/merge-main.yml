@@ -159,7 +159,7 @@ jobs:
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
+          overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
@@ -328,7 +328,7 @@ jobs:
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
+          overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
