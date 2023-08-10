@@ -1,7 +1,7 @@
 /// <reference types="cypress-get-by-label" />
-import "./common";
 import { When, Then } from "@badeball/cypress-cucumber-preprocessor";
 import "cypress-get-by-label/commands";
+import "./common";
 
 When("I select the option that says I have a BC registered business", () => {
   cy.contains("I have a BC registered business").click();

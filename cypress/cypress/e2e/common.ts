@@ -1,5 +1,5 @@
 /// <reference types="cypress-get-by-label" />
-import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
+import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
 import "cypress-get-by-label/commands";
 
 Given("I navigate to the client application form", () => {
