@@ -178,7 +178,8 @@ public class ClientService {
   /**
    * <p><b>Send Email</b></p>
    * <p>Send email to a client.</p>
-   * @param emailRequestDto The request data containing user and client details.
+   * 
+   * @param emailRequestDto The request data containing client details.
    * @return A {@link Mono} of {@link Void}.
    */
   public Mono<Void> sendEmail(EmailRequestDto emailRequestDto) {
@@ -188,6 +189,7 @@ public class ClientService {
   /**
    * <p><b>Send Email</b></p>
    * <p>Send email to the client when entry already exists.</p>
+   * 
    * @param emailRequestDto The request data containing user and client details.
    * @return A {@link Mono} of {@link Void}.
    */
