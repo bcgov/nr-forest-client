@@ -7,7 +7,7 @@ When("I select the option that says I have a BC registered business", () => {
   cy.contains("I have a BC registered business").click();
 });
 
-When("I type in the first 3 characters of the business name", function () {
+When("I type in the first characters of the business name", function () {
   const businessNameFirst3Characters = "lum";
   cy.getByLabel("BC registered business name")
     .filter("input[type=text]")

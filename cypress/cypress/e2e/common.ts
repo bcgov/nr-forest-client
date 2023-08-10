@@ -1,5 +1,5 @@
 /// <reference types="cypress-get-by-label" />
-import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
+import { Given, Then, When } from "@badeball/cypress-cucumber-preprocessor";
 import "cypress-get-by-label/commands";
 
 Given("I navigate to the client application form", () => {
@@ -41,4 +41,16 @@ Then("the button Next is enabled", () => {
 
 Then("the button Next is hidden", () => {
   cy.contains("bx-btn", "Next").should("not.exist");
+});
+
+When("I click the button 'End application and logout'", () => {
+  cy.contains("bx-btn", "End application and logout").click();
+});
+
+When("I click the button 'Receive email and logout'", () => {
+  cy.contains("bx-btn", "Receive email and logout").click();
+});
+
+Then("I am redirected to the landing page", () => {
+  cy.location().its("pathname").should("equal", "/landing");
 });
