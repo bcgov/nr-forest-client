@@ -7,8 +7,6 @@ import org.springframework.web.server.ResponseStatusException;
 @ResponseStatus(value = HttpStatus.CONFLICT)
 public class ClientAlreadyExistException extends ResponseStatusException {
 
-  private static final long serialVersionUID = -502107443944401081L;
-
   public ClientAlreadyExistException(
       String clientNumber,
       String clientCode,

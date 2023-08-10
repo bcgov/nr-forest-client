@@ -7,8 +7,6 @@ import org.springframework.web.server.ResponseStatusException;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class NoClientDataFound extends ResponseStatusException {
 
-  private static final long serialVersionUID = -4060998577310972210L;
-
   public NoClientDataFound(String clientNumber) {
     super(HttpStatus.NOT_FOUND,
         String.format("No data found for client number %s", clientNumber));

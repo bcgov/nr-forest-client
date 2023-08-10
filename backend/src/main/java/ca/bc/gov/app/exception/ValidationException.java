@@ -10,8 +10,6 @@ import org.springframework.web.server.ResponseStatusException;
 @Getter
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class ValidationException extends ResponseStatusException {
-
-  private static final long serialVersionUID = 8685785380234657208L;
   
   @SuppressWarnings("java:S1948")
   private final List<ValidationError> errors;

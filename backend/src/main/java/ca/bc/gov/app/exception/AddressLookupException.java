@@ -7,8 +7,6 @@ import org.springframework.web.server.ResponseStatusException;
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class AddressLookupException extends ResponseStatusException {
 
-  private static final long serialVersionUID = -2992276338244727156L;
-
   public AddressLookupException(String error) {
     super(HttpStatus.BAD_REQUEST, error);
   }
