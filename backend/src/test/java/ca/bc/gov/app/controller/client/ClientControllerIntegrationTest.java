@@ -12,7 +12,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.dto.client.SendMailRequestDto;
+import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -431,7 +431,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     client
         .post()
         .uri("/api/clients/mail")
-        .body(Mono.just(TestConstants.EMAIL_REQUEST), SendMailRequestDto.class)
+        .body(Mono.just(TestConstants.EMAIL_REQUEST), EmailRequestDto.class)
         .exchange()
         .expectStatus().isAccepted()
         .expectBody().isEmpty();

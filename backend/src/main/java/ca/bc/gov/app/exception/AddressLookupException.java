@@ -10,4 +10,5 @@ public class AddressLookupException extends ResponseStatusException {
   public AddressLookupException(String error) {
     super(HttpStatus.BAD_REQUEST, error);
   }
+  
 }

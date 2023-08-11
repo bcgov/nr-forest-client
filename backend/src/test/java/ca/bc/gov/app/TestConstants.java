@@ -1,14 +1,15 @@
 package ca.bc.gov.app;
 
+import java.util.List;
+import java.util.Map;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
-import ca.bc.gov.app.dto.client.SendMailRequestDto;
+import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.dto.cognito.AuthResponse;
-import java.util.List;
 
 public class TestConstants {
 
@@ -482,13 +483,22 @@ public class TestConstants {
               )
           )
       );
-  public static final SendMailRequestDto EMAIL_REQUEST =
-      new SendMailRequestDto(
+  
+  public static final EmailRequestDto EMAIL_REQUEST =
+      new EmailRequestDto(
           "XX1234567",
           "Example Inc.",
           "12345",
           "John Doe",
-          "johndoe@example.com");
+          "johndoe@example.com",
+          "match",
+          "Subject example",
+          Map.of(
+              "key1", "value1",
+              "key2", 42,
+              "key3", true
+          )
+          );
 
   public static final String AUTH_RESPONSE_OK = """
       {
