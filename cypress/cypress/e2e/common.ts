@@ -53,7 +53,7 @@ When("I click the button 'Receive email and logout'", () => {
 
 Then("I am redirected to the landing page", () => {
   // allow some time to follow two redirections
-  cy.wait(100);
+  cy.wait(500);
 
   cy.location("pathname").should("equal", "/landing");
 });
