@@ -19,10 +19,11 @@ const routes: RouteRecordRaw[] = [
       hideHeader: true,
       requireAuth: false,
       showLoggedIn: false,
-      visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
+      visibleTo: [],
       redirectTo: {
-        idir: 'form',
-        bceidbusiness: 'internal'
+        idir: 'internal',
+        bceidbusiness: 'form',
+        bcsc: 'form'
       }
     }
   },
@@ -36,7 +37,10 @@ const routes: RouteRecordRaw[] = [
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ['idir', 'bceidbusiness', 'bcsc']
+      visibleTo: ['bceidbusiness', 'bcsc'],
+      redirectTo: {
+        idir: 'internal'
+      }
     }
   },
   {
@@ -48,7 +52,10 @@ const routes: RouteRecordRaw[] = [
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ['idir', 'bceidbusiness', 'bcsc']
+      visibleTo: ['bceidbusiness', 'bcsc'],
+      redirectTo: {
+        idir: 'internal'
+      }
     }
   },
   {
@@ -60,7 +67,11 @@ const routes: RouteRecordRaw[] = [
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ['idir', 'bceidbusiness', 'bcsc']
+      visibleTo: ['idir'],
+      redirectTo: {
+        bceidbusiness: 'form',
+        bcsc: 'form'
+      }
     }
   },
   {
@@ -71,11 +82,11 @@ const routes: RouteRecordRaw[] = [
     meta: {
       hideHeader: true,
       requireAuth: false,
-      showLoggedIn: true,
+      showLoggedIn: false,
       visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
       redirectTo: {
-        idir: 'form',
-        bceidbusiness: 'internal',
+        idir: 'internal',
+        bceidbusiness: 'form',
         bcsc: 'form'
       }
     }
@@ -112,24 +123,27 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
+  const user = ForestClientUserSession.loadDetails()
+
+  // Page requires auth
   if (to.meta.requireAuth) {
-    if (!ForestClientUserSession.isLoggedIn()) {
-      next({ name: 'home' })
-    } else {
-      const user = ForestClientUserSession.loadDetails()
-      to.meta.visibleTo.includes(user!!.provider)
+    // User is logged in
+    if (user) {
+      // If user can see this page, continue, otherwise go to specific page or error
+      to.meta.visibleTo.includes(user.provider)
         ? next()
-        : next({ name: 'error' })
+        : next({ name: to.meta.redirectTo?.[user.provider] || 'error' })
+    } else {
+      // User is not logged in, redirect to home for login
+      next({ name: 'home' })
     }
+    // Page does not require auth
   } else {
-    if (!to.meta.showLoggedIn) {
-      const user = ForestClientUserSession.loadDetails()
-      if (user) {
-        next({ name: to.meta.redirectTo?.[user.provider] })
-        return
-      }
+    if (user && !to.meta.showLoggedIn) {
+      next({ name: to.meta.redirectTo?.[user?.provider || 'error'] ?? 'error' })
+    } else {
+      next()
     }
-    next()
   }
 })
 
