@@ -125,8 +125,6 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const user = ForestClientUserSession.loadDetails()
 
-  console.log('from', from.fullPath, 'to', to.fullPath, 'user', user)
-
   // Page requires auth
   if (to.meta.requireAuth) {
     // User is logged in
@@ -141,14 +139,8 @@ router.beforeEach(async (to, from, next) => {
     }
     // Page does not require auth
   } else {
-    // User is logged in
-    if (user) {
-      if (to.meta.showLoggedIn) {
-        next()
-      } else {
-        next({ name: to.meta.redirectTo?.[user.provider] || 'error' })
-      }
-    } else {
+    if ((user && !to.meta.showLoggedIn)) {
+      next({ name: to.meta.redirectTo?.[user?.provider || 'error'] ?? 'error' })
       next()
     }
   }
