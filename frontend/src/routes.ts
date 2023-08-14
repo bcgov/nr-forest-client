@@ -86,7 +86,7 @@ const routes: RouteRecordRaw[] = [
     component: ErrorPage,
     props: true,
     meta: {
-      hideHeader: false,
+      hideHeader: true,
       requireAuth: false,
       showLoggedIn: true,
       visibleTo: ['idir', 'bceidbusiness', 'bcsc']
