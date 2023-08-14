@@ -6,7 +6,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class InvalidRequestObjectException extends ResponseStatusException {
+
   public InvalidRequestObjectException(String message) {
     super(HttpStatus.BAD_REQUEST, message);
   }
+  
 }

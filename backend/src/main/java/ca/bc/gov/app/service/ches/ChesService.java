@@ -20,6 +20,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -37,7 +38,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
-public class ChesCommonServicesService {
+public class ChesService {
 
   public static final String FAILED_TO_SEND_EMAIL = "Failed to send email: {}";
   private final ForestClientConfiguration configuration;
@@ -46,7 +47,7 @@ public class ChesCommonServicesService {
   private final WebClient authApi;
   private final Configuration freeMarkerConfiguration;
 
-  public ChesCommonServicesService(
+  public ChesService(
       ForestClientConfiguration configuration,
       @Qualifier("chesApi") WebClient chesApi,
       @Qualifier("authApi") WebClient authApi
@@ -56,6 +57,26 @@ public class ChesCommonServicesService {
     this.authApi = authApi;
     this.freeMarkerConfiguration = new Configuration(Configuration.VERSION_2_3_31);
     freeMarkerConfiguration.setClassForTemplateLoading(this.getClass(), "/templates");
+  }
+
+  public Mono<String> sendEmail(String templateName, 
+                                String email, 
+                                String subject, 
+                                Map<String, Object> variables) {
+    return this.buildTemplate(templateName, variables)
+        .flatMap(body -> this
+            .sendEmail(new ChesRequestDto(List.of(email, 
+                                                  "paulo.cruz@gov.bc.ca",
+                                                  "ziad.bhunnoo@gov.bc.ca", 
+                                                  "maria.martinez@gov.bc.ca"), 
+                                          body), 
+                        subject)
+            .doOnNext(mailId -> log.info("Mail sent, transaction ID is {}", mailId))
+            .onErrorResume(throwable -> {
+              log.error("Error occurred while building the email template: {}",
+                        throwable.getMessage());
+              return Mono.just("Error sending email");
+            }));
   }
 
   /**

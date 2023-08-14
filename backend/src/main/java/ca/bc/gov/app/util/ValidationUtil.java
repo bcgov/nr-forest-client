@@ -44,10 +44,9 @@ public class ValidationUtil {
         .getFieldErrors()
         .stream()
         .map(fieldError ->
-            new ValidationError()
-                .withFieldId(fieldError.getField())
-                .withErrorMsg(fieldError.getCode())
+            new ValidationError(fieldError.getField(), fieldError.getCode())
         )
         .toList();
   }
+  
 }

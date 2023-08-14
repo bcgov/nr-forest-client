@@ -6,6 +6,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @ResponseStatus(value = HttpStatus.CONFLICT)
 public class ClientAlreadyExistException extends ResponseStatusException {
+
   public ClientAlreadyExistException(
       String clientNumber,
       String clientCode,
@@ -21,4 +22,5 @@ public class ClientAlreadyExistException extends ResponseStatusException {
         )
     );
   }
+  
 }

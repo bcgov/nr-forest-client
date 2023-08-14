@@ -1,5 +1,7 @@
 <template>
-  <div style="margin: 24px">Application lists</div>
+  <div class="bx--content">
+    <div>Application lists</div>
+  </div>
 </template>
 
 <script setup lang="ts"></script>
