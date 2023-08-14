@@ -52,5 +52,5 @@ When("I click the button 'Receive email and logout'", () => {
 });
 
 Then("I am redirected to the landing page", () => {
-  cy.location().its("pathname").should("equal", "/landing");
+  cy.location("pathname").should("equal", "/landing");
 });

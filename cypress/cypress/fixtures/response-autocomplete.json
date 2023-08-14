@@ -1,0 +1,38 @@
+[
+  {
+    "code": "XX9016140",
+    "name": "Totally Valid Company",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX9753423",
+    "name": "Forest of Forests Ltd",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "XX7944564",
+    "name": "Lumber & Lumber Inc",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "JJ3478189",
+    "name": "Dum-Gondor Cultural Association of Middle Earth",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "ZZ8201962",
+    "name": "Totally Duplicated Company",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "YY5199142",
+    "name": "Totally Shady Company",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  }
+]

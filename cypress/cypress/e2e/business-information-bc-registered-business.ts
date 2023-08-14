@@ -8,7 +8,12 @@ When("I select the option that says I have a BC registered business", () => {
 });
 
 When("I type in the first characters of the business name", function () {
-  const businessNameFirst3Characters = "lum";
+  const businessNameFirst3Characters = "val";
+
+  cy.intercept("GET", "/api/clients/name/*", {
+    fixture: "response-autocomplete.json",
+  });
+
   cy.getByLabel("BC registered business name")
     .filter("input[type=text]")
     .type(businessNameFirst3Characters);
@@ -28,6 +33,9 @@ Then(
 When(
   "I select the name of a business in good standing from the filtered list",
   function () {
+    cy.intercept("GET", "/api/clients/XX9016140", {
+      fixture: "response-details-XX9016140.json",
+    });
     cy.get("div.autocomplete-items-cell").first().click();
   }
 );
@@ -35,6 +43,9 @@ When(
 When(
   "I select the name of a business which is not in good standing from the filtered list",
   function () {
+    cy.intercept("GET", "/api/clients/YY5199142", {
+      fixture: "response-details-YY5199142.json",
+    });
     cy.get("div.autocomplete-items-cell").contains("Shady").click();
   }
 );
@@ -42,6 +53,10 @@ When(
 When(
   "I select the name of a business which already has a client number from the filtered list",
   function () {
+    cy.intercept("GET", "/api/clients/ZZ8201962", {
+      statusCode: 409,
+      body: "The Dupped Company already exists with the Incorporation number ZZ8201962 and client number 999999",
+    });
     cy.get("div.autocomplete-items-cell").contains("Duplicated").click();
   }
 );
