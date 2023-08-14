@@ -139,8 +139,9 @@ router.beforeEach(async (to, from, next) => {
     }
     // Page does not require auth
   } else {
-    if ((user && !to.meta.showLoggedIn)) {
+    if (user && !to.meta.showLoggedIn) {
       next({ name: to.meta.redirectTo?.[user?.provider || 'error'] ?? 'error' })
+    } else {
       next()
     }
   }
