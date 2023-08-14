@@ -6,8 +6,8 @@
   "scripts": {
     "cy:open": "cypress open",
     "cy:run": "cypress run --reporter junit --reporter-options mochaFile=result.xml,toConsole=true",
-    "cy:run:local": "cypress run --reporter junit --reporter-options mochaFile=result.xml,toConsole=true --config \"baseUrl=http://127.0.0.1:3000\"",
-    "cy:open:local": "cypress open --config \"baseUrl=http://127.0.0.1:3000\""
+    "cy:run:local": "cypress run --reporter junit --reporter-options mochaFile=result.xml,toConsole=true --config \"baseUrl=http://localhost:3000\"",
+    "cy:open:local": "cypress open --config \"baseUrl=http://localhost:3000\""
   },
   "keywords": [],
   "author": "",
