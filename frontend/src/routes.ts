@@ -1,18 +1,12 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
-// The Submission page, AKA internal user page
 import ReviewApplicationPage from '@/pages/ReviewApplicationPage.vue'
-// The external user page
 import ApplyClientNumber from '@/pages/ApplyClientNumberPage.vue'
-// The form submitted page
 import FormSubmittedPage from '@/pages/FormSubmittedPage.vue'
-// The page user will see while loading the login data
 import UserLoadingPage from '@/pages/UserLoadingPage.vue'
-// The landing page
 import LandingPage from '@/pages/LandingPage.vue'
-// The generic error page
 import ErrorPage from '@/pages/ErrorPage.vue'
-
+import NotFoundPage from '@/pages/NotFoundPage.vue'
 import ForestClientUserSession from '@/helpers/ForestClientUserSession'
 
 const routes: RouteRecordRaw[] = [
@@ -93,6 +87,18 @@ const routes: RouteRecordRaw[] = [
     props: true,
     meta: {
       hideHeader: false,
+      requireAuth: false,
+      showLoggedIn: true,
+      visibleTo: ['idir', 'bceidbusiness', 'bcsc']
+    }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: NotFoundPage,
+    props: true,
+    meta: {
+      hideHeader: true,
       requireAuth: false,
       showLoggedIn: true,
       visibleTo: ['idir', 'bceidbusiness', 'bcsc']
