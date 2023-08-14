@@ -12,22 +12,26 @@ const generateRandomHex = (length: number): string => {
 };
 
 Cypress.Commands.add("addCookie", (name: string, value: string) => {
-  cy.setCookie(name, value, {
-    domain: "localhost",
-    path: "/",
-    httpOnly: false,
-    secure: false,
-    expiry: Date.now() + 86400000,
+  cy.location("hostname").then((hostname) => {
+    cy.setCookie(name, value, {
+      domain: hostname,
+      path: "/",
+      httpOnly: false,
+      secure: false,
+      expiry: Date.now() + 86400000,
+    });
   });
 });
 
 Cypress.Commands.add("expireCookie", (name: string) => {
-  cy.setCookie(name, "", {
-    domain: "localhost",
-    path: "/",
-    httpOnly: true,
-    secure: true,
-    expiry: Date.now() - 86400000 * 2,
+  cy.location("hostname").then((hostname) => {
+    cy.setCookie(name, "", {
+      domain: hostname,
+      path: "/",
+      httpOnly: true,
+      secure: true,
+      expiry: Date.now() - 86400000 * 2,
+    });
   });
 });
 
