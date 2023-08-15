@@ -3,6 +3,7 @@
     <label v-if="!enabled" :for="id" class="label-01 label-01-primary">{{ label }}</label>
     <bx-form-item>
       <bx-input
+        v-if="enabled"
         :id="id"
         :data-id="'input-' + id"
         :placeholder="placeholder"
@@ -19,6 +20,9 @@
       />
       
     </bx-form-item>
+    <div v-if="!enabled" class="bx-input-disabled">
+      <label >{{ selectedValue }}</label>
+    </div>
   </div>
 </template>
 
@@ -92,3 +96,11 @@ const validateInput = (newValue: string) => {
 }
 
 </script>
+
+<style scoped>
+.bx-input-disabled {
+  height: 2.5rem;
+  color: #131315; /*Change to common color*/
+  padding-top: 0.69rem;
+}
+</style>
