@@ -7,15 +7,6 @@
         <p class="body-01" v-if="subtitle">{{ subtitle }}</p>
       </div>
 
-      <bx-toast-notification
-        v-if="toastContent.active"
-        class="wizard-head-toast"
-        timeout="8000"
-        kind="success"
-        :title="toastContent.kind"
-        :subtitle="toastContent.message"
-      >
-      </bx-toast-notification>
     </div>
     <wizard-progress-indicator-component
       :model-value="progressData"
@@ -140,6 +131,16 @@
       </div>
     </div>
   </div>
+
+  <bx-toast-notification
+        v-if="toastContent.active"
+        class="wizard-head-toast"
+        timeout="8000"
+        kind="success"
+        :title="toastContent.kind"
+        :subtitle="toastContent.message"
+      >
+      </bx-toast-notification>
 
   <bx-modal
     id="modal-example"
