@@ -1,9 +1,10 @@
 <template>
+
   <div class="bx--progress">
     <div class="wizard-head">
       <div class="wizard-head-text">
-        <label class="bx--title">{{ title }}</label>
-        <p class="bx--description" v-if="subtitle">{{ subtitle }}</p>
+        <label class="heading-05 heading">{{ title }}</label>
+        <p class="body-01" v-if="subtitle">{{ subtitle }}</p>
       </div>
 
       <bx-toast-notification
@@ -33,6 +34,7 @@
   <div class="wizard-body wizard-mid-content">
     <slot :processValidity="processValidity" :goToStep="goToStep" />
   </div>
+
   <div class="wizard-footer wizard-mid-content">
     <div class="bx--progress" v-if="isLast && !endAndLogOut && !mailAndLogOut">
       <hr />
@@ -66,7 +68,7 @@
     >
       <hr />
 
-      <span class="bx--description" v-if="!isStateValid(currentTab)"
+      <span class="body-compact-01" v-if="!isStateValid(currentTab)"
         >All fields must be filled out correctly to enable the "Next" button
         below</span
       >
@@ -138,6 +140,7 @@
       </div>
     </div>
   </div>
+
   <bx-modal
     id="modal-example"
     :open="modalContent.active"
@@ -165,6 +168,7 @@
       </bx-btn>
     </bx-modal-footer>
   </bx-modal>
+
 </template>
 
 <script setup lang="ts">

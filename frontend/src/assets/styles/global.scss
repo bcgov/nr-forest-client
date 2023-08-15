@@ -14,6 +14,7 @@ body {
 
 hr {
   width: 100%;
+  margin: 2.5rem 0;
 }
 
 .bulleted-list {
@@ -110,7 +111,6 @@ hr {
 .bx--progress {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
 }
 
 @media screen and (max-width: 671px) {
@@ -137,6 +137,7 @@ hr {
   display: flex;
   justify-content: space-between;
   margin-bottom: 3rem;
+  margin-top: 1.5rem;
 }
 
 .bx--progress-step {
@@ -210,4 +211,85 @@ hr {
 
 .bx--progress-step-icon-queued {
   color: #DFDFE1;
+}
+
+.screen{
+  display: flex;
+  padding: 6rem 2.5rem 25.99994rem 2.5rem;
+  justify-content: center;
+  align-items: center;
+  background: var(--light-theme-background-background, #FFF);
+}
+
+.steps{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2.5rem;
+}
+
+.heading{
+  margin-bottom: 0.5rem;
+}
+
+.heading-04{
+  color: var(--light-theme-text-text-primary, #131315);
+
+  /* Fixed heading styles/heading-04 */
+  font-family: BC Sans;
+  font-size: 1.75rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 2.25rem; /* 128.571% */
+}
+
+.heading-05{
+  color: var(--light-theme-text-text-primary, #131315);
+
+  /* Fixed heading styles/heading-05 */
+  font-family: BC Sans;
+  font-size: 2rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 2.5rem; /* 125% */
+}
+
+.body-01{
+  color: var(--light-theme-text-text-secondary, #606062);
+
+  /* Body styles/body-01 */
+  font-family: BC Sans;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.25rem; /* 142.857% */
+  letter-spacing: 0.01rem;
+}
+
+.body-02{
+  color: var(--light-theme-text-text-primary, #131315);
+
+  /* Body styles/body-02 */
+  font-family: BC Sans;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5rem; /* 150% */
+}
+
+.body-compact-01{
+  color: var(--light-theme-text-text-secondary, #606062);
+
+  /* Body styles/body-compact-01 */
+  font-family: BC Sans;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.125rem; /* 128.571% */
+  letter-spacing: 0.01rem;
+  margin: 0.5rem 0 1rem 0;
+}
+
+.border-subtle-02{
+  background: var(--light-theme-border-border-subtle-02, #DFDFE1);
 }

@@ -11,14 +11,14 @@
       >
         <wizard-tab-component
           title="Business information"
-          sub-title="Enter the business information"
+          sub-title=""
           :index="0"
           :valid="false"
           :wizard="slotProps"
         >
           <template v-slot:pre-header>
-            <label class="bx--title">Before you begin</label>
-            <ol type="1" class="bulleted-list">
+            <label class="heading-04 heading">Before you begin</label>
+            <ol type="1" class="bulleted-list body-02">
               <li>
                 A registered business must be in good standing with BC
                 Registries

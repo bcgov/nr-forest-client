@@ -1,10 +1,10 @@
 <template>
-  <div v-if="index == selectedContent">
+  <div v-if="index == selectedContent" class="steps">
     <div class="bx--progress">
       <slot name="pre-header"></slot>
       <div>
-        <label class="bx--title">{{ title }}</label>
-        <p class="bx--description" v-if="subTitle">{{ subTitle }}</p>
+        <label class="heading-04">{{ title }}</label>
+        <p class="body-01" v-if="subTitle">{{ subTitle }}</p>
         <br />
       </div>
       <slot name="header"></slot>
