@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <label :for="id + 'rb'" class="bx--label">{{ label }}</label>
+  <div class="bx--radio">
+    <label :for="id + 'rb'" class="label-01 label-01-primary">{{ label }}</label>
     <bx-radio-button-group
       label-position="right"
       orientation="vertical"
@@ -8,6 +8,7 @@
       :id="id + 'rb'"
       v-model="selectedValue"
       @bx-radio-button-group-changed="updateSelectedValue"
+      class="bx--radio"
     >
       <bx-radio-button
         v-for="option in modelValue"

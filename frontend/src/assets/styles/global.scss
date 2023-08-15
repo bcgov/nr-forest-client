@@ -289,3 +289,15 @@ hr {
   line-height: 1rem; /* 133.333% */
   letter-spacing: 0.02rem;
 }
+
+.label-01-primary{
+  color: var(--light-theme-text-text-primary, #131315);
+}
+
+.bx--radio{
+  display: flex;
+  width: 50.4375rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
