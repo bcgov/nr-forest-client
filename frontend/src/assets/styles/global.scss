@@ -211,6 +211,13 @@ hr {
   gap: 2.5rem;
 }
 
+.frame-01{
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
 .heading{
   margin-bottom: 0.5rem;
 }
@@ -304,10 +311,10 @@ hr {
   color: var(--light-theme-text-text-primary, #131315);
 }
 
-.bx--radio{
+.grouping-01{
   display: flex;
-  width: 50.4375rem;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.5rem;
+  flex: 1 0 0;
 }

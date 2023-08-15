@@ -1,5 +1,5 @@
 <template>
-  <span class="note">{{ note }}</span>
+  <span class="note body-01">{{ note }}</span>
 </template>
 
 <script setup lang="ts">

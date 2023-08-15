@@ -143,6 +143,7 @@
 
   <bx-modal
     id="modal-example"
+    size="sm"
     :open="modalContent.active"
     @bx-modal-closed="closeModal"
   >

@@ -50,24 +50,21 @@ const addressError = ref<string | undefined>('')
 const nameError = ref<string | undefined>('')
 const showDetailsLoading = ref<boolean>(false)
 
-//Watch for changes on the input
-watch([selectedValue], () => {
-  console.log('selectedValue', selectedValue.province)
+const uniquenessValidation = () => {
   addressError.value = validateAddressData(
     `${selectedValue.streetAddress} ${selectedValue.country.value} ${selectedValue.province.value} ${selectedValue.city} ${selectedValue.city} ${selectedValue.postalCode}`
   )
   nameError.value = validateAddressNameData(selectedValue.locationName)
   emit('update:model-value', selectedValue)
-})
+}
+
+//Watch for changes on the input
+watch([selectedValue], () => uniquenessValidation())
 
 watch(
   () => props.revalidate,
-  () => {
-    addressError.value = validateAddressData(
-      `${selectedValue.streetAddress} ${selectedValue.country.value} ${selectedValue.province.value} ${selectedValue.city} ${selectedValue.city} ${selectedValue.postalCode}`
-    )
-    nameError.value = validateAddressNameData(selectedValue.locationName)
-  }
+  () => uniquenessValidation(),
+  { immediate: true }
 )
 
 const updateStateProvince = (
@@ -209,11 +206,11 @@ watch([detailsData], () => {
 </script>
 
 <template>
-  <div class="steps">
+  <div class="steps frame-02">
   <text-input-component
     :id="'name_' + id"
     label="Location or address name"
-    placeholder="Kamloops office"
+    placeholder=""
     tip="For example, 'Campbell River Region' or 'Castlegar Woods Division'"
     v-model="selectedValue.locationName"
     :enabled="true"
