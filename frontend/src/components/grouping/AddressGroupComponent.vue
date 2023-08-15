@@ -52,6 +52,7 @@ const showDetailsLoading = ref<boolean>(false)
 
 //Watch for changes on the input
 watch([selectedValue], () => {
+  console.log('selectedValue', selectedValue.province)
   addressError.value = validateAddressData(
     `${selectedValue.streetAddress} ${selectedValue.country.value} ${selectedValue.province.value} ${selectedValue.city} ${selectedValue.city} ${selectedValue.postalCode}`
   )
@@ -172,7 +173,7 @@ const autoCompleteUrl = computed(
   () =>
     `/api/clients/addresses?country=${selectedValue.country.value}&maxSuggestions=10&searchTerm=${selectedValue.streetAddress}`
 )
-const autoCompleteResult = ref<BusinessSearchResult>({} as BusinessSearchResult)
+const autoCompleteResult = ref<BusinessSearchResult|undefined>({} as BusinessSearchResult)
 const detailsData = ref<Address | null>(null)
 
 watch([autoCompleteResult], () => {
@@ -202,12 +203,13 @@ watch([detailsData], () => {
     selectedValue.streetAddress = detailsData.value.streetAddress
     selectedValue.city = detailsData.value.city
     selectedValue.province = detailsData.value.province
-    selectedValue.postalCode = detailsData.value.postalCode
+    selectedValue.postalCode = detailsData.value.postalCode.replace(/\s/g, '')
   }
 })
 </script>
 
 <template>
+  <div class="steps">
   <text-input-component
     :id="'name_' + id"
     label="Location or address name"
@@ -268,10 +270,7 @@ watch([detailsData], () => {
         validation.streetAddress = selectedValue.streetAddress ? true : false
       "
     />
-    <div class="spinner-block" v-if="showDetailsLoading">
-      <bx-loading type="small"> </bx-loading>
-      <span>Loading address details...</span>
-    </div>
+    <bx-inline-loading status="active" v-if="showDetailsLoading">Loading address details...</bx-inline-loading>
   </data-fetcher>
 
   <text-input-component
@@ -339,4 +338,5 @@ watch([detailsData], () => {
     <span>Delete address</span>
     <Delete16 slot="icon" />
   </bx-btn>
+  </div>
 </template>

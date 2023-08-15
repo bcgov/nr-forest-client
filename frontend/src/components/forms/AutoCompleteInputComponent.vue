@@ -23,7 +23,7 @@
       "
     >
       <div class="autocomplete-items-ct" v-if="loading">
-        <bx-loading type="small"> </bx-loading>
+        <bx-inline-loading status="active">Loading data...</bx-inline-loading>
       </div>
       <div class="autocomplete-items-ct" v-else>
         <div

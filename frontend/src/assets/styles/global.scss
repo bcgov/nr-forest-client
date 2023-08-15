@@ -208,12 +208,22 @@ hr {
 .steps{
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 2.5rem;
 }
 
 .heading{
   margin-bottom: 0.5rem;
+}
+
+.heading-03{
+  color: var(--light-theme-text-text-primary, #131315);
+
+  /* Fixed heading styles/heading-03 */
+  font-family: BC Sans;
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.75rem; /* 140% */
 }
 
 .heading-04{

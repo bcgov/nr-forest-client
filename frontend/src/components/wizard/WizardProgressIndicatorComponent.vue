@@ -23,12 +23,19 @@
             v-if="canShowLink(step)"
             @click.prevent="emit('go-to', index)"
             rel="noopener noreferrer"
-            class="body-compact-01"
+            :class="{
+              'body-compact-01': true,
+              'body-compact-01-active': step.kind === 'current'
+            }"
             >{{ step.title }}</a
           >
           <span
             v-else
-            class="body-compact-01"
+            :class="{
+              'body-compact-01-active': step.kind === 'current',
+              'body-compact-01': step.kind !== 'current',
+
+            }"
             >{{ step.title }}</span
           >
         </p>

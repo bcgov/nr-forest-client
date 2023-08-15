@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label v-if="!enabled" :for="id" class="bx--label">{{ label }}</label>
+    <label v-if="!enabled" :for="id" class="label-01 label-01-primary">{{ label }}</label>
     <bx-form-item>
       <bx-input
         :id="id"
@@ -17,6 +17,7 @@
         @blur="(event:any) => validateInput(event.target.value)"
         @input="(event:any) => selectedValue = event.target.value"
       />
+      
     </bx-form-item>
   </div>
 </template>
@@ -90,5 +91,4 @@ const validateInput = (newValue: string) => {
   }
 }
 
-validateInput(selectedValue.value)
 </script>

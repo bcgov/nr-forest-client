@@ -47,24 +47,26 @@
           :wizard="slotProps"
         >
           <template v-slot:header>
-            <label class="bx--title">Mailing address</label>
-            <p class="bx--description">
+            <div>
+            <label class="heading-03">Mailing address</label>
+            <p class="body-01">
               This is the primary address you will receive mail.
-            </p>
-            <p class="bx--description">
+              <br /><br />
               If you’d like another address, for example a seed orchard or if
               your street address is different from your mailing address, select
               the ”Add another address” button below.
             </p>
-            <br />
+          </div>
           </template>
           <template v-slot="{ validateStep, active }">
+            <div>
             <address-wizard-step
               v-if="active"
               v-model:data="formData"
               :active="active"
               @valid="validateStep"
             />
+          </div>
           </template>
         </wizard-tab-component>
 

@@ -164,13 +164,13 @@ watch([detailsData], () => {
 // -- Unregistered Proprietorship
 watch([selectedOption], () => {
   if (selectedOption.value === ClientTypeEnum.U) {
-
+   
     const fromName = `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`
 
     formData.value.businessInformation.businessType = 'U'
     formData.value.businessInformation.clientType = 'U'
     formData.value.businessInformation.businessName =
-      ForestClientUserSession.user?.businessName ?? fromName
+      ForestClientUserSession.user?.businessName ? ForestClientUserSession.user?.businessName :fromName
     validation.business = true
     emit('update:data', formData.value)
   } else {
@@ -211,7 +211,7 @@ watch([selectedOption], () => {
       v-if="selectedOption === ClientTypeEnum.R"
       id="business"
       label="BC registered business name"
-      tip="The name must be exactly the same as in BC Registries"
+      tip=""
       v-model="formData.businessInformation.businessName"
       :contents="content"
       :validations="[
@@ -221,11 +221,7 @@ watch([selectedOption], () => {
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
     />
-
-    <div class="spinner-block" v-if="showDetailsLoading">
-      <bx-loading type="small"> </bx-loading>
-      <span>Loading client details...</span>
-    </div>
+    <bx-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</bx-inline-loading>
     <display-block-component
       kind="info"
       title="BC registered business name"
@@ -300,4 +296,3 @@ watch([selectedOption], () => {
   />
   <br />
 </template>
-@/helpers/ForestClientUserSession
