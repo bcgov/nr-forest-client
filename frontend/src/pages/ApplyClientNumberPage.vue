@@ -77,10 +77,10 @@
           :wizard="slotProps"
         >
           <template v-slot:header>
-            <label class="bx--title"
+            <label class="heading-03"
               >Add authorized people to the account</label
             >
-            <p class="bx--description">
+            <p class="body-01">
               Your first name, last name and email address are from your BCeID.
               If they're incorrect,
               <a

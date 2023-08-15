@@ -1,5 +1,5 @@
 {
-  "streetAddress": "1234 Nowhere St    ",
+  "streetAddress": "1234 Nowhere St",
   "country": { "value": "CA", "text": "Canada" },
   "province": { "value": "BC", "text": "British Columbia" },
   "city": "Victoria",

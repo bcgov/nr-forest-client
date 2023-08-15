@@ -97,5 +97,4 @@ watch(
     setTimeout(() => (selectedValue.value = props.initialValue), 400)
   }
 )
-//validateInput(selectedValue.value)
 </script>

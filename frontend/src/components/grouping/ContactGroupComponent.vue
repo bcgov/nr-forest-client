@@ -41,21 +41,20 @@ const validateData =
     : props.validations[0]('Name', props.id + '')
 const error = ref<string | undefined>('')
 
-//Watch for changes on the input
-watch([selectedValue], () => {
+const uniquenessValidation = () => {
   error.value = validateData(
     `${selectedValue.firstName} ${selectedValue.lastName}`
   )
   emit('update:model-value', selectedValue)
-})
+}
+
+//Watch for changes on the input
+watch([selectedValue], () => uniquenessValidation())
 
 watch(
   () => props.revalidate,
-  () => {
-    error.value = validateData(
-      `${selectedValue.firstName} ${selectedValue.lastName}`
-    )
-  }
+  () => uniquenessValidation(),
+  { immediate: true }
 )
 
 //Validations
@@ -89,6 +88,7 @@ const nameTypesToCodeDescr = (
 </script>
 
 <template>
+    <div class="steps frame-02">
   <multiselect-input-component
     :id="'address_' + id"
     label="Address name"
@@ -199,4 +199,5 @@ const nameTypesToCodeDescr = (
     <span>Delete contact</span>
     <Delete16 slot="icon" />
   </bx-btn>
+</div>
 </template>

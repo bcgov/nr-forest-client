@@ -56,8 +56,6 @@ import {
 } from '@/dto/ApplyClientNumberDto'
 import { useFetchTo } from '@/composables/useFetch'
 import type { ModalNotification } from '@/dto/CommonTypesDto'
-
-import Note from '@/components/NoteComponent.vue'
 import { isUniqueDescriptive } from '@/helpers/validators/GlobalValidators'
 
 //Defining the props and emitter to receive the data and emit an update
@@ -77,10 +75,16 @@ const revalidate = ref(false);
 watch([formData], () => emit('update:data', formData));
 
 const updateAddress = (value: Address | undefined, index: number) => {
-  revalidate.value = !revalidate.value;
-  if (value && index < formData.location.addresses.length)
-    formData.location.addresses[index] = value;
-  emit('update:data', formData);
+  if(index < formData.location.addresses.length){
+    if (value)
+      formData.location.addresses[index] = value;
+    else{
+      const addressesCopy: Address[] = [...formData.location.addresses];
+      addressesCopy.splice(index, 1);
+      formData.location.addresses = addressesCopy;
+    }
+    revalidate.value = !revalidate.value;
+  }
 };
 
 //Country related data
@@ -98,15 +102,12 @@ fetch();
 const otherAddresses = computed(() => formData.location.addresses.slice(1));
 const addAddress = () => formData.location.addresses.push(emptyAddress());
 
-
-
 //Validation
 const validation = reactive<Record<string, boolean>>({
   0: false
 });
 
 const checkValid = () =>{
-  
   const result = Object.values(validation).reduce(
     (accumulator: boolean, currentValue: boolean) =>
       accumulator && currentValue,
@@ -118,25 +119,19 @@ watch([validation], () => emit('valid', checkValid()));
 emit('valid', false);
 
 const updateValidState = (index: number, valid: boolean) => {
-  validation[index] = valid;
+   if (validation[index] !== valid) {
+     validation[index] = valid;
+   }
 };
 
 const uniqueValues = isUniqueDescriptive();
 
 const removeAddress = (index: number) => () => {
-  const addressesCopy: Address[] = [...formData.location.addresses];
-  addressesCopy.splice(index, 1);
-  formData.location.addresses = addressesCopy;
- 
+  updateAddress(undefined, index)
   delete validation[index];
   uniqueValues.remove('Address',index+'')
   uniqueValues.remove('Names',index+'')
-  revalidate.value = !revalidate.value;
-  emit('valid', checkValid())
-
   bus.emit({ active: false, message: '', kind: '', handler: () => {} });
-
- 
 };
 
 const handleRemove = (index: number) => {

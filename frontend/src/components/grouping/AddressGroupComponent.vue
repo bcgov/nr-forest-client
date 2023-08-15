@@ -55,11 +55,14 @@ const uniquenessValidation = () => {
     `${selectedValue.streetAddress} ${selectedValue.country.value} ${selectedValue.province.value} ${selectedValue.city} ${selectedValue.city} ${selectedValue.postalCode}`
   )
   nameError.value = validateAddressNameData(selectedValue.locationName)
-  emit('update:model-value', selectedValue)
+  
 }
 
 //Watch for changes on the input
-watch([selectedValue], () => uniquenessValidation())
+watch([selectedValue], () =>{ 
+  uniquenessValidation()
+  emit('update:model-value', selectedValue)
+})
 
 watch(
   () => props.revalidate,
@@ -263,6 +266,7 @@ watch([detailsData], () => {
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
       @update:model-value="validation.streetAddress = false"
+      :error-message="addressError"
       @empty="
         validation.streetAddress = selectedValue.streetAddress ? true : false
       "
@@ -321,7 +325,7 @@ watch([detailsData], () => {
     :mask="postalCodeMask"
     :validations="postalCodeValidators"
     @error="validation.postalCode = !$event"
-    @empty="validation.province = !$event"
+    @empty="validation.postalCode = !$event"
   />
 
   <bx-btn
