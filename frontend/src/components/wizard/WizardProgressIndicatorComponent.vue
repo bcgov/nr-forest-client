@@ -23,22 +23,17 @@
             v-if="canShowLink(step)"
             @click.prevent="emit('go-to', index)"
             rel="noopener noreferrer"
+            class="body-compact-01"
             >{{ step.title }}</a
           >
           <span
             v-else
-            :class="{
-              'bx--description': true,
-              'bx--description-disabled': !step.enabled
-            }"
+            class="body-compact-01"
             >{{ step.title }}</span
           >
         </p>
         <span
-          :class="{
-            'bx--description': true,
-            'bx--description-disabled': !step.enabled
-          }"
+        class="label-01"
           >{{ step.subtitle }}</span
         >
       </div>

@@ -142,9 +142,9 @@ hr {
 
 .bx--progress-step {
   display: flex;
-  justify-content: space-between;
-  overflow: hidden;
-  height: 3.625rem;
+  padding: 0.625rem 1rem 0rem 0rem;
+  align-items: flex-start;
+  align-self: stretch;
 }
 
 .bx--progress-step-icon {
@@ -152,33 +152,17 @@ hr {
   flex-shrink: 0;
 }
 
-.bx--progress-step-text {
-  flex-grow: 1;
-  overflow: hidden;
-}
-.bx--progress-step-text p {
-  font-size: 0.875rem;
-}
-
-.bx--progress-step-text a, .bx--progress-step-text span {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: block;
-}
-
 .bx--progress-step-text p a {
   text-decoration: none;
-  color: inherit;
+  color: var(--light-theme-text-text-primary, #131315);
+}
+.bx--progress-step-text p span {
+  color: var(--light-theme-text-text-primary, #131315);
 }
 
 .bx--progress-step-text p a:hover {
   text-decoration: underline;
   cursor: pointer;
-}
-
-.bx--progress-step-text span {
-  font-size: 0.75rem;
 }
 
 .bx--progress-step-current {
@@ -292,4 +276,16 @@ hr {
 
 .border-subtle-02{
   background: var(--light-theme-border-border-subtle-02, #DFDFE1);
+}
+
+.label-01{
+  color: var(--light-theme-text-text-secondary, #606062);
+
+  /* Utility styles/label-01 */
+  font-family: BC Sans;
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1rem; /* 133.333% */
+  letter-spacing: 0.02rem;
 }
