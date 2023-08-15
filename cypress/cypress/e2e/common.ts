@@ -1,12 +1,38 @@
 /// <reference types="cypress-get-by-label" />
-import { Given, Then, When } from "@badeball/cypress-cucumber-preprocessor";
+import {
+  Before,
+  Given,
+  Then,
+  When,
+} from "@badeball/cypress-cucumber-preprocessor";
 import "cypress-get-by-label/commands";
 
-Given("I navigate to the client application form", () => {
-  cy.visit("/");
-  cy.wait(500);
-  cy.login("uattest@forest.client", "Uat Test", "bceidbusiness");
+interface CustomWorld extends Mocha.Context {
+  appLocation: Location;
+}
+
+Before(function (this: CustomWorld) {
+  cy.intercept("GET", "/logout", (req) => {
+    req.reply({
+      statusCode: 302,
+      headers: {
+        Location: `${this.appLocation.origin}/`,
+        "Set-Cookie": `idToken=; sameSite=Lax; path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${this.appLocation.hostname}`,
+      },
+    });
+  }).as("logout");
 });
+
+Given(
+  "I navigate to the client application form",
+  function (this: CustomWorld) {
+    cy.visit("/");
+    cy.location().then((location) => {
+      this.appLocation = location;
+    });
+    cy.login("uattest@forest.client", "Uat Test", "bceidbusiness");
+  }
+);
 
 Then(
   "the links for all the next steps presented in the breadcrumbs are all disabled",
@@ -51,9 +77,6 @@ When("I click the button 'Receive email and logout'", () => {
   cy.contains("bx-btn", "Receive email and logout").click();
 });
 
-Then("I am redirected to the landing page", () => {
-  // allow some time to follow two redirections
-  cy.wait(500);
-
-  cy.location("pathname").should("equal", "/landing");
+Then("I am redirected to the logout route", () => {
+  cy.wait("@logout"); // the route has been hit
 });

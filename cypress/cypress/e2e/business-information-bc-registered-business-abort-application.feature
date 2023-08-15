@@ -12,11 +12,11 @@ Feature: Business Information: BC registered business: Abort application
     And a notification for the business being 'Not in good standing' is displayed
     And the button 'End application and logout' is displayed
     When I click the button 'End application and logout'
-    Then I am redirected to the landing page
+    Then I am redirected to the logout route
 
   Scenario: Business which already has a client number
     Given I select the name of a business which already has a client number from the filtered list
     And a notification saying that 'Client already exists' is displayed
     And the button 'Receive email and logout' is displayed
     When I click the button 'Receive email and logout'
-    Then I am redirected to the landing page
+    Then I am redirected to the logout route
