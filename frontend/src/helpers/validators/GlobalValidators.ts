@@ -64,7 +64,7 @@ export const isPhoneNumber = (value: string) => {
  **/
 export const isCanadianPostalCode = (value: string) => {
   if (isNotEmpty(value) === '' && canadianPostalCodeRegex.test(value)) return ''
-  return 'This field must be a valid Canadian postal code'
+  return 'This field must be a valid Canadian postal code without spaces or dashes'
 }
 
 /**
@@ -152,24 +152,21 @@ export const isOnlyNumbers = (value: string) => {
  * Check if value is unique in the group of entries
  * @param key - The key of the group of entries
  * @param field - The field of the group of entries, this is kind of a unique reference per field
- * @returns A function that returns an empty string if the value is unique in the group of entries, error message otherwise
+ * @returns An object with two functions, one that returns an empty string if the value is unique in the group of entries, error message otherwise, other that removes the entry from the group of entries
  * @example
  * const isUnique = isUniqueDescriptive();
- * isUnique('key', 'field')('value'); // true
- * isUnique('key', 'field')('value'); // false
+ * isUnique.add('key', 'field')('value'); // true
+ * isUnique.add('key', 'field')('value'); // false
+ * isUnique.remove('key', 'field'); // true
  **/
-export const isUniqueDescriptive = (): ((
-  key: string,
-  field: string
-) => (value: string) => string) => {
+export const isUniqueDescriptive = () => {
   const record: Record<string, Record<string, string>> = {}
 
-  return (key: string, fieldId: string) => (value: string) => {
+  const add = (key: string, fieldId: string) => (value: string) => {
     // if the record contains the key and the fieldId is not the same as mine, check all the values, except the one if my fieldId to see if it includes my value
     const fieldsToCheck = Object.keys(record[key] || {}).filter(
       (field) => field !== fieldId
     )
-
     // Get all the values of the fields to check, except the one of my fieldId
     const values = fieldsToCheck.map((field: string) => record[key][field])
     record[key] = { ...record[key], [fieldId]: value }
@@ -183,6 +180,12 @@ export const isUniqueDescriptive = (): ((
     }
 
     return ''
+  }
+
+  const remove = (key: string, fieldId: string) : boolean => delete record[key][fieldId]
+
+  return {
+    add, remove
   }
 }
 
