@@ -11,26 +11,35 @@
     @valid="updateValidState(0, $event)"
   />
 
-  <div v-show="otherContacts.length > 0">
-    <h5>Additional address</h5>
-    <br />
-    <Note note="Provide a name to identify your additional address" />
+  <hr v-if="otherContacts.length > 0"/>
+
+  <div class="frame-01" v-if="otherContacts.length > 0">
+    <div class="grouping-01">
+      <span class="heading-03">Additional address</span>
+      <span class="body-01">Provide a name to identify your additional address</span>
+    </div>
+    <div  v-for="(contact, index) in otherContacts">
+      <hr v-if="index > 0"/>
+    <contact-group-component
+    
+      :key="index + 1"
+      :id="index + 1"
+      v-bind:modelValue="contact"
+      :roleList="roleList"
+      :addressList="addresses"
+      :validations="[uniqueValues.add]"
+      :enabled="true"
+      :revalidate="revalidate"
+      @update:model-value="updateContact($event, index + 1)"
+      @valid="updateValidState(index + 1, $event)"
+      @remove="handleRemove(index + 1)"
+    />
+    </div>
   </div>
 
-  <contact-group-component
-    v-for="(contact, index) in otherContacts"
-    :key="index + 1"
-    :id="index + 1"
-    v-bind:modelValue="contact"
-    :roleList="roleList"
-    :addressList="addresses"
-    :validations="[uniqueValues.add]"
-    :enabled="true"
-    :revalidate="revalidate"
-    @update:model-value="updateContact($event, index + 1)"
-    @valid="updateValidState(index + 1, $event)"
-    @remove="handleRemove(index + 1)"
-  />
+  <span class="body-01">
+              To add another contact to the account, select "Add another
+              contact" button below.</span>
 
   <bx-btn
     kind="tertiary"
@@ -79,10 +88,16 @@ const revalidate = ref(false)
 watch([formData], () => emit('update:data', formData))
 
 const updateContact = (value: Contact | undefined, index: number) => {
+  if (index < formData.location.contacts.length){
+    if(value)
+      formData.location.contacts[index] = value
+    else{
+      const contactCopy: Contact[] = [...formData.location.contacts];
+      contactCopy.splice(index, 1);
+      formData.location.contacts = contactCopy;
+    }
+  }
   revalidate.value = !revalidate.value
-  if (value && index < formData.location.contacts.length)
-    formData.location.contacts[index] = value
-  emit('update:data', formData)
 }
 
 //Role related data
@@ -102,19 +117,30 @@ const addresses = computed<CodeNameType[]>(() =>
   })
 )
 
+const uniqueValues = isUniqueDescriptive()
+
 //New contact being added
 const otherContacts = computed(() => formData.location.contacts.slice(1))
 const addContact = () =>
   formData.location.contacts.push(JSON.parse(JSON.stringify(emptyContact)))
+
 const removeContact = (index: number) => () => {
-  formData.location.contacts = formData.location.contacts.splice(index, 1)
-  bus.emit({ active: false, message: '', kind: '', handler: () => {} })
+    updateContact(undefined, index)
+    delete validation[index]
+    uniqueValues.remove('Name',index+'')
+    bus.emit({ active: false, message: '', kind: '', handler: () => {} })
 }
 
 //Validation
 const validation = reactive<Record<string, boolean>>({
   0: false
 })
+
+const updateValidState = (index: number, valid: boolean) => {
+  if (validation[index] !== valid) {
+     validation[index] = valid;
+   }
+}
 
 const checkValid = () =>
   Object.values(validation).reduce(
@@ -125,12 +151,6 @@ const checkValid = () =>
 
 watch([validation], () => emit('valid', checkValid()))
 emit('valid', false)
-
-const updateValidState = (index: number, valid: boolean) => {
-  validation[index] = valid
-}
-
-const uniqueValues = isUniqueDescriptive()
 
 const handleRemove = (index: number) => {
   const selectedContact = formData.location.contacts[index]

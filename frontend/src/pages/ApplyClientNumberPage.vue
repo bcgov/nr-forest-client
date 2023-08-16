@@ -89,12 +89,9 @@
                 rel="noopener noreferrer"
                 >go to BCeID</a
               >
-              to update them before submitting your form. Be sure to add your
-              phone number, location and role.
-            </p>
-            <p class="bx--description">
-              To add another contact to the account, select "Add another
-              contact" button below.
+              to update them before submitting your form. 
+              <br />Be sure to add your phone number, location and role.
+             
             </p>
           </template>
           <template v-slot="{ validateStep, active }">

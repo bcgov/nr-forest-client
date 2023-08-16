@@ -45,11 +45,14 @@ const uniquenessValidation = () => {
   error.value = validateData(
     `${selectedValue.firstName} ${selectedValue.lastName}`
   )
-  emit('update:model-value', selectedValue)
+
 }
 
 //Watch for changes on the input
-watch([selectedValue], () => uniquenessValidation())
+watch([selectedValue], () => {
+  uniquenessValidation()
+  emit('update:model-value', selectedValue)
+})
 
 watch(
   () => props.revalidate,
