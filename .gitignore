@@ -570,4 +570,3 @@ frontend/cypress/videos/*
 
 reports/
 frontend/reports/
-legacy/src/main/resources/application-dev-mariamar.properties
