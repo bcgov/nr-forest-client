@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <label v-if="!enabled" :for="id" class="label-01 label-01-primary">{{ label }}</label>
-    <bx-form-item>
+    <bx-form-item class="grouping-02" v-if="enabled">
       <bx-input
         v-if="enabled"
         :id="id"
@@ -18,12 +16,13 @@
         @blur="(event:any) => validateInput(event.target.value)"
         @input="(event:any) => selectedValue = event.target.value"
       />
-      
     </bx-form-item>
-    <div v-if="!enabled" class="bx-input-disabled">
-      <label >{{ selectedValue }}</label>
+
+    <div v-if="!enabled" class="grouping-04">
+      <div class="grouping-04-label"><span :for="id" class="label-01">{{ label }}</span></div>
+      <span class="text-01">{{ selectedValue }}</span>
     </div>
-  </div>
+
 </template>
 
 <script setup lang="ts">

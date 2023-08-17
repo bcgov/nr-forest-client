@@ -1,11 +1,11 @@
 <template>
-  <div class="bordered">
-    <label class="bx--title">Business information</label>
-    <div>
-      <p class="inner-spotlight-topic">
+  <div class="grouping-05">
+    <label class="heading-03">Business information</label>
+    <div class="grouping-06">
+      <p class="heading-02">
         {{ formData.businessInformation.businessName }}
       </p>
-      <p>
+      <p class="body-compact-01">
         {{
           companyBusinessTypes[`${formData.businessInformation.businessType}`]
         }}
@@ -24,23 +24,20 @@
     </bx-btn>
   </div>
 
-  <div class="bordered">
-    <label class="bx--title">Address</label>
+  <div class="grouping-05">
+    <label class="heading-03">Address</label>
 
     <div
       v-for="(address, index) in formData.location.addresses"
       :key="address.locationName"
-      class="inner-spotlight-group"
-      :class="{
-        'inner-spotlight-group-markup':
-          index < formData.location.contacts.length - 1
-      }"
+      class="grouping-07"
     >
-      <p class="inner-spotlight-topic">{{ address.locationName }}</p>
-      <p>{{ address.streetAddress }}</p>
-      <p>{{ address.city }}, {{ address.province.text }}</p>
-      <p>{{ address.country.text }}</p>
-      <p>{{ address.postalCode }}</p>
+      <hr v-if="index > 0"/>
+      <span class="heading-02">{{ address.locationName }}</span>
+      <span class="body-compact-01">{{ address.streetAddress }}</span>
+      <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
+      <span class="body-compact-01">{{ address.country.text }}</span>
+      <span class="body-compact-01">{{ address.postalCode }}</span>
     </div>
 
     <bx-btn
@@ -55,27 +52,22 @@
     </bx-btn>
   </div>
 
-  <div class="bordered">
-    <label class="bx--title">Contacts</label>
+  <div class="grouping-05">
+    <label class="heading-03">Contacts</label>
 
     <div
       v-for="(contact, index) in formData.location.contacts"
       :key="contact.email"
-      class="inner-spotlight-group"
-      :class="{
-        'inner-spotlight-group-markup':
-          index < formData.location.contacts.length - 1
-      }"
+      class="grouping-07"
     >
-      <p class="inner-spotlight-topic">
-        {{ contact.firstName }} {{ contact.lastName }}
-      </p>
-      <p>
+      <hr v-if="index > 0"/>
+      <span class="heading-02">{{ contact.firstName }} {{ contact.lastName }}</span>
+      <span class="body-compact-01">
         {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
-      </p>
-      <p>{{ contact.contactType.text }}</p>
-      <p>{{ contact.email }}</p>
-      <p>{{ contact.phoneNumber }}</p>
+      </span>
+      <span class="body-compact-01">{{ contact.contactType.text }}</span>
+      <span class="body-compact-01">{{ contact.email }}</span>
+      <span class="body-compact-01">{{ contact.phoneNumber }}</span>
     </div>
 
     <bx-btn

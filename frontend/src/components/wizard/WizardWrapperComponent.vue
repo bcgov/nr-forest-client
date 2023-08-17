@@ -1,6 +1,6 @@
 <template>
 
-  <div class="bx--progress">
+  <div class="header">
     <div class="wizard-head">
       <div class="wizard-head-text">
         <label class="heading-05 heading">{{ title }}</label>

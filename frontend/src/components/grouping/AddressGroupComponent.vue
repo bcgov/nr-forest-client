@@ -209,7 +209,7 @@ watch([detailsData], () => {
 </script>
 
 <template>
-  <div class="steps frame-02">
+  <div class="frame-01">
   <text-input-component
     :id="'name_' + id"
     label="Location or address name"

@@ -1,35 +1,39 @@
 <template>
-  <div>
-    <bx-dropdown
-      :id="id"
-      :value="selectedValue"
-      :label-text="label"
-      :helper-text="tip"
-      :invalid="error ? true : false"
-      :validityMessage="error"
-      @bx-dropdown-beingselected="(target:any) => validateInput(target.detail.item.__value)"
-      @bx-dropdown-selected="(target:any) => addFromSelection(target.detail.item.__value)"
-    >
-      <bx-dropdown-item
-        v-for="option in modelValue"
-        :key="option.code"
-        :value="option.code"
-        >{{ option.name }}</bx-dropdown-item
+  <div class="grouping-03">
+    <div class="frame-02">
+      <bx-dropdown
+        :id="id"
+        :value="selectedValue"
+        :label-text="label"
+        :helper-text="tip"
+        :invalid="error ? true : false"
+        :validityMessage="error"
+        @bx-dropdown-beingselected="(target:any) => validateInput(target.detail.item.__value)"
+        @bx-dropdown-selected="(target:any) => addFromSelection(target.detail.item.__value)"
       >
-    </bx-dropdown>
-    <bx-tag
-      v-for="(tag, index) in items"
-      title="Clear selection"
-      class="bx-tag"
-      :id="'tag_' + id + '_' + index"
-      :key="index"
-    >
-      {{ tag }}
-      <CloseOutline16
-        :id="'close_' + id + '_' + index"
-        @click="removeFromSelection(tag)"
-      />
-    </bx-tag>
+        <bx-dropdown-item
+          v-for="option in modelValue"
+          :key="option.code"
+          :value="option.code"
+          >{{ option.name }}</bx-dropdown-item
+        >
+      </bx-dropdown>
+      <div class="bx-tag-box">
+        <bx-tag
+          v-for="(tag, index) in items"
+          title="Clear selection"
+          class="bx-tag"
+          :id="'tag_' + id + '_' + index"
+          :key="index"
+        >
+          {{ tag }}
+          <CloseOutline16
+            :id="'close_' + id + '_' + index"
+            @click="removeFromSelection(tag)"
+          />
+        </bx-tag>
+      </div>
+    </div>
   </div>
 </template>
 <script setup lang="ts">

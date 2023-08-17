@@ -91,7 +91,6 @@ const nameTypesToCodeDescr = (
 </script>
 
 <template>
-    <div class="steps frame-02">
   <multiselect-input-component
     :id="'address_' + id"
     label="Address name"
@@ -202,5 +201,4 @@ const nameTypesToCodeDescr = (
     <span>Delete contact</span>
     <Delete16 slot="icon" />
   </bx-btn>
-</div>
 </template>

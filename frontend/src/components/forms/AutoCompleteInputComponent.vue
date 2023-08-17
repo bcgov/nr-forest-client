@@ -1,5 +1,5 @@
 <template>
-  <bx-form-item>
+  <bx-form-item class="grouping-02">
     <bx-input
       :id="id"
       :name="id"

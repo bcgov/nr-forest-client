@@ -1,4 +1,5 @@
 <template>
+  <div class="grouping-03">
   <bx-dropdown
     :id="id"
     :value="selectedValue"
@@ -15,6 +16,7 @@
       >{{ option.name }}</bx-dropdown-item
     >
   </bx-dropdown>
+</div>
 </template>
 
 <script setup lang="ts">
