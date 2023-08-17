@@ -9,6 +9,8 @@ import ErrorPage from '@/pages/ErrorPage.vue'
 import NotFoundPage from '@/pages/NotFoundPage.vue'
 import ForestClientUserSession from '@/helpers/ForestClientUserSession'
 
+import { nodeEnv } from '@/CoreConstants'
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/landing',
@@ -116,6 +118,16 @@ const routes: RouteRecordRaw[] = [
     }
   }
 ]
+
+if (nodeEnv === 'openshift-dev') {
+  const names = ['form', 'confirmation']
+
+  routes.forEach((route) => {
+    if (names.includes(route.name as string)) {
+      route.meta?.visibleTo.push('idir')
+    }
+  })
+}
 
 const router = createRouter({
   history: createWebHistory(),
