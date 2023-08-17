@@ -7,6 +7,48 @@
     <router-view></router-view>
     </div>
   </div>
+
+  <div class="modals">
+    
+  <bx-modal
+    id="modal-example"
+    size="sm"
+    :open="modalContent.active"
+    @bx-modal-closed="closeModal"
+  >
+    <bx-modal-header>
+      <bx-modal-close-button></bx-modal-close-button>
+      <bx-modal-label>Delete additional {{ modalContent.kind }}</bx-modal-label>
+      <bx-modal-heading
+        >Are you sure you want to delete "{{ modalContent.message }}" additional
+        {{ modalContent.kind }}</bx-modal-heading
+      >
+    </bx-modal-header>
+    <bx-modal-body><p></p></bx-modal-body>
+
+    <bx-modal-footer>
+      <bx-btn kind="secondary" 
+              data-modal-close>
+        Cancel
+      </bx-btn>
+      <span style="width: 0.5rem;"></span>
+      <bx-btn kind="danger" 
+              @click.prevent="deleteContentModal">
+        Delete additional {{ modalContent.kind }}
+      </bx-btn>
+    </bx-modal-footer>
+  </bx-modal>
+</div>
+
+  <bx-toast-notification
+      v-if="toastContent.active"
+      class="wizard-head-toast"
+      timeout="8000"
+      kind="success"
+      :title="toastContent.kind"
+      :subtitle="toastContent.message"
+    >
+  </bx-toast-notification>
 </template>
 
 <script setup lang="ts">
