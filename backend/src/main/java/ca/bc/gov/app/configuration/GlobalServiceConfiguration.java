@@ -7,6 +7,7 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentAccessRequestDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentAccessTypeDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestBodyDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryExceptionMessageDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
@@ -77,7 +78,8 @@ import org.springframework.web.reactive.function.client.WebClient;
     AuthResponse.class,
     BcRegistryDocumentRequestBodyDto.class,
     BcRegistryDocumentAccessRequestDto.class,
-    BcRegistryDocumentAccessTypeDto.class
+    BcRegistryDocumentAccessTypeDto.class,
+    BcRegistryDocumentRequestResponseDto.class,
 })
 public class GlobalServiceConfiguration {
 
