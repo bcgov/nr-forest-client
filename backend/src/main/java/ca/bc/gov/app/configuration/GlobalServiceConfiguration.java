@@ -4,6 +4,9 @@ import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentAccessRequestDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentAccessTypeDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestBodyDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryExceptionMessageDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
@@ -71,7 +74,10 @@ import org.springframework.web.reactive.function.client.WebClient;
     ChesMailRequest.class,
     ChesMailResponse.class,
     ChesMailErrorResponse.class,
-    AuthResponse.class
+    AuthResponse.class,
+    BcRegistryDocumentRequestBodyDto.class,
+    BcRegistryDocumentAccessRequestDto.class,
+    BcRegistryDocumentAccessTypeDto.class
 })
 public class GlobalServiceConfiguration {
 
