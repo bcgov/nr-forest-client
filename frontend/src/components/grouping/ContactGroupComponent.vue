@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch, ref } from 'vue'
+import { reactive, watch, ref, onMounted } from 'vue'
 import Delete16 from '@carbon/icons-vue/es/trash-can/16'
 import type { CodeDescrType, CodeNameType } from '@/dto/CommonTypesDto'
 import type { Contact } from '@/dto/ApplyClientNumberDto'
@@ -12,6 +12,7 @@ import {
   isNoSpecialCharacters
 } from '@/helpers/validators/GlobalValidators'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
+import useFocus from '@/composables/useFocus'
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -31,6 +32,7 @@ const emit = defineEmits<{
   (e: 'remove', value: number): void
 }>()
 
+const { setFocusedComponent } = useFocus();
 const noValidation = (value: string) => ''
 
 //We set it as a separated ref due to props not being updatable
@@ -88,6 +90,10 @@ const nameTypesToCodeDescr = (
   if (values) return values.map(nameTypeToCodeDescr)
   return []
 }
+
+onMounted(() =>{
+  setFocusedComponent(`address_${props.id}`)
+})
 </script>
 
 <template>

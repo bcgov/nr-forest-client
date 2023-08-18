@@ -2,6 +2,7 @@
   <div class="grouping-01">
     <label :for="id + 'rb'" class="label-01 label-01-primary">{{ label }}</label>
     <bx-radio-button-group
+      :data-scroll="id"
       label-position="right"
       orientation="vertical"
       :name="id + 'rb'"

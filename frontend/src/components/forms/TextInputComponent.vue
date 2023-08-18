@@ -3,6 +3,7 @@
       <bx-input
         v-if="enabled"
         :id="id"
+        :data-scroll="id"
         :data-id="'input-' + id"
         :placeholder="placeholder"
         :value="selectedValue"
@@ -19,7 +20,7 @@
     </bx-form-item>
 
     <div v-if="!enabled" class="grouping-04">
-      <div class="grouping-04-label"><span :for="id" class="label-01">{{ label }}</span></div>
+      <div :data-scroll="id" class="grouping-04-label"><span :for="id" class="label-01">{{ label }}</span></div>
       <span class="text-01">{{ selectedValue }}</span>
     </div>
 

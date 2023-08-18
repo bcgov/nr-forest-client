@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch, computed, ref } from 'vue'
+import { reactive, watch, computed, ref, onMounted } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import Delete16 from '@carbon/icons-vue/es/trash-can/16'
 import type { CodeNameType, BusinessSearchResult } from '@/dto/CommonTypesDto'
@@ -15,6 +15,7 @@ import {
 } from '@/helpers/validators/GlobalValidators'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
 import { useFetchTo } from '@/composables/useFetch'
+import useFocus from '@/composables/useFocus'
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -33,6 +34,7 @@ const emit = defineEmits<{
 }>()
 
 const generalErrorBus = useEventBus<string>('general-error-notification')
+const { setFocusedComponent } = useFocus();
 
 const noValidation = (value: string) => ''
 
@@ -206,13 +208,18 @@ watch([detailsData], () => {
     selectedValue.postalCode = detailsData.value.postalCode.replace(/\s/g, '')
   }
 })
+
+onMounted(() =>{
+  if(props.id == 0) setFocusedComponent(`addr_${props.id}`)
+  else setFocusedComponent(`name_${props.id}`)
+})
 </script>
 
 <template>
   <div class="frame-01">
   <text-input-component
     :id="'name_' + id"
-    label="Location or address name"
+        label="Location or address name"
     placeholder=""
     tip="For example, 'Campbell River Region' or 'Castlegar Woods Division'"
     v-model="selectedValue.locationName"
@@ -252,7 +259,7 @@ watch([detailsData], () => {
   >
     <AutoCompleteInputComponent
       :id="'addr_' + id"
-      label="Street address or PO box"
+            label="Street address or PO box"
       placeholder="Start typing to search for your address or PO box"
       tip=""
       v-model="selectedValue.streetAddress"

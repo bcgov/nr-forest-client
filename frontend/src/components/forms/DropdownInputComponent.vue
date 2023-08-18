@@ -2,6 +2,7 @@
   <div class="grouping-03">
   <bx-dropdown
     :id="id"
+    :data-scroll="id"
     :value="selectedValue"
     :label-text="label"
     :helper-text="tip"

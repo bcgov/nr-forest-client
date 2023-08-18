@@ -2,6 +2,7 @@
 import { watch, computed, ref, reactive } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import { useFetchTo } from '@/composables/useFetch'
+import useFocus from '@/composables/useFocus'
 import { type BusinessSearchResult, ClientTypeEnum } from '@/dto/CommonTypesDto'
 import type {
   FormDataDto,
@@ -25,6 +26,8 @@ const emit = defineEmits<{
 const navigationBus = useEventBus<boolean>('navigation-notification')
 const exitBus = useEventBus<Record<string, boolean | null>>('exit-notification')
 const generalErrorBus = useEventBus<string>('general-error-notification')
+
+const { setFocusedComponent } = useFocus();
 
 //Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data)
@@ -173,10 +176,12 @@ watch([selectedOption], () => {
       ForestClientUserSession.user?.businessName ? ForestClientUserSession.user?.businessName :fromName
     validation.business = true
     emit('update:data', formData.value)
+    setFocusedComponent('nextBtn')
   } else {
     formData.value.businessInformation.businessName = ''
     validation.business = false
     showAutoCompleteInfo.value = true
+    setFocusedComponent('business')
   }
 })
 </script>

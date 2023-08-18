@@ -3,6 +3,7 @@
     <div class="frame-02">
       <bx-dropdown
         :id="id"
+        :data-scroll="id"
         :value="selectedValue"
         :label-text="label"
         :helper-text="tip"

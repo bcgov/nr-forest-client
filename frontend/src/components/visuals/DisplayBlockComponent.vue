@@ -1,5 +1,6 @@
 <template>
   <div
+  data-scroll="top-notification"
     data-testid="display-block-wrapper"
     :class="{
       'display-block-wrapper': true,

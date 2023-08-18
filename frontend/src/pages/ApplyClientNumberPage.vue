@@ -30,7 +30,7 @@
       <hr class="divider" />
 
       <div class="form-steps-section">
-        <label class="heading-04">{{ progressData[0].title}}</label>
+        <label class="heading-04" data-scroll="focus-0">{{ progressData[0].title}}</label>
         <div class="frame-01">
           <business-information-wizard-step
               v-model:data="formData"
@@ -106,7 +106,7 @@
 
 
       <div class="form-steps-section form-steps-section-04">
-          <span class="heading-04">{{ progressData[3].title}}</span>
+          <span class="heading-04" data-scroll="focus-3">{{ progressData[3].title}}</span>
           <span class="body-02">Review the content and make any changes by navigating through the steps above or using the "Edit" buttons in each section below.</span>
 
         <review-wizard-step
@@ -144,6 +144,7 @@
         </bx-btn>
 
         <bx-btn
+            id="nextBtn"
             v-if="!isLast && !isFormValid && !endAndLogOut && !mailAndLogOut"
             data-test="wizard-next-button"
             kind="primary"
@@ -221,11 +222,12 @@ import {
   type Contact
 } from '@/dto/ApplyClientNumberDto'
 
-import type { ValidationMessageType } from '@/dto/CommonTypesDto'
+import type { ValidationMessageType, ModalNotification } from '@/dto/CommonTypesDto'
 import { usePost } from '@/composables/useFetch'
 import ForestClientUserSession from '@/helpers/ForestClientUserSession'
-import type { ModalNotification } from '@/dto/CommonTypesDto'
+import useFocus from '@/composables/useFocus';
 
+const { setFocusedComponent } = useFocus();
 const submitterInformation = ForestClientUserSession.user
 const errorBus = useEventBus<ValidationMessageType[]>(
   'submission-error-notification'
@@ -293,7 +295,7 @@ watch([error], () => {
       generalErrorBus.emit(
         `There was an error submitting your application. ${matchingFields.errorMsg}`
       )
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setFocusedComponent('top-notification')
     }
   } else {
     generalErrorBus.emit(
@@ -348,7 +350,7 @@ const onNext = () => {
     currentTab.value++
     progressData[currentTab.value-1].kind = stateIcon(currentTab.value-1)
     progressData[currentTab.value].kind = stateIcon(currentTab.value)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    setFocusedComponent(`focus-${currentTab.value}`)
   }
 }
 const onBack = () => {
@@ -356,7 +358,7 @@ const onBack = () => {
     currentTab.value--
     progressData[currentTab.value+1].kind = stateIcon(currentTab.value+1)
     progressData[currentTab.value].kind = stateIcon(currentTab.value)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    setFocusedComponent(`focus-${currentTab.value}`)
   }
 }
 const validateStep = (valid: boolean) => {

@@ -4,6 +4,7 @@
       :id="id"
       :name="id"
       type="text"
+      :data-scroll="id"
       :data-id="'input-' + id"
       :placeholder="'Start typing to search for your ' + label"
       :value="inputValue"

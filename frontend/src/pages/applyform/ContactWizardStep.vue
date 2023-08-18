@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref, computed, reactive } from 'vue'
+import { watch, ref, computed, reactive, onMounted } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import Add16 from '@carbon/icons-vue/es/add/16'
 
@@ -64,12 +64,10 @@ import {
   emptyContact
 } from '@/dto/ApplyClientNumberDto'
 import { useFetchTo } from '@/composables/useFetch'
-
+import useFocus from '@/composables/useFocus'
 import type { CodeNameType, ModalNotification } from '@/dto/CommonTypesDto'
-
-import Note from '@/components/NoteComponent.vue'
-
 import { isUniqueDescriptive } from '@/helpers/validators/GlobalValidators'
+
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>()
@@ -81,6 +79,8 @@ const emit = defineEmits<{
 
 //Defining the event bus to send notifications up
 const bus = useEventBus<ModalNotification>('modal-notification')
+
+const { setFocusedComponent } = useFocus();
 
 //Set the prop as a ref, and then emit when it changes
 const formData = reactive<FormDataDto>(props.data)
@@ -161,4 +161,6 @@ const handleRemove = (index: number) => {
     active: true
   })
 }
+
+onMounted(() => setFocusedComponent('address_0'))
 </script>
