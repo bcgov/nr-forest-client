@@ -7,23 +7,33 @@ import {
 } from "@badeball/cypress-cucumber-preprocessor";
 import "cypress-get-by-label/commands";
 
-interface CustomWorld extends Mocha.Context {
+export interface CustomWorld extends Mocha.Context {
   appLocation: Location;
 }
 
-Before(function (this: CustomWorld) {
-  // Utility to allow using cross environment URL as the backend if the current environment's backend is not available.
-  // cy.intercept(
-  //   {
-  //     url: "https://nr-forest-client-test-backend.apps.silver.devops.gov.bc.ca/**",
-  //   },
-  //   // Make CORS adjustment for all incoming responses
-  //   (req) =>
-  //     req.continue((res) => {
-  //       res.headers["Access-Control-Allow-Origin"] = this.appLocation.origin;
-  //     })
-  // );
+/**
+ * Utility to allow using cross environment URL as the backend if the current environment's backend is not available.
+ * @param this
+ * @param backendUrl - The backend URL whose responses are to be padded. Should match your VITE_BACKEND_URL configuration.
+ */
+function allowCrossEnvironments(
+  this: CustomWorld,
+  backendUrl = "https://nr-forest-client-test-backend.apps.silver.devops.gov.bc.ca"
+) {
+  cy.intercept(
+    {
+      url: `${backendUrl}/**`,
+    },
+    // Make CORS adjustment for all incoming responses
+    (req) =>
+      req.continue((res) => {
+        res.headers["Access-Control-Allow-Origin"] = this.appLocation.origin;
+      })
+  );
+}
 
+Before(function (this: CustomWorld) {
+  // allowCrossEnvironments.apply(this);
   cy.intercept("GET", "/logout").as("logout");
 });
 
