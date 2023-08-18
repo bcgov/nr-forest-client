@@ -40,5 +40,11 @@
     "name": "Totally Shady Company",
     "status": "ACTIVE",
     "legalType": "SP"
+  },
+  {
+    "code":"FM1234567",
+    "name":"The Great Fake Forest Company",
+    "status":"ACTIVE",
+    "legalType":"SP"
   }
 ]

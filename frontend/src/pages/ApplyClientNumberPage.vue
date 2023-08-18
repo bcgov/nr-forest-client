@@ -96,6 +96,16 @@
     </div>
 
     <div v-if="currentTab == 3" class="form-steps-04">
+
+      <display-block-component
+      v-if="globalErrorMessage"
+      kind="error"
+      title="Your application could not be submitted"
+      :subtitle="globalErrorMessage"
+    >
+    </display-block-component>
+
+
       <div class="form-steps-section form-steps-section-04">
           <span class="heading-04">{{ progressData[3].title}}</span>
           <span class="body-02">Review the content and make any changes by navigating through the steps above or using the "Edit" buttons in each section below.</span>
@@ -112,8 +122,6 @@
 
     <hr class="divider"/>
   </div>
-
- 
 
   <div class="form-footer">
     <div class="form-footer-group">
@@ -286,11 +294,13 @@ watch([error], () => {
       generalErrorBus.emit(
         `There was an error submitting your application. ${matchingFields.errorMsg}`
       )
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   } else {
     generalErrorBus.emit(
       `There was an error submitting your application. ${error.value.data}}`
     )
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 })
 
@@ -388,4 +398,7 @@ exitBus.on((event: Record<string, boolean | null>) => {
   endAndLogOut.value = event.goodStanding ? event.goodStanding : false
   mailAndLogOut.value = event.duplicated ? event.duplicated : false
 })
+
+const globalErrorMessage = ref<string>('')
+generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
 </script>

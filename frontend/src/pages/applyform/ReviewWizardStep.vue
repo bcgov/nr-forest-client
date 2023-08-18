@@ -114,16 +114,3 @@ const companyBusinessTypes: Record<string, string> = {
 //We emit valid here because there is nothing else to be done here apart from showing information
 emit('valid', true)
 </script>
-
-<style scoped>
-.bordered {
-  box-sizing: border-box;
-  border: 1px solid #DFDFE1;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 32px;
-  gap: 40px;
-}
-</style>
