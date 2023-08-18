@@ -28,12 +28,14 @@
 
     <bx-modal-footer>
       <bx-btn kind="secondary" 
-              data-modal-close>
+              data-modal-close
+              class="bx--modal-btn bx--modal-btn1">
         Cancel
       </bx-btn>
-      <span style="width: 0.5rem;"></span>
+      <span class="bx--modal-btn-divider"></span>
       <bx-btn kind="danger" 
-              @click.prevent="deleteContentModal">
+              @click.prevent="deleteContentModal"
+              class="bx--modal-btn bx--modal-btn2">
         Delete additional {{ modalContent.kind }}
       </bx-btn>
     </bx-modal-footer>

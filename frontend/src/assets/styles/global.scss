@@ -583,9 +583,39 @@ body {
   background: var(--dark-theme-tag-blue-background, #00478F);
 }
 
+.bx--modal-btn-divider {
+  width: 0.5rem;
+}
+
 /* Small (up to 320px) */
 @media screen and (max-width: 320px) {
 
+  bx-modal::part(dialog) {
+    max-height: 21.25rem;
+    position: relative;
+    margin-bottom: 0;
+    margin-top: auto;
+  }
+
+  .bx--modal-btn-divider {
+    display: none;
+  }
+
+  bx-modal-footer {
+    height: 8rem;
+    padding: 0 1rem 0 1rem;
+    margin: 0;
+  }
+  
+  .bx--modal-btn {
+    height: 1.13rem  !important;
+    position: absolute;
+    width: 90%;
+  }
+  
+  .bx--modal-btn2 {
+    bottom: 2.5rem;
+  }
 
   .screen{
     margin: 1.5rem 1rem 1rem 1rem;
