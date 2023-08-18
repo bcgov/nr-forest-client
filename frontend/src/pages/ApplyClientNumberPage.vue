@@ -82,8 +82,7 @@
                 >go to BCeID</a
               >
               to update them before submitting your form. 
-              <br />Be sure to add your phone number, location and role.
-             
+              <br /><br />Be sure to add your phone number, location and role.
             </p>
         </div>
       
