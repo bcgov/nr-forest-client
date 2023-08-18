@@ -12,15 +12,19 @@ interface CustomWorld extends Mocha.Context {
 }
 
 Before(function (this: CustomWorld) {
-  cy.intercept("GET", "/logout", (req) => {
-    req.reply({
-      statusCode: 302,
-      headers: {
-        Location: `${this.appLocation.origin}/`,
-        "Set-Cookie": `idToken=; sameSite=Lax; path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${this.appLocation.hostname}`,
-      },
-    });
-  }).as("logout");
+  // Utility to allow using cross environment URL as the backend if the current environment's backend is not available.
+  // cy.intercept(
+  //   {
+  //     url: "https://nr-forest-client-test-backend.apps.silver.devops.gov.bc.ca/**",
+  //   },
+  //   // Make CORS adjustment for all incoming responses
+  //   (req) =>
+  //     req.continue((res) => {
+  //       res.headers["Access-Control-Allow-Origin"] = this.appLocation.origin;
+  //     })
+  // );
+
+  cy.intercept("GET", "/logout").as("logout");
 });
 
 Given(

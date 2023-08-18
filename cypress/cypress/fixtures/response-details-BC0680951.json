@@ -1,0 +1,41 @@
+{
+  "name": "GOOD SOFTWARE INC.",
+  "id": "BC0680951",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "123 Fake DR",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "BC",
+        "text": "British Columbia"
+      },
+      "city": "Fakest City",
+      "postalCode": "A0A0A0",
+      "index": 0,
+      "locationName": "Mailing Address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "P",
+        "text": "Person"
+      },
+      "firstName": "Jhon",
+      "lastName": "Wick",
+      "phoneNumber": "(111) 222-3344",
+      "email": "babayaga@theguild.ca",
+      "index": 0,
+      "locationNames": [
+        {
+          "value": "0",
+          "text": "Mailing Address"
+        }
+      ]
+    }
+  ]
+}
