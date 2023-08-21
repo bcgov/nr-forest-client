@@ -39,7 +39,7 @@ const routes: RouteRecordRaw[] = [
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ['bceidbusiness', 'bcsc'],
+      visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
       redirectTo: {
         idir: 'internal'
       }
