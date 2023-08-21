@@ -347,10 +347,9 @@ backend/.classpath
 
 ### User related configuration
 # The below expression will prevent user specific configuration files from being added to the repository
-backend/config/application-dev-*.yml
+**/config/application-dev-*.*
 .checkstyle
 backend/.checkstyle
-backend/src/main/resources/application-dev-mariamar.properties
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/vue,vuejs,visualstudiocode
