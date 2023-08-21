@@ -23,7 +23,7 @@ const routes: RouteRecordRaw[] = [
       showLoggedIn: false,
       visibleTo: [],
       redirectTo: {
-        idir: 'internal',
+        idir: 'form',
         bceidbusiness: 'form',
         bcsc: 'form'
       }
@@ -41,7 +41,7 @@ const routes: RouteRecordRaw[] = [
       showLoggedIn: true,
       visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
       redirectTo: {
-        idir: 'internal'
+
       }
     }
   },
@@ -54,7 +54,7 @@ const routes: RouteRecordRaw[] = [
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ['bceidbusiness', 'bcsc'],
+      visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
       redirectTo: {
         idir: 'internal'
       }
