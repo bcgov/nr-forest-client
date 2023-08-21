@@ -41,7 +41,7 @@ const routes: RouteRecordRaw[] = [
       showLoggedIn: true,
       visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
       redirectTo: {
-
+        idir: 'form'
       }
     }
   },
@@ -56,7 +56,7 @@ const routes: RouteRecordRaw[] = [
       showLoggedIn: true,
       visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
       redirectTo: {
-        idir: 'internal'
+        idir: 'form'
       }
     }
   },
@@ -71,6 +71,7 @@ const routes: RouteRecordRaw[] = [
       showLoggedIn: true,
       visibleTo: ['idir'],
       redirectTo: {
+        idir: 'form',
         bceidbusiness: 'form',
         bcsc: 'form'
       }
@@ -87,7 +88,7 @@ const routes: RouteRecordRaw[] = [
       showLoggedIn: false,
       visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
       redirectTo: {
-        idir: 'internal',
+        idir: 'form',
         bceidbusiness: 'form',
         bcsc: 'form'
       }
@@ -118,16 +119,6 @@ const routes: RouteRecordRaw[] = [
     }
   }
 ]
-
-if (nodeEnv === 'openshift-dev') {
-  const names = ['form', 'confirmation']
-
-  routes.forEach((route) => {
-    if (names.includes(route.name as string)) {
-      route.meta?.visibleTo.push('idir')
-    }
-  })
-}
 
 const router = createRouter({
   history: createWebHistory(),
