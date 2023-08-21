@@ -9,8 +9,6 @@ import ErrorPage from '@/pages/ErrorPage.vue'
 import NotFoundPage from '@/pages/NotFoundPage.vue'
 import ForestClientUserSession from '@/helpers/ForestClientUserSession'
 
-import { nodeEnv } from '@/CoreConstants'
-
 const routes: RouteRecordRaw[] = [
   {
     path: '/landing',
@@ -23,7 +21,7 @@ const routes: RouteRecordRaw[] = [
       showLoggedIn: false,
       visibleTo: [],
       redirectTo: {
-        idir: 'form',
+        idir: 'internal',
         bceidbusiness: 'form',
         bcsc: 'form'
       }
@@ -39,9 +37,9 @@ const routes: RouteRecordRaw[] = [
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
+      visibleTo: ['bceidbusiness', 'bcsc'],
       redirectTo: {
-        idir: 'form'
+        idir: 'internal'
       }
     }
   },
@@ -54,9 +52,9 @@ const routes: RouteRecordRaw[] = [
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
+      visibleTo: ['bceidbusiness', 'bcsc'],
       redirectTo: {
-        idir: 'form'
+        idir: 'internal'
       }
     }
   },
@@ -71,7 +69,6 @@ const routes: RouteRecordRaw[] = [
       showLoggedIn: true,
       visibleTo: ['idir'],
       redirectTo: {
-        idir: 'form',
         bceidbusiness: 'form',
         bcsc: 'form'
       }
@@ -88,7 +85,7 @@ const routes: RouteRecordRaw[] = [
       showLoggedIn: false,
       visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
       redirectTo: {
-        idir: 'form',
+        idir: 'internal',
         bceidbusiness: 'form',
         bcsc: 'form'
       }
