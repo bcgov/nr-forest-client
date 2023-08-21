@@ -1,51 +1,45 @@
 <head>
-<meta charset="utf-8">
-<!-- utf-8 works for most cases -->
-<meta name="viewport" content="width=device-width">
-<!-- Forcing initial-scale shouldn't be necessary -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<!-- Use the latest (edge) version of IE rendering engine -->
 <meta name="x-apple-disable-message-reformatting">
-<!-- Disable auto-scale in iOS 10 Mail entirely -->
 <title></title>
-<!-- The title tag shows in email notifications, like Android 4.4. -->
 
+<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link
 	href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap"
 	rel="stylesheet">
 
-<!-- CSS Reset : BEGIN -->
+<!-- CSS Reset -->
 <style>
-
-/* What it does: Remove spaces around the email design added by some email clients. */
-/* Beware: It can remove the padding / margin and add a background color to the compose a reply window. */
-html, body {
-	margin: 0 auto !important;
+/* Reset email client styles */
+body, html {
+	margin: 0 !important;
 	padding: 0 !important;
 	height: 100% !important;
 	width: 100% !important;
 }
 
-/* What it does: Stops email clients resizing small text. */
+/* Prevent text size adjustment in Outlook */
 * {
 	-ms-text-size-adjust: 100%;
 	-webkit-text-size-adjust: 100%;
 }
 
-/* What it does: Centers email on Android 4.4 */
+/* Center content on Android 4.4 */
 div[style*="margin: 16px 0"] {
 	margin: 0 !important;
 }
 
-/* What it does: Stops Outlook from adding extra spacing to tables. */
+/* Remove extra spacing in Outlook */
 table, td {
 	mso-table-lspace: 0pt !important;
 	mso-table-rspace: 0pt !important;
 }
 
-/* What it does: Fixes webkit padding issue. */
+/* Fix webkit padding issue */
 table {
 	border-spacing: 0 !important;
 	border-collapse: collapse !important;
@@ -53,12 +47,12 @@ table {
 	margin: 0 auto !important;
 }
 
-/* What it does: Uses a better rendering method when resizing images in IE. */
+/* Improve image rendering in IE */
 img {
 	-ms-interpolation-mode: bicubic;
 }
 
-/* What it does: A work-around for email clients meddling in triggered links. */
+/* Remove underline and styling from auto-detected links */
 *[x-apple-data-detectors], /* iOS */ .unstyle-auto-detected-links *,
 	.aBn {
 	border-bottom: 0 !important;
@@ -71,40 +65,37 @@ img {
 	line-height: inherit !important;
 }
 
-/* What it does: Prevents Gmail from displaying a download button on large, non-linked images. */
+/* Hide Gmail's download button on large images */
 .a6S {
 	display: none !important;
 	opacity: 0.01 !important;
 }
 
-/* What it does: Prevents Gmail from changing the text color in conversation threads. */
+/* Prevent Gmail from changing text color in conversation threads */
 .im {
 	color: inherit !important;
 }
 
-/* If the above doesn't work, add a .g-img class to any image in question. */
+/* Hide images in Gmail iOS app */
 img.g-img+div {
 	display: none !important;
 }
 
-/* What it does: Removes right gutter in Gmail iOS app: https://github.com/TedGoas/Cerberus/issues/89  */
-/* Create one of these media queries for each additional viewport size you'd like to fix */
-
-/* iPhone 4, 4S, 5, 5S, 5C, and 5SE */
+/* Remove right gutter in Gmail iOS app for various screen sizes */
 @media only screen and (min-device-width: 320px) and (max-device-width:
 	374px) {
 	u ~ div .email-container {
 		min-width: 320px !important;
 	}
 }
-/* iPhone 6, 6S, 7, 8, and X */
+
 @media only screen and (min-device-width: 375px) and (max-device-width:
 	413px) {
 	u ~ div .email-container {
 		min-width: 375px !important;
 	}
 }
-/* iPhone 6+, 7+, and 8+ */
+
 @media only screen and (min-device-width: 414px) {
 	u ~ div .email-container {
 		min-width: 414px !important;
@@ -112,9 +103,7 @@ img.g-img+div {
 }
 </style>
 
-<!-- CSS Reset : END -->
-
-<!-- Progressive Enhancements : BEGIN -->
+<!-- Progressive Enhancements -->
 <style>
 body {
 	font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
@@ -128,7 +117,7 @@ a {
 }
 
 p {
-	margin: 0px;
+	margin: 0;
 }
 </style>
 </head>
