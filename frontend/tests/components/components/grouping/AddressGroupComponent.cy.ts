@@ -18,6 +18,12 @@ describe('<AddressGroupComponent />', () => {
       { fixture: 'provinces.json' }
     ).as('getProvinces')
 
+    cy.intercept(
+      'GET',
+      '/api/clients/activeCountryCodes/US?page=0&size=250',
+      { fixture: 'states.json' }
+    ).as('getStates')
+
     cy.fixture('address.json').as('addressFixture')
     cy.fixture('countries.json').as('countriesFixture')
   })
@@ -126,5 +132,52 @@ describe('<AddressGroupComponent />', () => {
       .should('be.visible')
       .and('have.value', 'Mailing Address')
       .and('have.focus')
+  })
+
+  it('should render the component and reset province when country changes', () => {
+    cy.get('@addressFixture').then((address) => {
+      cy.get('@countriesFixture').then((countries) => {
+        cy.mount(AddressGroupComponent, {
+          props: {
+            id: 0,
+            modelValue: address,
+            countryList: countries,
+            validations: []
+          }
+        })
+      })
+    })
+
+    cy.wait('@getProvinces')
+
+    cy.get('#postalCode_0')
+      .should('be.visible')
+      .shadow()
+      .find('label')
+      .and('have.text', '  Postal code  ')
+
+    cy.get('#country_0')
+      .should('be.visible')
+      .and('have.value', 'CA')
+      .click()
+      .find('[data-item="US"]')
+      .click()
+      .and('have.value', 'US')
+
+    cy.wait('@getStates')
+
+    cy.get('#province_0')
+      .should('be.visible')
+      .and('have.value', '')
+      .click()
+      .find('[data-item="IL"]')
+      .click()
+      .and('have.value', 'IL')
+
+    cy.get('#postalCode_0')
+      .should('be.visible')
+      .shadow()
+      .find('label')
+      .and('have.text', '  Zip code  ')
   })
 })

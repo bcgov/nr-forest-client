@@ -14,6 +14,7 @@
       v-for="option in modelValue"
       :key="option.code"
       :value="option.code"
+      :data-item="option.code"
       >{{ option.name }}</bx-dropdown-item
     >
   </bx-dropdown>
