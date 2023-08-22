@@ -1,0 +1,14 @@
+{
+  "streetAddress": "2975 Jutland Rd",
+  "country": {
+    "value": "CA",
+    "text": "Canada"
+  },
+  "province": {
+    "value": "BC",
+    "text": "British Columbia"
+  },
+  "city": "Victoria",
+  "postalCode": "V8T5J9",
+  "locationName": "Mailing Address"
+}

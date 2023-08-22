@@ -1,6 +1,8 @@
 <template>
+  <div class="grouping-03">
   <bx-dropdown
     :id="id"
+    :data-scroll="id"
     :value="selectedValue"
     :label-text="label"
     :helper-text="tip"
@@ -12,9 +14,11 @@
       v-for="option in modelValue"
       :key="option.code"
       :value="option.code"
+      :data-item="option.code"
       >{{ option.name }}</bx-dropdown-item
     >
   </bx-dropdown>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -90,5 +94,11 @@ watch(
     setTimeout(() => (selectedValue.value = props.initialValue), 400)
   }
 )
-//validateInput(selectedValue.value)
+watch(
+  () => props.initialValue,
+  () => {
+    if(selectedValue.value === props.initialValue) return
+    setTimeout(() => (selectedValue.value = props.initialValue), 400)
+  }
+)
 </script>

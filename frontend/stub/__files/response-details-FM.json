@@ -1,0 +1,36 @@
+{
+  "name": "The Great Fake Forest Company",
+  "id": "{{request.path.[2]}}",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "123 Fake DR",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "BC",
+        "text": "British Columbia"
+      },
+      "city": "Fakest City",
+      "postalCode": "A0A0A0",
+      "index": 0,
+      "locationName": "Mailing Address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "person",
+        "text": "person"
+      },
+      "firstName": "Jhon",
+      "lastName": "Wick",
+      "phoneNumber": "",
+      "email": "",
+      "index": 1,
+      "locationNames": []
+    }
+  ]
+}

@@ -81,6 +81,7 @@ class ForestClientUserSession implements SessionProperties {
           parsedUser['custom:idp_name']
         )
       }
+      this.user.provider = this.user.provider.startsWith('ca.bc.gov.flnr.fam.') ? 'bcsc' : this.user.provider
     }
   }
 

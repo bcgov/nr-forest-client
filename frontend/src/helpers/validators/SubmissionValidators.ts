@@ -31,7 +31,7 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 /**
  * Array of submission validators.
  */
-let submissionValidators = []
+let submissionValidators : any = []
 
 /**
  * Register a listener for submission errors on the error bus.
@@ -50,7 +50,7 @@ errorBus.on((errors) => {
  * @param value - The new value for the validator's originalValue property.
  */
 const updateValidators = (fieldId: string, value: string): void => {
-  submissionValidators = submissionValidators.map((validator) => {
+  submissionValidators = submissionValidators.map((validator : any) => {
     if (validator.fieldId === fieldId) {
       return { ...validator, originalValue: value }
     }
@@ -69,7 +69,7 @@ export const submissionValidation = (
 ): ((value: string) => string) => {
   return (value: string) => {
     const foundError = submissionValidators.find(
-      (validator) => validator.fieldId === fieldName
+      (validator: any) => validator.fieldId === fieldName
     )
     if (
       foundError &&
