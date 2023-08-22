@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "composite": true,
     "types": ["cypress"],
     "target": "ES6",
     "lib": ["DOM", "ESNext"]
