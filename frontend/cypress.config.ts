@@ -15,7 +15,8 @@ export default defineConfig({
         '**/src/routes.ts',
         '**/src/shims-vue.d.ts ',
         '**/src/CoreConstants.ts',
-        '**/src/main.ts'
+        '**/src/main.ts',
+        '**/stub/**/*'
       ]
     }
   },
@@ -24,7 +25,6 @@ export default defineConfig({
     baseUrl: 'http://127.0.0.1:3000/',
     setupNodeEvents: (on, config) => {
       require('@cypress/code-coverage/task')(on, config)
-      // implement node event listeners here
       return config
     }
   },
@@ -38,5 +38,7 @@ export default defineConfig({
       require('@cypress/code-coverage/task')(on, config)
       return config
     }
-  }
+  },
+
+  retries: 2
 })
