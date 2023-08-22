@@ -57,6 +57,7 @@ public class ChesService {
     this.authApi = authApi;
     this.freeMarkerConfiguration = new Configuration(Configuration.VERSION_2_3_31);
     freeMarkerConfiguration.setClassForTemplateLoading(this.getClass(), "/templates");
+    freeMarkerConfiguration.setDefaultEncoding("UTF-8");
   }
 
   public Mono<String> sendEmail(String templateName, 

@@ -25,6 +25,11 @@ spring:
     user: ${ca.bc.gov.nrs.postgres.username}
     password: ${ca.bc.gov.nrs.postgres.password}
     url: jdbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 management:
   endpoint:
