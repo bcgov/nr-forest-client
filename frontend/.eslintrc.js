@@ -19,6 +19,8 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   rules: {},
   globals: {
-    config: 'readable'
+    config: 'readable',
+    cy: 'readonly',
+    Cypress: 'readonly'
   }
 }

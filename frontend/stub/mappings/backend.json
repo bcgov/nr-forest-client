@@ -13,12 +13,12 @@
     },
     {
       "request": {
-        "urlPattern": "/api/clients/(XX|YY|UU|JJ)(.*)",
+        "urlPattern": "/api/clients/(XX|YY|UU|JJ|FM)(.*)",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-details-{{regexExtract request.path.[2] '(XX|YY|UU|JJ)(.*)' 'parts'}}{{parts.0}}.json",
+        "bodyFileName": "response-details-{{regexExtract request.path.[2] '(XX|YY|UU|JJ|FM)(.*)' 'parts'}}{{parts.0}}.json",
         "transformers": ["response-template"],
         "fixedDelayMilliseconds": 2500
       }
@@ -107,7 +107,6 @@
         "bodyFileName": "response-submission-fault.json"
       }
     },
-
     {
       "request": {
         "url": "/api/clients/mail",
@@ -123,6 +122,24 @@
       },
       "response": {
         "status": 202
+      }
+    },
+    {
+      "request": {
+        "url": "/api/clients/submissions",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.incorporationNumber",
+              "contains": "FM1234567"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 400,
+        "body":"[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]"
       }
     },
 

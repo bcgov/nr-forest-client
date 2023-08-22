@@ -13,7 +13,8 @@ describe('Text Input Component', () => {
         label: 'TestField',
         placeholder: '',
         modelValue: '',
-        validations: []
+        validations: [],
+        enabled: true
       },
       directives: {
         mask: () => {}
@@ -30,7 +31,8 @@ describe('Text Input Component', () => {
         label: 'TestField',
         placeholder: '',
         modelValue: '',
-        validations: []
+        validations: [],
+        enabled: true
       },
       directives: {
         mask: () => {}
@@ -52,7 +54,8 @@ describe('Text Input Component', () => {
         label: 'TestField',
         placeholder: '',
         modelValue: '',
-        validations
+        validations,
+        enabled: true
       },
       directives: {
         mask: () => {}
@@ -73,7 +76,8 @@ describe('Text Input Component', () => {
         label: 'TestField',
         placeholder: '',
         modelValue: '',
-        validations: []
+        validations: [],
+        enabled: true
       },
       directives: {
         mask: () => {}

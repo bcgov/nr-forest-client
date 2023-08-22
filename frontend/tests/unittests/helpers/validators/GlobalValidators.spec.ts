@@ -110,27 +110,27 @@ describe('GlobalValidators', () => {
   })
   it('should return an error message when isCanadianPostalCode is called with an empty string', () => {
     expect(isCanadianPostalCode('')).toBe(
-      'This field must be a valid Canadian postal code'
+      'This field must be a valid Canadian postal code without spaces or dashes'
     )
   })
   it('should return an error message when isCanadianPostalCode is called with a string with leading whitespaces', () => {
     expect(isCanadianPostalCode('  A1A1A1')).toBe(
-      'This field must be a valid Canadian postal code'
+      'This field must be a valid Canadian postal code without spaces or dashes'
     )
   })
   it('should return an error message when isCanadianPostalCode is called with a string with trailing whitespaces', () => {
     expect(isCanadianPostalCode('A1A1A1  ')).toBe(
-      'This field must be a valid Canadian postal code'
+      'This field must be a valid Canadian postal code without spaces or dashes'
     )
   })
   it('should return an error message when isCanadianPostalCode is called with a string with leading and trailing whitespaces', () => {
     expect(isCanadianPostalCode('  A1A1A1  ')).toBe(
-      'This field must be a valid Canadian postal code'
+      'This field must be a valid Canadian postal code without spaces or dashes'
     )
   })
   it('should return an error message when isCanadianPostalCode is called with a postal code with whitespace in the middle of it', () => {
     expect(isCanadianPostalCode('A1A 1A1')).toBe(
-      'This field must be a valid Canadian postal code'
+      'This field must be a valid Canadian postal code without spaces or dashes'
     )
   })
   it('should return empty when isCanadianPostalCode is called with a postal code with lowercase letters', () => {
@@ -141,12 +141,12 @@ describe('GlobalValidators', () => {
   })
   it('should return an error message when isCanadianPostalCode is called with a postal code with a number in the first position', () => {
     expect(isCanadianPostalCode('1A1A1B')).toBe(
-      'This field must be a valid Canadian postal code'
+      'This field must be a valid Canadian postal code without spaces or dashes'
     )
   })
   it('should return an error message when isCanadianPostalCode is called with a postal code with a dash', () => {
     expect(isCanadianPostalCode('A1-A1A1')).toBe(
-      'This field must be a valid Canadian postal code'
+      'This field must be a valid Canadian postal code without spaces or dashes'
     )
   })
   it('should return empty when isUsZipCode is called with a valid zip code', () => {
@@ -218,13 +218,13 @@ describe('GlobalValidators', () => {
   })
   it('should return empty when isUniqueDescriptive is called on two different sets of strings', () => {
     const isUnique = isUniqueDescriptive()
-    expect(isUnique('key1', 'field1')('value')).toBe('')
-    expect(isUnique('key2', 'field1')('value')).toBe('')
+    expect(isUnique.add('key1', 'field1')('value')).toBe('')
+    expect(isUnique.add('key2', 'field1')('value')).toBe('')
   })
   it('should return an error message when isUniqueDescriptive is called on two fields but for the same set of strings', () => {
     const isUnique = isUniqueDescriptive()
-    expect(isUnique('key1', 'field1')('value')).toBe('')
-    expect(isUnique('key1', 'field2')('value')).toBe(
+    expect(isUnique.add('key1', 'field1')('value')).toBe('')
+    expect(isUnique.add('key1', 'field2')('value')).toBe(
       'This value is already in use'
     )
   })

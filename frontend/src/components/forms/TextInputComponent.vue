@@ -1,9 +1,9 @@
 <template>
-  <div>
-    <label v-if="!enabled" :for="id" class="bx--label">{{ label }}</label>
-    <bx-form-item>
+    <bx-form-item class="grouping-02" v-if="enabled">
       <bx-input
+        v-if="enabled"
         :id="id"
+        :data-scroll="id"
         :data-id="'input-' + id"
         :placeholder="placeholder"
         :value="selectedValue"
@@ -18,7 +18,12 @@
         @input="(event:any) => selectedValue = event.target.value"
       />
     </bx-form-item>
-  </div>
+
+    <div v-if="!enabled" class="grouping-04">
+      <div :data-scroll="id" class="grouping-04-label"><span :for="id" class="label-01">{{ label }}</span></div>
+      <span class="text-01">{{ selectedValue }}</span>
+    </div>
+
 </template>
 
 <script setup lang="ts">
@@ -90,5 +95,12 @@ const validateInput = (newValue: string) => {
   }
 }
 
-validateInput(selectedValue.value)
 </script>
+
+<style scoped>
+.bx-input-disabled {
+  height: 2.5rem;
+  color: #131315; /*Change to common color*/
+  padding-top: 0.69rem;
+}
+</style>

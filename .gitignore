@@ -569,3 +569,5 @@ frontend/cypress/videos/*
 
 reports/
 frontend/reports/
+
+**/sonar-report.xml

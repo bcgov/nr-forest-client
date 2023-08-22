@@ -4,11 +4,21 @@ import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentAccessRequestDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentAccessTypeDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestBodyDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestDocumentDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryExceptionMessageDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryIdentificationDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryOfficerDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryOfficesDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryRoleDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.ches.ChesMailErrorResponse;
 import ca.bc.gov.app.dto.ches.ChesMailRequest;
@@ -71,7 +81,20 @@ import org.springframework.web.reactive.function.client.WebClient;
     ChesMailRequest.class,
     ChesMailResponse.class,
     ChesMailErrorResponse.class,
-    AuthResponse.class
+    AuthResponse.class,
+    BcRegistryDocumentRequestBodyDto.class,
+    BcRegistryDocumentAccessRequestDto.class,
+    BcRegistryDocumentAccessTypeDto.class,
+    BcRegistryDocumentRequestResponseDto.class,
+    BcRegistryDocumentDto.class,
+    BcRegistryDocumentRequestDocumentDto.class,
+    BcRegistryBusinessDto.class,
+    BcRegistryOfficesDto.class,
+    BcRegistryPartyDto.class,
+    BcRegistryAddressDto.class,
+    BcRegistryBusinessAdressesDto.class,
+    BcRegistryOfficerDto.class,
+    BcRegistryRoleDto.class
 })
 public class GlobalServiceConfiguration {
 

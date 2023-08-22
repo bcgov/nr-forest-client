@@ -23,7 +23,7 @@ export default defineConfig(({ command, mode }) => {
       Icons(),
       istanbul({
         include: 'src/*',
-        exclude: ['node_modules', 'test/', 'cypress/'],
+        exclude: ['node_modules/', 'test/', 'cypress/', 'stub/', 'coverage/', 'reports/', 'reports/**/*', '.nyc_output/'],
         extension: ['.js', '.ts', '.vue'],
         requireEnv: true,
         nycrcPath: '.nycrc'
@@ -49,17 +49,19 @@ export default defineConfig(({ command, mode }) => {
           '**/public/**',
           '**/.nyc*/**/*',
           '**/coverage/**/*',
+          '**/reports/**/*',
+          '**/stub/**/*',
           '.eslintrc.cjs',
           '.eslintrc.js',
           'components.d.ts',
           'env.d.ts',
-          'src/routes.ts',
-          'src/shims-vue.d.ts ',
+          '**/routes.ts',
+          '**/shims-vue.d.ts ',
           'vite.config.ts',
           '**/dto/**/*',
           '**/core/**/*',
-          'src/CoreConstants.ts',
-          'src/main.ts'
+          '**/CoreConstants.ts',
+          '**/main.ts'
         ]
       },
       environment: 'jsdom'
