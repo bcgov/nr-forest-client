@@ -14,6 +14,7 @@
       >
         <bx-dropdown-item
           v-for="option in modelValue"
+          :data-item="option.code"
           :key="option.code"
           :value="option.code"
           >{{ option.name }}</bx-dropdown-item
@@ -24,6 +25,7 @@
           v-for="(tag, index) in items"
           title="Clear selection"
           class="bx-tag"
+          :data-tag="'tag_' + id + '_' + index"
           :id="'tag_' + id + '_' + index"
           :key="index"
         >

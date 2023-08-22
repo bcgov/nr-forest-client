@@ -1,23 +1,27 @@
 import { ref } from 'vue'
-
 export default function useFocus () {
-  const focusedComponent = ref(null)
+  let focusedComponent = ''
   const changeFocus = () => {
-    console.log(`[useFocus] changeFocus: ${focusedComponent.value}`, document.all)
-    if (focusedComponent.value) {
-      const element = document.querySelector(`[data-scroll="${focusedComponent.value}"]`)
+    if (focusedComponent) {
+      const element = document.querySelector(`[data-scroll="${focusedComponent}"]`)
       if (element) {
-        console.log(`[useFocus] element: ${element}`)
         element.focus()
         element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      } else {
-        console.log('[useFocus] element not found')
+        return element
       }
+      return undefined
     }
   }
-  const setFocusedComponent = (componentName:any) => {
-    focusedComponent.value = componentName
-    setTimeout(() => changeFocus(), 100)
+  const setFocusedComponent = (componentName:string) => {
+    focusedComponent = componentName
+    const refComponent = ref<Element|undefined>(undefined)
+    console.log('test0')
+    setTimeout(() => {
+      refComponent.value = changeFocus()
+      console.log('test1', refComponent.value)
+    }, 100)
+    console.log('test2')
+    return refComponent
   }
   return { setFocusedComponent }
 }

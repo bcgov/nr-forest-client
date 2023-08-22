@@ -1,40 +1,6 @@
 import AddressGroupComponent from '@/components/grouping/AddressGroupComponent.vue'
 
 describe('<AddressGroupComponent />', () => {
-  const countries = [
-    { code: 'CA', name: 'Canada' },
-    { code: 'US', name: 'United States of America' }
-  ]
-  const provinces = [
-    { code: 'NL', name: 'Newfoundland and Labrador' },
-    { code: 'PE', name: 'Prince Edward Island' },
-    { code: 'NS', name: 'Nova Scotia' },
-    { code: 'NB', name: 'New Brunswick' },
-    { code: 'QC', name: 'Quebec' },
-    { code: 'ON', name: 'Ontario' },
-    { code: 'MB', name: 'Manitoba' },
-    { code: 'SK', name: 'Saskatchewan' },
-    { code: 'AB', name: 'Alberta' },
-    { code: 'BC', name: 'British Columbia' },
-    { code: 'YT', name: 'Yukon' },
-    { code: 'NT', name: 'Northwest Territories' },
-    { code: 'NU', name: 'Nunavut' }
-  ]
-
-  const address = {
-    streetAddress: '2975 Jutland Rd',
-    country: {
-      value: 'CA',
-      text: 'Canada'
-    },
-    province: {
-      value: 'BC',
-      text: 'British Columbia'
-    },
-    city: 'Victoria',
-    postalCode: 'V8T5J9',
-    locationName: 'Mailing Address'
-  }
   const dummyValidation = (): ((
     key: string,
     field: string
@@ -49,18 +15,25 @@ describe('<AddressGroupComponent />', () => {
     cy.intercept(
       'GET',
       '/api/clients/activeCountryCodes/CA?page=0&size=250',
-      provinces
+      { fixture: 'provinces.json' }
     ).as('getProvinces')
+
+    cy.fixture('address.json').as('addressFixture')
+    cy.fixture('countries.json').as('countriesFixture')
   })
 
   it('should render the component', () => {
-    cy.mount(AddressGroupComponent, {
-      props: {
-        id: 0,
-        modelValue: address,
-        countryList: countries,
-        validations: []
-      }
+    cy.get('@addressFixture').then((address) => {
+      cy.get('@countriesFixture').then((countries) => {
+        cy.mount(AddressGroupComponent, {
+          props: {
+            id: 0,
+            modelValue: address,
+            countryList: countries,
+            validations: []
+          }
+        })
+      })
     })
 
     cy.wait('@getProvinces')
@@ -80,23 +53,29 @@ describe('<AddressGroupComponent />', () => {
   })
 
   it('should render the component with validation', () => {
-    cy.mount(AddressGroupComponent, {
-      props: {
-        id: 0,
-        modelValue: {
-          ...address,
-          streetAddress: address.streetAddress + ' fault'
-        },
-        countryList: countries,
-        validations: [dummyValidation()]
-      }
+    cy.get('@addressFixture').then((address:any) => {
+      cy.get('@countriesFixture').then((countries) => {
+        cy.mount(AddressGroupComponent, {
+          props: {
+            id: 0,
+            modelValue: {
+              ...address,
+              streetAddress: address.streetAddress + ' fault'
+            },
+            countryList: countries,
+            validations: [dummyValidation()]
+          }
+        })
+      })
     })
 
     cy.wait('@getProvinces')
 
-    cy.get('#addr_0')
-      .should('be.visible')
-      .and('have.value', address.streetAddress + ' fault')
+    cy.get('@addressFixture').then((address:any) => {
+      cy.get('#addr_0')
+        .should('be.visible')
+        .and('have.value', address.streetAddress + ' fault')
+    })
 
     cy.get('#postalCode_0')
       .shadow()
@@ -104,5 +83,48 @@ describe('<AddressGroupComponent />', () => {
       .should('be.visible')
       .find('slot')
       .and('have.text', ' Error ')
+  })
+
+  it('should render the component and set focus on street address input', () => {
+    cy.get('@addressFixture').then((address) => {
+      cy.get('@countriesFixture').then((countries) => {
+        cy.mount(AddressGroupComponent, {
+          props: {
+            id: 0,
+            modelValue: address,
+            countryList: countries,
+            validations: []
+          }
+        })
+      })
+    })
+
+    cy.wait('@getProvinces')
+
+    cy.get('#addr_0')
+      .should('be.visible')
+      .and('have.focus')
+  })
+
+  it('should render the component and show the address name if id is bigger than 0', () => {
+    cy.get('@addressFixture').then((address) => {
+      cy.get('@countriesFixture').then((countries) => {
+        cy.mount(AddressGroupComponent, {
+          props: {
+            id: 1,
+            modelValue: address,
+            countryList: countries,
+            validations: []
+          }
+        })
+      })
+    })
+
+    cy.wait('@getProvinces')
+
+    cy.get('#name_1')
+      .should('be.visible')
+      .and('have.value', 'Mailing Address')
+      .and('have.focus')
   })
 })

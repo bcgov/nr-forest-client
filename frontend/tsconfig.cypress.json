@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "types": ["cypress"],
+    "target": "ES6",
+    "lib": ["DOM", "ESNext"]
+  },
+  "include": ["cypress/**/*.ts","tests/components/**/*.ts"]
+}

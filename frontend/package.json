@@ -81,7 +81,7 @@
     "eslint-plugin-vue": "^9.0.0",
     "istanbul-lib-coverage": "^3.2.0",
     "istanbul-lib-instrument": "^6.0.0",
-    "jsdom": "^22.0.0",
+    "jsdom": "^22.1.0",
     "lcov-result-merger": "^4.1.0",
     "nyc": "^15.1.0",
     "prettier": "^3.0.0",
