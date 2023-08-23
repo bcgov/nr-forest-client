@@ -122,28 +122,19 @@ body {
   display: flex;
   flex-direction: column;
 }
+
 .form-header-progress {
   display: flex;
 }
+
 .bx--progress-indicator {
   flex-direction: row;
 }
+
 .bx--progress-step {
   border-top: solid 0.125rem;
   flex: 1;
 }
-
-@media screen and (max-width: 320px) {
-  .bx--progress-indicator {
-    flex-direction: column;
-  }
-  .bx--progress-step {
-    border-top: none;
-    border-left: solid 0.125rem;
-    flex: none;
-  }
-}
-
 
 .bx--progress-indicator {
   display: flex;
@@ -740,14 +731,17 @@ bx-modal-footer {
     flex-direction: column;
     align-items: center;
   }
+
   .headers{
     padding: 0rem 1rem;
     gap: 1rem;
     flex-shrink: 0;
   }
+
   .headers a img {
     width: 2.5rem;
   }
+
   .heading {
     width: 6.5rem;
     padding: 1rem 0.5rem;
@@ -755,29 +749,36 @@ bx-modal-footer {
     align-items: center;
     flex-shrink: 0;
   }
+
   .heading span:last-child {
     display: none;
   }
+
   .heading-space {
     width: 2rem;
     flex-shrink: 0;
   }
+
   .bx--btn-header {
     width: 1.25rem;
     height: 1.25rem;
     border: none !important;
   }
+
   .bx--btn-header::part(button) {
     width: 2.5rem;
     border: none !important;
     margin-right: 20rem !important;
   }
+
   .bx--btn-reset {
     width: 2.5rem;
   }
+
   .form-header {
     align-self: stretch;
   }
+
   .form-header-progress {
     flex-direction: column;
   }
@@ -785,6 +786,7 @@ bx-modal-footer {
   .bx--progress-step{
     width: 18rem;
   }
+
   .bx--progress-step svg {
     margin: 0.6rem;
   }
@@ -793,6 +795,7 @@ bx-modal-footer {
     align-self: stretch;
     width: 18rem;
   }
+
   .form-steps-01{
     align-self: stretch;
     width: 18rem;
@@ -806,6 +809,16 @@ bx-modal-footer {
   .form-footer-group-buttons{
     flex-direction: column-reverse;
     justify-content: flex-end;
+  }
+
+  .bx--progress-indicator {
+    flex-direction: column;
+  }
+
+  .bx--progress-step {
+    border-top: none;
+    border-left: solid 0.125rem;
+    flex: none;
   }
 
 }
