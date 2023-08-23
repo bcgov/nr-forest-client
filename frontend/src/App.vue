@@ -97,8 +97,8 @@ modalBus.on(openModal)
       class="wizard-head-toast"
       timeout="8000"
       kind="success"
-      :title="toastContent.kind"
-      :subtitle="toastContent.message"
+      :title="toastContent.message"
+      subtitle=""
     >
   </bx-toast-notification>
 </template>

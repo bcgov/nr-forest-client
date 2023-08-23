@@ -63,11 +63,12 @@ body {
 }
 
 .wizard-head-toast {
-  position: absolute;
+  position: fixed;
   right: 1.5625rem;
   top: 5rem;
   border-radius: 0.25rem;
   background: var(--light-theme-background-background-inverse, #2D2D2F);
+  z-index: 999; /* Higher value to ensure it's on top */
 
   /* Light Theme/Shadows/Menu */
   box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.30);
