@@ -53,7 +53,7 @@ const routes: RouteRecordRaw[] = [
     component: FormSubmittedPage,
     props: true,
     meta: {
-      format: 'full',
+      format: 'full-centered',
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,

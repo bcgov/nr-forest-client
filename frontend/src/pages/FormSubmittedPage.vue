@@ -1,8 +1,8 @@
 <template>
-  <div class="bx--content submission-head">
+  <div class="frame-03">
     <SVG alt="Badge pictogram" class="submission-badge"></SVG>
     <div ref="i"></div>
-    <div class="submission-text">
+    <div class="form-header form-header-stretched">
       <h1>Application submitted!</h1>
       <p>Your application for a client number has been submitted.</p>
       <p>
