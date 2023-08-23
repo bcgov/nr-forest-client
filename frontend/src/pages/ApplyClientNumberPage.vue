@@ -267,7 +267,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
           <span class="heading-03"
               >Add authorized people to the account</span
             >
-            <p class="body-01">
+            <p class="body-01 heading-compact-01-dark">
               Your first name, last name and email address are from your BCeID.
               If they're incorrect,
               <a

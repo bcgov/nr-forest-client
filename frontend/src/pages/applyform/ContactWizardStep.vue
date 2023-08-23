@@ -1,58 +1,3 @@
-<template>
-  <contact-group-component
-    :id="0"
-    v-model="formData.location.contacts[0]"
-    :roleList="roleList"
-    :addressList="addresses"
-    :validations="[uniqueValues.add]"
-    :revalidate="revalidate"
-    :enabled="false"
-    @update:model-value="updateContact($event, 0)"
-    @valid="updateValidState(0, $event)"
-  />
-
-  <hr v-if="otherContacts.length > 0"/>
-
-  <div class="frame-01" v-if="otherContacts.length > 0">
-    <div class="grouping-01">
-      <span class="heading-03">Additional address</span>
-      <span class="body-01">Provide a name to identify your additional address</span>
-    </div>
-    <div  v-for="(contact, index) in otherContacts">
-      <hr v-if="index > 0"/>
-    <contact-group-component
-    
-      :key="index + 1"
-      :id="index + 1"
-      v-bind:modelValue="contact"
-      :roleList="roleList"
-      :addressList="addresses"
-      :validations="[uniqueValues.add]"
-      :enabled="true"
-      :revalidate="revalidate"
-      @update:model-value="updateContact($event, index + 1)"
-      @valid="updateValidState(index + 1, $event)"
-      @remove="handleRemove(index + 1)"
-    />
-    </div>
-  </div>
-
-  <span class="body-01">
-              To add another contact to the account, select "Add another
-              contact" button below.</span>
-
-  <bx-btn
-    kind="tertiary"
-    iconLayout=""
-    class="bx--btn"
-    @click.prevent="addContact"
-    size="field"
-  >
-    <span>Add another contact</span>
-    <Add16 slot="icon" />
-  </bx-btn>
-</template>
-
 <script setup lang="ts">
 import { watch, ref, computed, reactive, onMounted } from 'vue'
 import { useEventBus } from '@vueuse/core'
@@ -164,3 +109,59 @@ const handleRemove = (index: number) => {
 
 onMounted(() => setFocusedComponent('address_0'))
 </script>
+
+<template>
+  <contact-group-component
+    :id="0"
+    v-model="formData.location.contacts[0]"
+    :roleList="roleList"
+    :addressList="addresses"
+    :validations="[uniqueValues.add]"
+    :revalidate="revalidate"
+    :enabled="false"
+    @update:model-value="updateContact($event, 0)"
+    @valid="updateValidState(0, $event)"
+  />
+
+  <hr v-if="otherContacts.length > 0"/>
+
+  <div class="frame-01" v-if="otherContacts.length > 0">
+    <div class="grouping-01">
+      <span class="heading-03">Additional contact</span>
+    </div>
+    <div  v-for="(contact, index) in otherContacts">
+      <hr v-if="index > 0"/>
+    <contact-group-component
+    
+      :key="index + 1"
+      :id="index + 1"
+      v-bind:modelValue="contact"
+      :roleList="roleList"
+      :addressList="addresses"
+      :validations="[uniqueValues.add]"
+      :enabled="true"
+      :revalidate="revalidate"
+      @update:model-value="updateContact($event, index + 1)"
+      @valid="updateValidState(index + 1, $event)"
+      @remove="handleRemove(index + 1)"
+    />
+    </div>
+  </div>
+
+  <span class="body-01">
+              To add another contact to the account, select "Add another
+              contact" button below.</span>
+
+  <bx-btn
+    kind="tertiary"
+    iconLayout=""
+    class="bx--btn"
+    @click.prevent="addContact"
+    size="field"
+  >
+    <span>Add another contact</span>
+    <Add16 slot="icon" />
+  </bx-btn>
+</template>
+
+
