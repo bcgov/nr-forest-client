@@ -73,7 +73,7 @@ const removeContact = (index: number) => () => {
     updateContact(undefined, index)
     delete validation[index]
     uniqueValues.remove('Name',index+'')
-    bus.emit({ active: false, message: '', kind: '', handler: () => {} })
+    bus.emit({ active: false, message: '', kind: '', toastTitle: '', handler: () => {} })
 }
 
 //Validation
@@ -98,10 +98,13 @@ watch([validation], () => emit('valid', checkValid()))
 emit('valid', false)
 
 const handleRemove = (index: number) => {
-  const selectedContact = formData.location.contacts[index]
+  const selectedContact = formData.location.contacts[index].firstName.length !== 0
+    ? formData.location.contacts[index].firstName + formData.location.contacts[index].lastName
+    : 'Contact #' + index;
   bus.emit({
-    message: selectedContact.firstName || 'this',
+    message: selectedContact,
     kind: 'Contact deleted',
+    toastTitle: 'The additional contact was deleted',
     handler: removeContact(index),
     active: true
   })

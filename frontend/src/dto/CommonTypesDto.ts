@@ -53,6 +53,7 @@ export interface Submitter {
 export interface ModalNotification {
   message: string
   kind: string
+  toastTitle: string
   active: boolean
   handler: () => void
 }

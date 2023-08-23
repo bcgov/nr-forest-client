@@ -87,7 +87,7 @@ const removeAddress = (index: number) => () => {
   delete validation[index];
   uniqueValues.remove('Address',index+'')
   uniqueValues.remove('Names',index+'')
-  bus.emit({ active: false, message: '', kind: '', handler: () => {} });
+  bus.emit({ active: false, message: '', kind: '', toastTitle: '', handler: () => {} });
   setFocusedComponent(`addr_addr_${index-1}`);
 };
 
@@ -98,6 +98,7 @@ const handleRemove = (index: number) => {
   bus.emit({
     message: selectedAddress,
     kind: 'address',
+    toastTitle: 'The additional address was deleted',
     handler: removeAddress(index),
     active: true
   });
