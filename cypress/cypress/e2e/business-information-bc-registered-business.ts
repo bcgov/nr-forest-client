@@ -156,17 +156,15 @@ Then("the button 'Receive email and logout' is displayed", () => {
 });
 
 Then("I get to the Address tab", () => {
-  cy.get(".wizard-body")
-    .find(".bx--title")
-    .first()
-    .should("contain.text", "Address");
+  cy.get(".heading-04").should("contain.text", "Address");
 });
 
 Then("I get to the Contacts tab", () => {
-  cy.get(".wizard-body")
-    .find(".bx--title")
-    .first()
-    .should("contain.text", "Contacts");
+  cy.get(".heading-04").should("contain.text", "Contacts");
+});
+
+Then("I get to the Review tab", () => {
+  cy.get(".heading-04").should("contain.text", "Review");
 });
 
 When("the list of countries finishes loading", () => {
@@ -175,7 +173,7 @@ When("the list of countries finishes loading", () => {
     .should("be.visible");
 });
 
-When("I type in {string} in the Street Address", (address: string) => {
+When("I type in {string} in the Street address", (address: string) => {
   // cy.getByLabel("Street address or PO box").type(address);
   cy.get('bx-input[label-text="Street address or PO box"')
     .find("input")
@@ -195,23 +193,15 @@ Then("the City gets updated to {string}", (city: string) => {
 });
 
 Then("the Province gets updated to {string}", (province: string) => {
-  return "skipped"; // TODO: fix application
   cy.get('bx-dropdown[label-text="Province or territory"]')
     .contains("span", province)
     .should("be.visible");
 });
 
 Then("the Postal code gets updated to {string}", (postalCode: string) => {
-  // cy.getByLabel("Postal code").should("equal", postalCode);
   cy.get('bx-input[label-text="Postal code"')
     .find("input")
     .should("have.value", postalCode);
-
-  // TODO: investigate why the white space is auto-removed by this test.
-
-  // TODO: fix the application and remove focus and blur below.
-  cy.get('bx-input[label-text="Postal code"').find("input").focus();
-  cy.get('bx-input[label-text="Postal code"').blur();
 });
 
 When("I select the Address name {string}", (addressName: string) => {
@@ -221,27 +211,26 @@ When("I select the Address name {string}", (addressName: string) => {
   cy.get('bx-dropdown[label-text="Address name"]')
     .contains(addressName)
     .click();
-  /* ==== Generated with Cypress Studio ==== */
-  // cy.get('#address_0').click();
-  // cy.get('#address_0 > bx-dropdown-item').click();
-  // cy.get('#tag_address_0_0').should('have.text', 'Mailing Address ');
-  // cy.get('#role_0').click();
-  // cy.get('#role_0 > :nth-child(10)').click();
-  /* ==== End Cypress Studio ==== */
 });
 
-When("I select the Address name {string}", (addressName: string) => {
-  cy.get('bx-dropdown[label-text="Address name"]')
+When("I select the Contact name {string}", (contactName: string) => {
+  cy.get('bx-dropdown[label-text="Contact name"]')
     .find("[role='button']")
     .click();
-  cy.get('bx-dropdown[label-text="Address name"]')
-    .contains(addressName)
+  cy.get('bx-dropdown[label-text="Contact name"]')
+    .contains(contactName)
     .click();
-  /* ==== Generated with Cypress Studio ==== */
-  // cy.get('#address_0').click();
-  // cy.get('#address_0 > bx-dropdown-item').click();
-  // cy.get('#tag_address_0_0').should('have.text', 'Mailing Address ');
-  // cy.get('#role_0').click();
-  // cy.get('#role_0 > :nth-child(10)').click();
-  /* ==== End Cypress Studio ==== */
+});
+
+When("I select the Primary role {string}", (contactName: string) => {
+  cy.get('bx-dropdown[label-text="Primary role"]')
+    .find("[role='button']")
+    .click();
+  cy.get('bx-dropdown[label-text="Primary role"]')
+    .contains(contactName)
+    .click();
+});
+
+When("I type in {string} as Phone number", (phoneNumber: string) => {
+  cy.get('bx-input[label-text="Phone number"').find("input").type(phoneNumber);
 });

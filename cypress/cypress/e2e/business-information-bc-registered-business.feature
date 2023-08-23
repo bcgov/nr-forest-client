@@ -18,12 +18,20 @@ Feature: Business Information: BC registered business
     Then I get to the Address tab
     And the button Next is disabled
     When the list of countries finishes loading
-    And I type in "3219 34 Ave SE Calgary" in the Street Address
+    And I type in "3219 34 Ave SE Calgary" in the Street address
     And I select the Street Address that contains "3219 34 Ave SE Calgary" from the list
     Then the City gets updated to "Calgary"
     And the Province gets updated to "Alberta"
-    And the Postal code gets updated to "T2B 2M6"
+    And the Postal code gets updated to "T2B2M6"
     And the button Next is enabled
     When I click the button Next
     Then I get to the Contacts tab
     When I select the Address name "Mailing Address"
+    And I select the Primary role "Billing"
+    And I type in "7804146040" as Phone number
+    Then the button Next is enabled
+    When I click the button Next
+    Then I get to the Review tab
+# And the displayed Business information match the provided information
+# And the displayed Address information match the provided information
+# And the displayed Contacts information match the provided information
