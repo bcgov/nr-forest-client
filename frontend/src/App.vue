@@ -12,6 +12,7 @@ const modalContent = ref<ModalNotification>({
   active: false,
   message: '',
   kind: '',
+  toastTitle: '',
   handler: () => {}
 })
 
@@ -19,6 +20,7 @@ const toastContent = ref<ModalNotification>({
   active: false,
   message: '',
   kind: '',
+  toastTitle: '',
   handler: () => {}
 })
 
@@ -36,6 +38,7 @@ const deleteContentModal = () => {
   openToast({
     message: `“${modalContent.value.message}” additional ${modalContent.value.kind} was deleted successfully`,
     kind: 'Success',
+    toastTitle: '',
     active: true,
     handler: () => {}
   })
