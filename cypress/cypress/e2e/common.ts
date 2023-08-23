@@ -94,3 +94,7 @@ When("I click the button 'Receive email and logout'", () => {
 Then("I am redirected to the logout route", () => {
   cy.wait("@logout"); // the route has been hit
 });
+
+When("I click the button Next", () => {
+  cy.contains("bx-btn", "Next").click();
+});
