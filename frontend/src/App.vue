@@ -2,7 +2,7 @@
   <div class="headers">
     <main-header-component v-if="!$route.meta.hideHeader"></main-header-component>
   </div>
-  <div class="screen">
+  <div :class="{[`${$route.meta.format}`]:true}">
     <div class="content">
     <router-view></router-view>
     </div>

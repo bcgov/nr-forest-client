@@ -18,6 +18,7 @@ const routes: RouteRecordRaw[] = [
     component: LandingPage,
     props: true,
     meta: {
+      format: 'full',
       hideHeader: true,
       requireAuth: false,
       showLoggedIn: false,
@@ -36,6 +37,7 @@ const routes: RouteRecordRaw[] = [
     component: ApplyClientNumber,
     props: true,
     meta: {
+      format: 'screen',
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
@@ -51,6 +53,7 @@ const routes: RouteRecordRaw[] = [
     component: FormSubmittedPage,
     props: true,
     meta: {
+      format: 'full',
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
@@ -66,6 +69,7 @@ const routes: RouteRecordRaw[] = [
     component: ReviewApplicationPage,
     props: true,
     meta: {
+      format: 'screen',
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
@@ -82,6 +86,7 @@ const routes: RouteRecordRaw[] = [
     component: UserLoadingPage,
     props: true,
     meta: {
+      format: 'full',
       hideHeader: true,
       requireAuth: false,
       showLoggedIn: false,
@@ -99,6 +104,7 @@ const routes: RouteRecordRaw[] = [
     component: ErrorPage,
     props: true,
     meta: {
+      format: 'full',
       hideHeader: true,
       requireAuth: false,
       showLoggedIn: true,
@@ -111,6 +117,7 @@ const routes: RouteRecordRaw[] = [
     component: NotFoundPage,
     props: true,
     meta: {
+      format: 'full',
       hideHeader: true,
       requireAuth: false,
       showLoggedIn: true,
@@ -164,6 +171,7 @@ export { routes, router }
 declare module 'vue-router' {
   // eslint-disable-next-line no-unused-vars
   interface RouteMeta {
+    format: string
     hideHeader: boolean
     requireAuth: boolean
     showLoggedIn: boolean

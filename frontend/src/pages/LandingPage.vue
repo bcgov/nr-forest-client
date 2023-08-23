@@ -18,46 +18,51 @@ if (query.ref && query.ref === 'external') {
   <div class="full-width">
     <div class="row bx--row landing-grid">
       <div class="bx--col-sm-8 bx--col-md-10 bx--col-lg-10">
-        <img :src="logo" alt="BCGov Logo" width="160" class="logo" />
-        <h1 id="landing-title" class="landing-title">Welcome to CLIENT</h1>
+
+        <img :src="logo" alt="Government of British Columbia Logo" width="160" class="logo" />
+        
+        <h1 id="landing-title" class="landing-title">Client Management System</h1>
+        
         <h2 id="landing-subtitle" class="landing-subtitle">
-          The Ministry of Forests' client management system
+          Create and manage client accounts
         </h2>
-
-        <p id="landing-desc" class="landing-desc">
-          Check and manage client submissions
-        </p>
-
-        <bx-btn
-          kind="primary"
-          iconLayout=""
-          class="landing-button"
-          :href="$backend+'/login?code=idir'"
-        >
-          <span>Login with IDIR</span>
-          <login16 slot="icon" />
-        </bx-btn>
-        <bx-btn
-          v-if="$features.BCSC_LOGIN"
-          kind="primary"
-          iconLayout=""
-          class="landing-button"
-          :href="$backend+'/login?code=bcsc'"
-        >
-          <span>Login with BC Services Card</span>
-          <login16 slot="icon" />
-        </bx-btn>
-        <bx-btn
-          v-if="$features.BCEID_LOGIN"
-          kind="primary"
-          iconLayout=""
-          class="landing-button"
-          :href="$backend+'/login?code=bceidbusiness'"
-        >
-          <span>Login with BCeID</span>
-          <login16 slot="icon" />
-        </bx-btn>
+        <div class="spacing"></div>
+        <div class="form-footer-group-buttons">
+          <bx-btn
+            kind="primary"
+            iconLayout=""
+            class="landing-button"
+            :href="$backend+'/login?code=idir'"
+          >
+            <span>Login with IDIR</span>
+            <login16 slot="icon" />
+          </bx-btn>
+          
+          <bx-btn
+            v-if="$features.BCSC_LOGIN"
+            kind="primary"
+            iconLayout=""
+            class="landing-button"
+            :href="$backend+'/login?code=bcsc'"
+          >
+            <span>Login with BC Services Card</span>
+            <login16 slot="icon" />
+          </bx-btn>
+          
+          <bx-btn
+            v-if="$features.BCEID_LOGIN"
+            kind="primary"
+            iconLayout=""
+            class="landing-button"
+            :href="$backend+'/login?code=bceidbusiness'"
+          >
+            <span>Login with BCeID</span>
+            <login16 slot="icon" />
+          </bx-btn>
+        
+        </div>
       </div>
+      
       <div class="bx--col-sm-8 bx--col-md-6 bx--col-lg-6 landing-img-column">
         <img
           :src="Seeding"
@@ -65,6 +70,7 @@ if (query.ref && query.ref === 'external') {
           class="landing-img"
         />
       </div>
+
     </div>
   </div>
 </template>

@@ -1,3 +1,203 @@
+<script setup lang="ts">
+import { reactive, watch, toRef, ref, getCurrentInstance, computed } from 'vue'
+import { useEventBus } from '@vueuse/core'
+import { useRouter } from 'vue-router'
+import ArrowRight16 from '@carbon/icons-vue/es/arrow--right/16'
+import Save16 from '@carbon/icons-vue/es/save/16'
+import LogOut16 from '@carbon/icons-vue/es/logout/16'
+import Check16 from '@carbon/icons-vue/es/checkmark/16'
+import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformationWizardStep.vue'
+import AddressWizardStep from '@/pages/applyform/AddressWizardStep.vue'
+import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue'
+import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue'
+import {
+  newFormDataDto,
+  type FormDataDto,
+  type Contact
+} from '@/dto/ApplyClientNumberDto'
+
+import type { ValidationMessageType, ModalNotification } from '@/dto/CommonTypesDto'
+import { usePost } from '@/composables/useFetch'
+import ForestClientUserSession from '@/helpers/ForestClientUserSession'
+import useFocus from '@/composables/useFocus';
+
+const { setFocusedComponent } = useFocus();
+const submitterInformation = ForestClientUserSession.user
+const errorBus = useEventBus<ValidationMessageType[]>(
+  'submission-error-notification'
+)
+const generalErrorBus = useEventBus<string>('general-error-notification')
+const exitBus = useEventBus<Record<string, boolean | null>>('exit-notification')
+
+const router = useRouter()
+
+const instance = getCurrentInstance()
+const session = instance?.appContext.config.globalProperties.$session
+
+const submitterContact: Contact = {
+  locationNames: [],
+  contactType: { value: '', text: '' },
+  phoneNumber: '',
+  firstName: session?.user?.firstName ?? '',
+  lastName: session?.user?.lastName ?? '',
+  email: session?.user?.email ?? ''
+}
+
+let formDataDto = ref<FormDataDto>({ ...newFormDataDto() })
+
+//---- Form Data ----//
+let formData = reactive<FormDataDto>({
+  ...formDataDto.value,
+  location: {
+    addresses: formDataDto.value.location.addresses,
+    contacts: [submitterContact]
+  }
+})
+
+const { response, error, fetch } = usePost(
+  '/api/clients/submissions',
+  toRef(formData).value,
+  {
+    skip: true,
+    headers: {
+      'x-user-id': submitterInformation?.userId || '',
+      'x-user-email': submitterInformation?.email || '',
+      'x-user-name': submitterInformation?.firstName || ''
+    }
+  }
+)
+
+watch([response], () => {
+  if (response.value.status === 201) {
+    router.push({ name: 'confirmation' })
+  }
+})
+
+watch([error], () => {
+  if (error.value.response.status === 400) {
+    const validationErrors: ValidationMessageType[] = error.value.response.data
+    const fieldIds = [
+      'businessInformation.businessType',
+      'businessInformation.legalType',
+      'businessInformation.clientType'
+    ]
+
+    const matchingFields = validationErrors.find((item) =>
+      fieldIds.includes(item.fieldId)
+    )
+    if (matchingFields) {
+      generalErrorBus.emit(
+        `There was an error submitting your application. ${matchingFields.errorMsg}`
+      )
+      setFocusedComponent('top-notification')
+    }
+  } else {
+    generalErrorBus.emit(
+      `There was an error submitting your application. ${error.value.data}}`
+    )
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+})
+
+const submit = () => {
+  errorBus.emit([])
+  generalErrorBus.emit('')
+  fetch()
+}
+
+
+// Tab system
+const progressData = reactive(
+  ['Business information','Address','Contacts','Review']
+  .map((title, index) => {
+    return {
+      title,
+      subtitle: `Step ${index + 1}`,
+      kind: index === 0 ? 'current' : 'queued',
+      enabled: true,
+      valid: false
+    }
+  })
+  
+)
+
+const currentTab = ref(0);
+
+const stateIcon = (index: number) => {
+  if (currentTab.value == index) return 'current'
+  if (currentTab.value > index || progressData[index].valid) return 'complete'
+  return 'queued'
+}
+
+const isLast = computed(() => currentTab.value === progressData.length - 1)
+const isFirst = computed(() => currentTab.value === 0)
+const isCurrentValid = computed(() => progressData[currentTab.value].valid)
+const isNextAvailable = computed(() => !isCurrentValid.value || isLast.value)
+const isFormValid = computed(() => progressData.every((entry: any) => entry.valid))
+const endAndLogOut = ref<boolean>(false)
+const mailAndLogOut = ref<boolean>(false)
+
+const goToStep = (index: number) => (currentTab.value = index)
+
+const onNext = () => {
+  if (currentTab.value + 1 < progressData.length) {
+    currentTab.value++
+    progressData[currentTab.value-1].kind = stateIcon(currentTab.value-1)
+    progressData[currentTab.value].kind = stateIcon(currentTab.value)
+    setFocusedComponent(`focus-${currentTab.value}`)
+  }
+}
+const onBack = () => {
+  if (currentTab.value - 1 >= 0) {
+    currentTab.value--
+    progressData[currentTab.value+1].kind = stateIcon(currentTab.value+1)
+    progressData[currentTab.value].kind = stateIcon(currentTab.value)
+    setFocusedComponent(`focus-${currentTab.value}`)
+  }
+}
+const validateStep = (valid: boolean) => {
+  progressData[currentTab.value].valid = valid
+}
+const openToast = (event: ModalNotification) => {
+  console.log(event)
+}
+
+const saveChange = () => {
+  openToast({
+    message: `“${progressData[currentTab.value].title}” changes was saved successfully.`,
+    kind: 'Success',
+    active: true,
+    handler: () => {}
+  })
+  goToStep(3)
+}
+
+const processAndLogOut = () => {
+  if (mailAndLogOut.value) {
+    usePost(
+      '/api/clients/mail',
+      {
+        incorporation: formData.businessInformation.incorporationNumber,
+        name: formData.businessInformation.businessName,
+        userName: submitterInformation?.name || '',
+        userId: submitterInformation?.userId || '',
+        mail: submitterInformation?.email || ''
+      },
+      {}
+    )
+  }
+  session?.logOut()
+}
+
+exitBus.on((event: Record<string, boolean | null>) => {
+  endAndLogOut.value = event.goodStanding ? event.goodStanding : false
+  mailAndLogOut.value = event.duplicated ? event.duplicated : false
+})
+
+const globalErrorMessage = ref<string>('')
+generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
+</script>
+
 <template>
   <div class="form-header">
     <div class="form-header-title">
@@ -203,203 +403,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { reactive, watch, toRef, ref, getCurrentInstance, computed } from 'vue'
-import { useEventBus } from '@vueuse/core'
-import { useRouter } from 'vue-router'
-import ArrowRight16 from '@carbon/icons-vue/es/arrow--right/16'
-import Save16 from '@carbon/icons-vue/es/save/16'
-import LogOut16 from '@carbon/icons-vue/es/logout/16'
-import Check16 from '@carbon/icons-vue/es/checkmark/16'
-import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformationWizardStep.vue'
-import AddressWizardStep from '@/pages/applyform/AddressWizardStep.vue'
-import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue'
-import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue'
-import {
-  newFormDataDto,
-  type FormDataDto,
-  type Contact
-} from '@/dto/ApplyClientNumberDto'
-
-import type { ValidationMessageType, ModalNotification } from '@/dto/CommonTypesDto'
-import { usePost } from '@/composables/useFetch'
-import ForestClientUserSession from '@/helpers/ForestClientUserSession'
-import useFocus from '@/composables/useFocus';
-
-const { setFocusedComponent } = useFocus();
-const submitterInformation = ForestClientUserSession.user
-const errorBus = useEventBus<ValidationMessageType[]>(
-  'submission-error-notification'
-)
-const generalErrorBus = useEventBus<string>('general-error-notification')
-const exitBus = useEventBus<Record<string, boolean | null>>('exit-notification')
-
-const router = useRouter()
-
-const instance = getCurrentInstance()
-const session = instance?.appContext.config.globalProperties.$session
-
-const submitterContact: Contact = {
-  locationNames: [],
-  contactType: { value: '', text: '' },
-  phoneNumber: '',
-  firstName: session?.user?.firstName ?? '',
-  lastName: session?.user?.lastName ?? '',
-  email: session?.user?.email ?? ''
-}
-
-let formDataDto = ref<FormDataDto>({ ...newFormDataDto() })
-
-//---- Form Data ----//
-let formData = reactive<FormDataDto>({
-  ...formDataDto.value,
-  location: {
-    addresses: formDataDto.value.location.addresses,
-    contacts: [submitterContact]
-  }
-})
-
-const { response, error, fetch } = usePost(
-  '/api/clients/submissions',
-  toRef(formData).value,
-  {
-    skip: true,
-    headers: {
-      'x-user-id': submitterInformation?.userId || '',
-      'x-user-email': submitterInformation?.email || '',
-      'x-user-name': submitterInformation?.firstName || ''
-    }
-  }
-)
-
-watch([response], () => {
-  if (response.value.status === 201) {
-    router.push({ name: 'confirmation' })
-  }
-})
-
-watch([error], () => {
-  if (error.value.response.status === 400) {
-    const validationErrors: ValidationMessageType[] = error.value.response.data
-    const fieldIds = [
-      'businessInformation.businessType',
-      'businessInformation.legalType',
-      'businessInformation.clientType'
-    ]
-
-    const matchingFields = validationErrors.find((item) =>
-      fieldIds.includes(item.fieldId)
-    )
-    if (matchingFields) {
-      generalErrorBus.emit(
-        `There was an error submitting your application. ${matchingFields.errorMsg}`
-      )
-      setFocusedComponent('top-notification')
-    }
-  } else {
-    generalErrorBus.emit(
-      `There was an error submitting your application. ${error.value.data}}`
-    )
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-})
-
-const submit = () => {
-  errorBus.emit([])
-  generalErrorBus.emit('')
-  fetch()
-}
-
-
-// Tab system
-const progressData = reactive(
-  ['Business information','Address','Contacts','Review']
-  .map((title, index) => {
-    return {
-      title,
-      subtitle: `Step ${index + 1}`,
-      kind: index === 0 ? 'current' : 'queued',
-      enabled: true,
-      valid: false
-    }
-  })
-  
-)
-
-const currentTab = ref(0);
-
-const stateIcon = (index: number) => {
-  if (currentTab.value == index) return 'current'
-  if (currentTab.value > index || progressData[index].valid) return 'complete'
-  return 'queued'
-}
-
-const isLast = computed(() => currentTab.value === progressData.length - 1)
-const isFirst = computed(() => currentTab.value === 0)
-const isCurrentValid = computed(() => progressData[currentTab.value].valid)
-const isNextAvailable = computed(() => !isCurrentValid.value || isLast.value)
-const isFormValid = computed(() => progressData.every((entry: any) => entry.valid))
-const endAndLogOut = ref<boolean>(false)
-const mailAndLogOut = ref<boolean>(false)
-
-const goToStep = (index: number) => (currentTab.value = index)
-
-const onNext = () => {
-  if (currentTab.value + 1 < progressData.length) {
-    currentTab.value++
-    progressData[currentTab.value-1].kind = stateIcon(currentTab.value-1)
-    progressData[currentTab.value].kind = stateIcon(currentTab.value)
-    setFocusedComponent(`focus-${currentTab.value}`)
-  }
-}
-const onBack = () => {
-  if (currentTab.value - 1 >= 0) {
-    currentTab.value--
-    progressData[currentTab.value+1].kind = stateIcon(currentTab.value+1)
-    progressData[currentTab.value].kind = stateIcon(currentTab.value)
-    setFocusedComponent(`focus-${currentTab.value}`)
-  }
-}
-const validateStep = (valid: boolean) => {
-  progressData[currentTab.value].valid = valid
-}
-const openToast = (event: ModalNotification) => {
-  console.log(event)
-}
-
-const saveChange = () => {
-  openToast({
-    message: `“${progressData[currentTab.value].title}” changes was saved successfully.`,
-    kind: 'Success',
-    active: true,
-    handler: () => {}
-  })
-  goToStep(3)
-}
-
-const processAndLogOut = () => {
-  if (mailAndLogOut.value) {
-    usePost(
-      '/api/clients/mail',
-      {
-        incorporation: formData.businessInformation.incorporationNumber,
-        name: formData.businessInformation.businessName,
-        userName: submitterInformation?.name || '',
-        userId: submitterInformation?.userId || '',
-        mail: submitterInformation?.email || ''
-      },
-      {}
-    )
-  }
-  session?.logOut()
-}
-
-exitBus.on((event: Record<string, boolean | null>) => {
-  endAndLogOut.value = event.goodStanding ? event.goodStanding : false
-  mailAndLogOut.value = event.duplicated ? event.duplicated : false
-})
-
-const globalErrorMessage = ref<string>('')
-generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
-</script>

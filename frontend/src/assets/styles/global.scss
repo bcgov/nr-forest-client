@@ -205,6 +205,20 @@ body {
 
 
 /* Recreating the style */
+.spacing {
+  padding:1.5rem;
+}
+
+.landing-subtitle {
+  margin: 1.5rem 0rem 0rem 0rem;
+}
+
+.full {
+  margin: 0rem;
+  padding-bottom: 0px;
+  display: flex;
+  background: var(--light-theme-background-background, #FFF);
+}
 .screen {
   margin: 3rem 2.5rem 2.5rem 2.5rem;
   padding-bottom: 0px;
