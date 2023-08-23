@@ -139,7 +139,7 @@ const postalCodeMask = computed(() => {
     case 'CA':
       return 'A#A#A#'
     case 'US':
-      return '#####'
+      return '#####' // TODO: Should fix mask to allow 00000 or 00000-0000
     default:
       return '##########'
   }
@@ -148,11 +148,11 @@ const postalCodeMask = computed(() => {
 const postalCodePlaceholder = computed(() => {
   switch (selectedValue.country.value) {
     case 'CA':
-      return 'A1A1A1'
+      return 'Use A1A1A1 format'
     case 'US':
-      return '99999'
+      return 'Use 00000 or 00000-0000 format'
     default:
-      return '12345'
+      return 'Use 00000 format'
   }
 })
 
@@ -260,7 +260,7 @@ onMounted(() =>{
     <AutoCompleteInputComponent
       :id="'addr_' + id"
             label="Street address or PO box"
-      placeholder="Start typing to search for your address or PO box"
+      placeholder="Start typing to search for your street address or PO box"
       tip=""
       v-model="selectedValue.streetAddress"
       :contents="content"
@@ -284,7 +284,7 @@ onMounted(() =>{
   <text-input-component
     :id="'city_' + id"
     label="City"
-    placeholder="City"
+    placeholder=""
     v-model="selectedValue.city"
     tip=""
     :enabled="true"
@@ -324,9 +324,9 @@ onMounted(() =>{
   <text-input-component
     :id="'postalCode_' + id"
     :label="postalCodeNaming"
-    :placeholder="postalCodePlaceholder"
+    placeholder=""
+    :tip="postalCodePlaceholder"
     :enabled="true"
-    tip=""
     :error-message="addressError"
     v-model="modelValue.postalCode"
     :mask="postalCodeMask"

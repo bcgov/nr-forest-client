@@ -26,7 +26,7 @@ describe('GlobalValidators', () => {
     expect(isNotEmpty(' a ')).toBe('')
   })
   it('should return an error message when isNotEmpty is called on an empty string', () => {
-    expect(isNotEmpty('')).toBe('This field is required and cannot be empty')
+    expect(isNotEmpty('')).toBe('This field is required')
   })
 
   it('should return empty when isEmail is called with a valid email', () => {

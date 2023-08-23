@@ -1,3 +1,5 @@
+import { type Address, emptyAddress } from '@/dto/ApplyClientNumberDto'
+
 export const retrieveClientType = (legalType: string): string => {
   switch (legalType) {
     case 'A':
@@ -33,3 +35,8 @@ export const toMixedCase = (inputString: string) =>
     .split(' ')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
+
+export const exportAddress = (addresses: Address[]) : Address[] => {
+  if (addresses && addresses.length > 0) { return addresses }
+  return [{ ...emptyAddress(), locationName: 'Mailing Aaddress' }]
+}

@@ -7,7 +7,10 @@
 :root {
   --others-transparent-transparent: rgba(255, 255, 255, 0);
   --cds-interactive-01:#0073E6;
-  --light-theme-button-button-primary: #0073E6
+  --light-theme-button-button-primary: #0073E6;
+  --cds-interactive-03: #005CB8;
+  --light-theme-button-button-tertiary: #005CB8;
+  --cds-focus: #0073E6;
 }
 
 * {
@@ -290,10 +293,10 @@ body {
   letter-spacing: 0.01rem;
 }
 .heading-compact-01-dark {
-  color: var(--light-theme-text-text-primary, #131315);
+  color: var(--light-theme-text-text-primary, #131315) !important;
 }
 .heading-02 {
-  color: var(--light-theme-text-text-primary, #131315);
+  color: var(--light-theme-text-text-primary, #131315) !important;
 
   /* Fixed heading styles/heading-02 */
   font-family: BC Sans;

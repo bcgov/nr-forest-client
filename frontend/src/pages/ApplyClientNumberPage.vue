@@ -246,13 +246,8 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
         <span class="heading-04">{{ progressData[1].title}}</span>
         
         <div class="form-steps-section-01">
-          <label class="heading-03">Mailing address</label>
             <p class="body-01 heading-compact-01-dark">
-              This is the primary address you will receive mail.
-              <br /><br />
-              If you’d like another address, for example a seed orchard or if
-              your street address is different from your mailing address, select
-              the ”Add another address” button below.
+              This is the primary address where you will receive mail.
             </p>
         </div>
       

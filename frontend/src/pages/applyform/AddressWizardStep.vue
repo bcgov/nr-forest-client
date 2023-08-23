@@ -1,50 +1,3 @@
-<template>
-  <address-group-component
-    :id="0"
-    v-model="formData.location.addresses[0]"
-    :countryList="countryList"
-    :validations="[uniqueValues.add]"
-    :revalidate="revalidate"
-    @update:model-value="updateAddress($event, 0)"
-    @valid="updateValidState(0, $event)"
-  />
-
-<hr v-if="otherAddresses.length > 0"/>
-
-<div class="frame-01">
-  <div v-if="otherAddresses.length > 0" class="grouping-01">
-    <span class="heading-03">Additional address</span>
-    <span class="body-01">Provide a name to identify your additional address</span>
-  </div>
-
-  <div v-for="(address, index) in otherAddresses">
-    <hr v-if="index > 0"/>
-    <address-group-component
-      :key="index + 1"
-      :id="index + 1"
-      v-bind:model-value="address"
-      :countryList="countryList"
-      :validations="[uniqueValues.add]"
-      :revalidate="revalidate"
-      @update:model-value="updateAddress($event, index + 1)"
-      @valid="updateValidState(index + 1, $event)"
-      @remove="handleRemove(index + 1)"
-    />
-  </div>
-
-</div>
-<bx-btn
-    kind="tertiary"
-    iconLayout=""
-    class="bx--btn"
-    @click.prevent="addAddress"
-    size="field"
-  >
-    <span>Add another address</span>
-    <Add16 slot="icon" />
-  </bx-btn>
-</template>
-
 <script setup lang="ts">
 import { watch, ref, computed, reactive, onMounted} from 'vue'
 import { useEventBus } from '@vueuse/core'
@@ -152,3 +105,52 @@ const handleRemove = (index: number) => {
 
 onMounted(() => setFocusedComponent('addr_0'))
 </script>
+
+<template>
+  <address-group-component
+    :id="0"
+    v-model="formData.location.addresses[0]"
+    :countryList="countryList"
+    :validations="[uniqueValues.add]"
+    :revalidate="revalidate"
+    @update:model-value="updateAddress($event, 0)"
+    @valid="updateValidState(0, $event)"
+  />
+
+<hr v-if="otherAddresses.length > 0"/>
+
+<div class="frame-01">
+  <div v-if="otherAddresses.length > 0" class="grouping-01">
+    <span class="heading-03">Additional address</span>
+  </div>
+
+  <div v-for="(address, index) in otherAddresses">
+    <hr v-if="index > 0"/>
+    <address-group-component
+      :key="index + 1"
+      :id="index + 1"
+      v-bind:model-value="address"
+      :countryList="countryList"
+      :validations="[uniqueValues.add]"
+      :revalidate="revalidate"
+      @update:model-value="updateAddress($event, index + 1)"
+      @valid="updateValidState(index + 1, $event)"
+      @remove="handleRemove(index + 1)"
+    />
+  </div>
+
+</div>
+<p class="body-01 heading-compact-01-dark">
+If you’d like to include another address, for example a seed orchard or if your street address is different from your mailing address, select the “Add another address” button below.
+</p>
+<bx-btn
+    kind="tertiary"
+    iconLayout=""
+    class="bx--btn"
+    @click.prevent="addAddress"
+    size="field"
+  >
+    <span>Add another address</span>
+    <Add16 slot="icon" />
+  </bx-btn>
+</template>

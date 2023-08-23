@@ -17,7 +17,7 @@ const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/
  **/
 export const isNotEmpty = (value: string) => {
   if (value && value.trim().length > 0) return ''
-  return 'This field is required and cannot be empty'
+  return 'This field is required'
 }
 
 /**

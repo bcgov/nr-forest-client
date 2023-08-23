@@ -11,7 +11,7 @@ import type {
 import RadioInputComponent from '@/components/forms/RadioInputComponent.vue'
 import { isNotEmpty } from '@/helpers/validators/GlobalValidators'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
-import { retrieveClientType, toMixedCase } from '@/helpers/DataConversors'
+import { retrieveClientType, exportAddress } from '@/helpers/DataConversors'
 import ForestClientUserSession from '@/helpers/ForestClientUserSession'
 
 //Defining the props and emiter to reveice the data and emit an update
@@ -154,7 +154,7 @@ watch([detailsData], () => {
       formData.value.location.contacts[0],
       ...forestClientDetails.contacts
     ]
-    formData.value.location.addresses = forestClientDetails.addresses
+    formData.value.location.addresses = exportAddress(forestClientDetails.addresses)
     formData.value.businessInformation.goodStandingInd =
       forestClientDetails.goodStanding ? 'Y' : 'N'
     toggleErrorMessages(!forestClientDetails.goodStanding, null)
