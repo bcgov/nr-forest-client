@@ -1,5 +1,5 @@
 <template>
-  <div class="headers">
+  <div class="headers" v-if="$session?.isLoggedIn()">
     <main-header-component v-if="!$route.meta.hideHeader"></main-header-component>
   </div>
   <div :class="{[`${$route.meta.format}`]:true}">
