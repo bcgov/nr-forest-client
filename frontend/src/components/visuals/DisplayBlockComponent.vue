@@ -1,11 +1,13 @@
 <template>
   <div
+  data-scroll="top-notification"
     data-testid="display-block-wrapper"
     :class="{
       'display-block-wrapper': true,
       [`display-block-wrapper-${kind}`]: true
     }"
   >
+  <div class="display-block-icon-wrapper">
     <component
       data-testid="display-block-icon"
       :is="iconsForKinds[kind]"
@@ -15,11 +17,10 @@
       }"
       :alt="kind"
     />
-    <div class="display-block-body">
-      <p>
-        <span>{{ title }}</span>
-        {{ subtitle }}
-      </p>
+    </div>
+    <div class="grouping-08">
+        <p class="heading-compact-01 heading-compact-01-dark ">{{ title }}</p>
+        <span class="body-compact-01">{{ subtitle }}</span>
       <slot></slot>
     </div>
   </div>
@@ -33,7 +34,6 @@ const props = defineProps<{
 }>()
 
 import CheckmarkFilled20 from '@carbon/icons-vue/es/checkmark--filled/24'
-import ErrorFilled20 from '@carbon/icons-vue/es/error--filled/24'
 import WarningFilled20 from '@carbon/icons-vue/es/warning--filled/24'
 import InfoFilled20 from '@carbon/icons-vue/es/information--filled/24'
 
@@ -41,7 +41,7 @@ const iconsForKinds: Record<string, any> = {
   ['success']: CheckmarkFilled20,
   ['info']: InfoFilled20,
   ['warning']: WarningFilled20,
-  ['error']: ErrorFilled20
+  ['error']: WarningFilled20
 }
 </script>
 

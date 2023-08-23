@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch, computed, ref } from 'vue'
+import { reactive, watch, computed, ref, onMounted } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import Delete16 from '@carbon/icons-vue/es/trash-can/16'
 import type { CodeNameType, BusinessSearchResult } from '@/dto/CommonTypesDto'
@@ -15,6 +15,7 @@ import {
 } from '@/helpers/validators/GlobalValidators'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
 import { useFetchTo } from '@/composables/useFetch'
+import useFocus from '@/composables/useFocus'
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -33,6 +34,7 @@ const emit = defineEmits<{
 }>()
 
 const generalErrorBus = useEventBus<string>('general-error-notification')
+const { setFocusedComponent } = useFocus();
 
 const noValidation = (value: string) => ''
 
@@ -50,23 +52,24 @@ const addressError = ref<string | undefined>('')
 const nameError = ref<string | undefined>('')
 const showDetailsLoading = ref<boolean>(false)
 
-//Watch for changes on the input
-watch([selectedValue], () => {
+const uniquenessValidation = () => {
   addressError.value = validateAddressData(
     `${selectedValue.streetAddress} ${selectedValue.country.value} ${selectedValue.province.value} ${selectedValue.city} ${selectedValue.city} ${selectedValue.postalCode}`
   )
   nameError.value = validateAddressNameData(selectedValue.locationName)
+  
+}
+
+//Watch for changes on the input
+watch([selectedValue], () =>{ 
+  uniquenessValidation()
   emit('update:model-value', selectedValue)
 })
 
 watch(
   () => props.revalidate,
-  () => {
-    addressError.value = validateAddressData(
-      `${selectedValue.streetAddress} ${selectedValue.country.value} ${selectedValue.province.value} ${selectedValue.city} ${selectedValue.city} ${selectedValue.postalCode}`
-    )
-    nameError.value = validateAddressNameData(selectedValue.locationName)
-  }
+  () => uniquenessValidation(),
+  { immediate: true }
 )
 
 const updateStateProvince = (
@@ -172,7 +175,7 @@ const autoCompleteUrl = computed(
   () =>
     `/api/clients/addresses?country=${selectedValue.country.value}&maxSuggestions=10&searchTerm=${selectedValue.streetAddress}`
 )
-const autoCompleteResult = ref<BusinessSearchResult>({} as BusinessSearchResult)
+const autoCompleteResult = ref<BusinessSearchResult|undefined>({} as BusinessSearchResult)
 const detailsData = ref<Address | null>(null)
 
 watch([autoCompleteResult], () => {
@@ -202,16 +205,22 @@ watch([detailsData], () => {
     selectedValue.streetAddress = detailsData.value.streetAddress
     selectedValue.city = detailsData.value.city
     selectedValue.province = detailsData.value.province
-    selectedValue.postalCode = detailsData.value.postalCode
+    selectedValue.postalCode = detailsData.value.postalCode.replace(/\s/g, '')
   }
+})
+
+onMounted(() =>{
+  if(props.id == 0) setFocusedComponent(`addr_${props.id}`)
+  else setFocusedComponent(`name_${props.id}`)
 })
 </script>
 
 <template>
+  <div class="frame-01">
   <text-input-component
     :id="'name_' + id"
-    label="Location or address name"
-    placeholder="Kamloops office"
+        label="Location or address name"
+    placeholder=""
     tip="For example, 'Campbell River Region' or 'Castlegar Woods Division'"
     v-model="selectedValue.locationName"
     :enabled="true"
@@ -250,7 +259,7 @@ watch([detailsData], () => {
   >
     <AutoCompleteInputComponent
       :id="'addr_' + id"
-      label="Street address or PO box"
+            label="Street address or PO box"
       placeholder="Start typing to search for your address or PO box"
       tip=""
       v-model="selectedValue.streetAddress"
@@ -264,14 +273,12 @@ watch([detailsData], () => {
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
       @update:model-value="validation.streetAddress = false"
+      :error-message="addressError"
       @empty="
         validation.streetAddress = selectedValue.streetAddress ? true : false
       "
     />
-    <div class="spinner-block" v-if="showDetailsLoading">
-      <bx-loading type="small"> </bx-loading>
-      <span>Loading address details...</span>
-    </div>
+    <bx-inline-loading status="active" v-if="showDetailsLoading">Loading address details...</bx-inline-loading>
   </data-fetcher>
 
   <text-input-component
@@ -325,7 +332,7 @@ watch([detailsData], () => {
     :mask="postalCodeMask"
     :validations="postalCodeValidators"
     @error="validation.postalCode = !$event"
-    @empty="validation.province = !$event"
+    @empty="validation.postalCode = !$event"
   />
 
   <bx-btn
@@ -339,4 +346,5 @@ watch([detailsData], () => {
     <span>Delete address</span>
     <Delete16 slot="icon" />
   </bx-btn>
+  </div>
 </template>

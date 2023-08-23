@@ -1,76 +1,69 @@
 <template>
-  <header>
-    <div class="bx--header">
-      <div v-if="$session?.user?.provider !== 'idir'">
-        <a href="https://gov.bc.ca">
-          <img
-            src="/img/bc_for_logo.png"
-            alt="Go to the Government of British Columbia website"
-            width="150"
-          />
-        </a>
-        <div class="bx--header-external-texts">
-          <label class="bx--header-site-name">
-            Ministry of Forests
-          </label>
-          <label class="bx--header-env-and-rel" 
-                v-if="env !== 'Prod'">
-            Env. {{ env }} - Rel. {{appVersion}}
-          </label>
-        </div>
-        <bx-btn
-          v-if="$session?.isLoggedIn()"
-          data-id="logout-btn"
-          kind="tertiary"
-          iconLayout=""
-          class="bx--btn bx--btn-header"
-         @click.prevent="$session?.logOut"
-          size="field"
-        >
-          <span>Logout</span>
-          <Logout16 slot="icon" />
-        </bx-btn>
-      </div>
-      <div v-if="$session?.user?.provider === 'idir'">
-        <label class="bx--header-site-name">Client Management System</label>
-        <label class="bx--header-env-and-rel" 
-              v-if="env !== 'Prod'">
-          Env. {{ env }} - Rel. {{appVersion}}
-        </label>
-      </div>
+
+    <a href="https://gov.bc.ca">
+      <img
+        src="/img/logo1.svg"
+        alt="Go to the Government of British Columbia website"
+        v-if="isSmallScreen"
+      />
+      <img
+        src="/img/bc_for_logo.png"
+        alt="Go to the Government of British Columbia website"
+        v-else
+      />
+    </a>
+    <div class="heading">
+      <span class="heading-compact-01" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
+      <span class="heading-compact-01" v-else>Client Management System</span>
+      <span class="heading-compact-01" v-if="env !== 'Prod'">Env. {{ env }} - Rel. {{appVersion}}</span>
     </div>
-  </header>
+    
+    <div class="heading-space"></div>
+
+    <!-- Remember to add profile button here -->
+    <bx-btn
+      v-if="$session?.isLoggedIn() && (isSmallScreen || isMediumScreen)"
+      data-id="logout-btn"
+      kind="tertiary"
+      iconLayout=""
+      class="bx--btn bx--btn-header bx--btn-reset"
+      @click.prevent="$session?.logOut"
+      size="field"
+    >
+      <Logout16 slot="icon" />
+    </bx-btn>
+
+    <bx-btn
+      v-if="$session?.isLoggedIn() && (!isSmallScreen && !isMediumScreen)"
+      data-id="logout-btn"
+      kind="tertiary"
+      iconLayout=""
+      class="bx--btn bx--btn-header bx--btn-reset"
+      @click.prevent="$session?.logOut"
+      size="field"
+    >
+      <span>Logout</span>
+      <Logout16 slot="icon" />
+    </bx-btn>
+
 </template>
 
 <script setup lang="ts">
 import Logout16 from '@carbon/icons-vue/es/logout/16';
 import { nodeEnv, appVersion } from '@/CoreConstants';
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
 const envPrefix = "openshift-";
 const env = ref(nodeEnv);
 env.value = env.value.slice(envPrefix.length);
 env.value = env.value.charAt(0).toUpperCase() + env.value.slice(1);
+
+const screenWidth = ref(window.outerWidth);
+const updateScreenWidth = () => (screenWidth.value = window.outerWidth);
+
+// Use computed property to determine if it's a small screen
+const isSmallScreen = computed(() => screenWidth.value <= 320);
+const isMediumScreen = computed(() => screenWidth.value <= 671);
+
+onMounted(() => window.addEventListener('resize', updateScreenWidth));
 </script>
-
-<style scoped>
-.bx--header-external-texts {
-  position: absolute;
-  top: 40%;
-  left: 9rem;
-}
-
-.bx--header-site-name {
-  font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #F3F3F5;
-  padding-left: 2rem;
-  display: inline-block;
-}
-
-.bx--header-env-and-rel {
-  padding-left: 2rem; 
-  color: white;
-}
-</style>

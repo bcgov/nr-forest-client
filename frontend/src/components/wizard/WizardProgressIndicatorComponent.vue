@@ -1,5 +1,5 @@
 <template>
-  <div class="bx--progress-indicator">
+  <div class="form-header-progress">
     <div
       v-for="(step, index) in values"
       :class="{
@@ -23,22 +23,24 @@
             v-if="canShowLink(step)"
             @click.prevent="emit('go-to', index)"
             rel="noopener noreferrer"
+            :class="{
+              'body-compact-01': true,
+              'body-compact-01-active': step.kind === 'current'
+            }"
             >{{ step.title }}</a
           >
           <span
             v-else
             :class="{
-              'bx--description': true,
-              'bx--description-disabled': !step.enabled
+              'body-compact-01-active': step.kind === 'current',
+              'body-compact-01': step.kind !== 'current',
+
             }"
             >{{ step.title }}</span
           >
         </p>
         <span
-          :class="{
-            'bx--description': true,
-            'bx--description-disabled': !step.enabled
-          }"
+        class="label-01"
           >{{ step.subtitle }}</span
         >
       </div>

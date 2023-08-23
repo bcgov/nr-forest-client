@@ -1,0 +1,26 @@
+[
+  {
+    "kind": "current",
+    "title": "Initial",
+    "subtitle": "Step 1",
+    "enabled": true
+  },
+  {
+    "kind": "queued",
+    "title": "Data",
+    "subtitle": "Name and Phone",
+    "enabled": true
+  },
+  {
+    "kind": "queued",
+    "title": "Records",
+    "subtitle": "School and Jobs",
+    "enabled": true
+  },
+  {
+    "kind": "queued",
+    "title": "References",
+    "subtitle": "Name and Phone",
+    "enabled": false
+  }
+]

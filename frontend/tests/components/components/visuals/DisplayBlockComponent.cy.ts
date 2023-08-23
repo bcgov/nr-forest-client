@@ -26,9 +26,9 @@ describe('<DisplayBlockComponent />', () => {
         .should('have.attr', 'alt')
         .and('contain', kind)
 
-      cy.get('span').should('be.visible').and('contain', `Test ${kind}`)
+      cy.get('p').should('be.visible').and('contain', `Test ${kind}`)
 
-      cy.get('p').should('be.visible').and('contain', `Test Sub${kind}`)
+      cy.get('span').should('be.visible').and('contain', `Test Sub${kind}`)
     })
   })
 
@@ -43,7 +43,7 @@ describe('<DisplayBlockComponent />', () => {
         default: 'Test Default Slot'
       }
     })
-    cy.get('div.display-block-body').should('be.visible')
-    cy.get('div.display-block-body').should('contain', 'Test Default Slot')
+    cy.get('div.grouping-08').should('be.visible')
+    cy.get('div.grouping-08').should('contain', 'Test Default Slot')
   })
 })
