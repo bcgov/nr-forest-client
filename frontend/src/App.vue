@@ -38,7 +38,7 @@ const deleteContentModal = () => {
   openToast({
     message: `“${modalContent.value.message}” additional ${modalContent.value.kind} was deleted successfully`,
     kind: 'Success',
-    toastTitle: '',
+    toastTitle: modalContent.value.toastTitle,
     active: true,
     handler: () => {}
   })
