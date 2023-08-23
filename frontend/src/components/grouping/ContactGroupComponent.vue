@@ -97,6 +97,7 @@ onMounted(() =>{
 </script>
 
 <template>
+  <div class="frame-01">
   <multiselect-input-component
     :id="'address_' + id"
     label="Address name"
@@ -207,4 +208,5 @@ onMounted(() =>{
     <span>Delete contact</span>
     <Delete16 slot="icon" />
   </bx-btn>
+</div>
 </template>
