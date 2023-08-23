@@ -27,3 +27,9 @@ export const retrieveClientType = (legalType: string): string => {
       throw new Error('Unknown Legal Type.')
   }
 }
+
+export const toMixedCase = (inputString: string) =>
+  inputString
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')

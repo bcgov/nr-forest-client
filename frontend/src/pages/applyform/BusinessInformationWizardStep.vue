@@ -11,7 +11,7 @@ import type {
 import RadioInputComponent from '@/components/forms/RadioInputComponent.vue'
 import { isNotEmpty } from '@/helpers/validators/GlobalValidators'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
-import { retrieveClientType } from '@/helpers/DataConversors'
+import { retrieveClientType, toMixedCase } from '@/helpers/DataConversors'
 import ForestClientUserSession from '@/helpers/ForestClientUserSession'
 
 //Defining the props and emiter to reveice the data and emit an update
@@ -229,15 +229,11 @@ watch([selectedOption], () => {
     <bx-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</bx-inline-loading>
     <display-block-component
       kind="info"
-      title="BC registered business name"
-      v-show="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
+      title="If the name of your registered business does not appear in the list, follow these steps:"
+      v-if="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
       id="business"
     >
       <div>
-        <p>
-          If the name of your registered business does not appear in the list,
-          follow these steps:
-        </p>
         <ol type="1" class="bulleted-list">
           <li>
             Log into Manage Account in
@@ -259,7 +255,7 @@ watch([selectedOption], () => {
     </display-block-component>
 
     <display-block-component
-      v-show="showGoodStandingError"
+      v-if="showGoodStandingError"
       kind="error"
       title="Not in good standing with BC Registries"
     >
@@ -278,7 +274,7 @@ watch([selectedOption], () => {
     </display-block-component>
 
     <display-block-component
-      v-show="showDuplicatedError"
+      v-if="showDuplicatedError"
       kind="error"
       title="Client already exists"
     >
@@ -299,5 +295,4 @@ watch([selectedOption], () => {
     :validations="[]"
     :enabled="false"
   />
-  <br />
 </template>

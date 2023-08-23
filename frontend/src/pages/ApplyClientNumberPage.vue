@@ -202,7 +202,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
   <div class="form-header">
     <div class="form-header-title">
       <span class="heading-05">New client application</span>
-      <p class="body-01">All fields are mandatory unless noted</p>
+      <p class="body-01">All fields are mandatory</p>
     </div>
       <wizard-progress-indicator-component
       :model-value="progressData"
@@ -215,7 +215,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
     <div v-if="currentTab == 0" class="form-steps-01">
       <div class="form-steps-01-title">
         <span class="heading-04">Before you begin</span>
-        <ol type="1" class="bulleted-list body-02">
+        <ol type="1" class="bulleted-list body-compact-01">
           <li>
             A registered business must be in good standing with BC
             Registries
@@ -247,7 +247,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
         
         <div class="form-steps-section-01">
           <label class="heading-03">Mailing address</label>
-            <p class="body-01">
+            <p class="body-01 heading-compact-01-dark">
               This is the primary address you will receive mail.
               <br /><br />
               If you’d like another address, for example a seed orchard or if

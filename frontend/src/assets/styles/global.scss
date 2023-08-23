@@ -6,6 +6,8 @@
 
 :root {
   --others-transparent-transparent: rgba(255, 255, 255, 0);
+  --cds-interactive-01:#0073E6;
+  --light-theme-button-button-primary: #0073E6
 }
 
 * {
@@ -161,6 +163,9 @@ body {
 .bx--progress-step-text p a {
   text-decoration: none;
   color: var(--light-theme-text-text-primary, #131315);
+}
+.bx--progress-step-text p a:hover {
+  color: var(--light-theme-link-link-primary, #005CB8);
 }
 .bx--progress-step-text p span {
   color: var(--light-theme-text-text-primary, #131315);
@@ -347,6 +352,17 @@ body {
   font-style: normal;
   font-weight: 400;
   line-height: 1.5rem; /* 150% */
+}
+.body-compact-01 {
+  color: var(--light-theme-text-text-primary, #131315);
+
+  /* Body styles/body-compact-01 */
+  font-family: BC Sans;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.25rem; /* 142.857% */
+  letter-spacing: 0.01rem;
 }
 
 .divider {
