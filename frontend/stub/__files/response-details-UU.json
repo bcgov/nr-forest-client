@@ -16,7 +16,7 @@
       "city": "Victoria",
       "postalCode": "V8T5J9",
       "index": 0,
-      "locationName": "Mailing Address"
+      "locationName": "Mailing address"
     },
     {
       "streetAddress": "42000 Loggers Ln Suite 101",
@@ -48,7 +48,7 @@
       "locationNames": [
         {
           "value": "0",
-          "text": "Mailing Address"
+          "text": "Mailing address"
         }
       ]
     }

@@ -130,7 +130,7 @@ describe('<AddressGroupComponent />', () => {
 
     cy.get('#name_1')
       .should('be.visible')
-      .and('have.value', 'Mailing Address')
+      .and('have.value', 'Mailing address')
       .and('have.focus')
   })
 

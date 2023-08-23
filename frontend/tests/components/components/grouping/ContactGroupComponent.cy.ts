@@ -166,7 +166,7 @@ describe('<ContactGroupComponent />', () => {
 
     cy.get('bx-tag#tag_address_0_0.bx-tag')
       .should('be.visible')
-      .and('have.text', 'Mailing Address ')
+      .and('have.text', 'Mailing address ')
   })
 
   it('should render the component and select both addresses and show it as tag', () => {
@@ -206,7 +206,7 @@ describe('<ContactGroupComponent />', () => {
 
     cy.get('bx-tag#tag_address_0_0.bx-tag')
       .should('be.visible')
-      .and('have.text', 'Mailing Address ')
+      .and('have.text', 'Mailing address ')
 
     cy.get('bx-tag#tag_address_0_1.bx-tag')
       .should('be.visible')
@@ -245,7 +245,7 @@ describe('<ContactGroupComponent />', () => {
 
     cy.get('bx-tag#tag_address_0_0.bx-tag')
       .should('be.visible')
-      .and('have.text', 'Mailing Address ')
+      .and('have.text', 'Mailing address ')
       .find('svg')
       .click()
 

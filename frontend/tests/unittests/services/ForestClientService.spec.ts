@@ -20,7 +20,7 @@ describe('ForestClientService.ts', () => {
     },
     city: 'Victoria',
     postalCode: 'V8T5J9',
-    locationName: 'Mailing Address'
+    locationName: 'Mailing address'
   }
   const sampleContact = {
     contactType: {
@@ -34,7 +34,7 @@ describe('ForestClientService.ts', () => {
     locationNames: [
       {
         value: '0',
-        text: 'Mailing Address'
+        text: 'Mailing address'
       }
     ]
   }
