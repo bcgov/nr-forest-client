@@ -35,5 +35,6 @@
 		"[xml]": {
 			"editor.defaultFormatter": "redhat.vscode-xml"
 		},
+		"typescript.tsdk": "node_modules/typescript/lib",
 	}
 }
