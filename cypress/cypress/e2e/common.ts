@@ -7,8 +7,35 @@ import {
 } from "@badeball/cypress-cucumber-preprocessor";
 import "cypress-get-by-label/commands";
 
+export enum BusinessTypeDescription {
+  Registered = "B.C. Registered Business - Corporation",
+  Unregistered = "Sole Proprietorship",
+}
+
+export interface IAddress {
+  name: string;
+  country: string;
+  streetAddress: string;
+  city: string;
+  province: string;
+  postalCode: string;
+}
+
+export interface IContact {
+  firstName: string;
+  lastName: string;
+  email: string;
+  addressNameList: string[];
+  primaryRole: string;
+  phoneNumber: string;
+}
+
 export interface CustomWorld extends Mocha.Context {
   appLocation: Location;
+  businessTypeDescription: BusinessTypeDescription;
+  businessName: string;
+  addressList: IAddress[];
+  contactList: IContact[];
 }
 
 /**
@@ -44,7 +71,17 @@ Given(
     cy.location().then((location) => {
       this.appLocation = location;
     });
-    cy.login("uattest@forest.client", "Uat Test", "bceidbusiness");
+    const email = "uattest@forest.client";
+    const lastName = "Uat";
+    const firstName = "Test";
+    cy.login(email, `${lastName} ${firstName}`, "bceidbusiness");
+    this.contactList = [
+      {
+        firstName,
+        lastName,
+        email,
+      } as IContact,
+    ];
   }
 );
 
