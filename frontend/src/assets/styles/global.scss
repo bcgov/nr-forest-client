@@ -64,7 +64,7 @@ body {
 
 .wizard-head-toast {
   position: fixed;
-  right: 1.5rem;
+  right: 1.5625rem;
   top: 5rem;
   border-radius: 0.25rem;
   background: var(--light-theme-background-background-inverse, #2D2D2F);
@@ -159,11 +159,9 @@ body {
   text-decoration: none;
   color: var(--light-theme-text-text-primary, #131315);
 }
-
 .bx--progress-step-text p a:hover {
   color: var(--light-theme-link-link-primary, #005CB8);
 }
-
 .bx--progress-step-text p span {
   color: var(--light-theme-text-text-primary, #131315);
 }
@@ -214,28 +212,24 @@ body {
 .landing-subtitle {
   margin: 1.5rem 0rem 0rem 0rem;
 }
-
 .full-centered {
   display: flex;
   padding: 8.125rem 13.375rem 15rem 2.5rem;
   align-items: center;
   background: var(--light-theme-layer-layer-02, #FFF);
 }
-
 .full {
   margin: 0rem;
   padding-bottom: 0px;
   display: flex;
   background: var(--light-theme-background-background, #FFF);
 }
-
 .screen {
   margin: 3rem 2.5rem 2.5rem 2.5rem;
   padding-bottom: 0px;
   display: flex;
   background: var(--light-theme-background-background, #FFF);
 }
-
 .headers {
   display: flex;
   height: 3rem;
@@ -247,24 +241,20 @@ body {
   flex: 1 0 0;
   background: var(--light-theme-background-background-brand, #0073E6);
 }
-
 .headers a img {
   width: 7.5rem;
   flex-shrink: 0;
 }
-
 .heading {
   display: flex;
   padding: 0.9375rem 2rem 0.9375rem 0.5rem;
   align-items: flex-start;
   gap: 0.1875rem;
 }
-
 .heading-space {
   flex: 1 0 0;
   align-self: stretch;
 }
-
 .heading-button-transparent {
   display: flex;
   width: 12.375rem;
@@ -276,7 +266,6 @@ body {
   background: var(--others-transparent-transparent, #FFF);
   background-blend-mode: multiply;
 }
-
 .heading-button {
   display: flex;
   width: 9.6875rem;
@@ -289,7 +278,6 @@ body {
   background: var(--others-transparent-transparent, #FFF);
   background-blend-mode: multiply;
 }
-
 .heading-compact-01 {
   color: var(--dark-theme-text-text-primary, #F3F3F5);
 
@@ -301,11 +289,9 @@ body {
   line-height: 1.125rem; /* 128.571% */
   letter-spacing: 0.01rem;
 }
-
 .heading-compact-01-dark {
   color: var(--light-theme-text-text-primary, #131315) !important;
 }
-
 .heading-02 {
   color: var(--light-theme-text-text-primary, #131315) !important;
 
@@ -316,7 +302,6 @@ body {
   font-weight: 700;
   line-height: 1.5rem; /* 150% */
 }
-
 .heading-03 {
   color: var(--light-theme-text-text-primary, #131315);
 
@@ -327,7 +312,6 @@ body {
   font-weight: 400;
   line-height: 1.75rem; /* 140% */
 }
-
 .heading-04 {
   color: var(--light-theme-text-text-primary, #131315);
 
@@ -338,7 +322,6 @@ body {
   font-weight: 400;
   line-height: 2.25rem; /* 128.571% */
 }
-
 .heading-05 {
   color: var(--light-theme-text-text-primary, #131315);
 
@@ -349,7 +332,6 @@ body {
   font-weight: 400;
   line-height: 2.5rem; /* 125% */
 }
-
 .fluid-heading-05 {
   align-self: stretch;
   color: var(--light-theme-text-text-primary, #131315);
@@ -361,7 +343,6 @@ body {
   font-weight: 400;
   line-height: 4.375rem; /* 116.667% */
 }
-
 .fluid-paragraph-01 {
   align-self: stretch;
   color: var(--light-theme-text-text-secondary, #606062);
@@ -374,7 +355,6 @@ body {
   line-height: 2.5rem; /* 125% */
 
 }
-
 .body-01 {
   color: var(--light-theme-text-text-secondary, #606062);
 
@@ -386,7 +366,6 @@ body {
   line-height: 1.25rem; /* 142.857% */
   letter-spacing: 0.01rem;
 }
-
 .body-02 {
   color: var(--light-theme-text-text-secondary, #606062);
 
@@ -397,7 +376,6 @@ body {
   font-weight: 400;
   line-height: 1.5rem; /* 150% */
 }
-
 .body-compact-01 {
   color: var(--light-theme-text-text-primary, #131315);
 
@@ -429,7 +407,6 @@ body {
   flex-direction: column;
   gap: 1.5rem;
 }
-
 .form-header-stretched {
   align-self: stretch
 }
@@ -643,10 +620,6 @@ body {
   transform: inherit;
 }
 
-.bx--btn-tertiary::part(button):hover {
-  background: #0052A3;
-}
-
 .label-01 {
   align-self: stretch;
   color: var(--light-theme-text-text-primary, #131315);
@@ -728,8 +701,8 @@ bx-modal-footer {
 @media screen and (max-width: 320px) {
 
   .wizard-head-toast {
-    right: 0rem;
-    top: 0rem;
+    right: 0.5rem;
+    top: 0.5rem;
   }
 
   bx-modal::part(dialog) {
@@ -897,9 +870,15 @@ bx-modal-footer {
     width: 2.5rem;
   }
 
+  .bx--btn-header::part(button):hover {
+    background: var(--light-theme-background-background-brand, #0073E6);
+  }
+
   .form-header {
     align-self: stretch;
   }
+
+ 
 
 }
 

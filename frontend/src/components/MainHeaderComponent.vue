@@ -26,7 +26,7 @@
       data-id="logout-btn"
       kind="tertiary"
       iconLayout=""
-      class="bx--btn bx--btn-header bx--btn-reset bx--btn-tertiary"
+      class="bx--btn bx--btn-header bx--btn-reset"
       @click.prevent="$session?.logOut"
       size="field"
     >
@@ -38,7 +38,7 @@
       data-id="logout-btn"
       kind="tertiary"
       iconLayout=""
-      class="bx--btn bx--btn-header bx--btn-reset bx--btn-tertiary"
+      class="bx--btn bx--btn-header bx--btn-reset"
       @click.prevent="$session?.logOut"
       size="field"
     >
