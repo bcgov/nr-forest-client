@@ -6,22 +6,28 @@
 
 :root {
   --others-transparent-transparent: rgba(255, 255, 255, 0);
-  --cds-interactive-01: #0073e6;
   --light-theme-button-button-primary: #0073e6;
-  --cds-interactive-03: #005cb8;
+  --light-theme-button-button-secondary: #464648;
   --light-theme-button-button-tertiary: #005cb8;
   --cds-focus: #0073e6;
 
   //Primary button
-  --cds-hover-primary: #0066cc;
+  --cds-interactive-01: #0073E6;
+  --cds-active-primary: #0073E6;
+  --cds-hover-primary: #0066CC;
 
   //Secondary button
+  --cds-interactive-02: #464648;
+  --cds-active-secondary: #464648;
   --cds-hover-secondary: #535355;
 
   //Tertiary button
-  --cds-hover-tertiary: #0052a3;
+  --cds-interactive-03: #005CB8;
+  --cds-active-tertiary: #005CB8;
+  --cds-hover-tertiary: #0052A3;
 
   //Danger Ghost button
+  --cds-danger-01: #e72000;
   --cds-hover-danger: #b32001;
 }
 
