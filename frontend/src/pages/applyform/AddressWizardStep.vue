@@ -147,7 +147,7 @@ If you’d like to include another address, for example a seed orchard or if you
 <bx-btn
     kind="tertiary"
     iconLayout=""
-    class="bx--btn"
+    class="bx--btn bx--btn-tertiary"
     @click.prevent="addAddress"
     size="field"
   >

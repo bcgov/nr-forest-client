@@ -158,7 +158,7 @@ onMounted(() => setFocusedComponent('address_0'))
   <bx-btn
     kind="tertiary"
     iconLayout=""
-    class="bx--btn"
+    class="bx--btn bx--btn-tertiary"
     @click.prevent="addContact"
     size="field"
   >

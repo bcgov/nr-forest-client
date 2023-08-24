@@ -15,7 +15,7 @@
     <bx-btn
       kind="tertiary"
       iconLayout=""
-      class="bx--btn"
+      class="bx--btn bx--btn-tertiary"
       size="field"
       @click.prevent="goToStep(0)"
     >
@@ -43,7 +43,7 @@
     <bx-btn
       kind="tertiary"
       iconLayout=""
-      class="bx--btn"
+      class="bx--btn bx--btn-tertiary"
       size="field"
       @click.prevent="goToStep(1)"
     >
@@ -73,7 +73,7 @@
     <bx-btn
       kind="tertiary"
       iconLayout=""
-      class="bx--btn"
+      class="bx--btn bx--btn-tertiary"
       size="field"
       @click.prevent="goToStep(2)"
     >
