@@ -32,7 +32,7 @@ Before(() => {
       Location: "/api/clients/123456",
       "x-sub-id": "123456",
     },
-  });
+  }).as("submitData");
 });
 
 When(
@@ -411,3 +411,43 @@ Then("the button Submit application is enabled", () => {
 When("I click the button Submit application", () => {
   cy.contains("bx-btn", "Submit application").click();
 });
+
+Then(
+  "the provided information is sent to the backend",
+  function (this: CustomWorld) {
+    cy.get("@submitData")
+      .its("request.body")
+      .then((data) => {
+        expect(data.businessInformation).to.deep.include({
+          businessName: this.businessName,
+        });
+
+        expect(data.location.addresses[0]).to.deep.include({
+          locationName: this.addressList[0].name,
+          // TODO: uncomment when fixed
+          // streetAddress: this.addressList[0].streetAddress,
+          city: this.addressList[0].city,
+          postalCode: this.addressList[0].postalCode,
+        });
+        expect(data.location.addresses[0].country.text).to.equal(
+          this.addressList[0].country
+        );
+        expect(data.location.addresses[0].province.text).to.equal(
+          this.addressList[0].province
+        );
+
+        expect(data.location.contacts[0]).to.deep.include({
+          phoneNumber: this.contactList[0].phoneNumber,
+          firstName: this.contactList[0].firstName,
+          lastName: this.contactList[0].lastName,
+          email: this.contactList[0].email,
+        });
+        expect(data.location.contacts[0].locationNames[0].text).to.equal(
+          this.contactList[0].addressNameList[0]
+        );
+        expect(data.location.contacts[0].contactType.text).to.equal(
+          this.contactList[0].primaryRole
+        );
+      });
+  }
+);

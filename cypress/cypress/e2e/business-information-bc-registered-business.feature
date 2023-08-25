@@ -39,4 +39,5 @@ Feature: Business Information: BC registered business
     And the displayed Contacts information match the provided information
     And the button Submit application is enabled
     When I click the button Submit application
-    Then I get to the Application submitted page
+    Then the provided information is sent to the backend
+    And I get to the Application submitted page
