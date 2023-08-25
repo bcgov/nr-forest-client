@@ -26,6 +26,13 @@ Before(() => {
     statusCode: 409,
     body: "The Dupped Company already exists with the Incorporation number BC1162739 and client number 999999",
   });
+  cy.intercept("POST", "/api/clients/submissions", {
+    statusCode: 201,
+    headers: {
+      Location: "/api/clients/123456",
+      "x-sub-id": "123456",
+    },
+  });
 });
 
 When(
@@ -179,6 +186,10 @@ Then("I get to the Contacts tab", () => {
 
 Then("I get to the Review tab", () => {
   cy.get(".heading-04").should("contain.text", "Review");
+});
+
+Then("I get to the Application submitted page", () => {
+  cy.contains("Application submitted");
 });
 
 When("the list of countries finishes loading", function (this: CustomWorld) {
@@ -390,3 +401,13 @@ Then(
     cy.get("@contactsInfo").contains(this.contactList[0].phoneNumber);
   }
 );
+
+Then("the button Submit application is enabled", () => {
+  cy.contains("bx-btn", "Submit application")
+    .find("button")
+    .should("be.enabled");
+});
+
+When("I click the button Submit application", () => {
+  cy.contains("bx-btn", "Submit application").click();
+});

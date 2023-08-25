@@ -27,6 +27,7 @@ Feature: Business Information: BC registered business
     And the button Next is enabled
     When I click the button Next
     Then I get to the Contacts tab
+    And the button Next is disabled
     When I select the Address name "Mailing Address"
     And I select the Primary role "Billing"
     And I type in "7804146040" as Phone number
@@ -36,3 +37,6 @@ Feature: Business Information: BC registered business
     And the displayed Business information match the provided information
     And the displayed Address information match the provided information
     And the displayed Contacts information match the provided information
+    And the button Submit application is enabled
+    When I click the button Submit application
+    Then I get to the Application submitted page
