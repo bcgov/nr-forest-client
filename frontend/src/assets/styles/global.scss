@@ -190,7 +190,7 @@ body {
 }
 
 .bx--progress-step-current {
-  border-color: #0073e6;
+  border-color: var(--cds-interactive-01);
 }
 
 .bx--progress-step-queued {
@@ -202,11 +202,11 @@ body {
 }
 
 .bx--progress-step-complete {
-  border-color: #0073e6;
+  border-color: var(--cds-interactive-01);
 }
 
 .bx--progress-step-icon-current {
-  color: #0073e6;
+  color: var(--cds-interactive-01);
 }
 
 .bx--progress-step-icon-error {
@@ -214,7 +214,7 @@ body {
 }
 
 .bx--progress-step-icon-complete {
-  color: #0073e6;
+  color: var(--cds-interactive-01)
 }
 
 .bx--progress-step-icon-queued {

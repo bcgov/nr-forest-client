@@ -1,27 +1,34 @@
 import { ref } from 'vue'
-export default function useFocus () {
-  let focusedComponent = ''
-  const changeFocus = () => {
+/**
+ * useFocus composable is used to set focus and/or scroll to a component
+ * @returns two functions to set focus and scroll to a component
+ */
+export function useFocus () {
+  // setActionOn is a function that execute the action on an a component
+  const setActionOn = (focusedComponent:string, key: string,action:((target:any) => {})) => {
+    console.log('setActionOn',focusedComponent,key)
     if (focusedComponent) {
-      const element = document.querySelector(`[data-scroll="${focusedComponent}"]`)
+      const element = document.querySelector(`[${key}="${focusedComponent}"]`)
       if (element) {
-        element.focus()
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        action(element)
         return element
       }
       return undefined
     }
   }
-  const setFocusedComponent = (componentName:string) => {
-    focusedComponent = componentName
+
+  // execute is a function that execute the action on an a component after a delay
+  // The delay is here to allow the component to be rendered before to execute the action
+  const execute = (componentName:string,key:string,action:((target:any) => {})) => {
     const refComponent = ref<Element|undefined>(undefined)
-    console.log('test0')
-    setTimeout(() => {
-      refComponent.value = changeFocus()
-      console.log('test1', refComponent.value)
-    }, 100)
-    console.log('test2')
+    setTimeout(() => (refComponent.value = setActionOn(componentName,key,action)), 100)
     return refComponent
   }
-  return { setFocusedComponent }
+
+  // Set the focus on a component with the data-focus attribute
+  const setFocusedComponent = (componentName:string) => (execute(componentName,'data-focus', (element) => element.focus()))
+  // Scroll into view a component with the data-scroll attribute
+  const setScrollPoint = (componentName:string) => (execute(componentName,'data-scroll', (element) => element.scrollIntoView({ behavior: 'smooth', block: 'start' })))
+
+  return { setFocusedComponent, setScrollPoint }
 }

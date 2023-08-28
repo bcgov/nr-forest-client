@@ -1,17 +1,22 @@
 <script setup lang="ts">
 import { watch, computed, ref, reactive } from 'vue'
+// Importing composables
 import { useEventBus } from '@vueuse/core'
 import { useFetchTo } from '@/composables/useFetch'
-import useFocus from '@/composables/useFocus'
-import { type BusinessSearchResult, ClientTypeEnum } from '@/dto/CommonTypesDto'
+import { useFocus } from '@/composables/useFocus'
+// Importing types
+import type { BusinessSearchResult} from '@/dto/CommonTypesDto'
+import { ClientTypeEnum } from '@/dto/CommonTypesDto'
 import type {
   FormDataDto,
   ForestClientDetailsDto
 } from '@/dto/ApplyClientNumberDto'
-import RadioInputComponent from '@/components/forms/RadioInputComponent.vue'
-import { isNotEmpty } from '@/helpers/validators/GlobalValidators'
+// Importing validators
+import { getValidations } from '@/helpers/validators/ExternalFormValidations'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
+// Importing helper functions
 import { retrieveClientType, exportAddress } from '@/helpers/DataConversors'
+// Importing session
 import ForestClientUserSession from '@/helpers/ForestClientUserSession'
 
 //Defining the props and emiter to reveice the data and emit an update
@@ -78,8 +83,8 @@ const toggleErrorMessages = (
   goodStanding: boolean | null,
   duplicated: boolean | null
 ) => {
-  showGoodStandingError.value = goodStanding ? goodStanding : false
-  showDuplicatedError.value = duplicated ? duplicated : false
+  showGoodStandingError.value = goodStanding || false
+  showDuplicatedError.value = duplicated || false
 
   if (goodStanding || duplicated) {
     navigationBus.emit(false)
@@ -198,7 +203,7 @@ watch([selectedOption], () => {
       },
       { value: 'U', text: 'I have an unregistered sole proprietorship' }
     ]"
-    :validations="[submissionValidation('businessInformation.businessType')]"
+    :validations="[...getValidations('businessInformation.businessType'),submissionValidation('businessInformation.businessType')]"
     @update:model-value="
       formData.businessInformation.businessType = $event ?? ''
     "
@@ -219,10 +224,7 @@ watch([selectedOption], () => {
       tip=""
       v-model="formData.businessInformation.businessName"
       :contents="content"
-      :validations="[
-        isNotEmpty,
-        submissionValidation('businessInformation.businessName')
-      ]"
+      :validations="[...getValidations('businessInformation.businessName'),submissionValidation('businessInformation.businessName')]"
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
     />

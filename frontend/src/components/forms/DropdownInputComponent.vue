@@ -1,28 +1,6 @@
-<template>
-  <div class="grouping-03">
-  <bx-dropdown
-    :id="id"
-    :data-scroll="id"
-    :value="selectedValue"
-    :label-text="label"
-    :helper-text="tip"
-    :invalid="error ? true : false"
-    :validityMessage="error"
-    @bx-dropdown-beingselected="(target:any) => selectedValue = target.detail.item.__value"
-  >
-    <bx-dropdown-item
-      v-for="option in modelValue"
-      :key="option.code"
-      :value="option.code"
-      :data-item="option.code"
-      >{{ option.name }}</bx-dropdown-item
-    >
-  </bx-dropdown>
-</div>
-</template>
-
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useEventBus } from '@vueuse/core'
 import { type CodeNameType, isEmpty } from '@/dto/CommonTypesDto'
 
 //Define the input properties for this component
@@ -46,6 +24,8 @@ const emit = defineEmits<{
 
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage || '')
+
+const revalidateBus = useEventBus<void>('revalidate-bus')
 
 //We watch for error changes to emit events
 watch(error, () => emit('error', error.value))
@@ -101,4 +81,32 @@ watch(
     setTimeout(() => (selectedValue.value = props.initialValue), 400)
   }
 )
+
+revalidateBus.on(() => validateInput(selectedValue.value))
 </script>
+
+
+<template>
+  <div class="grouping-03">
+  <bx-dropdown
+    :id="id"
+    :data-focus="id"
+    :data-scroll="id"
+    :value="selectedValue"
+    :label-text="label"
+    :helper-text="tip"
+    :invalid="error ? true : false"
+    :validityMessage="error"
+    @bx-dropdown-beingselected="(target:any) => selectedValue = target.detail.item.__value"
+  >
+    <bx-dropdown-item
+      v-for="option in modelValue"
+      :key="option.code"
+      :value="option.code"
+      :data-item="option.code"
+      >{{ option.name }}</bx-dropdown-item
+    >
+  </bx-dropdown>
+</div>
+</template>
+

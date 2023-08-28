@@ -1,18 +1,15 @@
 <script setup lang="ts">
 import { reactive, watch, ref, onMounted } from 'vue'
-import Delete16 from '@carbon/icons-vue/es/trash-can/16'
+// Importing composables
+import { useFocus } from '@/composables/useFocus'
+// Importing types
 import type { CodeDescrType, CodeNameType } from '@/dto/CommonTypesDto'
 import type { Contact } from '@/dto/ApplyClientNumberDto'
-import {
-  isNotEmpty,
-  isEmail,
-  isPhoneNumber,
-  isMaxSize,
-  isMinSize,
-  isNoSpecialCharacters
-} from '@/helpers/validators/GlobalValidators'
+// Importing validatons
+import { getValidations } from '@/helpers/validators/ExternalFormValidations'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
-import useFocus from '@/composables/useFocus'
+// @ts-ignore
+import Delete16 from '@carbon/icons-vue/es/trash-can/16'
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -99,15 +96,15 @@ onMounted(() =>{
 <template>
   <div class="frame-01">
   <multiselect-input-component
-    :id="'address_' + id"
+    :id="'addressname_' + id"
     label="Address name"
     tip="Select an address name for the contact. A contact can have more than one address"
     :initial-value="''"
     :model-value="addressList"
     :selectedValues="selectedValue.locationNames?.map((location:CodeDescrType) => location?.value)"
     :validations="[
-      isNotEmpty,
-      submissionValidation(`location.contacts[${id}].province`)
+      ...getValidations('location.contacts.*.locationNames.*.text'),
+      submissionValidation(`location.contacts[${id}].locationNames`)
     ]"
     @update:selected-value="
       selectedValue.locationNames = nameTypesToCodeDescr($event)
@@ -122,6 +119,7 @@ onMounted(() =>{
     :initial-value="selectedValue.contactType.value"
     :model-value="roleList"
     :validations="[
+      ...getValidations('location.contacts.*.contactType.text'),
       submissionValidation(`location.contacts[${id}].contactType`)
     ]"
     @update:selected-value="
@@ -136,10 +134,7 @@ onMounted(() =>{
     placeholder="First name"
     v-model="selectedValue.firstName"
     :validations="[
-      isMinSize(1),
-      isMaxSize(25),
-      isNotEmpty,
-      isNoSpecialCharacters,
+      ...getValidations('location.contacts.*.firstName'),
       submissionValidation(`location.contacts[${id}].firstName`)
     ]"
     :enabled="enabled"
@@ -153,10 +148,7 @@ onMounted(() =>{
     placeholder="Last name"
     v-model="selectedValue.lastName"
     :validations="[
-      isMinSize(1),
-      isMaxSize(25),
-      isNotEmpty,
-      isNoSpecialCharacters,
+      ...getValidations('location.contacts.*.lastName'),
       submissionValidation(`location.contacts[${id}].lastName`)
     ]"
     :enabled="enabled"
@@ -170,10 +162,7 @@ onMounted(() =>{
     placeholder="Email"
     v-model="selectedValue.email"
     :validations="[
-      isNotEmpty,
-      isEmail,
-      isMinSize(6),
-      isMaxSize(50),
+      ...getValidations('location.contacts.*.email'),
       submissionValidation(`location.contacts[${id}].email`)
     ]"
     :enabled="enabled"
@@ -188,10 +177,7 @@ onMounted(() =>{
     v-model="selectedValue.phoneNumber"
     :enabled="true"
     :validations="[
-      isNotEmpty,
-      isPhoneNumber,
-      isMaxSize(15),
-      isMinSize(10),
+      ...getValidations('location.contacts.*.phoneNumber'),
       submissionValidation(`location.contacts[${id}].phoneNumber`)
     ]"
     @empty="validation.phoneNumber = !$event"

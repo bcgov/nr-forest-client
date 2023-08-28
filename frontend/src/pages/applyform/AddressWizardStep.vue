@@ -10,7 +10,7 @@ import {
 import { useFetchTo } from '@/composables/useFetch'
 import type { ModalNotification } from '@/dto/CommonTypesDto'
 import { isUniqueDescriptive } from '@/helpers/validators/GlobalValidators'
-import useFocus from '@/composables/useFocus'
+import { useFocus } from '@/composables/useFocus'
 
 //Defining the props and emitter to receive the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>()

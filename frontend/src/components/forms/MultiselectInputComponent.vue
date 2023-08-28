@@ -1,47 +1,8 @@
-<template>
-  <div class="grouping-03">
-    <div class="frame-02">
-      <bx-dropdown
-        :id="id"
-        :data-scroll="id"
-        :value="selectedValue"
-        :label-text="label"
-        :helper-text="tip"
-        :invalid="error ? true : false"
-        :validityMessage="error"
-        @bx-dropdown-beingselected="(target:any) => validateInput(target.detail.item.__value)"
-        @bx-dropdown-selected="(target:any) => addFromSelection(target.detail.item.__value)"
-      >
-        <bx-dropdown-item
-          v-for="option in modelValue"
-          :data-item="option.code"
-          :key="option.code"
-          :value="option.code"
-          >{{ option.name }}</bx-dropdown-item
-        >
-      </bx-dropdown>
-      <div class="bx-tag-box">
-        <bx-tag
-          v-for="(tag, index) in items"
-          title="Clear selection"
-          class="bx-tag"
-          :data-tag="'tag_' + id + '_' + index"
-          :id="'tag_' + id + '_' + index"
-          :key="index"
-        >
-          {{ tag }}
-          <CloseOutline16
-            :id="'close_' + id + '_' + index"
-            @click="removeFromSelection(tag)"
-          />
-        </bx-tag>
-      </div>
-    </div>
-  </div>
-</template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { type CodeNameType } from '@/dto/CommonTypesDto'
+import { useEventBus } from '@vueuse/core'
+import type {  CodeNameType } from '@/dto/CommonTypesDto'
+//@ts-ignore
 import CloseOutline16 from '@carbon/icons-vue/es/close/16'
 
 //Define the input properties for this component
@@ -66,6 +27,8 @@ const emit = defineEmits<{
 
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage || '')
+
+const revalidateBus = useEventBus<void>('revalidate-bus')
 
 //We watch for error changes to emit events
 watch(error, () => emit('error', error.value))
@@ -134,4 +97,48 @@ watch([items], () => emitChange())
 
 props.selectedValues?.forEach((value: string) => addFromSelection(value))
 validateInput(selectedValue.value)
+revalidateBus.on(() => validateInput(selectedValue.value))
 </script>
+
+<template>
+  <div class="grouping-03">
+    <div class="frame-02">
+      <bx-dropdown
+        :id="id"
+        :data-focus="id"
+        :data-scroll="id"
+        :value="selectedValue"
+        :label-text="label"
+        :helper-text="tip"
+        :invalid="error ? true : false"
+        :validityMessage="error"
+        @bx-dropdown-beingselected="(target:any) => validateInput(target.detail.item.__value)"
+        @bx-dropdown-selected="(target:any) => addFromSelection(target.detail.item.__value)"
+      >
+        <bx-dropdown-item
+          v-for="option in modelValue"
+          :data-item="option.code"
+          :key="option.code"
+          :value="option.code"
+          >{{ option.name }}</bx-dropdown-item
+        >
+      </bx-dropdown>
+      <div class="bx-tag-box">
+        <bx-tag
+          v-for="(tag, index) in items"
+          title="Clear selection"
+          class="bx-tag"
+          :data-tag="'tag_' + id + '_' + index"
+          :id="'tag_' + id + '_' + index"
+          :key="index"
+        >
+          {{ tag }}
+          <CloseOutline16
+            :id="'close_' + id + '_' + index"
+            @click="removeFromSelection(tag)"
+          />
+        </bx-tag>
+      </div>
+    </div>
+  </div>
+</template>

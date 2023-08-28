@@ -1,3 +1,25 @@
+<script setup lang="ts">
+//@ts-ignore
+import CheckmarkFilled20 from '@carbon/icons-vue/es/checkmark--filled/24'
+//@ts-ignore
+import WarningFilled20 from '@carbon/icons-vue/es/warning--filled/24'
+//@ts-ignore
+import InfoFilled20 from '@carbon/icons-vue/es/information--filled/24'
+
+const props = defineProps<{
+  kind: string
+  title: string
+  subtitle?: string
+}>()
+
+const iconsForKinds: Record<string, any> = {
+  ['success']: CheckmarkFilled20,
+  ['info']: InfoFilled20,
+  ['warning']: WarningFilled20,
+  ['error']: WarningFilled20
+}
+</script>
+
 <template>
   <div
   data-scroll="top-notification"
@@ -26,24 +48,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-const props = defineProps<{
-  kind: string
-  title: string
-  subtitle?: string
-}>()
 
-import CheckmarkFilled20 from '@carbon/icons-vue/es/checkmark--filled/24'
-import WarningFilled20 from '@carbon/icons-vue/es/warning--filled/24'
-import InfoFilled20 from '@carbon/icons-vue/es/information--filled/24'
-
-const iconsForKinds: Record<string, any> = {
-  ['success']: CheckmarkFilled20,
-  ['info']: InfoFilled20,
-  ['warning']: WarningFilled20,
-  ['error']: WarningFilled20
-}
-</script>
 
 <style scoped>
 .display-block-wrapper {
@@ -60,9 +65,9 @@ const iconsForKinds: Record<string, any> = {
 
 .display-block-wrapper-info {
   background: #c2e0ff;
-  border: 1px solid #0073E6;
+  border: 1px solid var(--cds-interactive-01);
   border-radius: 4px;
-  border-left: 4px solid #0073E6;
+  border-left: 4px solid var(--cds-interactive-01);
 }
 
 .display-block-wrapper-success {

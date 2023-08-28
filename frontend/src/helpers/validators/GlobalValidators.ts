@@ -1,3 +1,5 @@
+import type { Ref } from 'vue'
+
 // Defines the used regular expressions
 const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const specialCharacters: RegExp = /^[a-zA-Z0-9\sÀ-ÖØ-öø-ÿ]+$/
@@ -192,4 +194,10 @@ export const isUniqueDescriptive = () => {
 export const isNoSpecialCharacters = (value: string) => {
   if (specialCharacters.test(value)) return ''
   return 'No special characters allowed'
+}
+
+
+export const isContainedIn = (values: Ref<string[]>) => (value: string) => {
+  if (values.value.includes(value)) return ''
+  return 'No value selected'
 }

@@ -1,36 +1,44 @@
 <script setup lang="ts">
 import { reactive, watch, toRef, ref, getCurrentInstance, computed } from 'vue'
+// Composables
 import { useEventBus } from '@vueuse/core'
 import { useRouter } from 'vue-router'
-import ArrowRight16 from '@carbon/icons-vue/es/arrow--right/16'
-import Save16 from '@carbon/icons-vue/es/save/16'
-import LogOut16 from '@carbon/icons-vue/es/logout/16'
-import Check16 from '@carbon/icons-vue/es/checkmark/16'
+import { useFocus } from '@/composables/useFocus';
+import { usePost } from '@/composables/useFetch'
+// Imported Pages
 import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformationWizardStep.vue'
 import AddressWizardStep from '@/pages/applyform/AddressWizardStep.vue'
 import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue'
 import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue'
+// Imported types
 import {
   newFormDataDto,
   type FormDataDto,
   type Contact
 } from '@/dto/ApplyClientNumberDto'
-
 import type { ValidationMessageType, ModalNotification } from '@/dto/CommonTypesDto'
-import { usePost } from '@/composables/useFetch'
+// Imported User session
 import ForestClientUserSession from '@/helpers/ForestClientUserSession'
-import useFocus from '@/composables/useFocus';
+// Imported global validations
+import { addValidation,validate } from '@/helpers/validators/ExternalFormValidations'
+// @ts-ignore
+import ArrowRight16 from '@carbon/icons-vue/es/arrow--right/16'
+// @ts-ignore
+import Save16 from '@carbon/icons-vue/es/save/16'
+// @ts-ignore
+import LogOut16 from '@carbon/icons-vue/es/logout/16'
+// @ts-ignore
+import Check16 from '@carbon/icons-vue/es/checkmark/16'
+import { isContainedIn } from '@/helpers/validators/GlobalValidators';
 
-const { setFocusedComponent } = useFocus();
-const submitterInformation = ForestClientUserSession.user
-const errorBus = useEventBus<ValidationMessageType[]>(
-  'submission-error-notification'
-)
+const errorBus = useEventBus<ValidationMessageType[]>('submission-error-notification')
 const generalErrorBus = useEventBus<string>('general-error-notification')
 const exitBus = useEventBus<Record<string, boolean | null>>('exit-notification')
+const toastBus = useEventBus<ModalNotification>('toast-notification')
 
 const router = useRouter()
-
+const { setScrollPoint } = useFocus();
+const submitterInformation = ForestClientUserSession.user
 const instance = getCurrentInstance()
 const session = instance?.appContext.config.globalProperties.$session
 
@@ -53,6 +61,8 @@ let formData = reactive<FormDataDto>({
     contacts: [submitterContact]
   }
 })
+
+const locations = computed(() => formData.location.addresses.map((address:any) => address.locationName))
 
 const { response, error, fetch } = usePost(
   '/api/clients/submissions',
@@ -89,37 +99,93 @@ watch([error], () => {
       generalErrorBus.emit(
         `There was an error submitting your application. ${matchingFields.errorMsg}`
       )
-      setFocusedComponent('top-notification')
+      setScrollPoint('top')
     }
   } else {
     generalErrorBus.emit(
       `There was an error submitting your application. ${error.value.data}}`
     )
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    setScrollPoint('top')
   }
 })
 
-const submit = () => {
-  errorBus.emit([])
-  generalErrorBus.emit('')
-  fetch()
-}
+addValidation('location.contacts.*.locationNames.*.text', isContainedIn(locations))
 
 
 // Tab system
-const progressData = reactive(
-  ['Business information','Address','Contacts','Review']
-  .map((title, index) => {
-    return {
-      title,
-      subtitle: `Step ${index + 1}`,
-      kind: index === 0 ? 'current' : 'queued',
-      enabled: true,
-      valid: false
-    }
-  })
-  
-)
+const progressData = reactive([
+  {
+    title: 'Business Information',
+    subtitle: 'Step 1',
+    kind: 'current',
+    enabled: true,
+    valid: false,
+    step:0,
+    fields: [
+      'businessInformation.businessType',
+      'businessInformation.businessName'
+    ]
+  },{
+    title: 'Address',
+    subtitle: 'Step 2',
+    kind: 'queued',
+    enabled: true,
+    valid: false,
+    step:1,
+    fields: [
+      'location.addresses.*.locationName',
+      'location.addresses.*.country.text',
+      'location.addresses.*.province.text',
+      'location.addresses.*.city',
+      'location.addresses.*.streetAddress',
+      'location.addresses.*.postalCode(location.addresses.*.country.text === "CA")',
+      'location.addresses.*.postalCode(location.addresses.*.country.text === "US")',
+      'location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && location.addresses.*.country.text !== "US")'
+    ]
+  },
+  {
+    title: 'Contacts',
+    subtitle: 'Step 3',
+    kind: 'queued',
+    enabled: true,
+    valid: false,
+    step:2,
+    fields: [
+      'location.contacts.*.locationNames.*.text',
+      'location.contacts.*.contactType.text',
+      'location.contacts.*.firstName',
+      'location.contacts.*.lastName',
+      'location.contacts.*.email',
+      'location.contacts.*.phoneNumber'
+    ]
+  },
+  {
+    title: 'Review',
+    subtitle: 'Step 4',
+    kind: 'queued',
+    enabled: true,
+    valid: false,
+    step:3,
+    fields: [
+    'businessInformation.businessType',
+    'businessInformation.businessName',
+    'location.addresses.*.locationName',
+    'location.addresses.*.country.text',
+    'location.addresses.*.province.text',
+    'location.addresses.*.city',
+    'location.addresses.*.streetAddress',
+    'location.addresses.*.postalCode(location.addresses.*.country.text === "CA")',
+    'location.addresses.*.postalCode(location.addresses.*.country.text === "US")',
+    'location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && location.addresses.*.country.text !== "US")',
+    'location.contacts.*.locationNames.*.text',
+    'location.contacts.*.contactType.text',
+    'location.contacts.*.firstName',
+    'location.contacts.*.lastName',
+    'location.contacts.*.email',
+    'location.contacts.*.phoneNumber'
+    ]
+  }
+])
 
 const currentTab = ref(0);
 
@@ -127,6 +193,16 @@ const stateIcon = (index: number) => {
   if (currentTab.value == index) return 'current'
   if (currentTab.value > index || progressData[index].valid) return 'complete'
   return 'queued'
+}
+
+const checkStepValidity = (stepNumber: number) : boolean =>{
+  progressData.forEach((step:any) => {
+    if(step.step <= stepNumber){
+      step.valid = validate(step.fields,formData);
+      if(!step.valid) step.kind = 'error'
+    }
+  })
+  return progressData[stepNumber].valid
 }
 
 const isLast = computed(() => currentTab.value === progressData.length - 1)
@@ -137,14 +213,18 @@ const isFormValid = computed(() => progressData.every((entry: any) => entry.vali
 const endAndLogOut = ref<boolean>(false)
 const mailAndLogOut = ref<boolean>(false)
 
-const goToStep = (index: number) => (currentTab.value = index)
+const goToStep = (index: number) => {
+  if(checkStepValidity(index)) currentTab.value = index
+}
 
 const onNext = () => {
   if (currentTab.value + 1 < progressData.length) {
-    currentTab.value++
-    progressData[currentTab.value-1].kind = stateIcon(currentTab.value-1)
-    progressData[currentTab.value].kind = stateIcon(currentTab.value)
-    setFocusedComponent(`focus-${currentTab.value}`)
+    if(checkStepValidity(currentTab.value)){
+      currentTab.value++
+      progressData[currentTab.value-1].kind = stateIcon(currentTab.value-1)
+      progressData[currentTab.value].kind = stateIcon(currentTab.value)
+      setScrollPoint('top')
+    }
   }
 }
 const onBack = () => {
@@ -152,24 +232,22 @@ const onBack = () => {
     currentTab.value--
     progressData[currentTab.value+1].kind = stateIcon(currentTab.value+1)
     progressData[currentTab.value].kind = stateIcon(currentTab.value)
-    setFocusedComponent(`focus-${currentTab.value}`)
+    setScrollPoint('top')
   }
 }
 const validateStep = (valid: boolean) => {
   progressData[currentTab.value].valid = valid
 }
-const openToast = (event: ModalNotification) => {
-  console.log(event)
-}
-
 const saveChange = () => {
-  openToast({
-    message: `“${progressData[currentTab.value].title}” changes was saved successfully.`,
-    kind: 'Success',
-    active: true,
-    handler: () => {}
-  })
-  goToStep(3)
+  if(checkStepValidity(currentTab.value)){
+    toastBus.emit({
+      message: `“${progressData[currentTab.value].title}” changes was saved successfully.`,
+      kind: 'Success',
+      active: true,
+      handler: () => {}
+    })
+    goToStep(3)
+  }
 }
 
 const processAndLogOut = () => {
@@ -189,6 +267,14 @@ const processAndLogOut = () => {
   session?.logOut()
 }
 
+const submit = () => {
+  errorBus.emit([])
+  generalErrorBus.emit('')
+  if(checkStepValidity(currentTab.value)){
+    fetch()
+  }
+}
+
 exitBus.on((event: Record<string, boolean | null>) => {
   endAndLogOut.value = event.goodStanding ? event.goodStanding : false
   mailAndLogOut.value = event.duplicated ? event.duplicated : false
@@ -196,12 +282,16 @@ exitBus.on((event: Record<string, boolean | null>) => {
 
 const globalErrorMessage = ref<string>('')
 generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
+
+watch(formData,() =>{
+  checkStepValidity(currentTab.value)
+})
 </script>
 
 <template>
   <div class="form-header">
     <div class="form-header-title">
-      <span class="heading-05">New client application</span>
+      <span class="heading-05" data-scroll="top">New client application</span>
       <p class="body-01">All fields are mandatory</p>
     </div>
       <wizard-progress-indicator-component
@@ -214,7 +304,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
 
     <div v-if="currentTab == 0" class="form-steps-01">
       <div class="form-steps-01-title">
-        <span class="heading-04">Before you begin</span>
+        <span class="heading-04" data-scroll="scroll-0">Before you begin</span>
         <ol type="1" class="bulleted-list body-compact-01">
           <li>
             A registered business must be in good standing with BC
@@ -243,7 +333,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
 
     <div v-if="currentTab == 1" class="form-steps-02">
       <div class="form-steps-section">
-        <span class="heading-04">{{ progressData[1].title}}</span>
+        <span class="heading-04" data-scroll="scroll-1">{{ progressData[1].title}}</span>
         
         <div class="form-steps-section-01">
             <p class="body-01 heading-compact-01-dark">
@@ -261,7 +351,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
 
     <div v-if="currentTab == 2" class="form-steps-03">
       <div class="form-steps-section">
-        <span class="heading-04">{{ progressData[2].title}}</span>
+        <span class="heading-04" data-scroll="scroll-2">{{ progressData[2].title}}</span>
         
         <div class="form-steps-section-01">
           <span class="heading-03"
@@ -301,7 +391,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
 
 
       <div class="form-steps-section form-steps-section-04">
-          <span class="heading-04" data-scroll="focus-3">{{ progressData[3].title}}</span>
+          <span class="heading-04" data-scroll="scroll-3">{{ progressData[3].title}}</span>
           <span class="body-02">Review the content and make any changes by navigating through the steps above or using the "Edit" buttons in each section below.</span>
 
         <review-wizard-step

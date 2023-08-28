@@ -1,33 +1,6 @@
-<template>
-    <bx-form-item class="grouping-02" v-if="enabled">
-      <bx-input
-        v-if="enabled"
-        :id="id"
-        :data-scroll="id"
-        :data-id="'input-' + id"
-        :placeholder="placeholder"
-        :value="selectedValue"
-        :label-text="enabled ? label : null"
-        :helper-text="tip"
-        :disabled="!enabled"
-        :color-scheme="enabled ? '' : 'light'"
-        :invalid="error ? true : false"
-        :validityMessage="error"
-        v-mask="mask"
-        @blur="(event:any) => validateInput(event.target.value)"
-        @input="(event:any) => selectedValue = event.target.value"
-      />
-    </bx-form-item>
-
-    <div v-if="!enabled" class="grouping-04">
-      <div :data-scroll="id" class="grouping-04-label"><span :for="id" class="label-01">{{ label }}</span></div>
-      <span class="text-01">{{ selectedValue }}</span>
-    </div>
-
-</template>
-
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useEventBus } from '@vueuse/core'
 import { isEmpty } from '@/dto/CommonTypesDto'
 
 //Define the input properties for this component
@@ -52,6 +25,8 @@ const emit = defineEmits<{
 
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage || '')
+
+const revalidateBus = useEventBus<void>('revalidate-bus')
 
 //We watch for error changes to emit events
 watch(error, () => emit('error', error.value))
@@ -95,12 +70,44 @@ const validateInput = (newValue: string) => {
   }
 }
 
+revalidateBus.on(() => {
+  validateInput(selectedValue.value)
+})
 </script>
+
+<template>
+  <bx-form-item class="grouping-02" v-if="enabled">
+    <bx-input
+      v-if="enabled"
+      :id="id"
+      :data-focus="id"
+      :data-scroll="id"
+      :data-id="'input-' + id"
+      :placeholder="placeholder"
+      :value="selectedValue"
+      :label-text="enabled ? label : null"
+      :helper-text="tip"
+      :disabled="!enabled"
+      :color-scheme="enabled ? '' : 'light'"
+      :invalid="error ? true : false"
+      :validityMessage="error"
+      v-mask="mask"
+      @blur="(event:any) => validateInput(event.target.value)"
+      @input="(event:any) => selectedValue = event.target.value"
+    />
+  </bx-form-item>
+
+  <div v-if="!enabled" class="grouping-04">
+    <div :data-scroll="id" class="grouping-04-label"><span :for="id" class="label-01">{{ label }}</span></div>
+    <span class="text-01">{{ selectedValue }}</span>
+  </div>
+
+</template>
 
 <style scoped>
 .bx-input-disabled {
   height: 2.5rem;
-  color: #131315; /*Change to common color*/
+  color: var(--light-theme-text-text-primary, #131315);
   padding-top: 0.69rem;
 }
 </style>

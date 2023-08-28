@@ -2,14 +2,13 @@
 import { watch, ref, computed, reactive, onMounted } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import Add16 from '@carbon/icons-vue/es/add/16'
-
 import {
   type FormDataDto,
   type Contact,
   emptyContact
 } from '@/dto/ApplyClientNumberDto'
 import { useFetchTo } from '@/composables/useFetch'
-import useFocus from '@/composables/useFocus'
+import { useFocus } from '@/composables/useFocus'
 import type { CodeNameType, ModalNotification } from '@/dto/CommonTypesDto'
 import { isUniqueDescriptive } from '@/helpers/validators/GlobalValidators'
 
@@ -110,7 +109,7 @@ const handleRemove = (index: number) => {
   })
 }
 
-onMounted(() => setFocusedComponent('address_0'))
+onMounted(() => setFocusedComponent('addressname_0'))
 </script>
 
 <template>
@@ -135,7 +134,6 @@ onMounted(() => setFocusedComponent('address_0'))
     <div  v-for="(contact, index) in otherContacts">
       <hr v-if="index > 0"/>
     <contact-group-component
-    
       :key="index + 1"
       :id="index + 1"
       v-bind:modelValue="contact"

@@ -1,3 +1,54 @@
+<script setup lang="ts">
+import { toRef, watch } from 'vue'
+// Composables
+import { useEventBus } from '@vueuse/core'
+// Types
+import type { ProgressData } from '@/dto/CommonTypesDto'
+// @ts-ignore
+import Checkmark16 from '@carbon/icons-vue/es/checkmark--outline/16'
+// @ts-ignore
+import Error16 from '@carbon/icons-vue/es/error--outline/16'
+// @ts-ignore
+import Circle16 from '@carbon/icons-vue/es/circle-dash/16'
+// @ts-ignore
+import Info16 from '@carbon/icons-vue/es/incomplete/16'
+
+const props = defineProps<{ modelValue: Array<ProgressData> }>()
+
+// eslint-disable typescript:S6598
+const emit = defineEmits<{ (e: 'go-to', value: number): void }>()
+
+const bus = useEventBus<boolean>('navigation-notification')
+
+const values = toRef(props.modelValue)
+watch(
+  () => props.modelValue,
+  () => {
+    values.value = props.modelValue
+  }
+)
+bus.on(
+  (value: boolean) =>
+    (values.value = values.value.map((item: ProgressData) => {
+      if (item.kind === 'queued') {
+        item.enabled = value
+      }
+      return item
+    }))
+)
+
+const iconsForKinds: Record<string, any> = {
+  ['complete']: Checkmark16,
+  ['current']: Info16,
+  ['queued']: Circle16,
+  ['error']: Error16
+}
+
+const canShowLink = (step: ProgressData) => {
+  return step.kind === 'current' || step.kind === 'complete'
+}
+</script>
+
 <template>
   <div class="form-header-progress">
     <div
@@ -48,48 +99,3 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { toRef, watch } from 'vue'
-import { useEventBus } from '@vueuse/core'
-import type { ProgressData } from '@/dto/CommonTypesDto'
-
-import Checkmark16 from '@carbon/icons-vue/es/checkmark--outline/16'
-import Error16 from '@carbon/icons-vue/es/error--outline/16'
-import Circle16 from '@carbon/icons-vue/es/circle-dash/16'
-import Info16 from '@carbon/icons-vue/es/incomplete/16'
-
-const props = defineProps<{ modelValue: Array<ProgressData> }>()
-
-/* eslint-disable typescript:S6598 */
-const emit = defineEmits<{ (e: 'go-to', value: number): void }>()
-
-const bus = useEventBus<boolean>('navigation-notification')
-
-const values = toRef(props.modelValue)
-watch(
-  () => props.modelValue,
-  () => {
-    values.value = props.modelValue
-  }
-)
-bus.on(
-  (value: boolean) =>
-    (values.value = values.value.map((item: ProgressData) => {
-      if (item.kind === 'queued') {
-        item.enabled = value
-      }
-      return item
-    }))
-)
-
-const iconsForKinds: Record<string, any> = {
-  ['complete']: Checkmark16,
-  ['current']: Info16,
-  ['queued']: Circle16,
-  ['error']: Error16
-}
-
-const canShowLink = (step: ProgressData) => {
-  return step.kind === 'current' || step.kind === 'complete'
-}
-</script>

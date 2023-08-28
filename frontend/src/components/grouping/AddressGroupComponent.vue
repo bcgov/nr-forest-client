@@ -1,21 +1,17 @@
 <script setup lang="ts">
 import { reactive, watch, computed, ref, onMounted } from 'vue'
+// Composables
 import { useEventBus } from '@vueuse/core'
-import Delete16 from '@carbon/icons-vue/es/trash-can/16'
+import { useFetchTo } from '@/composables/useFetch'
+import { useFocus } from '@/composables/useFocus'
+// Types
 import type { CodeNameType, BusinessSearchResult } from '@/dto/CommonTypesDto'
 import type { Address } from '@/dto/ApplyClientNumberDto'
-import {
-  isNotEmpty,
-  isCanadianPostalCode,
-  isUsZipCode,
-  isOnlyNumbers,
-  isMaxSize,
-  isMinSize,
-  isNoSpecialCharacters
-} from '@/helpers/validators/GlobalValidators'
+// Validators
+import { getValidations } from '@/helpers/validators/ExternalFormValidations'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
-import { useFetchTo } from '@/composables/useFetch'
-import useFocus from '@/composables/useFocus'
+// @ts-ignore
+import Delete16 from '@carbon/icons-vue/es/trash-can/16'
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -116,19 +112,17 @@ const postalCodeValidators = computed(() => {
   switch (selectedValue.country.value) {
     case 'CA':
       return [
-        isCanadianPostalCode,
+      ...getValidations('location.addresses.*.postalCode(location.addresses.*.country.text === "CA")'),
         submissionValidation(`location.adresses[${props.id}].postalCode`)
       ]
     case 'US':
       return [
-        isUsZipCode,
+      ...getValidations('location.addresses.*.postalCode(location.addresses.*.country.text === "US")'),
         submissionValidation(`location.adresses[${props.id}].postalCode`)
       ]
     default:
       return [
-        isOnlyNumbers,
-        isMinSize(5),
-        isMaxSize(10),
+        ...getValidations('location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && location.addresses.*.country.text !== "US")'),
         submissionValidation(`location.adresses[${props.id}].postalCode`)
       ]
   }
@@ -163,7 +157,7 @@ const provinceNaming = computed(() => {
     case 'US':
       return 'State'
     default:
-      return 'Province/terrytory or state'
+      return 'Province/territory or state'
   }
 })
 
@@ -225,10 +219,7 @@ onMounted(() =>{
     v-model="selectedValue.locationName"
     :enabled="true"
     :validations="[
-      isNotEmpty,
-      isMinSize(3),
-      isMaxSize(50),
-      isNoSpecialCharacters,
+      ...getValidations('location.adresses.*.locationName'),
       submissionValidation(`location.adresses[${id}].locationName`)
     ]"
     :error-message="nameError"
@@ -243,7 +234,7 @@ onMounted(() =>{
     tip=""
     :enabled="true"
     :model-value="countryList"
-    :validations="[submissionValidation(`location.adresses[${id}].country`)]"
+    :validations="[...getValidations('location.addresses.country.text'),submissionValidation(`location.adresses[${id}].country`)]"
     :error-message="addressError"
     @update:selected-value="updateStateProvince($event, 'country')"
     @update:model-value="resetProvinceOnChange"
@@ -265,9 +256,7 @@ onMounted(() =>{
       v-model="selectedValue.streetAddress"
       :contents="content"
       :validations="[
-        isNotEmpty,
-        isMinSize(5),
-        isMaxSize(50),
+        ...getValidations('location.adresses.*.streetAddress'),
         submissionValidation(`location.adresses[${id}].streetAddress`)
       ]"
       :loading="loading"
@@ -290,10 +279,7 @@ onMounted(() =>{
     :enabled="true"
     :error-message="addressError"
     :validations="[
-      isNotEmpty,
-      isMinSize(3),
-      isMaxSize(50),
-      isNoSpecialCharacters,
+      ...getValidations('location.adresses.*.city'),
       submissionValidation(`location.adresses[${id}].city`)
     ]"
     @empty="validation.city = !$event"
@@ -314,7 +300,7 @@ onMounted(() =>{
       :model-value="content"
       :enabled="true"
       tip=""
-      :validations="[submissionValidation(`location.adresses[${id}].province`)]"
+      :validations="[...getValidations('location.addresses.*.province.text'),submissionValidation(`location.adresses[${id}].province`)]"
       :error-message="addressError"
       @update:selected-value="updateStateProvince($event, 'province')"
       @empty="validation.province = !$event"

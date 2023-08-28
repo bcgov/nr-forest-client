@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { useFetchTo } from '@/composables/useFetch'
 import { ref, watch, computed } from 'vue'
+// Composables
+import { useFetchTo } from '@/composables/useFetch'
+
 
 const props = defineProps<{
   url: string

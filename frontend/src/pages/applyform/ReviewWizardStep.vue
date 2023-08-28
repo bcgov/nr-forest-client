@@ -1,3 +1,41 @@
+<script setup lang="ts">
+import { watch, ref, onMounted } from 'vue'
+import { useEventBus } from '@vueuse/core'
+import type { FormDataDto } from '@/dto/ApplyClientNumberDto'
+import Edit16 from '@carbon/icons-vue/es/edit/16'
+
+//Defining the props and emiter to reveice the data and emit an update
+const props = defineProps<{
+  data: FormDataDto
+  active: boolean
+  goToStep: Function
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:data', value: FormDataDto): void
+  (e: 'valid', value: boolean): void
+}>()
+
+const revalidateBus = useEventBus<void>('revalidate-bus')
+
+//Set the prop as a ref, and then emit when it changes
+const formData = ref<FormDataDto>(props.data)
+watch([formData], () => emit('update:data', formData.value))
+
+//So far, hardcoded the value but should be coming from somewhere else
+const companyBusinessTypes: Record<string, string> = {
+  R: 'B.C. Registered Business - Corporation',
+  U: 'Sole Proprietorship'
+}
+
+//We emit valid here because there is nothing else to be done here apart from showing information
+emit('valid', true)
+
+onMounted(() => {
+  revalidateBus.emit()
+  })
+</script>
+
 <template>
   <div class="grouping-05">
     <label class="heading-03">Business information</label>
@@ -82,35 +120,3 @@
     </bx-btn>
   </div>
 </template>
-
-<script setup lang="ts">
-import { watch, ref } from 'vue'
-
-import type { FormDataDto } from '@/dto/ApplyClientNumberDto'
-import Edit16 from '@carbon/icons-vue/es/edit/16'
-
-//Defining the props and emiter to reveice the data and emit an update
-const props = defineProps<{
-  data: FormDataDto
-  active: boolean
-  goToStep: Function
-}>()
-
-const emit = defineEmits<{
-  (e: 'update:data', value: FormDataDto): void
-  (e: 'valid', value: boolean): void
-}>()
-
-//Set the prop as a ref, and then emit when it changes
-const formData = ref<FormDataDto>(props.data)
-watch([formData], () => emit('update:data', formData.value))
-
-//So far, hardcoded the value but should be coming from somewhere else
-const companyBusinessTypes: Record<string, string> = {
-  R: 'B.C. Registered Business - Corporation',
-  U: 'Sole Proprietorship'
-}
-
-//We emit valid here because there is nothing else to be done here apart from showing information
-emit('valid', true)
-</script>

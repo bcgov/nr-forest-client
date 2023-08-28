@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, useSlots, reactive, provide } from 'vue'
+import { ref } from 'vue'
+// Composables
 import { useEventBus } from '@vueuse/core'
+// Imported Types
 import type { ModalNotification } from '@/dto/CommonTypesDto'
+// @ts-ignore
 import Delete16 from '@carbon/icons-vue/es/trash-can/16'
 
 const modalBus = useEventBus<ModalNotification>('modal-notification')
@@ -47,6 +50,7 @@ const deleteContentModal = () => {
 }
 
 modalBus.on(openModal)
+toastBus.on(openToast)
 </script>
 
 <template>

@@ -1,51 +1,6 @@
-<template>
-  <bx-form-item class="grouping-02">
-    <bx-input
-      :id="id"
-      :name="id"
-      type="text"
-      :data-scroll="id"
-      :data-id="'input-' + id"
-      :placeholder="'Start typing to search for your ' + label"
-      :value="inputValue"
-      :label-text="label"
-      :helper-text="tip"
-      @focus="autoCompleteVisible = true"
-      :invalid="error ? true : false"
-      :validityMessage="error"
-      @blur="(event:any) => blur(event.target.value)"
-      @input="(event:any) => inputValue = event.target.value"
-    />
-    <div
-      class="autocomplete-items"
-      :id="id + 'list'"
-      v-show="
-        autoCompleteVisible && inputValue.length > 2 && contents.length > 0
-      "
-    >
-      <div class="autocomplete-items-ct" v-if="loading">
-        <bx-inline-loading status="active">Loading data...</bx-inline-loading>
-      </div>
-      <div class="autocomplete-items-ct" v-else>
-        <div
-          v-for="item in contents"
-          :key="item.code"
-          :data-id="item.code"
-          :data-value="item.name"
-          class="autocomplete-items-cell"
-          @click="selectAutocompleteItem"
-        >
-          <strong :data-id="item.code" :data-value="item.name">{{
-            item.name
-          }}</strong>
-        </div>
-      </div>
-    </div>
-  </bx-form-item>
-</template>
-
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useEventBus } from '@vueuse/core'
 import { isEmpty, type BusinessSearchResult } from '@/dto/CommonTypesDto'
 
 //Define the input properties for this component
@@ -72,6 +27,8 @@ const autoCompleteVisible = ref(false)
 
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage || '')
+
+const revalidateBus = useEventBus<void>('revalidate-bus')
 
 //We watch for error changes to emit events
 watch(error, () => emit('error', error.value))
@@ -144,7 +101,58 @@ const selectAutocompleteItem = (event: any) => {
   emit('update:selected-value', selectedValue)
   autoCompleteVisible.value = false
 }
+
+revalidateBus.on(() => validateInput(inputValue.value))
 </script>
+
+<template>
+  <bx-form-item class="grouping-02">
+    <bx-input
+      :id="id"
+      :name="id"
+      type="text"
+      :data-focus="id"
+      :data-scroll="id"
+      :data-id="'input-' + id"
+      :placeholder="'Start typing to search for your ' + label"
+      :value="inputValue"
+      :label-text="label"
+      :helper-text="tip"
+      @focus="autoCompleteVisible = true"
+      :invalid="error ? true : false"
+      :validityMessage="error"
+      @blur="(event:any) => blur(event.target.value)"
+      @input="(event:any) => inputValue = event.target.value"
+    />
+    <div
+      class="autocomplete-items"
+      :id="id + 'list'"
+      v-show="
+        autoCompleteVisible && inputValue.length > 2 && contents.length > 0
+      "
+    >
+      <div class="autocomplete-items-ct" v-if="loading">
+        <bx-inline-loading status="active">Loading data...</bx-inline-loading>
+      </div>
+      <div class="autocomplete-items-ct" v-else>
+        <div
+          v-for="item in contents"
+          :key="item.code"
+          :data-id="item.code"
+          :data-value="item.name"
+          class="autocomplete-items-cell"
+          @click="selectAutocompleteItem"
+        >
+          <strong :data-id="item.code" :data-value="item.name">{{
+            item.name
+          }}</strong>
+        </div>
+      </div>
+    </div>
+  </bx-form-item>
+</template>
+
+
 <style scoped>
 .autocomplete {
   /*the container must be positioned relative:*/
