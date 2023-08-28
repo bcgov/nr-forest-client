@@ -6,7 +6,7 @@ import {
   Step,
 } from "@badeball/cypress-cucumber-preprocessor";
 import "cypress-get-by-label/commands";
-import { BusinessTypeDescription, CustomWorld, IAddress } from "./common";
+import { BusinessType, CustomWorld, IAddress } from "./common";
 
 Before(() => {
   // cy.intercept("GET", "/api/clients/name/*", {
@@ -39,7 +39,7 @@ When(
   "I select the option that says I have a BC registered business",
   function (this: CustomWorld) {
     cy.contains("I have a BC registered business").click();
-    this.businessTypeDescription = BusinessTypeDescription.Registered;
+    this.businessType = BusinessType.Registered;
   }
 );
 
@@ -361,7 +361,7 @@ Then(
       .as("businessInfo");
 
     cy.get("@businessInfo").contains(this.businessName);
-    cy.get("@businessInfo").contains(this.businessTypeDescription);
+    cy.get("@businessInfo").contains(this.businessType.description);
   }
 );
 
@@ -420,6 +420,9 @@ Then(
       .then((data) => {
         expect(data.businessInformation).to.deep.include({
           businessName: this.businessName,
+          businessType: this.businessType.value,
+          // TODO: should we add the other business fields?
+          // For example: should we capture the incorporationNumber so as to be able to assert it here?
         });
 
         expect(data.location.addresses[0]).to.deep.include({

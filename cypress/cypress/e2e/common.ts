@@ -7,10 +7,21 @@ import {
 } from "@badeball/cypress-cucumber-preprocessor";
 import "cypress-get-by-label/commands";
 
-export enum BusinessTypeDescription {
-  Registered = "B.C. Registered Business - Corporation",
-  Unregistered = "Sole Proprietorship",
+interface IBusinessType {
+  value: string;
+  description: string;
 }
+
+export const BusinessType = {
+  Registered: {
+    value: "R",
+    description: "B.C. Registered Business - Corporation",
+  },
+  Unregistered: {
+    value: "U",
+    description: "Sole Proprietorship",
+  },
+} as const;
 
 export interface IAddress {
   name: string;
@@ -32,7 +43,7 @@ export interface IContact {
 
 export interface CustomWorld extends Mocha.Context {
   appLocation: Location;
-  businessTypeDescription: BusinessTypeDescription;
+  businessType: IBusinessType;
   businessName: string;
   addressList: IAddress[];
   contactList: IContact[];
