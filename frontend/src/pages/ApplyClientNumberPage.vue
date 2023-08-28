@@ -199,7 +199,7 @@ const checkStepValidity = (stepNumber: number) : boolean =>{
   progressData.forEach((step:any) => {
     if(step.step <= stepNumber){
       step.valid = validate(step.fields,formData);
-      if(!step.valid) step.kind = 'error'
+      //if(!step.valid) step.kind = 'error'
     }
   })
   return progressData[stepNumber].valid
@@ -243,6 +243,7 @@ const saveChange = () => {
     toastBus.emit({
       message: `“${progressData[currentTab.value].title}” changes was saved successfully.`,
       kind: 'Success',
+      toastTitle:'',
       active: true,
       handler: () => {}
     })
@@ -282,10 +283,6 @@ exitBus.on((event: Record<string, boolean | null>) => {
 
 const globalErrorMessage = ref<string>('')
 generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
-
-watch(formData,() =>{
-  checkStepValidity(currentTab.value)
-})
 </script>
 
 <template>
