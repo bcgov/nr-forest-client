@@ -204,8 +204,8 @@ watch([detailsData], () => {
 })
 
 onMounted(() =>{
-  if(props.id == 0) setFocusedComponent(`addr_${props.id}`)
-  else setFocusedComponent(`name_${props.id}`)
+  if(props.id == 0) setFocusedComponent(`addr_${props.id}`,800)
+  else setFocusedComponent(`name_${props.id}`,200)
 })
 </script>
 

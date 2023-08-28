@@ -109,7 +109,7 @@ const handleRemove = (index: number) => {
   })
 }
 
-onMounted(() => setFocusedComponent('addressname_0'))
+onMounted(() => setFocusedComponent('addressname_0',800))
 </script>
 
 <template>

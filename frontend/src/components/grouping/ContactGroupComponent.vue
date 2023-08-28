@@ -89,7 +89,7 @@ const nameTypesToCodeDescr = (
 }
 
 onMounted(() =>{
-  setFocusedComponent(`address_${props.id}`)
+  setFocusedComponent(`address_${props.id}`,800)
 })
 </script>
 

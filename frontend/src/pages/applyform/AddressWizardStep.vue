@@ -88,7 +88,7 @@ const removeAddress = (index: number) => () => {
   uniqueValues.remove('Address',index+'')
   uniqueValues.remove('Names',index+'')
   bus.emit({ active: false, message: '', kind: '', toastTitle: '', handler: () => {} });
-  setFocusedComponent(`addr_addr_${index-1}`);
+  setFocusedComponent(`addr_addr_${index-1}`,200);
 };
 
 const handleRemove = (index: number) => {
@@ -104,7 +104,7 @@ const handleRemove = (index: number) => {
   });
 };
 
-onMounted(() => setFocusedComponent('addr_0'))
+onMounted(() => setFocusedComponent('addr_0',800))
 </script>
 
 <template>
