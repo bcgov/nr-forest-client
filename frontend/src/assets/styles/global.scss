@@ -10,6 +10,20 @@
   --light-theme-button-button-secondary: #464648;
   --light-theme-button-button-tertiary: #005cb8;
   --cds-focus: #0073e6;
+  --light-theme-link-link-primary: #005CB8;
+  --light-theme-link-link-primary-hover: #00478f;
+  --light-theme-link-link-secondary: #00478f;
+  --light-theme-link-link-secondary-hover: #00478f;
+  --light-theme-link-link-inverse: #5cadff;
+  --light-theme-link-link-visited: #7c1cdf;
+  --dark-theme-link-link-primary: #5cadff;
+  --dark-theme-link-link-primary-hover: #85c2ff;
+  --dark-theme-link-link-secondary: #85c2ff;
+  --dark-theme-link-link-secondary-hover: #005cb8;
+  --dark-theme-link-link-inverse: #005cb8;
+  --dark-theme-link-link-visited: #c59af1;
+  --light-theme-support-support-info: #00478f;
+  --light-theme-notifications-support-info-border: rgba(0, 102, 204, 1);
 
   //Primary button
   --cds-interactive-01: #0073E6;
@@ -37,6 +51,18 @@
 
 body {
   font-family: map.get(typeFamily.$type-family, "sans");
+}
+
+a {
+  color: var(--light-theme-link-link-primary, #005cb8);
+}
+
+a:hover {
+  color: var(--light-theme-link-link-primary-hover, #00478f);
+}
+
+a:visited {
+  color: var(--light-theme-link-link-visited, #7c1cdf);
 }
 
 .bulleted-list {
@@ -186,6 +212,7 @@ body {
 
 .bx--progress-step-text p a:hover {
   text-decoration: underline;
+  color: var(--light-theme-link-link-primary-hover, #00478f);
   cursor: pointer;
 }
 
@@ -198,7 +225,7 @@ body {
 }
 
 .bx--progress-step-error {
-  border-color: #e72000;
+  border-color: var(--cds-danger-01);
 }
 
 .bx--progress-step-complete {
@@ -210,7 +237,7 @@ body {
 }
 
 .bx--progress-step-icon-error {
-  color: #e72000;
+  color: var(--cds-danger-01);
 }
 
 .bx--progress-step-icon-complete {

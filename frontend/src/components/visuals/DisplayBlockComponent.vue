@@ -64,10 +64,11 @@ const iconsForKinds: Record<string, any> = {
 }
 
 .display-block-wrapper-info {
+  border-radius: 0.25rem;
+  border: 1px solid var(--light-theme-notifications-support-info-border, rgba(0, 102, 204, 0.40));
+  background: var(--light-theme-notifications-notification-info-background, #C2E0FF);
   background: #c2e0ff;
-  border: 1px solid var(--cds-interactive-01);
-  border-radius: 4px;
-  border-left: 4px solid var(--cds-interactive-01);
+  border-left: 4px solid var(--light-theme-notifications-support-info-border, rgba(0, 102, 204, 0.40));
 }
 
 .display-block-wrapper-success {
@@ -92,13 +93,13 @@ const iconsForKinds: Record<string, any> = {
 }
 
 .display-block-icon-info {
-  color: #0073E6;
+  color: var(--light-theme-notifications-support-info-border, rgba(0, 102, 204, 0.40));
 }
 .display-block-icon-success {
   color: #198038;
 }
 .display-block-icon-error {
-  color: #E72000;
+  color: var(--cds-danger-01);
 }
 .display-block-icon-warning {
   color: #f1c21b;
