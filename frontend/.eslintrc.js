@@ -5,16 +5,18 @@ module.exports = {
     es2021: true,
     jest: true,
     node: true,
-    'vue/setup-compiler-macros': true
+    'vue/setup-compiler-macros': true,
   },
-  'import/resolver': {
-    node: {
-      extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue'],
-      moduleDirectory: ['node_modules', 'src/']
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue'],
+        moduleDirectory: ['node_modules', 'src/'],
+      },
+      typescript: {
+        alwaysTryTypes: true,
+      },
     },
-    typescript: {
-      alwaysTryTypes: true
-    }
   },
   extends: [
     'plugin:import/errors',
@@ -23,27 +25,35 @@ module.exports = {
     'standard',
     'prettier',
     'plugin:vue/vue3-essential',
+    'plugin:prettier/recommended',
     'eslint:recommended',
     '@vue/typescript/recommended',
     '@vue/eslint-config-typescript/recommended',
-    '@vue/eslint-config-prettier'
+    '@vue/eslint-config-prettier',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
-    sourceType: 'module'
+    sourceType: 'module',
   },
-  plugins: ['@typescript-eslint'],
-  rules: {},
+  plugins: ['@typescript-eslint', 'prettier'],
+  rules: {
+    'prettier/prettier': 'error',
+    '@typescript-eslint/explicit-module-boundary-types': 'error',
+    '@typescript-eslint/no-unused-vars': 'error',
+    'vue/no-multiple-template-root': 'error',
+    'vue/no-v-html': 'error',
+    'vue/require-prop-types': 'error',
+  },
   overrides: [
     {
       files: ['cypress/integration/**.spec.{js,ts,jsx,tsx}'],
-      extends: ['plugin:cypress/recommended']
-    }
+      extends: ['plugin:cypress/recommended'],
+    },
   ],
   globals: {
     config: 'readable',
     cy: 'readonly',
-    Cypress: 'readonly'
-  }
+    Cypress: 'readonly',
+  },
 }
