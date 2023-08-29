@@ -48,7 +48,7 @@ export const formDataDto: FormDataDto = {
     clientType: '',
     incorporationNumber: '',
     businessName: '',
-    goodStandingInd: ''
+    goodStandingInd: '',
   },
   location: {
     addresses: [
@@ -58,11 +58,11 @@ export const formDataDto: FormDataDto = {
         country: { value: 'CA', text: 'Canada' },
         province: { value: 'BC', text: 'British Columbia' },
         city: '',
-        postalCode: ''
-      }
+        postalCode: '',
+      },
     ],
-    contacts: []
-  }
+    contacts: [],
+  },
 }
 
 export const emptyAddress = (): Address =>
@@ -73,8 +73,8 @@ export const emptyAddress = (): Address =>
       country: { value: 'CA', text: 'Canada' },
       province: { value: 'BC', text: 'British Columbia' },
       city: '',
-      postalCode: ''
-    })
+      postalCode: '',
+    }),
   )
 
 export const emptyContact: Contact = {
@@ -83,8 +83,7 @@ export const emptyContact: Contact = {
   firstName: '',
   lastName: '',
   phoneNumber: '',
-  email: ''
+  email: '',
 }
 
-export const newFormDataDto = (): FormDataDto =>
-  JSON.parse(JSON.stringify(formDataDto))
+export const newFormDataDto = (): FormDataDto => JSON.parse(JSON.stringify(formDataDto))

@@ -18,10 +18,12 @@ const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/
  * isNotEmpty('a') // true
  * isNotEmpty(' a ') // true
  **/
-export const isNotEmpty = (value: string, message: string = 'This field is required'): string => {
-  if (value && value.trim().length > 0) return ''
-  return message
-}
+export const isNotEmpty =
+  (message: string = 'This field is required') =>
+  (value: string): string => {
+    if (value && value.trim().length > 0) return ''
+    return message
+  }
 
 /**
  * Checks if the value is an email
@@ -36,21 +38,19 @@ export const isNotEmpty = (value: string, message: string = 'This field is requi
  * isEmail(' a@b ') // false
  * isEmail('mail@mail.com') // true
  **/
-export const isEmail = (
-  value: string,
-  message: string = 'This field must be a valid email',
-): string => {
-  if (isNotEmpty(value) === '' && emailRegex.test(value)) return ''
-  return message
-}
+export const isEmail =
+  (message: string = 'This field must be a valid email') =>
+  (value: string): string => {
+    if (isNotEmpty(message)(value) === '' && emailRegex.test(value)) return ''
+    return message
+  }
 
-export const isPhoneNumber = (
-  value: string,
-  message: string = 'This field must be a valid phone number',
-): string => {
-  if (isNotEmpty(value) === '' && e164Regex.test(value)) return ''
-  return message
-}
+export const isPhoneNumber =
+  (message: string = 'This field must be a valid phone number') =>
+  (value: string): string => {
+    if (isNotEmpty(message)(value) === '' && e164Regex.test(value)) return ''
+    return message
+  }
 
 /**
  * Checks if the value is a canadian postal code
@@ -75,7 +75,7 @@ export const isCanadianPostalCode = (
   value: string,
   message: string = 'This field must be a valid Canadian postal code without spaces or dashes',
 ): string => {
-  if (isNotEmpty(value) === '' && canadianPostalCodeRegex.test(value)) return ''
+  if (isNotEmpty(message)(value) === '' && canadianPostalCodeRegex.test(value)) return ''
   return message
 }
 
@@ -102,7 +102,7 @@ export const isUsZipCode = (
   value: string,
   message: string = 'This field must be a valid US zip code',
 ): string => {
-  if (isNotEmpty(value) === '' && usZipCodeRegex.test(value)) {
+  if (isNotEmpty(message)(value) === '' && usZipCodeRegex.test(value)) {
     return ''
   }
   return message
@@ -120,12 +120,14 @@ export const isUsZipCode = (
  * isMaxSize(5)('abcde') // true
  * isMaxSize(5)('abcdef') // false
  **/
-export const isMaxSize = (maxSize: number, message: string = 'This field must be smaller') => {
-  return (value: string): string => {
-    if (value && value.length <= maxSize) return ''
-    return message
+export const isMaxSize =
+  (message: string = 'This field must be smaller') =>
+  (maxSize: number) => {
+    return (value: string): string => {
+      if (isNotEmpty(message)(value) && value.length <= maxSize) return ''
+      return message
+    }
   }
-}
 
 /**
  * Checks if the value is not empty and has a minimum size
@@ -139,12 +141,14 @@ export const isMaxSize = (maxSize: number, message: string = 'This field must be
  * isMinSize(5)('abcde') // true
  * isMinSize(5)('abcdef') // true
  **/
-export const isMinSize = (minSize: number, message: string = 'This field must bigger') => {
-  return (value: string): string => {
-    if (isNotEmpty(value) === '' && value.length >= minSize) return ''
-    return message
+export const isMinSize =
+  (message: string = 'This field must bigger') =>
+  (minSize: number) => {
+    return (value: string): string => {
+      if (isNotEmpty(message)(value) === '' && value.length >= minSize) return ''
+      return message
+    }
   }
-}
 
 /**
  * Checks if the value is not empty and is composed of only numbers
@@ -158,13 +162,12 @@ export const isMinSize = (minSize: number, message: string = 'This field must bi
  * isOnlyNumbers('123') // true
  * isOnlyNumbers('123a') // false
  **/
-export const isOnlyNumbers = (
-  value: string,
-  message: string = 'This field must be composed of only numbers',
-): string => {
-  if (isNotEmpty(value) === '' && /^\d*$/.exec(value)) return ''
-  return message
-}
+export const isOnlyNumbers =
+  (message: string = 'Only numbers allowed') =>
+  (value: string): string => {
+    if (isNotEmpty(message)(value) === '' && /^\d*$/.exec(value)) return ''
+    return message
+  }
 
 /**
  * Check if value is unique in the group of entries
@@ -207,17 +210,23 @@ export const isUniqueDescriptive = (): {
   }
 }
 
-export const isNoSpecialCharacters = (
-  value: string,
-  message: string = 'No special characters allowed',
-): string => {
-  if (specialCharacters.test(value)) return ''
-  return message
-}
+export const isNoSpecialCharacters =
+  (message: string = 'No special characters allowed') =>
+  (value: string): string => {
+    if (specialCharacters.test(value)) return ''
+    return message
+  }
 
 export const isContainedIn =
-  (values: Ref<string[]>) =>
-  (value: string, message = 'No value selected'): string => {
+  (values: Ref<string[]>, message = 'No value selected') =>
+  (value: string): string => {
     if (values.value.includes(value)) return ''
+    return message
+  }
+
+export const isNot =
+  (referenceValue: string, message = 'Value is not allowed') =>
+  (value: string): string => {
+    if (value !== referenceValue) return ''
     return message
   }

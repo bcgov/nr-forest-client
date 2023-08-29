@@ -7,83 +7,125 @@ import {
   isMaxSize,
   isMinSize,
   isOnlyNumbers,
-  isNoSpecialCharacters
+  isNoSpecialCharacters,
+  isNot,
 } from '@/helpers/validators/GlobalValidators'
 
 import type { FormDataDto } from '@/dto/ApplyClientNumberDto'
 
 // We declare here a collection of all validations for every field in the form
-const globalValidations : Record<string, Function[]> = {}
+const globalValidations: Record<string, ((value: string) => string)[]> = {}
 
 // Step 1: Business Information
-globalValidations['businessInformation.businessName'] = [isNotEmpty]
+globalValidations['businessInformation.businessName'] = [
+  isNotEmpty('Business Name cannot be empty'),
+]
+globalValidations['businessInformation.clientType'] = [
+  isNot('I', 'Individuals are not supported at the moment'),
+]
 
 // Step 2: Addresses
 globalValidations['location.addresses.*.locationName'] = [
-  isNotEmpty,
-  isMinSize(3),
-  isMaxSize(50),
-  isNoSpecialCharacters
+  isNotEmpty('You must provide a name for this location'),
+  isMinSize(
+    'The location name must be between 3 and 50 characters and cannot contain special characters',
+  )(3),
+  isMaxSize(
+    'The location name must be between 3 and 50 characters and cannot contain special characters',
+  )(50),
+  isNoSpecialCharacters(
+    'The location name must be between 3 and 50 characters and cannot contain special characters',
+  ),
 ]
-globalValidations['location.addresses.*.country.text'] = [isNotEmpty]
-globalValidations['location.addresses.*.province.text'] = [isNotEmpty]
+globalValidations['location.addresses.*.country.text'] = [isNotEmpty('You must select a country')]
+globalValidations['location.addresses.*.province.text'] = [isNotEmpty('You must select a value')]
 globalValidations['location.addresses.*.city'] = [
-  isNotEmpty,
-  isMinSize(3),
-  isMaxSize(50),
-  isNoSpecialCharacters
+  isNotEmpty('You must provide a city'),
+  isMinSize(
+    'The city name must be between 3 and 50 characters and cannot contain special characters',
+  )(3),
+  isMaxSize(
+    'The city name must be between 3 and 50 characters and cannot contain special characters',
+  )(50),
+  isNoSpecialCharacters(
+    'The city name must be between 3 and 50 characters and cannot contain special characters',
+  ),
 ]
-globalValidations['location.addresses.*.streetAddress'] = [isNotEmpty, isMinSize(5), isMaxSize(50)]
-globalValidations['location.addresses.*.postalCode(location.addresses.*.country.text === "CA")'] = [isCanadianPostalCode]
-globalValidations['location.addresses.*.postalCode(location.addresses.*.country.text === "US")'] = [isUsZipCode]
-globalValidations['location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && country.text !== "US")'] = [isOnlyNumbers, isMinSize(5), isMaxSize(10)]
+globalValidations['location.addresses.*.streetAddress'] = [
+  isNotEmpty('Please provide a valid address or PO Box'),
+  isMinSize('The address must be between 5 and 50 characters')(5),
+  isMaxSize('The address must be between 5 and 50 characters')(50),
+]
+globalValidations['location.addresses.*.postalCode(location.addresses.*.country.text === "CA")'] = [
+  isCanadianPostalCode,
+]
+globalValidations['location.addresses.*.postalCode(location.addresses.*.country.text === "US")'] = [
+  isUsZipCode,
+]
+globalValidations[
+  'location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && country.text !== "US")'
+] = [
+  isOnlyNumbers(
+    'Postal code should be composed of only numbers and should be between 5 and 10 characters',
+  ),
+  isMinSize(
+    'Postal code should be composed of only numbers and should be between 5 and 10 characters',
+  )(5),
+  isMaxSize(
+    'Postal code should be composed of only numbers and should be between 5 and 10 characters',
+  )(10),
+]
 
 // Step 3: Contacts
 
-globalValidations['location.contacts.*.locationNames.*.text'] = [isNotEmpty]
-globalValidations['location.contacts.*.contactType.text'] = [isNotEmpty]
+globalValidations['location.contacts.*.locationNames.*.text'] = [
+  isNotEmpty('You must select at least one location'),
+]
+globalValidations['location.contacts.*.contactType.text'] = [
+  isNotEmpty('You must select at least one contact type'),
+]
 globalValidations['location.contacts.*.firstName'] = [
-  isMinSize(1),
-  isMaxSize(25),
-  isNotEmpty,
-  isNoSpecialCharacters
+  isMinSize('Name should be between 1 and 25 characters with no special character')(1),
+  isMaxSize('Name should be between 1 and 25 characters with no special character')(25),
+  isNoSpecialCharacters('Name should be between 1 and 25 characters with no special character'),
 ]
 globalValidations['location.contacts.*.lastName'] = [
-  isMinSize(1),
-  isMaxSize(25),
-  isNotEmpty,
-  isNoSpecialCharacters
+  isMinSize('Name should be between 1 and 25 characters with no special character')(1),
+  isMaxSize('Name should be between 1 and 25 characters with no special character')(25),
+  isNoSpecialCharacters('Name should be between 1 and 25 characters with no special character'),
 ]
 globalValidations['location.contacts.*.email'] = [
-  isNotEmpty,
-  isEmail,
-  isMinSize(6),
-  isMaxSize(50)
+  isEmail('Please provide a valid email address'),
+  isMinSize('Please provide a valid email address')(6),
+  isMaxSize('Please provide a valid email address')(50),
 ]
 globalValidations['location.contacts.*.phoneNumber'] = [
-  isNotEmpty,
-  isPhoneNumber,
-  isMaxSize(15),
-  isMinSize(10)
+  isPhoneNumber('Please provide a valid phone number'),
+  isMaxSize('Please provide a valid phone number')(15),
+  isMinSize('Please provide a valid phone number')(10),
 ]
 
 // Associate the field with the validators here
 
 // This function will extract the field value from the object
-export const getField = (path:string, value: FormDataDto):any => {
+export const getField = (path: string, value: FormDataDto): string | string[] => {
   // First we set is in a temporary variable
   let temporaryValue: any = value
   // We split the path by dots and iterate over it
-  path.split('.').forEach((key:string) => {
+  path.split('.').forEach((key: string) => {
     // If the temporary value is not undefined we dig in
     if (temporaryValue[key] !== undefined) {
       // If the temporary value is an array we iterate over it
       if (Array.isArray(temporaryValue[key])) {
         // Array fields are split by star to indicate that we want to iterate over the array
         // Due to that, we split the path by the star and get the second element containing the rest of the path
-        temporaryValue = temporaryValue[key].map((item:any) => getField(path.split('.*.').slice(1).join('.*.'), item))
+        temporaryValue = temporaryValue[key].map((item: any) =>
+          getField(path.split('.*.').slice(1).join('.*.'), item),
+        )
         // if is not an array we just set the value
-      } else { temporaryValue = temporaryValue[key] }
+      } else {
+        temporaryValue = temporaryValue[key]
+      }
     }
   })
 
@@ -92,45 +134,52 @@ export const getField = (path:string, value: FormDataDto):any => {
 }
 
 // This function will return all validators for the field
-export const getValidations = (key: string) : Function[] => (globalValidations[key] || [])
-
+export const getValidations = (key: string): ((value: string) => string)[] =>
+  globalValidations[key] || []
 
 // This function will run the validators and return the errors
 export const validate = (keys: string[], target: FormDataDto): boolean => {
-// For every received key we get the validations and run them
-return keys.every((key) => {
-  // First we get all validators for that field
-  const validations: Function[] = getValidations(key);
-  //If there is no corresponding key in the validations we return false
-  if(!validations) return false
-  // For every validator we run it and check if the result is empty
-  return validations.every((validation: Function) => {
+  // For every received key we get the validations and run them
+  return keys.every((key) => {
+    // First we get all validators for that field
+    const validations: ((value: string) => string)[] = getValidations(key)
+    // If there is no corresponding key in the validations we return false
+    if (!validations) return false
     // We split the field key and the condition if it has one
-    const [fieldKey, fieldCondition] = key.includes('(') ? key.replace(')','').split('(') : [key, 'true'];
-    // We then load the field value
-    const fieldValue = getField(fieldKey, target);
-    // We define a function that will run the validation if the condition is true
-    const buildEval = (condition: string) => condition === 'true' ? 'true' : `target.${condition}`;
-    const runValidation = (item: any,condition:string) => eval(condition) ? validation(item) === '' : true;
-    // If the field value is an array we run the validation for every item in the array
-    if (Array.isArray(fieldValue)) {
-      return fieldValue.every((item: any,index:number) => {
-        // And sometimes we can end up with another array inside, that's life
-        if (Array.isArray(item)) {
-          if(item.length === 0) item.push('')
-          return item.every((subItem:any) => runValidation(subItem,buildEval(fieldCondition.replace('.*.',`[${index}].`))));
-        }
-        // If it is not an array here, just validate it
-        return runValidation(item,buildEval(fieldCondition.replace('.*.',`[${index}].`)));
-      });
-    }
-    // If the field value is not an array we run the validation for the field
-    return runValidation(fieldValue,fieldCondition);
-  });
-});
+    const [fieldKey, fieldCondition] = key.includes('(')
+      ? key.replace(')', '').split('(')
+      : [key, 'true']
+    // For every validator we run it and check if the result is empty
+    return validations.every((validation: (value: string) => string) => {
+      // We then load the field value
+      const fieldValue = getField(fieldKey, target)
+      // We define a function that will run the validation if the condition is true
+      const buildEval = (condition: string) =>
+        condition === 'true' ? 'true' : `target.${condition}`
+      const runValidation = (item: any, condition: string) =>
+        // eslint-disable-next-line no-eval
+        eval(condition) ? validation(item) === '' : true
+      // If the field value is an array we run the validation for every item in the array
+      if (Array.isArray(fieldValue)) {
+        return fieldValue.every((item: any, index: number) => {
+          // And sometimes we can end up with another array inside, that's life
+          if (Array.isArray(item)) {
+            if (item.length === 0) item.push('')
+            return item.every((subItem: any) =>
+              runValidation(subItem, buildEval(fieldCondition.replace('.*.', `[${index}].`))),
+            )
+          }
+          // If it is not an array here, just validate it
+          return runValidation(item, buildEval(fieldCondition.replace('.*.', `[${index}].`)))
+        })
+      }
+      // If the field value is not an array we run the validation for the field
+      return runValidation(fieldValue, fieldCondition)
+    })
+  })
 }
 
-export const addValidation = (key: string, validation: Function) => {
-  if (!globalValidations[key]) globalValidations[key] = [];
-  globalValidations[key].push(validation);
+export const addValidation = (key: string, validation: (value: string) => string): void => {
+  if (!globalValidations[key]) globalValidations[key] = []
+  globalValidations[key].push(validation)
 }

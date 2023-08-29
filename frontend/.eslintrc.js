@@ -44,6 +44,7 @@ module.exports = {
     'vue/no-multiple-template-root': 'error',
     'vue/no-v-html': 'error',
     'vue/require-prop-types': 'error',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
   overrides: [
     {
