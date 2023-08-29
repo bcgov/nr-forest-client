@@ -124,7 +124,7 @@ export const isMaxSize =
   (message: string = 'This field must be smaller') =>
   (maxSize: number) => {
     return (value: string): string => {
-      if (isNotEmpty(message)(value) && value.length <= maxSize) return ''
+      if (isNotEmpty(message)(value) === '' && value.length <= maxSize) return ''
       return message
     }
   }
@@ -163,7 +163,7 @@ export const isMinSize =
  * isOnlyNumbers('123a') // false
  **/
 export const isOnlyNumbers =
-  (message: string = 'Only numbers allowed') =>
+  (message: string = 'This field must be composed of only numbers') =>
   (value: string): string => {
     if (isNotEmpty(message)(value) === '' && /^\d*$/.exec(value)) return ''
     return message

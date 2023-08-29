@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { ref } from 'vue'
 import {
   isNotEmpty,
   isEmail,
@@ -9,99 +10,101 @@ import {
   isMinSize,
   isOnlyNumbers,
   isUniqueDescriptive,
-  isNoSpecialCharacters
+  isNoSpecialCharacters,
+  isContainedIn,
+  isNot,
 } from '@/helpers/validators/GlobalValidators'
 
 describe('GlobalValidators', () => {
   it('should return empty when isNotEmpty is called with a non-empty string', () => {
-    expect(isNotEmpty('a')).toBe('')
+    expect(isNotEmpty()('a')).toBe('')
   })
   it('should return empty when isNotEmpty is called on a string with leading whitespaces', () => {
-    expect(isNotEmpty(' a')).toBe('')
+    expect(isNotEmpty()(' a')).toBe('')
   })
   it('should return empty when isNotEmpty is called on a string with trailing whitespaces', () => {
-    expect(isNotEmpty('a ')).toBe('')
+    expect(isNotEmpty()('a ')).toBe('')
   })
   it('should return empty when isNotEmpty is called on a string with leading and trailing whitespaces', () => {
-    expect(isNotEmpty(' a ')).toBe('')
+    expect(isNotEmpty()(' a ')).toBe('')
   })
   it('should return an error message when isNotEmpty is called on an empty string', () => {
-    expect(isNotEmpty('')).toBe('This field is required')
+    expect(isNotEmpty()('')).toBe('This field is required')
   })
 
   it('should return empty when isEmail is called with a valid email', () => {
-    expect(isEmail('mail@mail.ca')).toBe('')
+    expect(isEmail()('mail@mail.ca')).toBe('')
   })
   it('should return an error message when isEmail is called with an invalid email', () => {
-    expect(isEmail('mail')).toBe('This field must be a valid email')
+    expect(isEmail()('mail')).toBe('This field must be a valid email')
   })
   it('should return an error message when isEmail is called with an empty string', () => {
-    expect(isEmail('')).toBe('This field must be a valid email')
+    expect(isEmail()('')).toBe('This field must be a valid email')
   })
   it('should return an error message when isEmail is called with a string with leading whitespaces', () => {
-    expect(isEmail('  mail@mail.ca')).toBe('This field must be a valid email')
+    expect(isEmail()('  mail@mail.ca')).toBe('This field must be a valid email')
   })
   it('should return an error message when isEmail is called with a string with trailing whitespaces', () => {
-    expect(isEmail('mail@mail.ca  ')).toBe('This field must be a valid email')
+    expect(isEmail()('mail@mail.ca  ')).toBe('This field must be a valid email')
   })
   it('should return an error message when isEmail is called with a string with leading and trailing whitespaces', () => {
-    expect(isEmail('  mail@mail.ca  ')).toBe('This field must be a valid email')
+    expect(isEmail()('  mail@mail.ca  ')).toBe('This field must be a valid email')
   })
   it('should return an error message when isEmail is called with an email with whitespace in the middle of it', () => {
-    expect(isEmail('mail @mail.ca')).toBe('This field must be a valid email')
+    expect(isEmail()('mail @mail.ca')).toBe('This field must be a valid email')
   })
 
   it('should return empty when isPhoneNumber is called with a valid phone number', () => {
-    expect(isPhoneNumber('+14165555555')).toBe('')
+    expect(isPhoneNumber()('+14165555555')).toBe('')
   })
   it('should return empty when isPhoneNumber is called with a phone number without country code', () => {
-    expect(isPhoneNumber('4165555555')).toBe('')
+    expect(isPhoneNumber()('4165555555')).toBe('')
   })
   it('should return an error message when isPhoneNumber is called with an empty string', () => {
-    expect(isPhoneNumber('')).toBe('This field must be a valid phone number')
+    expect(isPhoneNumber()('')).toBe('This field must be a valid phone number')
   })
   it('should return an error message when isPhoneNumber is called with a string with leading whitespaces', () => {
-    expect(isPhoneNumber('  +14165555555')).toBe(
+    expect(isPhoneNumber()('  +14165555555')).toBe(
       'This field must be a valid phone number'
     )
   })
   it('should return an error message when isPhoneNumber is called with a string with trailing whitespaces', () => {
-    expect(isPhoneNumber('+14165555555  ')).toBe(
+    expect(isPhoneNumber()('+14165555555  ')).toBe(
       'This field must be a valid phone number'
     )
   })
   it('should return an error message when isPhoneNumber is called with a string with leading and trailing whitespaces', () => {
-    expect(isPhoneNumber('  +14165555555  ')).toBe(
+    expect(isPhoneNumber()('  +14165555555  ')).toBe(
       'This field must be a valid phone number'
     )
   })
   it('should return an error message when isPhoneNumber is called with a phone number with whitespace in the middle of it', () => {
-    expect(isPhoneNumber('+1416 555 5555')).toBe(
+    expect(isPhoneNumber()('+1416 555 5555')).toBe(
       'This field must be a valid phone number'
     )
   })
   it('should return an error message when isPhoneNumber is called with a phone number with a letter in it', () => {
-    expect(isPhoneNumber('+1416555a555')).toBe(
+    expect(isPhoneNumber()('+1416555a555')).toBe(
       'This field must be a valid phone number'
     )
   })
   it('should return an error message when isPhoneNumber is called with a phone number with a special character in it', () => {
-    expect(isPhoneNumber('+1416555!555')).toBe(
+    expect(isPhoneNumber()('+1416555!555')).toBe(
       'This field must be a valid phone number'
     )
   })
   it('should return an error message when isPhoneNumber is called with a phone number with a space in it', () => {
-    expect(isPhoneNumber('+1416555 555')).toBe(
+    expect(isPhoneNumber()('+1416555 555')).toBe(
       'This field must be a valid phone number'
     )
   })
   it('should return an error message when isPhoneNumber is called with a phone number with a dash in it', () => {
-    expect(isPhoneNumber('+1416555-555')).toBe(
+    expect(isPhoneNumber()('+1416555-555')).toBe(
       'This field must be a valid phone number'
     )
   })
   it('should return an error message when isPhoneNumber is called with a phone number with a dot in it', () => {
-    expect(isPhoneNumber('+1416555.555')).toBe(
+    expect(isPhoneNumber()('+1416555.555')).toBe(
       'This field must be a valid phone number'
     )
   })
@@ -177,42 +180,42 @@ describe('GlobalValidators', () => {
     expect(isUsZipCode('1234a')).toBe('This field must be a valid US zip code')
   })
   it('should return empty when isMaxSize is called on a string with a size less than the max size', () => {
-    expect(isMaxSize(5)('123')).toBe('')
+    expect(isMaxSize()(5)('123')).toBe('')
   })
   it('should return empty when isMaxSize is called on a string with a size equal to the max size', () => {
-    expect(isMaxSize(5)('12345')).toBe('')
+    expect(isMaxSize()(5)('12345')).toBe('')
   })
   it('should return an error message when isMaxSize is called on a string with a size greater than the max size', () => {
-    expect(isMaxSize(5)('123456')).toBe(
+    expect(isMaxSize('This field must be at most 5 characters long')(5)('123456')).toBe(
       'This field must be at most 5 characters long'
     )
   })
   it('should return empty when isMinSize is called on a string with a size greater than the min size', () => {
-    expect(isMinSize(5)('123456')).toBe('')
+    expect(isMinSize()(5)('123456')).toBe('')
   })
   it('should return empty when isMinSize is called on a string with a size equal to the min size', () => {
-    expect(isMinSize(5)('12345')).toBe('')
+    expect(isMinSize()(5)('12345')).toBe('')
   })
   it('should return an error message when isMinSize is called on a string with a size less than the min size', () => {
-    expect(isMinSize(5)('1234')).toBe(
+    expect(isMinSize('This field must be at least 5 characters long')(5)('1234')).toBe(
       'This field must be at least 5 characters long'
     )
   })
   it('should return an error message when isMinSize is called on an empty string', () => {
-    expect(isMinSize(5)('')).toBe(
+    expect(isMinSize('This field must be at least 5 characters long')(5)('')).toBe(
       'This field must be at least 5 characters long'
     )
   })
   it('should return empty when isOnlyNumbers is called on a string with only numbers', () => {
-    expect(isOnlyNumbers('123')).toBe('')
+    expect(isOnlyNumbers()('123')).toBe('')
   })
   it('should return an error message when isOnlyNumbers is called on a string with letters', () => {
-    expect(isOnlyNumbers('123a')).toBe(
+    expect(isOnlyNumbers()('123a')).toBe(
       'This field must be composed of only numbers'
     )
   })
   it('should return an error message when isOnlyNumbers is called on an empty string', () => {
-    expect(isOnlyNumbers('')).toBe(
+    expect(isOnlyNumbers()('')).toBe(
       'This field must be composed of only numbers'
     )
   })
@@ -229,14 +232,26 @@ describe('GlobalValidators', () => {
     )
   })
   it('should return empty when isNoSpecialCharacters is called on a string with no special characters', () => {
-    expect(isNoSpecialCharacters('abc123')).toBe('')
+    expect(isNoSpecialCharacters()('abc123')).toBe('')
   })
   it('should return an error message when isNoSpecialCharacters is called on a string with special characters', () => {
-    expect(isNoSpecialCharacters('abc123!')).toBe(
+    expect(isNoSpecialCharacters()('abc123!')).toBe(
       'No special characters allowed'
     )
   })
   it('should return an error message when isNoSpecialCharacters is called on an empty string', () => {
-    expect(isNoSpecialCharacters('')).toBe('No special characters allowed')
+    expect(isNoSpecialCharacters()('')).toBe('No special characters allowed')
+  })
+  it('should return empty when content is contained in the list', () => {
+    expect(isContainedIn(ref(['a', 'b']))('a')).toBe('')
+  })
+  it('should return an error message when content is not contained in the list', () => {
+    expect(isContainedIn(ref(['a', 'b']))('c')).toBe('No value selected')
+  })
+  it('should return empty when value is different than the other value', () => {
+    expect(isNot('a')('b')).toBe('')
+  })
+  it('should return an error message when value is equal to the other value', () => {
+    expect(isNot('a')('a')).toBe('Value is not allowed')
   })
 })

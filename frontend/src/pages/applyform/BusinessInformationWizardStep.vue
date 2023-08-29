@@ -40,8 +40,8 @@ watch(
 
 // -- Validation of the component --
 const validation = reactive<Record<string, boolean>>({
-  businessType: formData.value.businessInformation.businessType ? true : false,
-  business: formData.value.businessInformation.businessName ? true : false
+  businessType: !!formData.value.businessInformation.businessType,
+  business: !!formData.value.businessInformation.businessName
 })
 
 const checkValid = () =>
@@ -80,8 +80,8 @@ const toggleErrorMessages = (
   goodStanding: boolean | null,
   duplicated: boolean | null
 ) => {
-  showGoodStandingError.value = goodStanding || false
-  showDuplicatedError.value = duplicated || false
+  showGoodStandingError.value = goodStanding ?? false
+  showDuplicatedError.value = duplicated ?? false
 
   if (goodStanding || duplicated) {
     navigationBus.emit(false)
@@ -129,17 +129,18 @@ watch([autoCompleteResult], () => {
 
     showDetailsLoading.value = true
     watch([error], () => {
-      if (error.value.response.status === 409) {
+      if (error.response?.status === 409) {
         toggleErrorMessages(null, true)
         return
       }
-      if (error.value.response.status === 404) {
+      if (error.response?.status === 404) {
         toggleErrorMessages(null, null)
         validation.business = true
         emit('update:data', formData.value)
         return
       }
-      generalErrorBus.emit(error.value.response.data.message)
+      // @ts-ignore
+      generalErrorBus.emit(error.response?.data.message)
     })
 
     watch(
@@ -219,7 +220,12 @@ watch([selectedOption], () => {
       tip=""
       v-model="formData.businessInformation.businessName"
       :contents="content"
-      :validations="[...getValidations('businessInformation.businessName'),submissionValidation('businessInformation.businessName')]"
+      :validations="[
+        ...getValidations('businessInformation.businessName'),
+        ...getValidations('businessInformation.clientType'),
+        submissionValidation('businessInformation.businessName'),
+        submissionValidation('businessInformation.clientType')
+        ]"
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
     />

@@ -111,20 +111,22 @@ globalValidations['location.contacts.*.phoneNumber'] = [
 export const getField = (path: string, value: FormDataDto): string | string[] => {
   // First we set is in a temporary variable
   let temporaryValue: any = value
+  console.log(path, value)
   // We split the path by dots and iterate over it
   path.split('.').forEach((key: string) => {
+    const fieldKey = key.includes('(') ? key.replace(')', '').split('(')[0] : key
     // If the temporary value is not undefined we dig in
-    if (temporaryValue[key] !== undefined) {
+    if (temporaryValue[fieldKey] !== undefined) {
       // If the temporary value is an array we iterate over it
-      if (Array.isArray(temporaryValue[key])) {
+      if (Array.isArray(temporaryValue[fieldKey])) {
         // Array fields are split by star to indicate that we want to iterate over the array
         // Due to that, we split the path by the star and get the second element containing the rest of the path
-        temporaryValue = temporaryValue[key].map((item: any) =>
+        temporaryValue = temporaryValue[fieldKey].map((item: any) =>
           getField(path.split('.*.').slice(1).join('.*.'), item),
         )
         // if is not an array we just set the value
       } else {
-        temporaryValue = temporaryValue[key]
+        temporaryValue = temporaryValue[fieldKey]
       }
     }
   })
@@ -143,8 +145,6 @@ export const validate = (keys: string[], target: FormDataDto): boolean => {
   return keys.every((key) => {
     // First we get all validators for that field
     const validations: ((value: string) => string)[] = getValidations(key)
-    // If there is no corresponding key in the validations we return false
-    if (!validations) return false
     // We split the field key and the condition if it has one
     const [fieldKey, fieldCondition] = key.includes('(')
       ? key.replace(')', '').split('(')

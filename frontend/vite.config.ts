@@ -61,7 +61,9 @@ export default defineConfig(({ command, mode }) => {
           '**/dto/**/*',
           '**/core/**/*',
           '**/CoreConstants.ts',
-          '**/main.ts'
+          '**/main.ts',
+          '.prettierrc.js',
+          '.eslintrc.js',
         ]
       },
       environment: 'jsdom'
