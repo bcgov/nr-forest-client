@@ -8,5 +8,6 @@ declare namespace Cypress {
     expireCookie(name: string): Chainable<void>;
     login(email: string, name: string, provider: string): Chainable<void>;
     logout(): Chainable<void>;
+    typeWait(text: string, waitTime?: number): Chainable<JQuery<HTMLElement>>;
   }
 }

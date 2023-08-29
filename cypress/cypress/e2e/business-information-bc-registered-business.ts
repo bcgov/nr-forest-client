@@ -47,24 +47,9 @@ When(
   "I type in {string} in the business name input",
   function (businessNameFirstCharacters: string) {
     // TODO: fix in the application for concurrent autocomplete requests, or bounce changes before firing a request.
-
-    const stringLength = businessNameFirstCharacters.length;
-    const stringMinusLastCharacter = businessNameFirstCharacters.substring(
-      0,
-      stringLength - 1
-    );
-
     cy.getByLabel("BC registered business name")
       .filter("input[type=text]")
-      .type(stringMinusLastCharacter, { delay: 0 });
-
-    cy.wait(250);
-
-    const lastCharacter = businessNameFirstCharacters[stringLength - 1];
-
-    cy.getByLabel("BC registered business name")
-      .filter("input[type=text]")
-      .type(lastCharacter);
+      .typeWait(businessNameFirstCharacters);
   }
 );
 
@@ -206,10 +191,10 @@ When("the list of countries finishes loading", function (this: CustomWorld) {
 });
 
 When("I type in {string} in the Street address", (address: string) => {
-  // cy.getByLabel("Street address or PO box").type(address);
+  // TODO: fix in the application for concurrent autocomplete requests, or bounce changes before firing a request.
   cy.get('bx-input[label-text="Street address or PO box"')
     .find("input")
-    .type(address);
+    .typeWait(address);
 });
 
 When(

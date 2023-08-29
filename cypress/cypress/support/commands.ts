@@ -84,3 +84,32 @@ Cypress.Commands.add(
     cy.wait(1000);
   }
 );
+
+Cypress.Commands.add(
+  "typeWait",
+  {
+    prevSubject: true,
+  },
+  /**
+   * Types the supplied characters except for the last one initially, then waits some time,
+   * then waits the last one. Can be useful for autocomplete fields to avoid issues with
+   * concurrency.
+   * Note: ideally we should not need this.
+   *
+   * @param subject
+   * @param text
+   * @param waitTime
+   */
+  (subject: JQuery<HTMLElement>, text: string, waitTime = 250) => {
+    const stringLength = text.length;
+    const stringMinusLastCharacter = text.substring(0, stringLength - 1);
+
+    cy.wrap(subject).type(stringMinusLastCharacter, { delay: 0 });
+
+    cy.wait(waitTime);
+
+    const lastCharacter = text[stringLength - 1];
+
+    cy.wrap(subject).type(lastCharacter);
+  }
+);
