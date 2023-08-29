@@ -184,7 +184,8 @@ watch([autoCompleteResult], () => {
     )
 
     watch([error], () => {
-      generalErrorBus.emit(error.value.response.data.message)
+      // @ts-ignore
+      generalErrorBus.emit(error.response?.data.message)
     })
 
     watch(
@@ -250,9 +251,9 @@ onMounted(() =>{
   >
     <AutoCompleteInputComponent
       :id="'addr_' + id"
-            label="Street address or PO box"
-      placeholder="Start typing to search for your street address or PO box"
-      tip=""
+      label="Street address or PO box"
+      placeholder=""
+      tip="Start typing to search for your street address or PO box"
       v-model="selectedValue.streetAddress"
       :contents="content"
       :validations="[

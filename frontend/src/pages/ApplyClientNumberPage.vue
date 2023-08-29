@@ -12,9 +12,11 @@ import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue'
 import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue'
 // Imported types
 import {
-  newFormDataDto,
-  type FormDataDto,
-  type Contact
+  newFormDataDto
+} from '@/dto/ApplyClientNumberDto'
+import type {
+  FormDataDto,
+  Contact
 } from '@/dto/ApplyClientNumberDto'
 import type { ValidationMessageType, ModalNotification } from '@/dto/CommonTypesDto'
 // Imported User session
@@ -70,9 +72,9 @@ const { response, error, fetch } = usePost(
   {
     skip: true,
     headers: {
-      'x-user-id': submitterInformation?.userId || '',
-      'x-user-email': submitterInformation?.email || '',
-      'x-user-name': submitterInformation?.firstName || ''
+      'x-user-id': submitterInformation?.userId ?? '',
+      'x-user-email': submitterInformation?.email ?? '',
+      'x-user-name': submitterInformation?.firstName ?? ''
     }
   }
 )
@@ -84,8 +86,8 @@ watch([response], () => {
 })
 
 watch([error], () => {
-  if (error.value.response.status === 400) {
-    const validationErrors: ValidationMessageType[] = error.value.response.data
+  if (error.response?.status === 400) {
+    const validationErrors: ValidationMessageType[] = error.response?.data as ValidationMessageType[]
     const fieldIds = [
       'businessInformation.businessType',
       'businessInformation.legalType',
@@ -103,13 +105,14 @@ watch([error], () => {
     }
   } else {
     generalErrorBus.emit(
-      `There was an error submitting your application. ${error.value.data}}`
+      `There was an error submitting your application. ${error.response?.data}}`
     )
     setScrollPoint('top')
   }
 })
 
 addValidation('location.contacts.*.locationNames.*.text', isContainedIn(locations))
+
 
 
 // Tab system
@@ -199,7 +202,6 @@ const checkStepValidity = (stepNumber: number) : boolean =>{
   progressData.forEach((step:any) => {
     if(step.step <= stepNumber){
       step.valid = validate(step.fields,formData);
-      //if(!step.valid) step.kind = 'error'
     }
   })
   return progressData[stepNumber].valid
@@ -258,9 +260,9 @@ const processAndLogOut = () => {
       {
         incorporation: formData.businessInformation.incorporationNumber,
         name: formData.businessInformation.businessName,
-        userName: submitterInformation?.name || '',
-        userId: submitterInformation?.userId || '',
-        mail: submitterInformation?.email || ''
+        userName: submitterInformation?.name ?? '',
+        userId: submitterInformation?.userId ?? '',
+        mail: submitterInformation?.email ?? ''
       },
       {}
     )
@@ -302,7 +304,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
     <div v-if="currentTab == 0" class="form-steps-01">
       <div class="form-steps-01-title">
         <span class="heading-04" data-scroll="scroll-0">Before you begin</span>
-        <ol type="1" class="bulleted-list body-compact-01">
+        <ol type="1" class="bulleted-list body-02">
           <li>
             A registered business must be in good standing with BC
             Registries

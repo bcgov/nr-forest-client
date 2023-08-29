@@ -1,6 +1,7 @@
 import type { Ref } from 'vue'
 
 // Defines the used regular expressions
+// @sonar-ignore-next-line
 const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const specialCharacters: RegExp = /^[a-zA-Z0-9\sÀ-ÖØ-öø-ÿ]+$/
 const e164Regex: RegExp = /^((\+?[1-9]\d{1,14})|(\(\d{3}\) \d{3}-\d{4}))$/
@@ -17,9 +18,9 @@ const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/
  * isNotEmpty('a') // true
  * isNotEmpty(' a ') // true
  **/
-export const isNotEmpty = (value: string) => {
+export const isNotEmpty = (value: string, message: string = 'This field is required'): string => {
   if (value && value.trim().length > 0) return ''
-  return 'This field is required'
+  return message
 }
 
 /**
@@ -35,14 +36,20 @@ export const isNotEmpty = (value: string) => {
  * isEmail(' a@b ') // false
  * isEmail('mail@mail.com') // true
  **/
-export const isEmail = (value: string) => {
+export const isEmail = (
+  value: string,
+  message: string = 'This field must be a valid email',
+): string => {
   if (isNotEmpty(value) === '' && emailRegex.test(value)) return ''
-  return 'This field must be a valid email'
+  return message
 }
 
-export const isPhoneNumber = (value: string) => {
+export const isPhoneNumber = (
+  value: string,
+  message: string = 'This field must be a valid phone number',
+): string => {
   if (isNotEmpty(value) === '' && e164Regex.test(value)) return ''
-  return 'This field must be a valid phone number'
+  return message
 }
 
 /**
@@ -64,9 +71,12 @@ export const isPhoneNumber = (value: string) => {
  * isCanadianPostalCode('A1A 1A1') // false
  * isCanadianPostalCode('A1A-1A1') // false
  **/
-export const isCanadianPostalCode = (value: string) => {
+export const isCanadianPostalCode = (
+  value: string,
+  message: string = 'This field must be a valid Canadian postal code without spaces or dashes',
+): string => {
   if (isNotEmpty(value) === '' && canadianPostalCodeRegex.test(value)) return ''
-  return 'This field must be a valid Canadian postal code without spaces or dashes'
+  return message
 }
 
 /**
@@ -88,11 +98,14 @@ export const isCanadianPostalCode = (value: string) => {
  * isUsZipCode("123456") // false
  * isUsZipCode("ABCDE") // false
  **/
-export const isUsZipCode = (value: string) => {
+export const isUsZipCode = (
+  value: string,
+  message: string = 'This field must be a valid US zip code',
+): string => {
   if (isNotEmpty(value) === '' && usZipCodeRegex.test(value)) {
     return ''
   }
-  return 'This field must be a valid US zip code'
+  return message
 }
 
 /**
@@ -107,10 +120,10 @@ export const isUsZipCode = (value: string) => {
  * isMaxSize(5)('abcde') // true
  * isMaxSize(5)('abcdef') // false
  **/
-export const isMaxSize = (maxSize: number) => {
-  return (value: string) => {
+export const isMaxSize = (maxSize: number, message: string = 'This field must be smaller') => {
+  return (value: string): string => {
     if (value && value.length <= maxSize) return ''
-    return `This field must be at most ${maxSize} characters long`
+    return message
   }
 }
 
@@ -126,10 +139,10 @@ export const isMaxSize = (maxSize: number) => {
  * isMinSize(5)('abcde') // true
  * isMinSize(5)('abcdef') // true
  **/
-export const isMinSize = (minSize: number) => {
-  return (value: string) => {
+export const isMinSize = (minSize: number, message: string = 'This field must bigger') => {
+  return (value: string): string => {
     if (isNotEmpty(value) === '' && value.length >= minSize) return ''
-    return `This field must be at least ${minSize} characters long`
+    return message
   }
 }
 
@@ -145,9 +158,12 @@ export const isMinSize = (minSize: number) => {
  * isOnlyNumbers('123') // true
  * isOnlyNumbers('123a') // false
  **/
-export const isOnlyNumbers = (value: string) => {
+export const isOnlyNumbers = (
+  value: string,
+  message: string = 'This field must be composed of only numbers',
+): string => {
   if (isNotEmpty(value) === '' && /^\d*$/.exec(value)) return ''
-  return 'This field must be composed of only numbers'
+  return message
 }
 
 /**
@@ -161,43 +177,47 @@ export const isOnlyNumbers = (value: string) => {
  * isUnique.add('key', 'field')('value'); // false
  * isUnique.remove('key', 'field'); // true
  **/
-export const isUniqueDescriptive = () => {
+export const isUniqueDescriptive = (): {
+  add: (key: string, fieldId: string) => (value: string, message: string) => string
+  remove: (key: string, fieldId: string) => boolean
+} => {
   const record: Record<string, Record<string, string>> = {}
 
-  const add = (key: string, fieldId: string) => (value: string) => {
-    // if the record contains the key and the fieldId is not the same as mine, check all the values, except the one if my fieldId to see if it includes my value
-    const fieldsToCheck = Object.keys(record[key] || {}).filter(
-      (field) => field !== fieldId
-    )
-    // Get all the values of the fields to check, except the one of my fieldId
-    const values = fieldsToCheck.map((field: string) => record[key][field])
-    record[key] = { ...record[key], [fieldId]: value }
+  const add =
+    (key: string, fieldId: string) =>
+    (value: string, message: string = 'This value is already in use'): string => {
+      // if the record contains the key and the fieldId is not the same as mine, check all the values, except the one if my fieldId to see if it includes my value
+      const fieldsToCheck = Object.keys(record[key] || {}).filter((field) => field !== fieldId)
+      // Get all the values of the fields to check, except the one of my fieldId
+      const values = fieldsToCheck.map((field: string) => record[key][field])
+      record[key] = { ...record[key], [fieldId]: value }
 
-    if (
-      values.some(
-        (entry: string) => entry.toLowerCase() === value.toLowerCase()
-      )
-    ) {
-      return 'This value is already in use'
+      if (values.some((entry: string) => entry.toLowerCase() === value.toLowerCase())) {
+        return message
+      }
+
+      return ''
     }
 
-    return ''
-  }
-
-  const remove = (key: string, fieldId: string) : boolean => delete record[key][fieldId]
+  const remove = (key: string, fieldId: string): boolean => delete record[key][fieldId]
 
   return {
-    add, remove
+    add,
+    remove,
   }
 }
 
-export const isNoSpecialCharacters = (value: string) => {
+export const isNoSpecialCharacters = (
+  value: string,
+  message: string = 'No special characters allowed',
+): string => {
   if (specialCharacters.test(value)) return ''
-  return 'No special characters allowed'
+  return message
 }
 
-
-export const isContainedIn = (values: Ref<string[]>) => (value: string) => {
-  if (values.value.includes(value)) return ''
-  return 'No value selected'
-}
+export const isContainedIn =
+  (values: Ref<string[]>) =>
+  (value: string, message = 'No value selected'): string => {
+    if (values.value.includes(value)) return ''
+    return message
+  }

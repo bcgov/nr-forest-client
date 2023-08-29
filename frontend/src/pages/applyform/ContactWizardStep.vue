@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { watch, ref, computed, reactive, onMounted } from 'vue'
+// Composables
 import { useEventBus } from '@vueuse/core'
-import Add16 from '@carbon/icons-vue/es/add/16'
-import {
-  type FormDataDto,
-  type Contact,
-  emptyContact
-} from '@/dto/ApplyClientNumberDto'
 import { useFetchTo } from '@/composables/useFetch'
 import { useFocus } from '@/composables/useFocus'
+// Type Imports
+import type { FormDataDto, Contact } from '@/dto/ApplyClientNumberDto'
+import { emptyContact } from '@/dto/ApplyClientNumberDto'
 import type { CodeNameType, ModalNotification } from '@/dto/CommonTypesDto'
+// Validators
 import { isUniqueDescriptive } from '@/helpers/validators/GlobalValidators'
+// @ts-ignore
+import Add16 from '@carbon/icons-vue/es/add/16'
 
 
 //Defining the props and emiter to reveice the data and emit an update

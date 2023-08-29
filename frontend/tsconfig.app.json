@@ -4,6 +4,7 @@
   "exclude": ["src/tests/*"],
   "compilerOptions": {
     "composite": true,
+    "lib": ["es2017", "dom", "dom.iterable"],
     "verbatimModuleSyntax": true,
     "baseUrl": ".",
     "paths": {

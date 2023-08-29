@@ -3,7 +3,7 @@
   "exclude": [],
   "compilerOptions": {
     "composite": true,
-    "lib": [],
+    "lib": ["es2017", "dom", "dom.iterable"],
     "types": ["node", "jsdom"],
     "ignoreDeprecations": "5.0",
     "verbatimModuleSyntax": true
