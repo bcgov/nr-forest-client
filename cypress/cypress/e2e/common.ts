@@ -47,6 +47,8 @@ export interface CustomWorld extends Mocha.Context {
   businessName: string;
   addressList: IAddress[];
   contactList: IContact[];
+  curAddressIndex: number;
+  curContactIndex: number;
 }
 
 /**
@@ -73,6 +75,14 @@ function allowCrossEnvironments(
 Before(function (this: CustomWorld) {
   // allowCrossEnvironments.apply(this);
   cy.intercept("GET", "/logout").as("logout");
+
+  this.addressList = [
+    {
+      name: "Mailing Address",
+    } as IAddress,
+  ];
+  this.curAddressIndex = 0;
+  this.curContactIndex = 0;
 });
 
 Given(

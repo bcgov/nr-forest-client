@@ -201,14 +201,7 @@ When("the list of countries finishes loading", function (this: CustomWorld) {
     .find("span")
     .invoke("text")
     .then((text) => {
-      if (!this.addressList) {
-        this.addressList = [
-          {
-            name: "Mailing Address",
-          } as IAddress,
-        ];
-      }
-      this.addressList[0].country = text;
+      this.addressList[this.curAddressIndex].country = text;
     });
 });
 
@@ -240,7 +233,7 @@ Then(
       .find("input")
       .invoke("val")
       .then((value) => {
-        this.addressList[0].streetAddress = value as any;
+        this.addressList[this.curAddressIndex].streetAddress = value as any;
       });
   }
 );
@@ -257,7 +250,7 @@ Then(
       .find("input")
       .invoke("val")
       .then((value) => {
-        this.addressList[0].city = value as any;
+        this.addressList[this.curAddressIndex].city = value as any;
       });
   }
 );
@@ -273,7 +266,7 @@ Then(
       .find("span")
       .invoke("text")
       .then((text) => {
-        this.addressList[0].province = text;
+        this.addressList[this.curAddressIndex].province = text;
       });
   }
 );
@@ -289,7 +282,7 @@ Then(
       .find("input")
       .invoke("val")
       .then((value) => {
-        this.addressList[0].postalCode = value as any;
+        this.addressList[this.curAddressIndex].postalCode = value as any;
       });
   }
 );
@@ -308,10 +301,10 @@ When(
     cy.get("@addressName")
       .invoke("text")
       .then((text) => {
-        if (!this.contactList[0].addressNameList) {
-          this.contactList[0].addressNameList = [];
+        if (!this.contactList[this.curContactIndex].addressNameList) {
+          this.contactList[this.curContactIndex].addressNameList = [];
         }
-        this.contactList[0].addressNameList.push(text);
+        this.contactList[this.curContactIndex].addressNameList.push(text);
       });
 
     cy.get("@addressName").click();
@@ -332,7 +325,7 @@ When(
       .find("span")
       .invoke("text")
       .then((text) => {
-        this.contactList[0].primaryRole = text;
+        this.contactList[this.curContactIndex].primaryRole = text;
       });
   }
 );
@@ -348,7 +341,7 @@ When(
       .find("input")
       .invoke("val")
       .then((value) => {
-        this.contactList[0].phoneNumber = value as any;
+        this.contactList[this.curContactIndex].phoneNumber = value as any;
       });
   }
 );
@@ -372,16 +365,16 @@ Then(
       .find(".grouping-07")
       .as("addressInfo");
 
-    cy.get("@addressInfo").contains(this.addressList[0].name);
+    this.addressList.forEach((address) => {
+      cy.get("@addressInfo").contains(address.name);
 
-    // TODO: uncomment when fixed
-    // cy.get("@addressInfo").contains(this.addressList[0].streetAddress);
+      // TODO: uncomment when fixed
+      // cy.get("@addressInfo").contains(address.streetAddress);
 
-    cy.get("@addressInfo").contains(
-      `${this.addressList[0].city}, ${this.addressList[0].province}`
-    );
-    cy.get("@addressInfo").contains(this.addressList[0].country);
-    cy.get("@addressInfo").contains(this.addressList[0].postalCode);
+      cy.get("@addressInfo").contains(`${address.city}, ${address.province}`);
+      cy.get("@addressInfo").contains(address.country);
+      cy.get("@addressInfo").contains(address.postalCode);
+    });
   }
 );
 
@@ -392,13 +385,15 @@ Then(
       .find(".grouping-07")
       .as("contactsInfo");
 
-    cy.get("@contactsInfo").contains(
-      `${this.contactList[0].firstName} ${this.contactList[0].lastName}`
-    );
-    cy.get("@contactsInfo").contains(this.contactList[0].addressNameList[0]);
-    cy.get("@contactsInfo").contains(this.contactList[0].primaryRole);
-    cy.get("@contactsInfo").contains(this.contactList[0].email);
-    cy.get("@contactsInfo").contains(this.contactList[0].phoneNumber);
+    this.contactList.forEach((contact) => {
+      cy.get("@contactsInfo").contains(
+        `${contact.firstName} ${contact.lastName}`
+      );
+      cy.get("@contactsInfo").contains(contact.addressNameList.join(", "));
+      cy.get("@contactsInfo").contains(contact.primaryRole);
+      cy.get("@contactsInfo").contains(contact.email);
+      cy.get("@contactsInfo").contains(contact.phoneNumber);
+    });
   }
 );
 
@@ -425,32 +420,58 @@ Then(
           // For example: should we capture the incorporationNumber so as to be able to assert it here?
         });
 
-        expect(data.location.addresses[0]).to.deep.include({
-          locationName: this.addressList[0].name,
-          // TODO: uncomment when fixed
-          // streetAddress: this.addressList[0].streetAddress,
-          city: this.addressList[0].city,
-          postalCode: this.addressList[0].postalCode,
-        });
-        expect(data.location.addresses[0].country.text).to.equal(
-          this.addressList[0].country
-        );
-        expect(data.location.addresses[0].province.text).to.equal(
-          this.addressList[0].province
+        expect(data.location.addresses).to.have.lengthOf(
+          this.addressList.length
         );
 
-        expect(data.location.contacts[0]).to.deep.include({
-          phoneNumber: this.contactList[0].phoneNumber,
-          firstName: this.contactList[0].firstName,
-          lastName: this.contactList[0].lastName,
-          email: this.contactList[0].email,
-        });
-        expect(data.location.contacts[0].locationNames[0].text).to.equal(
-          this.contactList[0].addressNameList[0]
+        for (let index = 0; index < data.location.addresses.length; index++) {
+          const dataAddress = data.location.addresses[index];
+          const expectedAddress = this.addressList[index];
+
+          expect(dataAddress).to.deep.include({
+            locationName: expectedAddress.name,
+            // TODO: uncomment when fixed
+            // streetAddress: curAddress.streetAddress,
+            city: expectedAddress.city,
+            postalCode: expectedAddress.postalCode,
+          });
+          expect(dataAddress.country.text).to.equal(expectedAddress.country);
+          expect(dataAddress.province.text).to.equal(expectedAddress.province);
+        }
+
+        expect(data.location.contacts).to.have.lengthOf(
+          this.contactList.length
         );
-        expect(data.location.contacts[0].contactType.text).to.equal(
-          this.contactList[0].primaryRole
-        );
+
+        for (let index = 0; index < data.location.contacts.length; index++) {
+          const dataContact = data.location.contacts[index];
+          const expectedContact = this.contactList[index];
+
+          expect(dataContact).to.deep.include({
+            phoneNumber: expectedContact.phoneNumber,
+            firstName: expectedContact.firstName,
+            lastName: expectedContact.lastName,
+            email: expectedContact.email,
+          });
+
+          expect(dataContact.locationNames).to.have.lengthOf(
+            expectedContact.addressNameList.length
+          );
+
+          for (
+            let locationIndex = 0;
+            locationIndex < dataContact.locationNames.length;
+            locationIndex++
+          ) {
+            expect(dataContact.locationNames[locationIndex].text).to.equal(
+              expectedContact.addressNameList[locationIndex]
+            );
+          }
+
+          expect(dataContact.contactType.text).to.equal(
+            expectedContact.primaryRole
+          );
+        }
       });
   }
 );
