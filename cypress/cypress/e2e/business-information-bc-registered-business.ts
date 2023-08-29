@@ -135,18 +135,24 @@ Then("a field to type in the business name is displayed", () => {
 });
 
 Then("a notification about 'Registered business name' is displayed", () => {
-  cy.contains("span", "BC registered business name").should("be.visible");
+  cy.contains(".heading-compact-01", "BC registered business name").should(
+    "be.visible"
+  );
 });
 
 Then(
   "a notification for the business being 'Not in good standing' is displayed",
   () => {
-    cy.contains("span", "Not in good standing").should("be.visible");
+    cy.contains(".heading-compact-01", "Not in good standing").should(
+      "be.visible"
+    );
   }
 );
 
 Then("a notification saying that 'Client already exists' is displayed", () => {
-  cy.contains("span", "Client already exists").should("be.visible");
+  cy.contains(".heading-compact-01", "Client already exists").should(
+    "be.visible"
+  );
 });
 
 Then("the button 'End application and logout' is displayed", () => {
