@@ -139,14 +139,20 @@ const postalCodeMask = computed(() => {
   }
 })
 
+const postalCodeShowHint = ref(false)
+
 const postalCodePlaceholder = computed(() => {
-  switch (selectedValue.country.value) {
-    case 'CA':
-      return 'Use A1A1A1 format'
-    case 'US':
-      return 'Use 00000 or 00000-0000 format'
-    default:
-      return 'Use 00000 format'
+  if(postalCodeShowHint.value) {
+    switch (selectedValue.country.value) {
+      case 'CA':
+        return 'Use A1A1A1 format'
+      case 'US':
+        return 'Use 00000 or 00000-0000 format'
+      default:
+        return 'Use 00000 format'
+    }
+  }else{
+    return ''
   }
 })
 
@@ -201,6 +207,8 @@ watch([detailsData], () => {
     selectedValue.city = detailsData.value.city
     selectedValue.province = detailsData.value.province
     selectedValue.postalCode = detailsData.value.postalCode.replace(/\s/g, '')
+    if(!selectedValue.postalCode) postalCodeShowHint.value = true
+    else postalCodeShowHint.value = false
   }
 })
 
