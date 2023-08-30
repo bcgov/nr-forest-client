@@ -131,7 +131,7 @@ onMounted(() =>{
   <text-input-component
     :id="'firstName_' + id"
     label="First name"
-    placeholder="First name"
+    placeholder=""
     v-model="selectedValue.firstName"
     :validations="[
       ...getValidations('location.contacts.*.firstName'),
@@ -145,7 +145,7 @@ onMounted(() =>{
   <text-input-component
     :id="'lastName_' + id"
     label="Last name"
-    placeholder="Last name"
+    placeholder=""
     v-model="selectedValue.lastName"
     :validations="[
       ...getValidations('location.contacts.*.lastName'),
@@ -159,7 +159,7 @@ onMounted(() =>{
   <text-input-component
     :id="'email_' + id"
     label="Email address"
-    placeholder="Email"
+    placeholder=""
     v-model="selectedValue.email"
     :validations="[
       ...getValidations('location.contacts.*.email'),

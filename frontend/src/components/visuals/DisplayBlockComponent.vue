@@ -55,8 +55,8 @@ const iconsForKinds: Record<string, any> = {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 15px;
-  gap: 16px;
+  padding: 0.25rem;
+  gap: 1rem;
 }
 
 .display-block-wrapper p span {
@@ -93,7 +93,7 @@ const iconsForKinds: Record<string, any> = {
 }
 
 .display-block-icon-info {
-  color: var(--light-theme-notifications-support-info-border, rgba(0, 102, 204, 0.40));
+  color: var(--light-theme-support-info, #00478F);
 }
 .display-block-icon-success {
   color: #198038;

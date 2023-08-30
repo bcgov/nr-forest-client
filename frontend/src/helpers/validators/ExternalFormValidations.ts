@@ -82,14 +82,14 @@ globalValidations['location.contacts.*.contactType.text'] = [
   isNotEmpty('You must select at least one contact type'),
 ]
 globalValidations['location.contacts.*.firstName'] = [
-  isMinSize('Name should be between 1 and 25 characters with no special character')(1),
-  isMaxSize('Name should be between 1 and 25 characters with no special character')(25),
-  isNoSpecialCharacters('Name should be between 1 and 25 characters with no special character'),
+  isMinSize('Enter a name')(1),
+  isMaxSize('Enter a name')(25),
+  isNoSpecialCharacters('Enter a name'),
 ]
 globalValidations['location.contacts.*.lastName'] = [
-  isMinSize('Name should be between 1 and 25 characters with no special character')(1),
-  isMaxSize('Name should be between 1 and 25 characters with no special character')(25),
-  isNoSpecialCharacters('Name should be between 1 and 25 characters with no special character'),
+  isMinSize('Enter a name')(1),
+  isMaxSize('Enter a name')(25),
+  isNoSpecialCharacters('Enter a name'),
 ]
 globalValidations['location.contacts.*.email'] = [
   isEmail('Please provide a valid email address'),

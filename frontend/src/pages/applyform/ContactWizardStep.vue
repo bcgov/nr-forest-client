@@ -126,14 +126,13 @@ onMounted(() => setFocusedComponent('addressname_0',800))
     @valid="updateValidState(0, $event)"
   />
 
-  <hr v-if="otherContacts.length > 0"/>
-
   <div class="frame-01" v-if="otherContacts.length > 0">
-    <div class="grouping-01">
+
+    <div  v-for="(contact, index) in otherContacts">
+      <hr />
+      <div class="grouping-09">
       <span class="heading-03">Additional contact</span>
     </div>
-    <div  v-for="(contact, index) in otherContacts">
-      <hr v-if="index > 0"/>
     <contact-group-component
       :key="index + 1"
       :id="index + 1"

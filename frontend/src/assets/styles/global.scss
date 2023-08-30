@@ -25,6 +25,10 @@
   --light-theme-support-support-info: #00478f;
   --light-theme-notifications-support-info-border: rgba(0, 102, 204, 1);
   --light-theme-text-text-primary: #131315;
+  --border-subtle-02: #dfdfe1;
+  --light-theme-tag-blue-background: #c2e0ff;
+  --light-theme-tag-blue-text:#00478f;
+  --light-theme-focus: #0073e6;
   //Primary button
   --cds-interactive-01: #0073E6;
   --cds-active-primary: #0073E6;
@@ -64,6 +68,13 @@ a:hover {
 a:visited {
   color: var(--light-theme-link-link-visited, #7c1cdf);
 }
+hr {
+  display: block;
+  border: 0;
+  border-top: 1px solid var(--border-subtle-02,#dfdfe1);
+  margin: 1em 0;
+  padding: 0;
+}
 
 .bulleted-list {
   list-style: decimal;
@@ -90,12 +101,7 @@ a:visited {
 }
 
 .inner-spotlight-group-markup {
-  border-bottom: solid 1px #dfdfe1;
-}
-
-.bx-tag {
-  background-color: #00478f;
-  color: white;
+  border-bottom: solid 1px var(--border-subtle-02);
 }
 
 .wizard-head {
@@ -654,6 +660,14 @@ a:visited {
   gap: 0.125rem;
   flex: 1 0 0;
 }
+.grouping-09 {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 2rem;
+  padding-bottom: 1.5rem;
+}
 
 .bx--btn-reset {
   position: relative;
@@ -694,7 +708,25 @@ a:visited {
   display: flex;
   align-items: flex-start;
   border-radius: 62.5rem;
-  background: var(--dark-theme-tag-blue-background, #00478f);
+  background: var(--light-theme-tag-blue-background, #c2e0ff);
+  gap: 0.125rem;
+  padding: 0 !important;
+}
+.bx-tag span{
+  color: var(--light-theme-tag-blue-text,#00478f);
+  margin: 0.19rem 0.5rem 0.31rem 0.5rem !important;
+}
+.bx-tag svg {
+  color: var(--light-theme-tag-blue-text,#00478f);
+  margin: 0.25rem !important;
+  border-radius: 150%;
+}
+.bx-tag svg:hover {
+  background-color: var(--light-theme-tag-blue-hover, #99ccff);
+  cursor: pointer;
+}
+.bx-tag svg:focus {
+  outline: 2px solid var(--light-theme-focus, #99ccff);
 }
 
 .bx--modal-btn-divider {
@@ -711,7 +743,8 @@ a:visited {
 
 .display-block-icon-wrapper {
   display: flex;
-  padding-top: 14px;
+  padding-top: 1rem;
+  padding-left: 1rem;
   align-items: flex-start;
   align-self: stretch;
 }

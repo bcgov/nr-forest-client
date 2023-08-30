@@ -118,15 +118,13 @@ onMounted(() => setFocusedComponent('addr_0',800))
     @valid="updateValidState(0, $event)"
   />
 
-<hr v-if="otherAddresses.length > 0"/>
-
-<div class="frame-01">
-  <div v-if="otherAddresses.length > 0" class="grouping-01">
-    <span class="heading-03">Additional address</span>
-  </div>
-
+<div class="frame-01" v-if="otherAddresses.length > 0">
+  
   <div v-for="(address, index) in otherAddresses">
-    <hr v-if="index > 0"/>
+    <hr />
+    <div class="grouping-09">
+      <span class="heading-03">Additional address</span>
+    </div>
     <address-group-component
       :key="index + 1"
       :id="index + 1"

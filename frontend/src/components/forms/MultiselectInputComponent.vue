@@ -125,6 +125,7 @@ revalidateBus.on(() => validateInput(selectedValue.value))
       </bx-dropdown>
       <div class="bx-tag-box">
         <bx-tag
+          filter="true"
           v-for="(tag, index) in items"
           title="Clear selection"
           class="bx-tag"
@@ -132,8 +133,9 @@ revalidateBus.on(() => validateInput(selectedValue.value))
           :id="'tag_' + id + '_' + index"
           :key="index"
         >
-          {{ tag }}
+          <span>{{ tag }}</span>
           <CloseOutline16
+          tabindex="1"
             :id="'close_' + id + '_' + index"
             @click="removeFromSelection(tag)"
           />

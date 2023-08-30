@@ -166,12 +166,23 @@
     },
     {
       "request": {
-        "urlPattern": "/api/clients/addresses/(.*)",
+        "url": "/api/clients/addresses/AA",
         "method": "GET"
       },
       "response": {
         "status": 200,
         "bodyFileName": "response-address-detail.json",
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 2500
+      }
+    },
+    {
+      "request": {
+        "url": "/api/clients/addresses/BB",
+        "method": "GET"
+      },
+      "response": {
+        "status": 404,
         "transformers": ["response-template"],
         "fixedDelayMilliseconds": 2500
       }

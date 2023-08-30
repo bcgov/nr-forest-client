@@ -8,6 +8,7 @@ const props = defineProps<{
   id: string
   label: string
   tip?: string
+  placeholder?: string
   modelValue: string
   contents: Array<BusinessSearchResult>
   validations: Array<Function>
@@ -114,7 +115,7 @@ revalidateBus.on(() => validateInput(inputValue.value))
       :data-focus="id"
       :data-scroll="id"
       :data-id="'input-' + id"
-      :placeholder="'Start typing to search for your ' + label"
+      :placeholder="placeholder"
       :value="inputValue"
       :label-text="label"
       :helper-text="tip"

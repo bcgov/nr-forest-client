@@ -192,6 +192,7 @@ watch([autoCompleteResult], () => {
     watch([error], () => {
       // @ts-ignore
       generalErrorBus.emit(error.response?.data.message)
+      postalCodeShowHint.value = true
     })
 
     watch(
