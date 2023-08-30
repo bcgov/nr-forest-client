@@ -20,9 +20,6 @@ const globalValidations: Record<string, ((value: string) => string)[]> = {}
 globalValidations['businessInformation.businessName'] = [
   isNotEmpty('Business Name cannot be empty'),
 ]
-globalValidations['businessInformation.clientType'] = [
-  isNot('I', 'Individuals are not supported at the moment'),
-]
 
 // Step 2: Addresses
 globalValidations['location.addresses.*.locationName'] = [
