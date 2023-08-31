@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { reactive, watch, toRef, ref, getCurrentInstance, computed } from "vue";
+import { reactive, watch, toRef, ref, getCurrentInstance, computed } from 'vue'
+// Carbon
+import '@carbon/web-components/es/components/button/index';
 // Composables
 import { useEventBus } from "@vueuse/core";
 import { useRouter } from "vue-router";
@@ -428,33 +430,32 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
         below</span
       >
       <div class="form-footer-group-buttons">
-        <bx-btn
-            data-test="wizard-back-button"
+        <cds-button
             v-if="!isFirst"
             kind="secondary"
-            iconLayout=""
-            class="bx--btn"
             :disabled="isFirst"
-            @click.prevent="onBack"
+            v-on:click="onBack"
+            data-test="wizard-back-button"
           >
           <span>Back</span>
-        </bx-btn>
+        </cds-button>
 
-        <bx-btn
-            id="nextBtn"
-            v-if="!isLast && !isFormValid && !endAndLogOut && !mailAndLogOut"
-            data-test="wizard-next-button"
-            kind="primary"
-            iconLayout=""
-            class="bx--btn"
-            :disabled="progressData[currentTab].valid === false"
-            @click.prevent="onNext"
+        <cds-button
+          v-if="!isLast && !isFormValid && !endAndLogOut && !mailAndLogOut"
+          id="nextBtn"
+          kind="primary"
+          v-on:click="onNext"
+          :disabled="progressData[currentTab].valid === false"
+          data-test="wizard-next-button"
+          tooltip-position="top"
+          tooltip-text="All fields must be filled out correctly"
+          :open-tooltip="progressData[currentTab].valid === false"
           >
           <span>Next</span>
           <ArrowRight16 slot="icon" />
-        </bx-btn>
+        </cds-button>
 
-        <bx-btn
+        <cds-button
           v-if="isLast && !endAndLogOut && !mailAndLogOut"
             data-test="wizard-submit-button"
             kind="primary"
@@ -464,9 +465,9 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
           >
           <span>Submit application</span>
           <Check16 slot="icon" />
-        </bx-btn>
+        </cds-button>
 
-        <bx-btn
+        <cds-button
           data-test="wizard-save-button"
           kind="primary"
           iconLayout=""
@@ -477,9 +478,9 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
         >
           <span>Save</span>
           <Save16 slot="icon" />
-        </bx-btn>
+        </cds-button>
 
-        <bx-btn
+        <cds-button
           data-test="wizard-logout-button"
           kind="primary"
           iconLayout=""
@@ -492,7 +493,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
             logout</span
           >
           <LogOut16 slot="icon" />
-        </bx-btn>
+        </cds-button>
 
         </div>
       </div>

@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+// Carbon
+import '@carbon/web-components/es/components/modal/index';
+import '@carbon/web-components/es/components/notification/index';
 // Composables
 import { useEventBus } from '@vueuse/core'
 // Imported Types
@@ -65,41 +68,40 @@ toastBus.on(openToast)
 
   <div class="modals">
     
-  <bx-modal
-    id="modal-example"
+  <cds-modal
+    id="modal-global"
     size="sm"
     :open="modalContent.active"
-    @bx-modal-closed="closeModal"
+    @cds-modal-closed="closeModal"
   >
-    <bx-modal-header>
-      <bx-modal-close-button></bx-modal-close-button>
-      <bx-modal-heading
+    <cds-modal-header>
+      <cds-modal-close-button></cds-modal-close-button>
+      <cds-modal-heading
         >Are you sure you want to delete "{{ modalContent.message }}" additional
-        {{ modalContent.kind }}?</bx-modal-heading
-      >
-    </bx-modal-header>
-    <bx-modal-body><p></p></bx-modal-body>
+        {{ modalContent.kind }}?
+      </cds-modal-heading>
+    </cds-modal-header>
+    <cds-modal-body><p></p></cds-modal-body>
 
-    <bx-modal-footer>
-      <div class="modal-footer">
-        <bx-btn kind="secondary" 
-              data-modal-close
-              class="bx--modal-btn bx--modal-btn1">
-        Cancel
-      </bx-btn>
-      
-      <bx-btn kind="danger" 
-              @click.prevent="deleteContentModal"
-              class="bx--modal-btn bx--modal-btn2">
-        Delete
-        <Delete16 slot="icon" />
-      </bx-btn>
-      </div>
-    </bx-modal-footer>
-  </bx-modal>
+    <cds-modal-footer>
+        <cds-modal-footer-button 
+          kind="secondary" 
+          data-modal-close>
+          Cancel
+        </cds-modal-footer-button>
+        
+        <cds-modal-footer-button 
+          kind="danger"
+          v-on:click="deleteContentModal">
+          Delete
+          <Delete16 slot="icon" />
+        </cds-modal-footer-button>
+
+      </cds-modal-footer>
+  </cds-modal>
 </div>
 
-  <bx-toast-notification
+  <cds-toast-notification
       v-if="toastContent.active"
       class="wizard-head-toast"
       timeout="8000"
@@ -107,6 +109,6 @@ toastBus.on(openToast)
       :title="toastContent.toastTitle"
       subtitle=""
     >
-  </bx-toast-notification>
+  </cds-toast-notification>
 </template>
 
