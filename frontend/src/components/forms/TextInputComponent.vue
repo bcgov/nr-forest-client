@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+// Carbon
+import '@carbon/web-components/es/components/text-input/index';
+// Composables
 import { useEventBus } from '@vueuse/core'
+// Types
 import { isEmpty } from '@/dto/CommonTypesDto'
 
 //Define the input properties for this component
@@ -76,26 +80,25 @@ revalidateBus.on(() => {
 </script>
 
 <template>
-  <bx-form-item class="grouping-02" v-if="enabled">
-    <bx-input
+  <div class="grouping-02" v-if="enabled">
+    <cds-text-input
       v-if="enabled"
       :id="id"
-      :data-focus="id"
-      :data-scroll="id"
-      :data-id="'input-' + id"
       :placeholder="placeholder"
       :value="selectedValue"
-      :label-text="enabled ? label : null"
+      :label="enabled ? label : null"
       :helper-text="tip"
       :disabled="!enabled"
-      :color-scheme="enabled ? '' : 'light'"
       :invalid="error ? true : false"
-      :validityMessage="error"
+      :invalid-text="error"
       v-mask="mask"
       @blur="(event:any) => validateInput(event.target.value)"
       @input="(event:any) => selectedValue = event.target.value"
+      :data-focus="id"
+      :data-scroll="id"
+      :data-id="'input-' + id"
     />
-  </bx-form-item>
+  </div>
 
   <div v-if="!enabled" class="grouping-04">
     <div :data-scroll="id" class="grouping-04-label"><span :for="id" class="label-01">{{ label }}</span></div>
