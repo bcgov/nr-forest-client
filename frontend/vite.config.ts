@@ -13,7 +13,7 @@ export default defineConfig(({ command, mode }) => {
       vue({
         template: {
           compilerOptions: {
-            isCustomElement: (tag) => tag.includes('bx-')
+            isCustomElement: (tag) => tag.includes('cds-')
           }
         }
       }),
@@ -68,6 +68,6 @@ export default defineConfig(({ command, mode }) => {
       },
       environment: 'jsdom'
     },
-    optimizeDeps: false
+    optimizeDeps: true
   }
 })
