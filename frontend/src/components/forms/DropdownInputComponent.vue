@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 // Carbon
 import '@carbon/web-components/es/components/combo-box/index';
 // Composables
@@ -41,6 +41,11 @@ watch(
 
 //We set it as a separated ref due to props not being updatable
 const selectedValue = ref(props.initialValue)
+// This is to make the input list contains the selected value to show when component render
+const inputList = computed<Array<CodeNameType>>(() =>
+  ((!props.modelValue || props.modelValue.length === 0) ? [{name: props.initialValue, code: '',status:'',legalType:''}] : props.modelValue)
+)
+
 //We set the value prop as a reference for update reason
 emit('empty', isEmpty(props.initialValue))
 //This function emits the events on update
@@ -98,38 +103,21 @@ revalidateBus.on(() => validateInput(selectedValue.value))
       filterable
       :helper-text="tip"
       :title-text="label"
-      :label="selectedValue"
+      :value="selectedValue"
       :invalid="error ? true : false"
       :invalid-text="error"
-      @cds-combo-box-selected="(event:any) => selectedValue = event.target.value"
+      @cds-combo-box-selected="(event:any) => selectedValue = event.detail.item.getAttribute('data-id')"
       :data-focus="id"
       :data-scroll="id">
       <cds-combo-box-item 
-        v-for="option in modelValue"
+        v-for="option in inputList"
         :key="option.code"
-        :value="option.code"
-        :data-item="option.code">
+        :value="option.name"
+        :data-id="option.code"
+        :data-value="option.name">
         {{ option.name }}
       </cds-combo-box-item>
     </cds-combo-box>
-  <bx-dropdown
-    
-   
-    :value="selectedValue"
-    :label-text="label"
-    :helper-text="tip"
-    :invalid="error ? true : false"
-    :validityMessage="error"
-    @bx-dropdown-beingselected="(target:any) => selectedValue = target.detail.item.__value"
-  >
-    <bx-dropdown-item
-      v-for="option in modelValue"
-      :key="option.code"
-      :value="option.code"
-      :data-item="option.code"
-      >{{ option.name }}</bx-dropdown-item
-    >
-  </bx-dropdown>
 </div>
 </template>
 

@@ -108,7 +108,6 @@ globalValidations['location.contacts.*.phoneNumber'] = [
 export const getField = (path: string, value: FormDataDto): string | string[] => {
   // First we set is in a temporary variable
   let temporaryValue: any = value
-  console.log(path, value)
   // We split the path by dots and iterate over it
   path.split('.').forEach((key: string) => {
     const fieldKey = key.includes('(') ? key.replace(')', '').split('(')[0] : key

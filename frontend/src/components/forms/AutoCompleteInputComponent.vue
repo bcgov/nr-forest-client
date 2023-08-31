@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 // Carbon
 import '@carbon/web-components/es/components/combo-box/index';
 // Composables
@@ -44,6 +44,11 @@ watch(
 //We set the value prop as a reference for update reason
 const inputValue = ref(props.modelValue)
 
+// This is to make the input list contains the selected value to show when component render
+const inputList = computed<Array<BusinessSearchResult>>(() =>
+  ((!props.contents || props.contents.length === 0) ? [{name: props.modelValue, code: '',status:'',legalType:''}] : props.contents)
+)
+
 let selectedValue: BusinessSearchResult | undefined = undefined
 
 //This function emits the events on update
@@ -82,7 +87,7 @@ const validateInput = (newValue: string) => {
 }
 
 const selectAutocompleteItem = (event: any) => {
-  emitValueChange(event.target.value)
+  emitValueChange(event.detail.item.getAttribute('data-id'))
 }
 
 const onTyping = (event: any) => {
@@ -101,7 +106,6 @@ revalidateBus.on(() => validateInput(inputValue.value))
       :helper-text="tip"
       :title-text="label"
       :value="inputValue"
-      :label="modelValue"
       filterable
       :invalid="error ? true : false"
       :invalid-text="error"
@@ -113,11 +117,11 @@ revalidateBus.on(() => validateInput(inputValue.value))
       >
 
       <cds-combo-box-item
-        v-for="item in contents"
+        v-for="item in inputList"
         :key="item.code"
         :data-id="item.code"
         :data-value="item.name" 
-        :value="item.code">
+        :value="item.name">
         {{ item.name }}
       </cds-combo-box-item>
       
