@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+// Carbon
+import '@carbon/web-components/es/components/combo-box/index';
+// Composables
 import { useEventBus } from '@vueuse/core'
-import { isEmpty, type BusinessSearchResult } from '@/dto/CommonTypesDto'
+// Types
+import type { BusinessSearchResult } from '@/dto/CommonTypesDto'
+import { isEmpty } from '@/dto/CommonTypesDto'
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -24,8 +29,6 @@ const emit = defineEmits<{
   (e: 'update:selected-value', value: BusinessSearchResult | undefined): void
 }>()
 
-const autoCompleteVisible = ref(false)
-
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage || '')
 
@@ -45,8 +48,8 @@ let selectedValue: BusinessSearchResult | undefined = undefined
 
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
-  const reference = props.contents.find((entry) => entry.name === newValue)
-  emit('update:model-value', newValue)
+  const reference = props.contents.find((entry) => entry.code === newValue)
+  emit('update:model-value', reference?.name ?? newValue)
   emit('empty', isEmpty(reference))
 
   /* 
@@ -77,10 +80,6 @@ watch([inputValue], () => {
   emitValueChange(inputValue.value)
 })
 
-const blur = (newValue: string) => {
-  validateInput(newValue)
-  setTimeout(() => (autoCompleteVisible.value = false), 150)
-}
 //We call all the validations
 const validateInput = (newValue: string) => {
   if (props.validations) {
@@ -96,61 +95,45 @@ const validateInput = (newValue: string) => {
 }
 
 const selectAutocompleteItem = (event: any) => {
-  const newValue = event.target.getAttribute('data-value')
-  selectedValue = props.contents.find((entry) => entry.name === newValue)
-  inputValue.value = newValue
-  emit('update:selected-value', selectedValue)
-  autoCompleteVisible.value = false
+  emitValueChange(event.target.value)
+}
+
+const onTyping = (event: any) => {
+  inputValue.value = event.srcElement._filterInputValue
+  emit('update:model-value', inputValue.value)
 }
 
 revalidateBus.on(() => validateInput(inputValue.value))
 </script>
 
 <template>
-  <bx-form-item class="grouping-02">
-    <bx-input
+  <div class="groupong-02">
+    <cds-combo-box
       :id="id"
       :name="id"
-      type="text"
+      :helper-text="tip"
+      :title-text="label"
+      :value="inputValue"
+      :label="modelValue"
+      filterable
+      @cds-combo-box-selected="selectAutocompleteItem"
+      v-on:input="onTyping"
       :data-focus="id"
       :data-scroll="id"
       :data-id="'input-' + id"
-      :placeholder="placeholder"
-      :value="inputValue"
-      :label-text="label"
-      :helper-text="tip"
-      @focus="autoCompleteVisible = true"
-      :invalid="error ? true : false"
-      :validityMessage="error"
-      @blur="(event:any) => blur(event.target.value)"
-      @input="(event:any) => inputValue = event.target.value"
-    />
-    <div
-      class="autocomplete-items"
-      :id="id + 'list'"
-      v-show="
-        autoCompleteVisible && inputValue.length > 2 && contents.length > 0
-      "
-    >
-      <div class="autocomplete-items-ct" v-if="loading">
-        <bx-inline-loading status="active">Loading data...</bx-inline-loading>
-      </div>
-      <div class="autocomplete-items-ct" v-else>
-        <div
-          v-for="item in contents"
-          :key="item.code"
-          :data-id="item.code"
-          :data-value="item.name"
-          class="autocomplete-items-cell"
-          @click="selectAutocompleteItem"
-        >
-          <strong :data-id="item.code" :data-value="item.name">{{
-            item.name
-          }}</strong>
-        </div>
-      </div>
-    </div>
-  </bx-form-item>
+      >
+
+      <cds-combo-box-item
+        v-for="item in contents"
+        :key="item.code"
+        :data-id="item.code"
+        :data-value="item.name" 
+        :value="item.code">
+        {{ item.name }}
+      </cds-combo-box-item>
+      
+    </cds-combo-box>
+  </div>
 </template>
 
 
