@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref,computed, watch } from 'vue'
+// Carbon
+import '@carbon/web-components/es/components/multi-select/index';
+import '@carbon/web-components/es/components/tag/index';
+// Composables
 import { useEventBus } from '@vueuse/core'
+// Types
 import type {  CodeNameType } from '@/dto/CommonTypesDto'
-//@ts-ignore
-import CloseOutline16 from '@carbon/icons-vue/es/close/16'
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -39,6 +42,10 @@ watch(
 
 //We set it as a separated ref due to props not being updatable
 const selectedValue = ref(props.initialValue)
+const inputList = computed<Array<CodeNameType>>(() =>
+  ((!props.modelValue || props.modelValue.length === 0) ? [{name: props.initialValue, code: '',status:'',legalType:''}] : props.modelValue)
+)
+
 //We set the value prop as a reference for update reason
 emit('empty', props.selectedValues ? props.initialValue.length === 0 : true)
 
@@ -83,13 +90,23 @@ const emitChange = () => {
 }
 
 const addFromSelection = (itemCode: string) => {
-  const reference = props.modelValue.find((entry) => entry.code === itemCode)
-  if (reference) items.value.push(reference.name)
+  const reference = props.modelValue.find((entry) => entry.name === itemCode)
+  if (reference) {
+    items.value.push(reference.name)
+    selectedValue.value = items.value.join(',')
+  }
   emitChange()
 }
 
-const removeFromSelection = (itemName: string) => {
-  items.value = items.value.filter((entry) => entry !== itemName)
+const selectItems = (event:any) =>{
+  selectedValue.value = event.target.value
+  items.value = event.target.value.split(',').filter((value:string) => value)
+  emitChange()
+}
+
+const removeFromSelection = (event: any) => {
+  items.value = items.value.filter((entry) => entry !== event.srcElement.attributes['data-value'].value)
+  selectedValue.value = items.value.join(',')
   emitChange()
 }
 
@@ -103,43 +120,42 @@ revalidateBus.on(() => validateInput(selectedValue.value))
 <template>
   <div class="grouping-03">
     <div class="frame-02">
-      <bx-dropdown
+      <cds-multi-select
         :id="id"
-        :data-focus="id"
-        :data-scroll="id"
         :value="selectedValue"
-        :label-text="label"
+        :label="selectedValue"
+        :title-text="label"
         :helper-text="tip"
         :invalid="error ? true : false"
-        :validityMessage="error"
-        @bx-dropdown-beingselected="(target:any) => validateInput(target.detail.item.__value)"
-        @bx-dropdown-selected="(target:any) => addFromSelection(target.detail.item.__value)"
+        :invalid-text="error"
+        filterable
+        @cds-multi-select-selected="selectItems"
+        :data-focus="id"
+        :data-scroll="id"
       >
-        <bx-dropdown-item
-          v-for="option in modelValue"
-          :data-item="option.code"
+        <cds-multi-select-item
+          v-for="option in inputList"
           :key="option.code"
-          :value="option.code"
-          >{{ option.name }}</bx-dropdown-item
-        >
-      </bx-dropdown>
+          :value="option.name"
+          :data-id="option.code"
+          :data-value="option.name">
+          {{ option.name }}
+        </cds-multi-select-item>
+      </cds-multi-select>
       <div class="bx-tag-box">
-        <bx-tag
-          filter="true"
+        <cds-tag
+          filter
           v-for="(tag, index) in items"
           title="Clear selection"
           class="bx-tag"
           :data-tag="'tag_' + id + '_' + index"
+          :data-value="tag"
           :id="'tag_' + id + '_' + index"
           :key="index"
-        >
-          <span>{{ tag }}</span>
-          <CloseOutline16
-          tabindex="1"
-            :id="'close_' + id + '_' + index"
-            @click="removeFromSelection(tag)"
-          />
-        </bx-tag>
+          type="blue"
+          @cds-tag-closed="removeFromSelection"
+        >{{ tag }}
+        </cds-tag>
       </div>
     </div>
   </div>
