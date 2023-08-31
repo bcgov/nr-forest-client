@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+// Carbon 
+import '@carbon/web-components/es/components/radio-button/index';
+// Composables
 import { useEventBus } from '@vueuse/core'
-import { type CodeDescrType, isEmpty } from '@/dto/CommonTypesDto'
+// Types
+import type { CodeDescrType } from '@/dto/CommonTypesDto'
+import { isEmpty } from '@/dto/CommonTypesDto'
 
 const props = defineProps<{
   id: string
   label: string
+  tip?: string
   modelValue: Array<CodeDescrType>
   initialValue: string
   validations: Array<Function>
@@ -66,25 +72,26 @@ const updateSelectedValue = (event: any) =>
 
 <template>
   <div class="grouping-01">
-    <label :for="id + 'rb'" class="label-01 label-01-primary">{{ label }}</label>
-    <bx-radio-button-group
-      :data-focus="id"
-      :data-scroll="id"
+    <cds-radio-button-group
+      :id="id + 'rb'"
+      :name="id + 'rb'"
       label-position="right"
       orientation="vertical"
-      :name="id + 'rb'"
-      :id="id + 'rb'"
+      :legend-text="label"
+      :helper-text="tip"
       v-model="selectedValue"
-      @bx-radio-button-group-changed="updateSelectedValue"
+      @cds-radio-button-group-changed="updateSelectedValue"
       class="grouping-01"
+      :data-focus="id"
+      :data-scroll="id"
     >
-      <bx-radio-button
+      <cds-radio-button
         v-for="option in modelValue"
         :key="id + 'rb' + option.value"
         :label-text="option.text"
         :value="option.value"
       />
-    </bx-radio-button-group>
+    </cds-radio-button-group>
   </div>
 </template>
 
