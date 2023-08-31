@@ -48,23 +48,10 @@ let selectedValue: BusinessSearchResult | undefined = undefined
 
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
-  const reference = props.contents.find((entry) => entry.code === newValue)
-  emit('update:model-value', reference?.name ?? newValue)
-  emit('empty', isEmpty(reference))
-
-  /* 
-  Fire the update:selected-value with undefined when:
-  - there was an item previously selected (clicked);
-  - and the value in the input was changed by typing or removing some
-  characters.
-  Note: we know the change was not due to selecting (clicking) a new item
-  because otherwise the newValue would already correspond to the
-  selectedValue.name.
-  */
-  if (selectedValue && newValue !== selectedValue.name) {
-    selectedValue = undefined
-    emit('update:selected-value', selectedValue)
-  }
+  selectedValue = props.contents.find((entry) => entry.code === newValue)
+  emit('update:model-value', selectedValue?.name ?? newValue)
+  emit('update:selected-value', selectedValue)
+  emit('empty', isEmpty(selectedValue))
 }
 
 emit('empty', true)
