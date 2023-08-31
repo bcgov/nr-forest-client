@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import { watch, ref, computed, reactive, onMounted} from 'vue'
+// Carbon
+import '@carbon/web-components/es/components/button/index';
+// Composables
 import { useEventBus } from '@vueuse/core'
-import Add16 from '@carbon/icons-vue/es/add/16'
-import {
-  type FormDataDto,
-  type Address,
-  emptyAddress
-} from '@/dto/ApplyClientNumberDto'
+import { useFocus } from '@/composables/useFocus'
 import { useFetchTo } from '@/composables/useFetch'
+// Type
+import type { FormDataDto, Address } from '@/dto/ApplyClientNumberDto'
+import { emptyAddress } from '@/dto/ApplyClientNumberDto'
 import type { ModalNotification } from '@/dto/CommonTypesDto'
 import { isUniqueDescriptive } from '@/helpers/validators/GlobalValidators'
-import { useFocus } from '@/composables/useFocus'
+
+
+// @ts-ignore
+import Add16 from '@carbon/icons-vue/es/add/16'
 
 //Defining the props and emitter to receive the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>()
@@ -142,14 +146,11 @@ onMounted(() => setFocusedComponent('addr_0',800))
 <p class="body-01 heading-compact-01-dark">
 If you’d like to include another address, for example a seed orchard or if your street address is different from your mailing address, select the “Add another address” button below.
 </p>
-<bx-btn
+<cds-button
     kind="tertiary"
-    iconLayout=""
-    class="bx--btn"
     @click.prevent="addAddress"
-    size="field"
   >
     <span>Add another address</span>
     <Add16 slot="icon" />
-  </bx-btn>
+  </cds-button>
 </template>

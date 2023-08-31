@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { watch, ref, computed, reactive, onMounted } from 'vue'
+// Carbon
+import '@carbon/web-components/es/components/button/index';
 // Composables
 import { useEventBus } from '@vueuse/core'
 import { useFetchTo } from '@/composables/useFetch'
@@ -153,16 +155,13 @@ onMounted(() => setFocusedComponent('addressname_0',800))
               To add another contact to the account, select "Add another
               contact" button below.</span>
 
-  <bx-btn
+  <cds-button
     kind="tertiary"
-    iconLayout=""
-    class="bx--btn"
     @click.prevent="addContact"
-    size="field"
   >
     <span>Add another contact</span>
     <Add16 slot="icon" />
-  </bx-btn>
+  </cds-button>
 </template>
 
 

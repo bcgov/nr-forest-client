@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { watch, computed, ref, reactive } from 'vue'
+// Carbon
+import '@carbon/web-components/es/components/inline-loading/index';
+import '@carbon/web-components/es/components/notification/index';
 // Importing composables
 import { useEventBus } from '@vueuse/core'
 import { useFetchTo } from '@/composables/useFetch'
@@ -96,6 +99,7 @@ const toggleErrorMessages = (
 //incorporation number and client type
 const autoCompleteResult = ref<BusinessSearchResult>()
 watch([autoCompleteResult], () => {
+
   // reset business validation state
   validation.business = false
 
@@ -128,19 +132,19 @@ watch([autoCompleteResult], () => {
     )
 
     showDetailsLoading.value = true
-    watch([error], () => {
-      if (error.response?.status === 409) {
+    watch(error, () => {
+      if (error.value.response?.status === 409) {
         toggleErrorMessages(null, true)
         return
       }
-      if (error.response?.status === 404) {
+      if (error.value.response?.status === 404) {
         toggleErrorMessages(null, null)
         validation.business = true
         emit('update:data', formData.value)
         return
       }
       // @ts-ignore
-      generalErrorBus.emit(error.response?.data.message)
+      generalErrorBus.emit(error.value.response?.data.message)
     })
 
     watch(
@@ -229,13 +233,13 @@ watch([selectedOption], () => {
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
     />
-    <bx-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</bx-inline-loading>
-    <display-block-component
-      kind="info"
-      title="If the name of your registered business does not appear in the list, follow these steps:"
+    <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
+
+    <cds-inline-notification
       v-if="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
-      id="business"
-    >
+      open="true"
+      kind="info"
+      title="If the name of your registered business does not appear in the list, follow these steps:">
       <div>
         <ol type="1" class="bulleted-list">
           <li>
@@ -255,10 +259,11 @@ watch([selectedOption], () => {
           </li>
         </ol>
       </div>
-    </display-block-component>
+    </cds-inline-notification>
 
-    <display-block-component
+    <cds-inline-notification
       v-if="showGoodStandingError"
+      open="true"
       kind="error"
       title="Not in good standing with BC Registries"
     >
@@ -274,10 +279,11 @@ watch([selectedOption], () => {
         >
         account to find out why.
       </p>
-    </display-block-component>
+    </cds-inline-notification>
 
-    <display-block-component
+    <cds-inline-notification
       v-if="showDuplicatedError"
+      open="true"
       kind="error"
       title="Client already exists"
     >
@@ -286,7 +292,7 @@ watch([selectedOption], () => {
         client number. Select the 'Receive email and logout' button below to
         have it sent to you at {{ formData.location.contacts[0].email }}
       </p>
-    </display-block-component>
+    </cds-inline-notification>
   </data-fetcher>
 
   <text-input-component
