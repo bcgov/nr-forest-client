@@ -1,42 +1,46 @@
 <script setup lang="ts">
-import { reactive, watch, toRef, ref, getCurrentInstance, computed } from 'vue';
+import { reactive, watch, toRef, ref, getCurrentInstance, computed } from "vue";
 // Composables
-import { useEventBus } from '@vueuse/core';
-import { useRouter } from 'vue-router';
-import { useFocus } from '@/composables/useFocus';
-import { usePost } from '@/composables/useFetch';
+import { useEventBus } from "@vueuse/core";
+import { useRouter } from "vue-router";
+import { useFocus } from "@/composables/useFocus";
+import { usePost } from "@/composables/useFetch";
 // Imported Pages
-import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformationWizardStep.vue';
-import AddressWizardStep from '@/pages/applyform/AddressWizardStep.vue';
-import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue';
-import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue';
+import BusinessInformationWizardStep from "@/pages/applyform/BusinessInformationWizardStep.vue";
+import AddressWizardStep from "@/pages/applyform/AddressWizardStep.vue";
+import ContactWizardStep from "@/pages/applyform/ContactWizardStep.vue";
+import ReviewWizardStep from "@/pages/applyform/ReviewWizardStep.vue";
 // Imported types
-import {
-  newFormDataDto
-} from '@/dto/ApplyClientNumberDto';
+import { newFormDataDto } from "@/dto/ApplyClientNumberDto";
+import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 import type {
-  FormDataDto,
-  Contact
-} from '@/dto/ApplyClientNumberDto';
-import type { ValidationMessageType, ModalNotification } from '@/dto/CommonTypesDto';
+  ValidationMessageType,
+  ModalNotification,
+} from "@/dto/CommonTypesDto";
 // Imported User session
-import ForestClientUserSession from '@/helpers/ForestClientUserSession';
+import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // Imported global validations
-import { addValidation, validate } from '@/helpers/validators/ExternalFormValidations';
+import {
+  addValidation,
+  validate,
+} from "@/helpers/validators/ExternalFormValidations";
 // @ts-ignore
-import ArrowRight16 from '@carbon/icons-vue/es/arrow--right/16';
+import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 // @ts-ignore
-import Save16 from '@carbon/icons-vue/es/save/16';
+import Save16 from "@carbon/icons-vue/es/save/16";
 // @ts-ignore
-import LogOut16 from '@carbon/icons-vue/es/logout/16';
+import LogOut16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
-import Check16 from '@carbon/icons-vue/es/checkmark/16';
-import { isContainedIn } from '@/helpers/validators/GlobalValidators';
+import Check16 from "@carbon/icons-vue/es/checkmark/16";
+import { isContainedIn } from "@/helpers/validators/GlobalValidators";
 
-const errorBus = useEventBus<ValidationMessageType[]>('submission-error-notification');
-const generalErrorBus = useEventBus<string>('general-error-notification');
-const exitBus = useEventBus<Record<string, boolean | null>>('exit-notification');
-const toastBus = useEventBus<ModalNotification>('toast-notification');
+const errorBus = useEventBus<ValidationMessageType[]>(
+  "submission-error-notification"
+);
+const generalErrorBus = useEventBus<string>("general-error-notification");
+const exitBus =
+  useEventBus<Record<string, boolean | null>>("exit-notification");
+const toastBus = useEventBus<ModalNotification>("toast-notification");
 
 const router = useRouter();
 const { setScrollPoint } = useFocus();
@@ -46,11 +50,11 @@ const session = instance?.appContext.config.globalProperties.$session;
 
 const submitterContact: Contact = {
   locationNames: [],
-  contactType: { value: '', text: '' },
-  phoneNumber: '',
-  firstName: session?.user?.firstName ?? '',
-  lastName: session?.user?.lastName ?? '',
-  email: session?.user?.email ?? ''
+  contactType: { value: "", text: "" },
+  phoneNumber: "",
+  firstName: session?.user?.firstName ?? "",
+  lastName: session?.user?.lastName ?? "",
+  email: session?.user?.email ?? "",
 };
 
 let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
@@ -60,38 +64,41 @@ let formData = reactive<FormDataDto>({
   ...formDataDto.value,
   location: {
     addresses: formDataDto.value.location.addresses,
-    contacts: [submitterContact]
-  }
+    contacts: [submitterContact],
+  },
 });
 
-const locations = computed(() => formData.location.addresses.map((address:any) => address.locationName));
+const locations = computed(() =>
+  formData.location.addresses.map((address: any) => address.locationName)
+);
 
 const { response, error, fetch } = usePost(
-  '/api/clients/submissions',
+  "/api/clients/submissions",
   toRef(formData).value,
   {
     skip: true,
     headers: {
-      'x-user-id': submitterInformation?.userId ?? '',
-      'x-user-email': submitterInformation?.email ?? '',
-      'x-user-name': submitterInformation?.firstName ?? ''
-    }
+      "x-user-id": submitterInformation?.userId ?? "",
+      "x-user-email": submitterInformation?.email ?? "",
+      "x-user-name": submitterInformation?.firstName ?? "",
+    },
   }
 );
 
 watch([response], () => {
   if (response.value.status === 201) {
-    router.push({ name: 'confirmation' });
+    router.push({ name: "confirmation" });
   }
 });
 
 watch([error], () => {
   if (error.response?.status === 400) {
-    const validationErrors: ValidationMessageType[] = error.response?.data as ValidationMessageType[];
+    const validationErrors: ValidationMessageType[] = error.response
+      ?.data as ValidationMessageType[];
     const fieldIds = [
-      'businessInformation.businessType',
-      'businessInformation.legalType',
-      'businessInformation.clientType'
+      "businessInformation.businessType",
+      "businessInformation.legalType",
+      "businessInformation.clientType",
     ];
 
     const matchingFields = validationErrors.find((item) =>
@@ -101,104 +108,108 @@ watch([error], () => {
       generalErrorBus.emit(
         `There was an error submitting your application. ${matchingFields.errorMsg}`
       );
-      setScrollPoint('top');
+      setScrollPoint("top");
     }
   } else {
     generalErrorBus.emit(
       `There was an error submitting your application. ${error.response?.data}`
     );
-    setScrollPoint('top');
+    setScrollPoint("top");
   }
 });
 
-addValidation('location.contacts.*.locationNames.*.text', isContainedIn(locations));
+addValidation(
+  "location.contacts.*.locationNames.*.text",
+  isContainedIn(locations)
+);
 
 // Tab system
 const progressData = reactive([
   {
-    title: 'Business Information',
-    subtitle: 'Step 1',
-    kind: 'current',
+    title: "Business Information",
+    subtitle: "Step 1",
+    kind: "current",
     enabled: true,
     valid: false,
     step: 0,
     fields: [
-      'businessInformation.businessType',
-      'businessInformation.businessName',
-      'businessInformation.clientType'
-    ]
-  },{
-    title: 'Address',
-    subtitle: 'Step 2',
-    kind: 'queued',
+      "businessInformation.businessType",
+      "businessInformation.businessName",
+      "businessInformation.clientType",
+    ],
+  },
+  {
+    title: "Address",
+    subtitle: "Step 2",
+    kind: "queued",
     enabled: true,
     valid: false,
     step: 1,
     fields: [
-      'location.addresses.*.locationName',
-      'location.addresses.*.country.text',
-      'location.addresses.*.province.text',
-      'location.addresses.*.city',
-      'location.addresses.*.streetAddress',
+      "location.addresses.*.locationName",
+      "location.addresses.*.country.text",
+      "location.addresses.*.province.text",
+      "location.addresses.*.city",
+      "location.addresses.*.streetAddress",
       'location.addresses.*.postalCode(location.addresses.*.country.text === "CA")',
       'location.addresses.*.postalCode(location.addresses.*.country.text === "US")',
-      'location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && location.addresses.*.country.text !== "US")'
-    ]
+      'location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && location.addresses.*.country.text !== "US")',
+    ],
   },
   {
-    title: 'Contacts',
-    subtitle: 'Step 3',
-    kind: 'queued',
+    title: "Contacts",
+    subtitle: "Step 3",
+    kind: "queued",
     enabled: true,
     valid: false,
     step: 2,
     fields: [
-      'location.contacts.*.locationNames.*.text',
-      'location.contacts.*.contactType.text',
-      'location.contacts.*.firstName',
-      'location.contacts.*.lastName',
-      'location.contacts.*.email',
-      'location.contacts.*.phoneNumber'
-    ]
+      "location.contacts.*.locationNames.*.text",
+      "location.contacts.*.contactType.text",
+      "location.contacts.*.firstName",
+      "location.contacts.*.lastName",
+      "location.contacts.*.email",
+      "location.contacts.*.phoneNumber",
+    ],
   },
   {
-    title: 'Review',
-    subtitle: 'Step 4',
-    kind: 'queued',
+    title: "Review",
+    subtitle: "Step 4",
+    kind: "queued",
     enabled: true,
     valid: false,
     step: 3,
     fields: [
-    'businessInformation.businessType',
-    'businessInformation.businessName',
-    'location.addresses.*.locationName',
-    'location.addresses.*.country.text',
-    'location.addresses.*.province.text',
-    'location.addresses.*.city',
-    'location.addresses.*.streetAddress',
-    'location.addresses.*.postalCode(location.addresses.*.country.text === "CA")',
-    'location.addresses.*.postalCode(location.addresses.*.country.text === "US")',
-    'location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && location.addresses.*.country.text !== "US")',
-    'location.contacts.*.locationNames.*.text',
-    'location.contacts.*.contactType.text',
-    'location.contacts.*.firstName',
-    'location.contacts.*.lastName',
-    'location.contacts.*.email',
-    'location.contacts.*.phoneNumber'
-    ]
-  }
+      "businessInformation.businessType",
+      "businessInformation.businessName",
+      "location.addresses.*.locationName",
+      "location.addresses.*.country.text",
+      "location.addresses.*.province.text",
+      "location.addresses.*.city",
+      "location.addresses.*.streetAddress",
+      'location.addresses.*.postalCode(location.addresses.*.country.text === "CA")',
+      'location.addresses.*.postalCode(location.addresses.*.country.text === "US")',
+      'location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && location.addresses.*.country.text !== "US")',
+      "location.contacts.*.locationNames.*.text",
+      "location.contacts.*.contactType.text",
+      "location.contacts.*.firstName",
+      "location.contacts.*.lastName",
+      "location.contacts.*.email",
+      "location.contacts.*.phoneNumber",
+    ],
+  },
 ]);
 
 const currentTab = ref(0);
 
 const stateIcon = (index: number) => {
-  if (currentTab.value == index) return 'current';
-  if (currentTab.value > index || progressData[index].valid) return 'complete';
-  return 'queued';
+  if (currentTab.value == index) return "current";
+  if (currentTab.value > index || progressData[index].valid) return "complete";
+  return "queued";
 };
 
 const checkStepValidity = (stepNumber: number): boolean => {
-  progressData.forEach((step:any) => {
+  progressData.forEach((step: any) => {
     if (step.step <= stepNumber) {
       step.valid = validate(step.fields, formData);
     }
@@ -210,7 +221,9 @@ const isLast = computed(() => currentTab.value === progressData.length - 1);
 const isFirst = computed(() => currentTab.value === 0);
 const isCurrentValid = computed(() => progressData[currentTab.value].valid);
 const isNextAvailable = computed(() => !isCurrentValid.value || isLast.value);
-const isFormValid = computed(() => progressData.every((entry: any) => entry.valid));
+const isFormValid = computed(() =>
+  progressData.every((entry: any) => entry.valid)
+);
 const endAndLogOut = ref<boolean>(false);
 const mailAndLogOut = ref<boolean>(false);
 
@@ -224,7 +237,7 @@ const onNext = () => {
       currentTab.value++;
       progressData[currentTab.value - 1].kind = stateIcon(currentTab.value - 1);
       progressData[currentTab.value].kind = stateIcon(currentTab.value);
-      setScrollPoint('top');
+      setScrollPoint("top");
     }
   }
 };
@@ -233,7 +246,7 @@ const onBack = () => {
     currentTab.value--;
     progressData[currentTab.value + 1].kind = stateIcon(currentTab.value + 1);
     progressData[currentTab.value].kind = stateIcon(currentTab.value);
-    setScrollPoint('top');
+    setScrollPoint("top");
   }
 };
 const validateStep = (valid: boolean) => {
@@ -242,11 +255,12 @@ const validateStep = (valid: boolean) => {
 const saveChange = () => {
   if (checkStepValidity(currentTab.value)) {
     toastBus.emit({
-      message: `“${progressData[currentTab.value].title}” changes were saved successfully.`,
-      kind: 'Success',
-      toastTitle:'',
+      message: `“${progressData[currentTab.value].title
+        }” changes were saved successfully.`,
+      kind: "Success",
+      toastTitle: "",
       active: true,
-      handler: () => {}
+      handler: () => { },
     });
     goToStep(3);
   }
@@ -255,13 +269,13 @@ const saveChange = () => {
 const processAndLogOut = () => {
   if (mailAndLogOut.value) {
     usePost(
-      '/api/clients/mail',
+      "/api/clients/mail",
       {
         incorporation: formData.businessInformation.incorporationNumber,
         name: formData.businessInformation.businessName,
-        userName: submitterInformation?.name ?? '',
-        userId: submitterInformation?.userId ?? '',
-        mail: submitterInformation?.email ?? ''
+        userName: submitterInformation?.name ?? "",
+        userId: submitterInformation?.userId ?? "",
+        mail: submitterInformation?.email ?? "",
       },
       {}
     );
@@ -271,7 +285,7 @@ const processAndLogOut = () => {
 
 const submit = () => {
   errorBus.emit([]);
-  generalErrorBus.emit('');
+  generalErrorBus.emit("");
   if (checkStepValidity(currentTab.value)) {
     fetch();
   }
@@ -282,7 +296,7 @@ exitBus.on((event: Record<string, boolean | null>) => {
   mailAndLogOut.value = event.duplicated ? event.duplicated : false;
 });
 
-const globalErrorMessage = ref<string>('');
+const globalErrorMessage = ref<string>("");
 generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
 </script>
 
