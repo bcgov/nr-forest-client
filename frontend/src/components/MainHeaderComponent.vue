@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+// Carbon
+import '@carbon/web-components/es/components/button/index';
 // Types
 import { nodeEnv, appVersion } from '@/CoreConstants';
 // @ts-ignore
@@ -43,29 +45,23 @@ onMounted(() => window.addEventListener('resize', updateScreenWidth));
   <div class="heading-space"></div>
 
   <!-- Remember to add profile button here -->
-  <bx-btn
+  <cds-button
     v-if="$session?.isLoggedIn() && (isSmallScreen || isMediumScreen)"
     data-id="logout-btn"
     kind="tertiary"
-    iconLayout=""
-    class="bx--btn bx--btn-header bx--btn-reset"
     @click.prevent="$session?.logOut"
-    size="field"
   >
     <Logout16 slot="icon" />
-  </bx-btn>
+  </cds-button>
 
-  <bx-btn
+  <cds-button
     v-if="$session?.isLoggedIn() && (!isSmallScreen && !isMediumScreen)"
     data-id="logout-btn"
     kind="tertiary"
-    iconLayout=""
-    class="bx--btn bx--btn-header bx--btn-reset"
     @click.prevent="$session?.logOut"
-    size="field"
   >
     <span>Logout</span>
     <Logout16 slot="icon" />
-  </bx-btn>
+  </cds-button>
 
 </template>
