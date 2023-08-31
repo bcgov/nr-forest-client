@@ -1,48 +1,48 @@
 <script setup lang="ts">
-import { reactive, watch, toRef, ref, getCurrentInstance, computed } from 'vue'
+import { reactive, watch, toRef, ref, getCurrentInstance, computed } from 'vue';
 // Composables
-import { useEventBus } from '@vueuse/core'
-import { useRouter } from 'vue-router'
+import { useEventBus } from '@vueuse/core';
+import { useRouter } from 'vue-router';
 import { useFocus } from '@/composables/useFocus';
-import { usePost } from '@/composables/useFetch'
+import { usePost } from '@/composables/useFetch';
 // Imported Pages
-import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformationWizardStep.vue'
-import AddressWizardStep from '@/pages/applyform/AddressWizardStep.vue'
-import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue'
-import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue'
+import BusinessInformationWizardStep from '@/pages/applyform/BusinessInformationWizardStep.vue';
+import AddressWizardStep from '@/pages/applyform/AddressWizardStep.vue';
+import ContactWizardStep from '@/pages/applyform/ContactWizardStep.vue';
+import ReviewWizardStep from '@/pages/applyform/ReviewWizardStep.vue';
 // Imported types
 import {
   newFormDataDto
-} from '@/dto/ApplyClientNumberDto'
+} from '@/dto/ApplyClientNumberDto';
 import type {
   FormDataDto,
   Contact
-} from '@/dto/ApplyClientNumberDto'
-import type { ValidationMessageType, ModalNotification } from '@/dto/CommonTypesDto'
+} from '@/dto/ApplyClientNumberDto';
+import type { ValidationMessageType, ModalNotification } from '@/dto/CommonTypesDto';
 // Imported User session
-import ForestClientUserSession from '@/helpers/ForestClientUserSession'
+import ForestClientUserSession from '@/helpers/ForestClientUserSession';
 // Imported global validations
-import { addValidation,validate } from '@/helpers/validators/ExternalFormValidations'
+import { addValidation, validate } from '@/helpers/validators/ExternalFormValidations';
 // @ts-ignore
-import ArrowRight16 from '@carbon/icons-vue/es/arrow--right/16'
+import ArrowRight16 from '@carbon/icons-vue/es/arrow--right/16';
 // @ts-ignore
-import Save16 from '@carbon/icons-vue/es/save/16'
+import Save16 from '@carbon/icons-vue/es/save/16';
 // @ts-ignore
-import LogOut16 from '@carbon/icons-vue/es/logout/16'
+import LogOut16 from '@carbon/icons-vue/es/logout/16';
 // @ts-ignore
-import Check16 from '@carbon/icons-vue/es/checkmark/16'
+import Check16 from '@carbon/icons-vue/es/checkmark/16';
 import { isContainedIn } from '@/helpers/validators/GlobalValidators';
 
-const errorBus = useEventBus<ValidationMessageType[]>('submission-error-notification')
-const generalErrorBus = useEventBus<string>('general-error-notification')
-const exitBus = useEventBus<Record<string, boolean | null>>('exit-notification')
-const toastBus = useEventBus<ModalNotification>('toast-notification')
+const errorBus = useEventBus<ValidationMessageType[]>('submission-error-notification');
+const generalErrorBus = useEventBus<string>('general-error-notification');
+const exitBus = useEventBus<Record<string, boolean | null>>('exit-notification');
+const toastBus = useEventBus<ModalNotification>('toast-notification');
 
-const router = useRouter()
+const router = useRouter();
 const { setScrollPoint } = useFocus();
-const submitterInformation = ForestClientUserSession.user
-const instance = getCurrentInstance()
-const session = instance?.appContext.config.globalProperties.$session
+const submitterInformation = ForestClientUserSession.user;
+const instance = getCurrentInstance();
+const session = instance?.appContext.config.globalProperties.$session;
 
 const submitterContact: Contact = {
   locationNames: [],
@@ -51,9 +51,9 @@ const submitterContact: Contact = {
   firstName: session?.user?.firstName ?? '',
   lastName: session?.user?.lastName ?? '',
   email: session?.user?.email ?? ''
-}
+};
 
-let formDataDto = ref<FormDataDto>({ ...newFormDataDto() })
+let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
 
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
@@ -62,9 +62,9 @@ let formData = reactive<FormDataDto>({
     addresses: formDataDto.value.location.addresses,
     contacts: [submitterContact]
   }
-})
+});
 
-const locations = computed(() => formData.location.addresses.map((address:any) => address.locationName))
+const locations = computed(() => formData.location.addresses.map((address:any) => address.locationName));
 
 const { response, error, fetch } = usePost(
   '/api/clients/submissions',
@@ -77,43 +77,41 @@ const { response, error, fetch } = usePost(
       'x-user-name': submitterInformation?.firstName ?? ''
     }
   }
-)
+);
 
 watch([response], () => {
   if (response.value.status === 201) {
-    router.push({ name: 'confirmation' })
+    router.push({ name: 'confirmation' });
   }
-})
+});
 
 watch([error], () => {
   if (error.response?.status === 400) {
-    const validationErrors: ValidationMessageType[] = error.response?.data as ValidationMessageType[]
+    const validationErrors: ValidationMessageType[] = error.response?.data as ValidationMessageType[];
     const fieldIds = [
       'businessInformation.businessType',
       'businessInformation.legalType',
       'businessInformation.clientType'
-    ]
+    ];
 
     const matchingFields = validationErrors.find((item) =>
       fieldIds.includes(item.fieldId)
-    )
+    );
     if (matchingFields) {
       generalErrorBus.emit(
         `There was an error submitting your application. ${matchingFields.errorMsg}`
-      )
-      setScrollPoint('top')
+      );
+      setScrollPoint('top');
     }
   } else {
     generalErrorBus.emit(
-      `There was an error submitting your application. ${error.response?.data}}`
-    )
-    setScrollPoint('top')
+      `There was an error submitting your application. ${error.response?.data}`
+    );
+    setScrollPoint('top');
   }
-})
+});
 
-addValidation('location.contacts.*.locationNames.*.text', isContainedIn(locations))
-
-
+addValidation('location.contacts.*.locationNames.*.text', isContainedIn(locations));
 
 // Tab system
 const progressData = reactive([
@@ -123,7 +121,7 @@ const progressData = reactive([
     kind: 'current',
     enabled: true,
     valid: false,
-    step:0,
+    step: 0,
     fields: [
       'businessInformation.businessType',
       'businessInformation.businessName',
@@ -135,7 +133,7 @@ const progressData = reactive([
     kind: 'queued',
     enabled: true,
     valid: false,
-    step:1,
+    step: 1,
     fields: [
       'location.addresses.*.locationName',
       'location.addresses.*.country.text',
@@ -153,7 +151,7 @@ const progressData = reactive([
     kind: 'queued',
     enabled: true,
     valid: false,
-    step:2,
+    step: 2,
     fields: [
       'location.contacts.*.locationNames.*.text',
       'location.contacts.*.contactType.text',
@@ -169,7 +167,7 @@ const progressData = reactive([
     kind: 'queued',
     enabled: true,
     valid: false,
-    step:3,
+    step: 3,
     fields: [
     'businessInformation.businessType',
     'businessInformation.businessName',
@@ -189,70 +187,70 @@ const progressData = reactive([
     'location.contacts.*.phoneNumber'
     ]
   }
-])
+]);
 
 const currentTab = ref(0);
 
 const stateIcon = (index: number) => {
-  if (currentTab.value == index) return 'current'
-  if (currentTab.value > index || progressData[index].valid) return 'complete'
-  return 'queued'
-}
+  if (currentTab.value == index) return 'current';
+  if (currentTab.value > index || progressData[index].valid) return 'complete';
+  return 'queued';
+};
 
-const checkStepValidity = (stepNumber: number) : boolean =>{
+const checkStepValidity = (stepNumber: number): boolean => {
   progressData.forEach((step:any) => {
-    if(step.step <= stepNumber){
-      step.valid = validate(step.fields,formData);
+    if (step.step <= stepNumber) {
+      step.valid = validate(step.fields, formData);
     }
-  })
-  return progressData[stepNumber].valid
-}
+  });
+  return progressData[stepNumber].valid;
+};
 
-const isLast = computed(() => currentTab.value === progressData.length - 1)
-const isFirst = computed(() => currentTab.value === 0)
-const isCurrentValid = computed(() => progressData[currentTab.value].valid)
-const isNextAvailable = computed(() => !isCurrentValid.value || isLast.value)
-const isFormValid = computed(() => progressData.every((entry: any) => entry.valid))
-const endAndLogOut = ref<boolean>(false)
-const mailAndLogOut = ref<boolean>(false)
+const isLast = computed(() => currentTab.value === progressData.length - 1);
+const isFirst = computed(() => currentTab.value === 0);
+const isCurrentValid = computed(() => progressData[currentTab.value].valid);
+const isNextAvailable = computed(() => !isCurrentValid.value || isLast.value);
+const isFormValid = computed(() => progressData.every((entry: any) => entry.valid));
+const endAndLogOut = ref<boolean>(false);
+const mailAndLogOut = ref<boolean>(false);
 
 const goToStep = (index: number) => {
-  if(checkStepValidity(index)) currentTab.value = index
-}
+  if (checkStepValidity(index)) currentTab.value = index;
+};
 
 const onNext = () => {
   if (currentTab.value + 1 < progressData.length) {
-    if(checkStepValidity(currentTab.value)){
-      currentTab.value++
-      progressData[currentTab.value-1].kind = stateIcon(currentTab.value-1)
-      progressData[currentTab.value].kind = stateIcon(currentTab.value)
-      setScrollPoint('top')
+    if (checkStepValidity(currentTab.value)) {
+      currentTab.value++;
+      progressData[currentTab.value - 1].kind = stateIcon(currentTab.value - 1);
+      progressData[currentTab.value].kind = stateIcon(currentTab.value);
+      setScrollPoint('top');
     }
   }
-}
+};
 const onBack = () => {
   if (currentTab.value - 1 >= 0) {
-    currentTab.value--
-    progressData[currentTab.value+1].kind = stateIcon(currentTab.value+1)
-    progressData[currentTab.value].kind = stateIcon(currentTab.value)
-    setScrollPoint('top')
+    currentTab.value--;
+    progressData[currentTab.value + 1].kind = stateIcon(currentTab.value + 1);
+    progressData[currentTab.value].kind = stateIcon(currentTab.value);
+    setScrollPoint('top');
   }
-}
+};
 const validateStep = (valid: boolean) => {
-  progressData[currentTab.value].valid = valid
-}
+  progressData[currentTab.value].valid = valid;
+};
 const saveChange = () => {
-  if(checkStepValidity(currentTab.value)){
+  if (checkStepValidity(currentTab.value)) {
     toastBus.emit({
-      message: `“${progressData[currentTab.value].title}” changes was saved successfully.`,
+      message: `“${progressData[currentTab.value].title}” changes were saved successfully.`,
       kind: 'Success',
       toastTitle:'',
       active: true,
       handler: () => {}
-    })
-    goToStep(3)
+    });
+    goToStep(3);
   }
-}
+};
 
 const processAndLogOut = () => {
   if (mailAndLogOut.value) {
@@ -266,26 +264,26 @@ const processAndLogOut = () => {
         mail: submitterInformation?.email ?? ''
       },
       {}
-    )
+    );
   }
-  session?.logOut()
-}
+  session?.logOut();
+};
 
 const submit = () => {
-  errorBus.emit([])
-  generalErrorBus.emit('')
-  if(checkStepValidity(currentTab.value)){
-    fetch()
+  errorBus.emit([]);
+  generalErrorBus.emit('');
+  if (checkStepValidity(currentTab.value)) {
+    fetch();
   }
-}
+};
 
 exitBus.on((event: Record<string, boolean | null>) => {
-  endAndLogOut.value = event.goodStanding ? event.goodStanding : false
-  mailAndLogOut.value = event.duplicated ? event.duplicated : false
-})
+  endAndLogOut.value = event.goodStanding ? event.goodStanding : false;
+  mailAndLogOut.value = event.duplicated ? event.duplicated : false;
+});
 
-const globalErrorMessage = ref<string>('')
-generalErrorBus.on((event: string) => (globalErrorMessage.value = event))
+const globalErrorMessage = ref<string>('');
+generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
 </script>
 
 <template>
