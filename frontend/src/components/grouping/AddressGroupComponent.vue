@@ -223,7 +223,7 @@ onMounted(() =>{
   <div class="frame-01">
   <text-input-component
     :id="'name_' + id"
-        label="Location or address name"
+    label="Location or address name"
     placeholder=""
     tip="For example, 'Campbell River Region' or 'Castlegar Woods Division'"
     v-model="selectedValue.locationName"
@@ -240,7 +240,7 @@ onMounted(() =>{
   <dropdown-input-component
     :id="'country_' + id"
     label="Country"
-    :initial-value="selectedValue.country.value"
+    :initial-value="selectedValue.country.text"
     tip=""
     :enabled="true"
     :model-value="countryList"
@@ -277,7 +277,7 @@ onMounted(() =>{
         validation.streetAddress = selectedValue.streetAddress ? true : false
       "
     />
-    <bx-inline-loading status="active" v-if="showDetailsLoading">Loading address details...</bx-inline-loading>
+    <cds-inline-loading status="active" v-if="showDetailsLoading">Loading address details...</cds-inline-loading>
   </data-fetcher>
 
   <text-input-component
@@ -306,7 +306,7 @@ onMounted(() =>{
     <dropdown-input-component
       :id="'province_' + id"
       :label="provinceNaming"
-      :initial-value="selectedValue.province.value"
+      :initial-value="selectedValue.province.text"
       :model-value="content"
       :enabled="true"
       tip=""
@@ -331,16 +331,13 @@ onMounted(() =>{
     @empty="validation.postalCode = !$event"
   />
 
-  <bx-btn
-    v-show="id > 0"
-    kind="danger-ghost"
-    iconLayout=""
-    class="bx--btn"
+  <cds-button
+    v-if="id > 0"
+    kind="danger-tertiary"
     @click.prevent="emit('remove', id)"
-    size="field"
   >
     <span>Delete address</span>
     <Delete16 slot="icon" />
-  </bx-btn>
+  </cds-button>
   </div>
 </template>

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { reactive, watch, ref, onMounted } from 'vue'
+// Carbon
+import '@carbon/web-components/es/components/button/index';
 // Importing composables
 import { useFocus } from '@/composables/useFocus'
 // Importing types
@@ -101,7 +103,7 @@ onMounted(() =>{
     tip="Select an address name for the contact. A contact can have more than one address"
     :initial-value="''"
     :model-value="addressList"
-    :selectedValues="selectedValue.locationNames?.map((location:CodeDescrType) => location?.value)"
+    :selectedValues="selectedValue.locationNames?.map((location:CodeDescrType) => location?.text)"
     :validations="[
       ...getValidations('location.contacts.*.locationNames.*.text'),
       submissionValidation(`location.contacts[${id}].locationNames`)
@@ -116,7 +118,7 @@ onMounted(() =>{
     :id="'role_' + id"
     label="Primary role"
     tip="Choose the primary role for this contact"
-    :initial-value="selectedValue.contactType.value"
+    :initial-value="selectedValue.contactType.text"
     :model-value="roleList"
     :validations="[
       ...getValidations('location.contacts.*.contactType.text'),
@@ -183,16 +185,13 @@ onMounted(() =>{
     @empty="validation.phoneNumber = !$event"
   />
 
-  <bx-btn
-    v-show="id > 0"
-    kind="danger-ghost"
-    iconLayout=""
-    class="bx--btn"
+  <cds-button
+    v-if="id > 0"
+    kind="danger-tertiary"
     @click.prevent="emit('remove', id)"
-    size="field"
   >
     <span>Delete contact</span>
     <Delete16 slot="icon" />
-  </bx-btn>
+  </cds-button>
 </div>
 </template>
