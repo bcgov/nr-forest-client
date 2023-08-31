@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+// Carbon
+import '@carbon/web-components/es/components/combo-box/index';
+// Composables
 import { useEventBus } from '@vueuse/core'
-import { type CodeNameType, isEmpty } from '@/dto/CommonTypesDto'
+// Types
+import type { CodeNameType } from '@/dto/CommonTypesDto'
+import { isEmpty } from '@/dto/CommonTypesDto'
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -88,10 +93,28 @@ revalidateBus.on(() => validateInput(selectedValue.value))
 
 <template>
   <div class="grouping-03">
+    <cds-combo-box
+      :id="id"
+      filterable
+      :helper-text="tip"
+      :title-text="label"
+      :label="selectedValue"
+      :invalid="error ? true : false"
+      :invalid-text="error"
+      @cds-combo-box-selected="(event:any) => selectedValue = event.target.value"
+      :data-focus="id"
+      :data-scroll="id">
+      <cds-combo-box-item 
+        v-for="option in modelValue"
+        :key="option.code"
+        :value="option.code"
+        :data-item="option.code">
+        {{ option.name }}
+      </cds-combo-box-item>
+    </cds-combo-box>
   <bx-dropdown
-    :id="id"
-    :data-focus="id"
-    :data-scroll="id"
+    
+   
     :value="selectedValue"
     :label-text="label"
     :helper-text="tip"

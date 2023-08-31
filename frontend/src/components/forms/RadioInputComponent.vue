@@ -80,6 +80,8 @@ const updateSelectedValue = (event: any) =>
       :legend-text="label"
       :helper-text="tip"
       v-model="selectedValue"
+      :invalid="error ? true : false"
+      :invalid-text="error"
       @cds-radio-button-group-changed="updateSelectedValue"
       class="grouping-01"
       :data-focus="id"

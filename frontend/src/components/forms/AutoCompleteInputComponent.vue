@@ -103,6 +103,8 @@ revalidateBus.on(() => validateInput(inputValue.value))
       :value="inputValue"
       :label="modelValue"
       filterable
+      :invalid="error ? true : false"
+      :invalid-text="error"
       @cds-combo-box-selected="selectAutocompleteItem"
       v-on:input="onTyping"
       :data-focus="id"
