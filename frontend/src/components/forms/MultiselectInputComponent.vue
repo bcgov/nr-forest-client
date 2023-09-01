@@ -104,12 +104,6 @@ const selectItems = (event:any) =>{
   emitChange()
 }
 
-const removeFromSelection = (event: any) => {
-  items.value = items.value.filter((entry) => entry !== event.srcElement.attributes['data-value'].value)
-  selectedValue.value = items.value.join(',')
-  emitChange()
-}
-
 watch([items], () => emitChange())
 
 props.selectedValues?.forEach((value: string) => addFromSelection(value))
@@ -142,22 +136,6 @@ revalidateBus.on(() => validateInput(selectedValue.value))
           {{ option.name }}
         </cds-multi-select-item>
       </cds-multi-select>
-      <div class="bx-tag-box">
-        <cds-tag
-          filter
-          v-for="(tag, index) in items"
-          title="Clear selection"
-          class="bx-tag"
-          :data-tag="'tag_' + id + '_' + index"
-          :data-value="tag"
-          :id="'tag_' + id + '_' + index"
-          :key="index"
-          type="blue"
-          @cds-tag-closed="removeFromSelection"
-        >
-        <span>{{ tag }}</span>
-        </cds-tag>
-      </div>
     </div>
   </div>
 </template>
