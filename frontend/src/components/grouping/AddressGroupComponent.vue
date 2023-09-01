@@ -90,6 +90,8 @@ const resetProvinceOnChange = (receivedCountry: any) => {
     selectedValue.province = { value: '', text: '' }
 }
 
+const addressControl = ref(false)
+
 //Validations
 const validation = reactive<Record<string, boolean>>({
   locationName: props.id == 0,
@@ -181,6 +183,7 @@ const autoCompleteResult = ref<BusinessSearchResult|undefined>({} as BusinessSea
 const detailsData = ref<Address | null>(null)
 
 watch([autoCompleteResult], () => {
+  addressControl.value = false
   if (autoCompleteResult.value) {
     showDetailsLoading.value = true
     const { error, loading: detailsLoading } = useFetchTo(
@@ -212,6 +215,7 @@ watch([detailsData], () => {
     selectedValue.postalCode = detailsData.value.postalCode.replace(/\s/g, '')
     if(!selectedValue.postalCode) postalCodeShowHint.value = true
     else postalCodeShowHint.value = false
+    addressControl.value = true
   }
 })
 
@@ -266,7 +270,7 @@ onMounted(() =>{
       placeholder=""
       tip="Start typing to search for your street address or PO box"
       v-model="selectedValue.streetAddress"
-      :contents="content"
+      :contents="addressControl ? [] : content"
       :validations="[
         ...getValidations('location.adresses.*.streetAddress'),
         submissionValidation(`location.adresses[${id}].streetAddress`)
@@ -327,7 +331,7 @@ onMounted(() =>{
     :enabled="true"
     :error-message="addressError"
     v-model="modelValue.postalCode"
-    :mask="postalCodeMask"
+    :masked="postalCodeMask"
     :validations="postalCodeValidators"
     @error="validation.postalCode = !$event"
     @empty="validation.postalCode = !$event"

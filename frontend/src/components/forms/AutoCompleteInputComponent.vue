@@ -96,6 +96,8 @@ const onTyping = (event: any) => {
 }
 
 revalidateBus.on(() => validateInput(inputValue.value))
+
+watch(() => props.modelValue,() => inputValue.value = props.modelValue)
 </script>
 
 <template>

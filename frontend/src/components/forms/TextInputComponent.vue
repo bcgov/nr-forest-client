@@ -70,6 +70,8 @@ const validateInput = (newValue: string) => {
 revalidateBus.on(() => {
   validateInput(selectedValue.value)
 })
+
+watch(() => props.modelValue,() => selectedValue.value = props.modelValue)
 </script>
 
 <template>
