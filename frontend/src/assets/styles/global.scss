@@ -29,6 +29,8 @@
   --light-theme-tag-blue-background: #c2e0ff;
   --light-theme-tag-blue-text:#00478f;
   --light-theme-focus: #0073e6;
+  --light-theme-miscellaneous-interactive:#0073E6;
+
   //Primary button
   --cds-interactive-01: #0073E6;
   --cds-active-primary: #0073E6;
@@ -68,6 +70,18 @@ cds-button span {
   --cds-support-info-inverse: var(--light-theme-notifications-support-info-border);
   --cds-text-inverse: var(--light-theme-text-text-primary);
 }
+.step-active {
+  --cds-border-subtle: var(--light-theme-miscellaneous-interactive);
+}
+.cds--progress-label {
+  overflow: visible !important;
+  
+}
+.cds--progress-label:hover {
+  box-shadow: none !important;
+  text-decoration: underline;
+  text-underline-offset: 0.325rem;
+}
 
 * {
   font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
@@ -92,8 +106,9 @@ hr {
   display: block;
   border: 0;
   border-top: 1px solid var(--border-subtle-02,#dfdfe1);
-  margin: 1em 0;
   padding: 0;
+  align-self: stretch;
+  width: 100%;
 }
 
 .bulleted-list {
@@ -381,12 +396,6 @@ hr {
   letter-spacing: 0.01rem;
 }
 
-.divider {
-  align-self: stretch;
-  width: 100%;
-  background: var(--light-theme-border-border-subtle-02, #dfdfe1);
-}
-
 .content {
   flex-grow: 1;
   align-self: stretch;
@@ -399,6 +408,8 @@ hr {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  --cds-icon-primary: var(--light-theme-miscellaneous-interactive);
+  //--cds-border-subtle: var(--light-theme-miscellaneous-interactive); aplica em todos
 }
 .form-header-stretched {
   align-self: stretch;
@@ -466,7 +477,7 @@ hr {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2.5rem;
+  gap: 1.5rem;
 }
 
 .form-steps-section-01 {

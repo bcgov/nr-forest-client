@@ -2,6 +2,7 @@
 import { reactive, watch, toRef, ref, getCurrentInstance, computed } from 'vue'
 // Carbon
 import '@carbon/web-components/es/components/button/index';
+import '@carbon/web-components/es/components/progress-indicator/index';
 // Composables
 import { useEventBus } from "@vueuse/core";
 import { useRouter } from "vue-router";
@@ -120,10 +121,7 @@ watch([error], () => {
   }
 });
 
-addValidation(
-  "location.contacts.*.locationNames.*.text",
-  isContainedIn(locations)
-);
+addValidation('location.contacts.*.locationNames.*.text', isContainedIn(locations))
 
 // Tab system
 const progressData = reactive([
@@ -205,10 +203,10 @@ const progressData = reactive([
 const currentTab = ref(0);
 
 const stateIcon = (index: number) => {
-  if (currentTab.value == index) return "current";
-  if (currentTab.value > index || progressData[index].valid) return "complete";
-  return "queued";
-};
+  if (currentTab.value == index) return 'current'
+  if (currentTab.value > index || progressData[index].valid) return 'complete'
+  return 'incomplete'
+}
 
 const checkStepValidity = (stepNumber: number): boolean => {
   progressData.forEach((step: any) => {
@@ -308,10 +306,17 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
       <span class="heading-05" data-scroll="top">New client application</span>
       <p class="body-01">All fields are mandatory</p>
     </div>
-      <wizard-progress-indicator-component
-      :model-value="progressData"
-      @go-to="goToStep"
-    />
+    <cds-progress-indicator space-equally>
+        <cds-progress-step 
+          v-for="item in progressData"
+          :key="item.step"
+          :secondary-label="item.subtitle"
+          :state="item.step <= currentTab ? item.step < currentTab ? 'complete' : 'current' : 'incomplete'"
+          :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"
+          >
+          <span class="cds--progress-label">{{ item.title }}</span>
+        </cds-progress-step>
+      </cds-progress-indicator>
   </div>
 
   <div class="form-steps">
@@ -442,7 +447,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
         </cds-button>
 
         <cds-button
-          v-if="!isLast && !isFormValid && !endAndLogOut && !mailAndLogOut"
+          v-if="!isLast && !endAndLogOut && !mailAndLogOut"
           id="nextBtn"
           kind="primary"
           size="lg"
@@ -466,18 +471,6 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
           >
           <span>Submit application</span>
           <Check16 slot="icon" />
-        </cds-button>
-
-        <cds-button
-          data-test="wizard-save-button"
-          kind="primary"
-          size="lg"
-          :disabled="isNextAvailable"
-          v-if="!isLast && isFormValid && !endAndLogOut && !mailAndLogOut"
-          @click.prevent="saveChange"
-        >
-          <span>Save</span>
-          <Save16 slot="icon" />
         </cds-button>
 
         <cds-button
