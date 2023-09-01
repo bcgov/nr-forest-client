@@ -185,13 +185,15 @@ onMounted(() =>{
     @empty="validation.phoneNumber = !$event"
   />
 
+  <div class="grouping-06">
   <cds-button
     v-if="id > 0"
-    kind="danger-tertiary"
+    kind="danger--tertiary"
     @click.prevent="emit('remove', id)"
   >
     <span>Delete contact</span>
     <Delete16 slot="icon" />
   </cds-button>
+</div>
 </div>
 </template>

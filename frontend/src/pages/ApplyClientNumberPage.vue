@@ -433,6 +433,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
         <cds-button
             v-if="!isFirst"
             kind="secondary"
+            size="lg"
             :disabled="isFirst"
             v-on:click="onBack"
             data-test="wizard-back-button"
@@ -444,6 +445,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
           v-if="!isLast && !isFormValid && !endAndLogOut && !mailAndLogOut"
           id="nextBtn"
           kind="primary"
+          size="lg"
           v-on:click="onNext"
           :disabled="progressData[currentTab].valid === false"
           data-test="wizard-next-button"
@@ -459,8 +461,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
           v-if="isLast && !endAndLogOut && !mailAndLogOut"
             data-test="wizard-submit-button"
             kind="primary"
-            iconLayout=""
-            class="bx--btn"
+            size="lg"
             @click.prevent="submit"
           >
           <span>Submit application</span>
@@ -470,8 +471,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
         <cds-button
           data-test="wizard-save-button"
           kind="primary"
-          iconLayout=""
-          class="bx--btn"
+          size="lg"
           :disabled="isNextAvailable"
           v-if="!isLast && isFormValid && !endAndLogOut && !mailAndLogOut"
           @click.prevent="saveChange"
@@ -483,8 +483,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
         <cds-button
           data-test="wizard-logout-button"
           kind="primary"
-          iconLayout=""
-          class="bx--btn"
+          size="lg"
           v-show="!isLast && (endAndLogOut || mailAndLogOut)"
           @click.prevent="processAndLogOut"
         >

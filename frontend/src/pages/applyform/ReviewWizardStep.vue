@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { watch, ref, onMounted } from 'vue'
+// Carbon
+import '@carbon/web-components/es/components/button/index';
+// Composables
 import { useEventBus } from '@vueuse/core'
+// Types
 import type { FormDataDto } from '@/dto/ApplyClientNumberDto'
+// @ts-ignore
 import Edit16 from '@carbon/icons-vue/es/edit/16'
 
 //Defining the props and emiter to reveice the data and emit an update
@@ -49,17 +54,15 @@ onMounted(() => {
         }}
       </p>
     </div>
-
-    <bx-btn
+<div class="grouping-06">
+    <cds-button
       kind="tertiary"
-      iconLayout=""
-      class="bx--btn"
-      size="field"
       @click.prevent="goToStep(0)"
     >
       <span>Edit business information</span>
       <Edit16 slot="icon" />
-    </bx-btn>
+    </cds-button>
+    </div>
   </div>
 
   <div class="grouping-05">
@@ -77,17 +80,15 @@ onMounted(() => {
       <span class="body-compact-01">{{ address.country.text }}</span>
       <span class="body-compact-01">{{ address.postalCode }}</span>
     </div>
-
-    <bx-btn
+<div class="grouping-06">
+    <cds-button
       kind="tertiary"
-      iconLayout=""
-      class="bx--btn"
-      size="field"
       @click.prevent="goToStep(1)"
     >
       <span>Edit address</span>
       <Edit16 slot="icon" />
-    </bx-btn>
+    </cds-button>
+    </div>
   </div>
 
   <div class="grouping-05">
@@ -107,16 +108,14 @@ onMounted(() => {
       <span class="body-compact-01">{{ contact.email }}</span>
       <span class="body-compact-01">{{ contact.phoneNumber }}</span>
     </div>
-
-    <bx-btn
+<div class="grouping-06">
+    <cds-button
       kind="tertiary"
-      iconLayout=""
-      class="bx--btn"
-      size="field"
       @click.prevent="goToStep(2)"
     >
       <span>Edit contacts</span>
       <Edit16 slot="icon" />
-    </bx-btn>
+    </cds-button>
+    </div>
   </div>
 </template>

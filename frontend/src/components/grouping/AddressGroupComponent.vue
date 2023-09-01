@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { reactive, watch, computed, ref, onMounted } from 'vue'
+// Carbon
+import '@carbon/web-components/es/components/button/index';
 // Composables
 import { useEventBus } from '@vueuse/core'
 import { useFetchTo } from '@/composables/useFetch'
@@ -330,14 +332,15 @@ onMounted(() =>{
     @error="validation.postalCode = !$event"
     @empty="validation.postalCode = !$event"
   />
-
+<div class="grouping-06">
   <cds-button
     v-if="id > 0"
-    kind="danger-tertiary"
+    kind="danger--tertiary"
     @click.prevent="emit('remove', id)"
   >
     <span>Delete address</span>
     <Delete16 slot="icon" />
   </cds-button>
+</div>
   </div>
 </template>

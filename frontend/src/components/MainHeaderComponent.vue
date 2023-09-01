@@ -44,24 +44,27 @@ onMounted(() => window.addEventListener('resize', updateScreenWidth));
   
   <div class="heading-space"></div>
 
-  <!-- Remember to add profile button here -->
-  <cds-button
-    v-if="$session?.isLoggedIn() && (isSmallScreen || isMediumScreen)"
-    data-id="logout-btn"
-    kind="tertiary"
-    @click.prevent="$session?.logOut"
-  >
-    <Logout16 slot="icon" />
-  </cds-button>
+  <div class="heading-buttons">
 
-  <cds-button
-    v-if="$session?.isLoggedIn() && (!isSmallScreen && !isMediumScreen)"
-    data-id="logout-btn"
-    kind="tertiary"
-    @click.prevent="$session?.logOut"
-  >
-    <span>Logout</span>
-    <Logout16 slot="icon" />
-  </cds-button>
+    <!-- Remember to add profile button here -->
+    <cds-button
+      v-if="$session?.isLoggedIn() && (isSmallScreen || isMediumScreen)"
+      data-id="logout-btn"
+      kind="tertiary"
+      size="sm"
+      @click.prevent="$session?.logOut"
+    >
+      <Logout16 slot="icon" />
+    </cds-button>
 
+    <cds-button
+      v-if="$session?.isLoggedIn() && (!isSmallScreen && !isMediumScreen)"
+      data-id="logout-btn"
+      kind="tertiary"
+      @click.prevent="$session?.logOut"
+    >
+      <span>Logout</span>
+      <Logout16 slot="icon" />
+    </cds-button>
+  </div>
 </template>
