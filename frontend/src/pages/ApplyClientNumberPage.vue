@@ -3,6 +3,7 @@ import { reactive, watch, toRef, ref, getCurrentInstance, computed } from 'vue'
 // Carbon
 import '@carbon/web-components/es/components/button/index';
 import '@carbon/web-components/es/components/progress-indicator/index';
+import '@carbon/web-components/es/components/notification/index';
 // Composables
 import { useEventBus } from "@vueuse/core";
 import { useRouter } from "vue-router";
@@ -317,7 +318,20 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
           <span class="cds--progress-label">{{ item.title }}</span>
         </cds-progress-step>
       </cds-progress-indicator>
+      <cds-inline-notification
+      v-if="globalErrorMessage"
+      v-shadow="true"
+      low-contrast="true"
+      hide-close-button="true"
+      open="true"
+      kind="error"
+      title="Your application could not be submitted"
+      :subtitle="globalErrorMessage"
+    >
+    </cds-inline-notification>
   </div>
+
+
 
   <div class="form-steps">
 
@@ -399,14 +413,6 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
     </div>
 
     <div v-if="currentTab == 3" class="form-steps-04">
-
-      <display-block-component
-      v-if="globalErrorMessage"
-      kind="error"
-      title="Your application could not be submitted"
-      :subtitle="globalErrorMessage"
-    >
-    </display-block-component>
 
 
       <div class="form-steps-section form-steps-section-04">
