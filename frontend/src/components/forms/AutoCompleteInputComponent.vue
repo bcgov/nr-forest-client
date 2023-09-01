@@ -46,7 +46,7 @@ const inputValue = ref(props.modelValue)
 
 // This is to make the input list contains the selected value to show when component render
 const inputList = computed<Array<BusinessSearchResult>>(() =>
-  ((!props.contents || props.contents.length === 0) ? [{name: props.modelValue, code: '',status:'',legalType:''}] : props.contents)
+  ((!props.contents || props.contents.length === 0) ? [{name: props.modelValue, code: '',status:'',legalType:''}] : props.contents).filter(entry => entry.name)
 )
 
 let selectedValue: BusinessSearchResult | undefined = undefined
