@@ -44,13 +44,6 @@ const selectedValue = ref<string>(props.modelValue)
 
 //We set the value prop as a reference for update reason
 emit('empty', isEmpty(props.modelValue))
-watch(
-  () => props.modelValue,
-  () => {
-    selectedValue.value = props.modelValue
-    validateInput(selectedValue.value)
-  }
-)
 
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
