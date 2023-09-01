@@ -234,9 +234,10 @@ watch([selectedOption], () => {
       @update:selected-value="autoCompleteResult = $event"
     />
     <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
-    <div class="notifications" v-if="(showAutoCompleteInfo && selectedOption === ClientTypeEnum.R) || showGoodStandingError || showDuplicatedError">
+    <div v-if="(showAutoCompleteInfo && selectedOption === ClientTypeEnum.R) || showGoodStandingError || showDuplicatedError">
       <cds-inline-notification
         v-if="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
+        low-contrast="true"
         open="true"
         kind="info"
         hide-close-button="true"
@@ -264,6 +265,8 @@ watch([selectedOption], () => {
 
       <cds-inline-notification
         v-if="showGoodStandingError"
+        hide-close-button="true"
+        low-contrast="true"
         open="true"
         kind="error"
         title="Not in good standing with BC Registries"
@@ -284,6 +287,8 @@ watch([selectedOption], () => {
 
       <cds-inline-notification
         v-if="showDuplicatedError"
+        hide-close-button="true"
+        low-contrast="true"
         open="true"
         kind="error"
         title="Client already exists"

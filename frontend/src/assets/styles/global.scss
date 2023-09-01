@@ -65,11 +65,6 @@ cds-button::part(button) {
 cds-button span {
   width:11rem;
 }
-.notifications {
-  --cds-background-inverse: var(--light-theme-notifications-notification-info-background);
-  --cds-support-info-inverse: var(--light-theme-notifications-support-info-border);
-  --cds-text-inverse: var(--light-theme-text-text-primary);
-}
 .step-active {
   --cds-border-subtle: var(--light-theme-miscellaneous-interactive);
 }
@@ -81,6 +76,10 @@ cds-button span {
   box-shadow: none !important;
   text-decoration: underline;
   text-underline-offset: 0.325rem;
+}
+
+cds-inline-notification::part(div), cds-inline-notification, .cds--inline-notification {
+  max-width: 100%;
 }
 
 * {
