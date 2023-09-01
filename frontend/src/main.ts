@@ -3,7 +3,7 @@ import VueTheMask from 'vue-the-mask'
 import App from '@/App.vue'
 import { router } from '@/routes'
 import { featureFlags, backendUrl } from '@/CoreConstants'
-import { masking } from '@/helpers/CustomDirectives'
+import { masking, shadowPart } from '@/helpers/CustomDirectives'
 import type { SessionProperties } from '@/dto/CommonTypesDto'
 import ForestClientUserSession from '@/helpers/ForestClientUserSession'
 
@@ -15,6 +15,7 @@ const app = createApp(App)
 app.use(router)
 app.use(VueTheMask)
 app.directive('masked', masking('.cds--text-input__field-wrapper input'))
+app.directive('shadow', shadowPart)
 app.config.globalProperties.$session = ForestClientUserSession
 app.config.globalProperties.$features = featureFlags
 app.config.globalProperties.$backend = backendUrl
