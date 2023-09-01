@@ -23,10 +23,10 @@ describe('Radio Input Component', () => {
         initialValue: ''
       }
     })
-
+console.log(wrapper.html())
     for (const value of values) {
       expect(wrapper.html()).toContain(
-        `<bx-radio-button label-text="${value.text}" value="${value.value}"></bx-radio-button>`
+        `<cds-radio-button label-text="${value.text}"></cds-radio-button>`
       )
     }
   })
@@ -43,8 +43,8 @@ describe('Radio Input Component', () => {
     })
 
     await wrapper
-      .find(`[name=${id}rb]`)
-      .trigger('bx-radio-button-group-changed', {
+      .find(`[id=${id}rb]`)
+      .trigger('cds-radio-button-group-changed', {
         detail: { value: 'A' }
       })
 
@@ -67,8 +67,8 @@ describe('Radio Input Component', () => {
     })
 
     await wrapper
-      .find(`[name=${id}rb]`)
-      .trigger('bx-radio-button-group-changed', {
+      .find(`[id=${id}rb]`)
+      .trigger('cds-radio-button-group-changed', {
         detail: { value: 'B' }
       })
 
@@ -90,8 +90,8 @@ describe('Radio Input Component', () => {
     })
 
     await wrapper
-      .find(`[name=${id}rb]`)
-      .trigger('bx-radio-button-group-changed', {
+      .find(`[id=${id}rb]`)
+      .trigger('cds-radio-button-group-changed', {
         detail: { value: 'A' }
       })
 
@@ -107,8 +107,8 @@ describe('Radio Input Component', () => {
     expect(updateEvent[0]).toStrictEqual(['A'])
 
     await wrapper
-      .find(`[name=${id}rb]`)
-      .trigger('bx-radio-button-group-changed', {
+      .find(`[id=${id}rb]`)
+      .trigger('cds-radio-button-group-changed', {
         detail: { value: 'B' }
       })
 
