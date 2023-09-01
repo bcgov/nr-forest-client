@@ -84,7 +84,7 @@ revalidateBus.on(() => {
       :disabled="!enabled"
       :invalid="error ? true : false"
       :invalid-text="error"
-      v-mask="mask"
+      v-masked="mask"
       @blur="(event:any) => validateInput(event.target.value)"
       @input="(event:any) => selectedValue = event.target.value"
       :data-focus="id"

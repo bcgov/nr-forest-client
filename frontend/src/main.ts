@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-
+import VueTheMask from 'vue-the-mask'
 import App from '@/App.vue'
 import { router } from '@/routes'
 import { featureFlags, backendUrl } from '@/CoreConstants'
@@ -13,7 +13,8 @@ import '@/styles'
 const app = createApp(App)
 
 app.use(router)
-app.directive('mask', masking('.cds--text-input__field-wrapper input'))
+app.use(VueTheMask)
+app.directive('masked', masking('.cds--text-input__field-wrapper input'))
 app.config.globalProperties.$session = ForestClientUserSession
 app.config.globalProperties.$features = featureFlags
 app.config.globalProperties.$backend = backendUrl

@@ -135,7 +135,7 @@ const postalCodeMask = computed(() => {
     case 'CA':
       return 'A#A#A#'
     case 'US':
-      return '#####' // TODO: Should fix mask to allow 00000 or 00000-0000
+      return ['#####','#####-####']
     default:
       return '##########'
   }
