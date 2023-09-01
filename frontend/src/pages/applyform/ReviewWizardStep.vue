@@ -73,7 +73,7 @@ onMounted(() => {
       :key="address.locationName"
       class="grouping-07"
     >
-      <hr v-if="index > 0"/>
+      <hr class="divider" v-if="index > 0"/>
       <span class="heading-02">{{ address.locationName }}</span>
       <span class="body-compact-01">{{ address.streetAddress }}</span>
       <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
@@ -99,7 +99,7 @@ onMounted(() => {
       :key="contact.email"
       class="grouping-07"
     >
-      <hr v-if="index > 0"/>
+      <hr class="divider" v-if="index > 0"/>
       <span class="heading-02">{{ contact.firstName }} {{ contact.lastName }}</span>
       <span class="body-compact-01">
         {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}

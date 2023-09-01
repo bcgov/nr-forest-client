@@ -234,7 +234,7 @@ watch([selectedOption], () => {
       @update:selected-value="autoCompleteResult = $event"
     />
     <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
-    <div class="notifications">
+    <div class="notifications" v-if="(showAutoCompleteInfo && selectedOption === ClientTypeEnum.R) || showGoodStandingError || showDuplicatedError">
       <cds-inline-notification
         v-if="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
         open="true"
