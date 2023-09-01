@@ -154,7 +154,8 @@ revalidateBus.on(() => validateInput(selectedValue.value))
           :key="index"
           type="blue"
           @cds-tag-closed="removeFromSelection"
-        >{{ tag }}
+        >
+        <span>{{ tag }}</span>
         </cds-tag>
       </div>
     </div>
