@@ -20,7 +20,7 @@ describe('MainHeaderComponent.vue', () => {
     })
 
     expect(wrapper.html()).not.toBe('')
-    expect(wrapper.find('bx-btn').exists()).toBe(true)
+    expect(wrapper.find('cds-button').exists()).toBe(true)
     expect(wrapper.html()).toContain('Ministry of Forests')
   })
 
