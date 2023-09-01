@@ -13,7 +13,7 @@ import '@/styles'
 const app = createApp(App)
 
 app.use(router)
-app.directive('mask', masking('.cds--text-input__field-wrapper  input'))
+app.directive('mask', masking('.cds--text-input__field-wrapper input'))
 app.config.globalProperties.$session = ForestClientUserSession
 app.config.globalProperties.$features = featureFlags
 app.config.globalProperties.$backend = backendUrl
