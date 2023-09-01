@@ -234,65 +234,67 @@ watch([selectedOption], () => {
       @update:selected-value="autoCompleteResult = $event"
     />
     <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
+    <div class="notifications">
+      <cds-inline-notification
+        v-if="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
+        open="true"
+        kind="info"
+        hide-close-button="true"
+        title="If the name of your registered business does not appear in the list, follow these steps:">
+        <div>
+          <ol type="1" class="bulleted-list">
+            <li>
+              Log into Manage Account in
+              <a
+                href="https://www.bceid.ca/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >BCeID</a
+              >
+              to find your business name
+            </li>
+            <li>
+              If your name isn’t there, call BC Registry toll free at
+              <a href="tel:18775261526">1-877-526-1526</a> or email them at
+              <a href="mailto:BCRegistries@gov.bc.ca">BCRegistries@gov.bc.ca</a>.
+            </li>
+          </ol>
+        </div>
+      </cds-inline-notification>
 
-    <cds-inline-notification
-      v-if="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
-      open="true"
-      kind="info"
-      title="If the name of your registered business does not appear in the list, follow these steps:">
-      <div>
-        <ol type="1" class="bulleted-list">
-          <li>
-            Log into Manage Account in
-            <a
-              href="https://www.bceid.ca/"
-              target="_blank"
-              rel="noopener noreferrer"
-              >BCeID</a
-            >
-            to find your business name
-          </li>
-          <li>
-            If your name isn’t there, call BC Registry toll free at
-            <a href="tel:18775261526">1-877-526-1526</a> or email them at
-            <a href="mailto:BCRegistries@gov.bc.ca">BCRegistries@gov.bc.ca</a>.
-          </li>
-        </ol>
-      </div>
-    </cds-inline-notification>
+      <cds-inline-notification
+        v-if="showGoodStandingError"
+        open="true"
+        kind="error"
+        title="Not in good standing with BC Registries"
+      >
+        <p>
+          Your request for a client number cannot go ahead because “{{
+            formData.businessInformation.businessName
+          }}” is not in good standing with BC Registries. Go to your
+          <a
+            href="https://www.bcregistry.gov.bc.ca/"
+            target="_blank"
+            rel="noopener noreferrer"
+            >BC Registries</a
+          >
+          account to find out why.
+        </p>
+      </cds-inline-notification>
 
-    <cds-inline-notification
-      v-if="showGoodStandingError"
-      open="true"
-      kind="error"
-      title="Not in good standing with BC Registries"
-    >
-      <p>
-        Your request for a client number cannot go ahead because “{{
-          formData.businessInformation.businessName
-        }}” is not in good standing with BC Registries. Go to your
-        <a
-          href="https://www.bcregistry.gov.bc.ca/"
-          target="_blank"
-          rel="noopener noreferrer"
-          >BC Registries</a
-        >
-        account to find out why.
-      </p>
-    </cds-inline-notification>
-
-    <cds-inline-notification
-      v-if="showDuplicatedError"
-      open="true"
-      kind="error"
-      title="Client already exists"
-    >
-      <p>
-        Looks like “{{ formData.businessInformation.businessName }}” has a
-        client number. Select the 'Receive email and logout' button below to
-        have it sent to you at {{ formData.location.contacts[0].email }}
-      </p>
-    </cds-inline-notification>
+      <cds-inline-notification
+        v-if="showDuplicatedError"
+        open="true"
+        kind="error"
+        title="Client already exists"
+      >
+        <p>
+          Looks like “{{ formData.businessInformation.businessName }}” has a
+          client number. Select the 'Receive email and logout' button below to
+          have it sent to you at {{ formData.location.contacts[0].email }}
+        </p>
+      </cds-inline-notification>
+    </div>
   </data-fetcher>
 
   <text-input-component
