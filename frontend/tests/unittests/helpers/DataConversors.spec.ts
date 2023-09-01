@@ -29,6 +29,6 @@ describe('DataConversors.ts', () => {
   it('throw an error when legalType is unknown', () => {
     expect(() => {
       retrieveClientType('Z')
-    }).toThrow('Unknown Legal Type.')
+    }).toThrow('Unknown Legal Type Z')
   })
 })
