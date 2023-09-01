@@ -12,6 +12,7 @@ describe('Auto Complete Input Component', () => {
     { code: 'TC', name: 'TAMCADA' },
     { code: 'TD', name: 'TADANARA' }
   ]
+  const eventContent = (value:string) => {return { detail: { item: { 'data-id': value, getAttribute: (key:string) => value } }}}
 
   it('renders the input field with the provided id', () => {
     const wrapper = mount(AutoCompleteInputComponent, {
@@ -25,14 +26,7 @@ describe('Auto Complete Input Component', () => {
     })
 
     expect(wrapper.find(`#${id}`).exists()).toBe(true)
-    expect(wrapper.find(`#${id}list`).exists()).toBe(true)
 
-    const options = wrapper.findAll('.autocomplete-items-cell')
-
-    expect(options.length).toBe(contents.length)
-    for (let index = 0; index < contents.length; index++) {
-      expect(options[index].text()).toContain(contents[index].name)
-    }
   })
 
   it('emits the "update" event with the updated value', async () => {
@@ -102,9 +96,7 @@ describe('Auto Complete Input Component', () => {
       }
     })
 
-    const options = wrapper.findAll('.autocomplete-items-cell')
-    const firstOption = options[0]
-    await firstOption.trigger('click')
+    await wrapper.find(`#${id}`).trigger('cds-combo-box-selected',eventContent('TA'));
     expect(wrapper.emitted('update:selected-value')).toBeTruthy()
     expect(wrapper.emitted('update:selected-value')![0][0]).toEqual(contents[0])
   })
@@ -123,9 +115,7 @@ describe('Auto Complete Input Component', () => {
         }
       })
 
-      const options = wrapper.findAll('.autocomplete-items-cell')
-      const firstOption = options[0]
-      await firstOption.trigger('click')
+      await wrapper.find(`#${id}`).trigger('cds-combo-box-selected',eventContent(contents[0].code));
 
       // Now an option is effectively selected
       expect(wrapper.emitted('update:selected-value')).toBeTruthy()
@@ -143,9 +133,7 @@ describe('Auto Complete Input Component', () => {
     })
 
     it('emits the "update:selected-value" with the newly selected value', async () => {
-      const options = wrapper.findAll('.autocomplete-items-cell')
-      const secondOption = options[1]
-      await secondOption.trigger('click')
+      await wrapper.find(`#${id}`).trigger('cds-combo-box-selected',eventContent(contents[1].code));
 
       expect(wrapper.emitted('update:selected-value')).toHaveLength(2)
       expect(wrapper.emitted('update:selected-value')![1][0]).toEqual(
