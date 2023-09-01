@@ -60,7 +60,6 @@ const emitValueChange = (newValue: string): void => {
 }
 //Watch for changes on the input
 watch([selectedValue], () => {
-  console.log('watch',selectedValue.value)
   validateInput(selectedValue.value)
   emitValueChange(selectedValue.value)
 })
@@ -78,6 +77,8 @@ const validateInput = (newValue: any) => {
         .shift() ?? props.errorMessage
   }
 }
+
+watch(inputList,() => (selectedValue.value = props.initialValue))
 
 revalidateBus.on(() => validateInput(selectedValue.value))
 </script>
