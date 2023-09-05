@@ -95,13 +95,13 @@ const addFromSelection = (itemCode: string) => {
     items.value.push(reference.name)
     selectedValue.value = items.value.join(',')
   }
-  emitChange()
 }
 
-const selectItems = (event:any) =>{
-  selectedValue.value = event.target.value
-  items.value = event.target.value.split(',').filter((value:string) => value)
-  emitChange()
+const selectItems = (event:any) => {
+  // Why this undefined data check is here you might ask? Well, it's because I can't emit the event with value on target
+  const contentValue = event?.data !== undefined ? event?.data : event.target.value
+  selectedValue.value = contentValue
+  items.value = contentValue.split(',').filter((value:string) => value)
 }
 
 watch([items], () => emitChange())

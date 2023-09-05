@@ -23,7 +23,6 @@ describe('Radio Input Component', () => {
         initialValue: ''
       }
     })
-console.log(wrapper.html())
     for (const value of values) {
       expect(wrapper.html()).toContain(
         `<cds-radio-button label-text="${value.text}"></cds-radio-button>`

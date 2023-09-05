@@ -17,7 +17,7 @@ describe('Text Input Component', () => {
         enabled: true
       },
       directives: {
-        mask: () => {}
+        masked: () => {}
       }
     })
 
@@ -35,7 +35,7 @@ describe('Text Input Component', () => {
         enabled: true
       },
       directives: {
-        mask: () => {}
+        masked: () => {}
       }
     })
 
@@ -58,7 +58,7 @@ describe('Text Input Component', () => {
         enabled: true
       },
       directives: {
-        mask: () => {}
+        masked: () => {}
       }
     })
 
@@ -80,7 +80,7 @@ describe('Text Input Component', () => {
         enabled: true
       },
       directives: {
-        mask: () => {}
+        masked: () => {}
       }
     })
 

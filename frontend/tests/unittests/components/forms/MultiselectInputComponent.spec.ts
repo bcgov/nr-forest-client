@@ -9,6 +9,9 @@ describe('MultiselectInputComponent', () => {
       value === 'A' || value === 'Value A' ? 'A is not supported' : ''
   ]
 
+  const eventContent = (value:string) => {return { data:  value }}
+
+
   it('should render', () => {
     const wrapper = mount(MultiselectInputComponent, {
       props: {
@@ -24,9 +27,9 @@ describe('MultiselectInputComponent', () => {
       }
     })
 
-    expect(wrapper.find('bx-dropdown-item[value="A"]').exists()).toBe(true)
-    expect(wrapper.find('bx-dropdown-item[value="B"]').exists()).toBe(true)
-    expect(wrapper.find('bx-dropdown-item[value="C"]').exists()).toBe(false)
+    expect(wrapper.find('cds-multi-select-item[data-value="Value A"]').exists()).toBe(true)
+    expect(wrapper.find('cds-multi-select-item[data-value="Value B"]').exists()).toBe(true)
+    expect(wrapper.find('cds-multi-select-item[data-value="Value C"]').exists()).toBe(false)
   })
 
   it('should emit event when changing selection', async () => {
@@ -44,18 +47,14 @@ describe('MultiselectInputComponent', () => {
       }
     })
 
-    const dropdown = wrapper.find('bx-dropdown')
+    const dropdown = wrapper.find('cds-multi-select')
 
-    await dropdown.trigger('bx-dropdown-selected', {
-      detail: { item: { __value: 'A' } }
-    })
+    await dropdown.trigger('cds-multi-select-selected',eventContent('Value A'))
 
     await wrapper.vm.$nextTick()
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy()
-    expect(wrapper.emitted('update:modelValue')![0][0]).toStrictEqual([
-      'Value A'
-    ])
+    expect(wrapper.emitted('update:modelValue')![0][0]).toStrictEqual(['Value A'])
 
     expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
     expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual([
@@ -84,11 +83,9 @@ describe('MultiselectInputComponent', () => {
     expect(wrapper.emitted('empty')).toBeTruthy()
     expect(wrapper.emitted('empty')![0][0]).toBe(true)
 
-    const dropdown = wrapper.find('bx-dropdown')
+    const dropdown = wrapper.find('cds-multi-select')
 
-    await dropdown.trigger('bx-dropdown-selected', {
-      detail: { item: { __value: 'A' } }
-    })
+    await dropdown.trigger('cds-multi-select-selected',eventContent('Value A'))
 
     expect(wrapper.emitted('empty')).toBeTruthy()
     expect(wrapper.emitted('empty')![1][0]).toBe(false)
@@ -109,19 +106,12 @@ describe('MultiselectInputComponent', () => {
       }
     })
 
-    const dropdown = wrapper.find('bx-dropdown')
+    const dropdown = wrapper.find('cds-multi-select')
 
-    await dropdown.trigger('bx-dropdown-selected', {
-      detail: { item: { __value: 'A' } }
-    })
-    await dropdown.trigger('bx-dropdown-beingselected', {
-      detail: { item: { __value: 'A' } }
-    })
+    await dropdown.trigger('cds-multi-select-selected',eventContent('Value A'))
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy()
-    expect(wrapper.emitted('update:modelValue')![0][0]).toStrictEqual([
-      'Value A'
-    ])
+    expect(wrapper.emitted('update:modelValue')![0][0]).toStrictEqual(['Value A'])
 
     expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
     expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual([
@@ -150,16 +140,12 @@ describe('MultiselectInputComponent', () => {
       }
     })
 
-    const dropdown = wrapper.find('bx-dropdown')
+    const dropdown = wrapper.find('cds-multi-select')
 
-    await dropdown.trigger('bx-dropdown-selected', {
-      detail: { item: { __value: 'B' } }
-    })
+    await dropdown.trigger('cds-multi-select-selected', eventContent('Value B'))
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy()
-    expect(wrapper.emitted('update:modelValue')![0][0]).toStrictEqual([
-      'Value B'
-    ])
+    expect(wrapper.emitted('update:modelValue')![0][0]).toStrictEqual(['Value B'])
 
     expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
     expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual([
@@ -185,14 +171,12 @@ describe('MultiselectInputComponent', () => {
         ],
         initialValue: '',
         validations: [],
-        selectedValues: ['A']
+        selectedValues: ['Value A']
       }
     })
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy()
-    expect(wrapper.emitted('update:modelValue')![0][0]).toStrictEqual([
-      'Value A'
-    ])
+    expect(wrapper.emitted('update:modelValue')![0][0]).toStrictEqual(['Value A'])
 
     expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
     expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual([
@@ -218,30 +202,23 @@ describe('MultiselectInputComponent', () => {
       }
     })
 
-    const dropdown = wrapper.find('bx-dropdown')
+    const dropdown = wrapper.find('#test')
 
-    await dropdown.trigger('bx-dropdown-selected', {
-      detail: { item: { __value: 'A' } }
-    })
+    await dropdown.trigger('cds-multi-select-selected',eventContent('Value A'))
 
+    await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy()
-    expect(wrapper.emitted('update:modelValue')![0][0]).toStrictEqual([
-      'Value A'
-    ])
+    expect(wrapper.emitted('update:modelValue')![0][0]).toStrictEqual(['Value A'])
 
     expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
-    expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual([
-      {
-        code: 'A',
-        name: 'Value A'
-      }
-    ])
+    expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual([ { code: 'A', name: 'Value A' } ])
 
-    const close = wrapper.find('#close_test_0')
+    await dropdown.trigger('cds-multi-select-selected',eventContent(''))
 
-    await close.trigger('click')
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy()
     expect(wrapper.emitted('update:modelValue')![1][0]).toStrictEqual([])
