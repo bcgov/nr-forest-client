@@ -1,9 +1,15 @@
 <script setup lang="ts">
+// Carbon
+import '@carbon/web-components/es/components/button/index';
+// Composables
 import { useRouter } from 'vue-router'
-import login16 from '@carbon/icons-vue/es/login/16'
+// Constants
 import { backendUrl } from '@/CoreConstants'
+// Assets
 import Seeding from '@/assets/images/seeding.png'
 import logo from '@/assets/images/bc-gov-logo.png'
+// @ts-ignore
+import login16 from '@carbon/icons-vue/es/login/16'
 
 // extract the querystring parameters from the URL
 const router = useRouter()
@@ -28,7 +34,7 @@ if (query.ref && query.ref === 'external') {
         </h2>
         <div class="spacing"></div>
         <div class="form-footer-group-buttons">
-          <bx-btn
+          <cds-button
             kind="primary"
             iconLayout=""
             class="landing-button"
@@ -36,9 +42,9 @@ if (query.ref && query.ref === 'external') {
           >
             <span>Login with IDIR</span>
             <login16 slot="icon" />
-          </bx-btn>
+          </cds-button>
           
-          <bx-btn
+          <cds-button
             v-if="$features.BCSC_LOGIN"
             kind="primary"
             iconLayout=""
@@ -47,9 +53,9 @@ if (query.ref && query.ref === 'external') {
           >
             <span>Login with BC Services Card</span>
             <login16 slot="icon" />
-          </bx-btn>
+          </cds-button>
           
-          <bx-btn
+          <cds-button
             v-if="$features.BCEID_LOGIN"
             kind="primary"
             iconLayout=""
@@ -58,7 +64,7 @@ if (query.ref && query.ref === 'external') {
           >
             <span>Login with BCeID</span>
             <login16 slot="icon" />
-          </bx-btn>
+          </cds-button>
         
         </div>
       </div>
