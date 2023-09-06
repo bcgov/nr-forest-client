@@ -61,7 +61,7 @@
         "headers":{
           "Location": "http://{{request.host}}:3000/dashboard",
           "Set-Cookie": [
-            "idToken=eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiYmNzYyIsImN1c3RvbTppZHBfZGlzcGxheV9uYW1lIjoiVWF0IFRlc3QiLCJnaXZlbl9uYW1lIjoiVWF0IiwiZmFtaWx5X25hbWUiOiJUZXN0IiwiZW1haWwiOiJ1YXR0ZXN0QHRlc3QubG9jYWwiLCJpZHBfYnVzaW5lc3NfbmFtZSI6IkF1dG9tYXRlZCBUZXN0In0.WxwJhq-wCTt-k2YL0ZXw83jWQ9JGotH4jt84gZM7VzQ; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
+            "idToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVhdHRlc3RAdGVzdC5sb2NhbCIsImN1c3RvbTppZHBfdXNlcl9pZCI6InVhdHRlc3QiLCJjdXN0b206aWRwX25hbWUiOiJVYXQgVGVzdCIsImdpdmVuX25hbWUiOiJKYXZhSW5Vc2UiLCJmYW1pbHlfbmFtZSI6IkFkbWluIiwiYWRkcmVzcyI6Ijc3NyBGYWtlIFN0cmVldCIsImV4cGlyZXNfaW4iOiIyMDMzLTA5LTA2VDE1OjUwOjMwLjY3NFoifQ.8ujoIOufQ0jAKXdxQAt56pV_e6SqDwk4coZKip8YU2Y; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
           ]
         }
       }

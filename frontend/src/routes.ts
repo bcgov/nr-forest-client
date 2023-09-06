@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
 import ReviewApplicationPage from '@/pages/ReviewApplicationPage.vue'
 import ApplyClientNumber from '@/pages/ApplyClientNumberPage.vue'
+import ApplyClientNumberBcscPage from '@/pages/ApplyClientNumberWithBcscPage.vue'
 import FormSubmittedPage from '@/pages/FormSubmittedPage.vue'
 import UserLoadingPage from '@/pages/UserLoadingPage.vue'
 import LandingPage from '@/pages/LandingPage.vue'
@@ -41,9 +42,28 @@ const routes: RouteRecordRaw[] = [
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ['bceidbusiness', 'bcsc'],
+      visibleTo: ['bceidbusiness'],
       redirectTo: {
-        idir: 'internal'
+        idir: 'internal',
+        bcsc: 'bcsc-form'
+      }
+    }
+  },
+  {
+    path: '/new-client-bcsc',
+    alias: '/',
+    name: 'bcsc-form',
+    component: ApplyClientNumberBcscPage,
+    props: true,
+    meta: {
+      format: 'screen',
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ['bcsc'],
+      redirectTo: {
+        idir: 'internal',
+        bceidbusiness: 'form'
       }
     }
   },
