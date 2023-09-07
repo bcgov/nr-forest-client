@@ -61,7 +61,7 @@ toastBus.on(openToast)
     <main-header-component v-if="!$route.meta.hideHeader"></main-header-component>
   </div>
   <div :class="{[`${$route.meta.format}`]:true}">
-    <div class="content">
+    <div :class="$route.meta.style">
     <router-view></router-view>
     </div>
   </div>

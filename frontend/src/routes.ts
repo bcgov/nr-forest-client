@@ -29,6 +29,7 @@ const routes: RouteRecordRaw[] = [
         bceidbusiness: 'form',
         bcsc: 'bcsc-form',
       },
+      style: 'content-landing',
     },
   },
   {
@@ -47,6 +48,7 @@ const routes: RouteRecordRaw[] = [
         idir: 'internal',
         bcsc: 'bcsc-form',
       },
+      style: 'content',
     },
   },
   {
@@ -65,6 +67,7 @@ const routes: RouteRecordRaw[] = [
         idir: 'internal',
         bceidbusiness: 'form',
       },
+      style: 'content',
     },
   },
   {
@@ -81,6 +84,7 @@ const routes: RouteRecordRaw[] = [
       redirectTo: {
         idir: 'internal',
       },
+      style: 'content',
     },
   },
   {
@@ -98,6 +102,7 @@ const routes: RouteRecordRaw[] = [
         bceidbusiness: 'form',
         bcsc: 'form',
       },
+      style: 'content',
     },
   },
   {
@@ -106,7 +111,7 @@ const routes: RouteRecordRaw[] = [
     component: UserLoadingPage,
     props: true,
     meta: {
-      format: 'full',
+      format: 'full-centered',
       hideHeader: true,
       requireAuth: false,
       showLoggedIn: false,
@@ -116,6 +121,7 @@ const routes: RouteRecordRaw[] = [
         bceidbusiness: 'form',
         bcsc: 'bcsc-form',
       },
+      style: 'content',
     },
   },
   {
@@ -130,6 +136,7 @@ const routes: RouteRecordRaw[] = [
       showLoggedIn: true,
       visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
     },
+    style: 'content',
   },
   {
     path: '/:pathMatch(.*)*',
@@ -143,6 +150,7 @@ const routes: RouteRecordRaw[] = [
       showLoggedIn: true,
       visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
     },
+    style: 'content',
   },
 ]
 
