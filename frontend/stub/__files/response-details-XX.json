@@ -1,5 +1,5 @@
 {
-  "name": "The Good Company",
+  "name": "Pacific Lumber Association",
   "id": "{{request.path.[2]}}",
   "goodStanding": true,
   "addresses": [
@@ -13,7 +13,7 @@
         "value": "BC",
         "text": "British Columbia"
       },
-      "city": "Fakest City",
+      "city": "Victoria",
       "postalCode": "A0A0A0",
       "index": 0,
       "locationName": "Mailing address"

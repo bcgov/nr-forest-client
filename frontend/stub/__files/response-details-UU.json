@@ -1,5 +1,5 @@
 {
-  "name": "Ministry of Forests, Lands and Natural Resource Operations",
+  "name": "Pacific Operations",
   "id": "{{request.path.[2]}}",
   "goodStanding": true,
   "addresses": [
@@ -43,7 +43,24 @@
       "firstName": "Jhon",
       "lastName": "Wick",
       "phoneNumber": "(111) 222-3344",
-      "email": "babayaga@theguild.ca",
+      "email": "jwick@theguild.ca",
+      "index": 0,
+      "locationNames": [
+        {
+          "value": "0",
+          "text": "Mailing address"
+        }
+      ]
+    },
+    {
+      "contactType": {
+        "value": "P",
+        "text": "Person"
+      },
+      "firstName": "James",
+      "lastName": "Kirk",
+      "phoneNumber": "(111) 332-3344",
+      "email": "jamestkirk@fleet.ca",
       "index": 0,
       "locationNames": [
         {

@@ -1,19 +1,19 @@
 [
   {
     "code": "XX9016140",
-    "name": "Totally Valid Company",
+    "name": "Pacific Lumber Association",
     "status": "ACTIVE",
     "legalType": "SP"
   },
   {
     "code": "XX9753423",
-    "name": "Forest of Forests Ltd",
+    "name": "Pacific Forests Ltd",
     "status": "ACTIVE",
     "legalType": "SP"
   },
   {
     "code": "XX7944564",
-    "name": "Lumber & Lumber Inc",
+    "name": "Starfire Pacific Inc",
     "status": "ACTIVE",
     "legalType": "SP"
   },
@@ -25,25 +25,25 @@
   },
   {
     "code": "JJ3478189",
-    "name": "Dum-Gondor Cultural Association of Middle Earth",
+    "name": "Pacific Cultural Association",
     "status": "ACTIVE",
     "legalType": "SP"
   },
   {
     "code": "ZZ8201962",
-    "name": "Totally Duplicated Company",
+    "name": "Edgar Paciolli",
     "status": "ACTIVE",
     "legalType": "SP"
   },
   {
     "code": "YY5199142",
-    "name": "Totally Shady Company",
+    "name": "Powel of the Pacific",
     "status": "ACTIVE",
     "legalType": "SP"
   },
   {
     "code":"FM1234567",
-    "name":"The Great Fake Forest Company",
+    "name":"The Great Pacific  Forest Company",
     "status":"ACTIVE",
     "legalType":"SP"
   }

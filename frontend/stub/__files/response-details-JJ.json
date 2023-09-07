@@ -1,5 +1,5 @@
 {
-  "name": "Dum-Gondor Cultural Association of Middle Earth",
+  "name": "Pacific Cultural Association",
   "id": "{{request.path.[2]}}",
   "goodStanding": true,
   "addresses": null,
