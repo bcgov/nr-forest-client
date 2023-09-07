@@ -97,7 +97,7 @@ public class ClientAddressService {
             .filter(address -> "Retrieve" .equalsIgnoreCase(address.next()))
             .map(address -> new ClientNameCodeDto(
                     address.id(),
-                    String.format("%s %s", address.text(), address.description())
+                    String.format("%s %s", address.text().trim(), address.description().trim())
                 )
             );
   }
