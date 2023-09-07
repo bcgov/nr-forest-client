@@ -101,7 +101,7 @@ emit('valid', false)
 
 const handleRemove = (index: number) => {
   const selectedContact = formData.location.contacts[index].firstName.length !== 0
-    ? formData.location.contacts[index].firstName + formData.location.contacts[index].lastName
+    ? `${formData.location.contacts[index].firstName} ${formData.location.contacts[index].lastName}`
     : 'Contact #' + index;
   bus.emit({
     message: selectedContact,
