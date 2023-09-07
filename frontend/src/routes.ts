@@ -27,9 +27,9 @@ const routes: RouteRecordRaw[] = [
       redirectTo: {
         idir: 'internal',
         bceidbusiness: 'form',
-        bcsc: 'form'
-      }
-    }
+        bcsc: 'bcsc-form',
+      },
+    },
   },
   {
     path: '/new-client',
@@ -45,9 +45,9 @@ const routes: RouteRecordRaw[] = [
       visibleTo: ['bceidbusiness'],
       redirectTo: {
         idir: 'internal',
-        bcsc: 'bcsc-form'
-      }
-    }
+        bcsc: 'bcsc-form',
+      },
+    },
   },
   {
     path: '/new-client-bcsc',
@@ -63,9 +63,9 @@ const routes: RouteRecordRaw[] = [
       visibleTo: ['bcsc'],
       redirectTo: {
         idir: 'internal',
-        bceidbusiness: 'form'
-      }
-    }
+        bceidbusiness: 'form',
+      },
+    },
   },
   {
     path: '/form-submitted',
@@ -79,9 +79,9 @@ const routes: RouteRecordRaw[] = [
       showLoggedIn: true,
       visibleTo: ['bceidbusiness', 'bcsc'],
       redirectTo: {
-        idir: 'internal'
-      }
-    }
+        idir: 'internal',
+      },
+    },
   },
   {
     path: '/submissions',
@@ -96,9 +96,9 @@ const routes: RouteRecordRaw[] = [
       visibleTo: ['idir'],
       redirectTo: {
         bceidbusiness: 'form',
-        bcsc: 'form'
-      }
-    }
+        bcsc: 'form',
+      },
+    },
   },
   {
     path: '/dashboard',
@@ -114,9 +114,9 @@ const routes: RouteRecordRaw[] = [
       redirectTo: {
         idir: 'internal',
         bceidbusiness: 'form',
-        bcsc: 'form'
-      }
-    }
+        bcsc: 'bcsc-form',
+      },
+    },
   },
   {
     path: '/error',
@@ -128,8 +128,8 @@ const routes: RouteRecordRaw[] = [
       hideHeader: true,
       requireAuth: false,
       showLoggedIn: true,
-      visibleTo: ['idir', 'bceidbusiness', 'bcsc']
-    }
+      visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
+    },
   },
   {
     path: '/:pathMatch(.*)*',
@@ -141,9 +141,9 @@ const routes: RouteRecordRaw[] = [
       hideHeader: true,
       requireAuth: false,
       showLoggedIn: true,
-      visibleTo: ['idir', 'bceidbusiness', 'bcsc']
-    }
-  }
+      visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
+    },
+  },
 ]
 
 if (nodeEnv === 'openshift-dev') {
@@ -158,12 +158,11 @@ if (nodeEnv === 'openshift-dev') {
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 })
 
 router.beforeEach(async (to, from, next) => {
   const user = ForestClientUserSession.loadDetails()
-
   // Page requires auth
   if (to.meta.requireAuth) {
     // User is logged in
