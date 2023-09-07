@@ -1,8 +1,11 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+/**
+ * Router configuration for the application.
+ */
+import { createRouter, createWebHistory } from 'vue-router'
 
 import ReviewApplicationPage from '@/pages/ReviewApplicationPage.vue'
-import ApplyClientNumber from '@/pages/ApplyClientNumberPage.vue'
-import ApplyClientNumberBcscPage from '@/pages/ApplyClientNumberWithBcscPage.vue'
+import BCeIDForm from '@/pages/FormBCeIDPage.vue'
+import BCSCForm from '@/pages/FormBCSCPage.vue'
 import FormSubmittedPage from '@/pages/FormSubmittedPage.vue'
 import UserLoadingPage from '@/pages/UserLoadingPage.vue'
 import LandingPage from '@/pages/LandingPage.vue'
@@ -12,7 +15,7 @@ import ForestClientUserSession from '@/helpers/ForestClientUserSession'
 
 import { nodeEnv } from '@/CoreConstants'
 
-const routes: RouteRecordRaw[] = [
+const routes = [
   {
     path: '/landing',
     name: 'home',
@@ -36,7 +39,7 @@ const routes: RouteRecordRaw[] = [
     path: '/new-client',
     alias: '/',
     name: 'form',
-    component: ApplyClientNumber,
+    component: BCeIDForm,
     props: true,
     meta: {
       format: 'screen',
@@ -55,7 +58,7 @@ const routes: RouteRecordRaw[] = [
     path: '/new-client-bcsc',
     alias: '/',
     name: 'bcsc-form',
-    component: ApplyClientNumberBcscPage,
+    component: BCSCForm,
     props: true,
     meta: {
       format: 'screen',
@@ -204,5 +207,6 @@ declare module 'vue-router' {
     showLoggedIn: boolean
     visibleTo: Array<string>
     redirectTo?: Record<string, string>
+    style: string
   }
 }
