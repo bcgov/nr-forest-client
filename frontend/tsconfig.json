@@ -15,6 +15,10 @@
     }
   ],
   "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "composite": true,
     "moduleResolution": "node",
     "module": "es2020"
   }

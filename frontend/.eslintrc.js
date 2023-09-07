@@ -33,17 +33,18 @@ module.exports = {
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 'latest',
+    ecmaVersion: '11',
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint', 'prettier'],
+  plugins: ['@typescript-eslint', 'prettier', 'vue'],
   rules: {
-    'prettier/prettier': 'error',
-    '@typescript-eslint/explicit-module-boundary-types': 'error',
-    '@typescript-eslint/no-unused-vars': 'error',
     'vue/no-multiple-template-root': 'error',
     'vue/no-v-html': 'error',
     'vue/require-prop-types': 'error',
+    'prettier/prettier': 'error',
+    'import/extensions': ['error', 'always', { js: 'never', ts: 'never', vue: 'never' }],
+    '@typescript-eslint/explicit-module-boundary-types': 'error',
+    '@typescript-eslint/no-unused-vars': 'error',
     '@typescript-eslint/no-explicit-any': 'off',
   },
   overrides: [
