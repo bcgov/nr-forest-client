@@ -117,17 +117,17 @@ const postalCodeValidators = computed(() => {
     case 'CA':
       return [
       ...getValidations('location.addresses.*.postalCode(location.addresses.*.country.text === "CA")'),
-        submissionValidation(`location.adresses[${props.id}].postalCode`)
+        submissionValidation(`location.addresses[${props.id}].postalCode`)
       ]
     case 'US':
       return [
       ...getValidations('location.addresses.*.postalCode(location.addresses.*.country.text === "US")'),
-        submissionValidation(`location.adresses[${props.id}].postalCode`)
+        submissionValidation(`location.addresses[${props.id}].postalCode`)
       ]
     default:
       return [
         ...getValidations('location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && location.addresses.*.country.text !== "US")'),
-        submissionValidation(`location.adresses[${props.id}].postalCode`)
+        submissionValidation(`location.addresses[${props.id}].postalCode`)
       ]
   }
 })
@@ -216,6 +216,9 @@ watch([detailsData], () => {
     if(!selectedValue.postalCode) postalCodeShowHint.value = true
     else postalCodeShowHint.value = false
     addressControl.value = true
+    //Why is this here? Because Address response differs from the street address value
+    //addressControl is responsible for giving an empty list instead of the AC value
+    setTimeout(() => (addressControl.value = false), 200)
   }
 })
 
@@ -235,8 +238,8 @@ onMounted(() =>{
     v-model="selectedValue.locationName"
     :enabled="true"
     :validations="[
-      ...getValidations('location.adresses.*.locationName'),
-      submissionValidation(`location.adresses[${id}].locationName`)
+      ...getValidations('location.addresses.*.locationName'),
+      submissionValidation(`location.addresses[${id}].locationName`)
     ]"
     :error-message="nameError"
     @empty="validation.locationName = !$event"
@@ -250,7 +253,7 @@ onMounted(() =>{
     tip=""
     :enabled="true"
     :model-value="countryList"
-    :validations="[...getValidations('location.addresses.country.text'),submissionValidation(`location.adresses[${id}].country`)]"
+    :validations="[...getValidations('location.addresses.country.text'),submissionValidation(`location.addresses[${id}].country`)]"
     :error-message="addressError"
     @update:selected-value="updateStateProvince($event, 'country')"
     @update:model-value="resetProvinceOnChange"
@@ -272,8 +275,8 @@ onMounted(() =>{
       v-model="selectedValue.streetAddress"
       :contents="addressControl ? [] : content"
       :validations="[
-        ...getValidations('location.adresses.*.streetAddress'),
-        submissionValidation(`location.adresses[${id}].streetAddress`)
+        ...getValidations('location.addresses.*.streetAddress'),
+        submissionValidation(`location.addresses[${id}].streetAddress`)
       ]"
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
@@ -295,8 +298,8 @@ onMounted(() =>{
     :enabled="true"
     :error-message="addressError"
     :validations="[
-      ...getValidations('location.adresses.*.city'),
-      submissionValidation(`location.adresses[${id}].city`)
+      ...getValidations('location.addresses.*.city'),
+      submissionValidation(`location.addresses[${id}].city`)
     ]"
     @empty="validation.city = !$event"
   />
@@ -316,7 +319,7 @@ onMounted(() =>{
       :model-value="content"
       :enabled="true"
       tip=""
-      :validations="[...getValidations('location.addresses.*.province.text'),submissionValidation(`location.adresses[${id}].province`)]"
+      :validations="[...getValidations('location.addresses.*.province.text'),submissionValidation(`location.addresses[${id}].province`)]"
       :error-message="addressError"
       @update:selected-value="updateStateProvince($event, 'province')"
       @empty="validation.province = !$event"
