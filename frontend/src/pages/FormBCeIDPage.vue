@@ -232,6 +232,10 @@ const goToStep = (index: number) => {
   if (checkStepValidity(index)) currentTab.value = index;
 };
 
+const goToStep2 = (index: number) => {
+  console.log(index,'bling')
+}
+
 const onNext = () => {
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
@@ -314,6 +318,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
           :secondary-label="item.subtitle"
           :state="item.step <= currentTab ? item.step < currentTab ? 'complete' : 'current' : 'incomplete'"
           :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"
+          v-on:click="goToStep2(item.step)"
           >
           <span class="cds--progress-label">{{ item.title }}</span>
         </cds-progress-step>
@@ -460,9 +465,6 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
           v-on:click="onNext"
           :disabled="progressData[currentTab].valid === false"
           data-test="wizard-next-button"
-          tooltip-position="top"
-          tooltip-text="All fields must be filled out correctly"
-          :open-tooltip="progressData[currentTab].valid === false"
           >
           <span>Next</span>
           <ArrowRight16 slot="icon" />
