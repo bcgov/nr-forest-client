@@ -38,13 +38,11 @@ import LogOut16 from "@carbon/icons-vue/es/logout/16";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 import { isContainedIn } from "@/helpers/validators/GlobalValidators";
 
-const errorBus = useEventBus<ValidationMessageType[]>(
-  "submission-error-notification"
-);
+const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
 const generalErrorBus = useEventBus<string>("general-error-notification");
-const exitBus =
-  useEventBus<Record<string, boolean | null>>("exit-notification");
+const exitBus = useEventBus<Record<string, boolean | null>>("exit-notification");
 const toastBus = useEventBus<ModalNotification>("toast-notification");
+const navigationBus = useEventBus<boolean>('navigation-notification')
 
 const router = useRouter();
 const { setScrollPoint } = useFocus();
@@ -254,19 +252,6 @@ const onBack = () => {
 const validateStep = (valid: boolean) => {
   progressData[currentTab.value].valid = valid;
 };
-const saveChange = () => {
-  if (checkStepValidity(currentTab.value)) {
-    toastBus.emit({
-      message: `“${progressData[currentTab.value].title
-        }” changes were saved successfully.`,
-      kind: "Success",
-      toastTitle: "",
-      active: true,
-      handler: () => { },
-    });
-    goToStep(3);
-  }
-};
 
 const processAndLogOut = () => {
   if (mailAndLogOut.value) {
@@ -298,6 +283,8 @@ exitBus.on((event: Record<string, boolean | null>) => {
   mailAndLogOut.value = event.duplicated ? event.duplicated : false;
 });
 
+navigationBus.on((event: boolean) => ([1,2,3].forEach((index: number) => progressData[index].enabled = event)));
+
 const globalErrorMessage = ref<string>("");
 generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
 </script>
@@ -316,6 +303,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
           :state="item.step <= currentTab ? item.step < currentTab ? 'complete' : 'current' : 'incomplete'"
           :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"
           v-on:click="goToStep(item.step)"
+          :disabled="item.enabled === false"
           >
           <span class="cds--progress-label">{{ item.title }}</span>
         </cds-progress-step>
