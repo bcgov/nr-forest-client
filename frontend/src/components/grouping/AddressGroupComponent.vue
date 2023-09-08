@@ -209,7 +209,7 @@ watch([autoCompleteResult], () => {
 
 watch([detailsData], () => {
   if (detailsData.value) {
-    selectedValue.streetAddress = detailsData.value.streetAddress
+    selectedValue.streetAddress = detailsData.value.streetAddress.trim()
     selectedValue.city = detailsData.value.city
     selectedValue.province = detailsData.value.province
     selectedValue.postalCode = detailsData.value.postalCode.replace(/\s/g, '')
