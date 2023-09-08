@@ -1,3 +1,5 @@
+import { useEventBus } from '@vueuse/core'
+
 import {
   isNotEmpty,
   isEmail,
@@ -12,6 +14,11 @@ import {
 } from '@/helpers/validators/GlobalValidators'
 
 import type { FormDataDto } from '@/dto/ApplyClientNumberDto'
+import type { ValidationMessageType } from '@/dto/CommonTypesDto'
+
+const errorBus = useEventBus<ValidationMessageType[]>(
+  'submission-error-notification'
+)
 
 // We declare here a collection of all validations for every field in the form
 const globalValidations: Record<string, ((value: string) => string)[]> = {}
@@ -136,7 +143,7 @@ export const getValidations = (key: string): ((value: string) => string)[] =>
   globalValidations[key] || []
 
 // This function will run the validators and return the errors
-export const validate = (keys: string[], target: FormDataDto): boolean => {
+export const validate = (keys: string[], target: FormDataDto, notify: boolean = false): boolean => {
   // For every received key we get the validations and run them
   return keys.every((key) => {
     // First we get all validators for that field
@@ -152,9 +159,18 @@ export const validate = (keys: string[], target: FormDataDto): boolean => {
       // We define a function that will run the validation if the condition is true
       const buildEval = (condition: string) =>
         condition === 'true' ? 'true' : `target.${condition}`
-      const runValidation = (item: any, condition: string) =>
+      const runValidation = (item: any, condition: string,fieldId: string = fieldKey) : string =>{
         // eslint-disable-next-line no-eval
-        eval(condition) ? validation(item) === '' : true
+        if(eval(condition)){
+          const validationResponse = validation(item)
+          if(notify && validationResponse){            
+            errorBus.emit([{fieldId,errorMsg:validationResponse}])
+          }
+          return validationResponse
+         }else{ 
+          return ''
+         }
+      }
       // If the field value is an array we run the validation for every item in the array
       if (Array.isArray(fieldValue)) {
         return fieldValue.every((item: any, index: number) => {
@@ -162,15 +178,23 @@ export const validate = (keys: string[], target: FormDataDto): boolean => {
           if (Array.isArray(item)) {
             if (item.length === 0) item.push('')
             return item.every((subItem: any) =>
-              runValidation(subItem, buildEval(fieldCondition.replace('.*.', `[${index}].`))),
+              runValidation(
+                subItem, 
+                buildEval(fieldCondition.replace('.*.', `[${index}].`)),
+                fieldKey.replace('.*.', `[${index}].`)
+              )  === '',
             )
           }
           // If it is not an array here, just validate it
-          return runValidation(item, buildEval(fieldCondition.replace('.*.', `[${index}].`)))
+          return runValidation(
+            item, 
+            buildEval(fieldCondition.replace('.*.', `[${index}].`)),
+            fieldKey.replace('.*.', `[${index}].`)
+            )  === ''
         })
       }
       // If the field value is not an array we run the validation for the field
-      return runValidation(fieldValue, fieldCondition)
+      return runValidation(fieldValue, fieldCondition) === ''
     })
   })
 }

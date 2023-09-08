@@ -27,6 +27,10 @@ import type { ValidationMessageType } from '@/dto/CommonTypesDto'
 const errorBus = useEventBus<ValidationMessageType[]>(
   'submission-error-notification'
 )
+/**
+ * Event bus for revalidating the submission.
+ */
+const revalidateBus = useEventBus<void>('revalidate-bus')
 
 /**
  * Array of submission validators.
@@ -38,6 +42,7 @@ let submissionValidators : any = []
  * When an error is received, update the submission validators array.
  */
 errorBus.on((errors) => {
+  revalidateBus.emit()
   submissionValidators = errors.map((error) => {
     return { ...error, originalValue: '' }
   })
