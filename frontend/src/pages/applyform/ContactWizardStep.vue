@@ -158,7 +158,7 @@ onMounted(() => setFocusedComponent('addressname_0',800))
   <cds-button
     kind="tertiary"
     @click.prevent="addContact"
-    v-if="formData.location.contacts.length < 6"
+    v-if="formData.location.contacts.length < 5"
   >
     <span>Add another contact</span>
     <Add16 slot="icon" />

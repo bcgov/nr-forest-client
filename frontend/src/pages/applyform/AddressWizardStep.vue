@@ -149,7 +149,7 @@ If you’d like to include another address, for example a seed orchard or if you
 <cds-button
     kind="tertiary"
     @click.prevent="addAddress"
-    v-if="formData.location.addresses.length < 6"
+    v-if="formData.location.addresses.length < 5"
   >
     <span>Add another address</span>
     <Add16 slot="icon" />
