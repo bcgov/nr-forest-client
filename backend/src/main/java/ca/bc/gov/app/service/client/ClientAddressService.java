@@ -137,7 +137,7 @@ public class ClientAddressService {
                 new ClientAddressDto(
                     String.format("%s %s %s %s %s", address.line1(), address.line2(),
                         address.line3(), address.line4(), address.line5()
-                    ),
+                    ).trim(),
                     new ClientValueTextDto(address.countryIso2(), address.countryName()),
                     new ClientValueTextDto(address.province(), address.provinceName()),
                     address.city(),
