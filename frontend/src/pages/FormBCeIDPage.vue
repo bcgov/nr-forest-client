@@ -212,7 +212,7 @@ const stateIcon = (index: number) => {
 const checkStepValidity = (stepNumber: number): boolean => {
   progressData.forEach((step: any) => {
     if (step.step <= stepNumber) {
-      step.valid = validate(step.fields, formData);
+      step.valid = validate(step.fields, formData, true);
     }
   });
   return progressData[stepNumber].valid;
@@ -229,12 +229,9 @@ const endAndLogOut = ref<boolean>(false);
 const mailAndLogOut = ref<boolean>(false);
 
 const goToStep = (index: number) => {
-  if (checkStepValidity(index)) currentTab.value = index;
+  if (index <= currentTab.value && checkStepValidity(index)) currentTab.value = index;
 };
 
-const goToStep2 = (index: number) => {
-  console.log(index,'bling')
-}
 
 const onNext = () => {
   if (currentTab.value + 1 < progressData.length) {
@@ -318,7 +315,7 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
           :secondary-label="item.subtitle"
           :state="item.step <= currentTab ? item.step < currentTab ? 'complete' : 'current' : 'incomplete'"
           :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"
-          v-on:click="goToStep2(item.step)"
+          v-on:click="goToStep(item.step)"
           >
           <span class="cds--progress-label">{{ item.title }}</span>
         </cds-progress-step>
