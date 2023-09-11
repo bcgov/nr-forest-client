@@ -84,6 +84,10 @@ watch(
   () => props.errorMessage,
   () => (error.value = props.errorMessage)
 )
+watch(
+  () => props.initialValue,
+  () => (selectedValue.value = props.initialValue)
+)
 
 revalidateBus.on(() => validateInput(selectedValue.value))
 </script>
