@@ -1,10 +1,90 @@
 [
   {
-    "code": "AA",
+    "code": "V8V8V8",
     "name": "1234 Nowhere St Victoria, BC, V8V 8V8"
   },
   {
-    "code": "BB",
-    "name": "505 Fail St Victoria, BC, V8V 8V8"
+    "code": "F8F8F8",
+    "name": "505 Fail St Victoria, BC, F8F 8F8"
+  },
+  {
+    "code": "G4C8E2",
+    "name": "4945 Disputed Rd Cumberland, QC, G4C 8E2"
+  },
+  {
+    "code": "A3F0B5",
+    "name": "3085 Lake of Bays Road Winfield, AB, A3F 0B5"
+  },
+  {
+    "code": "P0Y9A3",
+    "name": "953 Peel St St. Antoine, YK, P0Y 9A3"
+  },
+  {
+    "code": "M2W5E5",
+    "name": "3925 Dieppe Ave Lumsden, NS, M2W 5E5"
+  },
+  {
+    "code": "F8P0K6",
+    "name": "9060 Oak St Georgetown, YK, F8P 0K6"
+  },
+  {
+    "code": "U4Y1G4",
+    "name": "6750 College Ave Red Rock, QC, U4Y 1G4"
+  },
+  {
+    "code": "C5T3I9",
+    "name": "8494 Pine Rd Trout Lake, QC, C5T 3I9"
+  },
+  {
+    "code": "U3H8X8",
+    "name": "6493 Maple Ave Russell, NB, U3H 8X8"
+  },
+  {
+    "code": "C2L3W7",
+    "name": "6870 Tecumseh Rd Lumsden, NL, C2L 3W7"
+  },
+  {
+    "code": "T7R2X0",
+    "name": "8979 Pierre Ave Russell, SK, T7R 2X0"
+  },
+  {
+    "code": "X4I6G7",
+    "name": "6076 15th St Trout Lake, SK, X4I 6G7"
+  },
+  {
+    "code": "U2E6Y1",
+    "name": "1457 Bay Ave Kingston, PE, U2E 6Y1"
+  },
+  {
+    "code": "R0K7W4",
+    "name": "5376 Victoria Ave Selkirk, NB, R0K 7W4"
+  },
+  {
+    "code": "F2L6B3",
+    "name": "7056 Lakeview Ave Grand Falls, QC, F2L 6B3"
+  },
+  {
+    "code": "G3F6J5",
+    "name": "6163 Oak St Deer Lake, BC, G3F 6J5"
+  },
+  {
+    "code": "I1R9Y6",
+    "name": "8803 Brock Rd Flatrock, NT, I1R 9Y6"
+  },
+  {
+    "code": "E2A9U5",
+    "name": "7044 Dieppe Ave Carleton, ON, E2A 9U5"
+  },
+  {
+    "code": "B4X9S7",
+    "name": "2548 36th Ave Minto, NU, B4X 9S7"
+  },
+  {
+    "code": "P5Q7S4",
+    "name": "547 Richmond Ave Hampton, SK, P5Q 7S4"
+  },
+  {
+    "code": "B5V6L4",
+    "name": "9084 Concession Road 6 Charlottetown, QC, B5V 6L4"
   }
 ]

@@ -176,22 +176,22 @@
       }
     },
     {
-      "name":"Canada Post details for AA",
+      "name":"Canada Post details for success",
       "request": {
-        "url": "/api/clients/addresses/AA",
+        "urlPattern": "/api/clients/addresses/(.*)",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-address-detail.json",
+        "bodyFileName": "response-address-{{request.path.[3]}}.json",
         "transformers": ["response-template"],
         "fixedDelayMilliseconds": 2500
       }
     },
     {
-      "name":"Canada Post error details for BB",
+      "name":"Canada Post error details for F8F8F8",
       "request": {
-        "url": "/api/clients/addresses/BB",
+        "url": "/api/clients/addresses/F8F8F8",
         "method": "GET"
       },
       "response": {
