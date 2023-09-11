@@ -68,8 +68,14 @@ const uniqueValues = isUniqueDescriptive()
 
 //New contact being added
 const otherContacts = computed(() => formData.location.contacts.slice(1))
-const addContact = () =>
-  formData.location.contacts.push(JSON.parse(JSON.stringify(emptyContact)))
+const addContact = (autoFocus = true) => {
+  const newLength = formData.location.contacts.push(JSON.parse(JSON.stringify(emptyContact)))
+  if (autoFocus) {
+    const focusIndex = newLength - 1;
+    setFocusedComponent(`addressname_${focusIndex}`);
+  }
+  return newLength;
+}
 
 const removeContact = (index: number) => () => {
     updateContact(undefined, index)
@@ -113,6 +119,10 @@ const handleRemove = (index: number) => {
 }
 
 onMounted(() => setFocusedComponent('addressname_0',800))
+
+defineExpose({
+  addContact
+})
 </script>
 
 <template>
@@ -132,7 +142,7 @@ onMounted(() => setFocusedComponent('addressname_0',800))
 
     <div  v-for="(contact, index) in otherContacts">
       <hr />
-      <div class="grouping-09">
+      <div class="grouping-09" :data-scroll="`additional-contact-${index + 1}`">
       <span class="heading-03">Additional contact</span>
     </div>
     <contact-group-component
