@@ -147,7 +147,7 @@ const goToStep = (step: number) => {
   >
     <p class="body-compact-01">
       <span class="heading-compact-01 heading-compact-01-dark">Assigned contact required:</span>
-      You must associate <span class="heading-compact-01 heading-compact-01-dark">“{{ item }}”</span> address with an existing contact or <a href="#">add a new contact</a> before submitting the application again.
+      You must associate <span class="heading-compact-01 heading-compact-01-dark">“{{ item }}”</span> address with an existing contact or <a href="#" @click.prevent="scrollToNewContact">add a new contact</a> before submitting the application again.
     </p>
   </cds-inline-notification>
   </div>
