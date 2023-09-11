@@ -7,6 +7,7 @@ import '@carbon/web-components/es/components/tag/index';
 import { useEventBus } from '@vueuse/core'
 // Types
 import type {  CodeNameType } from '@/dto/CommonTypesDto'
+import { isEmpty } from '@/dto/CommonTypesDto'
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -33,24 +34,15 @@ const error = ref<string | undefined>(props.errorMessage || '')
 
 const revalidateBus = useEventBus<void>('revalidate-bus')
 
-//We watch for error changes to emit events
-watch(error, () => emit('error', error.value))
-watch(
-  () => props.errorMessage,
-  () => (error.value = props.errorMessage)
-)
-
 //We set it as a separated ref due to props not being updatable
 const selectedValue = ref(props.initialValue)
+// This is to make the input list contains the selected value to show when component render
 const inputList = computed<Array<CodeNameType>>(() =>
   ((!props.modelValue || props.modelValue.length === 0) ? [{name: props.initialValue, code: '',status:'',legalType:''}] : props.modelValue)
 )
 
 //We set the value prop as a reference for update reason
-emit('empty', props.selectedValues ? props.initialValue.length === 0 : true)
-
-//Watch for changes on the input
-watch([selectedValue], () => validateInput(selectedValue.value))
+emit('empty', props.selectedValues ? props.selectedValues.length === 0 : true)
 
 //Controls the selected values
 const items = ref<string[]>([])
@@ -75,10 +67,6 @@ const validateInput = (newValue: any) => {
         .shift() ?? props.errorMessage
   }
 }
-watch(
-  () => props.modelValue,
-  () => (selectedValue.value = props.initialValue)
-)
 
 const emitChange = () => {
   const reference = props.modelValue.filter((entry) =>
@@ -104,9 +92,24 @@ const selectItems = (event:any) => {
   items.value = contentValue.split(',').filter((value:string) => value)
 }
 
+props.selectedValues?.forEach((value: string) => addFromSelection(value))
+
 watch([items], () => emitChange())
 
-props.selectedValues?.forEach((value: string) => addFromSelection(value))
+watch(
+  () => props.modelValue,
+  () => (selectedValue.value = props.initialValue)
+)
+
+watch([selectedValue], () => validateInput(selectedValue.value))
+
+//We watch for error changes to emit events
+watch(error, () => emit('error', error.value))
+watch(
+  () => props.errorMessage,
+  () => (error.value = props.errorMessage)
+)
+
 validateInput(selectedValue.value)
 revalidateBus.on(() => validateInput(selectedValue.value))
 </script>

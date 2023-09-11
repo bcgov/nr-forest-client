@@ -32,13 +32,6 @@ const error = ref<string | undefined>(props.errorMessage || '')
 
 const revalidateBus = useEventBus<void>('revalidate-bus')
 
-//We watch for error changes to emit events
-watch(error, () => emit('error', error.value))
-watch(
-  () => props.errorMessage,
-  () => (error.value = props.errorMessage)
-)
-
 //We set it as a separated ref due to props not being updatable
 const selectedValue = ref(props.initialValue)
 // This is to make the input list contains the selected value to show when component render
@@ -58,11 +51,6 @@ const emitValueChange = (newValue: string): void => {
   emit('update:selectedValue', reference)
   emit('empty', isEmpty(newValue))
 }
-//Watch for changes on the input
-watch([selectedValue], () => {
-  validateInput(selectedValue.value)
-  emitValueChange(selectedValue.value)
-})
 
 //We call all the validations
 const validateInput = (newValue: any) => {
@@ -78,11 +66,24 @@ const validateInput = (newValue: any) => {
   }
 }
 
-watch(inputList,() => (selectedValue.value = props.initialValue))
-
 const selectItem = (event:any) => {  
   selectedValue.value = event?.detail?.item?.getAttribute('data-id')
 }
+
+//Watch for changes on the input
+watch([selectedValue], () => {
+  validateInput(selectedValue.value)
+  emitValueChange(selectedValue.value)
+})
+
+watch(inputList,() => (selectedValue.value = props.initialValue))
+
+//We watch for error changes to emit events
+watch(error, () => emit('error', error.value))
+watch(
+  () => props.errorMessage,
+  () => (error.value = props.errorMessage)
+)
 
 revalidateBus.on(() => validateInput(selectedValue.value))
 </script>

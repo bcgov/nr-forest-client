@@ -476,14 +476,6 @@ const reEval = () => (revalidateBus.emit())
           <LogOut16 slot="icon" />
         </cds-button>
 
-        <cds-button
-            kind="tertiary"
-            size="lg"            
-            v-on:click="reEval"            
-          >
-          <span>Eval</span>
-        </cds-button>
-
         </div>
       </div>
     
