@@ -19,6 +19,7 @@ import type { ValidationMessageType } from '@/dto/CommonTypesDto'
 const errorBus = useEventBus<ValidationMessageType[]>(
   'submission-error-notification'
 )
+const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification");
 
 // We declare here a collection of all validations for every field in the form
 const globalValidations: Record<string, ((value: string) => string)[]> = {}
@@ -26,6 +27,9 @@ const globalValidations: Record<string, ((value: string) => string)[]> = {}
 // Step 1: Business Information
 globalValidations['businessInformation.businessName'] = [
   isNotEmpty('Business Name cannot be empty'),
+]
+globalValidations['businessInformation.clientType'] = [
+isNot('I','Individuals cannot be selected. Please select a different client.')
 ]
 
 // Step 2: Addresses
@@ -167,9 +171,9 @@ export const validate = (keys: string[], target: FormDataDto, notify: boolean = 
             errorBus.emit([{fieldId,errorMsg:validationResponse}])
           }
           return validationResponse
-         }else{ 
+        }else{ 
           return ''
-         }
+        }
       }
       // If the field value is an array we run the validation for every item in the array
       if (Array.isArray(fieldValue)) {
@@ -197,6 +201,55 @@ export const validate = (keys: string[], target: FormDataDto, notify: boolean = 
       return runValidation(fieldValue, fieldCondition) === ''
     })
   })
+}
+
+// This function will run the validators and return the errors
+export const runValidation = (key: string, target: FormDataDto, validation: (value: string) => string, notify: boolean = false): boolean => {
+  // We split the field key and the condition if it has one
+  const [fieldKey, fieldCondition] = key.includes('(')
+    ? key.replace(')', '').split('(')
+    : [key, 'true']
+  // We then load the field value
+  const fieldValue = getField(fieldKey, target)
+  // We define a function that will run the validation if the condition is true
+  const buildEval = (condition: string) =>
+    condition === 'true' ? 'true' : `target.${condition}`
+  const executeValidation = (item: any, condition: string,fieldId: string = fieldKey) : string =>{
+    // eslint-disable-next-line no-eval
+    if(eval(condition)){
+      const validationResponse = validation(item)
+      if(notify && validationResponse){
+        notificationBus.emit({fieldId,errorMsg:validationResponse}, item)
+      }
+      return validationResponse
+    }else{ 
+      return ''
+    }
+  }
+  // If the field value is an array we run the validation for every item in the array
+  if (Array.isArray(fieldValue)) {
+    return fieldValue.every((item: any, index: number) => {
+      // And sometimes we can end up with another array inside, that's life
+      if (Array.isArray(item)) {
+        if (item.length === 0) item.push('')
+        return item.every((subItem: any) =>
+          executeValidation(
+            subItem, 
+            buildEval(fieldCondition.replace('.*.', `[${index}].`)),
+            fieldKey.replace('.*.', `[${index}].`)
+          )  === '',
+        )
+      }
+      // If it is not an array here, just validate it
+      return executeValidation(
+        item, 
+        buildEval(fieldCondition.replace('.*.', `[${index}].`)),
+        fieldKey.replace('.*.', `[${index}].`)
+        )  === ''
+    })
+  }
+  // If the field value is not an array we run the validation for the field
+  return executeValidation(fieldValue, fieldCondition) === ''  
 }
 
 export const addValidation = (key: string, validation: (value: string) => string): void => {

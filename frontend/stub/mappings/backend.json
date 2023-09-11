@@ -1,6 +1,7 @@
 {
   "mappings": [
     {
+      "name":"Autocomplete BC Registry",
       "request": {
         "urlPattern": "/api/clients/name/(.*)",
         "method": "GET"
@@ -12,6 +13,7 @@
       }
     },
     {
+      "name":"BC Registry Details OK",
       "request": {
         "urlPattern": "/api/clients/(XX|YY|UU|JJ|FM)(.*)",
         "method": "GET"
@@ -24,18 +26,20 @@
       }
     },
     {
+      "name":"BC Registry Details Duplicated",
       "request": {
         "urlPattern": "/api/clients/ZZ(.*)",
         "method": "GET"
       },
       "response": {
         "status": 409,
-        "body": "The Dupped Company already exists with the Incorporation number {{request.path.[2]}} and client number 999999",
+        "body": "The Edgar Paciolli already exists with the Incorporation number {{request.path.[2]}} and client number 999999",
         "transformers": ["response-template"]
       }
     },
 
     {
+      "name":"Country Codes",
       "request": {
         "url": "/api/clients/activeCountryCodes?page=0&size=250",
         "method": "GET"
@@ -46,6 +50,7 @@
       }
     },
     {
+      "name":"Province Codes",
       "request": {
         "urlPattern": "/api/clients/activeCountryCodes/(.*)?page=0&size=250",
         "method": "GET"
@@ -58,6 +63,7 @@
     },
 
     {
+      "name":"Contact Type Codes",
       "request": {
         "url": "/api/clients/activeContactTypeCodes?page=0&size=250",
         "method": "GET"
@@ -69,6 +75,7 @@
     },
 
     {
+      "name":"Submission Success for XX",
       "request": {
         "url": "/api/clients/submissions",
         "method": "POST",
@@ -90,6 +97,7 @@
       }
     },
     {
+      "name":"Submission Error for UU",
       "request": {
         "url": "/api/clients/submissions",
         "method": "POST",
@@ -108,6 +116,7 @@
       }
     },
     {
+      "name":"Send email for ZZ",
       "request": {
         "url": "/api/clients/mail",
         "method": "POST",
@@ -125,6 +134,7 @@
       }
     },
     {
+      "name":"Submission Error for FM1234567",
       "request": {
         "url": "/api/clients/submissions",
         "method": "POST",
@@ -144,6 +154,7 @@
     },
 
     {
+      "name":"Autocompete Canada Post",
       "request": {
         "urlPath": "/api/clients/addresses",
         "method": "GET",
@@ -165,6 +176,7 @@
       }
     },
     {
+      "name":"Canada Post details for AA",
       "request": {
         "url": "/api/clients/addresses/AA",
         "method": "GET"
@@ -177,6 +189,7 @@
       }
     },
     {
+      "name":"Canada Post error details for BB",
       "request": {
         "url": "/api/clients/addresses/BB",
         "method": "GET"

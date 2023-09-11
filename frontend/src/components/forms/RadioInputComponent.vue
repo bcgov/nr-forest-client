@@ -65,9 +65,8 @@ watch(selectedValue, () => {
   emit('empty', isEmpty(selectedValue))
 })
 
-const updateSelectedValue = (event: any) =>
-  (selectedValue.value = event.detail.value)
-  revalidateBus.on(() => validateInput())
+const updateSelectedValue = (event: any) => (selectedValue.value = event.detail.value)
+revalidateBus.on(() => validateInput())
 </script>
 
 <template>

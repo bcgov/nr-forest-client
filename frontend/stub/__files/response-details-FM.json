@@ -22,8 +22,8 @@
   "contacts": [
     {
       "contactType": {
-        "value": "person",
-        "text": "person"
+        "value": "P",
+        "text": "Person"
       },
       "firstName": "Jhon",
       "lastName": "Wick",

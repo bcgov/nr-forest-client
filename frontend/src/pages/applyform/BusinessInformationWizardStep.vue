@@ -7,7 +7,7 @@ import '@carbon/web-components/es/components/notification/index';
 import { useEventBus } from '@vueuse/core'
 import { useFetchTo } from '@/composables/useFetch'
 // Importing types
-import type { BusinessSearchResult} from '@/dto/CommonTypesDto'
+import type { BusinessSearchResult, ProgressNotification } from '@/dto/CommonTypesDto'
 import { ClientTypeEnum } from '@/dto/CommonTypesDto'
 import type {
   FormDataDto,
@@ -30,7 +30,7 @@ const emit = defineEmits<{
 }>()
 
 //Defining the event bus to send notifications up
-const navigationBus = useEventBus<boolean>('navigation-notification')
+const progressIndicatorBus = useEventBus<ProgressNotification>('progress-indicator-bus')
 const exitBus = useEventBus<Record<string, boolean | null>>('exit-notification')
 const generalErrorBus = useEventBus<string>('general-error-notification')
 
@@ -87,10 +87,10 @@ const toggleErrorMessages = (
   showDuplicatedError.value = duplicated ?? false
 
   if (goodStanding || duplicated) {
-    navigationBus.emit(false)
+    progressIndicatorBus.emit({kind: 'disabled', value: true})
     exitBus.emit({ goodStanding, duplicated })
   } else {
-    navigationBus.emit(true)
+    progressIndicatorBus.emit({kind: 'disabled', value: false})
     exitBus.emit({ goodStanding: false, duplicated: false })
   }
 }
@@ -226,7 +226,6 @@ watch([selectedOption], () => {
       :contents="content"
       :validations="[
         ...getValidations('businessInformation.businessName'),
-        ...getValidations('businessInformation.clientType'),
         submissionValidation('businessInformation.businessName'),
         submissionValidation('businessInformation.clientType')
         ]"

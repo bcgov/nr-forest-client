@@ -19,7 +19,8 @@ import { newFormDataDto } from "@/dto/ApplyClientNumberDto";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 import type {
   ValidationMessageType,
-  ModalNotification,
+  ProgressNotification,
+  CodeDescrType,
 } from "@/dto/CommonTypesDto";
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
@@ -27,22 +28,22 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import {
   addValidation,
   validate,
+  runValidation,
 } from "@/helpers/validators/ExternalFormValidations";
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
-// @ts-ignore
-import Save16 from "@carbon/icons-vue/es/save/16";
 // @ts-ignore
 import LogOut16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 import { isContainedIn } from "@/helpers/validators/GlobalValidators";
 
-const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
-const generalErrorBus = useEventBus<string>("general-error-notification");
-const exitBus = useEventBus<Record<string, boolean | null>>("exit-notification");
-const toastBus = useEventBus<ModalNotification>("toast-notification");
-const navigationBus = useEventBus<boolean>('navigation-notification')
+const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification")
+const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification")
+const exitBus = useEventBus<Record<string, boolean | null>>("exit-notification")
+const revalidateBus = useEventBus<void>('revalidate-bus')
+const progressIndicatorBus = useEventBus<ProgressNotification>('progress-indicator-bus')
+
 
 const router = useRouter();
 const { setScrollPoint } = useFocus();
@@ -74,6 +75,14 @@ const locations = computed(() =>
   formData.location.addresses.map((address: any) => address.locationName)
 );
 
+const associatedLocations = computed(() => (formData
+  .location
+  .contacts
+  .map((contact:Contact) => contact.locationNames)
+  .map((locationNames: CodeDescrType[]) => locationNames.map((locationName: CodeDescrType) => locationName.text))
+  .reduce((accumulator: string[], current: string[]) => accumulator.concat(current), [])
+))
+
 const { response, error, fetch } = usePost(
   "/api/clients/submissions",
   toRef(formData).value,
@@ -93,31 +102,12 @@ watch([response], () => {
   }
 });
 
-watch([error], () => {
-  if (error.response?.status === 400) {
-    const validationErrors: ValidationMessageType[] = error.response
-      ?.data as ValidationMessageType[];
-    const fieldIds = [
-      "businessInformation.businessType",
-      "businessInformation.legalType",
-      "businessInformation.clientType",
-    ];
-
-    const matchingFields = validationErrors.find((item) =>
-      fieldIds.includes(item.fieldId)
-    );
-    if (matchingFields) {
-      generalErrorBus.emit(
-        `There was an error submitting your application. ${matchingFields.errorMsg}`
-      );
-      setScrollPoint("top");
-    }
-  } else {
-    generalErrorBus.emit(
-      `There was an error submitting your application. ${error.response?.data}`
-    );
+watch([error], () => {  
+  const validationErrors: ValidationMessageType[] = error.value.response
+    ?.data as ValidationMessageType[];
+  
+    validationErrors.forEach((errorItem: ValidationMessageType) => notificationBus.emit(errorItem));
     setScrollPoint("top");
-  }
 });
 
 addValidation('location.contacts.*.locationNames.*.text', isContainedIn(locations))
@@ -128,7 +118,7 @@ const progressData = reactive([
     title: "Business Information",
     subtitle: "Step 1",
     kind: "current",
-    enabled: true,
+    disabled: false,
     valid: false,
     step: 0,
     fields: [
@@ -136,12 +126,13 @@ const progressData = reactive([
       "businessInformation.businessName",
       "businessInformation.clientType",
     ],
+    extraValidations: [],
   },
   {
     title: "Address",
     subtitle: "Step 2",
-    kind: "queued",
-    enabled: true,
+    kind: "incomplete",
+    disabled: false,
     valid: false,
     step: 1,
     fields: [
@@ -154,12 +145,13 @@ const progressData = reactive([
       'location.addresses.*.postalCode(location.addresses.*.country.text === "US")',
       'location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && location.addresses.*.country.text !== "US")',
     ],
+    extraValidations: [],
   },
   {
     title: "Contacts",
     subtitle: "Step 3",
-    kind: "queued",
-    enabled: true,
+    kind: "incomplete",
+    disabled: false,
     valid: false,
     step: 2,
     fields: [
@@ -170,12 +162,16 @@ const progressData = reactive([
       "location.contacts.*.email",
       "location.contacts.*.phoneNumber",
     ],
+    extraValidations: [{
+      field: 'location.addresses.*.locationName', validation: isContainedIn(associatedLocations,'Looks like “${item}” doesn’t have a contact. You must associate it with an existing contact or add a new contact before submitting the application again.')
+    }
+    ],
   },
   {
     title: "Review",
     subtitle: "Step 4",
-    kind: "queued",
-    enabled: true,
+    kind: "incomplete",
+    disabled: false,
     valid: false,
     step: 3,
     fields: [
@@ -196,16 +192,11 @@ const progressData = reactive([
       "location.contacts.*.email",
       "location.contacts.*.phoneNumber",
     ],
+    extraValidations: [],
   },
 ]);
 
 const currentTab = ref(0);
-
-const stateIcon = (index: number) => {
-  if (currentTab.value == index) return 'current'
-  if (currentTab.value > index || progressData[index].valid) return 'complete'
-  return 'incomplete'
-}
 
 const checkStepValidity = (stepNumber: number): boolean => {
   progressData.forEach((step: any) => {
@@ -213,41 +204,50 @@ const checkStepValidity = (stepNumber: number): boolean => {
       step.valid = validate(step.fields, formData, true);
     }
   });
+
+  if(!progressData[stepNumber]
+    .extraValidations
+    .every((validation: any) => runValidation(validation.field, formData, validation.validation, true))
+  )
+    return false;
+  
   return progressData[stepNumber].valid;
 };
 
 const isLast = computed(() => currentTab.value === progressData.length - 1);
 const isFirst = computed(() => currentTab.value === 0);
-const isCurrentValid = computed(() => progressData[currentTab.value].valid);
-const isNextAvailable = computed(() => !isCurrentValid.value || isLast.value);
-const isFormValid = computed(() =>
-  progressData.every((entry: any) => entry.valid)
-);
 const endAndLogOut = ref<boolean>(false);
 const mailAndLogOut = ref<boolean>(false);
 
-const goToStep = (index: number) => {
-  if (index <= currentTab.value && checkStepValidity(index)) currentTab.value = index;
+const goToStep = (index: number, skipCheck: boolean = false) => {
+  if (skipCheck || (index <= currentTab.value && checkStepValidity(index))) currentTab.value = index;
+  else notificationBus.emit({ fieldId: 'missing.info', errorMsg: '' });
+  revalidateBus.emit()
 };
 
 
 const onNext = () => {
+  notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
       currentTab.value++;
-      progressData[currentTab.value - 1].kind = stateIcon(currentTab.value - 1);
-      progressData[currentTab.value].kind = stateIcon(currentTab.value);
-      setScrollPoint("top");
+      progressData[currentTab.value - 1].kind = 'complete';
+      progressData[currentTab.value].kind = 'current';
+      setTimeout(revalidateBus.emit, 1000)
     }
+    setScrollPoint("top");
   }
+  
 };
 const onBack = () => {
   if (currentTab.value - 1 >= 0) {
     currentTab.value--;
-    progressData[currentTab.value + 1].kind = stateIcon(currentTab.value + 1);
-    progressData[currentTab.value].kind = stateIcon(currentTab.value);
-    setScrollPoint("top");
+    progressData[currentTab.value + 1].kind = 'incomplete';
+    progressData[currentTab.value].kind = 'current';
+    setScrollPoint("top");    
+    setTimeout(revalidateBus.emit, 1000)
   }
+  
 };
 const validateStep = (valid: boolean) => {
   progressData[currentTab.value].valid = valid;
@@ -272,7 +272,7 @@ const processAndLogOut = () => {
 
 const submit = () => {
   errorBus.emit([]);
-  generalErrorBus.emit("");
+  notificationBus.emit(undefined);
   if (checkStepValidity(currentTab.value)) {
     fetch();
   }
@@ -283,10 +283,18 @@ exitBus.on((event: Record<string, boolean | null>) => {
   mailAndLogOut.value = event.duplicated ? event.duplicated : false;
 });
 
-navigationBus.on((event: boolean) => ([1,2,3].forEach((index: number) => progressData[index].enabled = event)));
+progressIndicatorBus.on((event: ProgressNotification) => {  
+  if(event.kind === 'disabled') ([1,2,3].forEach((index: number) => progressData[index].disabled = event.value as boolean))
+  if(event.kind === 'navigate') goToStep(event.value as number, true)
+  if(event.kind === 'error'){ 
+    (event.value as number[]).forEach((index: number) => {
+      progressData[index].valid = false
+      progressData[index].kind = 'invalid'
+    })
+  }
+});
 
-const globalErrorMessage = ref<string>("");
-generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
+const reEval = () => (revalidateBus.emit())
 </script>
 
 <template>
@@ -300,28 +308,16 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
           v-for="item in progressData"
           :key="item.step"
           :secondary-label="item.subtitle"
-          :state="item.step <= currentTab ? item.step < currentTab ? 'complete' : 'current' : 'incomplete'"
+          :state="item.kind"
           :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"
           v-on:click="goToStep(item.step)"
-          :disabled="item.enabled === false"
+          :disabled="item.disabled"
           >
           <span class="cds--progress-label">{{ item.title }}</span>
         </cds-progress-step>
-      </cds-progress-indicator>
-      <cds-inline-notification
-      v-if="globalErrorMessage"
-      v-shadow="true"
-      low-contrast="true"
-      hide-close-button="true"
-      open="true"
-      kind="error"
-      title="Your application could not be submitted"
-      :subtitle="globalErrorMessage"
-    >
-    </cds-inline-notification>
+      </cds-progress-indicator>      
+    <error-notification-grouping-component />
   </div>
-
-
 
   <div class="form-steps">
 
@@ -478,6 +474,14 @@ generalErrorBus.on((event: string) => (globalErrorMessage.value = event));
             logout</span
           >
           <LogOut16 slot="icon" />
+        </cds-button>
+
+        <cds-button
+            kind="tertiary"
+            size="lg"            
+            v-on:click="reEval"            
+          >
+          <span>Eval</span>
         </cds-button>
 
         </div>

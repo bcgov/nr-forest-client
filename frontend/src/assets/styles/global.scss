@@ -80,6 +80,15 @@ cds-button span {
 
 cds-inline-notification::part(div), cds-inline-notification, .cds--inline-notification {
   max-width: 100%;
+  border-radius: 0.25rem;
+}
+cds-actionable-notification::part(div), cds-actionable-notification, .cds--actionable-notification {
+  max-width: 100%;
+  border-radius: 0.25rem;
+}
+
+.top-notification {
+  margin-top: 3rem;
 }
 
 * {

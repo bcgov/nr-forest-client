@@ -24,28 +24,33 @@ import type { ValidationMessageType } from '@/dto/CommonTypesDto'
 /**
  * Event bus for submission error notifications.
  */
-const errorBus = useEventBus<ValidationMessageType[]>(
-  'submission-error-notification'
-)
+const errorBus = useEventBus<ValidationMessageType[]>('submission-error-notification')
+
 /**
  * Event bus for revalidating the submission.
  */
 const revalidateBus = useEventBus<void>('revalidate-bus')
 
 /**
+ * Event bus for error notifications bar.
+ */
+const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification");
+
+/**
  * Array of submission validators.
  */
-let submissionValidators : any = []
+let submissionValidators : ValidationMessageType[] = []
 
 /**
  * Register a listener for submission errors on the error bus.
  * When an error is received, update the submission validators array.
  */
 errorBus.on((errors) => {
-  revalidateBus.emit()
-  submissionValidators = errors.map((error) => {
+  submissionValidators = errors.map((error: ValidationMessageType) => {
+    notificationBus.emit(error)
     return { ...error, originalValue: '' }
   })
+  revalidateBus.emit()
 })
 
 /**
@@ -55,7 +60,7 @@ errorBus.on((errors) => {
  * @param value - The new value for the validator's originalValue property.
  */
 const updateValidators = (fieldId: string, value: string): void => {
-  submissionValidators = submissionValidators.map((validator : any) => {
+  submissionValidators = submissionValidators.map((validator : ValidationMessageType) => {
     if (validator.fieldId === fieldId) {
       return { ...validator, originalValue: value }
     }
@@ -73,9 +78,7 @@ export const submissionValidation = (
   fieldName: string
 ): ((value: string) => string) => {
   return (value: string) => {
-    const foundError = submissionValidators.find(
-      (validator: any) => validator.fieldId === fieldName
-    )
+    const foundError = submissionValidators.find((validator: ValidationMessageType) => validator.fieldId === fieldName)
     if (
       foundError &&
       (foundError.originalValue === value || foundError.originalValue === '')

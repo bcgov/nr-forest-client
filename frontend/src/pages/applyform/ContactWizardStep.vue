@@ -152,8 +152,8 @@ onMounted(() => setFocusedComponent('addressname_0',800))
   </div>
 
   <span class="body-01">
-              To add another contact to the account, select "Add another
-              contact" button below.</span>
+    To add another contact to the account, select "Add another contact" button below.
+  </span>
 
   <cds-button
     kind="tertiary"

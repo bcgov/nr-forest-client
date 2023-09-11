@@ -20,6 +20,7 @@ export interface BusinessSearchResult {
 export interface ValidationMessageType {
   fieldId: string
   errorMsg: string
+  originalValue?: string
 }
 
 export const isEmpty = (receivedValue: any): boolean => {
@@ -64,4 +65,11 @@ export interface SessionProperties {
   logOut: () => void
   isLoggedIn: () => boolean
   loadDetails: () => Submitter | undefined
+}
+
+type ProgressNotificationKind = 'disabled' | 'error' | 'navigate'
+
+export interface ProgressNotification {
+  kind: ProgressNotificationKind
+  value?: number | number[] | boolean
 }
