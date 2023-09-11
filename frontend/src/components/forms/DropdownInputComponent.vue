@@ -80,6 +80,10 @@ const validateInput = (newValue: any) => {
 
 watch(inputList,() => (selectedValue.value = props.initialValue))
 
+const selectItem = (event:any) => {  
+  selectedValue.value = event?.detail?.item?.getAttribute('data-id')
+}
+
 revalidateBus.on(() => validateInput(selectedValue.value))
 </script>
 
@@ -94,7 +98,7 @@ revalidateBus.on(() => validateInput(selectedValue.value))
       :value="selectedValue"
       :invalid="error ? true : false"
       :invalid-text="error"
-      @cds-combo-box-selected="(event:any) => selectedValue = event.detail.item.getAttribute('data-id')"
+      @cds-combo-box-selected="selectItem"
       :data-focus="id"
       :data-scroll="id">
       <cds-combo-box-item 
