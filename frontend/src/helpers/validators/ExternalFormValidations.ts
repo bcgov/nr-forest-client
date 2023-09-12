@@ -204,7 +204,7 @@ export const validate = (keys: string[], target: FormDataDto, notify: boolean = 
 }
 
 // This function will run the validators and return the errors
-export const runValidation = (key: string, target: FormDataDto, validation: (value: string) => string, notify: boolean = false): boolean => {
+export const runValidation = (key: string, target: FormDataDto, validation: (value: string) => string, notify: boolean = false, formErrors?: Record<string, string>): boolean => {
   // We split the field key and the condition if it has one
   const [fieldKey, fieldCondition] = key.includes('(')
     ? key.replace(')', '').split('(')
@@ -220,6 +220,9 @@ export const runValidation = (key: string, target: FormDataDto, validation: (val
       const validationResponse = validation(item)
       if(notify && validationResponse){
         notificationBus.emit({fieldId,errorMsg:validationResponse}, item)
+      }
+      if(formErrors){
+        formErrors[fieldId] = validationResponse
       }
       return validationResponse
     }else{ 
