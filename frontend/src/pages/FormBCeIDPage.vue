@@ -71,6 +71,8 @@ let formData = reactive<FormDataDto>({
   },
 });
 
+const formErrors = reactive<Record<string, string>>({})
+
 const locations = computed(() =>
   formData.location.addresses.map((address: any) => address.locationName)
 );
@@ -207,7 +209,7 @@ const checkStepValidity = (stepNumber: number): boolean => {
 
   if(!progressData[stepNumber]
     .extraValidations
-    .every((validation: any) => runValidation(validation.field, formData, validation.validation, true))
+    .every((validation: any) => runValidation(validation.field, formData, validation.validation, false, formErrors))
   )
     return false;
   
