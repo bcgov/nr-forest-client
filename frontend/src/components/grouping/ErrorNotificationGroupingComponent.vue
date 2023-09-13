@@ -1,11 +1,36 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 // Carbon
 import '@carbon/web-components/es/components/notification/index';
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
 import type { ValidationMessageType, ProgressNotification } from '@/dto/CommonTypesDto'
+
+const props = defineProps<{
+  extraErrors: Record<string, ValidationMessageType>
+}>()
+
+const aggregatedExtraErrors = computed<Record<string, string | string[]>>(() => {
+  console.log('extra', props.extraErrors)
+  const value = Object.keys(props.extraErrors).reduce<Record<string, string | string[]>>((aggregated, fieldId) => {
+    const genericKey = fieldId.replace(/\[\d+\]/, '.*')
+    const error = props.extraErrors[fieldId]
+    if(error.errorMsg){
+      if (genericKey !== fieldId) {
+        if (!aggregated[genericKey]) {
+          aggregated[genericKey] = []
+        }
+        (aggregated[genericKey] as string[]).push(error.originalValue as string)
+      } else {
+        aggregated[genericKey] = error.originalValue as string
+      }
+    }
+    return aggregated
+  }, {})
+  console.log(value)
+  return value
+})
 
 // Define the bus to receive the global error messages and one to send the progress indicator messages
 const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification");
@@ -60,7 +85,7 @@ const goToStep = (step: number) => {
 
 </script>
 <template>
-  <div class="top-notification" v-if="globalErrorMessage?.fieldId">
+  <div class="top-notification" v-if="globalErrorMessage?.fieldId || Object.values(aggregatedExtraErrors).length > 0">
 
     <cds-inline-notification
         v-if="globalErrorMessage?.fieldId === 'missing.info'"
@@ -115,15 +140,18 @@ const goToStep = (step: number) => {
   </cds-actionable-notification>
 
   <cds-inline-notification
-    v-if="globalErrorMessage?.fieldId === 'missing.address.assigned'"
+    v-for="item in aggregatedExtraErrors['location.addresses.*.locationName']"
+    :key="item"
     v-shadow="true"
     low-contrast="true"
     hide-close-button="true"
     open="true"
     kind="error"
-    title="Address without a contact:"
-  >    
-    <div>Looks like "{{ globalErrorMessage.errorMsg }}" doesn’t have a contact. You must associate it with an existing contact or add a new contact before submitting the application again.</div>    
+  >
+    <p class="body-compact-01">
+      <span class="heading-compact-01 heading-compact-01-dark">Assigned contact required:</span>
+      You must associate <span class="heading-compact-01 heading-compact-01-dark">“{{ item }}”</span> address with an existing contact or <a href="#">add a new contact</a> before submitting the application again.
+    </p>
   </cds-inline-notification>
   </div>
 </template>

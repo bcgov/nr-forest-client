@@ -71,26 +71,7 @@ let formData = reactive<FormDataDto>({
   },
 });
 
-const addressFieldStart = 'location.addresses['
-const addressFieldEnd = '].locationName'
-
-const ADDRESS_LOCATION_NAME_KEY = addressFieldStart + addressFieldEnd
-
 const rawExtraErrors = reactive<Record<string, ValidationMessageType>>({})
-const extraErrors = reactive<Record<string, any>>({
-  [ADDRESS_LOCATION_NAME_KEY]: []
-})
-
-watch(rawExtraErrors, () => {
-  const addressNameErrors: ValidationMessageType[] = []
-  for (const fieldId in rawExtraErrors) {
-    const message = rawExtraErrors[fieldId].errorMsg;
-    if(message && fieldId.startsWith(addressFieldStart) && fieldId.endsWith(addressFieldEnd)){
-      addressNameErrors.push(rawExtraErrors[fieldId])
-    }
-  }
-  extraErrors[ADDRESS_LOCATION_NAME_KEY] = addressNameErrors
-})
 
 const locations = computed(() =>
   formData.location.addresses.map((address: any) => address.locationName)
@@ -337,21 +318,9 @@ const reEval = () => (revalidateBus.emit())
           <span class="cds--progress-label">{{ item.title }}</span>
         </cds-progress-step>
       </cds-progress-indicator>      
-    <error-notification-grouping-component />
-    <cds-inline-notification
-      v-for="item in (extraErrors[ADDRESS_LOCATION_NAME_KEY] as ValidationMessageType[])"
-      :key="item"
-      v-shadow="true"
-      low-contrast="true"
-      hide-close-button="true"
-      open="true"
-      kind="error"
-    >
-      <p class="body-compact-01">
-        <span class="heading-compact-01 heading-compact-01-dark">Assigned contact required:</span>
-        You must associate <span class="heading-compact-01 heading-compact-01-dark">“{{ item.originalValue }}”</span> address with an existing contact or <a href="#">add a new contact</a> before submitting the application again.
-      </p>
-    </cds-inline-notification>
+      <error-notification-grouping-component
+        :extra-errors="rawExtraErrors"
+      />
   </div>
 
   <div class="form-steps">
