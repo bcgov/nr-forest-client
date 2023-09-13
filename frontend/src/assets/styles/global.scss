@@ -56,12 +56,15 @@
   --cds-button-tertiary: var(--border-subtle-02);
   --cds-button-tertiary-hover: var(--others-transparent-transparent);
 }
+
 .heading-buttons cds-button span {
   width:7rem;
 }
+
 cds-button::part(button) {
   border-radius: 0.25rem;
 }
+
 cds-button span {
   width:11rem;
 }
@@ -629,6 +632,7 @@ hr {
   align-items: flex-start;
   gap: 1rem;
 }
+
 .grouping-08 {
   display: flex;
   padding: 0.9rem 0rem;
@@ -697,8 +701,12 @@ hr {
   align-self: stretch;
 }
 
-bx-modal {
-  display: flex;
+cds-modal::part(dialog) {
+  border-radius: 0.5rem;
+}
+
+cds-modal-close-button::part(button)  {
+  border-radius: 0.5rem;
 }
 
 bx-modal-footer {
