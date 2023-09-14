@@ -48,18 +48,19 @@ export const useFocus = (): {
     setTimeout(() => {
       refComponent.value = setActionOn(componentName, key, action)
       if (callback) {
+        // We need to detect the end of the scrolling
+        // Use event 'scroll' if browser does not support 'scrollend'
         const eventName = 'onscrollend' in window ? 'scrollend' : 'scroll'
 
         const scrollEndListener = () => {
           callback(refComponent)
           document.removeEventListener(eventName, polyfilledListener)
-          console.log({ polyfilledListener })
         }
 
         let scrollEndTimer: NodeJS.Timeout
 
         const polyfilledListener =
-          'onscrollend' in window
+          eventName === 'scrollend'
             ? scrollEndListener
             : () => {
                 clearTimeout(scrollEndTimer)
