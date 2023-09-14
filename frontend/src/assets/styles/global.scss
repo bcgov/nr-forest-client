@@ -1,6 +1,5 @@
 @use "sass:map";
 @use "@carbon/styles";
-@use "@carbon/themes/scss/tokens";
 @use "@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss" as typeFamily;
 
 :root {
@@ -32,23 +31,28 @@
   --light-theme-focus: #0073e6;
   --light-theme-miscellaneous-interactive: #0073e6;
 
+   //All buttons
+  --cds-button-disabled: #C6C6C8;
+
   //Primary button
   --cds-button-primary: #0073e6;
-  --cds-button-primary-hover: red;
+  --cds-button-primary-hover: #0066CC;
+  --cds-button-primary-active: #00478F;
 
   //Secondary button
-  --cds-interactive-02: #464648;
-  --cds-active-secondary: #464648;
-  --cds-hover-secondary: #535355;
+  --cds-button-secondary: #464648;
+  --cds-button-secondary-hover: #535355;
+  --cds-button-secondary-active: #606062;
 
   //Tertiary button
-  --cds-interactive-03: #005cb8;
-  --cds-active-tertiary: #005cb8;
-  --cds-hover-tertiary: #0052a3;
+  --cds-button-tertiary: #005cb8;
+  --cds-button-tertiary-hover: #0052a3;
+  --cds-button-tertiary-active: #00478F;
 
   //Danger Ghost button
-  --cds-danger-01: #e72000;
-  --cds-hover-danger: #b32001;
+  --cds-button-danger: #e72000;
+  --cds-button-danger-hover: #b32001;
+  --cds-button-danger-active: #801701;
 }
 
 .heading-buttons {
