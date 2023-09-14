@@ -330,6 +330,7 @@ const scrollToNewContact = () => {
       </cds-progress-indicator>      
       <error-notification-grouping-component
         :form-data="formData"
+        :scroll-to-new-contact="scrollToNewContact"
       />
   </div>
 
