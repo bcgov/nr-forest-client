@@ -56,22 +56,28 @@
   --cds-button-tertiary: var(--border-subtle-02);
   --cds-button-tertiary-hover: var(--others-transparent-transparent);
 }
+
 .heading-buttons cds-button span {
   width:7rem;
 }
+
 cds-button::part(button) {
   border-radius: 0.25rem;
 }
+
 cds-button span {
   width:11rem;
 }
+
 .step-active {
   --cds-border-subtle: var(--light-theme-miscellaneous-interactive);
 }
+
 .cds--progress-label {
   overflow: visible !important;
   
 }
+
 .cds--progress-label:hover {
   box-shadow: none !important;
   text-decoration: underline;
@@ -82,6 +88,7 @@ cds-inline-notification::part(div), cds-inline-notification, .cds--inline-notifi
   max-width: 100%;
   border-radius: 0.25rem;
 }
+
 cds-actionable-notification::part(div), cds-actionable-notification, .cds--actionable-notification {
   max-width: 100%;
   border-radius: 0.25rem;
@@ -632,6 +639,7 @@ hr {
   align-items: flex-start;
   gap: 1rem;
 }
+
 .grouping-08 {
   display: flex;
   padding: 0.9rem 0rem;
@@ -700,27 +708,29 @@ hr {
   align-self: stretch;
 }
 
-bx-modal {
-  display: flex;
+cds-modal::part(dialog) {
+  border-radius: 0.5rem;
 }
 
-bx-modal-footer {
-  align-self: stretch;
+cds-modal-close-button::part(button) {
+  border-radius: 0.5rem;
 }
 
-.modal-footer {
-  justify-content: center;
-  align-content: stretch;
-  padding: 1rem;
-  display: flex;
-  align-self: stretch;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  flex-grow: 1;
+cds-modal-footer {
+  padding: 3rem 1rem 1rem 1rem;
 }
 
-.bx--modal-btn {
-  flex-grow: 1;
+cds-modal-footer-button::part(button) {
+  border-radius: 0.25rem;
+  height: 75%;
+}
+
+.cds--modal-close-btn {
+  margin-right: 0.25rem;
+}
+
+.cds--modal-submit-btn {
+  margin-left: 0.25rem;
 }
 
 /* Small (up to 320px) */
@@ -730,31 +740,30 @@ bx-modal-footer {
     top: 0.5rem;
   }
 
-  bx-modal::part(dialog) {
-    max-height: 21.25rem;
-    position: relative;
+  cds-modal {
+    height: 100%;
+    width: 100%;
+  }
+
+  cds-modal::part(dialog) {
+    max-height: 20.5rem;
     margin-bottom: 0;
     margin-top: auto;
+    position: relative;
   }
 
-  .bx--modal-btn-divider {
-    display: none;
+  .cds--modal-close-btn, .cds--modal-submit-btn {
+    margin: 0rem;
+    width: 100%;
   }
 
-  bx-modal-footer {
-    height: 8rem;
-    padding: 0 1rem 0 1rem;
-    margin: 0;
-  }
-
-  .bx--modal-btn {
-    height: 1.13rem !important;
-    position: absolute;
-    width: 90%;
-  }
-
-  .bx--modal-btn2 {
-    bottom: 2.5rem;
+  cds-modal-footer {
+    display: flex;
+    padding: 0rem 1rem 1rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    align-self: stretch;
   }
 
   .screen {

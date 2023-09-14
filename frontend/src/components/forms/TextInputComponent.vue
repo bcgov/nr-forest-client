@@ -103,9 +103,4 @@ watch(() => props.modelValue,() => selectedValue.value = props.modelValue)
 </template>
 
 <style scoped>
-.bx-input-disabled {
-  height: 2.5rem;
-  color: var(--light-theme-text-text-primary, #131315);
-  padding-top: 0.69rem;
-}
 </style>
