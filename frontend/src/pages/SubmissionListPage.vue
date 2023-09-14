@@ -52,11 +52,26 @@ const tagColor = (status: string) =>{
   }
 }
 
-const friendlyDate = (date:string) => {
+const selectEntry = (id:string) => {
+  console.log(`Selected entry ${id}`)
+}
+
+const friendlyDate = (date:string):string => {
   return `${formatDistanceToNow(new Date(date))} ago`
 }
-const formattedDate = (date:string) => {
+const formattedDate = (date:string):string => {
   return format(new Date(date),'MMM dd, yyyy')
+}
+const normalizeString = (input:string):string => {  
+  const words = input.split(' ');
+  const capitalizedWords = words.map(word => {    
+    if (word.length > 0) {
+      return word[0].toUpperCase() + word.slice(1).toLocaleLowerCase();
+    } else {
+      return '';
+    }
+  });  
+  return capitalizedWords.join(' ');
 }
 
 // Disable the skelleton table header
@@ -113,13 +128,14 @@ onMounted(() => {
         </cds-table-head>
 
         <cds-table-body>
-          <cds-table-row v-for="row in tableData" :key="row.name">
+          <cds-table-row v-for="row in tableData" :key="row.name" @click="selectEntry(row.id)">
             <cds-table-cell>{{ row.requestType }}</cds-table-cell>
-            <cds-table-cell>{{ row.name }}</cds-table-cell>
+            <cds-table-cell>{{ normalizeString(row.name) }}</cds-table-cell>
             <cds-table-cell>{{row.clientType}}</cds-table-cell>
             <cds-table-cell>
+              {{ (row.user || '') }} 
               <cds-tooltip align="top">
-                <div class="sb-tooltip-trigger" aria-labelledby="content">{{ (row.user || '') }} | {{ friendlyDate(row.updated) }}</div>
+                <div class="sb-tooltip-trigger" aria-labelledby="content">| {{ friendlyDate(row.updated) }}</div>
                 <cds-tooltip-content id="content">{{ formattedDate(row.updated) }}</cds-tooltip-content>
               </cds-tooltip>
             </cds-table-cell>
@@ -132,7 +148,7 @@ onMounted(() => {
         v-else
         ref="skeleton"
         zebra
-        row-count="10"
+        :row-count="pageSize"
         :headers="['Submission type','Client name','Client type','Last updated','Submission status']"
         />
       

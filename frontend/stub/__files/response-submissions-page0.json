@@ -1,7 +1,7 @@
 [{
   "id": "1d676db1-7b48-4ed3-bdd3-10718bb39c5b",
   "requestType": "Review new client",
-  "name": "Kovacek, Thompson and Boyer",
+  "name": "KOVACEK, Thompson and Boyer",
   "clientType": "General partnership",
   "updated": "{{now offset='-9 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
   "status": "Approved",
