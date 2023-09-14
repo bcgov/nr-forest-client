@@ -1,5 +1,5 @@
 <template>
-  <div class="bx--content">
+  <div>
     <div>Something went wrong</div>
     <p>{{ errorCode }}</p>
   </div>

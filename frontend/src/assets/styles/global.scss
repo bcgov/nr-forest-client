@@ -1,5 +1,6 @@
 @use "sass:map";
-@use '@carbon/styles';
+@use "@carbon/styles";
+@use "@carbon/themes/scss/tokens";
 @use "@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss" as typeFamily;
 
 :root {
@@ -8,7 +9,7 @@
   --light-theme-button-button-secondary: #464648;
   --light-theme-button-button-tertiary: #005cb8;
   --cds-focus: #0073e6;
-  --light-theme-link-link-primary: #005CB8;
+  --light-theme-link-link-primary: #005cb8;
   --light-theme-link-link-primary-hover: #00478f;
   --light-theme-link-link-secondary: #00478f;
   --light-theme-link-link-secondary-hover: #00478f;
@@ -22,20 +23,19 @@
   --dark-theme-link-link-visited: #c59af1;
   --light-theme-support-support-info: #00478f;
   --light-theme-notifications-support-info-border: rgba(0, 102, 204, 1);
-  --light-theme-notifications-notification-info-background: #C2E0FF;
+  --light-theme-notifications-notification-info-background: #c2e0ff;
   --light-theme-background-background-inverse: #2d2d2f;
   --light-theme-text-text-primary: #131315;
   --border-subtle-02: #dfdfe1;
   --light-theme-tag-blue-background: #c2e0ff;
-  --light-theme-tag-blue-text:#00478f;
+  --light-theme-tag-blue-text: #00478f;
   --light-theme-focus: #0073e6;
   --light-theme-miscellaneous-interactive:#0073E6;
   --light-theme-background-background-selected: #93939533;
 
   //Primary button
-  --cds-interactive-01: #0073E6;
-  --cds-active-primary: #0073E6;
-  --cds-hover-primary: #0066CC;
+  --cds-button-primary: #0073e6;
+  --cds-button-primary-hover: red;
 
   //Secondary button
   --cds-interactive-02: #464648;
@@ -43,9 +43,9 @@
   --cds-hover-secondary: #535355;
 
   //Tertiary button
-  --cds-interactive-03: #005CB8;
-  --cds-active-tertiary: #005CB8;
-  --cds-hover-tertiary: #0052A3;
+  --cds-interactive-03: #005cb8;
+  --cds-active-tertiary: #005cb8;
+  --cds-hover-tertiary: #0052a3;
 
   //Danger Ghost button
   --cds-danger-01: #e72000;
@@ -56,18 +56,18 @@
 }
 
 .heading-buttons {
-  --cds-text-inverse:var(--border-subtle-02);
+  --cds-text-inverse: var(--border-subtle-02);
   --cds-button-tertiary: var(--border-subtle-02);
   --cds-button-tertiary-hover: var(--others-transparent-transparent);
 }
 .heading-buttons cds-button span {
-  width:7rem;
+  width: 7rem;
 }
 cds-button::part(button) {
   border-radius: 0.25rem;
 }
 cds-button span {
-  width:11rem;
+  width: 11rem;
 }
 
 .step-active {
@@ -76,7 +76,6 @@ cds-button span {
 
 .cds--progress-label {
   overflow: visible !important;
-  
 }
 
 .cds--progress-label:hover {
@@ -85,12 +84,16 @@ cds-button span {
   text-underline-offset: 0.325rem;
 }
 
-cds-inline-notification::part(div), cds-inline-notification, .cds--inline-notification {
+cds-inline-notification::part(div),
+cds-inline-notification,
+.cds--inline-notification {
   max-width: 100%;
   border-radius: 0.25rem;
 }
 
-cds-actionable-notification::part(div), cds-actionable-notification, .cds--actionable-notification {
+cds-actionable-notification::part(div),
+cds-actionable-notification,
+.cds--actionable-notification {
   max-width: 100%;
   border-radius: 0.25rem;
 }
@@ -121,7 +124,7 @@ a:visited {
 hr {
   display: block;
   border: 0;
-  border-top: 1px solid var(--border-subtle-02,#dfdfe1);
+  border-top: 1px solid var(--border-subtle-02, #dfdfe1);
   padding: 0;
   align-self: stretch;
   width: 100%;
@@ -167,80 +170,8 @@ div#app {
   fill: var(--cds-hover-primary, #0353e9);
 }
 
-.bx--progress {
-  display: flex;
-  flex-direction: column;
-}
-
 .form-header-progress {
   display: flex;
-}
-
-.bx--progress-indicator {
-  flex-direction: row;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 3rem;
-  margin-top: 1.5rem;
-}
-
-.bx--progress-step {
-  border-top: solid 0.125rem;
-  flex: 1;
-  display: flex;
-  padding: 0.625rem 1rem 0rem 0rem;
-  align-items: flex-start;
-  align-self: stretch;
-}
-
-.bx--progress-step-icon {
-  margin: 0.25rem 0.625rem 0 0;
-  flex-shrink: 0;
-}
-
-.bx--progress-step-text p a {
-  text-decoration: none;
-  color: var(--light-theme-text-text-primary, #131315);
-}
-.bx--progress-step-text p a:hover {
-  text-decoration: underline;
-  color: var(--light-theme-link-link-primary-hover, #00478f);
-  cursor: pointer;
-}
-.bx--progress-step-text p span {
-  color: var(--light-theme-text-text-primary, #131315);
-}
-
-.bx--progress-step-current {
-  border-color: var(--cds-interactive-01);
-}
-
-.bx--progress-step-queued {
-  border-color: #dfdfe1;
-}
-
-.bx--progress-step-error {
-  border-color: var(--cds-danger-01);
-}
-
-.bx--progress-step-complete {
-  border-color: var(--cds-interactive-01);
-}
-
-.bx--progress-step-icon-current {
-  color: var(--cds-interactive-01);
-}
-
-.bx--progress-step-icon-error {
-  color: var(--cds-danger-01);
-}
-
-.bx--progress-step-icon-complete {
-  color: var(--cds-interactive-01)
-}
-
-.bx--progress-step-icon-queued {
-  color: #dfdfe1;
 }
 
 /* Recreating the style */
@@ -333,7 +264,7 @@ div#app {
   color: var(--dark-theme-text-text-primary, #f3f3f5);
 
   /* Fixed heading styles/heading-compact-01 */
-  font-family:BC Sans, sans-serif;
+  font-family: BC Sans, sans-serif;
   font-size: 0.875rem;
   font-style: normal;
   font-weight: 700;
@@ -347,7 +278,7 @@ div#app {
   color: var(--light-theme-text-text-primary, #131315) !important;
 
   /* Fixed heading styles/heading-02 */
-  font-family:BC Sans, sans-serif;
+  font-family: BC Sans, sans-serif;
   font-size: 1rem;
   font-style: normal;
   font-weight: 700;
@@ -357,7 +288,7 @@ div#app {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-03 */
-  font-family:BC Sans, sans-serif;
+  font-family: BC Sans, sans-serif;
   font-size: 1.25rem;
   font-style: normal;
   font-weight: 400;
@@ -367,7 +298,7 @@ div#app {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-04 */
-  font-family:BC Sans, sans-serif;
+  font-family: BC Sans, sans-serif;
   font-size: 1.75rem;
   font-style: normal;
   font-weight: 400;
@@ -377,7 +308,7 @@ div#app {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-05 */
-  font-family:BC Sans, sans-serif;
+  font-family: BC Sans, sans-serif;
   font-size: 2rem;
   font-style: normal;
   font-weight: 400;
@@ -388,7 +319,7 @@ div#app {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fluid styles/MAX/fluid-heading-05 */
-  font-family:BC Sans, sans-serif;
+  font-family: BC Sans, sans-serif;
   font-size: 3.75rem;
   font-style: normal;
   font-weight: 400;
@@ -399,7 +330,7 @@ div#app {
   color: var(--light-theme-text-text-secondary, #606062);
 
   /* Fluid styles/MAX/fluid-paragraph-01 */
-  font-family:BC Sans, sans-serif;
+  font-family: BC Sans, sans-serif;
   font-size: 2rem;
   font-style: normal;
   font-weight: 400;
@@ -409,7 +340,7 @@ div#app {
   color: var(--light-theme-text-text-secondary, #606062);
 
   /* Body styles/body-01 */
-  font-family:BC Sans, sans-serif;
+  font-family: BC Sans, sans-serif;
   font-size: 0.875rem;
   font-style: normal;
   font-weight: 400;
@@ -420,7 +351,7 @@ div#app {
   color: var(--light-theme-text-text-secondary, #606062);
 
   /* Body styles/body-02 */
-  font-family:BC Sans, sans-serif;
+  font-family: BC Sans, sans-serif;
   font-size: 1rem;
   font-style: normal;
   font-weight: 400;
@@ -430,7 +361,7 @@ div#app {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Body styles/body-compact-01 */
-  font-family:BC Sans, sans-serif;
+  font-family: BC Sans, sans-serif;
   font-size: 0.875rem;
   font-style: normal;
   font-weight: 400;
@@ -835,12 +766,6 @@ div#app {
   border-radius: 0.25rem 0.25rem 0rem 0rem;
 }
 
-.bx-tag-box {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
 .display-block-wrapper {
   display: flex;
   align-items: flex-start;
@@ -937,7 +862,8 @@ cds-accordion-item.grouping-05-internal::part(title) {
     position: relative;
   }
 
-  .cds--modal-close-btn, .cds--modal-submit-btn {
+  .cds--modal-close-btn,
+  .cds--modal-submit-btn {
     margin: 0rem;
     width: 100%;
   }
@@ -985,36 +911,12 @@ cds-accordion-item.grouping-05-internal::part(title) {
     flex-shrink: 0;
   }
 
-  .bx--btn-header {
-    width: 1.25rem;
-    height: 1.25rem;
-    border: none !important;
-  }
-
-  .bx--btn-header::part(button) {
-    width: 2.5rem;
-    border: none !important;
-    margin-right: 20rem !important;
-  }
-
-  .bx--btn-reset {
-    width: 2.5rem;
-  }
-
   .form-header {
     align-self: stretch;
   }
 
   .form-header-progress {
     flex-direction: column;
-  }
-
-  .bx--progress-step {
-    width: 18rem;
-  }
-
-  .bx--progress-step svg {
-    margin: 0.6rem;
   }
 
   .form-steps {
@@ -1035,16 +937,6 @@ cds-accordion-item.grouping-05-internal::part(title) {
   .form-footer-group-buttons {
     flex-direction: column-reverse;
     justify-content: flex-end;
-  }
-
-  .bx--progress-indicator {
-    flex-direction: column;
-  }
-
-  .bx--progress-step {
-    border-top: none;
-    border-left: solid 0.125rem;
-    flex: none;
   }
 }
 
@@ -1075,21 +967,9 @@ cds-accordion-item.grouping-05-internal::part(title) {
   .heading span:last-child {
     display: none;
   }
+
   .heading-space {
     width: 8.75rem;
-  }
-  .bx--btn-header::part(button) {
-    width: 2.5rem;
-    border: none !important;
-    margin-right: 20rem !important;
-  }
-
-  .bx--btn-reset {
-    width: 2.5rem;
-  }
-
-  .bx--btn-header::part(button):hover {
-    background: var(--light-theme-background-background-brand, #0073e6);
   }
 
   .form-header {
