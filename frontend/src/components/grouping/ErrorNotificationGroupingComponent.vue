@@ -1,35 +1,32 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 // Carbon
 import '@carbon/web-components/es/components/notification/index';
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
 import type { ValidationMessageType, ProgressNotification } from '@/dto/CommonTypesDto'
+import type { Address, FormDataDto } from '@/dto/ApplyClientNumberDto';
 
 const props = defineProps<{
-  extraErrors: Record<string, ValidationMessageType>
+  formData: FormDataDto
 }>()
 
-const aggregatedExtraErrors = computed<Record<string, string | string[]>>(() => {
-  console.log('extra', props.extraErrors)
-  const value = Object.keys(props.extraErrors).reduce<Record<string, string | string[]>>((aggregated, fieldId) => {
-    const genericKey = fieldId.replace(/\[\d+\]/, '.*')
-    const error = props.extraErrors[fieldId]
-    if(error.errorMsg){
-      if (genericKey !== fieldId) {
-        if (!aggregated[genericKey]) {
-          aggregated[genericKey] = []
-        }
-        (aggregated[genericKey] as string[]).push(error.originalValue as string)
-      } else {
-        aggregated[genericKey] = error.originalValue as string
-      }
+const nonAssociatedAddressList = reactive<string[]>([])
+
+const locations = computed(() =>
+  props.formData.location.addresses.map((address: Address) => address.locationName)
+);
+
+watch(locations, (locations) => {
+  // Iterates backwards to prevent issues after removing an item from the list
+  for (let index = nonAssociatedAddressList.length - 1; index >= 0; index--) {
+    const addressName = nonAssociatedAddressList[index];
+    if (!locations.includes(addressName)) { // The address does not exist anymore
+      // Remove it from the error list
+      nonAssociatedAddressList.splice(index, 1)
     }
-    return aggregated
-  }, {})
-  console.log(value)
-  return value
+  }
 })
 
 // Define the bus to receive the global error messages and one to send the progress indicator messages
@@ -55,22 +52,22 @@ const handleErrorMessage = (event: ValidationMessageType|undefined, payload?:any
     // Handling address without association
   } else if(event && event.fieldId.startsWith('location.addresses[') && event.fieldId.endsWith('].locationName')){
     if(payload){
-      // Show as inline notification
-      globalErrorMessage.value = { fieldId: 'missing.address.assigned', errorMsg: payload };
-      // Emit back to the form so it can be displayed as a field error
-      errorBus.emit([
-        {fieldId: event.fieldId, errorMsg: 'You must associate a contact with this address or remove it'},
-        {fieldId: event.fieldId.replace('locationName','country'), errorMsg: 'You must associate a contact with this address or remove it'},
-        {fieldId: event.fieldId.replace('locationName','streetAddress'), errorMsg: 'You must associate a contact with this address or remove it'},
-        {fieldId: event.fieldId.replace('locationName','city'), errorMsg: 'You must associate a contact with this address or remove it'},
-        {fieldId: event.fieldId.replace('locationName','province'), errorMsg: 'You must associate a contact with this address or remove it'},
-        {fieldId: event.fieldId.replace('locationName','postalCode'), errorMsg: 'You must associate a contact with this address or remove it'}
-      ]);
-      // Make step 2 with error
-      progressIndicatorBus.emit({ kind: 'error', value: [1,2]})
+      if(event.errorMsg){ // The address is missing association
+        const foundIndex = nonAssociatedAddressList.indexOf(payload)
+        if (foundIndex === -1) {
+          // Add it to the error list
+          nonAssociatedAddressList.push(payload)
+        }
+      } else { // The address is properly associated
+        const foundIndex = nonAssociatedAddressList.indexOf(payload)
+        if (foundIndex >= 0) {
+          // Remove it from the error list
+          nonAssociatedAddressList.splice(foundIndex, 1)
+        }
+      }
     }
-  } else { 
-    globalErrorMessage.value = event; 
+  } else {
+    globalErrorMessage.value = event;
   }
 }
 
@@ -85,7 +82,7 @@ const goToStep = (step: number) => {
 
 </script>
 <template>
-  <div class="top-notification" v-if="globalErrorMessage?.fieldId || Object.values(aggregatedExtraErrors).length > 0">
+  <div class="top-notification" v-if="globalErrorMessage?.fieldId || nonAssociatedAddressList.length > 0">
 
     <cds-inline-notification
         v-if="globalErrorMessage?.fieldId === 'missing.info'"
@@ -140,7 +137,7 @@ const goToStep = (step: number) => {
   </cds-actionable-notification>
 
   <cds-inline-notification
-    v-for="item in aggregatedExtraErrors['location.addresses.*.locationName']"
+    v-for="item in nonAssociatedAddressList"
     :key="item"
     v-shadow="true"
     low-contrast="true"

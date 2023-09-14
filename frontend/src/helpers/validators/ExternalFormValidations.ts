@@ -209,7 +209,6 @@ export const runValidation = (
   target: FormDataDto,
   validation: (value: string) => string,
   notify: boolean = false,
-  formErrors?: Record<string, ValidationMessageType>,
   exhaustive = false,
 ): boolean => {
   // We split the field key and the condition if it has one
@@ -224,15 +223,9 @@ export const runValidation = (
     // eslint-disable-next-line no-eval
     if (eval(condition)) {
       const validationResponse = validation(item)
-      if (notify && validationResponse) {
+      if (notify) {
+        // Note: also notifies when valid - errorMsg will be empty.
         notificationBus.emit({ fieldId, errorMsg: validationResponse }, item)
-      }
-      if (formErrors) {
-        formErrors[fieldId] = {
-          fieldId,
-          errorMsg: validationResponse,
-          originalValue: item,
-        }
       }
       return validationResponse
     } else {
