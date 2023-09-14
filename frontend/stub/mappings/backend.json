@@ -199,6 +199,87 @@
         "transformers": ["response-template"],
         "fixedDelayMilliseconds": 2500
       }
+    },
+
+
+    {
+      "name":"Submission List Page",
+      "request": {
+        "urlPath": "/api/clients/submissions",
+        "method": "GET",
+        "queryParameters": {
+          "page": {
+            "matches": "^[0-5]$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-total-count": "57",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "bodyFileName": "response-submissions-page{{request.query.page}}.json",
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 2500
+      }
+    },
+    {
+      "name":"Submission List Empty",
+      "request": {
+        "urlPath": "/api/clients/submissions",
+        "method": "GET",
+        "queryParameters": {
+          "page": {
+            "matches": "^[6-9]\\d*$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-total-count": "57",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "body": "[]",
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "name":"Submission List Search",
+      "request": {
+        "urlPath": "/api/clients/submissions",
+        "method": "GET",
+        "queryParameters": {
+          "page": {
+            "matches": "^\\d+$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          },
+          "keyword":{
+            "matches": "^(.*)$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-total-count": "3",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "bodyFileName": "response-submissions-search.json",
+        "transformers": ["response-template"]
+      }
     }
   ]
 }

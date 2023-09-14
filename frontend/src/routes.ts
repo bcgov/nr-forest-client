@@ -3,7 +3,7 @@
  */
 import { createRouter, createWebHistory } from 'vue-router'
 
-import ReviewApplicationPage from '@/pages/ReviewApplicationPage.vue'
+import SubmissionList from '@/pages/SubmissionListPage.vue'
 import BCeIDForm from '@/pages/FormBCeIDPage.vue'
 import BCSCForm from '@/pages/FormBCSCPage.vue'
 import FormSubmittedPage from '@/pages/FormSubmittedPage.vue'
@@ -33,6 +33,7 @@ const routes = [
         bcsc: 'bcsc-form',
       },
       style: 'content-landing',
+      headersStyle: 'headers',
     },
   },
   {
@@ -52,6 +53,7 @@ const routes = [
         bcsc: 'bcsc-form',
       },
       style: 'content',
+      headersStyle: 'headers',
     },
   },
   {
@@ -71,6 +73,7 @@ const routes = [
         bceidbusiness: 'form',
       },
       style: 'content',
+      headersStyle: 'headers',
     },
   },
   {
@@ -88,15 +91,16 @@ const routes = [
         idir: 'internal',
       },
       style: 'content',
+      headersStyle: 'headers',
     },
   },
   {
     path: '/submissions',
     name: 'internal',
-    component: ReviewApplicationPage,
+    component: SubmissionList,
     props: true,
     meta: {
-      format: 'screen',
+      format: 'full',
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
@@ -105,7 +109,8 @@ const routes = [
         bceidbusiness: 'form',
         bcsc: 'form',
       },
-      style: 'content',
+      style: 'content-stretched',
+      headersStyle: 'headers-compact',
     },
   },
   {
@@ -125,6 +130,7 @@ const routes = [
         bcsc: 'bcsc-form',
       },
       style: 'content',
+      headersStyle: 'headers',
     },
   },
   {
@@ -140,6 +146,7 @@ const routes = [
       visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
     },
     style: 'content',
+    headersStyle: 'headers',
   },
   {
     path: '/:pathMatch(.*)*',
@@ -154,6 +161,7 @@ const routes = [
       visibleTo: ['idir', 'bceidbusiness', 'bcsc'],
     },
     style: 'content',
+    headersStyle: 'headers',
   },
 ]
 
@@ -201,12 +209,13 @@ export { routes, router }
 declare module 'vue-router' {
   // eslint-disable-next-line no-unused-vars
   interface RouteMeta {
-    format: string
-    hideHeader: boolean
-    requireAuth: boolean
-    showLoggedIn: boolean
-    visibleTo: Array<string>
-    redirectTo?: Record<string, string>
-    style: string
+    format: string // Main body style class
+    hideHeader: boolean // Show/Hide the header
+    requireAuth: boolean // Force user to be logged in to see this page
+    showLoggedIn: boolean // Show/Hide the page for a logged user
+    visibleTo: Array<string> // Which user types/providers can see this page
+    redirectTo?: Record<string, string> // Where to redirect the user if they are not allowed to see this page
+    style: string // Main body style class
+    heaerStyle: string // Header style class
   }
 }

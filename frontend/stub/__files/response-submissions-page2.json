@@ -1,0 +1,81 @@
+[{
+  "id": "b3cc0cd3-ebf6-4017-ba73-a3ad2e591682",
+  "requestType": "Auto approved client",
+  "name": "Jacobs-Marquardt",
+  "clientType": "Individual",
+  "updated": "{{now offset='-2 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "In progres",
+  "user": "Norman Jowsey"
+}, {
+  "id": "a78b26d5-c0fb-4bb1-948f-3d0521065fc7",
+  "requestType": "Review new client",
+  "name": "Yundt, Weimann and McClure",
+  "clientType": "Individual",
+  "updated": "{{now offset='-7 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Janna Conneely"
+}, {
+  "id": "104f021a-a32f-4d98-91d9-61a04fbd4c5f",
+  "requestType": "Auto approved client",
+  "name": "Parker-Gorczany",
+  "clientType": "Corporation",
+  "updated": "{{now offset='-6 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Rejected",
+  "user": "Kiele Ridler"
+}, {
+  "id": "24aeea5c-8aca-4fa5-be0e-3064688dfd96",
+  "requestType": "Auto approved client",
+  "name": "Weissnat Inc",
+  "clientType": "Individual",
+  "updated": "{{now offset='-2 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Gracie Ferminger"
+}, {
+  "id": "4adfa5d5-65cc-4e64-b3c6-00dce7c9d4c0",
+  "requestType": "Auto approved client",
+  "name": "Braun-Bernier",
+  "clientType": "Unregistered sole proprietorship",
+  "updated": "{{now offset='-8 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "In progres",
+  "user": "Heddi Vondracek"
+}, {
+  "id": "d3a3f5d8-01e7-49d5-8a68-da0fb53b5818",
+  "requestType": "Auto approved client",
+  "name": "Bashirian LLC",
+  "clientType": "General partnership",
+  "updated": "{{now offset='-9 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "In progres",
+  "user": "Noelyn Rollings"
+}, {
+  "id": "e5c22209-b56f-4378-b386-03c25ce68966",
+  "requestType": "Review new client",
+  "name": "Graham, Yost and Glover",
+  "clientType": "Individual",
+  "updated": "{{now offset='-0 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Rejected",
+  "user": "Loy Daintree"
+}, {
+  "id": "87a1c4b1-4e26-40e4-af56-4af9113a5ccd",
+  "requestType": "Auto approved client",
+  "name": "Weimann-Wehner",
+  "clientType": "Corporation",
+  "updated": "{{now offset='-9 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Rejected",
+  "user": "Cammi Balsom"
+}, {
+  "id": "a9570fba-d301-4054-9c2b-6161a8d031fa",
+  "requestType": "Review new client",
+  "name": "Willms, Gottlieb and D'Amore",
+  "clientType": "Unregistered sole proprietorship",
+  "updated": "{{now offset='-8 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Ilse Follos"
+}, {
+  "id": "3999b2b6-2dc6-4677-aaec-642c0218e991",
+  "requestType": "Review new client",
+  "name": "Pfannerstill Inc",
+  "clientType": "General partnership",
+  "updated": "{{now offset='-5 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "In progres",
+  "user": "Meredithe Glasscott"
+}]

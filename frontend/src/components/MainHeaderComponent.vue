@@ -24,7 +24,7 @@ onMounted(() => window.addEventListener('resize', updateScreenWidth));
 
 <template>
 
-  <a href="https://gov.bc.ca">
+  <a href="https://gov.bc.ca" v-if="$session.user?.provider !== 'idir'">
     <img
       src="/img/logo1.svg"
       alt="Go to the Government of British Columbia website"
@@ -36,6 +36,7 @@ onMounted(() => window.addEventListener('resize', updateScreenWidth));
       v-else
     />
   </a>
+  
   <div class="heading">
     <span class="heading-compact-01" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
     <span class="heading-compact-01" v-else>Client Management System</span>

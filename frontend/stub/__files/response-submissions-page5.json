@@ -1,0 +1,81 @@
+[{
+  "id": "56baf048-b156-4a65-853e-ffe679680f33",
+  "requestType": "Auto approved client",
+  "name": "Feeney, Heidenreich and DuBuque",
+  "clientType": "Unregistered sole proprietorship",
+  "updated": "{{now offset='-7 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Kathlin Mougin"
+}, {
+  "id": "f6d18daf-69df-487d-b325-7864b4543ce9",
+  "requestType": "Review new client",
+  "name": "Gutmann Inc",
+  "clientType": "Corporation",
+  "updated": "{{now offset='-0 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Janeta Haylock"
+}, {
+  "id": "7289d7fb-dfd4-4c2b-9137-a5bed69e74dc",
+  "requestType": "Review new client",
+  "name": "Waelchi-Adams",
+  "clientType": "General partnership",
+  "updated": "{{now offset='-6 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "In progres",
+  "user": "Reeba Millmoe"
+}, {
+  "id": "bfcfb734-bffc-4e11-bdad-8ce41e21abbf",
+  "requestType": "Review new client",
+  "name": "Bednar and Sons",
+  "clientType": "Individual",
+  "updated": "{{now offset='-7 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Lyndel Sabates"
+}, {
+  "id": "db3fd2c2-57f6-4adf-9434-9a6187892e88",
+  "requestType": "Auto approved client",
+  "name": "Renner, Gleason and Fahey",
+  "clientType": "Unregistered sole proprietorship",
+  "updated": "{{now offset='-1 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Dom Kennet"
+}, {
+  "id": "fbde3201-fdaf-4b34-90b6-2f2c9b77ee7d",
+  "requestType": "Review new client",
+  "name": "Anderson-Paucek",
+  "clientType": "Corporation",
+  "updated": "{{now offset='-0 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Lucio Elcoate"
+}, {
+  "id": "508cf8fc-1313-4d8b-8078-e513f6cd41c4",
+  "requestType": "Auto approved client",
+  "name": "Green-Thiel",
+  "clientType": "Unregistered sole proprietorship",
+  "updated": "{{now offset='-0 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "In progres",
+  "user": "Meta Tunsley"
+}, {
+  "id": "89ac5001-2248-4aa0-946f-c65cded3b95c",
+  "requestType": "Auto approved client",
+  "name": "Kihn, Jacobi and Wolf",
+  "clientType": "General partnership",
+  "updated": "{{now offset='-0 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Drake Drieu"
+}, {
+  "id": "055551fe-f09a-47c2-a3fc-497c9514f434",
+  "requestType": "Auto approved client",
+  "name": "Morissette-Mohr",
+  "clientType": "Individual",
+  "updated": "{{now offset='-1 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Milli Wilse"
+}, {
+  "id": "795bcef3-2e2e-45b4-bc7f-34f91f2032eb",
+  "requestType": "Auto approved client",
+  "name": "Dach, Wisozk and Weimann",
+  "clientType": "General partnership",
+  "updated": "{{now offset='-1 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Rejected",
+  "user": "Annabal Slyvester"
+}]

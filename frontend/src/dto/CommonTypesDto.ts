@@ -73,3 +73,13 @@ export interface ProgressNotification {
   kind: ProgressNotificationKind
   value?: number | number[] | boolean
 }
+
+export interface SubmissionList {
+  id: string
+  name: string
+  status: string
+  updated: string
+  user: string
+  requestType: string
+  clientType: string
+}
