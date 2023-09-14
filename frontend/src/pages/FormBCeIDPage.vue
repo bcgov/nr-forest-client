@@ -71,8 +71,6 @@ let formData = reactive<FormDataDto>({
   },
 });
 
-const rawExtraErrors = reactive<Record<string, ValidationMessageType>>({})
-
 const locations = computed(() =>
   formData.location.addresses.map((address: any) => address.locationName)
 );
@@ -209,7 +207,7 @@ const checkStepValidity = (stepNumber: number): boolean => {
 
   if(!progressData[stepNumber]
     .extraValidations
-    .every((validation: any) => runValidation(validation.field, formData, validation.validation, false, rawExtraErrors, true))
+    .every((validation: any) => runValidation(validation.field, formData, validation.validation, true, true))
   )
     return false;
   
@@ -319,7 +317,7 @@ const reEval = () => (revalidateBus.emit())
         </cds-progress-step>
       </cds-progress-indicator>      
       <error-notification-grouping-component
-        :extra-errors="rawExtraErrors"
+        :form-data="formData"
       />
   </div>
 
