@@ -85,13 +85,15 @@ toastBus.on(openToast)
 
       <cds-modal-footer>
           <cds-modal-footer-button 
-            kind="secondary" 
-            data-modal-close>
+            kind="secondary"
+            data-modal-close
+            class="cds--modal-close-btn">
             Cancel
           </cds-modal-footer-button>
           
           <cds-modal-footer-button 
             kind="danger"
+            class="cds--modal-submit-btn"
             v-on:click="deleteContentModal">
             Delete
             <Delete16 slot="icon" />
