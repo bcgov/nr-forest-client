@@ -10,6 +10,7 @@ import type { Address, FormDataDto } from '@/dto/ApplyClientNumberDto';
 
 const props = defineProps<{
   formData: FormDataDto
+  scrollToNewContact: () => void
 }>()
 
 const nonAssociatedAddressList = reactive<string[]>([])
