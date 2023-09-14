@@ -1,5 +1,5 @@
 <template>
-  <div class="bx--content">
+  <div>
     <div class="waiting">
       <bx-loading type="small"> </bx-loading>
     </div>

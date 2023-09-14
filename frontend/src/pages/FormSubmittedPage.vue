@@ -9,15 +9,12 @@
         We’ll send the client number to {{ submitterInformation?.email }} once
         we confirm the information you provided.
       </p>
-      <bx-btn
+      <cds-button
         kind="primary"
-        iconLayout=""
-        class="bx--btn"
         @click.prevent="newFormSubmission()"
-        size="field"
-      >
+        size="field">
         <span>Create another client</span>
-      </bx-btn>
+      </cds-button>
     </div>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <div class="bx--content">
+  <div>
     <div>Application lists</div>
   </div>
 </template>

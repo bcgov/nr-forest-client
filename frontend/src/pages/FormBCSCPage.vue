@@ -1,5 +1,5 @@
 <template>
-    <div class="bx--content">
+    <div>
       <h1>Test</h1>
     </div>
   </template>
