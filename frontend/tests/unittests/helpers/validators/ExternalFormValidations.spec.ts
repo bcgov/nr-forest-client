@@ -4,8 +4,11 @@ import {
   getField,
   getValidations,
   validate,
-  addValidation 
+  addValidation,
+  runValidation,
 } from '@/helpers/validators/ExternalFormValidations'
+import type { ValidationMessageType } from '@/dto/CommonTypesDto'
+import { useEventBus } from '@vueuse/core'
 
 describe('ExternalFormValidations.ts', () => {
 
@@ -34,6 +37,8 @@ describe('ExternalFormValidations.ts', () => {
       }],
     },
   }
+
+  const isGreaterThanZero = (value: number) => value > 0 ? '' : 'invalid'
 
   it('should get a list of functions for a field', () => {
     addValidation('test', () => '')
@@ -74,5 +79,73 @@ describe('ExternalFormValidations.ts', () => {
   })
   it('should return true for nested fields with conditions', () => {
     expect(validate(['location.addresses.*.postalCode(location.addresses.*.country.text === "CA")'], formDataDto)).toBeTruthy()
+  })
+  describe('runValidation', () => {
+    describe('when target is an array', () => {
+      it('should stop at the first error when exhaustive is false (default)', () => {
+        const target = {
+          foo: [10, 0, 5, 0, 2]
+        }
+        const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification");
+        let count = 0
+        notificationBus.on(() => {
+          count++
+        })
+        const result = runValidation('foo', target, isGreaterThanZero, true)
+        expect(result).toBe(false)
+        expect(count).toEqual(2)
+      })
+      it('should validate every item in the array regardless of finding any error when exhaustive is true', () => {
+        const target = {
+          foo: [10, 0, 5, 0, 2]
+        }
+        const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification");
+        let count = 0
+        notificationBus.on(() => {
+          count++
+        })
+        const result = runValidation('foo', target, isGreaterThanZero, true, true)
+        expect(result).toBe(false)
+        expect(count).toEqual(5)
+      })
+      it('should emit the notification regardless of being valid or invalid', () => {
+        const target = {
+          foo: [10, 0]
+        }
+        const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification");
+        let invalidCount = 0
+        let validCount = 0
+        notificationBus.on((event) => {
+          if (event.errorMsg) {
+            invalidCount++
+          } else {
+            validCount++
+          }
+        })
+        const result = runValidation('foo', target, isGreaterThanZero, true, true)
+        expect(result).toBe(false)
+        expect(invalidCount).toEqual(1)
+        expect(validCount).toEqual(1)
+      })
+      it('should return true when every item is valid', () => {
+        const target = {
+          foo: [10, 20, 30]
+        }
+        const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification");
+        let invalidCount = 0
+        let validCount = 0
+        notificationBus.on((event) => {
+          if (event.errorMsg) {
+            invalidCount++
+          } else {
+            validCount++
+          }
+        })
+        const result = runValidation('foo', target, isGreaterThanZero, true, true)
+        expect(result).toBe(true)
+        expect(invalidCount).toEqual(0)
+        expect(validCount).toEqual(3)
+      })
+    })
   })
 })
