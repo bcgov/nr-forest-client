@@ -46,7 +46,7 @@ const progressIndicatorBus = useEventBus<ProgressNotification>('progress-indicat
 
 
 const router = useRouter();
-const { setScrollPoint } = useFocus();
+const { setScrollPoint, setFocusedComponent } = useFocus();
 const submitterInformation = ForestClientUserSession.user;
 const instance = getCurrentInstance();
 const session = instance?.appContext.config.globalProperties.$session;
@@ -207,7 +207,7 @@ const checkStepValidity = (stepNumber: number): boolean => {
 
   if(!progressData[stepNumber]
     .extraValidations
-    .every((validation: any) => runValidation(validation.field, formData, validation.validation, true))
+    .every((validation: any) => runValidation(validation.field, formData, validation.validation, true, true))
   )
     return false;
   
@@ -295,6 +295,18 @@ progressIndicatorBus.on((event: ProgressNotification) => {
 });
 
 const reEval = () => (revalidateBus.emit())
+
+const contactWizardRef = ref<InstanceType<typeof ContactWizardStep> | null>(null)
+
+const scrollToNewContact = () => {
+  if (contactWizardRef.value) {
+    // Skip auto-focus so to do it only when scroll is done.
+    const index = contactWizardRef.value.addContact(false) - 1;
+    setScrollPoint(`additional-contact-${index}`, undefined, () => {
+      setFocusedComponent(`addressname_${index}`);
+    });
+  }
+}
 </script>
 
 <template>
@@ -316,7 +328,10 @@ const reEval = () => (revalidateBus.emit())
           <span class="cds--progress-label">{{ item.title }}</span>
         </cds-progress-step>
       </cds-progress-indicator>      
-    <error-notification-grouping-component />
+      <error-notification-grouping-component
+        :form-data="formData"
+        :scroll-to-new-contact="scrollToNewContact"
+      />
   </div>
 
   <div class="form-steps">
@@ -394,6 +409,7 @@ const reEval = () => (revalidateBus.emit())
             v-model:data="formData"
             :active="currentTab == 2"
             @valid="validateStep"
+            ref="contactWizardRef"
           />
       </div>
     </div>

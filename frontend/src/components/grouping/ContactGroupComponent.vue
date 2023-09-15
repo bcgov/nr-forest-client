@@ -93,6 +93,14 @@ const nameTypesToCodeDescr = (
 onMounted(() =>{
   setFocusedComponent(`address_${props.id}`,800)
 })
+
+const updateContactType = (
+  value: CodeNameType | undefined,
+) => {
+  if (value) {
+    selectedValue.contactType = { value: value.code, text: value.name }
+  }
+}
 </script>
 
 <template>
@@ -124,9 +132,7 @@ onMounted(() =>{
       ...getValidations('location.contacts.*.contactType.text'),
       submissionValidation(`location.contacts[${id}].contactType`)
     ]"
-    @update:selected-value="
-      selectedValue.contactType = nameTypeToCodeDescr($event)
-    "
+    @update:selected-value="updateContactType($event)"
     @empty="validation.contactType = !$event"
   />
 

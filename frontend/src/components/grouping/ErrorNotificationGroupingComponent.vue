@@ -1,11 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 // Carbon
 import '@carbon/web-components/es/components/notification/index';
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
 import type { ValidationMessageType, ProgressNotification } from '@/dto/CommonTypesDto'
+import type { Address, FormDataDto } from '@/dto/ApplyClientNumberDto';
+
+const props = defineProps<{
+  formData: FormDataDto
+  scrollToNewContact: () => void
+}>()
+
+const nonAssociatedAddressList = reactive<string[]>([])
+
+const locations = computed(() =>
+  props.formData.location.addresses.map((address: Address) => address.locationName)
+);
+
+watch(locations, (locations) => {
+  // Iterates backwards to prevent issues after removing an item from the list
+  for (let index = nonAssociatedAddressList.length - 1; index >= 0; index--) {
+    const addressName = nonAssociatedAddressList[index];
+    if (!locations.includes(addressName)) { // The address does not exist anymore
+      // Remove it from the error list
+      nonAssociatedAddressList.splice(index, 1)
+    }
+  }
+})
 
 // Define the bus to receive the global error messages and one to send the progress indicator messages
 const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification");
@@ -30,22 +53,22 @@ const handleErrorMessage = (event: ValidationMessageType|undefined, payload?:any
     // Handling address without association
   } else if(event && event.fieldId.startsWith('location.addresses[') && event.fieldId.endsWith('].locationName')){
     if(payload){
-      // Show as inline notification
-      globalErrorMessage.value = { fieldId: 'missing.address.assigned', errorMsg: payload };
-      // Emit back to the form so it can be displayed as a field error
-      errorBus.emit([
-        {fieldId: event.fieldId, errorMsg: 'You must associate a contact with this address or remove it'},
-        {fieldId: event.fieldId.replace('locationName','country'), errorMsg: 'You must associate a contact with this address or remove it'},
-        {fieldId: event.fieldId.replace('locationName','streetAddress'), errorMsg: 'You must associate a contact with this address or remove it'},
-        {fieldId: event.fieldId.replace('locationName','city'), errorMsg: 'You must associate a contact with this address or remove it'},
-        {fieldId: event.fieldId.replace('locationName','province'), errorMsg: 'You must associate a contact with this address or remove it'},
-        {fieldId: event.fieldId.replace('locationName','postalCode'), errorMsg: 'You must associate a contact with this address or remove it'}
-      ]);
-      // Make step 2 with error
-      progressIndicatorBus.emit({ kind: 'error', value: [1,2]})
+      if(event.errorMsg){ // The address is missing association
+        const foundIndex = nonAssociatedAddressList.indexOf(payload)
+        if (foundIndex === -1) {
+          // Add it to the error list
+          nonAssociatedAddressList.push(payload)
+        }
+      } else { // The address is properly associated
+        const foundIndex = nonAssociatedAddressList.indexOf(payload)
+        if (foundIndex >= 0) {
+          // Remove it from the error list
+          nonAssociatedAddressList.splice(foundIndex, 1)
+        }
+      }
     }
-  } else { 
-    globalErrorMessage.value = event; 
+  } else {
+    globalErrorMessage.value = event;
   }
 }
 
@@ -60,7 +83,7 @@ const goToStep = (step: number) => {
 
 </script>
 <template>
-  <div class="top-notification" v-if="globalErrorMessage?.fieldId">
+  <div class="top-notification" v-if="globalErrorMessage?.fieldId || nonAssociatedAddressList.length > 0">
 
     <cds-inline-notification
         v-if="globalErrorMessage?.fieldId === 'missing.info'"
@@ -115,15 +138,18 @@ const goToStep = (step: number) => {
   </cds-actionable-notification>
 
   <cds-inline-notification
-    v-if="globalErrorMessage?.fieldId === 'missing.address.assigned'"
+    v-for="item in nonAssociatedAddressList"
+    :key="item"
     v-shadow="true"
     low-contrast="true"
     hide-close-button="true"
     open="true"
     kind="error"
-    title="Address without a contact:"
-  >    
-    <div>Looks like "{{ globalErrorMessage.errorMsg }}" doesn’t have a contact. You must associate it with an existing contact or add a new contact before submitting the application again.</div>    
+  >
+    <p class="body-compact-01">
+      <span class="heading-compact-01 heading-compact-01-dark">Assigned contact required:</span>
+      You must associate <span class="heading-compact-01 heading-compact-01-dark">“{{ item }}”</span> address with an existing contact or <a href="#" @click.prevent="scrollToNewContact">add a new contact</a> before submitting the application again.
+    </p>
   </cds-inline-notification>
   </div>
 </template>
