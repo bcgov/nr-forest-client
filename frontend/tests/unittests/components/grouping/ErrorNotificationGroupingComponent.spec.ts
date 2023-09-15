@@ -106,7 +106,7 @@ describe('Error Notification Grouping Component', () => {
         const elements = wrapper.findAll('cds-inline-notification');
         expect(elements).toHaveLength(3)
       })
-      it("gets rid of a notification when an event for the corresponding item arrives with no error message", async () => {
+      it("clears the notification when an event with no error message for the corresponding location arrives", async () => {
         notificationBus.emit({
           fieldId: 'location.addresses[2].locationName',
           errorMsg: '' // empty means valid
@@ -126,7 +126,7 @@ describe('Error Notification Grouping Component', () => {
         expect(elements[0].text()).toContain(locationNames[1])
         expect(elements[1].text()).toContain(locationNames[3])
       })
-      it("gets rid of a notification when the corresponding location has been removed", async () => {
+      it("clears the notification when the corresponding location has been removed", async () => {
         const newLocationNames = [...locationNames];
         newLocationNames.splice(2, 1); // removing #2
         await wrapper.setProps({
@@ -137,8 +137,6 @@ describe('Error Notification Grouping Component', () => {
           },
           scrollToNewContact: () => {}
         })
-
-        await nextTick()
     
         const elements = wrapper.findAll('cds-inline-notification');
         expect(elements).toHaveLength(2)
@@ -157,6 +155,21 @@ describe('Error Notification Grouping Component', () => {
           fieldId: 'location.addresses[2].locationName',
           errorMsg: 'This value is invalid!'
         }, locationNames[2])
+    
+        await nextTick()
+    
+        const elements = wrapper.findAll('cds-inline-notification');
+        expect(elements).toHaveLength(3) // still 3 notifications just like before
+        for (let index = 0; index < elements.length; index++) {
+          const element = elements[index];
+          expect(element.text()).toContain(locationNames[index + 1])
+        }
+      })
+      it("ignores a valid event when the corresponding location was already valid", async () => {
+        notificationBus.emit({
+          fieldId: 'location.addresses[0].locationName',
+          errorMsg: ''
+        }, locationNames[0])
     
         await nextTick()
     
