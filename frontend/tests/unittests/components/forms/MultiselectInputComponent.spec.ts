@@ -91,6 +91,26 @@ describe('MultiselectInputComponent', () => {
     expect(wrapper.emitted('empty')![1][0]).toBe(false)
   })
 
+  it('should emit not empty when selectedValues is not empty', async () => {
+    const wrapper = mount(MultiselectInputComponent, {
+      props: {
+        id: 'test',
+        label: 'test',
+        tip: '',
+        modelValue: [
+          { code: 'A', name: 'Value A' },
+          { code: 'B', name: 'Value B' }
+        ],
+        initialValue: '',
+        validations: [],
+        selectedValues: ['Value A']
+      }
+    })
+
+    expect(wrapper.emitted('empty')).toBeTruthy()
+    expect(wrapper.emitted('empty')![0][0]).toBe(false)
+  })
+
   it('should validate and emit error if required', async () => {
     const wrapper = mount(MultiselectInputComponent, {
       props: {
@@ -157,34 +177,6 @@ describe('MultiselectInputComponent', () => {
 
     expect(wrapper.emitted('error')).toBeTruthy()
     expect(wrapper.emitted('error')![0][0]).toBe(undefined)
-  })
-
-  it('should select and emit on initial values', async () => {
-    const wrapper = mount(MultiselectInputComponent, {
-      props: {
-        id: 'test',
-        label: 'test',
-        tip: '',
-        modelValue: [
-          { code: 'A', name: 'Value A' },
-          { code: 'B', name: 'Value B' }
-        ],
-        initialValue: '',
-        validations: [],
-        selectedValues: ['Value A']
-      }
-    })
-
-    expect(wrapper.emitted('update:modelValue')).toBeTruthy()
-    expect(wrapper.emitted('update:modelValue')![0][0]).toStrictEqual(['Value A'])
-
-    expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
-    expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual([
-      {
-        code: 'A',
-        name: 'Value A'
-      }
-    ])
   })
 
   it('should remove selection', async () => {
