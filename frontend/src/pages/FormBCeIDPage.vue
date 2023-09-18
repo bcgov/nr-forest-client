@@ -5,7 +5,7 @@ import '@carbon/web-components/es/components/button/index';
 import '@carbon/web-components/es/components/progress-indicator/index';
 import '@carbon/web-components/es/components/notification/index';
 // Composables
-import { useEventBus } from "@vueuse/core";
+import { useEventBus, useMediaQuery } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useFocus } from "@/composables/useFocus";
 import { usePost } from "@/composables/useFetch";
@@ -307,6 +307,8 @@ const scrollToNewContact = () => {
     });
   }
 }
+
+const isSmallScreen = useMediaQuery('(max-width: 671px)')
 </script>
 
 <template>
@@ -315,19 +317,19 @@ const scrollToNewContact = () => {
       <span class="heading-05" data-scroll="top">New client application</span>
       <p class="body-01">All fields are mandatory</p>
     </div>
-    <cds-progress-indicator space-equally>
+      <cds-progress-indicator space-equally :vertical="isSmallScreen">
         <cds-progress-step 
           v-for="item in progressData"
           :key="item.step"
+          :label="item.title"
           :secondary-label="item.subtitle"
           :state="item.kind"
           :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"
           v-on:click="goToStep(item.step)"
           :disabled="item.disabled"
-          >
-          <span class="cds--progress-label">{{ item.title }}</span>
-        </cds-progress-step>
-      </cds-progress-indicator>      
+          v-shadow="3"
+          />
+      </cds-progress-indicator>
       <error-notification-grouping-component
         :form-data="formData"
         :scroll-to-new-contact="scrollToNewContact"

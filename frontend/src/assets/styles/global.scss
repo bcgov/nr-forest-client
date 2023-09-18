@@ -77,14 +77,13 @@ cds-button span {
   --cds-border-subtle: var(--light-theme-miscellaneous-interactive);
 }
 
-.cds--progress-label {
-  overflow: visible !important;
+cds-progress-step[vertical] {
+  width: fit-content;
 }
 
-.cds--progress-label:hover {
-  box-shadow: none !important;
-  text-decoration: underline;
-  text-underline-offset: 0.325rem;
+cds-progress-step::part(cds--progress-label) {
+  max-width: initial;
+  padding-right: 0.5rem;
 }
 
 cds-inline-notification::part(div),
