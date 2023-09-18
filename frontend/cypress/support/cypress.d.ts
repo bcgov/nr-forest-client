@@ -9,5 +9,6 @@ declare namespace Cypress {
       expireCookie(name: string): Chainable<void>;
       login(email: string, name: string, provider: string): Chainable<void>;
       logout(): Chainable<void>;
+      getMany(names: string[]): Chainable<any[]>;
   }
 }

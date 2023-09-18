@@ -81,3 +81,13 @@ Cypress.Commands.add('logout', () => {
   cy.reload()
   cy.wait(1000)
 })
+
+Cypress.Commands.add('getMany', (names: string[]): Cypress.Chainable<any[]> => {
+  const values: any[] = []
+
+  for (const arg of names) {
+    cy.get(arg).then((value) => values.push(value))
+  }
+
+  return cy.wrap(values)
+})
