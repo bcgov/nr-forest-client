@@ -50,14 +50,11 @@ globalValidations['location.addresses.*.province.text'] = [isNotEmpty('You must 
 globalValidations['location.addresses.*.city'] = [
   isNotEmpty('You must provide a city'),
   isMinSize(
-    'The city name must be between 3 and 50 characters and cannot contain special characters',
+    'The city name must be between 3 and 50 characters',
   )(3),
   isMaxSize(
-    'The city name must be between 3 and 50 characters and cannot contain special characters',
-  )(50),
-  isNoSpecialCharacters(
-    'The city name must be between 3 and 50 characters and cannot contain special characters',
-  ),
+    'The city name must be between 3 and 50 characters',
+  )(50)
 ]
 globalValidations['location.addresses.*.streetAddress'] = [
   isNotEmpty('Please provide a valid address or PO Box'),
