@@ -20,6 +20,12 @@
   --dark-theme-link-link-secondary-hover: #005cb8;
   --dark-theme-link-link-inverse: #005cb8;
   --dark-theme-link-link-visited: #c59af1;
+  --dark-theme-focus-focus: #ffffff;
+  --dark-theme-button-button-tertiary: #ffffff;
+  --dark-theme-button-button-tertiary-active: #C6C6C8;
+  --dark-theme-background-background-hover: rgba(147, 147, 149, 0.16);
+  --dark-theme-background-background-active: rgba(147, 147, 149, 0.40);
+  --dark-theme-text-text-primary: #F3F3F5;
   --light-theme-support-support-info: #00478f;
   --light-theme-notifications-support-info-border: rgba(0, 102, 204, 1);
   --light-theme-notifications-notification-info-background: #c2e0ff;
@@ -74,15 +80,23 @@
 .heading-buttons {
   display: flex;
   gap: 2.5rem;
+  --cds-text-inverse: var(--light-theme-text-text-primary);
+  --cds-button-tertiary: var(--dark-theme-button-button-tertiary);
+  --cds-button-tertiary-hover: var(--dark-theme-focus-focus);
+  --cds-button-tertiary-active: var(--dark-theme-button-button-tertiary-active);
+  
+  --cds-link-primary: var(--border-subtle-02);
+  --cds-link-primary-hover: var(--dark-theme-link-link-primary-hover);
+  --cds-layer-hover: var(--dark-theme-background-background-hover);
+  --cds-background-active: var(--dark-theme-background-background-active);
 }
 
-.cds--logout-btn::part(button) {
-  border-color: #FFFFFF;
-  color: #FFFFFF;
+.heading-buttons cds-button[kind='tertiary']{
+  --cds-button-tertiary: var(--dark-theme-button-button-tertiary);
 }
 
-.cds--help-btn::part(button) {
-  color: #F3F3F5;
+.heading-buttons cds-button[kind='ghost']{
+  --cds-button-tertiary: var(--dark-theme-text-text-primary);
 }
 
 .heading-buttons cds-button span {
