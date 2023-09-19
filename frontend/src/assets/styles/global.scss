@@ -30,6 +30,7 @@
   --light-theme-tag-blue-text:#00478f;
   --light-theme-focus: #0073e6;
   --light-theme-miscellaneous-interactive:#0073E6;
+  --light-theme-background-background-selected: #93939533;
 
   //Primary button
   --cds-interactive-01: #0073E6;
@@ -49,6 +50,9 @@
   //Danger Ghost button
   --cds-danger-01: #e72000;
   --cds-hover-danger: #b32001;
+}
+*, *::before, *::after {
+  box-sizing: unset;
 }
 
 .heading-buttons {
@@ -119,12 +123,24 @@ hr {
   width: 100%;
 }
 
+div#app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
 .bulleted-list {
+  list-style: disc;
+  margin-left: 1.5rem;
+}
+
+.numbered-list {
   list-style: decimal;
   margin-left: 1.5rem;
 }
 
-.bulleted-list li {
+.numbered-list li {
   padding-bottom: 0.625rem;
 }
 
@@ -236,20 +252,23 @@ hr {
   padding: 8.125rem 13.375rem 15rem 2.5rem;
   align-items: center;
   background: var(--light-theme-layer-layer-02, #fff);
+  flex-grow: 1;
 }
 .full {
   margin: 0rem;
   padding-bottom: 0px;
   display: flex;
   align-items: stretch;  
-  overflow: hidden;
+  
   background: var(--light-theme-background-background, #fff);
+  flex-grow: 1;
 }
 .screen {
   margin: 3rem 2.5rem 2.5rem 2.5rem;
   padding-bottom: 0px;
   display: flex;
   background: var(--light-theme-background-background, #fff);
+  flex-grow: 1;
 }
 
 .headers {
@@ -265,7 +284,6 @@ hr {
 .headers-compact {
   display: flex;
   align-items: center;
-  flex: 1 0 0;
   align-self: stretch;
   gap: 1.5rem;
   background: var(--light-theme-background-background-brand, #0073e6);
@@ -415,6 +433,27 @@ hr {
   line-height: 1.25rem; /* 142.857% */
   letter-spacing: 0.01rem;
 }
+.body-compact-01-colorless {
+
+  /* Body styles/body-compact-01 */
+  font-family:BC Sans, sans-serif;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.25rem; /* 142.857% */
+  letter-spacing: 0.01rem;
+}
+
+.heading-compact-02, cds-accordion-item::part(title) {
+  color: var(--light-theme-text-text-primary, #131315);
+
+  /* Fixed heading styles/heading-compact-02 */
+  font-family: BC Sans;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.375rem; /* 137.5% */
+}
 
 .content {
   flex-grow: 1;
@@ -441,13 +480,11 @@ hr {
   align-items: stretch;
 }
 
-// TODO: must fix this
-.submission-content {  
+.submission-list {  
   padding: 2.5rem 0rem;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-	align-content: stretch;
   gap: 2rem;
   flex-shrink: 0;
   flex-grow: 1;
@@ -455,6 +492,23 @@ hr {
 
 .submission-sidebar {
   width: 16rem;
+  border-right: solid 1px var(--light-theme-background-background-selected);
+}
+
+.submission-content {  
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3rem;
+  flex-shrink: 0;
+  flex-grow: 1;
+}
+
+.submission-details--title{
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .form-header {
@@ -646,6 +700,24 @@ hr {
   background: #fff;
 }
 
+.grouping-05-internal {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;  
+  gap: 2.5rem;
+  background: #fff;
+}
+
+.grouping-05-short {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
+  background: #fff;
+}
+
 .grouping-06 {
   display: flex;
   flex-direction: column;
@@ -674,6 +746,60 @@ hr {
   gap: 0.5rem;
   padding-top: 2rem;
   padding-bottom: 1.5rem;
+}
+
+.grouping-10 {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 2rem;  
+}
+.grouping-10-internal {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 0 0 2rem 1rem;
+}
+
+.grouping-11 {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0px;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.grouping-12 {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.grouping-13 {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 2.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
+  background: #fff;
+}
+.grouping-14{
+  flex-grow: 1;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+.grouping-15 {
+  display: flex;  
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.grouping-divider {
+  margin: 0.5rem 0;
 }
 
 .bx--btn-reset {
@@ -727,14 +853,6 @@ hr {
   align-self: stretch;
 }
 
-bx-modal {
-  display: flex;
-}
-
-bx-modal-footer {
-  align-self: stretch;
-}
-
 .modal-footer {
   justify-content: center;
   align-content: stretch;
@@ -748,6 +866,42 @@ bx-modal-footer {
 
 .bx--modal-btn {
   flex-grow: 1;
+}
+
+cds-accordion-item[open]:not([disabled])::part(content) ,:host(cds-accordion-item[open]:not([disabled])) .cds-ce--accordion__content--md {
+  padding-right: 1rem !important;
+  padding-top: inherit;
+  padding-bottom: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+cds-accordion-item.grouping-05-internal:not([open]) {  
+  padding-bottom: 2rem;
+}
+
+.mg-sd-25 {
+  margin: 0rem 2.5rem;
+}
+.sp-1 {
+  display: flex;
+  gap: 1rem;
+}
+.mg-tl-2 {
+  margin-top: 2rem;
+  margin-left: 2rem;
+}
+
+cds-accordion-item.grouping-05-internal::part(title) {
+  margin-top: 2rem;
+  margin-left: 2rem;
+}
+
+.submission-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 /* Small (up to 320px) */
@@ -968,19 +1122,9 @@ bx-modal-footer {
   }
 }
 
-// TODO: move from here or use another one
-.mg-sd-25 {
-  margin: 0rem 2.5rem;
+b {
+  font-weight: 700;
 }
-
-.debug-01 {
-  border: solid 3px red;
-}
-
-.debug-02 {
-  border: solid 3px green;
-}
-
-.debug-03 {
-  border: solid 3px blue;
+cds-modal {
+  border-radius: 0.25rem;
 }
