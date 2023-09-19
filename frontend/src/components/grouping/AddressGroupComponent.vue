@@ -334,7 +334,7 @@ onMounted(() =>{
     :enabled="true"
     :error-message="addressError"
     v-model="modelValue.postalCode"
-    :masked="postalCodeMask"
+    :mask="postalCodeMask"
     :validations="postalCodeValidators"
     @error="validation.postalCode = !$event"
     @empty="validation.postalCode = !$event"
