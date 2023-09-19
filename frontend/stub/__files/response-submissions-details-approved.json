@@ -1,0 +1,52 @@
+{
+    "submissionId": 8,
+    "submissionStatus": "New",
+    "submissionType": "Auto approved client",
+    "submittedTimestamp": "2023-09-14T10:08:47.365675",
+    "updateTimestamp": "2023-09-14T10:08:47.365675",
+    "updateUser": "AUTO-PROCESSOR",
+    "business": {
+        "businessType": "Registered Business",
+        "incorporationNumber": "XX7654321",
+        "clientNumber":"03441141",
+        "organizationName": "Christiansen LLC",
+        "clientType": "Unregistered sole proprietorship",
+        "goodStanding": "Y"
+    },
+    "contact": [
+        {
+            "index": 0,
+            "contactType": "Accounts Receivable",
+            "firstName": "Test",
+            "lastName": "Uat",
+            "phoneNumber": "(123) 123-1231",
+            "emailAddress": "uattest@gov.bc.ca",
+            "locations": [
+                "Mailing address",
+                "Accountant's address"
+            ],
+            "userId": "1d676db1-7b48-4ed3-bdd3-10718bb39c5b"
+        }
+    ],
+    "address": [
+        {
+            "index": 0,
+            "streetAddress":"547 Richmond Ave",
+            "country":"Canada",
+            "province":"Saskatchewan",
+            "city":"Hampton",
+            "postalCode":"P5Q7S4",
+            "name": "Mailing address"
+        },
+        {
+            "index": 1,
+            "streetAddress":"6163 Oak St",
+            "country":"Canada",
+            "province":"British Columbia",
+            "city":"Deer Lake",
+            "postalCode":"G3F6J5",
+            "name": "Accountant's address"
+        }
+    ],
+    "matchers": {}
+}

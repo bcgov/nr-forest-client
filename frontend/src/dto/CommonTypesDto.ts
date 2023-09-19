@@ -83,3 +83,51 @@ export interface SubmissionList {
   requestType: string
   clientType: string
 }
+
+export interface SubmissionDetails {
+  submissionId: number
+  submissionStatus: string
+  submissionType: string
+  submittedTimestamp: string
+  updateTimestamp: string
+  updateUser: string
+  business: SubmissionDetailsBusiness
+  contact: SubmissionDetailsContact[]
+  address: SubmissionDetailsAddress[]
+  matchers: SubmissionDetailsMatchers
+}
+
+export interface SubmissionDetailsBusiness {
+  businessType: string
+  incorporationNumber: string
+  clientNumber: string
+  organizationName: string
+  clientType: string
+  goodStanding: string
+}
+
+export interface SubmissionDetailsContact {
+  index: number
+  contactType: string
+  firstName: string
+  lastName: string
+  phoneNumber: string
+  emailAddress: string
+  locations: string[]
+  userId: string
+}
+
+export interface SubmissionDetailsAddress {
+  index: number
+  streetAddress: string
+  country: string
+  province: string
+  city: string
+  postalCode: string
+  name: string
+}
+
+export interface SubmissionDetailsMatchers {
+  goodStanding: string
+  legalName: string
+}

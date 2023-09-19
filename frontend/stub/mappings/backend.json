@@ -280,6 +280,31 @@
         "bodyFileName": "response-submissions-search.json",
         "transformers": ["response-template"]
       }
+    },
+    {
+      "name":"Submission Details Review",
+      "request": {
+        "urlPattern": "/api/clients/submissions/(.*)",
+        "method": "GET"        
+      },
+      "response": {
+        "status": 200,        
+        "bodyFileName": "response-submissions-details-review.json",
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "name":"Submission Details Approved",
+      "request": {
+        "urlPath": "/api/clients/submissions/a17d274f-3f5f-425b-b94e-757fea4dcfbb",
+        "method": "GET"        
+      },
+      "response": {
+        "status": 200,        
+        "bodyFileName": "response-submissions-details-approved.json",
+        "transformers": ["response-template"]
+      }
     }
   ]
 }
+
