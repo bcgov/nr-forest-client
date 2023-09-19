@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref } from 'vue';
+import { useMediaQuery } from '@vueuse/core';
 // Carbon
 import '@carbon/web-components/es/components/button/index';
 // Types
 import { nodeEnv, appVersion } from '@/CoreConstants';
 // @ts-ignore
 import Logout16 from '@carbon/icons-vue/es/logout/16';
+// @ts-ignore
 import Help16 from '@carbon/icons-vue/es/help/16';
 
 const envPrefix = "openshift-";
@@ -13,14 +15,8 @@ const env = ref(nodeEnv);
 env.value = env.value.slice(envPrefix.length);
 env.value = env.value.charAt(0).toUpperCase() + env.value.slice(1);
 
-const screenWidth = ref(window.outerWidth);
-const updateScreenWidth = () => (screenWidth.value = window.outerWidth);
-
-// Use computed property to determine if it's a small screen
-const isSmallScreen = computed(() => screenWidth.value <= 320);
-const isMediumScreen = computed(() => screenWidth.value <= 671);
-
-onMounted(() => window.addEventListener('resize', updateScreenWidth));
+const isSmallScreen = useMediaQuery('(max-width: 320px)')
+const isMediumScreen = useMediaQuery('(min-width: 321px) and (max-width: 671px)')
 
 const helpModalActive = ref(false);
 const logoutModalActive = ref(false);
