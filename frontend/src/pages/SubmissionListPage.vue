@@ -11,34 +11,48 @@ import '@carbon/web-components/es/components/tag/index';
 import '@carbon/web-components/es/components/tooltip/index';
 // Composables
 import { useFetchTo } from '@/composables/useFetch'
+import { useRouter } from 'vue-router'
 // Types
 import type {SubmissionList} from '@/dto/CommonTypesDto'
 import { formatDistanceToNow, format} from 'date-fns'
 // @ts-ignore
-import Filter16 from '@carbon/icons-vue/es/filter/16';
-// @ts-ignore
 import Result16 from '@carbon/icons-vue/es/result/16';
+// @ts-ignore
+import Approved16 from '@carbon/icons-vue/es/task--complete/16';
+// @ts-ignore
+import Review16 from '@carbon/icons-vue/es/data--view--alt/16';
+
+const router = useRouter()
 
 // Reference for the skelleton table
-const skeleton = ref(null)
-const searchbox = ref(null)
-const tb = ref('')
+const skeletonReference = ref(null)
+const tableReference = ref('')
+const paginationReference = ref(null)
 
+// Table data
 const tableData = ref<SubmissionList[]>([]);
-const pageNumber = ref(0)
-const pageSize = ref(10)
+const pageNumber = ref(1)
 const totalItems = ref(0)
-const uri = computed(() => `/api/clients/submissions?page=${pageNumber.value}&size=${pageSize.value}${tb.value}`);
+const pageSize = ref(10)
+
+// Request data that changes based on the pagination
+const uri = computed(() => `/api/clients/submissions?page=${pageNumber.value-1}&size=${pageSize.value}${tableReference.value}`);
 const {response, fetch, loading } = useFetchTo(uri, tableData)
 
-watch(uri, fetch)
-watch(response,() => (totalItems.value = parseInt(response.value.headers['x-total-count'] || '0')))
+// Watch for changes on the uri to fetch the new data
+watch(uri, () =>{
+  if(!loading.value)
+    fetch()
+})
+// Update the total items on the table
+watch(response,() => totalItems.value = parseInt(response.value.headers['x-total-count'] || '0'))
 
+// Update values on pagination
 const paginate = (event:any) =>{  
   pageNumber.value = (event.detail.page-1)
   pageSize.value = event.detail.pageSize
 }
-
+// Update the tag colors
 const tagColor = (status: string) =>{
   switch(status){
     case 'New':
@@ -51,17 +65,19 @@ const tagColor = (status: string) =>{
       return 'purple'
   }
 }
-
-const selectEntry = (id:string) => {
-  console.log(`Selected entry ${id}`)
+// Select an entry to go to the details page
+const selectEntry = (entry:SubmissionList) => {
+  const params = { id: entry.id }
+  if(entry.requestType !== 'Submission pending processing') router.push({ name: "review", params });
 }
-
+// Format the date to a friendly format
 const friendlyDate = (date:string):string => {
   return `${formatDistanceToNow(new Date(date))} ago`
 }
 const formattedDate = (date:string):string => {
   return format(new Date(date),'MMM dd, yyyy')
 }
+// Normalize the string to capitalize the first letter of each word
 const normalizeString = (input:string):string => {  
   const words = input.split(' ');
   const capitalizedWords = words.map(word => {    
@@ -73,28 +89,32 @@ const normalizeString = (input:string):string => {
   });  
   return capitalizedWords.join(' ');
 }
-
+// Get the icon for the row
+const iconForRow = (row:SubmissionList) => {
+  if(row.requestType === 'Auto approved client') return Approved16    
+  return Review16  
+}
 // Disable the skelleton table header
 const disableSkelleton = () => {
-  if(skeleton && skeleton.value){
-    skeleton.value.showHeader = false
-    skeleton.value.showToolbar = false
+  if(skeletonReference && skeletonReference.value){
+    skeletonReference.value.showHeader = false
+    skeletonReference.value.showToolbar = false
   }
 }
 // This is to make the skelleton data-table to hide some elements
 onMounted(() => {  
   disableSkelleton()
-  watch(skeleton,disableSkelleton)
+  watch(skeletonReference,disableSkelleton)
 })
-</script>
 
+</script>
 
 <template>
 
   <div id="side" class="submission-sidebar"> 
     <cds-side-nav>
       <cds-side-nav-items>
-        <cds-side-nav-link active href="javascript:void(0)" large>
+        <cds-side-nav-link active href="/submissions" large>
           <span>Submissions</span>
           <Result16 slot="title-icon" />
         </cds-side-nav-link>
@@ -103,7 +123,7 @@ onMounted(() => {
   
   </div>
 
-  <div id="screen" class="submission-content">
+  <div id="screen" class="submission-list">
     
     <div id="title">
       <div>
@@ -128,44 +148,58 @@ onMounted(() => {
         </cds-table-head>
 
         <cds-table-body>
-          <cds-table-row v-for="row in tableData" :key="row.name" @click="selectEntry(row.id)">
-            <cds-table-cell>{{ row.requestType }}</cds-table-cell>
-            <cds-table-cell>{{ normalizeString(row.name) }}</cds-table-cell>
-            <cds-table-cell>{{row.clientType}}</cds-table-cell>
+          <cds-table-row v-for="row in tableData" :key="row.name" @click="selectEntry(row)">
             <cds-table-cell>
-              {{ (row.user || '') }} 
-              <cds-tooltip align="top">
-                <div class="sb-tooltip-trigger" aria-labelledby="content">| {{ friendlyDate(row.updated) }}</div>
-                <cds-tooltip-content id="content">{{ formattedDate(row.updated) }}</cds-tooltip-content>
-              </cds-tooltip>
+              <div class="sp-1">
+                <component
+                  data-testid="display-row-icon"
+                  :is="iconForRow(row)"      
+                  :alt="row.requestType"
+                />
+                <span>{{ row.requestType }}</span>
+              </div>
             </cds-table-cell>
-            <cds-table-cell><cds-tag :type="tagColor(row.status)"><span>{{ row.status }}</span></cds-tag></cds-table-cell>
+            <cds-table-cell><span>{{ normalizeString(row.name) }}</span></cds-table-cell>
+            <cds-table-cell><span>{{row.clientType}}</span></cds-table-cell>
+            <cds-table-cell>
+              <div>
+                {{ (row.user || '') }} 
+                <cds-tooltip align="top">
+                  <div class="sb-tooltip-trigger" aria-labelledby="content">| {{ friendlyDate(row.updated) }}</div>
+                  <cds-tooltip-content id="content">{{ formattedDate(row.updated) }}</cds-tooltip-content>
+                </cds-tooltip>              
+              </div>
+            </cds-table-cell>
+            <cds-table-cell>
+              <div>
+                <cds-tag :type="tagColor(row.status)"><span>{{ row.status }}</span></cds-tag>
+              </div>
+            </cds-table-cell>
           </cds-table-row>
         </cds-table-body>
       </cds-table>
 
       <cds-table-skeleton
         v-else
-        ref="skeleton"
+        ref="skeletonReference"
         zebra
         :row-count="pageSize"
         :headers="['Submission type','Client name','Client type','Last updated','Submission status']"
         />
       
       <cds-pagination 
-        v-if="!loading"
-        items-per-page-text="Submissions per page"
+        ref="paginationReference"
+        items-per-page-text="Submissions per page"        
         :page-size="pageSize" 
         :total-items="totalItems"
         @cds-pagination-changed-current="paginate"
-        @cds-pagination-page-sizes-select-changed="paginate">
-        <cds-select-item value="10">10</cds-select-item>
-        <cds-select-item value="20">20</cds-select-item>
-        <cds-select-item value="30">30</cds-select-item>
-        <cds-select-item value="40">40</cds-select-item>
-        <cds-select-item value="50">50</cds-select-item>
+        >
+          <cds-select-item :value="10" selected>10</cds-select-item>
+          <cds-select-item :value="20">20</cds-select-item>
+          <cds-select-item :value="30">30</cds-select-item>
+          <cds-select-item :value="40">40</cds-select-item>
+          <cds-select-item :value="50">50</cds-select-item>
       </cds-pagination>
-
     </div>
   </div>
 
