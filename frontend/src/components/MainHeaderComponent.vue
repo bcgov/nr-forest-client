@@ -53,16 +53,19 @@ const logoutModalActive = ref(false);
       id="help-btn"
       data-id="help-btn"
       kind="ghost"
+      class="cds--help-btn"
       :size="(isSmallScreen || isMediumScreen) ? 'sm' : 'lg'"
       @click.prevent="helpModalActive = true"
     >
       <span v-if="!isSmallScreen && !isMediumScreen">Help with application</span>
       <Help16 slot="icon" />
     </cds-button>
+
     <cds-button
       v-if="$session?.isLoggedIn()"
       data-id="logout-btn"
       kind="tertiary"
+      class="cds--logout-btn"
       :size="(isSmallScreen || isMediumScreen) ? 'sm' : 'lg'"
       @click.prevent="logoutModalActive = true"
     >

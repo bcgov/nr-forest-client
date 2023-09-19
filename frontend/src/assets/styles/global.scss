@@ -50,7 +50,7 @@
   --cds-button-tertiary-hover: #0052a3;
   --cds-button-tertiary-active: #00478F;
 
-  //Danger Ghost button
+  //Danger button
   --cds-button-danger: #e72000;
   --cds-button-danger-hover: #b32001;
   --cds-button-danger-active: #801701;
@@ -78,10 +78,15 @@
 .heading-buttons {
   display: flex;
   gap: 2.5rem;
-  --cds-text-inverse: var(--border-subtle-02);
-  --cds-button-tertiary: var(--border-subtle-02);
-  --cds-button-tertiary-hover: var(--others-transparent-transparent);
-  --cds-link-primary: var(--border-subtle-02);
+}
+
+.cds--logout-btn::part(button) {
+  border-color: #FFFFFF;
+  color: #FFFFFF;
+}
+
+.cds--help-btn::part(button) {
+  color: #F3F3F5;
 }
 .heading-buttons cds-button span {
   width: 7rem;
@@ -289,7 +294,7 @@ div#app {
   background-blend-mode: multiply;
 }
 .heading-compact-01 {
-  color: var(--dark-theme-text-text-primary, #f3f3f5);
+  color: var(--dark-theme-text-text-primary, #F3F3F5);
 
   /* Fixed heading styles/heading-compact-01 */
   font-family: BC Sans, sans-serif;
@@ -825,6 +830,8 @@ cds-modal-footer {
 cds-modal-footer-button::part(button) {
   border-radius: 0.25rem;
   height: 75%;
+  margin-bottom: 0;
+  margin-top: auto;
 }
 
 .cds--modal-close-btn {
@@ -869,6 +876,10 @@ cds-accordion-item.grouping-05-internal::part(title) {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+cds-modal {
+  height: 100%;
 }
 
 /* Small (up to 320px) */
