@@ -6,6 +6,7 @@ import '@carbon/web-components/es/components/button/index';
 import { nodeEnv, appVersion } from '@/CoreConstants';
 // @ts-ignore
 import Logout16 from '@carbon/icons-vue/es/logout/16';
+import Help16 from '@carbon/icons-vue/es/help/16';
 
 const envPrefix = "openshift-";
 const env = ref(nodeEnv);
@@ -21,6 +22,7 @@ const isMediumScreen = computed(() => screenWidth.value <= 671);
 
 onMounted(() => window.addEventListener('resize', updateScreenWidth));
 
+const helpModalActive = ref(false);
 const logoutModalActive = ref(false);
 </script>
 
@@ -49,6 +51,17 @@ const logoutModalActive = ref(false);
   <div class="heading-buttons">
 
     <!-- Remember to add profile button here -->
+    
+    <cds-button
+      id="help-btn"
+      data-id="help-btn"
+      kind="ghost"
+      :size="(isSmallScreen || isMediumScreen) ? 'sm' : 'lg'"
+      @click.prevent="helpModalActive = true"
+    >
+      <span v-if="!isSmallScreen && !isMediumScreen">Help with application</span>
+      <Help16 slot="icon" />
+    </cds-button>
     <cds-button
       v-if="$session?.isLoggedIn()"
       data-id="logout-btn"
@@ -62,6 +75,25 @@ const logoutModalActive = ref(false);
   </div>
 
   <cds-modal
+    id="help-modal"
+    size="sm"
+    :open="helpModalActive"
+    @cds-modal-closed="helpModalActive = false"
+  >
+    <cds-modal-header>
+      <cds-modal-close-button></cds-modal-close-button>
+      <cds-modal-heading>
+        Help with application
+      </cds-modal-heading>
+    </cds-modal-header>
+    <cds-modal-body>
+      <p>
+        Can’t proceed with your application? Let us know by emailing your issue to <a href='mailto:forhvap.cliadmin@gov.bc.ca'>forhvap.cliadmin@gov.bc.ca</a> and we’ll get back to you.
+      </p>
+    </cds-modal-body>
+  </cds-modal>
+
+  <cds-modal
     id="logout-modal"
     size="sm"
     :open="logoutModalActive"
@@ -69,8 +101,8 @@ const logoutModalActive = ref(false);
   >
     <cds-modal-header>
       <cds-modal-close-button></cds-modal-close-button>
-      <cds-modal-heading
-        >Are you sure you want to logout? Your data will not be saved.
+      <cds-modal-heading>
+        Are you sure you want to logout? Your data will not be saved.
       </cds-modal-heading>
     </cds-modal-header>
     <cds-modal-body><p></p></cds-modal-body>
