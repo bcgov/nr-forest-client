@@ -50,22 +50,13 @@ const logoutModalActive = ref(false);
 
     <!-- Remember to add profile button here -->
     <cds-button
-      v-if="$session?.isLoggedIn() && (isSmallScreen || isMediumScreen)"
+      v-if="$session?.isLoggedIn()"
       data-id="logout-btn"
       kind="tertiary"
-      size="sm"
+      :size="(isSmallScreen || isMediumScreen) ? 'sm' : 'lg'"
       @click.prevent="logoutModalActive = true"
     >
-      <Logout16 slot="icon" />
-    </cds-button>
-
-    <cds-button
-      v-if="$session?.isLoggedIn() && (!isSmallScreen && !isMediumScreen)"
-      data-id="logout-btn"
-      kind="tertiary"
-      @click.prevent="logoutModalActive = true"
-    >
-      <span>Logout</span>
+      <span v-if="!isSmallScreen && !isMediumScreen">Logout</span>
       <Logout16 slot="icon" />
     </cds-button>
   </div>
