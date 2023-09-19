@@ -76,13 +76,21 @@
 }
 
 .heading-buttons {
+  display: flex;
+  gap: 2.5rem;
   --cds-text-inverse: var(--border-subtle-02);
   --cds-button-tertiary: var(--border-subtle-02);
   --cds-button-tertiary-hover: var(--others-transparent-transparent);
+  --cds-link-primary: var(--border-subtle-02);
 }
 .heading-buttons cds-button span {
   width: 7rem;
 }
+
+.heading-buttons #help-btn span {
+  width: 9.5rem;
+}
+
 cds-button::part(button) {
   border-radius: 0.25rem;
 }
