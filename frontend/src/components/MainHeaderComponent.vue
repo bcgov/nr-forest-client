@@ -53,7 +53,6 @@ const logoutModalActive = ref(false);
       id="help-btn"
       data-id="help-btn"
       kind="ghost"
-      class="cds--help-btn"
       :size="(isSmallScreen || isMediumScreen) ? 'sm' : 'lg'"
       @click.prevent="helpModalActive = true"
     >
@@ -65,7 +64,6 @@ const logoutModalActive = ref(false);
       v-if="$session?.isLoggedIn()"
       data-id="logout-btn"
       kind="tertiary"
-      class="cds--logout-btn"
       :size="(isSmallScreen || isMediumScreen) ? 'sm' : 'lg'"
       @click.prevent="logoutModalActive = true"
     >
