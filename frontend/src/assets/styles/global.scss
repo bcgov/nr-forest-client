@@ -58,7 +58,7 @@
   --cds-notification-background-info: #C2E0FF;
   --cds-support-info: #0066CC;
 
-  //Inline notifications
+  //Notifications
   --cds-notification-background-info: #C2E0FF;
   --cds-support-info: #0066CC;
 
@@ -178,9 +178,7 @@ div#app {
   right: 1.5625rem;
   top: 5rem;
   border-radius: 0.25rem;
-  background: var(--light-theme-background-background-inverse, #2d2d2f);
   z-index: 999; /* Higher value to ensure it's on top */
-
   /* Light Theme/Shadows/Menu */
   box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.3);
 }
