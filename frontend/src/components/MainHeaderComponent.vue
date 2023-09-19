@@ -20,6 +20,8 @@ const isSmallScreen = computed(() => screenWidth.value <= 320);
 const isMediumScreen = computed(() => screenWidth.value <= 671);
 
 onMounted(() => window.addEventListener('resize', updateScreenWidth));
+
+const logoutModalActive = ref(false);
 </script>
 
 <template>
@@ -52,7 +54,7 @@ onMounted(() => window.addEventListener('resize', updateScreenWidth));
       data-id="logout-btn"
       kind="tertiary"
       size="sm"
-      @click.prevent="$session?.logOut"
+      @click.prevent="logoutModalActive = true"
     >
       <Logout16 slot="icon" />
     </cds-button>
@@ -61,10 +63,44 @@ onMounted(() => window.addEventListener('resize', updateScreenWidth));
       v-if="$session?.isLoggedIn() && (!isSmallScreen && !isMediumScreen)"
       data-id="logout-btn"
       kind="tertiary"
-      @click.prevent="$session?.logOut"
+      @click.prevent="logoutModalActive = true"
     >
       <span>Logout</span>
       <Logout16 slot="icon" />
     </cds-button>
   </div>
+
+  <cds-modal
+    id="logout-modal"
+    size="sm"
+    :open="logoutModalActive"
+    @cds-modal-closed="logoutModalActive = false"
+  >
+    <cds-modal-header>
+      <cds-modal-close-button></cds-modal-close-button>
+      <cds-modal-heading
+        >Are you sure you want to logout? Your data will not be saved.
+      </cds-modal-heading>
+    </cds-modal-header>
+    <cds-modal-body><p></p></cds-modal-body>
+
+    <cds-modal-footer>
+        <cds-modal-footer-button 
+          kind="secondary"
+          data-modal-close
+          class="cds--modal-close-btn">
+          Cancel
+        </cds-modal-footer-button>
+        
+        <cds-modal-footer-button 
+          kind="danger"
+          class="cds--modal-submit-btn"
+          v-on:click="$session?.logOut"
+        >
+          Logout
+          <Logout16 slot="icon" />
+        </cds-modal-footer-button>
+
+      </cds-modal-footer>
+  </cds-modal>
 </template>
