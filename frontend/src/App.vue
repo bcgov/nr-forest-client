@@ -110,6 +110,7 @@ toastBus.on(openToast)
       kind="success"
       :title="toastContent.toastTitle"
       subtitle=""
+      low-contrast="true"
     >
   </cds-toast-notification>
 </template>
