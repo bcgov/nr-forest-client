@@ -4,6 +4,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import SubmissionList from '@/pages/SubmissionListPage.vue'
+import SubmissionReview from '@/pages/SubmissionReviewPage.vue'
 import BCeIDForm from '@/pages/FormBCeIDPage.vue'
 import BCSCForm from '@/pages/FormBCSCPage.vue'
 import FormSubmittedPage from '@/pages/FormSubmittedPage.vue'
@@ -98,6 +99,25 @@ const routes = [
     path: '/submissions',
     name: 'internal',
     component: SubmissionList,
+    props: true,
+    meta: {
+      format: 'full',
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ['idir'],
+      redirectTo: {
+        bceidbusiness: 'form',
+        bcsc: 'form',
+      },
+      style: 'content-stretched',
+      headersStyle: 'headers-compact',
+    },
+  },
+  {
+    path: '/submissions/:id',
+    name: 'review',
+    component: SubmissionReview,
     props: true,
     meta: {
       format: 'full',
