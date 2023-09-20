@@ -15,10 +15,12 @@ const props = defineProps<{
 //Set the initial value to the content
 const content = ref<any>(props.initValue)
 
+const response = ref<any>()
+
 const initialUrlValue = props.url
 const searchURL = computed(() => props.url)
 
-const { loading, error, fetch } = useFetchTo(searchURL, content, {
+const { loading, error, fetch } = useFetchTo(searchURL, response, {
   skip: true,
   ...props.params
 })
@@ -45,7 +47,14 @@ watch(
     if (
       calculateStringDifference(initialUrlValue, props.url) >= props.minLength
     ) {
-      fetch()
+      const fetchUrl = props.url
+      fetch().then(() => {
+        // Make sure the requested input is up-to-date with current user's input.
+        // This prevents an older request which took longer then the newest one from overwriting the results.
+        if (fetchUrl === props.url) {
+          content.value = response.value
+        }
+      })
     }
   }
 )
