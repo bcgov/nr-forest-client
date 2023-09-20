@@ -110,7 +110,7 @@ const submit = (approved:boolean) => {
       headers: {
       "x-user-id": ForestClientUserSession.user?.userId ?? "",
       "x-user-email": ForestClientUserSession.user?.email ?? "",
-      "x-user-name": ForestClientUserSession.user?.firstName ?? "",
+      "x-user-name": `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`,
     },
     }
   );
