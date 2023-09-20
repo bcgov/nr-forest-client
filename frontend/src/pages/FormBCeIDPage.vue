@@ -29,7 +29,7 @@ import {
   addValidation,
   validate,
   runValidation,
-} from "@/helpers/validators/ExternalFormValidations";
+} from "@/helpers/validators/BCeIDFormValidations";
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 // @ts-ignore
