@@ -6,11 +6,11 @@ import {
   validate,
   addValidation,
   runValidation,
-} from '@/helpers/validators/ExternalFormValidations'
+} from '@/helpers/validators/BCeIDFormValidations'
 import type { ValidationMessageType } from '@/dto/CommonTypesDto'
 import { useEventBus } from '@vueuse/core'
 
-describe('ExternalFormValidations.ts', () => {
+describe('BCeIDFormValidations.ts', () => {
 
   const formDataDto = {
     businessInformation: {
