@@ -21,7 +21,6 @@ const setPart = (nodes: HTMLCollection, currentLevel: number, maxLevel: number) 
       const partValues = [node.tagName.toLowerCase()]
       if (node.className) {
         partValues.push(node.className)
-        console.log(node.className)
       }
       node.setAttribute('part', partValues.join(' '))
       if (currentLevel < maxLevel) {
