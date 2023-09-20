@@ -10,7 +10,7 @@ import { useFocus } from '@/composables/useFocus'
 import type { CodeNameType, BusinessSearchResult } from '@/dto/CommonTypesDto'
 import type { Address } from '@/dto/ApplyClientNumberDto'
 // Validators
-import { getValidations } from '@/helpers/validators/ExternalFormValidations'
+import { getValidations } from '@/helpers/validators/BCeIDFormValidations'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
 // @ts-ignore
 import Delete16 from '@carbon/icons-vue/es/trash-can/16'

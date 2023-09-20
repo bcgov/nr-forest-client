@@ -10,6 +10,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["unplugin-icons/types/vue"]
+    "types": ["unplugin-icons/types/vue"],
+    "ignoreDeprecations": "5.0" // To silence the deprecation warning
   }
 }

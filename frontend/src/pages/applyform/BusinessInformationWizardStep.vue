@@ -14,7 +14,7 @@ import type {
   ForestClientDetailsDto
 } from '@/dto/ApplyClientNumberDto'
 // Importing validators
-import { getValidations } from '@/helpers/validators/ExternalFormValidations'
+import { getValidations } from '@/helpers/validators/BCeIDFormValidations'
 import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
 // Importing helper functions
 import { retrieveClientType, exportAddress } from '@/helpers/DataConversors'
