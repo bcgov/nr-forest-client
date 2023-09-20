@@ -304,6 +304,28 @@
         "bodyFileName": "response-submissions-details-approved.json",
         "transformers": ["response-template"]
       }
+    },
+    {
+      "name":"Submission processed successfully",
+      "request": {
+        "urlPattern": "/api/clients/submissions/(.*)",
+        "method": "POST",
+        "headers": {
+          "x-user-id": {
+            "equalTo": "uattest"
+          },
+          "x-user-email": {
+            "equalTo": "uattest@gov.bc.ca"
+          },
+          "x-user-name": {
+            "equalTo": "Uat Test"
+          }
+          }
+        
+      },
+      "response": {
+        "status": 202
+      }
     }
   ]
 }
