@@ -41,7 +41,9 @@ const calculateStringDifference = (
 
 //If initial fetch is required, fetch
 if (props.initFetch) {
-  fetch()
+  fetch().then(() => {
+    content.value = response.value
+  })
 }
 
 //Watch for changes in the url, and if the difference is greater than the min length, fetch

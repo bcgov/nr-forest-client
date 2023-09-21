@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import * as fetcher from '@/composables/useFetch'
 
 import DataFetcher from '@/components/DataFetcher.vue'
@@ -9,7 +9,7 @@ describe('DataFetcher', () => {
   const mockedFetchTo = (url: string, received: any, config: any = {}) => ({
     response: ref({}),
     error: ref({}),
-    data: ref({ name: 'Loaded' }),
+    data: received,
     loading: ref(false),
     fetch: async () => {
       received.value = { name: 'Loaded' }
@@ -56,6 +56,8 @@ describe('DataFetcher', () => {
         default: '<div>slot content is {{ content.name }}</div>'
       }
     })
+
+    await nextTick()
 
     expect(wrapper.html()).toBe('<div>slot content is Loaded</div>')
     expect(wrapper.find('div').text()).toBe('slot content is Loaded')
