@@ -77,6 +77,12 @@ public class ClientController {
         .listClientContactTypeCodes(page, size);
   }
 
+  /**
+   * Retrieve a Flux of ClientLookUpDto objects by searching for clients with a specific name.
+   *
+   * @param name The name to search for.
+   * @return A Flux of ClientLookUpDto objects that match the given name.
+   */
   @GetMapping(value = "/name/{name}")
   public Flux<ClientLookUpDto> findByClientName(
       @PathVariable String name
