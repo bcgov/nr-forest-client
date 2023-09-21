@@ -11,7 +11,7 @@ describe('DataFetcher', () => {
     error: ref({}),
     data: ref({ name: 'Loaded' }),
     loading: ref(false),
-    fetch: () => {
+    fetch: async () => {
       received.value = { name: 'Loaded' }
     }
   })
