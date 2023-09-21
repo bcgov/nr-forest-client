@@ -82,6 +82,8 @@ describe('DataFetcher', () => {
 
     await wrapper.setProps({ url: '/api/data/changed' })
 
+    await nextTick()
+
     expect(wrapper.html()).toBe('<div>slot content is Loaded</div>')
     expect(wrapper.find('div').text()).toBe('slot content is Loaded')
   })
