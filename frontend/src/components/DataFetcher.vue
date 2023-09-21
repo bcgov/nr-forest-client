@@ -17,6 +17,8 @@ const content = ref<any>(props.initValue)
 
 const response = ref<any>()
 
+const lastUpdateRequestId = ref<number>(0)
+
 const initialUrlValue = props.url
 const searchURL = computed(() => props.url)
 
@@ -47,12 +49,12 @@ watch(
     if (
       calculateStringDifference(initialUrlValue, props.url) >= props.minLength
     ) {
-      const fetchUrl = props.url
+      const curRequestId = Date.now()
       fetch().then(() => {
-        // Make sure the requested input is up-to-date with current user's input.
-        // This prevents an older request which took longer then the newest one from overwriting the results.
-        if (fetchUrl === props.url) {
+        // Block the response from old request when a newer one was already responded.
+        if (curRequestId >= lastUpdateRequestId.value) {
           content.value = response.value
+          lastUpdateRequestId.value = curRequestId
         }
       })
     }
