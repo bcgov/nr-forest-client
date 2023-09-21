@@ -17,6 +17,8 @@ const content = ref<any>(props.initValue)
 
 const response = ref<any>()
 
+const requestCounter = ref<number>(0)
+
 const lastUpdateRequestId = ref<number>(0)
 
 const initialUrlValue = props.url
@@ -49,12 +51,17 @@ watch(
     if (
       calculateStringDifference(initialUrlValue, props.url) >= props.minLength
     ) {
-      const curRequestId = Date.now()
+      requestCounter.value++
+      const curRequestId = requestCounter.value
+      // const curUrl = props.url
       fetch().then(() => {
         // Block the response from old request when a newer one was already responded.
         if (curRequestId >= lastUpdateRequestId.value) {
           content.value = response.value
           lastUpdateRequestId.value = curRequestId
+          // console.log('yes')
+        } else {
+          // console.log('no', curUrl, curRequestId, lastUpdateRequestId.value)
         }
       })
     }
