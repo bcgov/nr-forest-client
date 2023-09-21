@@ -57,7 +57,7 @@ watch(
       const curRequestId = requestCounter.value
       // const curUrl = props.url
       fetch().then(() => {
-        // Block the response from old request when a newer one was already responded.
+        // Discard the response from old request when a newer one was already responded.
         if (curRequestId >= lastUpdateRequestId.value) {
           content.value = response.value
           lastUpdateRequestId.value = curRequestId
