@@ -1,7 +1,9 @@
 package ca.bc.gov.app.dto.client;
 
 import java.util.Map;
+import lombok.With;
 
+@With
 public record ClientSubmissionDto(
     ClientBusinessInformationDto businessInformation,
     ClientLocationDto location) {

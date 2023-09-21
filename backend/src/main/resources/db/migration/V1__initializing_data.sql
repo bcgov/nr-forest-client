@@ -239,6 +239,9 @@ create table if not exists nrfc.submission_matching_detail (
 	submission_id				    integer			not null,
 	matching_fields		            jsonb 			null,
 	confirmed_match_status_ind	    varchar(1)      null,
+	confirmed_match_message          varchar(255)    null,
+	confirmed_match_timestamp        timestamp       null,
+	confirmed_match_userid           varchar(60)     null,
 	constraint submission_matching_detail_id_pk primary key (submission_matching_detail_id),
 	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id)
 );

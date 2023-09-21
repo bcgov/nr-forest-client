@@ -33,17 +33,9 @@ public class SubmissionPredicates implements QueryPredicates {
       return
           Stream
               .of(values)
-              .map(value ->
-                  where("updatedAt")
-                      .lessThanOrEquals(
-                          LocalDate
-                              .parse(
-                                  value,
-                                  DateTimeFormatter.ISO_DATE
-                              )
-                              .plusDays(1)
-                      )
-              )
+              .map(value -> LocalDate.parse(value,DateTimeFormatter.ISO_DATE))
+              .map(value -> value.plusDays(1))
+              .map(value -> QueryPredicates.isBefore(value.atStartOfDay(),"updatedAt"))
               .reduce(Criteria::or)
               .orElse(Criteria.empty());
     }

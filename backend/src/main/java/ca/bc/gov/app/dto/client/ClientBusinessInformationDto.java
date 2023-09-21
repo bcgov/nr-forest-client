@@ -1,8 +1,10 @@
 package ca.bc.gov.app.dto.client;
 
 import java.util.Map;
+import lombok.With;
 import org.apache.commons.lang3.StringUtils;
 
+@With
 public record ClientBusinessInformationDto(
     String incorporationNumber, 
     String businessName,

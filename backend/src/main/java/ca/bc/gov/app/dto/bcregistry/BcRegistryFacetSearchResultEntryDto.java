@@ -10,6 +10,7 @@ public record BcRegistryFacetSearchResultEntryDto(
     String identifier,
     String legalType,
     String name,
-    String status
+    String status,
+    String goodStanding
 ) {
 }
