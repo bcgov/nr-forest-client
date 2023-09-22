@@ -149,7 +149,7 @@ describe('<AddressGroupComponent />', () => {
       .and('have.value', 'Canada')
       .click()
       .find('cds-combo-box-item[data-id="US"]')
-      .click()
+      .click({ force: true }) // Prevent error in the workflow
       .and('have.value', 'United States of America')
 
     cy.wait('@getStates')
