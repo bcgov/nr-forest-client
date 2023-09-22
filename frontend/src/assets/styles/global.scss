@@ -76,7 +76,7 @@
 
 .heading-buttons {
   display: flex;
-  gap: 2.5rem;
+  gap: 1.5rem;
   --cds-text-inverse: var(--light-theme-text-text-primary);
   --cds-button-tertiary: var(--dark-theme-button-button-tertiary);
   --cds-button-tertiary-hover: var(--dark-theme-focus-focus);
@@ -97,7 +97,7 @@
 }
 
 .heading-buttons cds-button span {
-  width: 7rem;
+  width: 5rem;
 }
 
 .heading-buttons #help-btn span {
@@ -236,7 +236,7 @@ hr {
 }
 .headers {
   display: flex;
-  padding: 0.25rem 2.5rem;
+  padding: 0.25rem 2rem;
   align-items: center;
   flex: 1 0 0;
   align-self: stretch;
@@ -696,8 +696,8 @@ cds-modal {
   height: 100%;
 }
 
-/* Small (up to 320px) */
-@media screen and (max-width: 320px) {
+/* Small (up to 671px) */
+@media screen and (max-width: 671px) {
   .wizard-head-toast {
     right: 0.5rem;
     top: 0.5rem;
@@ -746,14 +746,6 @@ cds-modal {
     width: 2.5rem;
   }
 
-  .heading {
-    width: 6.5rem;
-    padding: 1rem 0.5rem;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
-  }
-
   .heading span:last-child {
     display: none;
   }
@@ -792,8 +784,8 @@ cds-modal {
   }
 }
 
-/* Medium (from 321px to 671px) */
-@media screen and (min-width: 321px) and (max-width: 671px) {
+/* Medium (from 672px to 1055px) */
+@media screen and (min-width: 672px) and (max-width: 1055px) {
   .form-header-title span {
     color: purple;
   }
@@ -805,19 +797,9 @@ cds-modal {
     align-items: center;
   }
 
-  .headers {
-    padding: 0rem 1rem;
-    gap: 1rem;
-    flex-shrink: 0;
-  }
-
   .heading {
     padding: 0.9375rem 2rem 0.9375rem 0.5rem;
     flex-shrink: 0;
-  }
-
-  .heading span:last-child {
-    display: none;
   }
 
   .heading-space {
@@ -829,15 +811,7 @@ cds-modal {
   }
 }
 
-/* Large (from 672px to 1055px) */
-@media screen and (min-width: 672px) and (max-width: 1055px) {
-  .screen {
-    margin: 2rem;
-    align-items: center;
-  }
-}
-
-/* X-Large (from 1057px to 1311px) */
+/* Large (from 1056px to 1311px) */
 @media screen and (min-width: 1056px) and (max-width: 1311px) {
   .screen {
     margin: 2rem;
@@ -845,7 +819,7 @@ cds-modal {
   }
 }
 
-/* XX-Large (from 1312px to 1583px) */
+/* X-Large (from 1312px to 1583px) */
 @media screen and (min-width: 1312px) and (max-width: 1583px) {
   .screen {
     margin: 2rem;
@@ -853,14 +827,14 @@ cds-modal {
   }
 }
 
-/* XXX-Large (from 1584px to 1783px) */
+/* XX-Large (from 1584px to 1783px) */
 @media screen and (min-width: 1584px) and (max-width: 1783px) {
   .form-steps {
     width: 50vw;
   }
 }
 
-/* Larger than XXX-Large (1784px and above) */
+/* XXX-Large (1784px and above) */
 @media screen and (min-width: 1784px) {
   .form-steps {
     width: 50vw;

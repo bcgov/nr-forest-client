@@ -15,8 +15,8 @@ const env = ref(nodeEnv);
 env.value = env.value.slice(envPrefix.length);
 env.value = env.value.charAt(0).toUpperCase() + env.value.slice(1);
 
-const isSmallScreen = useMediaQuery('(max-width: 320px)')
-const isMediumScreen = useMediaQuery('(min-width: 321px) and (max-width: 671px)')
+const isSmallScreen = useMediaQuery('(max-width: 671px)')
+const isMediumScreen = useMediaQuery('(min-width: 672px) and (max-width: 1055px)')
 
 const helpModalActive = ref(false);
 const logoutModalActive = ref(false);
