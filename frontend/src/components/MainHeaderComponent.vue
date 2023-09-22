@@ -26,15 +26,16 @@ const logoutModalActive = ref(false);
 
   <a href="https://gov.bc.ca" v-if="$session.user?.provider !== 'idir'">
     <img
-      src="/img/logo1.svg"
+      src="/img/logo-vertical 1.svg"
       alt="Go to the Government of British Columbia website"
       v-if="isSmallScreen"
     />
     <img
-      src="/img/bc_for_logo.png"
+      src="/img/BCID_H_rgb_rev.svg"
       alt="Go to the Government of British Columbia website"
       v-else
     />
+    <logo />
   </a>
   
   <div class="heading">
@@ -53,7 +54,7 @@ const logoutModalActive = ref(false);
       id="help-btn"
       data-id="help-btn"
       kind="ghost"
-      :size="(isSmallScreen || isMediumScreen) ? 'sm' : 'lg'"
+      size="sm"
       @click.prevent="helpModalActive = true"
     >
       <span v-if="!isSmallScreen && !isMediumScreen">Help with application</span>
@@ -64,7 +65,7 @@ const logoutModalActive = ref(false);
       v-if="$session?.isLoggedIn()"
       data-id="logout-btn"
       kind="tertiary"
-      :size="(isSmallScreen || isMediumScreen) ? 'sm' : 'lg'"
+      size="sm"
       @click.prevent="logoutModalActive = true"
     >
       <span v-if="!isSmallScreen && !isMediumScreen">Logout</span>
