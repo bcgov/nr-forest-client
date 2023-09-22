@@ -31,14 +31,14 @@ module.exports = {
     '@vue/eslint-config-typescript/recommended',
     '@vue/eslint-config-prettier',
   ],
-  parser: '@typescript-eslint/parser',
+  parser: 'vue-eslint-parser',
   parserOptions: {
+    parser: '@typescript-eslint/parser',
     ecmaVersion: '11',
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint', 'prettier', 'vue'],
   rules: {
-    'vue/no-multiple-template-root': 'error',
     'vue/no-v-html': 'error',
     'vue/require-prop-types': 'error',
     'prettier/prettier': 'error',
@@ -58,4 +58,4 @@ module.exports = {
     cy: 'readonly',
     Cypress: 'readonly',
   },
-}
+};
