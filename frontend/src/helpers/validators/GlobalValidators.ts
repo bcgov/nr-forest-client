@@ -4,7 +4,7 @@ import type { ValidationMessageType } from "@/dto/CommonTypesDto";
 
 // Defines the used regular expressions
 // @sonar-ignore-next-line
-const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailRegex: RegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 const specialCharacters: RegExp = /^[a-zA-Z0-9\sÀ-ÖØ-öø-ÿ]+$/;
 const e164Regex: RegExp = /^((\+?[1-9]\d{1,14})|(\(\d{3}\) \d{3}-\d{4}))$/;
 const canadianPostalCodeRegex: RegExp = /^(([A-Z]\d){3})$/i;
