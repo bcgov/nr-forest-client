@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed } from 'vue';
 // Composables
-import { useFetchTo } from '@/composables/useFetch'
+import { useFetchTo } from '@/composables/useFetch';
 
 
 const props = defineProps<{
@@ -10,38 +10,38 @@ const props = defineProps<{
   minLength: number
   initValue: object
   initFetch?: boolean
-}>()
+}>();
 
 //Set the initial value to the content
-const content = ref<any>(props.initValue)
+const content = ref<any>(props.initValue);
 
-const response = ref<any>()
+const response = ref<any>();
 
-const lastUpdateRequestId = ref<number>(0)
+const lastUpdateRequestTime = ref<number>(0);
 
-const initialUrlValue = props.url
-const searchURL = computed(() => props.url)
+const initialUrlValue = props.url;
+const searchURL = computed(() => props.url);
 
 const { loading, error, fetch } = useFetchTo(searchURL, response, {
   skip: true,
   ...props.params
-})
+});
 
 const calculateStringDifference = (
   initial: string,
   current: string
 ): number => {
-  if (initial === current) return 0
+  if (initial === current) return 0;
   if (initial.length > current.length)
-    return calculateStringDifference(current, initial)
-  return current.replace(initial, '').length
+    return calculateStringDifference(current, initial);
+  return current.replace(initial, '').length;
 }
 
 //If initial fetch is required, fetch
 if (props.initFetch) {
   fetch().then(() => {
-    content.value = response.value
-  })
+    content.value = response.value;
+  });
 }
 
 //Watch for changes in the url, and if the difference is greater than the min length, fetch
@@ -51,18 +51,18 @@ watch(
     if (
       calculateStringDifference(initialUrlValue, props.url) >= props.minLength
     ) {
-      const curRequestId = Date.now()
-      // const curUrl = props.url
+      const curRequestTime = Date.now();
+      // const curUrl = props.url;
       fetch().then(() => {
         // Discard the response from old request when a newer one was already responded.
-        if (curRequestId >= lastUpdateRequestId.value) {
-          content.value = response.value
-          lastUpdateRequestId.value = curRequestId
-          // console.log('yes')
+        if (curRequestTime >= lastUpdateRequestTime.value) {
+          content.value = response.value;
+          lastUpdateRequestTime.value = curRequestTime;
+          // console.log('yes');
         } else {
-          // console.log('no', curUrl, curRequestId, lastUpdateRequestId.value)
+          // console.log('no', curUrl, curRequestId, lastUpdateRequestId.value);
         }
-      })
+      });
     }
   }
 )
