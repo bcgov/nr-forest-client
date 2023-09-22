@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed } from "vue";
 // Composables
-import { useFetchTo } from '@/composables/useFetch';
-
+import { useFetchTo } from "@/composables/useFetch";
 
 const props = defineProps<{
-  url: string
-  params?: object
-  minLength: number
-  initValue: object
-  initFetch?: boolean
+  url: string;
+  params?: object;
+  minLength: number;
+  initValue: object;
+  initFetch?: boolean;
 }>();
 
 //Set the initial value to the content
@@ -24,7 +23,7 @@ const searchURL = computed(() => props.url);
 
 const { loading, error, fetch } = useFetchTo(searchURL, response, {
   skip: true,
-  ...props.params
+  ...props.params,
 });
 
 const calculateStringDifference = (
@@ -34,8 +33,8 @@ const calculateStringDifference = (
   if (initial === current) return 0;
   if (initial.length > current.length)
     return calculateStringDifference(current, initial);
-  return current.replace(initial, '').length;
-}
+  return current.replace(initial, "").length;
+};
 
 //If initial fetch is required, fetch
 if (props.initFetch) {
@@ -65,7 +64,7 @@ watch(
       });
     }
   }
-)
+);
 </script>
 <template>
   <slot :content="content" :loading="loading" :error="error"></slot>
