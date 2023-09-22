@@ -68,6 +68,6 @@ export default defineConfig(({ command, mode }) => {
       },
       environment: 'jsdom'
     },
-    optimizeDeps: true
+    optimizeDeps: false
   }
 })
