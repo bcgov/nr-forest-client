@@ -1,25 +1,29 @@
 <script setup lang="ts">
-import { watch, computed, ref, reactive } from 'vue'
+import { watch, computed, ref, reactive } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/inline-loading/index';
-import '@carbon/web-components/es/components/notification/index';
+import "@carbon/web-components/es/components/inline-loading/index";
+import "@carbon/web-components/es/components/notification/index";
 // Importing composables
-import { useEventBus } from '@vueuse/core'
-import { useFetchTo } from '@/composables/useFetch'
+import { useEventBus } from "@vueuse/core";
+import { useFetchTo } from "@/composables/useFetch";
 // Importing types
-import type { BusinessSearchResult, ProgressNotification } from '@/dto/CommonTypesDto'
-import { ClientTypeEnum } from '@/dto/CommonTypesDto'
+import type {
+  BusinessSearchResult,
+  ProgressNotification,
+} from "@/dto/CommonTypesDto";
+import { ClientTypeEnum } from "@/dto/CommonTypesDto";
 import type {
   FormDataDto,
-  ForestClientDetailsDto
-} from '@/dto/ApplyClientNumberDto'
+  ForestClientDetailsDto,
+} from "@/dto/ApplyClientNumberDto";
 // Importing validators
-import { getValidations } from '@/helpers/validators/BCeIDFormValidations'
-import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
+import { getValidations } from "@/helpers/validators/GlobalValidators";
+import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // Importing helper functions
-import { retrieveClientType, exportAddress } from '@/helpers/DataConversors'
+import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
 // Importing session
-import ForestClientUserSession from '@/helpers/ForestClientUserSession'
+import ForestClientUserSession from "@/helpers/ForestClientUserSession";
+
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>()
