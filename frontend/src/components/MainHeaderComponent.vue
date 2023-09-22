@@ -26,7 +26,7 @@ const logoutModalActive = ref(false);
 
   <a href="https://gov.bc.ca">
     <img
-      src="/img/logo-vertical 1.svg"
+      src="/img/logo-vertical1.svg"
       alt="Go to the Government of British Columbia website"
       v-if="isSmallScreen"
     />
