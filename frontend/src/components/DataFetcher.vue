@@ -11,7 +11,7 @@ const props = defineProps<{
   initFetch?: boolean;
 }>();
 
-//Set the initial value to the content
+// Set the initial value to the content
 const content = ref<any>(props.initValue);
 
 const response = ref<any>();
@@ -36,20 +36,18 @@ const calculateStringDifference = (
   return current.replace(initial, "").length;
 };
 
-//If initial fetch is required, fetch
+// If initial fetch is required, fetch
 if (props.initFetch) {
   fetch().then(() => {
     content.value = response.value;
   });
 }
 
-//Watch for changes in the url, and if the difference is greater than the min length, fetch
+// Watch for changes in the url, and if the difference is greater than the min length, fetch
 watch(
   () => props.url,
   () => {
-    if (
-      calculateStringDifference(initialUrlValue, props.url) >= props.minLength
-    ) {
+    if (calculateStringDifference(initialUrlValue, props.url) >= props.minLength) {
       const curRequestTime = Date.now();
       // const curUrl = props.url;
       fetch().then(() => {
@@ -63,7 +61,7 @@ watch(
         }
       });
     }
-  }
+  },
 );
 </script>
 <template>
