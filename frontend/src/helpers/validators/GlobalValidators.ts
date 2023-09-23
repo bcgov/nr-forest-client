@@ -283,7 +283,10 @@ export const getFieldValue = (path: string, value: any): string | string[] => {
 };
 
 // We declare here a collection of all validations for every field in the form
-export const formFieldValidations: Record<string, ((value: string) => string)[]> = {};
+export const formFieldValidations: Record<
+  string,
+  ((value: string) => string)[]
+> = {};
 
 // This function will return all validators for the field
 export const getValidations = (key: string): ((value: string) => string)[] =>
@@ -311,18 +314,29 @@ export const runValidation = (
     condition: string,
     fieldId: string = fieldKey
   ): string => {
-    // eslint-disable-next-line no-eval
-    if (eval(condition)) {
-      const validationResponse = validation(item);
-      if (notify) {
-        // Note: also notifies when valid - errorMsg will be empty.
-        notificationBus.emit({ fieldId, errorMsg: validationResponse }, item);
+    try {
+      const conditionFunction = new Function(
+        "item",
+        `return ${condition};`
+      );
+
+      if (conditionFunction(item)) {
+        const validationResponse = validation(item);
+        if (notify) {
+          // Note: also notifies when valid - errorMsg will be empty.
+          notificationBus.emit({ fieldId, errorMsg: validationResponse }, item);
+        }
+        return validationResponse;
+      } else {
+        return "";
       }
-      return validationResponse;
-    } else {
+    } catch (error) {
+      // Handle any potential errors in the condition evaluation
+      console.error("Error evaluating condition:", error);
       return "";
     }
   };
+
   // If the field value is an array we run the validation for every item in the array
   if (Array.isArray(fieldValue)) {
     let hasInvalidItem = false;
