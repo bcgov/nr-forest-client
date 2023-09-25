@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 
 import {
-  validate,
   addValidation,
 } from "@/helpers/validators/BCeIDFormValidations";
 
@@ -9,6 +8,7 @@ import {
   getFieldValue,
   getValidations,
   runValidation,
+  validate,
 } from "@/helpers/validators/GlobalValidators";
 
 import type { ValidationMessageType } from "@/dto/CommonTypesDto";
