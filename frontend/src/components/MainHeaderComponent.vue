@@ -42,8 +42,6 @@ const logoutModalActive = ref(false);
     <span class="heading-compact-01" v-else>Client Management System</span>
     <span class="heading-compact-01" v-if="env !== 'Prod'">Env. {{ env }} - Rel. {{appVersion}}</span>
   </div>
-  
-  <div class="heading-space"></div>
 
   <div class="heading-buttons">
 
