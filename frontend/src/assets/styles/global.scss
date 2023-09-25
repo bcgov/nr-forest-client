@@ -73,7 +73,10 @@
 
   --cds-notification-background-error: #FFEAE5;
   --cds-support-error: #E72000;
+
+  --light-theme-background-background-selected: #93939533;
 }
+
 *, *::before, *::after {
   box-sizing: unset;
 }
@@ -189,6 +192,13 @@ div#app {
   align-items: stretch;
 }
 
+div#app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
 .bulleted-list {
   list-style: disc;
   margin-left: 1.5rem;
@@ -217,7 +227,7 @@ div#app {
   width: 414px;
   height: 414px;
   flex-grow: 1;
-  fill: var(--cds-hover-primary, #0353e9);
+  fill: var(--cds-button-primary, #0353e9);
 }
 
 .form-header-progress {
@@ -244,7 +254,6 @@ div#app {
   padding-bottom: 0px;
   display: flex;
   align-items: stretch;  
-  
   background: var(--light-theme-background-background, #fff);
   flex-grow: 1;
 }
@@ -252,6 +261,7 @@ div#app {
   margin: 3rem 2.5rem 2.5rem 2.5rem;
   padding-bottom: 0px;
   display: flex;
+  align-items: stretch;  
   background: var(--light-theme-background-background, #fff);
   flex-grow: 1;
 }
@@ -500,6 +510,11 @@ div#app {
 }
 .form-header-stretched {
   align-self: stretch;
+  width: 50%;
+}
+
+.form-header-stretched cds-button{
+  width: 15rem;
 }
 
 .form-header-title {
