@@ -316,18 +316,23 @@ export const runValidation = (
     condition === "true" ? "true" : `target.${condition}`;
 
   // We define a function to evaluate the condition safely
-  const evaluateCondition = (item: any, condition: string): boolean => {
+  const evaluateCondition = (condition: string, item: any): boolean => {
     if (condition === "true") {
       return true;
     }
 
-    try {
-      return eval(condition);
-    } catch (error) {
-      // Handle any potential errors in the condition evaluation
-      console.error("Error evaluating condition:", error);
-      return false;
+    if (typeof item === "object") {
+      const conditionFunction = new Function("item", `return ${condition};`);
+      try {
+        return conditionFunction(item);
+      } catch (error) {
+        // Handle any potential errors in the condition evaluation
+        console.error("Error evaluating condition:", error);
+        return false;
+      }
     }
+
+    return false;
   };
 
   const executeValidation = (
@@ -336,7 +341,7 @@ export const runValidation = (
     fieldId: string = fieldKey
   ): string => {
     try {
-      if (evaluateCondition(item, condition)) {
+      if (evaluateCondition(condition, item)) {
         const validationResponse = validation(item);
         if (notify) {
           // Note: also notifies when valid - errorMsg will be empty.
@@ -353,7 +358,7 @@ export const runValidation = (
     }
   };
 
-  // If the field value is an array we run the validation for every item in the array
+  // If the field value is an array, we run the validation for every item in the array
   if (Array.isArray(fieldValue)) {
     let hasInvalidItem = false;
     for (let index = 0; index < fieldValue.length; index++) {
@@ -394,7 +399,7 @@ export const runValidation = (
     }
     return !hasInvalidItem;
   }
-  // If the field value is not an array we run the validation for the field
+  // If the field value is not an array, we run the validation for the field
   return executeValidation(fieldValue, fieldCondition) === "";
 };
 
