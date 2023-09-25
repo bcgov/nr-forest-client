@@ -172,7 +172,7 @@ const progressData = reactive([
     ],
   },
   {
-    title: "Review",
+    title: "Review application",
     subtitle: "Step 4",
     kind: "incomplete",
     disabled: true,
@@ -436,7 +436,7 @@ const isSmallScreen = useMediaQuery('(max-width: 671px)')
 
       <div class="form-steps-section form-steps-section-04">
           <span class="heading-04" data-scroll="scroll-3">{{ progressData[3].title}}</span>
-          <span class="body-02">Review the content and make any changes by navigating through the steps above or using the "Edit" buttons in each section below.</span>
+          <span class="body-02">Review the content and make any changes by using the "Edit" buttons in each section below.</span>
 
         <review-wizard-step
             v-model:data="formData"
