@@ -87,7 +87,7 @@ const validateInput = (newValue: string) => {
 }
 
 const selectAutocompleteItem = (event: any) => {
-  emitValueChange(event.detail.item.getAttribute('data-id'))
+  emitValueChange(event?.detail?.item?.getAttribute('data-id'))
 }
 
 const onTyping = (event: any) => {
@@ -100,15 +100,15 @@ revalidateBus.on(() => validateInput(inputValue.value))
 watch(() => props.modelValue,() => inputValue.value = props.modelValue)
 </script>
 
-<template>
-  <div class="groupong-02">
+<template>  
+  <div class="grouping-02">
     <cds-combo-box
       :id="id"
-      :name="id"
+      :name="id"      
       :helper-text="tip"
       :title-text="label"
-      :value="inputValue"
-      filterable
+      :value="inputValue"      
+filterable
       :invalid="error ? true : false"
       :invalid-text="error"
       @cds-combo-box-selected="selectAutocompleteItem"
@@ -132,37 +132,3 @@ watch(() => props.modelValue,() => inputValue.value = props.modelValue)
   </div>
 </template>
 
-
-<style scoped>
-.autocomplete {
-  /*the container must be positioned relative:*/
-  position: relative;
-  display: inline-block;
-}
-.autocomplete-items {
-  border-bottom: none;
-  border-top: none;
-  z-index: 99;
-  left: 0;
-  right: 0;
-}
-.autocomplete-items-ct {
-  border: 1px solid #d4d4d4;
-  position: absolute;
-  padding: 10px;
-  cursor: pointer;
-  background-color: #fff;
-  border-bottom: 1px solid #d4d4d4;
-}
-
-.autocomplete-items-cell {
-  padding: 10px;
-  cursor: pointer;
-  background-color: #fff;
-  border-bottom: 1px solid #d4d4d4;
-}
-.autocomplete-items-cell:hover {
-  /*when hovering an item:*/
-  background-color: #e9e9e9;
-}
-</style>
