@@ -79,14 +79,15 @@ revalidateBus.on(() => validateInput())
       :legend-text="label"
       :helper-text="tip"
       v-model="selectedValue"
+      
       :invalid="error ? true : false"
       :invalid-text="error"
-      @cds-radio-button-group-changed="updateSelectedValue"
-      class="grouping-01"
+      @cds-radio-button-group-changed="updateSelectedValue"      
       :data-focus="id"
       :data-scroll="id"
     >
       <cds-radio-button
+        v-shadow="1"
         v-for="option in modelValue"
         :key="id + 'rb' + option.value"
         :label-text="option.text"

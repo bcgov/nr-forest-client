@@ -143,6 +143,10 @@ cds-actionable-notification,
   border-radius: 0.25rem;
 }
 
+cds-radio-button:not(:last-child){
+  margin-bottom: 0.5rem;
+}
+
 .top-notification {
   margin-top: 3rem;
   display: flex;
@@ -1028,6 +1032,9 @@ cds-modal {
     width: 50vw;
   }
 }
+
+
+
 
 b {
   font-weight: 700;
