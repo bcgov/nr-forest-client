@@ -68,20 +68,20 @@ toastBus.on(openToast)
 
   <div class="modals">
     
-  <cds-modal
-    id="modal-global"
-    size="sm"
-    :open="modalContent.active"
-    @cds-modal-closed="closeModal"
-  >
-    <cds-modal-header>
-      <cds-modal-close-button></cds-modal-close-button>
-      <cds-modal-heading
-        >Are you sure you want to delete "{{ modalContent.message }}" additional
-        {{ modalContent.kind }}?
-      </cds-modal-heading>
-    </cds-modal-header>
-    <cds-modal-body><p></p></cds-modal-body>
+    <cds-modal
+      id="modal-global"
+      size="sm"
+      :open="modalContent.active"
+      @cds-modal-closed="closeModal"
+    >
+      <cds-modal-header>
+        <cds-modal-close-button></cds-modal-close-button>
+        <cds-modal-heading
+          >Are you sure you want to delete "{{ modalContent.message }}" additional
+          {{ modalContent.kind }}?
+        </cds-modal-heading>
+      </cds-modal-header>
+      
 
       <cds-modal-footer>
           <cds-modal-footer-button 
