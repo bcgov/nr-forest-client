@@ -12,16 +12,8 @@ import {
   isNoSpecialCharacters,
   isNot,
   formFieldValidations,
-  getFieldValue,
-  getValidations
 } from "@/helpers/validators/GlobalValidators";
 
-import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
-import type { ValidationMessageType } from "@/dto/CommonTypesDto";
-
-const errorBus = useEventBus<ValidationMessageType[]>(
-  "submission-error-notification"
-);
 
 // Step 1: Business Information
 formFieldValidations["businessInformation.businessName"] = [
@@ -110,76 +102,6 @@ formFieldValidations["location.contacts.*.phoneNumber"] = [
   isMaxSize("Please provide a valid phone number")(15),
   isMinSize("Please provide a valid phone number")(10),
 ];
-
-// This function will run the validators and return the errors
-export const validate = (
-  keys: string[],
-  target: FormDataDto,
-  notify: boolean = false
-): boolean => {
-  // For every received key we get the validations and run them
-  return keys.every((key) => {
-    // First we get all validators for that field
-    const validations: ((value: string) => string)[] = getValidations(key);
-    // We split the field key and the condition if it has one
-    const [fieldKey, fieldCondition] = key.includes("(")
-      ? key.replace(")", "").split("(")
-      : [key, "true"];
-    // For every validator we run it and check if the result is empty
-    return validations.every((validation: (value: string) => string) => {
-      // We then load the field value
-      const fieldValue = getFieldValue(fieldKey, target);
-      // We define a function that will run the validation if the condition is true
-      const buildEval = (condition: string) =>
-        condition === "true" ? "true" : `target.${condition}`;
-      const runValidation = (
-        item: any,
-        condition: string,
-        fieldId: string = fieldKey
-      ): string => {
-        // eslint-disable-next-line no-eval
-        if (eval(condition)) {
-          const validationResponse = validation(item);
-          if (notify && validationResponse) {
-            errorBus.emit([{ fieldId, errorMsg: validationResponse }]);
-          }
-          return validationResponse;
-        } else {
-          return "";
-        }
-      };
-      // If the field value is an array we run the validation for every item in the array
-      if (Array.isArray(fieldValue)) {
-        return fieldValue.every((item: any, index: number) => {
-          // And sometimes we can end up with another array inside, that's life
-          if (Array.isArray(item)) {
-            if (item.length === 0) item.push("");
-            return item.every(
-              (subItem: any) =>
-                runValidation(
-                  subItem,
-                  buildEval(fieldCondition.replace(".*.", `[${index}].`)),
-                  fieldKey.replace(".*.", `[${index}].`)
-                ) === ""
-            );
-          }
-          // If it is not an array here, just validate it
-          return (
-            runValidation(
-              item,
-              buildEval(fieldCondition.replace(".*.", `[${index}].`)),
-              fieldKey.replace(".*.", `[${index}].`)
-            ) === ""
-          );
-        });
-      }
-      // If the field value is not an array we run the validation for the field
-      return runValidation(fieldValue, fieldCondition) === "";
-    });
-  });
-};
-
-
 
 export const addValidation = (
   key: string,
