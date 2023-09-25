@@ -80,6 +80,8 @@
 
 .heading-buttons {
   display: flex;
+  flex-grow: 1;
+  justify-content: flex-end;
   gap: 1.5rem;
   --cds-text-inverse: var(--light-theme-text-text-primary);
   --cds-button-tertiary: var(--dark-theme-button-button-tertiary);
@@ -273,13 +275,9 @@ div#app {
 }
 .heading {
   display: flex;
-  padding: 0.9375rem 2rem 0.9375rem 0.5rem;
+  padding: 0.9375rem 0.5rem 0.9375rem 0.5rem;
   align-items: flex-start;
   gap: 0.1875rem;
-}
-.heading-space {
-  flex: 1 0 0;
-  align-self: stretch;
 }
 .heading-button-transparent {
   display: flex;
@@ -948,11 +946,6 @@ cds-modal {
     display: none;
   }
 
-  .heading-space {
-    width: 2rem;
-    flex-shrink: 0;
-  }
-
   .form-header {
     align-self: stretch;
   }
@@ -996,12 +989,8 @@ cds-modal {
   }
 
   .heading {
-    padding: 0.9375rem 2rem 0.9375rem 0.5rem;
+    padding: 0.9375rem 0.5rem 0.9375rem 0.5rem;
     flex-shrink: 0;
-  }
-
-  .heading-space {
-    width: 8.75rem;
   }
 
   .form-header {
