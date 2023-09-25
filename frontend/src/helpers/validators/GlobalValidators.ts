@@ -310,21 +310,33 @@ export const runValidation = (
     : [key, "true"];
   // We then load the field value
   const fieldValue = getFieldValue(fieldKey, target);
+
   // We define a function that will run the validation if the condition is true
   const buildEval = (condition: string) =>
     condition === "true" ? "true" : `target.${condition}`;
+
+  // We define a function to evaluate the condition safely
+  const evaluateCondition = (item: any, condition: string): boolean => {
+    if (condition === "true") {
+      return true;
+    }
+
+    try {
+      return eval(condition);
+    } catch (error) {
+      // Handle any potential errors in the condition evaluation
+      console.error("Error evaluating condition:", error);
+      return false;
+    }
+  };
+
   const executeValidation = (
     item: any,
     condition: string,
     fieldId: string = fieldKey
   ): string => {
     try {
-      const conditionFunction = new Function(
-        "item",
-        `return ${condition};`
-      );
-
-      if (conditionFunction(item)) {
+      if (evaluateCondition(item, condition)) {
         const validationResponse = validation(item);
         if (notify) {
           // Note: also notifies when valid - errorMsg will be empty.
@@ -336,7 +348,7 @@ export const runValidation = (
       }
     } catch (error) {
       // Handle any potential errors in the condition evaluation
-      console.error("Error evaluating condition:", error);
+      console.error("Error executing validation:", error);
       return "";
     }
   };
