@@ -318,9 +318,8 @@ export const runValidation = (
     }
 
     try {
-      return eval(condition);
-    } 
-    catch (error) {
+      return Function('"use strict";return (' + condition + ')').call(target, item);
+    } catch (error) {
       console.error("Error evaluating condition:", error);
       return false;
     }
@@ -343,7 +342,6 @@ export const runValidation = (
         return "";
       }
     } catch (error) {
-      // Handle any potential errors in the condition evaluation
       console.error("Error executing validation:", error);
       return "";
     }
