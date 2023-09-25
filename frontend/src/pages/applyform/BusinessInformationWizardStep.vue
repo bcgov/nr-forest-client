@@ -247,7 +247,7 @@ watch([selectedOption], () => {
         title="If the name of your registered business does not appear in the list, follow these steps:">
         <div>
           <ol type="1" class="bulleted-list">
-            <li>
+            <li class="body-compact-01">
               Log into Manage Account in
               <a
                 href="https://www.bceid.ca/"
@@ -257,7 +257,7 @@ watch([selectedOption], () => {
               >
               to find your business name
             </li>
-            <li>
+            <li class="body-compact-01">
               If your name isn’t there, call BC Registry toll free at
               <a href="tel:18775261526">1-877-526-1526</a> or email them at
               <a href="mailto:BCRegistries@gov.bc.ca">BCRegistries@gov.bc.ca</a>.
