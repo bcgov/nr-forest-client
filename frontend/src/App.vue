@@ -81,7 +81,7 @@ toastBus.on(openToast)
           {{ modalContent.kind }}?
         </cds-modal-heading>
       </cds-modal-header>
-      <cds-modal-body><p></p></cds-modal-body>
+      
 
       <cds-modal-footer>
           <cds-modal-footer-button 
