@@ -136,7 +136,7 @@ const progressData = reactive([
     title: "Address",
     subtitle: "Step 2",
     kind: "incomplete",
-    disabled: false,
+    disabled: true,
     valid: false,
     step: 1,
     fields: [
@@ -155,7 +155,7 @@ const progressData = reactive([
     title: "Contacts",
     subtitle: "Step 3",
     kind: "incomplete",
-    disabled: false,
+    disabled: true,
     valid: false,
     step: 2,
     fields: [
@@ -175,7 +175,7 @@ const progressData = reactive([
     title: "Review",
     subtitle: "Step 4",
     kind: "incomplete",
-    disabled: false,
+    disabled: true,
     valid: false,
     step: 3,
     fields: [
@@ -214,7 +214,8 @@ const checkStepValidity = (stepNumber: number): boolean => {
     .every((validation: any) => runValidation(validation.field, formData, validation.validation, true, true))
   )
     return false;
-  
+
+
   return progressData[stepNumber].valid;
 };
 
@@ -255,6 +256,12 @@ const onBack = () => {
 };
 const validateStep = (valid: boolean) => {
   progressData[currentTab.value].valid = valid;
+  if(valid){
+    const nextStep = progressData.find((step: any) => step.step === currentTab.value+1)  
+    if(nextStep)
+      nextStep.disabled = false;
+  }
+  
 };
 
 const processAndLogOut = () => {
@@ -288,7 +295,11 @@ exitBus.on((event: Record<string, boolean | null>) => {
 });
 
 progressIndicatorBus.on((event: ProgressNotification) => {  
-  if(event.kind === 'disabled') ([1,2,3].forEach((index: number) => progressData[index].disabled = event.value as boolean))
+  if(event.kind === 'disabled') {        
+    [1,2,3]
+    .filter((index: number) => event.value || index < currentTab.value+1)
+    .forEach((index: number) => progressData[index].disabled = event.value as boolean)
+  }
   if(event.kind === 'navigate') goToStep(event.value as number, true)
   if(event.kind === 'error'){ 
     (event.value as number[]).forEach((index: number) => {
