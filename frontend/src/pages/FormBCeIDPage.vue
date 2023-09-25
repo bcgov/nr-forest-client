@@ -32,6 +32,7 @@ import {
 import {
   runValidation,
   validate,
+  isContainedIn
 } from "@/helpers/validators/GlobalValidators";
 
 // @ts-ignore
@@ -40,7 +41,6 @@ import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 import LogOut16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
-import { isContainedIn } from "@/helpers/validators/GlobalValidators";
 
 const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification")
 const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification")
