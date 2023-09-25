@@ -192,6 +192,10 @@ div#app {
   align-items: stretch;
 }
 
+.cds--inline-notification-content{
+  width:100%;
+}
+
 div#app {
   height: 100vh;
   display: flex;
@@ -1054,8 +1058,6 @@ cds-modal {
     width: 50.4375rem;
   }
 }
-
-
 
 
 b {

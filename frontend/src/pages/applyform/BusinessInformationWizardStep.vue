@@ -239,13 +239,14 @@ watch([selectedOption], () => {
     <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
     <div v-if="(showAutoCompleteInfo && selectedOption === ClientTypeEnum.R) || showGoodStandingError || showDuplicatedError">
       <cds-inline-notification
+        v-shadow="2"
         v-if="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
         low-contrast="true"
         open="true"
         kind="info"
         hide-close-button="true"
         title="If the name of your registered business does not appear in the list, follow these steps:">
-        <div>
+        <div class="cds--inline-notification-content">
           <ol type="1" class="bulleted-list">
             <li class="body-compact-01">
               Log into Manage Account in
@@ -274,7 +275,7 @@ watch([selectedOption], () => {
         kind="error"
         title="Not in good standing with BC Registries"
       >
-        <p>
+        <p class="cds--inline-notification-content">
           Your request for a client number cannot go ahead because “{{
             formData.businessInformation.businessName
           }}” is not in good standing with BC Registries. Go to your
@@ -296,7 +297,7 @@ watch([selectedOption], () => {
         kind="error"
         title="Client already exists"
       >
-        <p>
+        <p  class="cds--inline-notification-content">
           Looks like “{{ formData.businessInformation.businessName }}” has a
           client number. Select the 'Receive email and logout' button below to
           have it sent to you at {{ formData.location.contacts[0].email }}
