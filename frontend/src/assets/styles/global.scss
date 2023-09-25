@@ -997,14 +997,11 @@ cds-modal {
 
 /* Medium (from 672px to 1055px) */
 @media screen and (min-width: 672px) and (max-width: 1055px) {
-  .form-header-title span {
-    color: purple;
-  }
 
   /* Lower range width is still a mess */
 
   .screen {
-    margin: 2rem;
+    margin: 2rem 2rem 0 2rem;
     align-items: center;
   }
 
@@ -1021,30 +1018,40 @@ cds-modal {
 /* Large (from 1056px to 1311px) */
 @media screen and (min-width: 1056px) and (max-width: 1311px) {
   .screen {
-    margin: 2rem;
+    margin: 2rem 2rem 0 2rem;
     align-items: center;
+  }
+  .grouping-02, .grouping-03 {
+    width: 50.4375rem;
   }
 }
 
 /* X-Large (from 1312px to 1583px) */
 @media screen and (min-width: 1312px) and (max-width: 1583px) {
   .screen {
-    margin: 2rem;
+    margin: 2rem 2rem 0 2rem;
     align-items: center;
+  }
+  .grouping-02, .grouping-03 {
+    width: 50.4375rem;
   }
 }
 
 /* XX-Large (from 1584px to 1783px) */
 @media screen and (min-width: 1584px) and (max-width: 1783px) {
-  .form-steps {
-    width: 50vw;
+  .grouping-02, .grouping-03 {
+    width: 50.4375rem;
   }
 }
 
 /* XXX-Large (1784px and above) */
 @media screen and (min-width: 1784px) {
-  .form-steps {
-    width: 50vw;
+  .screen {
+    margin: 2rem 7.75rem 0 2rem;
+    align-items: center;
+  }
+  .grouping-02, .grouping-03 {
+    width: 50.4375rem;
   }
 }
 
