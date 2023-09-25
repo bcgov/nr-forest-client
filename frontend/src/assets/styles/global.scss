@@ -150,6 +150,10 @@ cds-radio-button:not(:last-child){
   margin-bottom: 0.5rem;
 }
 
+cds-combo-box::part(trigger-button) {
+  padding: 0px 3rem 0px 0;
+}
+
 .top-notification {
   margin-top: 3rem;
   display: flex;
