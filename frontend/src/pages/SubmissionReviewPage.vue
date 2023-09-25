@@ -85,13 +85,10 @@ const rejectYesDisabled = computed(() =>{
 })
 
 const rejectionReasonMessage = computed(() => {
-  if(selectedRejectReasons.value && selectedRejectReasons.value.length > 0){
-    if(showClientNumberField.value) return rejectReasonMessage.value
-    return selectedRejectReasons.value
-            .map((reason:CodeNameType) => reason.name)
-            .join(', ')
+  if(selectedRejectReasons.value && selectedRejectReasons.value.length > 0){    
+    return selectedRejectReasons.value.map((reason:CodeNameType) => reason.code)
   }
-  return ''
+  return []
 })
 
 // Submit the form changes to the backend
@@ -103,8 +100,8 @@ const submit = (approved:boolean) => {
     `/api/clients/submissions/${id.value}`,
     { 
       approved,
-      reason: rejectionReasonMessage.value,
-      values: rejectionReasonMessage.value
+      reasons: rejectionReasonMessage.value,
+      message: rejectReasonMessage.value
     },
     {
       headers: {

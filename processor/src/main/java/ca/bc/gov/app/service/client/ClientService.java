@@ -56,6 +56,38 @@ public class ClientService {
             );
   }
 
+  @ServiceActivator(
+      inputChannel = ApplicationConstant.SUBMISSION_POSTPROCESSOR_CHANNEL,
+      outputChannel = ApplicationConstant.NOTIFICATION_PROCESSING_CHANNEL,
+      async = "true"
+  )
+  public Mono<Message<SubmissionInformationDto>> processSubmission(Integer submissionId) {
+    return
+        submissionDetailRepository
+            .findBySubmissionId(submissionId)
+            .doOnNext(submission -> log.info("Loaded submission details {}",submission))
+            //Grab what we need for the match part
+            .map(details -> new SubmissionInformationDto(
+                    details.getOrganizationName(),
+                    details.getIncorporationNumber(),
+                    details.getGoodStandingInd()
+                )
+            )
+
+            //Build a message with our dto and pass the submission Id as header
+            .map(event ->
+                MessageBuilder
+                    .withPayload(event)
+                    .setHeader(ApplicationConstant.SUBMISSION_ID, submissionId)
+                    .build()
+            );
+  }
+
+  @ServiceActivator(inputChannel = ApplicationConstant.NOTIFICATION_PROCESSING_CHANNEL)
+  public void notificationProcessing(Message<SubmissionInformationDto> eventMono) {
+    log.info("Notification processing {}", eventMono);
+  }
+
   @ServiceActivator(inputChannel = ApplicationConstant.AUTO_APPROVE_CHANNEL)
   public void approved(Message<List<MatcherResult>> message) {
     persistData(
@@ -86,7 +118,10 @@ public class ClientService {
                     .collect(Collectors.toMap(MatcherResult::fieldName, MatcherResult::value))
                 )
                 .submissionId(
-                    message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class))
+                    message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class)
+                )
+                .createdBy("AUTO-PROCESSOR")
+                .updatedAt(LocalDateTime.now())
                 .build()
         )
         .subscribe(entity -> log.info(
@@ -115,7 +150,6 @@ public class ClientService {
             )
         );
   }
-
 
 }
 
