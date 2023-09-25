@@ -311,28 +311,19 @@ export const runValidation = (
   // We then load the field value
   const fieldValue = getFieldValue(fieldKey, target);
 
-  // We define a function that will run the validation if the condition is true
-  const buildEval = (condition: string) =>
-    condition === "true" ? "true" : `target.${condition}`;
-
   // We define a function to evaluate the condition safely
   const evaluateCondition = (condition: string, item: any): boolean => {
     if (condition === "true") {
       return true;
     }
 
-    if (typeof item === "object") {
-      const conditionFunction = new Function("item", `return ${condition};`);
-      try {
-        return conditionFunction(item);
-      } catch (error) {
-        // Handle any potential errors in the condition evaluation
-        console.error("Error evaluating condition:", error);
-        return false;
-      }
+    try {
+      return eval(condition);
+    } 
+    catch (error) {
+      console.error("Error evaluating condition:", error);
+      return false;
     }
-
-    return false;
   };
 
   const executeValidation = (
@@ -371,7 +362,7 @@ export const runValidation = (
           const valid =
             executeValidation(
               subItem,
-              buildEval(fieldCondition.replace(".*.", `[${index}].`)),
+              fieldCondition.replace(".*.", `[${index}].`),
               fieldKey.replace(".*.", `[${index}].`)
             ) === "";
           if (!valid) {
@@ -387,7 +378,7 @@ export const runValidation = (
       const valid =
         executeValidation(
           item,
-          buildEval(fieldCondition.replace(".*.", `[${index}].`)),
+          fieldCondition.replace(".*.", `[${index}].`),
           fieldKey.replace(".*.", `[${index}].`)
         ) === "";
       if (!valid) {
