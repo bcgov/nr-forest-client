@@ -1,12 +1,32 @@
+<script setup lang="ts">
+import { inject } from 'vue'
+// Composables
+import { useRouter } from 'vue-router'
+import useSvg from '@/composables/useSvg'
+// Types
+import type { Submitter } from '@/dto/CommonTypesDto'
+// @ts-ignore
+import badgePictogram from '@carbon/pictograms/es/badge'
+
+const submitterInformation = inject<Submitter>('submitterInformation')
+
+const router = useRouter()
+
+const newFormSubmission = () => {
+  router.push({ name: 'form' })
+}
+
+const SVG = useSvg(badgePictogram)
+</script>
+
 <template>
   <div class="frame-03">
-    <SVG alt="Badge pictogram" class="submission-badge"></SVG>
-    <div ref="i"></div>
+    <SVG alt="Badge pictogram" class="submission-badge"></SVG>    
     <div class="form-header form-header-stretched">
-      <h1>Application submitted!</h1>
-      <p>Your application for a client number has been submitted.</p>
-      <p>
-        We’ll send the client number to {{ submitterInformation?.email }} once
+      <p class="fluid-heading-05">Application submitted!</p>
+      <p class="fluid-paragraph-01">Your application for a client number has been submitted.</p>
+      <p class="fluid-paragraph-01">
+        We’ll send the client number to {{ $session.user?.email }} once
         we confirm the information you provided.
       </p>
       <cds-button
@@ -19,21 +39,3 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { inject } from 'vue'
-import { useRouter } from 'vue-router'
-import badgePictogram from '@carbon/pictograms/es/badge'
-
-import type { Submitter } from '@/dto/CommonTypesDto'
-import useSvg from '@/composables/useSvg'
-
-const submitterInformation = inject<Submitter>('submitterInformation')
-
-const router = useRouter()
-
-const newFormSubmission = () => {
-  router.push({ name: 'form' })
-}
-
-const SVG = useSvg(badgePictogram)
-</script>

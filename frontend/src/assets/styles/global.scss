@@ -72,6 +72,12 @@
 
   --cds-notification-background-error: #FFEAE5;
   --cds-support-error: #E72000;
+
+  --light-theme-background-background-selected: #93939533;
+}
+
+*, *::before, *::after {
+  box-sizing: unset;
 }
 
 .heading-buttons {
@@ -180,6 +186,13 @@ hr {
   width: 100%;
 }
 
+div#app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
 .bulleted-list {
   list-style: decimal;
   margin-left: 1.5rem;
@@ -203,7 +216,7 @@ hr {
   width: 414px;
   height: 414px;
   flex-grow: 1;
-  fill: var(--cds-hover-primary, #0353e9);
+  fill: var(--cds-button-primary, #0353e9);
 }
 
 .form-header-progress {
@@ -223,22 +236,23 @@ hr {
   padding: 8.125rem 13.375rem 15rem 2.5rem;
   align-items: center;
   background: var(--light-theme-layer-layer-02, #fff);
+  flex-grow: 1;
 }
 .full {
   margin: 0rem;
   padding-bottom: 0px;
   display: flex;
-  align-items: stretch;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
+  align-items: stretch;  
   background: var(--light-theme-background-background, #fff);
+  flex-grow: 1;
 }
 .screen {
   margin: 3rem 2.5rem 2.5rem 2.5rem;
   padding-bottom: 0px;
   display: flex;
+  align-items: stretch;  
   background: var(--light-theme-background-background, #fff);
+  flex-grow: 1;
 }
 .headers {
   display: flex;
@@ -417,6 +431,11 @@ hr {
 }
 .form-header-stretched {
   align-self: stretch;
+  width: 50%;
+}
+
+.form-header-stretched cds-button{
+  width: 15rem;
 }
 
 .form-header-title {
