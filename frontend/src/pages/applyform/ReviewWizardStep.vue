@@ -44,7 +44,7 @@ onMounted(() => {
 <template>
   <div class="grouping-05">
     <label class="heading-03">Business information</label>
-    <div class="grouping-06">
+    <div class="grouping-01">
       <p class="heading-02">
         {{ formData.businessInformation.businessName }}
       </p>
