@@ -27,11 +27,11 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // Imported global validations
 import {
   addValidation,
-  validate,
 } from "@/helpers/validators/BCeIDFormValidations";
 
 import {
   runValidation,
+  validate,
 } from "@/helpers/validators/GlobalValidators";
 
 // @ts-ignore
