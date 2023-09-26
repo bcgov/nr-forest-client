@@ -415,8 +415,7 @@ export const validate = (
         condition: string,
         fieldId: string = fieldKey
       ): string => {
-        // eslint-disable-next-line no-eval
-        if (eval(condition)) {
+        if (evaluateCondition(condition, item)) {
           const validationResponse = validation(item);
           if (notify && validationResponse) {
             errorBus.emit([{ fieldId, errorMsg: validationResponse }]);
@@ -426,6 +425,16 @@ export const validate = (
           return "";
         }
       };
+
+      const evaluateCondition = (condition: string, item: any): boolean => {
+        if (condition === "true") {
+          return true;
+        } else {
+          console.error("Unknown condition:", condition);
+          return false;
+        }
+      };
+
       // If the field value is an array we run the validation for every item in the array
       if (Array.isArray(fieldValue)) {
         return fieldValue.every((item: any, index: number) => {
