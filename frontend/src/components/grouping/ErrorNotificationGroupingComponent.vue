@@ -1,87 +1,116 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/notification/index';
+import "@carbon/web-components/es/components/notification/index";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
-import type { ValidationMessageType, ProgressNotification } from '@/dto/CommonTypesDto'
-import type { Address, FormDataDto } from '@/dto/ApplyClientNumberDto';
+import type {
+  ValidationMessageType,
+  ProgressNotification,
+} from "@/dto/CommonTypesDto";
+import type { Address, FormDataDto } from "@/dto/ApplyClientNumberDto";
 
 const props = defineProps<{
-  formData: FormDataDto
-  scrollToNewContact: () => void
-}>()
+  formData: FormDataDto;
+  scrollToNewContact: () => void;
+}>();
 
-const nonAssociatedAddressList = reactive<string[]>([])
+const nonAssociatedAddressList = reactive<string[]>([]);
 
 const locations = computed(() =>
-  props.formData.location.addresses.map((address: Address) => address.locationName)
+  props.formData.location.addresses.map(
+    (address: Address) => address.locationName
+  )
 );
 
 watch(locations, (locations) => {
   // Iterates backwards to prevent issues after removing an item from the list
   for (let index = nonAssociatedAddressList.length - 1; index >= 0; index--) {
     const addressName = nonAssociatedAddressList[index];
-    if (!locations.includes(addressName)) { // The address does not exist anymore
+    if (!locations.includes(addressName)) {
+      // The address does not exist anymore
       // Remove it from the error list
-      nonAssociatedAddressList.splice(index, 1)
+      nonAssociatedAddressList.splice(index, 1);
     }
   }
-})
+});
 
 // Define the bus to receive the global error messages and one to send the progress indicator messages
-const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification");
-const progressIndicatorBus = useEventBus<ProgressNotification>('progress-indicator-bus')
-const errorBus = useEventBus<ValidationMessageType[]>('submission-error-notification')
+const notificationBus = useEventBus<ValidationMessageType | undefined>(
+  "error-notification"
+);
+const progressIndicatorBus = useEventBus<ProgressNotification>(
+  "progress-indicator-bus"
+);
+const errorBus = useEventBus<ValidationMessageType[]>(
+  "submission-error-notification"
+);
 
 // Define the global error message
-const globalErrorMessage = ref<ValidationMessageType|undefined>(undefined);
+const globalErrorMessage = ref<ValidationMessageType | undefined>(undefined);
 
 // Handle the global error message, including filtering unsatisfactory messages
-const handleErrorMessage = (event: ValidationMessageType|undefined, payload?:any) => {  
-  
+const handleErrorMessage = (
+  event: ValidationMessageType | undefined,
+  payload?: any
+) => {
   // Handling incorrect client type selection
-  if(event && event.fieldId === 'businessInformation.clientType'){
+  if (event && event.fieldId === "businessInformation.clientType") {
     // Show as inline notification
-    globalErrorMessage.value = {fieldId: 'server.validation.error', errorMsg: 'Individuals cannot be selected. Please select a different client.'};
+    globalErrorMessage.value = {
+      fieldId: "server.validation.error",
+      errorMsg:
+        "Individuals cannot be selected. Please select a different client.",
+    };
     // Emit back to the form so it can be displayed as a field error
-    errorBus.emit([{fieldId: 'businessInformation.businessName', errorMsg: 'Individuals cannot be selected. Please select a different client.'}]);
+    errorBus.emit([
+      {
+        fieldId: "businessInformation.businessName",
+        errorMsg:
+          "Individuals cannot be selected. Please select a different client.",
+      },
+    ]);
     // Make step 1 with error
-    progressIndicatorBus.emit({ kind: 'error', value: [0]})
+    progressIndicatorBus.emit({ kind: "error", value: [0] });
 
     // Handling address without association
-  } else if(event && event.fieldId.startsWith('location.addresses[') && event.fieldId.endsWith('].locationName')){
-    if(payload){
-      if(event.errorMsg){ // The address is missing association
-        const foundIndex = nonAssociatedAddressList.indexOf(payload)
+  } else if (
+    event &&
+    event.fieldId.startsWith("location.addresses[") &&
+    event.fieldId.endsWith("].locationName")
+  ) {
+    if (payload) {
+      if (event.errorMsg) {
+        // The address is missing association
+        const foundIndex = nonAssociatedAddressList.indexOf(payload);
         if (foundIndex === -1) {
           // Add it to the error list
-          nonAssociatedAddressList.push(payload)
+          nonAssociatedAddressList.push(payload);
         }
-      } else { // The address is properly associated
-        const foundIndex = nonAssociatedAddressList.indexOf(payload)
+      } else {
+        // The address is properly associated
+        const foundIndex = nonAssociatedAddressList.indexOf(payload);
         if (foundIndex >= 0) {
           // Remove it from the error list
-          nonAssociatedAddressList.splice(foundIndex, 1)
+          nonAssociatedAddressList.splice(foundIndex, 1);
         }
       }
     }
   } else {
     globalErrorMessage.value = event;
   }
-}
-
+};
 
 // Watch for changes in the global error message bus
 notificationBus.on(handleErrorMessage);
 
 // Send a message to the progress indicator bus to navigate to a step
 const goToStep = (step: number) => {
-  progressIndicatorBus.emit({ kind: 'navigate', value: step})
-}
-
+  progressIndicatorBus.emit({ kind: "navigate", value: step });
+};
 </script>
+
 <template>
   <div class="top-notification" v-if="globalErrorMessage?.fieldId || nonAssociatedAddressList.length > 0">
 
