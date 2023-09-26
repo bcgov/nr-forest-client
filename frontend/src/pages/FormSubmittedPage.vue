@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { inject } from 'vue'
+import { inject } from "vue";
 // Composables
-import { useRouter } from 'vue-router'
-import useSvg from '@/composables/useSvg'
+import { useRouter } from "vue-router";
+import useSvg from "@/composables/useSvg";
 // Types
-import type { Submitter } from '@/dto/CommonTypesDto'
+import type { Submitter } from "@/dto/CommonTypesDto";
 // @ts-ignore
-import badgePictogram from '@carbon/pictograms/es/badge'
+import badgePictogram from "@carbon/pictograms/es/badge";
 
-const submitterInformation = inject<Submitter>('submitterInformation')
+const submitterInformation = inject<Submitter>("submitterInformation");
 
-const router = useRouter()
+const router = useRouter();
 
 const newFormSubmission = () => {
-  router.push({ name: 'form' })
-}
+  router.push({ name: "form" });
+};
 
-const SVG = useSvg(badgePictogram)
+const SVG = useSvg(badgePictogram);
 </script>
 
 <template>

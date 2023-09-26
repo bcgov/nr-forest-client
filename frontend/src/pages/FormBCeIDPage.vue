@@ -10,10 +10,10 @@ import { useRouter } from "vue-router";
 import { useFocus } from "@/composables/useFocus";
 import { usePost } from "@/composables/useFetch";
 // Imported Pages
-import BusinessInformationWizardStep from "@/pages/applyform/BusinessInformationWizardStep.vue";
-import AddressWizardStep from "@/pages/applyform/AddressWizardStep.vue";
-import ContactWizardStep from "@/pages/applyform/ContactWizardStep.vue";
-import ReviewWizardStep from "@/pages/applyform/ReviewWizardStep.vue";
+import BusinessInformationWizardStep from "@/pages/bceidform/BusinessInformationWizardStep.vue";
+import AddressWizardStep from "@/pages/bceidform/AddressWizardStep.vue";
+import ContactWizardStep from "@/pages/bceidform/ContactWizardStep.vue";
+import ReviewWizardStep from "@/pages/bceidform/ReviewWizardStep.vue";
 // Imported types
 import { newFormDataDto } from "@/dto/ApplyClientNumberDto";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
