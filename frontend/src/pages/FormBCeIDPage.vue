@@ -350,8 +350,7 @@ const isSmallScreen = useMediaQuery("(max-width: 671px)");
           :label="item.title"
           :secondary-label="item.subtitle"
           :state="item.kind"
-          :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"
-          v-on:click="goToStep(item.step)"
+          :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"          
           :disabled="item.disabled"
           v-shadow="3"
           />
