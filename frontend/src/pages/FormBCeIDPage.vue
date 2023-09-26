@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { reactive, watch, toRef, ref, getCurrentInstance, computed } from 'vue'
+import { reactive, watch, toRef, ref, getCurrentInstance, computed } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/button/index';
-import '@carbon/web-components/es/components/progress-indicator/index';
-import '@carbon/web-components/es/components/notification/index';
+import "@carbon/web-components/es/components/button/index";
+import "@carbon/web-components/es/components/progress-indicator/index";
+import "@carbon/web-components/es/components/notification/index";
 // Composables
 import { useEventBus, useMediaQuery } from "@vueuse/core";
 import { useRouter } from "vue-router";
@@ -25,14 +25,12 @@ import type {
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // Imported global validations
-import {
-  addValidation,
-} from "@/helpers/validators/BCeIDFormValidations";
+import { addValidation } from "@/helpers/validators/BCeIDFormValidations";
 
 import {
   runValidation,
   validate,
-  isContainedIn
+  isContainedIn,
 } from "@/helpers/validators/GlobalValidators";
 
 // @ts-ignore
@@ -42,12 +40,11 @@ import LogOut16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 
-const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification")
-const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification")
-const exitBus = useEventBus<Record<string, boolean | null>>("exit-notification")
-const revalidateBus = useEventBus<void>('revalidate-bus')
-const progressIndicatorBus = useEventBus<ProgressNotification>('progress-indicator-bus')
-
+const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
+const notificationBus = useEventBus<ValidationMessageType | undefined>("error-notification");
+const exitBus = useEventBus<Record<string, boolean | null>>("exit-notification");
+const revalidateBus = useEventBus<void>("revalidate-bus");
+const progressIndicatorBus = useEventBus<ProgressNotification>("progress-indicator-bus");
 
 const router = useRouter();
 const { setScrollPoint, setFocusedComponent } = useFocus();
@@ -79,13 +76,17 @@ const locations = computed(() =>
   formData.location.addresses.map((address: any) => address.locationName)
 );
 
-const associatedLocations = computed(() => (formData
-  .location
-  .contacts
-  .map((contact:Contact) => contact.locationNames)
-  .map((locationNames: CodeDescrType[]) => locationNames.map((locationName: CodeDescrType) => locationName.text))
-  .reduce((accumulator: string[], current: string[]) => accumulator.concat(current), [])
-))
+const associatedLocations = computed(() =>
+  formData.location.contacts
+    .map((contact: Contact) => contact.locationNames)
+    .map((locationNames: CodeDescrType[]) =>
+      locationNames.map((locationName: CodeDescrType) => locationName.text)
+    )
+    .reduce(
+      (accumulator: string[], current: string[]) => accumulator.concat(current),
+      []
+    )
+);
 
 const { response, error, fetch } = usePost(
   "/api/clients/submissions",
@@ -106,15 +107,20 @@ watch([response], () => {
   }
 });
 
-watch([error], () => {  
+watch([error], () => {
   const validationErrors: ValidationMessageType[] = error.value.response
     ?.data as ValidationMessageType[];
-  
-    validationErrors.forEach((errorItem: ValidationMessageType) => notificationBus.emit(errorItem));
-    setScrollPoint("top");
+
+  validationErrors.forEach((errorItem: ValidationMessageType) =>
+    notificationBus.emit(errorItem)
+  );
+  setScrollPoint("top");
 });
 
-addValidation('location.contacts.*.locationNames.*.text', isContainedIn(locations))
+addValidation(
+  "location.contacts.*.locationNames.*.text",
+  isContainedIn(locations)
+);
 
 // Tab system
 const progressData = reactive([
@@ -166,9 +172,14 @@ const progressData = reactive([
       "location.contacts.*.email",
       "location.contacts.*.phoneNumber",
     ],
-    extraValidations: [{
-      field: 'location.addresses.*.locationName', validation: isContainedIn(associatedLocations,'Looks like “${item}” doesn’t have a contact. You must associate it with an existing contact or add a new contact before submitting the application again.')
-    }
+    extraValidations: [
+      {
+        field: "location.addresses.*.locationName",
+        validation: isContainedIn(
+          associatedLocations,
+          "Looks like “${item}” doesn’t have a contact. You must associate it with an existing contact or add a new contact before submitting the application again."
+        ),
+      },
     ],
   },
   {
@@ -215,7 +226,6 @@ const checkStepValidity = (stepNumber: number): boolean => {
   )
     return false;
 
-
   return progressData[stepNumber].valid;
 };
 
@@ -225,43 +235,41 @@ const endAndLogOut = ref<boolean>(false);
 const mailAndLogOut = ref<boolean>(false);
 
 const goToStep = (index: number, skipCheck: boolean = false) => {
-  if (skipCheck || (index <= currentTab.value && checkStepValidity(index))) currentTab.value = index;
-  else notificationBus.emit({ fieldId: 'missing.info', errorMsg: '' });
-  revalidateBus.emit()
+  if (skipCheck || (index <= currentTab.value && checkStepValidity(index)))
+    currentTab.value = index;
+  else notificationBus.emit({ fieldId: "missing.info", errorMsg: "" });
+  revalidateBus.emit();
 };
-
 
 const onNext = () => {
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
       currentTab.value++;
-      progressData[currentTab.value - 1].kind = 'complete';
-      progressData[currentTab.value].kind = 'current';
-      setTimeout(revalidateBus.emit, 1000)
+      progressData[currentTab.value - 1].kind = "complete";
+      progressData[currentTab.value].kind = "current";
+      setTimeout(revalidateBus.emit, 1000);
     }
     setScrollPoint("top");
   }
-  
 };
 const onBack = () => {
   if (currentTab.value - 1 >= 0) {
     currentTab.value--;
-    progressData[currentTab.value + 1].kind = 'incomplete';
-    progressData[currentTab.value].kind = 'current';
-    setScrollPoint("top");    
-    setTimeout(revalidateBus.emit, 1000)
+    progressData[currentTab.value + 1].kind = "incomplete";
+    progressData[currentTab.value].kind = "current";
+    setScrollPoint("top");
+    setTimeout(revalidateBus.emit, 1000);
   }
-  
 };
 const validateStep = (valid: boolean) => {
   progressData[currentTab.value].valid = valid;
-  if(valid){
-    const nextStep = progressData.find((step: any) => step.step === currentTab.value+1)  
-    if(nextStep)
-      nextStep.disabled = false;
+  if (valid) {
+    const nextStep = progressData.find(
+      (step: any) => step.step === currentTab.value + 1
+    );
+    if (nextStep) nextStep.disabled = false;
   }
-  
 };
 
 const processAndLogOut = () => {
@@ -294,24 +302,29 @@ exitBus.on((event: Record<string, boolean | null>) => {
   mailAndLogOut.value = event.duplicated ? event.duplicated : false;
 });
 
-progressIndicatorBus.on((event: ProgressNotification) => {  
-  if(event.kind === 'disabled') {        
-    [1,2,3]
-    .filter((index: number) => event.value || index < currentTab.value+1)
-    .forEach((index: number) => progressData[index].disabled = event.value as boolean)
+progressIndicatorBus.on((event: ProgressNotification) => {
+  if (event.kind === "disabled") {
+    [1, 2, 3]
+      .filter((index: number) => event.value || index < currentTab.value + 1)
+      .forEach(
+        (index: number) =>
+          (progressData[index].disabled = event.value as boolean)
+      );
   }
-  if(event.kind === 'navigate') goToStep(event.value as number, true)
-  if(event.kind === 'error'){ 
+  if (event.kind === "navigate") goToStep(event.value as number, true);
+  if (event.kind === "error") {
     (event.value as number[]).forEach((index: number) => {
-      progressData[index].valid = false
-      progressData[index].kind = 'invalid'
-    })
+      progressData[index].valid = false;
+      progressData[index].kind = "invalid";
+    });
   }
 });
 
-const reEval = () => (revalidateBus.emit())
+const reEval = () => revalidateBus.emit();
 
-const contactWizardRef = ref<InstanceType<typeof ContactWizardStep> | null>(null)
+const contactWizardRef = ref<InstanceType<typeof ContactWizardStep> | null>(
+  null
+);
 
 const scrollToNewContact = () => {
   if (contactWizardRef.value) {
@@ -321,9 +334,9 @@ const scrollToNewContact = () => {
       setFocusedComponent(`addressname_${index}`);
     });
   }
-}
+};
 
-const isSmallScreen = useMediaQuery('(max-width: 671px)')
+const isSmallScreen = useMediaQuery("(max-width: 671px)");
 </script>
 
 <template>
