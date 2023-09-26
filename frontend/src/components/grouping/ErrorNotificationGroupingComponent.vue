@@ -55,27 +55,7 @@ const handleErrorMessage = (
   event: ValidationMessageType | undefined,
   payload?: any
 ) => {
-  // Handling incorrect client type selection
-  if (event && event.fieldId === "businessInformation.clientType") {
-    // Show as inline notification
-    globalErrorMessage.value = {
-      fieldId: "server.validation.error",
-      errorMsg:
-        "Individuals cannot be selected. Please select a different client.",
-    };
-    // Emit back to the form so it can be displayed as a field error
-    errorBus.emit([
-      {
-        fieldId: "businessInformation.businessName",
-        errorMsg:
-          "Individuals cannot be selected. Please select a different client.",
-      },
-    ]);
-    // Make step 1 with error
-    progressIndicatorBus.emit({ kind: "error", value: [0] });
-
-    // Handling address without association
-  } else if (
+  if (
     event &&
     event.fieldId.startsWith("location.addresses[") &&
     event.fieldId.endsWith("].locationName")
