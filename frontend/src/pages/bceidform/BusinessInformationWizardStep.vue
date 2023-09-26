@@ -24,175 +24,179 @@ import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
 // Importing session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-
 //Defining the props and emiter to reveice the data and emit an update
-const props = defineProps<{ data: FormDataDto; active: boolean }>()
+const props = defineProps<{ data: FormDataDto; active: boolean }>();
 
 const emit = defineEmits<{
-  (e: 'update:data', value: FormDataDto): void
-  (e: 'valid', value: boolean): void
-}>()
+  (e: "update:data", value: FormDataDto): void;
+  (e: "valid", value: boolean): void;
+}>();
 
 //Defining the event bus to send notifications up
-const progressIndicatorBus = useEventBus<ProgressNotification>('progress-indicator-bus')
-const exitBus = useEventBus<Record<string, boolean | null>>('exit-notification')
-const generalErrorBus = useEventBus<string>('general-error-notification')
+const progressIndicatorBus = useEventBus<ProgressNotification>(
+  "progress-indicator-bus"
+);
+const exitBus =
+  useEventBus<Record<string, boolean | null>>("exit-notification");
+const generalErrorBus = useEventBus<string>("general-error-notification");
 
 //Set the prop as a ref, and then emit when it changes
-const formData = ref<FormDataDto>(props.data)
+const formData = ref<FormDataDto>(props.data);
 watch(
   () => formData.value,
-  () => emit('update:data', formData.value)
-)
+  () => emit("update:data", formData.value)
+);
 
 // -- Validation of the component --
 const validation = reactive<Record<string, boolean>>({
   businessType: !!formData.value.businessInformation.businessType,
-  business: !!formData.value.businessInformation.businessName
-})
+  business: !!formData.value.businessInformation.businessName,
+});
 
 const checkValid = () =>
   Object.values(validation).reduce(
     (accumulator: boolean, currentValue: boolean) =>
       accumulator && currentValue,
     true
-  )
+  );
 
-watch([validation], () => emit('valid', checkValid()))
-emit('valid', checkValid())
+watch([validation], () => emit("valid", checkValid()));
+emit("valid", checkValid());
 
 // -- Auto completion --
 const selectedOption = computed(() => {
   switch (formData.value.businessInformation.businessType) {
-    case 'R':
-      return ClientTypeEnum.R
-    case 'U':
-      return ClientTypeEnum.U
+    case "R":
+      return ClientTypeEnum.R;
+    case "U":
+      return ClientTypeEnum.U;
     default:
-      return ClientTypeEnum.Unknow
+      return ClientTypeEnum.Unknow;
   }
-})
+});
 
 const autoCompleteUrl = computed(
   () => `/api/clients/name/${formData.value.businessInformation.businessName}`
-)
+);
 
-const showAutoCompleteInfo = ref<boolean>(false)
-const showGoodStandingError = ref<boolean>(false)
-const showDuplicatedError = ref<boolean>(false)
-const showDetailsLoading = ref<boolean>(false)
-const detailsData = ref(null)
+const showAutoCompleteInfo = ref<boolean>(false);
+const showGoodStandingError = ref<boolean>(false);
+const showDuplicatedError = ref<boolean>(false);
+const showDetailsLoading = ref<boolean>(false);
+const detailsData = ref(null);
 
 const toggleErrorMessages = (
   goodStanding: boolean | null,
   duplicated: boolean | null
 ) => {
-  showGoodStandingError.value = goodStanding ?? false
-  showDuplicatedError.value = duplicated ?? false
+  showGoodStandingError.value = goodStanding ?? false;
+  showDuplicatedError.value = duplicated ?? false;
 
   if (goodStanding || duplicated) {
-    progressIndicatorBus.emit({kind: 'disabled', value: true})
-    exitBus.emit({ goodStanding, duplicated })
+    progressIndicatorBus.emit({ kind: "disabled", value: true });
+    exitBus.emit({ goodStanding, duplicated });
   } else {
-    progressIndicatorBus.emit({kind: 'disabled', value: false})
-    exitBus.emit({ goodStanding: false, duplicated: false })
+    progressIndicatorBus.emit({ kind: "disabled", value: false });
+    exitBus.emit({ goodStanding: false, duplicated: false });
   }
-}
+};
 
 //Using this as we have to handle the selected result to get
 //incorporation number and client type
-const autoCompleteResult = ref<BusinessSearchResult>()
+const autoCompleteResult = ref<BusinessSearchResult>();
 watch([autoCompleteResult], () => {
-
   // reset business validation state
-  validation.business = false
+  validation.business = false;
 
   if (autoCompleteResult.value) {
-    toggleErrorMessages(false, false)
+    toggleErrorMessages(false, false);
 
     formData.value.businessInformation.incorporationNumber =
-      autoCompleteResult.value.code
+      autoCompleteResult.value.code;
     formData.value.businessInformation.legalType =
-      autoCompleteResult.value.legalType
+      autoCompleteResult.value.legalType;
     formData.value.businessInformation.clientType = retrieveClientType(
       autoCompleteResult.value.legalType
-    )
-    showAutoCompleteInfo.value = false
+    );
+    showAutoCompleteInfo.value = false;
 
-    emit('update:data', formData.value)
+    emit("update:data", formData.value);
 
     const config = {
       headers: {
-        'x-user-email': formData.value.location.contacts[0].email,
-        'x-user-id': formData.value.location.contacts[0].firstName
-      }
-    }
+        "x-user-email": formData.value.location.contacts[0].email,
+        "x-user-id": formData.value.location.contacts[0].firstName,
+      },
+    };
 
     //Also, we will load the backend data to fill all the other information as well
     const { error, loading: detailsLoading } = useFetchTo(
       `/api/clients/${autoCompleteResult.value.code}`,
       detailsData,
       config
-    )
+    );
 
-    showDetailsLoading.value = true
+    showDetailsLoading.value = true;
     watch(error, () => {
       if (error.value.response?.status === 409) {
-        toggleErrorMessages(null, true)
-        return
+        toggleErrorMessages(null, true);
+        return;
       }
       if (error.value.response?.status === 404) {
-        toggleErrorMessages(null, null)
-        validation.business = true
-        emit('update:data', formData.value)
-        return
+        toggleErrorMessages(null, null);
+        validation.business = true;
+        emit("update:data", formData.value);
+        return;
       }
       // @ts-ignore
-      generalErrorBus.emit(error.value.response?.data.message)
-    })
+      generalErrorBus.emit(error.value.response?.data.message);
+    });
 
     watch(
       [detailsLoading],
       () => (showDetailsLoading.value = detailsLoading.value)
-    )
+    );
   }
-})
+});
 
 watch([detailsData], () => {
   if (detailsData.value) {
-    const forestClientDetails: ForestClientDetailsDto = detailsData.value
+    const forestClientDetails: ForestClientDetailsDto = detailsData.value;
     formData.value.location.contacts = [
       formData.value.location.contacts[0],
-      ...forestClientDetails.contacts
-    ]
-    formData.value.location.addresses = exportAddress(forestClientDetails.addresses)
+      ...forestClientDetails.contacts,
+    ];
+    formData.value.location.addresses = exportAddress(
+      forestClientDetails.addresses
+    );
     formData.value.businessInformation.goodStandingInd =
-      forestClientDetails.goodStanding ? 'Y' : 'N'
-    toggleErrorMessages(!forestClientDetails.goodStanding, null)
-    validation.business = forestClientDetails.goodStanding
+      forestClientDetails.goodStanding ? "Y" : "N";
+    toggleErrorMessages(!forestClientDetails.goodStanding, null);
+    validation.business = forestClientDetails.goodStanding;
 
-    emit('update:data', formData.value)
+    emit("update:data", formData.value);
   }
-})
+});
 
 // -- Unregistered Proprietorship
 watch([selectedOption], () => {
   if (selectedOption.value === ClientTypeEnum.U) {
-   
-    const fromName = `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`
+    const fromName = `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`;
 
-    formData.value.businessInformation.businessType = 'U'
-    formData.value.businessInformation.clientType = 'U'
-    formData.value.businessInformation.businessName =
-      ForestClientUserSession.user?.businessName ? ForestClientUserSession.user?.businessName :fromName
-    validation.business = true
-    emit('update:data', formData.value)
+    formData.value.businessInformation.businessType = "U";
+    formData.value.businessInformation.clientType = "U";
+    formData.value.businessInformation.businessName = ForestClientUserSession
+      .user?.businessName
+      ? ForestClientUserSession.user?.businessName
+      : fromName;
+    validation.business = true;
+    emit("update:data", formData.value);
   } else {
-    formData.value.businessInformation.businessName = ''
-    validation.business = false
-    showAutoCompleteInfo.value = true
+    formData.value.businessInformation.businessName = "";
+    validation.business = false;
+    showAutoCompleteInfo.value = true;
   }
-})
+});
 </script>
 
 <template>

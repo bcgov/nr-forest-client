@@ -7,18 +7,15 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import { backendUrl } from '@/CoreConstants'
-const router = useRouter()
+import { useRouter } from "vue-router";
+import { backendUrl } from "@/CoreConstants";
+const router = useRouter();
 
-if(!router.currentRoute.value.query.code){
-  router.push({ name: 'error',query: { error: 'no_code' } })
-}else{
-  window.location.href = `${backendUrl}/callback?code=${router.currentRoute.value.query.code}`
+if (!router.currentRoute.value.query.code) {
+  router.push({ name: "error", query: { error: "no_code" } });
+} else {
+  window.location.href = `${backendUrl}/callback?code=${router.currentRoute.value.query.code}`;
 }
-
-
-
 </script>
 
 <style scoped>

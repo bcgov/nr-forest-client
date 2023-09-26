@@ -1,44 +1,44 @@
 <script setup lang="ts">
-import { watch, ref, onMounted } from 'vue'
+import { watch, ref, onMounted } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/button/index';
+import "@carbon/web-components/es/components/button/index";
 // Composables
-import { useEventBus } from '@vueuse/core'
+import { useEventBus } from "@vueuse/core";
 // Types
-import type { FormDataDto } from '@/dto/ApplyClientNumberDto'
+import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
 // @ts-ignore
-import Edit16 from '@carbon/icons-vue/es/edit/16'
+import Edit16 from "@carbon/icons-vue/es/edit/16";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
-  data: FormDataDto
-  active: boolean
-  goToStep: Function
-}>()
+  data: FormDataDto;
+  active: boolean;
+  goToStep: Function;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:data', value: FormDataDto): void
-  (e: 'valid', value: boolean): void
-}>()
+  (e: "update:data", value: FormDataDto): void;
+  (e: "valid", value: boolean): void;
+}>();
 
-const revalidateBus = useEventBus<void>('revalidate-bus')
+const revalidateBus = useEventBus<void>("revalidate-bus");
 
 //Set the prop as a ref, and then emit when it changes
-const formData = ref<FormDataDto>(props.data)
-watch([formData], () => emit('update:data', formData.value))
+const formData = ref<FormDataDto>(props.data);
+watch([formData], () => emit("update:data", formData.value));
 
 //So far, hardcoded the value but should be coming from somewhere else
 const companyBusinessTypes: Record<string, string> = {
-  R: 'B.C. Registered Business - Corporation',
-  U: 'Sole Proprietorship'
-}
+  R: "B.C. Registered Business - Corporation",
+  U: "Sole Proprietorship",
+};
 
 //We emit valid here because there is nothing else to be done here apart from showing information
-emit('valid', true)
+emit("valid", true);
 
 onMounted(() => {
-  revalidateBus.emit()
-  })
+  revalidateBus.emit();
+});
 </script>
 
 <template>

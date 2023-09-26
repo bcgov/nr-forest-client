@@ -1,44 +1,42 @@
 <script setup lang="ts">
-import { watch, ref, computed, reactive, onMounted} from 'vue'
+import { watch, ref, computed, reactive, onMounted } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/button/index';
+import "@carbon/web-components/es/components/button/index";
 // Composables
-import { useEventBus } from '@vueuse/core'
-import { useFocus } from '@/composables/useFocus'
-import { useFetchTo } from '@/composables/useFetch'
+import { useEventBus } from "@vueuse/core";
+import { useFocus } from "@/composables/useFocus";
+import { useFetchTo } from "@/composables/useFetch";
 // Type
-import type { FormDataDto, Address } from '@/dto/ApplyClientNumberDto'
-import { emptyAddress } from '@/dto/ApplyClientNumberDto'
-import type { ModalNotification } from '@/dto/CommonTypesDto'
-import { isUniqueDescriptive } from '@/helpers/validators/GlobalValidators'
-
+import type { FormDataDto, Address } from "@/dto/ApplyClientNumberDto";
+import { emptyAddress } from "@/dto/ApplyClientNumberDto";
+import type { ModalNotification } from "@/dto/CommonTypesDto";
+import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 
 // @ts-ignore
-import Add16 from '@carbon/icons-vue/es/add/16'
+import Add16 from "@carbon/icons-vue/es/add/16";
 
 //Defining the props and emitter to receive the data and emit an update
-const props = defineProps<{ data: FormDataDto; active: boolean }>()
+const props = defineProps<{ data: FormDataDto; active: boolean }>();
 
 const emit = defineEmits<{
-  (e: 'update:data', value: FormDataDto): void;
-  (e: 'valid', value: boolean): void;
-}>()
+  (e: "update:data", value: FormDataDto): void;
+  (e: "valid", value: boolean): void;
+}>();
 
 //Defining the event bus to send notifications up
-const bus = useEventBus<ModalNotification>('modal-notification');
+const bus = useEventBus<ModalNotification>("modal-notification");
 
 const { setFocusedComponent } = useFocus();
 
 //Set the prop as a ref, and then emit when it changes
 const formData = reactive<FormDataDto>(props.data);
 const revalidate = ref(false);
-watch([formData], () => emit('update:data', formData));
+watch([formData], () => emit("update:data", formData));
 
 const updateAddress = (value: Address | undefined, index: number) => {
-  if(index < formData.location.addresses.length){
-    if (value)
-      formData.location.addresses[index] = value;
-    else{
+  if (index < formData.location.addresses.length) {
+    if (value) formData.location.addresses[index] = value;
+    else {
       const addressesCopy: Address[] = [...formData.location.addresses];
       addressesCopy.splice(index, 1);
       formData.location.addresses = addressesCopy;
@@ -52,7 +50,7 @@ const countryList = ref([]);
 
 const fetch = () => {
   if (props.active)
-    useFetchTo('/api/clients/activeCountryCodes?page=0&size=250', countryList);
+    useFetchTo("/api/clients/activeCountryCodes?page=0&size=250", countryList);
 };
 
 watch(() => props.active, fetch);
@@ -64,51 +62,58 @@ const addAddress = () => formData.location.addresses.push(emptyAddress());
 
 //Validation
 const validation = reactive<Record<string, boolean>>({
-  0: false
+  0: false,
 });
 
-const checkValid = () =>{
+const checkValid = () => {
   const result = Object.values(validation).reduce(
     (accumulator: boolean, currentValue: boolean) =>
       accumulator && currentValue,
     true
   );
   return result;
-}
-watch([validation], () => emit('valid', checkValid()));
-emit('valid', false);
+};
+watch([validation], () => emit("valid", checkValid()));
+emit("valid", false);
 
 const updateValidState = (index: number, valid: boolean) => {
-   if (validation[index] !== valid) {
-     validation[index] = valid;
-   }
+  if (validation[index] !== valid) {
+    validation[index] = valid;
+  }
 };
 
 const uniqueValues = isUniqueDescriptive();
 
 const removeAddress = (index: number) => () => {
-  updateAddress(undefined, index)
+  updateAddress(undefined, index);
   delete validation[index];
-  uniqueValues.remove('Address',index+'')
-  uniqueValues.remove('Names',index+'')
-  bus.emit({ active: false, message: '', kind: '', toastTitle: '', handler: () => {} });
-  setFocusedComponent(`addr_addr_${index-1}`,200);
+  uniqueValues.remove("Address", index + "");
+  uniqueValues.remove("Names", index + "");
+  bus.emit({
+    active: false,
+    message: "",
+    kind: "",
+    toastTitle: "",
+    handler: () => {},
+  });
+  setFocusedComponent(`addr_addr_${index - 1}`, 200);
 };
 
 const handleRemove = (index: number) => {
-  const selectedAddress = formData.location.addresses[index].locationName.length !== 0
-    ? formData.location.addresses[index].locationName
-    : 'Address #' + index;
+  const selectedAddress =
+    formData.location.addresses[index].locationName.length !== 0
+      ? formData.location.addresses[index].locationName
+      : "Address #" + index;
   bus.emit({
     message: selectedAddress,
-    kind: 'address',
-    toastTitle: 'The additional address was deleted',
+    kind: "address",
+    toastTitle: "The additional address was deleted",
     handler: removeAddress(index),
-    active: true
+    active: true,
   });
 };
 
-onMounted(() => setFocusedComponent('addr_0',800))
+onMounted(() => setFocusedComponent("addr_0", 800));
 </script>
 
 <template>

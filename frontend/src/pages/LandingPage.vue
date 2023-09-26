@@ -1,22 +1,22 @@
 <script setup lang="ts">
 // Carbon
-import '@carbon/web-components/es/components/button/index';
+import "@carbon/web-components/es/components/button/index";
 // Composables
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 // Constants
-import { backendUrl } from '@/CoreConstants'
+import { backendUrl } from "@/CoreConstants";
 // Assets
-import Seeding from '@/assets/images/seeding.png'
-import logo from '@/assets/images/bc-gov-logo.png'
+import Seeding from "@/assets/images/seeding.png";
+import logo from "@/assets/images/bc-gov-logo.png";
 // @ts-ignore
-import login16 from '@carbon/icons-vue/es/login/16'
+import login16 from "@carbon/icons-vue/es/login/16";
 
 // extract the querystring parameters from the URL
-const router = useRouter()
-const { query } = router.currentRoute.value
+const router = useRouter();
+const { query } = router.currentRoute.value;
 // check if a querystring parameter called ref exists and if it has a value of external
-if (query.ref && query.ref === 'external') {
-  window.location.href = `${backendUrl}/login?code=bceidbusiness`
+if (query.ref && query.ref === "external") {
+  window.location.href = `${backendUrl}/login?code=bceidbusiness`;
 }
 </script>
 

@@ -6,11 +6,11 @@ import useSvg from '@/composables/useSvg'
 // Carbon
 import '@carbon/web-components/es/components/button/index';
 // Types
-import type { Submitter } from '@/dto/CommonTypesDto'
+import type { Submitter } from "@/dto/CommonTypesDto";
 // @ts-ignore
-import badgePictogram from '@carbon/pictograms/es/badge'
+import badgePictogram from "@carbon/pictograms/es/badge";
 
-const submitterInformation = inject<Submitter>('submitterInformation')
+const submitterInformation = inject<Submitter>("submitterInformation");
 
 const router = useRouter()
 const SVG = useSvg(badgePictogram)
