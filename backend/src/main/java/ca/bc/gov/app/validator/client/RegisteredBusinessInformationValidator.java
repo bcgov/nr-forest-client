@@ -67,13 +67,6 @@ public class RegisteredBusinessInformationValidator implements Validator {
       return;
     }
 
-    if (ClientTypeEnum.I.toString().equals(clientType)) {
-      errors.rejectValue(
-          clientTypeField,
-          String.format("%s value %s is not supported for registered businesses",
-              clientTypeField, clientType));
-    }
-
     if (legalType == null) {
       return;
     }

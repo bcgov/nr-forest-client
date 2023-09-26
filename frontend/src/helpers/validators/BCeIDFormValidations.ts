@@ -19,12 +19,6 @@ import {
 formFieldValidations["businessInformation.businessName"] = [
   isNotEmpty("Business Name cannot be empty"),
 ];
-formFieldValidations["businessInformation.clientType"] = [
-  isNot(
-    "I",
-    "Individuals cannot be selected. Please select a different client."
-  ),
-];
 
 // Step 2: Addresses
 formFieldValidations["location.addresses.*.locationName"] = [
