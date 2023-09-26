@@ -1,106 +1,103 @@
 <script setup lang="ts">
-import { reactive, watch, ref, onMounted } from 'vue'
+import { reactive, watch, ref, onMounted } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/button/index';
+import "@carbon/web-components/es/components/button/index";
 // Importing composables
-import { useFocus } from '@/composables/useFocus'
+import { useFocus } from "@/composables/useFocus";
 // Importing types
-import type { CodeDescrType, CodeNameType } from '@/dto/CommonTypesDto'
-import type { Contact } from '@/dto/ApplyClientNumberDto'
+import type { CodeDescrType, CodeNameType } from "@/dto/CommonTypesDto";
+import type { Contact } from "@/dto/ApplyClientNumberDto";
 // Importing validatons
-import { getValidations } from '@/helpers/validators/GlobalValidators'
-import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
+import { getValidations } from "@/helpers/validators/GlobalValidators";
+import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // @ts-ignore
-import Delete16 from '@carbon/icons-vue/es/trash-can/16'
+import Delete16 from "@carbon/icons-vue/es/trash-can/16";
 
 //Define the input properties for this component
 const props = defineProps<{
-  id: number
-  modelValue: Contact
-  enabled?: boolean
-  roleList: Array<CodeNameType>
-  addressList: Array<CodeNameType>
-  validations: Array<Function>
-  revalidate?: boolean
-}>()
+  id: number;
+  modelValue: Contact;
+  enabled?: boolean;
+  roleList: Array<CodeNameType>;
+  addressList: Array<CodeNameType>;
+  validations: Array<Function>;
+  revalidate?: boolean;
+}>();
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: 'valid', value: boolean): void
-  (e: 'update:model-value', value: Contact | undefined): void
-  (e: 'remove', value: number): void
-}>()
+  (e: "valid", value: boolean): void;
+  (e: "update:model-value", value: Contact | undefined): void;
+  (e: "remove", value: number): void;
+}>();
 
 const { setFocusedComponent } = useFocus();
-const noValidation = (value: string) => ''
+const noValidation = (value: string) => "";
 
 //We set it as a separated ref due to props not being updatable
-const selectedValue = reactive<Contact>(props.modelValue)
+const selectedValue = reactive<Contact>(props.modelValue);
 const validateData =
   props.validations.length === 0
     ? noValidation
-    : props.validations[0]('Name', props.id + '')
-const error = ref<string | undefined>('')
+    : props.validations[0]("Name", props.id + "");
+const error = ref<string | undefined>("");
 
 const uniquenessValidation = () => {
   error.value = validateData(
     `${selectedValue.firstName} ${selectedValue.lastName}`
-  )
-
-}
+  );
+};
 
 //Watch for changes on the input
 watch([selectedValue], () => {
-  uniquenessValidation()
-  emit('update:model-value', selectedValue)
-})
+  uniquenessValidation();
+  emit("update:model-value", selectedValue);
+});
 
 watch(
   () => props.revalidate,
   () => uniquenessValidation(),
   { immediate: true }
-)
+);
 
 //Validations
-const validation = reactive<Record<string, boolean>>({})
+const validation = reactive<Record<string, boolean>>({});
 
 const checkValid = () =>
   Object.values(validation).reduce(
     (accumulator: boolean, currentValue: boolean) =>
       accumulator && currentValue,
     true
-  )
+  );
 
-watch([validation], () => emit('valid', checkValid()))
-emit('valid', false)
+watch([validation], () => emit("valid", checkValid()));
+emit("valid", false);
 
 //Data conversion
 
 const nameTypeToCodeDescr = (
   value: CodeNameType | undefined
 ): CodeDescrType => {
-  if (value) return { value: value.code, text: value.name }
-  return { value: '', text: '' }
-}
+  if (value) return { value: value.code, text: value.name };
+  return { value: "", text: "" };
+};
 
 const nameTypesToCodeDescr = (
   values: CodeNameType[] | undefined
 ): CodeDescrType[] => {
-  if (values) return values.map(nameTypeToCodeDescr)
-  return []
-}
+  if (values) return values.map(nameTypeToCodeDescr);
+  return [];
+};
 
-onMounted(() =>{
-  setFocusedComponent(`address_${props.id}`,800)
-})
+onMounted(() => {
+  setFocusedComponent(`address_${props.id}`, 800);
+});
 
-const updateContactType = (
-  value: CodeNameType | undefined,
-) => {
+const updateContactType = (value: CodeNameType | undefined) => {
   if (value) {
-    selectedValue.contactType = { value: value.code, text: value.name }
+    selectedValue.contactType = { value: value.code, text: value.name };
   }
-}
+};
 </script>
 
 <template>
