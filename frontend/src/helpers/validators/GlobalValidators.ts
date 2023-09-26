@@ -315,12 +315,8 @@ export const runValidation = (
   const evaluateCondition = (condition: string, item: any): boolean => {
     if (condition === "true") {
       return true;
-    }
-
-    try {
-      return Function('"use strict";return (' + condition + ')').call(target, item);
-    } catch (error) {
-      console.error("Error evaluating condition:", error);
+    } else {
+      console.error("Unknown condition:", condition);
       return false;
     }
   };
