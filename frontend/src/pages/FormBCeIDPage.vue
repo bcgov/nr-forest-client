@@ -248,7 +248,6 @@ const onNext = () => {
       currentTab.value++;
       progressData[currentTab.value - 1].kind = "complete";
       progressData[currentTab.value].kind = "current";
-      setTimeout(revalidateBus.emit, 1000);
     }
     setScrollPoint("top");
   }
