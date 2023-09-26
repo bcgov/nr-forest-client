@@ -320,8 +320,6 @@ progressIndicatorBus.on((event: ProgressNotification) => {
   }
 });
 
-const reEval = () => revalidateBus.emit();
-
 const contactWizardRef = ref<InstanceType<typeof ContactWizardStep> | null>(
   null
 );
