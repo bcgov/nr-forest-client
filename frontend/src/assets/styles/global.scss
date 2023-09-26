@@ -757,7 +757,7 @@ cds-modal {
   }
 
   .screen {
-    margin: 1.5rem 1rem 1rem 1rem;
+    margin: 1.5rem 1rem 2.5rem 1rem;
     flex-direction: column;
     align-items: center;
   }
@@ -811,7 +811,7 @@ cds-modal {
   /* Lower range width is still a mess */
 
   .screen {
-    margin: 2rem 2rem 0 2rem;
+    margin: 2.5rem 2rem;
     align-items: center;
   }
 
@@ -828,7 +828,7 @@ cds-modal {
 /* Large (from 1056px to 1311px) */
 @media screen and (min-width: 1056px) and (max-width: 1311px) {
   .screen {
-    margin: 2rem 2rem 0 2rem;
+    margin: 2.5rem 2rem;
     align-items: center;
   }
   .grouping-02, .grouping-03 {
@@ -839,7 +839,7 @@ cds-modal {
 /* X-Large (from 1312px to 1583px) */
 @media screen and (min-width: 1312px) and (max-width: 1583px) {
   .screen {
-    margin: 2rem 2rem 0 2rem;
+    margin: 2.5rem 2rem;
     align-items: center;
   }
   .grouping-02, .grouping-03 {
@@ -849,6 +849,10 @@ cds-modal {
 
 /* XX-Large (from 1584px to 1783px) */
 @media screen and (min-width: 1584px) and (max-width: 1783px) {
+  .screen {
+    margin: 2.5rem 2rem;
+    align-items: center;
+  }
   .grouping-02, .grouping-03 {
     width: 50.4375rem;
   }
@@ -857,11 +861,10 @@ cds-modal {
 /* XXX-Large (1784px and above) */
 @media screen and (min-width: 1784px) {
   .screen {
-    margin: 2rem 7.75rem 0 2rem;
+    margin: 2.5rem 7.75rem;
     align-items: center;
   }
   .grouping-02, .grouping-03 {
     width: 50.4375rem;
   }
 }
-
