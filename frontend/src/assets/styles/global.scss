@@ -133,6 +133,10 @@ cds-progress-step::part(cds--progress-label) {
   padding-right: 0.5rem;
 }
 
+cds-progress-step.step-inactive::part(cds--progress-optional) {
+  color:#939395;
+}
+
 cds-inline-notification::part(div),
 cds-inline-notification,
 .cds--inline-notification {
@@ -192,10 +196,6 @@ hr {
 
 .cds--inline-notification-content{
   width:100%;
-}
-
-.text-disabled {
-  color:#939395;
 }
 
 div#app {

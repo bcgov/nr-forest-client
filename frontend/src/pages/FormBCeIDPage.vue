@@ -352,9 +352,7 @@ const isSmallScreen = useMediaQuery("(max-width: 671px)");
           :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"          
           :disabled="item.disabled"
           v-shadow="3"
-          >
-          <span slot="secondary-label-text" class="cds--progress-optional" :class="{'text-disabled':item.disabled}">{{item.subtitle}}</span>
-          </cds-progress-step>
+        />
       </cds-progress-indicator>
       <error-notification-grouping-component
         :form-data="formData"
