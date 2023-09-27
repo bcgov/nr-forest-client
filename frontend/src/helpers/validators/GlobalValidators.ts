@@ -310,40 +310,27 @@ export const runValidation = (
     : [key, "true"];
   // We then load the field value
   const fieldValue = getFieldValue(fieldKey, target);
-
-  // We define a function to evaluate the condition safely
-  const evaluateCondition = (condition: string, item: any): boolean => {
-    if (condition === "true") {
-      return true;
-    } else {
-      console.error("Unknown condition:", condition);
-      return false;
-    }
-  };
-
+  // We define a function that will run the validation if the condition is true
+  const buildEval = (condition: string) =>
+    condition === "true" ? "true" : `target.${condition}`;
   const executeValidation = (
     item: any,
     condition: string,
     fieldId: string = fieldKey
   ): string => {
-    try {
-      if (evaluateCondition(condition, item)) {
-        const validationResponse = validation(item);
-        if (notify) {
-          // Note: also notifies when valid - errorMsg will be empty.
-          notificationBus.emit({ fieldId, errorMsg: validationResponse }, item);
-        }
-        return validationResponse;
-      } else {
-        return "";
+    // eslint-disable-next-line no-eval
+    if (eval(condition)) {
+      const validationResponse = validation(item);
+      if (notify) {
+        // Note: also notifies when valid - errorMsg will be empty.
+        notificationBus.emit({ fieldId, errorMsg: validationResponse }, item);
       }
-    } catch (error) {
-      console.error("Error executing validation:", error);
+      return validationResponse;
+    } else {
       return "";
     }
   };
-
-  // If the field value is an array, we run the validation for every item in the array
+  // If the field value is an array we run the validation for every item in the array
   if (Array.isArray(fieldValue)) {
     let hasInvalidItem = false;
     for (let index = 0; index < fieldValue.length; index++) {
@@ -356,7 +343,7 @@ export const runValidation = (
           const valid =
             executeValidation(
               subItem,
-              fieldCondition.replace(".*.", `[${index}].`),
+              buildEval(fieldCondition.replace(".*.", `[${index}].`)),
               fieldKey.replace(".*.", `[${index}].`)
             ) === "";
           if (!valid) {
@@ -372,7 +359,7 @@ export const runValidation = (
       const valid =
         executeValidation(
           item,
-          fieldCondition.replace(".*.", `[${index}].`),
+          buildEval(fieldCondition.replace(".*.", `[${index}].`)),
           fieldKey.replace(".*.", `[${index}].`)
         ) === "";
       if (!valid) {
@@ -384,10 +371,9 @@ export const runValidation = (
     }
     return !hasInvalidItem;
   }
-  // If the field value is not an array, we run the validation for the field
+  // If the field value is not an array we run the validation for the field
   return executeValidation(fieldValue, fieldCondition) === "";
 };
-
 
 // This function will run the validators and return the errors
 export const validate = (
@@ -415,7 +401,8 @@ export const validate = (
         condition: string,
         fieldId: string = fieldKey
       ): string => {
-        if (evaluateCondition(condition, item)) {
+        // eslint-disable-next-line no-eval
+        if (eval(condition)) {
           const validationResponse = validation(item);
           if (notify && validationResponse) {
             errorBus.emit([{ fieldId, errorMsg: validationResponse }]);
@@ -425,16 +412,6 @@ export const validate = (
           return "";
         }
       };
-
-      const evaluateCondition = (condition: string, item: any): boolean => {
-        if (condition === "true") {
-          return true;
-        } else {
-          console.error("Unknown condition:", condition);
-          return false;
-        }
-      };
-
       // If the field value is an array we run the validation for every item in the array
       if (Array.isArray(fieldValue)) {
         return fieldValue.every((item: any, index: number) => {
