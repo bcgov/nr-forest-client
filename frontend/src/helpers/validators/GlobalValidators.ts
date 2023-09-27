@@ -297,99 +297,6 @@ export const getValidations = (key: string): ((value: string) => string)[] =>
   formFieldValidations[key] || [];
 
 // This function will run the validators and return the errors
-export const runValidation = (
-  key: string,
-  target: any,
-  validation: (value: string) => string,
-  notify: boolean = false,
-  exhaustive = false
-): boolean => {
-  // We split the field key and the condition if it has one
-  const [fieldKey, fieldCondition] = key.includes("(")
-    ? key.replace(")", "").split("(")
-    : [key, "true"];
-  // We then load the field value
-  const fieldValue = getFieldValue(fieldKey, target);
-
-  // We define a function to evaluate the condition safely
-  const evaluateCondition = (condition: string, item: any): boolean => {
-    if (condition === "true") {
-      return true;
-    } else {
-      console.error("Unknown condition:", condition);
-      return false;
-    }
-  };
-
-  const executeValidation = (
-    item: any,
-    condition: string,
-    fieldId: string = fieldKey
-  ): string => {
-    try {
-      if (evaluateCondition(condition, item)) {
-        const validationResponse = validation(item);
-        if (notify) {
-          // Note: also notifies when valid - errorMsg will be empty.
-          notificationBus.emit({ fieldId, errorMsg: validationResponse }, item);
-        }
-        return validationResponse;
-      } else {
-        return "";
-      }
-    } catch (error) {
-      console.error("Error executing validation:", error);
-      return "";
-    }
-  };
-
-  // If the field value is an array, we run the validation for every item in the array
-  if (Array.isArray(fieldValue)) {
-    let hasInvalidItem = false;
-    for (let index = 0; index < fieldValue.length; index++) {
-      const item = fieldValue[index];
-      // And sometimes we can end up with another array inside, that's life
-      if (Array.isArray(item)) {
-        if (item.length === 0) item.push("");
-        let hasInvalidSubItem = false;
-        for (const subItem of item) {
-          const valid =
-            executeValidation(
-              subItem,
-              fieldCondition.replace(".*.", `[${index}].`),
-              fieldKey.replace(".*.", `[${index}].`)
-            ) === "";
-          if (!valid) {
-            hasInvalidSubItem = true;
-            if (!exhaustive) {
-              break;
-            }
-          }
-        }
-        return !hasInvalidSubItem;
-      }
-      // If it is not an array here, just validate it
-      const valid =
-        executeValidation(
-          item,
-          fieldCondition.replace(".*.", `[${index}].`),
-          fieldKey.replace(".*.", `[${index}].`)
-        ) === "";
-      if (!valid) {
-        hasInvalidItem = true;
-        if (!exhaustive) {
-          break;
-        }
-      }
-    }
-    return !hasInvalidItem;
-  }
-  // If the field value is not an array, we run the validation for the field
-  return executeValidation(fieldValue, fieldCondition) === "";
-};
-
-
-// This function will run the validators and return the errors
 export const validate = (
   keys: string[],
   target: any,
@@ -415,7 +322,8 @@ export const validate = (
         condition: string,
         fieldId: string = fieldKey
       ): string => {
-        if (evaluateCondition(condition, item)) {
+        // eslint-disable-next-line no-eval
+        if (eval(condition)) {
           const validationResponse = validation(item);
           if (notify && validationResponse) {
             errorBus.emit([{ fieldId, errorMsg: validationResponse }]);
@@ -425,16 +333,6 @@ export const validate = (
           return "";
         }
       };
-
-      const evaluateCondition = (condition: string, item: any): boolean => {
-        if (condition === "true") {
-          return true;
-        } else {
-          console.error("Unknown condition:", condition);
-          return false;
-        }
-      };
-
       // If the field value is an array we run the validation for every item in the array
       if (Array.isArray(fieldValue)) {
         return fieldValue.every((item: any, index: number) => {
@@ -464,4 +362,83 @@ export const validate = (
       return runValidation(fieldValue, fieldCondition) === "";
     });
   });
+};
+
+// This function will run the validators and return the errors
+export const runValidation = (
+  key: string,
+  target: any,
+  validation: (value: string) => string,
+  notify: boolean = false,
+  exhaustive = false
+): boolean => {
+  // We split the field key and the condition if it has one
+  const [fieldKey, fieldCondition] = key.includes("(")
+    ? key.replace(")", "").split("(")
+    : [key, "true"];
+  // We then load the field value
+  const fieldValue = getFieldValue(fieldKey, target);
+  // We define a function that will run the validation if the condition is true
+  const buildEval = (condition: string) =>
+    condition === "true" ? "true" : `target.${condition}`;
+  const executeValidation = (
+    item: any,
+    condition: string,
+    fieldId: string = fieldKey
+  ): string => {
+    // eslint-disable-next-line no-eval
+    if (eval(condition)) {
+      const validationResponse = validation(item);
+      if (notify) {
+        // Note: also notifies when valid - errorMsg will be empty.
+        notificationBus.emit({ fieldId, errorMsg: validationResponse }, item);
+      }
+      return validationResponse;
+    } else {
+      return "";
+    }
+  };
+  // If the field value is an array we run the validation for every item in the array
+  if (Array.isArray(fieldValue)) {
+    let hasInvalidItem = false;
+    for (let index = 0; index < fieldValue.length; index++) {
+      const item = fieldValue[index];
+      // And sometimes we can end up with another array inside, that's life
+      if (Array.isArray(item)) {
+        if (item.length === 0) item.push("");
+        let hasInvalidSubItem = false;
+        for (const subItem of item) {
+          const valid =
+            executeValidation(
+              subItem,
+              buildEval(fieldCondition.replace(".*.", `[${index}].`)),
+              fieldKey.replace(".*.", `[${index}].`)
+            ) === "";
+          if (!valid) {
+            hasInvalidSubItem = true;
+            if (!exhaustive) {
+              break;
+            }
+          }
+        }
+        return !hasInvalidSubItem;
+      }
+      // If it is not an array here, just validate it
+      const valid =
+        executeValidation(
+          item,
+          buildEval(fieldCondition.replace(".*.", `[${index}].`)),
+          fieldKey.replace(".*.", `[${index}].`)
+        ) === "";
+      if (!valid) {
+        hasInvalidItem = true;
+        if (!exhaustive) {
+          break;
+        }
+      }
+    }
+    return !hasInvalidItem;
+  }
+  // If the field value is not an array we run the validation for the field
+  return executeValidation(fieldValue, fieldCondition) === "";
 };
