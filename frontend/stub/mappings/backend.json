@@ -154,7 +154,7 @@
     },
 
     {
-      "name":"Autocompete Canada Post",
+      "name":"Autocompete Canada Post Canada",
       "request": {
         "urlPath": "/api/clients/addresses",
         "method": "GET",
@@ -172,7 +172,29 @@
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-address-search.json"
+        "bodyFileName": "response-address-search-CA.json"
+      }
+    },
+    {
+      "name":"Autocompete Canada Post US",
+      "request": {
+        "urlPath": "/api/clients/addresses",
+        "method": "GET",
+        "queryParameters": {
+          "country": {
+            "equalTo": "US"
+          },
+          "maxSuggestions": {
+            "equalTo": "10"
+          },
+          "searchTerm": {
+            "matches": ".*"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-address-search-US.json"
       }
     },
     {
