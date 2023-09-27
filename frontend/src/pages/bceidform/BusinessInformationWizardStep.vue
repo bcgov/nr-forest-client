@@ -242,7 +242,9 @@ watch([selectedOption], () => {
     />
 
     <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
-    <div v-if="(showAutoCompleteInfo && selectedOption === ClientTypeEnum.R) || showGoodStandingError || showDuplicatedError">
+    <div
+      class="grouping-02"
+      v-if="(showAutoCompleteInfo && selectedOption === ClientTypeEnum.R) || showGoodStandingError || showDuplicatedError">
       <cds-inline-notification
         v-shadow="2"
         v-if="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
