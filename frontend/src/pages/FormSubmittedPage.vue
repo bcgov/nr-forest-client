@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { inject } from "vue";
 // Composables
 import { useRouter } from "vue-router";
 import useSvg from "@/composables/useSvg";
-// Types
-import type { Submitter } from "@/dto/CommonTypesDto";
+
 // @ts-ignore
 import badgePictogram from "@carbon/pictograms/es/badge";
-
-const submitterInformation = inject<Submitter>("submitterInformation");
 
 const router = useRouter();
 
@@ -38,4 +34,3 @@ const SVG = useSvg(badgePictogram);
     </div>
   </div>
 </template>
-
