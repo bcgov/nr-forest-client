@@ -322,7 +322,7 @@ export const validate = (
         condition: string,
         fieldId: string = fieldKey
       ): string => {
-        // eslint-disable-next-line no-eval
+        // NOSONAR
         if (eval(condition)) {
           const validationResponse = validation(item);
           if (notify && validationResponse) {
@@ -386,7 +386,7 @@ export const runValidation = (
     condition: string,
     fieldId: string = fieldKey
   ): string => {
-    // eslint-disable-next-line no-eval
+    // NOSONAR
     if (eval(condition)) {
       const validationResponse = validation(item);
       if (notify) {
