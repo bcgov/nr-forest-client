@@ -53,7 +53,7 @@ let selectedValue: BusinessSearchResult | undefined = undefined
 
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
-  selectedValue = props.contents.find((entry) => entry.code === newValue)
+  selectedValue = inputList.value.find((entry) => entry.code === newValue)
   emit('update:model-value', selectedValue?.name ?? newValue)
   emit('update:selected-value', selectedValue)
   emit('empty', isEmpty(selectedValue))
