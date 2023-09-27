@@ -342,22 +342,22 @@ const isSmallScreen = useMediaQuery("(max-width: 671px)");
       <span class="heading-05" data-scroll="top">New client application</span>
       <p class="body-01">All fields are mandatory</p>
     </div>
-      <cds-progress-indicator space-equally :vertical="isSmallScreen">
-        <cds-progress-step 
-          v-for="item in progressData"
-          :key="item.step"
-          :label="item.title"
-          :secondary-label="item.subtitle"
-          :state="item.kind"
-          :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"          
-          :disabled="item.disabled"
-          v-shadow="3"
-        />
-      </cds-progress-indicator>
-      <error-notification-grouping-component
-        :form-data="formData"
-        :scroll-to-new-contact="scrollToNewContact"
+    <cds-progress-indicator space-equally :vertical="isSmallScreen">
+      <cds-progress-step 
+        v-for="item in progressData"
+        :key="item.step"
+        :label="item.title"
+        :secondary-label="item.subtitle"
+        :state="item.kind"
+        :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"          
+        :disabled="item.disabled"
+        v-shadow="3"
       />
+    </cds-progress-indicator>
+    <error-notification-grouping-component
+      :form-data="formData"
+      :scroll-to-new-contact="scrollToNewContact"
+    />
   </div>
 
   <div class="form-steps">
@@ -442,10 +442,11 @@ const isSmallScreen = useMediaQuery("(max-width: 671px)");
 
     <div v-if="currentTab == 3" class="form-steps-04">
 
-
       <div class="form-steps-section form-steps-section-04">
-          <span class="heading-04" data-scroll="scroll-3">{{ progressData[3].title}}</span>
-          <span class="body-02">Review the content and make any changes by using the "Edit" buttons in each section below.</span>
+        <span class="heading-04" data-scroll="scroll-3">{{ progressData[3].title}}</span>
+        <span class="body-02">
+          Review the content and make any changes by using the "Edit" buttons in each section below.
+        </span>
 
         <review-wizard-step
             v-model:data="formData"
@@ -464,59 +465,59 @@ const isSmallScreen = useMediaQuery("(max-width: 671px)");
     <div class="form-footer-group">
       <div class="form-footer-group-next">
 
-        <span class="body-compact-01" v-if="!isLast && !progressData[currentTab].valid"
-        >All fields must be filled out correctly to enable the "Next" button
-        below</span
-      >
-      <div class="form-footer-group-buttons">
-        <cds-button
-            v-if="!isFirst"
-            kind="secondary"
-            size="lg"
-            :disabled="isFirst"
-            v-on:click="onBack"
-            data-test="wizard-back-button"
-          >
-          <span>Back</span>
-        </cds-button>
+        <span class="body-compact-01" 
+              v-if="!isLast && !progressData[currentTab].valid">
+          All fields must be filled out correctly to enable the "Next" button below
+        </span>
+        <div class="form-footer-group-buttons">
+          <cds-button
+              v-if="!isFirst"
+              kind="secondary"
+              size="lg"
+              :disabled="isFirst"
+              v-on:click="onBack"
+              data-test="wizard-back-button"
+            >
+            <span>Back</span>
+          </cds-button>
 
-        <cds-button
-          v-if="!isLast && !endAndLogOut && !mailAndLogOut"
-          id="nextBtn"
-          kind="primary"
-          size="lg"
-          v-on:click="onNext"
-          :disabled="progressData[currentTab].valid === false"
-          data-test="wizard-next-button"
-          >
-          <span>Next</span>
-          <ArrowRight16 slot="icon" />
-        </cds-button>
-
-        <cds-button
-          v-if="isLast && !endAndLogOut && !mailAndLogOut"
-            data-test="wizard-submit-button"
+          <cds-button
+            v-if="!isLast && !endAndLogOut && !mailAndLogOut"
+            id="nextBtn"
             kind="primary"
             size="lg"
-            @click.prevent="submit"
-          >
-          <span>Submit application</span>
-          <Check16 slot="icon" />
-        </cds-button>
+            v-on:click="onNext"
+            :disabled="progressData[currentTab].valid === false"
+            data-test="wizard-next-button"
+            >
+            <span>Next</span>
+            <ArrowRight16 slot="icon" />
+          </cds-button>
 
-        <cds-button
-          data-test="wizard-logout-button"
-          kind="primary"
-          size="lg"
-          v-show="!isLast && (endAndLogOut || mailAndLogOut)"
-          @click.prevent="processAndLogOut"
-        >
-          <span
-            >{{ endAndLogOut ? 'End application' : 'Receive email' }} and
-            logout</span
+          <cds-button
+            v-if="isLast && !endAndLogOut && !mailAndLogOut"
+              data-test="wizard-submit-button"
+              kind="primary"
+              size="lg"
+              @click.prevent="submit"
+            >
+            <span>Submit application</span>
+            <Check16 slot="icon" />
+          </cds-button>
+
+          <cds-button
+            data-test="wizard-logout-button"
+            kind="primary"
+            size="lg"
+            v-show="!isLast && (endAndLogOut || mailAndLogOut)"
+            @click.prevent="processAndLogOut"
           >
-          <LogOut16 slot="icon" />
-        </cds-button>
+            <span
+              >{{ endAndLogOut ? 'End application' : 'Receive email' }} and
+              logout</span
+            >
+            <LogOut16 slot="icon" />
+          </cds-button>
 
         </div>
       </div>

@@ -49,57 +49,42 @@ onMounted(() => {
         {{ formData.businessInformation.businessName }}
       </p>
       <p class="body-compact-01">
-        {{
-          companyBusinessTypes[`${formData.businessInformation.businessType}`]
-        }}
+        {{ companyBusinessTypes[`${formData.businessInformation.businessType}`] }}
       </p>
     </div>
-<div class="grouping-06">
-    <cds-button
-      kind="tertiary"
-      @click.prevent="goToStep(0)"
-    >
-      <span>Edit business information</span>
-      <Edit16 slot="icon" />
-    </cds-button>
+    <div class="grouping-06">
+      <cds-button kind="tertiary" @click.prevent="goToStep(0)">
+        <span>Edit business information</span>
+        <Edit16 slot="icon" />
+      </cds-button>
     </div>
   </div>
-
   <div class="grouping-05">
     <label class="heading-03">Address</label>
-
-    <div
-      v-for="(address, index) in formData.location.addresses"
-      :key="address.locationName"
-      class="grouping-07"
-    >
-      <hr class="divider" v-if="index > 0"/>
+    <div v-for="(address, index) in formData.location.addresses" 
+        :key="address.locationName" 
+        class="grouping-07">
+      <hr class="divider" v-if="index > 0" />
       <span class="heading-02">{{ address.locationName }}</span>
       <span class="body-compact-01">{{ address.streetAddress }}</span>
       <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
       <span class="body-compact-01">{{ address.country.text }}</span>
       <span class="body-compact-01">{{ address.postalCode }}</span>
     </div>
-<div class="grouping-06">
-    <cds-button
-      kind="tertiary"
-      @click.prevent="goToStep(1)"
-    >
-      <span>Edit address</span>
-      <Edit16 slot="icon" />
-    </cds-button>
+    <div class="grouping-06">
+      <cds-button kind="tertiary" @click.prevent="goToStep(1)">
+        <span>Edit address</span>
+        <Edit16 slot="icon" />
+      </cds-button>
     </div>
   </div>
-
   <div class="grouping-05">
     <label class="heading-03">Contacts</label>
-
-    <div
-      v-for="(contact, index) in formData.location.contacts"
-      :key="contact.email"
-      class="grouping-07"
-    >
-      <hr class="divider" v-if="index > 0"/>
+    <div v-for="(contact, index) in formData.location.contacts" 
+        :key="contact.email" 
+        class="grouping-07">
+      <hr class="divider" 
+          v-if="index > 0" />
       <span class="heading-02">{{ contact.firstName }} {{ contact.lastName }}</span>
       <span class="body-compact-01">
         {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
@@ -108,14 +93,11 @@ onMounted(() => {
       <span class="body-compact-01">{{ contact.email }}</span>
       <span class="body-compact-01">{{ contact.phoneNumber }}</span>
     </div>
-<div class="grouping-06">
-    <cds-button
-      kind="tertiary"
-      @click.prevent="goToStep(2)"
-    >
-      <span>Edit contacts</span>
-      <Edit16 slot="icon" />
-    </cds-button>
+    <div class="grouping-06">
+      <cds-button kind="tertiary" @click.prevent="goToStep(2)">
+        <span>Edit contacts</span>
+        <Edit16 slot="icon" />
+      </cds-button>
     </div>
   </div>
 </template>
