@@ -148,9 +148,11 @@ onMounted(() => setFocusedComponent("addr_0", 800));
   </div>
 
 </div>
-<p class="body-01 heading-compact-01-dark">
-If you’d like to include another address, for example a seed orchard or if your street address is different from your mailing address, select the “Add another address” button below.
-</p>
+<div class="grouping-02">
+  <p class="body-01 heading-compact-01-dark">
+  If you’d like to include another address, for example a seed orchard or if your street address is different from your mailing address, select the “Add another address” button below.
+  </p>
+</div>
 <cds-button
     kind="tertiary"
     @click.prevent="addAddress"
