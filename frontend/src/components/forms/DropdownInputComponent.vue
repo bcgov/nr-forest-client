@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 // Carbon
 import '@carbon/web-components/es/components/combo-box/index';
+import CDSComboBox from '@carbon/web-components/es/components/combo-box/combo-box';
 // Composables
 import { useEventBus } from '@vueuse/core'
 // Types
@@ -12,6 +13,7 @@ import { isEmpty } from '@/dto/CommonTypesDto'
 const props = defineProps<{
   id: string
   label: string
+  placeholder?: string
   tip: string
   modelValue: Array<CodeNameType>
   initialValue: string
@@ -70,8 +72,20 @@ const selectItem = (event:any) => {
   selectedValue.value = event?.detail?.item?.getAttribute('data-id')
 }
 
+/**
+ * This array is used in a way that allows to mount a brand new combo-box
+ * whenever it contains a different time.
+ * This is done as a workaround that allows to clear the text displayed in
+ * the combo-box.
+ * @see FSADT1-900
+ */
+const comboBoxMountTime = ref<[number]>([Date.now()]);
+
 //Watch for changes on the input
 watch([selectedValue], () => {
+  if (selectedValue.value === '') {
+    comboBoxMountTime.value = [Date.now()];
+  }
   validateInput(selectedValue.value)
   emitValueChange(selectedValue.value)
 })
@@ -92,13 +106,15 @@ watch(
 revalidateBus.on(() => validateInput(selectedValue.value))
 </script>
 
-
 <template>
   <div class="grouping-03">
     <cds-combo-box
+      v-for="time in comboBoxMountTime"
+      :key="time"
       :id="id"
       filterable
       :helper-text="tip"
+      :label="placeholder"
       :title-text="label"
       :value="selectedValue"
       :invalid="error ? true : false"
@@ -115,6 +131,5 @@ revalidateBus.on(() => validateInput(selectedValue.value))
         {{ option.name }}
       </cds-combo-box-item>
     </cds-combo-box>
-</div>
+  </div>
 </template>
-
