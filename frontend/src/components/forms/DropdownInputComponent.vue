@@ -72,11 +72,19 @@ const selectItem = (event:any) => {
   selectedValue.value = event?.detail?.item?.getAttribute('data-id')
 }
 
+/**
+ * This array is used in a way that allows to mount a brand new combo-box
+ * whenever it contains a different time.
+ * This is done as a workaround that allows to clear the text displayed in
+ * the combo-box.
+ * @see FSADT1-900
+ */
+const comboBoxMountTime = ref<[number]>([Date.now()]);
+
 //Watch for changes on the input
 watch([selectedValue], () => {
   if (selectedValue.value === '') {
-    // force clear text displayed on the combo-box
-    cdsComboBoxRef.value._filterInputValue = '';
+    comboBoxMountTime.value = [Date.now()];
   }
   validateInput(selectedValue.value)
   emitValueChange(selectedValue.value)
@@ -96,34 +104,32 @@ watch(
 )
 
 revalidateBus.on(() => validateInput(selectedValue.value))
-
-const cdsComboBoxRef = ref<InstanceType<typeof CDSComboBox> | null>(null);
 </script>
 
 <template>
   <div class="grouping-03">
-    <cds-combo-box
-      ref="cdsComboBoxRef"
-      :id="id"
-      filterable
-      :helper-text="tip"
-      :label="placeholder"
-      :title-text="label"
-      :value="selectedValue"
-      :invalid="error ? true : false"
-      :invalidText="error"
-      @cds-combo-box-selected="selectItem"
-      :data-focus="id"
-      :data-scroll="id">
-      <cds-combo-box-item 
-        v-for="option in inputList"
-        :key="option.code"
-        :value="option.name"
-        :data-id="option.code"
-        :data-value="option.name">
-        {{ option.name }}
-      </cds-combo-box-item>
-    </cds-combo-box>
-</div>
+    <template v-for="time in comboBoxMountTime" :key="time">
+      <cds-combo-box
+        :id="id"
+        filterable
+        :helper-text="tip"
+        :label="placeholder"
+        :title-text="label"
+        :value="selectedValue"
+        :invalid="error ? true : false"
+        :invalidText="error"
+        @cds-combo-box-selected="selectItem"
+        :data-focus="id"
+        :data-scroll="id">
+        <cds-combo-box-item 
+          v-for="option in inputList"
+          :key="option.code"
+          :value="option.name"
+          :data-id="option.code"
+          :data-value="option.name">
+          {{ option.name }}
+        </cds-combo-box-item>
+      </cds-combo-box>
+    </template>
+  </div>
 </template>
-
