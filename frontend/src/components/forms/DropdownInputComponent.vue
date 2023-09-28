@@ -2,7 +2,6 @@
 import { ref, computed, watch } from 'vue'
 // Carbon
 import '@carbon/web-components/es/components/combo-box/index';
-import CDSComboBox from '@carbon/web-components/es/components/combo-box/combo-box';
 // Composables
 import { useEventBus } from '@vueuse/core'
 // Types
