@@ -125,7 +125,7 @@ addValidation(
 // Tab system
 const progressData = reactive([
   {
-    title: "Business Information",
+    title: "Business information",
     subtitle: "Step 1",
     kind: "current",
     disabled: false,
