@@ -108,28 +108,28 @@ revalidateBus.on(() => validateInput(selectedValue.value))
 
 <template>
   <div class="grouping-03">
-    <template v-for="time in comboBoxMountTime" :key="time">
-      <cds-combo-box
-        :id="id"
-        filterable
-        :helper-text="tip"
-        :label="placeholder"
-        :title-text="label"
-        :value="selectedValue"
-        :invalid="error ? true : false"
-        :invalidText="error"
-        @cds-combo-box-selected="selectItem"
-        :data-focus="id"
-        :data-scroll="id">
-        <cds-combo-box-item 
-          v-for="option in inputList"
-          :key="option.code"
-          :value="option.name"
-          :data-id="option.code"
-          :data-value="option.name">
-          {{ option.name }}
-        </cds-combo-box-item>
-      </cds-combo-box>
-    </template>
+    <cds-combo-box
+      v-for="time in comboBoxMountTime"
+      :key="time"
+      :id="id"
+      filterable
+      :helper-text="tip"
+      :label="placeholder"
+      :title-text="label"
+      :value="selectedValue"
+      :invalid="error ? true : false"
+      :invalidText="error"
+      @cds-combo-box-selected="selectItem"
+      :data-focus="id"
+      :data-scroll="id">
+      <cds-combo-box-item 
+        v-for="option in inputList"
+        :key="option.code"
+        :value="option.name"
+        :data-id="option.code"
+        :data-value="option.name">
+        {{ option.name }}
+      </cds-combo-box-item>
+    </cds-combo-box>
   </div>
 </template>
