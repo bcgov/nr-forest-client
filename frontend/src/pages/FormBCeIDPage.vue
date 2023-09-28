@@ -421,7 +421,7 @@ const isSmallScreen = useMediaQuery("(max-width: 671px)");
               Your first name, last name and email address are from your BCeID.
               If they're incorrect,
               <a
-                href="https://bceid.ca"
+                href="https://www.bceid.ca/"
                 target="_blank"
                 rel="noopener noreferrer"
                 >go to BCeID</a
