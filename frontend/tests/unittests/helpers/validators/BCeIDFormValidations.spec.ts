@@ -9,6 +9,7 @@ import {
   getValidations,
   runValidation,
   validate,
+  formFieldValidations,
 } from "@/helpers/validators/GlobalValidators";
 
 import type { ValidationMessageType } from "@/dto/CommonTypesDto";
@@ -64,7 +65,7 @@ describe("BCeIDFormValidations.ts", () => {
   it("should return the value of a nested field with a condition", () => {
     expect(
       getFieldValue(
-        'location.addresses.*.postalCode(location.addresses.*.country.text === "CA")',
+        'location.addresses.*.postalCode(location.addresses.*.country.value === "CA")',
         formDataDto
       )
     ).toEqual(["A1A1A1"]);
@@ -72,7 +73,7 @@ describe("BCeIDFormValidations.ts", () => {
   it("should return the value of a nested field with a condition", () => {
     expect(
       getFieldValue(
-        'location.addresses.*.postalCode(location.addresses.*.country.text === "US")',
+        'location.addresses.*.postalCode(location.addresses.*.country.value === "US")',
         formDataDto
       )
     ).toEqual(["A1A1A1"]);
@@ -92,16 +93,52 @@ describe("BCeIDFormValidations.ts", () => {
       validate(["location.addresses.*.locationName"], formDataDto)
     ).toBeTruthy();
   });
-  it("should return true for nested fields with conditions", () => {
-    expect(
-      validate(
-        [
-          'location.addresses.*.postalCode(location.addresses.*.country.text === "CA")',
-        ],
-        formDataDto
-      )
-    ).toBeTruthy();
-  });
+  describe("nested fields with conditions", () => {
+    it("should return true when it's valid", () => {
+      expect(
+        validate(
+          ['location.addresses.*.postalCode(location.addresses.*.country.value === "CA")'],
+          formDataDto
+        )
+      ).toBeTruthy();
+    });
+    it("should return false when it's not valid", () => {
+      const newFormDataDto = structuredClone(formDataDto);
+      newFormDataDto.location.addresses[0].postalCode = "AAA111";
+      expect(
+        validate(
+          ['location.addresses.*.postalCode(location.addresses.*.country.value === "CA")'],
+          newFormDataDto
+        )
+      ).toBeFalsy();
+    });
+    describe("conditions with multiple wildcards", () => {
+      const condition =
+      '$.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US"'
+      it("should return true when it's valid", () => {
+        const newFormDataDto = structuredClone(formDataDto);
+        newFormDataDto.location.addresses[0].country = {
+          value: "BR",
+          text: "Brazil"
+        };
+        newFormDataDto.location.addresses[0].postalCode = "12345678";
+        expect(
+          validate([`location.addresses.*.postalCode(${condition})`], newFormDataDto),
+        ).toBeTruthy();
+      });
+      it("should return false when it's not valid", () => {
+        const newFormDataDto = structuredClone(formDataDto);
+        newFormDataDto.location.addresses[0].country.value = {
+          value: "BR",
+          text: "Brazil"
+        };
+        newFormDataDto.location.addresses[0].postalCode = "A1A1A1";
+        expect(
+          validate([`location.addresses.*.postalCode(${condition})`], newFormDataDto),
+        ).toBeFalsy();
+      });
+    })
+  })
   it("should return true for nested fields withing nested fields", () => {
     expect(
       validate(["location.contacts.*.locationNames.*.text"], formDataDto)
@@ -112,16 +149,19 @@ describe("BCeIDFormValidations.ts", () => {
       validate(["businessInformation.businessType"], formDataDto)
     ).toBeTruthy();
   });
-  it("should return true for nested fields with conditions", () => {
-    expect(
-      validate(
-        [
-          'location.addresses.*.postalCode(location.addresses.*.country.text === "CA")',
-        ],
-        formDataDto
-      )
-    ).toBeTruthy();
-  });
+  describe("formFieldValidations", () => {
+    it("should compare contry values with two-letter country codes", () => {
+      // i.e. instead of comparing country values with the country names.
+
+      const countryValueConditions = Object.keys(formFieldValidations).filter((key) =>
+        key.match(/\(.+country\.value.+\)/),
+      );
+      expect(countryValueConditions.length).toBeGreaterThan(0);
+      countryValueConditions.forEach((key) => {
+        expect(key).toMatch(/['"][A-Z]{2}['"]/);
+      });
+    })
+  })
   describe("runValidation", () => {
     describe("when target is an array", () => {
       it("should stop at the first error when exhaustive is false (default)", () => {

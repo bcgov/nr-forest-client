@@ -296,6 +296,8 @@ export const formFieldValidations: Record<
 export const getValidations = (key: string): ((value: string) => string)[] =>
   formFieldValidations[key] || [];
 
+const arrayIndexGlobalRegex = /\.\*\./g;
+
 // This function will run the validators and return the errors
 export const validate = (
   keys: string[],
@@ -315,8 +317,17 @@ export const validate = (
       // We then load the field value
       const fieldValue = getFieldValue(fieldKey, target);
       // We define a function that will run the validation if the condition is true
-      const buildEval = (condition: string) =>
-        condition === "true" ? "true" : `target.${condition}`;
+      const buildEval = (condition: string) => {
+        if (condition === "true") {
+          return "true";
+        }
+        const targetGlobalRegex = /\$\./g;
+        let result = condition.replace(targetGlobalRegex, "target.");
+        if (!result.includes("target.")) {
+          result = `target.${result}`;
+        }
+        return result;
+      }
       const runValidation = (
         item: any,
         condition: string,
@@ -342,7 +353,7 @@ export const validate = (
               (subItem: any) =>
                 runValidation(
                   subItem,
-                  buildEval(fieldCondition.replace(".*.", `[${index}].`)),
+                  buildEval(fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)),
                   fieldKey.replace(".*.", `[${index}].`)
                 ) === ""
             );
@@ -351,7 +362,7 @@ export const validate = (
           return (
             runValidation(
               item,
-              buildEval(fieldCondition.replace(".*.", `[${index}].`)),
+              buildEval(fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)),
               fieldKey.replace(".*.", `[${index}].`)
             ) === ""
           );
@@ -378,8 +389,17 @@ export const runValidation = (
   // We then load the field value
   const fieldValue = getFieldValue(fieldKey, target);
   // We define a function that will run the validation if the condition is true
-  const buildEval = (condition: string) =>
-    condition === "true" ? "true" : `target.${condition}`;
+  const buildEval = (condition: string) => {
+    if (condition === "true") {
+      return "true";
+    }
+    const targetGlobalRegex = /\$\./g;
+    let result = condition.replace(targetGlobalRegex, "target.");
+    if (!result.includes("target.")) {
+      result = `target.${result}`;
+    }
+    return result;
+  }
   const executeValidation = (
     item: any,
     condition: string,
@@ -409,7 +429,7 @@ export const runValidation = (
           const valid =
             executeValidation(
               subItem,
-              buildEval(fieldCondition.replace(".*.", `[${index}].`)),
+              buildEval(fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)),
               fieldKey.replace(".*.", `[${index}].`)
             ) === "";
           if (!valid) {
@@ -425,7 +445,7 @@ export const runValidation = (
       const valid =
         executeValidation(
           item,
-          buildEval(fieldCondition.replace(".*.", `[${index}].`)),
+          buildEval(fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)),
           fieldKey.replace(".*.", `[${index}].`)
         ) === "";
       if (!valid) {
