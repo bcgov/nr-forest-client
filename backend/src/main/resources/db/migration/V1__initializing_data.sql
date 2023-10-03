@@ -36,7 +36,7 @@ create table if not exists nrfc.client_type_code (
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		null,
+    update_user                 varchar(60)		  null,
     constraint client_type_code_pk primary key (client_type_code)
 );
 
@@ -51,14 +51,14 @@ comment on column nrfc.client_type_code.create_user is 'The user or proxy accoun
 comment on column nrfc.client_type_code.update_user is 'The user or proxy account that created or last updated the record.';
 
 create table if not exists nrfc.submission_status_code (
-    submission_status_code  	varchar(5)      not null,
+    submission_status_code  	  varchar(5)      not null,
     description                 varchar(100)    not null,
     effective_date              date            not null,
     expiry_date                 date            default to_date('99991231','YYYYMMDD') not null,
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		null,
+    update_user                 varchar(60)		  null,
     constraint submission_status_code_pk primary key (submission_status_code)
 );
 
@@ -80,7 +80,7 @@ create table if not exists nrfc.submission_type_code (
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		null,
+    update_user                 varchar(60)		  null,
     constraint submission_type_code_pk primary key (submission_type_code)
 );
 
@@ -96,14 +96,14 @@ comment on column nrfc.submission_type_code.update_user is 'The user or proxy ac
 
 create table if not exists nrfc.country_code (
     country_code                varchar(2)      not null,
-    description                 varchar(100)     not null,
+    description                 varchar(100)    not null,
     effective_date              date            not null,
     expiry_date                 date            default to_date('99991231','YYYYMMDD') not null,
     display_order               integer         null,
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		null,
+    update_user                 varchar(60)		  null,
     constraint country_code_pk  primary key (country_code),
     constraint display_order_uk unique (display_order)
 );
@@ -128,7 +128,7 @@ create table if not exists nrfc.province_code (
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		null,
+    update_user                 varchar(60)		  null,
     constraint province_code_pk primary key (country_code, province_code),
     constraint province_code_country_code_fk foreign key (country_code) references nrfc.country_code(country_code)
 );
@@ -152,7 +152,7 @@ create table if not exists nrfc.contact_type_code (
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		null,
+    update_user                 varchar(60)		  null,
     constraint contact_type_code_pk primary key (contact_type_code)
 );
 
@@ -174,7 +174,7 @@ create table if not exists nrfc.business_type_code (
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		null,
+    update_user                 varchar(60)		  null,
     constraint business_type_code_pk primary key (business_type_code)
 );
 
@@ -189,13 +189,13 @@ comment on column nrfc.business_type_code.create_user is 'The user or proxy acco
 comment on column nrfc.business_type_code.update_user is 'The user or proxy account that created or last updated the record.';
 
 create table if not exists nrfc.submission(
-    submission_id             	integer 		not null,
-    submission_status_code		varchar(5)      null,
-    submission_type_code		varchar(5)      null,
+    submission_id             	integer 		    not null,
+    submission_status_code		  varchar(5)      null,
+    submission_type_code		    varchar(5)      null,
     submission_date             timestamp       null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		null,
+    update_user                 varchar(60)		  null,
     constraint submission_pk primary key (submission_id),
     constraint submission_submission_status_code_fk foreign key (submission_status_code) references nrfc.submission_status_code(submission_status_code),
     constraint submission_submission_type_code_fk foreign key (submission_type_code) references nrfc.submission_type_code(submission_type_code)
@@ -211,16 +211,16 @@ comment on column nrfc.submission.create_user is 'The user or proxy account that
 comment on column nrfc.submission.update_user is 'The user or proxy account that created or last updated the record.';
 
 create table if not exists nrfc.submission_detail (
-    submission_detail_id        integer			not null,
-	submission_id				integer			not null,
-    client_number               varchar(8)      null,
-	business_type_code			varchar(1)    	not null,
-	incorporation_number		varchar(50)    	null,
-    organization_name           varchar(100)    null,
-	client_type_code          	varchar(1)    	not null,
-    good_standing_ind           varchar(1)      null,
-	constraint submission_detail_id_pk primary key (submission_detail_id),
-	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
+    submission_detail_id    integer		    	not null,
+	  submission_id				    integer   			not null,
+    client_number           varchar(8)      null,
+	  business_type_code			varchar(1)    	not null,
+	  incorporation_number		varchar(50)    	null,
+    organization_name       varchar(100)    null,
+	  client_type_code        varchar(1)    	not null,
+    good_standing_ind       varchar(1)      null,
+	  constraint submission_detail_id_pk primary key (submission_detail_id),
+	  constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
     constraint submission_detail_business_type_code_fk foreign key (business_type_code) references nrfc.business_type_code(business_type_code),
     constraint submission_detail_client_type_code_fk foreign key (client_type_code) references nrfc.client_type_code(client_type_code)
 );
@@ -235,13 +235,14 @@ comment on column nrfc.submission_detail.client_type_code is 'A code representin
 comment on column nrfc.submission_detail.good_standing_ind is 'An indicator that determines whether a client is in good standing with respect to their financial obligations.';
 
 create table if not exists nrfc.submission_matching_detail (
-    submission_matching_detail_id   integer			not null,
-	submission_id				    integer			not null,
-	matching_fields		            jsonb 			null,
-	confirmed_match_status_ind	    varchar(1)      null,
-	confirmed_match_message          varchar(255)    null,
-	confirmed_match_timestamp        timestamp       null,
-	confirmed_match_userid           varchar(60)     null,
+  submission_matching_detail_id   integer			  not null,
+	submission_id				            integer			  not null,
+	matching_fields		              jsonb 			  null,
+	confirmed_match_status_ind	    varchar(1)    null,
+	confirmed_match_message         varchar(255)  null,
+	confirmed_match_timestamp       timestamp     null,
+	confirmed_match_userid          varchar(60)   null,
+	submission_matching_processed   bool          not null default false,
 	constraint submission_matching_detail_id_pk primary key (submission_matching_detail_id),
 	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id)
 );
@@ -251,10 +252,14 @@ comment on column nrfc.submission_matching_detail.submission_matching_detail_id 
 comment on column nrfc.submission_matching_detail.submission_id is 'Incremental id generated for a submission of a client.';
 comment on column nrfc.submission_matching_detail.matching_fields is 'A JSON object provides information about matches found in the existing database. The matches can result from fuzzy search, like matching a name pattern, or from exact equality, such as matching incorporation number or good standing status.';
 comment on column nrfc.submission_matching_detail.confirmed_match_status_ind is 'An indicator that determines whether a specific match has been approved, allowing the processing to continue, or denied, requiring immediate action to be taken during the submission process.';
+comment on column nrfc.submission_matching_detail.confirmed_match_message is 'A field with the reason for the denial of the submission.';
+comment on column nrfc.submission_matching_detail.confirmed_match_timestamp is 'The timestamp when the changes happened.';
+comment on column nrfc.submission_matching_detail.confirmed_match_userid is 'The ID of the user submitting the changes.';
+comment on column nrfc.submission_matching_detail.submission_matching_processed is 'A flag to indicate that the submission was finally processed.';
 
 create table if not exists nrfc.submission_location (
-    submission_location_id      integer			not null,
-	submission_id               integer			not null,
+    submission_location_id      integer			    not null,
+	  submission_id               integer			    not null,
     street_address              varchar(50)    	not null,    
     country_code                varchar(2)      not null,
     province_code               varchar(2)      not null,
@@ -277,11 +282,11 @@ comment on column nrfc.submission_location.city_name is 'The name of the city of
 comment on column nrfc.submission_location.location_name is 'The location name of an address. Examples of location names include, but are not limited to, Mailing Address, Billing Address among others.';
 
 create table if not exists nrfc.submission_contact (
-    submission_contact_id      integer		    not null,
-	submission_id              integer			not null,
+    submission_contact_id      integer		      not null,
+	  submission_id              integer			    not null,
     contact_type_code          varchar(2)       not null,
     first_name                 varchar(100)     null,
-	last_name                  varchar(100)     null,
+	  last_name                  varchar(100)     null,
     business_phone_number      varchar(20)      not null,
     email_address              varchar(100)     not null,
     idp_user_id                varchar(50)      null,
@@ -302,7 +307,7 @@ comment on column nrfc.submission_contact.idp_user_id is 'The unique identifier 
 
 create table if not exists nrfc.submission_location_contact_xref (
     submission_location_id      integer			not null,
-    submission_contact_id       integer		    not null,
+    submission_contact_id       integer		  not null,
     constraint submission_location_contact_xref_id_pk primary key (submission_location_id, submission_contact_id),
     constraint submission_location_id_fk foreign key (submission_location_id) references nrfc.submission_location(submission_location_id),
     constraint submission_contact_id_fk foreign key (submission_contact_id) references nrfc.submission_contact(submission_contact_id)
