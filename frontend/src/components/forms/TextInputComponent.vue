@@ -32,11 +32,26 @@ const error = ref<string | undefined>(props.errorMessage || "");
 
 const revalidateBus = useEventBus<void>("revalidate-bus");
 
-//We watch for error changes to emit events
-watch(error, () => emit("error", error.value));
+/**
+ * Sets the error and emits an error event.
+ * @param errorMessage - the error message
+ */
+const setError = (errorMessage: string | undefined) => {
+  error.value = errorMessage;
+
+  /*
+  The error should be emitted whenever it is found, instead of watching and emitting only when it
+  changes.
+  Because the empty event is always emitted, even when it remains the same payload, and then we
+  rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
+  an empty one to be able to make the field go invalid again when needed.
+  */
+  emit('error', error.value);
+}
+
 watch(
   () => props.errorMessage,
-  () => (error.value = props.errorMessage)
+  () => setError(props.errorMessage),
 );
 
 //We set it as a separated ref due to props not being updatable
@@ -56,14 +71,15 @@ watch([selectedValue], () => emitValueChange(selectedValue.value));
 //We call all the validations
 const validateInput = (newValue: string) => {
   if (props.validations) {
-    error.value =
+    setError(
       props.validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
           if (errorMessage) return true;
           return false;
         })
-        .shift() ?? props.errorMessage;
+        .shift() ?? props.errorMessage,
+    );
   }
 };
 
