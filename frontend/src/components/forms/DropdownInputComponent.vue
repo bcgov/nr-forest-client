@@ -1,57 +1,59 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/combo-box/index';
+import "@carbon/web-components/es/components/combo-box/index";
 // Composables
-import { useEventBus } from '@vueuse/core'
+import { useEventBus } from "@vueuse/core";
 // Types
-import type { CodeNameType } from '@/dto/CommonTypesDto'
-import { isEmpty } from '@/dto/CommonTypesDto'
+import type { CodeNameType } from "@/dto/CommonTypesDto";
+import { isEmpty } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
 const props = defineProps<{
-  id: string
-  label: string
-  placeholder?: string
-  tip: string
-  modelValue: Array<CodeNameType>
-  initialValue: string
-  validations: Array<Function>
-  errorMessage?: string
-}>()
+  id: string;
+  label: string;
+  placeholder?: string;
+  tip: string;
+  modelValue: Array<CodeNameType>;
+  initialValue: string;
+  validations: Array<Function>;
+  errorMessage?: string;
+}>();
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: 'error', value: string | undefined): void
-  (e: 'empty', value: boolean): void
-  (e: 'update:modelValue', value: string | undefined): void
-  (e: 'update:selectedValue', value: CodeNameType | undefined): void
-}>()
+  (e: "error", value: string | undefined): void;
+  (e: "empty", value: boolean): void;
+  (e: "update:modelValue", value: string | undefined): void;
+  (e: "update:selectedValue", value: CodeNameType | undefined): void;
+}>();
 
 //We initialize the error message handling for validation
-const error = ref<string | undefined>(props.errorMessage || '')
+const error = ref<string | undefined>(props.errorMessage || "");
 
-const revalidateBus = useEventBus<void>('revalidate-bus')
+const revalidateBus = useEventBus<void>("revalidate-bus");
 
 //We set it as a separated ref due to props not being updatable
-const selectedValue = ref(props.initialValue)
+const selectedValue = ref(props.initialValue);
 // This is to make the input list contains the selected value to show when component render
 const inputList = computed<Array<CodeNameType>>(() =>
-  ((!props.modelValue || props.modelValue.length === 0) ? [{name: props.initialValue, code: '',status:'',legalType:''}] : props.modelValue)
-)
+  !props.modelValue || props.modelValue.length === 0
+    ? [{ name: props.initialValue, code: "", status: "", legalType: "" }]
+    : props.modelValue
+);
 
 //We set the value prop as a reference for update reason
-emit('empty', isEmpty(props.initialValue))
+emit("empty", isEmpty(props.initialValue));
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
   const reference = newValue
     ? props.modelValue.find((entry) => entry.code === newValue)
-    : undefined
+    : undefined;
 
-  emit('update:modelValue', newValue)
-  emit('update:selectedValue', reference)
-  emit('empty', isEmpty(newValue))
-}
+  emit("update:modelValue", newValue);
+  emit("update:selectedValue", reference);
+  emit("empty", isEmpty(newValue));
+};
 
 //We call all the validations
 const validateInput = (newValue: any) => {
@@ -60,16 +62,16 @@ const validateInput = (newValue: any) => {
       props.validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
-          if (errorMessage) return true
-          return false
+          if (errorMessage) return true;
+          return false;
         })
-        .shift() ?? props.errorMessage
+        .shift() ?? props.errorMessage;
   }
-}
+};
 
-const selectItem = (event:any) => {  
-  selectedValue.value = event?.detail?.item?.getAttribute('data-id')
-}
+const selectItem = (event: any) => {
+  selectedValue.value = event?.detail?.item?.getAttribute("data-id");
+};
 
 /**
  * This array is used in a way that allows to mount a brand new combo-box
@@ -82,27 +84,27 @@ const comboBoxMountTime = ref<[number]>([Date.now()]);
 
 //Watch for changes on the input
 watch([selectedValue], () => {
-  if (selectedValue.value === '') {
+  if (selectedValue.value === "") {
     comboBoxMountTime.value = [Date.now()];
   }
-  validateInput(selectedValue.value)
-  emitValueChange(selectedValue.value)
-})
+  validateInput(selectedValue.value);
+  emitValueChange(selectedValue.value);
+});
 
-watch(inputList,() => (selectedValue.value = props.initialValue))
+watch(inputList, () => (selectedValue.value = props.initialValue));
 
 //We watch for error changes to emit events
-watch(error, () => emit('error', error.value))
+watch(error, () => emit("error", error.value));
 watch(
   () => props.errorMessage,
   () => (error.value = props.errorMessage)
-)
+);
 watch(
   () => props.initialValue,
   () => (selectedValue.value = props.initialValue)
-)
+);
 
-revalidateBus.on(() => validateInput(selectedValue.value))
+revalidateBus.on(() => validateInput(selectedValue.value));
 </script>
 
 <template>
