@@ -148,7 +148,7 @@ describe('<AddressGroupComponent />', () => {
 
     cy.get('#country_0')
       .find('cds-combo-box-item[data-id="US"]')
-      .click()
+      .click({ force: true })
       .and('have.value', 'United States of America')
 
     cy.wait('@getStates')
