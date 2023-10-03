@@ -1,15 +1,16 @@
 package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.EmailRequestDto;
 import ca.bc.gov.app.dto.MatcherResult;
-import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
+import ca.bc.gov.app.entity.client.SubmissionStatusEnum;
 import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
-import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,82 +23,65 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ClientService {
+public class ClientSubmissionAutoProcessingService {
 
   private final SubmissionRepository submissionRepository;
-  private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionMatchDetailRepository submissionMatchDetailRepository;
 
   @ServiceActivator(
-      inputChannel = ApplicationConstant.SUBMISSION_LIST_CHANNEL,
-      outputChannel = ApplicationConstant.MATCH_CHECKING_CHANNEL,
+      inputChannel = ApplicationConstant.AUTO_APPROVE_CHANNEL,
+      outputChannel = ApplicationConstant.SUBMISSION_POSTPROCESSOR_CHANNEL,
       async = "true"
   )
-  public Mono<Message<SubmissionInformationDto>> loadSubmissionDetails(Integer submissionId) {
+  public Mono<Message<Integer>> approved(Message<List<MatcherResult>> message) {
+    Integer submissionId = message.getHeaders()
+        .get(ApplicationConstant.SUBMISSION_ID, Integer.class);
+    persistData(submissionId, SubmissionTypeCodeEnum.AAC);
+    log.info("Request {} was approved",submissionId);
 
-    return
-        submissionDetailRepository
-            .findBySubmissionId(submissionId)
-            .doOnNext(submission -> log.info("Loaded submission details {}",submission))
-            //Grab what we need for the match part
-            .map(details -> new SubmissionInformationDto(
-                    details.getOrganizationName(),
-                    details.getIncorporationNumber(),
-                    details.getGoodStandingInd()
+
+    submissionMatchDetailRepository
+        .save(
+            SubmissionMatchDetailEntity
+                .builder()
+                .matchers(Map.of())
+                .submissionId(
+                    message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class)
                 )
+                .status("Y")
+                .createdBy("AUTO-PROCESSOR")
+                .updatedAt(LocalDateTime.now())
+                .build()
+        )
+        .subscribe(entity -> log.info(
+                "Added matches for submission {} {}",
+                entity.getSubmissionId(),
+                entity.getMatchingField()
             )
+        );
 
-            //Build a message with our dto and pass the submission Id as header
-            .map(event ->
-                MessageBuilder
-                    .withPayload(event)
-                    .setHeader(ApplicationConstant.SUBMISSION_ID, submissionId)
-                    .build()
-            );
+
+
+    return Mono.just(MessageBuilder.withPayload(submissionId).build());
   }
+
 
   @ServiceActivator(
-      inputChannel = ApplicationConstant.SUBMISSION_POSTPROCESSOR_CHANNEL,
-      outputChannel = ApplicationConstant.NOTIFICATION_PROCESSING_CHANNEL,
+      inputChannel = ApplicationConstant.SUBMISSION_COMPLETION_CHANNEL,
+      outputChannel = ApplicationConstant.SUBMISSION_MAIL_CHANNEL,
       async = "true"
   )
-  public Mono<Message<SubmissionInformationDto>> processSubmission(Integer submissionId) {
+  public Mono<Message<EmailRequestDto>> completeProcessing(Message<EmailRequestDto> message) {
     return
-        submissionDetailRepository
-            .findBySubmissionId(submissionId)
-            .doOnNext(submission -> log.info("Loaded submission details {}",submission))
-            //Grab what we need for the match part
-            .map(details -> new SubmissionInformationDto(
-                    details.getOrganizationName(),
-                    details.getIncorporationNumber(),
-                    details.getGoodStandingInd()
-                )
-            )
-
-            //Build a message with our dto and pass the submission Id as header
-            .map(event ->
-                MessageBuilder
-                    .withPayload(event)
-                    .setHeader(ApplicationConstant.SUBMISSION_ID, submissionId)
-                    .build()
-            );
+      submissionMatchDetailRepository
+          .findBySubmissionId(message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class))
+          .doOnNext(entity -> entity.setProcessed(true))
+          .doOnNext(entity -> entity.setUpdatedAt(LocalDateTime.now()))
+          .flatMap(submissionMatchDetailRepository::save)
+          .thenReturn(message);
   }
 
-  @ServiceActivator(inputChannel = ApplicationConstant.NOTIFICATION_PROCESSING_CHANNEL)
-  public void notificationProcessing(Message<SubmissionInformationDto> eventMono) {
-    log.info("Notification processing {}", eventMono);
-  }
-
-  @ServiceActivator(inputChannel = ApplicationConstant.AUTO_APPROVE_CHANNEL)
-  public void approved(Message<List<MatcherResult>> message) {
-    persistData(
-        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class),
-        SubmissionTypeCodeEnum.AAC
-    );
-    log.info("Request {} was approved",
-        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class));
-  }
-
+  //TODO: must send an email to admin team
   @ServiceActivator(inputChannel = ApplicationConstant.REVIEW_CHANNEL)
   public void reviewed(Message<List<MatcherResult>> message) {
     persistData(
@@ -131,7 +115,6 @@ public class ClientService {
             )
         );
 
-
     log.info("Request {} was put into review",
         message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class));
   }
@@ -140,6 +123,13 @@ public class ClientService {
     submissionRepository
         .findById(submissionId)
         .doOnNext(entity -> entity.setSubmissionType(typeCode))
+        .doOnNext(entity -> entity
+            .setSubmissionStatus(
+                SubmissionTypeCodeEnum.AAC.equals(typeCode)
+                    ? SubmissionStatusEnum.A
+                    : SubmissionStatusEnum.N
+                )
+        )
         .doOnNext(entity -> entity.setUpdatedBy("AUTO-PROCESSOR"))
         .doOnNext(entity -> entity.setUpdatedAt(LocalDateTime.now()))
         .flatMap(submissionRepository::save)
@@ -152,4 +142,3 @@ public class ClientService {
   }
 
 }
-
