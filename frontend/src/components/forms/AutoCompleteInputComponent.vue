@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 // Carbon
-import '@carbon/web-components/es/components/combo-box/index';
+import '@carbon/web-components/es/components/combo-box/index'
 // Composables
 import { useEventBus } from '@vueuse/core'
 // Types
@@ -38,7 +38,7 @@ const revalidateBus = useEventBus<void>('revalidate-bus')
 watch(error, () => emit('error', error.value))
 watch(
   () => props.errorMessage,
-  () => (error.value = props.errorMessage)
+  () => (error.value = props.errorMessage),
 )
 
 //We set the value prop as a reference for update reason
@@ -46,7 +46,10 @@ const inputValue = ref(props.modelValue)
 
 // This is to make the input list contains the selected value to show when component render
 const inputList = computed<Array<BusinessSearchResult>>(() =>
-  ((!props.contents || props.contents.length === 0) ? [{name: props.modelValue, code: '',status:'',legalType:''}] : props.contents).filter(entry => entry.name)
+  (!props.contents || props.contents.length === 0
+    ? [{ name: props.modelValue, code: '', status: '', legalType: '' }]
+    : props.contents
+  ).filter((entry) => entry.name),
 )
 
 let selectedValue: BusinessSearchResult | undefined = undefined
@@ -65,7 +68,7 @@ watch(
   () => {
     inputValue.value = props.modelValue
     validateInput(inputValue.value)
-  }
+  },
 )
 watch([inputValue], () => {
   validateInput(inputValue.value)
@@ -96,39 +99,35 @@ const onTyping = (event: any) => {
 }
 
 revalidateBus.on(() => validateInput(inputValue.value))
-
-watch(() => props.modelValue,() => inputValue.value = props.modelValue)
 </script>
 
-<template>  
+<template>
   <div class="grouping-02">
     <cds-combo-box
       :id="id"
-      :name="id"      
+      :name="id"
       :helper-text="tip"
       :title-text="label"
-      :value="inputValue"      
-filterable
+      :value="inputValue"
+      filterable
       :invalid="error ? true : false"
       :invalid-text="error"
       @cds-combo-box-selected="selectAutocompleteItem"
       v-on:input="onTyping"
-      v-on:blur="(event:any) => validateInput(event.srcElement._filterInputValue)"
+      v-on:blur="(event: any) => validateInput(event.srcElement._filterInputValue)"
       :data-focus="id"
       :data-scroll="id"
       :data-id="'input-' + id"
-      >
-
+    >
       <cds-combo-box-item
         v-for="item in inputList"
         :key="item.code"
         :data-id="item.code"
-        :data-value="item.name" 
-        :value="item.name">
+        :data-value="item.name"
+        :value="item.name"
+      >
         {{ item.name }}
       </cds-combo-box-item>
-      
     </cds-combo-box>
   </div>
 </template>
-
