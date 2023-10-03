@@ -148,7 +148,12 @@ describe('<AddressGroupComponent />', () => {
 
     cy.get('#country_0')
       .find('cds-combo-box-item[data-id="US"]')
-      .should('be.visible') // wait for option to become visible before clicking it
+      .shadow()
+      .find('div')
+      .should('be.visible') // wait for the option's inner, standard HTML element to become visible before clicking it.
+
+    cy.get('#country_0')
+      .find('cds-combo-box-item[data-id="US"]')
       .click()
       .and('have.value', 'United States of America')
 
