@@ -39,10 +39,13 @@ public class SubmissionMatchDetailEntity {
   private String matchingMessage;
 
   @Column("confirmed_match_timestamp")
-  protected LocalDateTime updatedAt;
+  private LocalDateTime updatedAt;
 
   @Column("confirmed_match_userid")
-  protected String createdBy;
+  private String createdBy;
+
+  @Column("submission_matching_processed")
+  private boolean processed;
 
   @Transient
   private Map<String,Object> matchers;
