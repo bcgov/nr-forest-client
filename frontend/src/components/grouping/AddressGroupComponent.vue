@@ -182,7 +182,9 @@ const postalCodeNaming = computed(() =>
 
 const autoCompleteUrl = computed(
   () =>
-    `/api/clients/addresses?country=${selectedValue.country.value}&maxSuggestions=10&searchTerm=${selectedValue.streetAddress}`
+    `/api/clients/addresses?country=${
+      selectedValue.country.value ?? ""
+    }&maxSuggestions=10&searchTerm=${selectedValue.streetAddress ?? ""}`,
 );
 const autoCompleteResult = ref<BusinessSearchResult | undefined>(
   {} as BusinessSearchResult

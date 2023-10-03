@@ -76,7 +76,7 @@ const selectedOption = computed(() => {
 });
 
 const autoCompleteUrl = computed(
-  () => `/api/clients/name/${formData.value.businessInformation.businessName}`
+  () => `/api/clients/name/${formData.value.businessInformation.businessName || ""}`
 );
 
 const showAutoCompleteInfo = ref<boolean>(false);
