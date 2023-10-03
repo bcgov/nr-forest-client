@@ -65,7 +65,7 @@ describe("BCeIDFormValidations.ts", () => {
   it("should return the value of a nested field with a condition", () => {
     expect(
       getFieldValue(
-        'location.addresses.*.postalCode(location.addresses.*.country.value === "CA")',
+        'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")',
         formDataDto
       )
     ).toEqual(["A1A1A1"]);
@@ -73,7 +73,7 @@ describe("BCeIDFormValidations.ts", () => {
   it("should return the value of a nested field with a condition", () => {
     expect(
       getFieldValue(
-        'location.addresses.*.postalCode(location.addresses.*.country.value === "US")',
+        'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")',
         formDataDto
       )
     ).toEqual(["A1A1A1"]);
@@ -97,7 +97,7 @@ describe("BCeIDFormValidations.ts", () => {
     it("should return true when it's valid", () => {
       expect(
         validate(
-          ['location.addresses.*.postalCode(location.addresses.*.country.value === "CA")'],
+          ['location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'],
           formDataDto
         )
       ).toBeTruthy();
@@ -107,7 +107,7 @@ describe("BCeIDFormValidations.ts", () => {
       newFormDataDto.location.addresses[0].postalCode = "AAA111";
       expect(
         validate(
-          ['location.addresses.*.postalCode(location.addresses.*.country.value === "CA")'],
+          ['location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'],
           newFormDataDto
         )
       ).toBeFalsy();

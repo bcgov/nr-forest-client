@@ -116,14 +116,14 @@ const postalCodeValidators = computed(() => {
     case "CA":
       return [
         ...getValidations(
-          'location.addresses.*.postalCode(location.addresses.*.country.value === "CA")'
+          'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'
         ),
         submissionValidation(`location.addresses[${props.id}].postalCode`),
       ];
     case "US":
       return [
         ...getValidations(
-          'location.addresses.*.postalCode(location.addresses.*.country.value === "US")'
+          'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")'
         ),
         submissionValidation(`location.addresses[${props.id}].postalCode`),
       ];
