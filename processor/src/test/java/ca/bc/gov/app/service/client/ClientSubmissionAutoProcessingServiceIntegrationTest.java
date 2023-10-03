@@ -89,15 +89,15 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
         .alias("Submission matches and loads")
         .atMost(Duration.ofSeconds(5))
         .untilAsserted(() ->
-            verify(submissionMatchDetailRepository, times(1)).findById(eq(2))
+            verify(submissionMatchDetailRepository, times(1)).findBySubmissionId(eq(2))
         );
 
     await()
         .alias("Submission matches")
         .atMost(Duration.ofSeconds(5))
         .untilAsserted(() ->
-            verify(submissionMatchDetailRepository, atLeastOnce()).save(
-                any(SubmissionMatchDetailEntity.class))
+            verify(submissionMatchDetailRepository, atLeastOnce())
+                .save(any(SubmissionMatchDetailEntity.class))
         );
 
   }
