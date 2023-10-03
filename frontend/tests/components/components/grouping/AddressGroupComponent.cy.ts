@@ -144,10 +144,9 @@ describe('<AddressGroupComponent />', () => {
       .find('label')
       .and('include.text', 'Postal code')
 
+    cy.get('#country_0').should('be.visible').and('have.value', 'Canada').click()
+
     cy.get('#country_0')
-      .should('be.visible')
-      .and('have.value', 'Canada')
-      .click()
       .find('cds-combo-box-item[data-id="US"]')
       .click()
       .and('have.value', 'United States of America')
