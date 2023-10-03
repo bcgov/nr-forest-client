@@ -18,10 +18,13 @@
 		<div>&nbsp;</div>
 
 		<p>
-			Your application for a client number can't go ahead because <b>${name}</b>
-			already has one.
+			Your application for a client number can't go ahead because <b>${name}</b> was rejected due to the following reason(s):<br/>
+			<ul>
+			<#list reason?split('\n') as line>
+				<li>${line}</li>
+			</#list>
+			</ul>
 		</p>
-		<p>The number is ${number}. Be sure to keep it for your records.</p>
 		<div>&nbsp;</div>
 		
 		<p>
