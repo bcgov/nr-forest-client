@@ -1,57 +1,57 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/text-input/index';
+import "@carbon/web-components/es/components/text-input/index";
 // Composables
-import { useEventBus } from '@vueuse/core'
+import { useEventBus } from "@vueuse/core";
 // Types
-import { isEmpty } from '@/dto/CommonTypesDto'
+import { isEmpty } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
 const props = defineProps<{
-  id: string
-  label: string
-  tip?: string
-  enabled?: boolean
-  placeholder: string
-  modelValue: string
-  validations: Array<Function>
-  errorMessage?: string
-  mask?: string
-}>()
+  id: string;
+  label: string;
+  tip?: string;
+  enabled?: boolean;
+  placeholder: string;
+  modelValue: string;
+  validations: Array<Function>;
+  errorMessage?: string;
+  mask?: string;
+}>();
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: 'error', value: string | undefined): void
-  (e: 'empty', value: boolean): void
-  (e: 'update:model-value', value: string): void
-}>()
+  (e: "error", value: string | undefined): void;
+  (e: "empty", value: boolean): void;
+  (e: "update:model-value", value: string): void;
+}>();
 
 //We initialize the error message handling for validation
-const error = ref<string | undefined>(props.errorMessage || '')
+const error = ref<string | undefined>(props.errorMessage || "");
 
-const revalidateBus = useEventBus<void>('revalidate-bus')
+const revalidateBus = useEventBus<void>("revalidate-bus");
 
 //We watch for error changes to emit events
-watch(error, () => emit('error', error.value))
+watch(error, () => emit("error", error.value));
 watch(
   () => props.errorMessage,
   () => (error.value = props.errorMessage)
-)
+);
 
 //We set it as a separated ref due to props not being updatable
-const selectedValue = ref<string>(props.modelValue)
+const selectedValue = ref<string>(props.modelValue);
 
 //We set the value prop as a reference for update reason
-emit('empty', isEmpty(props.modelValue))
+emit("empty", isEmpty(props.modelValue));
 
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
-  emit('update:model-value', newValue)
-  emit('empty', isEmpty(newValue))
-}
+  emit("update:model-value", newValue);
+  emit("empty", isEmpty(newValue));
+};
 //Watch for changes on the input
-watch([selectedValue], () => emitValueChange(selectedValue.value))
+watch([selectedValue], () => emitValueChange(selectedValue.value));
 
 //We call all the validations
 const validateInput = (newValue: string) => {
@@ -60,18 +60,21 @@ const validateInput = (newValue: string) => {
       props.validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
-          if (errorMessage) return true
-          return false
+          if (errorMessage) return true;
+          return false;
         })
-        .shift() ?? props.errorMessage
+        .shift() ?? props.errorMessage;
   }
-}
+};
 
 revalidateBus.on(() => {
-  validateInput(selectedValue.value)
-})
+  validateInput(selectedValue.value);
+});
 
-watch(() => props.modelValue,() => selectedValue.value = props.modelValue)
+watch(
+  () => props.modelValue,
+  () => (selectedValue.value = props.modelValue)
+);
 </script>
 
 <template>
