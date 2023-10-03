@@ -125,7 +125,7 @@ addValidation(
 // Tab system
 const progressData = reactive([
   {
-    title: "Business Information",
+    title: "Business information",
     subtitle: "Step 1",
     kind: "current",
     disabled: false,
@@ -151,9 +151,9 @@ const progressData = reactive([
       "location.addresses.*.province.text",
       "location.addresses.*.city",
       "location.addresses.*.streetAddress",
-      'location.addresses.*.postalCode(location.addresses.*.country.text === "CA")',
-      'location.addresses.*.postalCode(location.addresses.*.country.text === "US")',
-      'location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && location.addresses.*.country.text !== "US")',
+      'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")',
+      'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")',
+      'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")',
     ],
     extraValidations: [],
   },
@@ -197,9 +197,9 @@ const progressData = reactive([
       "location.addresses.*.province.text",
       "location.addresses.*.city",
       "location.addresses.*.streetAddress",
-      'location.addresses.*.postalCode(location.addresses.*.country.text === "CA")',
-      'location.addresses.*.postalCode(location.addresses.*.country.text === "US")',
-      'location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && location.addresses.*.country.text !== "US")',
+      'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")',
+      'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")',
+      'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")',
       "location.contacts.*.locationNames.*.text",
       "location.contacts.*.contactType.text",
       "location.contacts.*.firstName",
@@ -288,10 +288,14 @@ const processAndLogOut = () => {
   session?.logOut();
 };
 
+let submitBtnDisabled = ref(false);
+
 const submit = () => {
   errorBus.emit([]);
   notificationBus.emit(undefined);
+
   if (checkStepValidity(currentTab.value)) {
+    submitBtnDisabled.value = true;
     fetch();
   }
 };
@@ -500,6 +504,7 @@ const isSmallScreen = useMediaQuery("(max-width: 671px)");
               kind="primary"
               size="lg"
               @click.prevent="submit"
+              :disabled="submitBtnDisabled"
             >
             <span>Submit application</span>
             <Check16 slot="icon" />

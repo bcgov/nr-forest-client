@@ -144,11 +144,11 @@ describe('<AddressGroupComponent />', () => {
       .find('label')
       .and('include.text', 'Postal code')
 
+    cy.get('#country_0').should('be.visible').and('have.value', 'Canada').click()
+
     cy.get('#country_0')
-      .should('be.visible')
-      .and('have.value', 'Canada')
-      .click()
       .find('cds-combo-box-item[data-id="US"]')
+      .should('be.visible') // wait for option to become visible before clicking it
       .click()
       .and('have.value', 'United States of America')
 

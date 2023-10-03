@@ -50,13 +50,13 @@ formFieldValidations["location.addresses.*.streetAddress"] = [
   isMaxSize("The address must be between 5 and 50 characters")(50),
 ];
 formFieldValidations[
-  'location.addresses.*.postalCode(location.addresses.*.country.text === "CA")'
+  'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'
 ] = [isCanadianPostalCode];
 formFieldValidations[
-  'location.addresses.*.postalCode(location.addresses.*.country.text === "US")'
+  'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")'
 ] = [isUsZipCode];
 formFieldValidations[
-  'location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && country.text !== "US")'
+  'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")'
 ] = [
   isOnlyNumbers(
     "Postal code should be composed of only numbers and should be between 5 and 10 characters"

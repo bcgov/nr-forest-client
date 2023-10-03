@@ -116,21 +116,21 @@ const postalCodeValidators = computed(() => {
     case "CA":
       return [
         ...getValidations(
-          'location.addresses.*.postalCode(location.addresses.*.country.text === "CA")'
+          'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'
         ),
         submissionValidation(`location.addresses[${props.id}].postalCode`),
       ];
     case "US":
       return [
         ...getValidations(
-          'location.addresses.*.postalCode(location.addresses.*.country.text === "US")'
+          'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")'
         ),
         submissionValidation(`location.addresses[${props.id}].postalCode`),
       ];
     default:
       return [
         ...getValidations(
-          'location.addresses.*.postalCode(location.addresses.*.country.text !== "CA" && location.addresses.*.country.text !== "US")'
+          'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")'
         ),
         submissionValidation(`location.addresses[${props.id}].postalCode`),
       ];
@@ -182,7 +182,9 @@ const postalCodeNaming = computed(() =>
 
 const autoCompleteUrl = computed(
   () =>
-    `/api/clients/addresses?country=${selectedValue.country.value}&maxSuggestions=10&searchTerm=${selectedValue.streetAddress}`
+    `/api/clients/addresses?country=${
+      selectedValue.country.value ?? ""
+    }&maxSuggestions=10&searchTerm=${selectedValue.streetAddress ?? ""}`,
 );
 const autoCompleteResult = ref<BusinessSearchResult | undefined>(
   {} as BusinessSearchResult
@@ -259,7 +261,6 @@ onMounted(() => {
     label="Country"
     :initial-value="selectedValue.country.text"
     tip=""
-    placeholder="Choose an option"
     :enabled="true"
     :model-value="countryList"
     :validations="[...getValidations('location.addresses.country.text'),submissionValidation(`location.addresses[${id}].country`)]"
@@ -328,7 +329,6 @@ onMounted(() => {
       :model-value="content"
       :enabled="true"
       tip=""
-      placeholder="Choose an option"
       :validations="[...getValidations('location.addresses.*.province.text'),submissionValidation(`location.addresses[${id}].province`)]"
       :error-message="addressError"
       @update:selected-value="updateStateProvince($event, 'province')"

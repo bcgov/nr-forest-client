@@ -76,7 +76,7 @@ const selectedOption = computed(() => {
 });
 
 const autoCompleteUrl = computed(
-  () => `/api/clients/name/${formData.value.businessInformation.businessName}`
+  () => `/api/clients/name/${formData.value.businessInformation.businessName || ""}`
 );
 
 const showAutoCompleteInfo = ref<boolean>(false);
@@ -108,7 +108,7 @@ watch([autoCompleteResult], () => {
   // reset business validation state
   validation.business = false;
 
-  if (autoCompleteResult.value) {
+  if (autoCompleteResult.value && autoCompleteResult.value.code) {
     toggleErrorMessages(false, false);
 
     formData.value.businessInformation.incorporationNumber =
@@ -239,6 +239,7 @@ watch([selectedOption], () => {
         ]"
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
+      @update:model-value="validation.business = false"
     />
 
     <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>

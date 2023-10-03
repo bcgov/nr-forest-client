@@ -27,7 +27,7 @@ const errorBus = useEventBus<ValidationMessageType[]>(
  * isNotEmpty(' ') // false
  * isNotEmpty('a') // true
  * isNotEmpty(' a ') // true
- **/
+ */
 export const isNotEmpty =
   (message: string = "This field is required") =>
   (value: string): string => {
@@ -47,7 +47,7 @@ export const isNotEmpty =
  * isEmail('a@b') // false
  * isEmail(' a@b ') // false
  * isEmail('mail@mail.com') // true
- **/
+ */
 export const isEmail =
   (message: string = "This field must be a valid email") =>
   (value: string): string => {
@@ -80,7 +80,7 @@ export const isPhoneNumber =
  * isCanadianPostalCode('A1A1A1') // true
  * isCanadianPostalCode('A1A 1A1') // false
  * isCanadianPostalCode('A1A-1A1') // false
- **/
+ */
 export const isCanadianPostalCode = (
   value: string,
   message: string = "This field must be a valid Canadian postal code without spaces or dashes"
@@ -108,7 +108,7 @@ export const isCanadianPostalCode = (
  * isUsZipCode("12345-6789") // true
  * isUsZipCode("123456") // false
  * isUsZipCode("ABCDE") // false
- **/
+ */
 export const isUsZipCode = (
   value: string,
   message: string = "This field must be a valid US zip code"
@@ -130,7 +130,7 @@ export const isUsZipCode = (
  * isMaxSize(5)(' a ') // true
  * isMaxSize(5)('abcde') // true
  * isMaxSize(5)('abcdef') // false
- **/
+ */
 export const isMaxSize =
   (message: string = "This field must be smaller") =>
   (maxSize: number) => {
@@ -152,7 +152,7 @@ export const isMaxSize =
  * isMinSize(5)(' a ') // false
  * isMinSize(5)('abcde') // true
  * isMinSize(5)('abcdef') // true
- **/
+ */
 export const isMinSize =
   (message: string = "This field must bigger") =>
   (minSize: number) => {
@@ -174,7 +174,7 @@ export const isMinSize =
  * isOnlyNumbers(' a ') // false
  * isOnlyNumbers('123') // true
  * isOnlyNumbers('123a') // false
- **/
+ */
 export const isOnlyNumbers =
   (message: string = "This field must be composed of only numbers") =>
   (value: string): string => {
@@ -192,7 +192,7 @@ export const isOnlyNumbers =
  * isUnique.add('key', 'field')('value'); // true
  * isUnique.add('key', 'field')('value'); // false
  * isUnique.remove('key', 'field'); // true
- **/
+ */
 export const isUniqueDescriptive = (): {
   add: (
     key: string,
@@ -296,6 +296,9 @@ export const formFieldValidations: Record<
 export const getValidations = (key: string): ((value: string) => string)[] =>
   formFieldValidations[key] || [];
 
+const arrayIndexGlobalRegex = /\.\*\./g;
+const targetGlobalRegex = /\$\./g;
+
 // This function will run the validators and return the errors
 export const validate = (
   keys: string[],
@@ -315,8 +318,13 @@ export const validate = (
       // We then load the field value
       const fieldValue = getFieldValue(fieldKey, target);
       // We define a function that will run the validation if the condition is true
-      const buildEval = (condition: string) =>
-        condition === "true" ? "true" : `target.${condition}`;
+      const buildEval = (condition: string) => {
+        if (condition === "true") {
+          return "true";
+        }
+        const result = condition.replace(targetGlobalRegex, "target.");
+        return result;
+      }
       const runValidation = (
         item: any,
         condition: string,
@@ -342,7 +350,7 @@ export const validate = (
               (subItem: any) =>
                 runValidation(
                   subItem,
-                  buildEval(fieldCondition.replace(".*.", `[${index}].`)),
+                  buildEval(fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)),
                   fieldKey.replace(".*.", `[${index}].`)
                 ) === ""
             );
@@ -351,7 +359,7 @@ export const validate = (
           return (
             runValidation(
               item,
-              buildEval(fieldCondition.replace(".*.", `[${index}].`)),
+              buildEval(fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)),
               fieldKey.replace(".*.", `[${index}].`)
             ) === ""
           );
@@ -378,8 +386,13 @@ export const runValidation = (
   // We then load the field value
   const fieldValue = getFieldValue(fieldKey, target);
   // We define a function that will run the validation if the condition is true
-  const buildEval = (condition: string) =>
-    condition === "true" ? "true" : `target.${condition}`;
+  const buildEval = (condition: string) => {
+    if (condition === "true") {
+      return "true";
+    }
+    const result = condition.replace(targetGlobalRegex, "target.");
+    return result;
+  }
   const executeValidation = (
     item: any,
     condition: string,
@@ -409,7 +422,7 @@ export const runValidation = (
           const valid =
             executeValidation(
               subItem,
-              buildEval(fieldCondition.replace(".*.", `[${index}].`)),
+              buildEval(fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)),
               fieldKey.replace(".*.", `[${index}].`)
             ) === "";
           if (!valid) {
@@ -425,7 +438,7 @@ export const runValidation = (
       const valid =
         executeValidation(
           item,
-          buildEval(fieldCondition.replace(".*.", `[${index}].`)),
+          buildEval(fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)),
           fieldKey.replace(".*.", `[${index}].`)
         ) === "";
       if (!valid) {
