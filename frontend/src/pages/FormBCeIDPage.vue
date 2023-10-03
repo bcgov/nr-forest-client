@@ -288,10 +288,14 @@ const processAndLogOut = () => {
   session?.logOut();
 };
 
+let submitBtnDisabled = ref(false);
+
 const submit = () => {
   errorBus.emit([]);
   notificationBus.emit(undefined);
+
   if (checkStepValidity(currentTab.value)) {
+    submitBtnDisabled.value = true;
     fetch();
   }
 };
@@ -500,6 +504,7 @@ const isSmallScreen = useMediaQuery("(max-width: 671px)");
               kind="primary"
               size="lg"
               @click.prevent="submit"
+              :disabled="submitBtnDisabled"
             >
             <span>Submit application</span>
             <Check16 slot="icon" />
