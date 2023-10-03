@@ -39,6 +39,8 @@ ca:
       nrs:
         processor:
           poolTime: 5M
+        backend:
+          uri: ${CLIENT_URI:http://localhost:8080/api}
         oracle:
           service: ${ORACLEDB_SERVICENAME:fsa-forest}
           database: ${ORACLEDB_DATABASE:fsa-forest}
