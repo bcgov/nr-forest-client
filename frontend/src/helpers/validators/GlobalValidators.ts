@@ -297,6 +297,7 @@ export const getValidations = (key: string): ((value: string) => string)[] =>
   formFieldValidations[key] || [];
 
 const arrayIndexGlobalRegex = /\.\*\./g;
+const targetGlobalRegex = /\$\./g;
 
 // This function will run the validators and return the errors
 export const validate = (
@@ -321,11 +322,7 @@ export const validate = (
         if (condition === "true") {
           return "true";
         }
-        const targetGlobalRegex = /\$\./g;
-        let result = condition.replace(targetGlobalRegex, "target.");
-        if (!result.includes("target.")) {
-          result = `target.${result}`;
-        }
+        const result = condition.replace(targetGlobalRegex, "target.");
         return result;
       }
       const runValidation = (
@@ -393,11 +390,7 @@ export const runValidation = (
     if (condition === "true") {
       return "true";
     }
-    const targetGlobalRegex = /\$\./g;
-    let result = condition.replace(targetGlobalRegex, "target.");
-    if (!result.includes("target.")) {
-      result = `target.${result}`;
-    }
+    const result = condition.replace(targetGlobalRegex, "target.");
     return result;
   }
   const executeValidation = (
