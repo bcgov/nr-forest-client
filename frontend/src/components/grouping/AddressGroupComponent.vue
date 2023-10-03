@@ -253,6 +253,7 @@ onMounted(() => {
     ]"
     :error-message="nameError"
     @empty="validation.locationName = !$event"
+    @error="validation.locationName = !$event"
     v-if="id !== 0"
   />
 
@@ -312,6 +313,7 @@ onMounted(() => {
       submissionValidation(`location.addresses[${id}].city`)
     ]"
     @empty="validation.city = !$event"
+    @error="validation.city = !$event"
   />
 
   <data-fetcher
