@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 // Carbon
-import '@carbon/web-components/es/components/combo-box/index'
+import '@carbon/web-components/es/components/combo-box/index';
 // Composables
 import { useEventBus } from '@vueuse/core'
 // Types
