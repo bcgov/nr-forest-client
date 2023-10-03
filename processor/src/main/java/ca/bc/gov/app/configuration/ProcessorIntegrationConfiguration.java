@@ -1,6 +1,7 @@
 package ca.bc.gov.app.configuration;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.util.LastItemReleaseStrategy;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +41,15 @@ public class ProcessorIntegrationConfiguration {
     return new FluxMessageChannel();
   }
 
+  @Bean
+  public FluxMessageChannel saveToLegacy() {
+    return new FluxMessageChannel();
+  }
+
+  @Bean
+  public FluxMessageChannel submissionMail() {
+    return new FluxMessageChannel();
+  }
 
   @Bean
   public FluxMessageChannel submissionCompletedChannel() {
@@ -50,6 +60,38 @@ public class ProcessorIntegrationConfiguration {
   public FluxMessageChannel notificationProcessingChannel() {
     return new FluxMessageChannel();
   }
+
+  @Bean
+  public FluxMessageChannel submissionCompletionChannel() {
+    return new FluxMessageChannel();
+  }
+
+
+  @Bean
+  public FluxMessageChannel submissionLegacyClientChannel() {
+    return new FluxMessageChannel();
+  }
+
+  @Bean
+  public FluxMessageChannel submissionLegacyLocationChannel() {
+    return new FluxMessageChannel();
+  }
+
+  @Bean
+  public FluxMessageChannel submissionLegacyContactChannel() {
+    return new FluxMessageChannel();
+  }
+
+  @Bean
+  public FluxMessageChannel submissionLegacyAggregateChannel() {
+    return new FluxMessageChannel();
+  }
+
+  @Bean
+  public FluxMessageChannel submissionLegacyNotifyChannel() {
+    return new FluxMessageChannel();
+  }
+
 
   @Bean
   public R2dbcMessageSource submissionMessages(
@@ -76,7 +118,12 @@ public class ProcessorIntegrationConfiguration {
     final String submissionIdQuery = """
         SELECT nrfc.submission.submission_id
         FROM nrfc.submission
-        WHERE nrfc.submission.submission_status_code in ('R','A')""";
+        LEFT JOIN nrfc.submission_matching_detail 
+        ON nrfc.submission_matching_detail.submission_id = nrfc.submission.submission_id
+        WHERE
+        nrfc.submission.submission_status_code in ('R','A')
+        AND ( nrfc.submission_matching_detail.submission_matching_processed  is null or
+        nrfc.submission_matching_detail.submission_matching_processed = false)""";
 
     R2dbcMessageSource template = new R2dbcMessageSource(
         r2dbcEntityTemplate,
@@ -110,6 +157,24 @@ public class ProcessorIntegrationConfiguration {
         .from(messageSource, adapter -> adapter.poller(Pollers.fixedDelay(poolingTime)))
         .split()
         .channel(inputChannel)
+        .get();
+  }
+
+  @Bean
+  public IntegrationFlow aggregateLegacyData(
+      @Value("${ca.bc.gov.nrs.processor.poolTime:1M}") Duration poolingTime
+  ){
+    return
+      IntegrationFlow
+        .from("submissionLegacyAggregateChannel")
+        .aggregate(spec ->
+            spec
+                .expireTimeout(poolingTime.toMillis())
+                .releaseStrategy(new LastItemReleaseStrategy())
+                .correlationStrategy(message -> message.getHeaders().get(ApplicationConstant.SUBMISSION_ID))
+                .sendPartialResultOnExpiry(true)
+        )
+        .channel(submissionLegacyNotifyChannel())
         .get();
   }
 
