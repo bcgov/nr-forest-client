@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestConstants {
+
   public static final SubmissionDetailEntity SUBMISSION_DETAIL = SubmissionDetailEntity
       .builder()
       .submissionDetailId(1)
@@ -31,6 +32,31 @@ public class TestConstants {
       "testuser@mail.tst",
       "test",
       "Processor Tests",
-      Map.of()
+      Map.of(
+          "name", "Test User",
+          "business", Map.of(
+              "name", "Test Corp",
+              "identifier", "ABC1234"
+          )
+      )
   );
+
+  public static final String EMAIL_REQUEST_JSON = """
+        {
+          "incorporation": "ABC1234",
+          "name": "Test Corp",
+          "userId": "testuserid",
+          "userName": "Test User",
+          "email": "testuser@mail.tst",
+          "templateName": "test",
+          "subject": "Processor Tests",
+          "variables": {
+            "name": "Test User",
+            "business": {
+              "name": "Test Corp",
+              "identifier": "ABC1234"
+            }
+          }
+        }
+        """;
 }
