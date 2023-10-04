@@ -108,7 +108,7 @@ describe('Auto Complete Input Component', () => {
       expect(wrapper.emitted('empty')![0][0]).toBe(true)
 
       // the second event is the result from changing the input value
-      // Note: before FSADT1-907, it would be a "not empty" (false) one.
+      // Note: before FSADT1-912, it would emit a "not empty" (false) one.
       expect(wrapper.emitted('empty')![1][0]).toBe(true)
 
       expect(wrapper.emitted('empty')).toHaveLength(2)
