@@ -37,6 +37,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class LegacyPersistenceService {
 
+  public static final String LOCATION_CODE = "locationCode";
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionRepository submissionRepository;
   private final SubmissionLocationRepository locationRepository;
@@ -61,8 +62,8 @@ public class LegacyPersistenceService {
         .map(submission -> MessageBuilder
             .withPayload(message.getPayload())
             .setHeader(ApplicationConstant.SUBMISSION_ID, message.getPayload())
-            .setHeader("createdBy", submission.getCreatedBy())
-            .setHeader("updatedBy", submission.getUpdatedBy())
+            .setHeader(ApplicationConstant.CREATED_BY, submission.getCreatedBy())
+            .setHeader(ApplicationConstant.UPDATED_BY, submission.getUpdatedBy())
             .build()
         );
   }
@@ -87,8 +88,10 @@ public class LegacyPersistenceService {
                     )
             )
             .map(this::toForestClientEntity)
-            .doOnNext(forestClient -> forestClient.setCreatedBy(getUser(message, "createdBy")))
-            .doOnNext(forestClient -> forestClient.setUpdatedBy(getUser(message, "updatedBy")))
+            .doOnNext(forestClient -> forestClient.setCreatedBy(getUser(message,
+                ApplicationConstant.CREATED_BY)))
+            .doOnNext(forestClient -> forestClient.setUpdatedBy(getUser(message,
+                ApplicationConstant.UPDATED_BY)))
             .flatMap(forestClientRepository::save)
             .map(ForestClientEntity::getClientNumber)
             .doOnNext(forestClientNumber ->
@@ -106,9 +109,9 @@ public class LegacyPersistenceService {
                     .map(forestClientDetail ->
                         MessageBuilder
                             .fromMessage(message)
-                            .setHeader("forestClientNumber", forestClientNumber)
-                            .setHeader("forestClientName", forestClientDetail.getOrganizationName())
-                            .setHeader("incorporationNumber",
+                            .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, forestClientNumber)
+                            .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, forestClientDetail.getOrganizationName())
+                            .setHeader(ApplicationConstant.INCORPORATION_NUMBER,
                                 forestClientDetail.getIncorporationNumber())
                             .build()
                     )
@@ -137,8 +140,10 @@ public class LegacyPersistenceService {
                         submissionLocation.getClientLocnName()
                     )
                 )
-                .doOnNext(forestClient -> forestClient.setCreatedBy(getUser(message, "createdBy")))
-                .doOnNext(forestClient -> forestClient.setUpdatedBy(getUser(message, "updatedBy")))
+                .doOnNext(forestClient -> forestClient.setCreatedBy(getUser(message,
+                    ApplicationConstant.CREATED_BY)))
+                .doOnNext(forestClient -> forestClient.setUpdatedBy(getUser(message,
+                    ApplicationConstant.UPDATED_BY)))
                 .doOnNext(forestClient -> forestClient.setClientNumber(getClientNumber(message)))
                 .doOnNext(forestClient ->
                     log.info(
@@ -159,10 +164,10 @@ public class LegacyPersistenceService {
                         .map(count ->
                             MessageBuilder
                                 .fromMessage(message)
-                                .setHeader("locationCode", forestClient.getClientLocnCode())
-                                .setHeader("locationId", detail.getSubmissionLocationId())
-                                .setHeader("total", count)
-                                .setHeader("index", index)
+                                .setHeader(LOCATION_CODE, forestClient.getClientLocnCode())
+                                .setHeader(ApplicationConstant.LOCATION_ID, detail.getSubmissionLocationId())
+                                .setHeader(ApplicationConstant.TOTAL, count)
+                                .setHeader(ApplicationConstant.INDEX, index)
                                 .build()
                         )
                 )
@@ -179,7 +184,7 @@ public class LegacyPersistenceService {
   public Mono<Message<Integer>> createContact(Message<Integer> message) {
 
     return locationContactRepository
-        .findBySubmissionLocationId(message.getHeaders().get("locationId", Integer.class))
+        .findBySubmissionLocationId(message.getHeaders().get(ApplicationConstant.LOCATION_ID, Integer.class))
         .flatMap(locationContact ->
             contactRepository
                 .findById(locationContact.getSubmissionContactId())
@@ -189,15 +194,17 @@ public class LegacyPersistenceService {
                         message.getPayload(),
                         submissionContact.getFirstName(),
                         submissionContact.getLastName(),
-                        message.getHeaders().get("locationCode", String.class)
+                        message.getHeaders().get(LOCATION_CODE, String.class)
                     )
                 )
                 .map(this::toForestClientContactEntity)
-                .doOnNext(forestClient -> forestClient.setCreatedBy(getUser(message, "createdBy")))
-                .doOnNext(forestClient -> forestClient.setUpdatedBy(getUser(message, "updatedBy")))
+                .doOnNext(forestClient -> forestClient.setCreatedBy(getUser(message,
+                    ApplicationConstant.CREATED_BY)))
+                .doOnNext(forestClient -> forestClient.setUpdatedBy(getUser(message,
+                    ApplicationConstant.UPDATED_BY)))
                 .doOnNext(forestClient -> forestClient.setClientNumber(getClientNumber(message)))
                 .doOnNext(forestClientContact -> forestClientContact.setClientLocnCode(
-                    message.getHeaders().get("locationCode", String.class)
+                    message.getHeaders().get(LOCATION_CODE, String.class)
                     )
                 )
                 .flatMap(forestClientContactRepository::save)
@@ -220,14 +227,14 @@ public class LegacyPersistenceService {
                 log.info(
                     "All data saved onto oracle {} {} {}",
                     message.getPayload(),
-                    message.getHeaders().get("forestClientNumber", String.class),
-                    message.getHeaders().get("forestClientName", String.class)
+                    message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class),
+                    message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME, String.class)
                 )
             )
             .map(submissionContact ->
                 new EmailRequestDto(
-                    message.getHeaders().get("incorporationNumber", String.class),
-                    message.getHeaders().get("forestClientName", String.class),
+                    message.getHeaders().get(ApplicationConstant.INCORPORATION_NUMBER, String.class),
+                    message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME, String.class),
                     submissionContact.getUserId(),
                     submissionContact.getFirstName(),
                     submissionContact.getEmailAddress(),
@@ -236,9 +243,9 @@ public class LegacyPersistenceService {
                     Map.of(
                         "userName", submissionContact.getFirstName(),
                         "business", Map.of(
-                            "name", message.getHeaders().get("forestClientName", String.class),
+                            "name", message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME, String.class),
                             "clientNumber",
-                            message.getHeaders().get("forestClientNumber", String.class)
+                            message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class)
                         )
                     )
                 )
@@ -276,10 +283,10 @@ public class LegacyPersistenceService {
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
         .revision(1L)
-        .createdBy("SYSTEM")
-        .updatedBy("SYSTEM")
-        .addOrgUnit(70L)
-        .updateOrgUnit(70L)
+        .createdBy(ApplicationConstant.PROCESSOR_USER_NAME)
+        .updatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
+        .addOrgUnit(ApplicationConstant.ORG_UNIT)
+        .updateOrgUnit(ApplicationConstant.ORG_UNIT)
         .build();
   }
 
@@ -308,10 +315,10 @@ public class LegacyPersistenceService {
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
         .revision(1L)
-        .createdBy("SYSTEM")
-        .updatedBy("SYSTEM")
-        .addOrgUnit(70L)
-        .updateOrgUnit(70L)
+        .createdBy(ApplicationConstant.PROCESSOR_USER_NAME)
+        .updatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
+        .addOrgUnit(ApplicationConstant.ORG_UNIT)
+        .updateOrgUnit(ApplicationConstant.ORG_UNIT)
         .build()
     );
   }
@@ -330,10 +337,10 @@ public class LegacyPersistenceService {
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
         .revision(1L)
-        .createdBy("SYSTEM")
-        .updatedBy("SYSTEM")
-        .addOrgUnit(70L)
-        .updateOrgUnit(70L)
+        .createdBy(ApplicationConstant.PROCESSOR_USER_NAME)
+        .updatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
+        .addOrgUnit(ApplicationConstant.ORG_UNIT)
+        .updateOrgUnit(ApplicationConstant.ORG_UNIT)
         .build();
   }
 
@@ -344,14 +351,14 @@ public class LegacyPersistenceService {
             headerName,
             String.class
         )
-        .orElse("AUTO-PROCESSOR");
+        .orElse(ApplicationConstant.PROCESSOR_USER_NAME);
   }
 
   private String getClientNumber(Message<?> message) {
     return ProcessorUtil
         .readHeader(
             message,
-            "forestClientNumber",
+            ApplicationConstant.FOREST_CLIENT_NUMBER,
             String.class
         )
         .orElse(StringUtils.EMPTY);

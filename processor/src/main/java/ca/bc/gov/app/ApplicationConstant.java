@@ -15,32 +15,26 @@ public final class ApplicationConstant {
   public static final String FORWARD_CHANNEL = "forwardChannel";
   public static final String AUTO_APPROVE_CHANNEL = "autoApproveChannel";
   public static final String REVIEW_CHANNEL = "reviewChannel";
+  public static final String SUBMISSION_MAIL_CHANNEL = "submissionMailChannel";
+  public static final String SUBMISSION_LEGACY_CLIENT_CHANNEL = "submissionLegacyClientChannel";
+  public static final String SUBMISSION_LEGACY_LOCATION_CHANNEL = "submissionLegacyLocationChannel";
+  public static final String SUBMISSION_LEGACY_CONTACT_CHANNEL = "submissionLegacyContactChannel";
+  public static final String SUBMISSION_LEGACY_AGGREGATE_CHANNEL = "submissionLegacyAggregateChannel";
+  public static final String SUBMISSION_LEGACY_NOTIFY_CHANNEL = "submissionLegacyNotifyChannel";
   public static final String SUBMISSION_ID = "submission-id";
   public static final String SUBMISSION_STATUS = "submission-status";
   public static final String SUBMISSION_CLIENTID = "submission-clientid";
   public static final String SUBMISSION_NAME = "submission-name";
   public static final String SUBMISSION_MESSAGE_SOURCE = "submissionMessages";
   public static final String PROCESSED_MESSAGE_SOURCE = "processedMessage";
-  public static final String SUBMISSION_MAIL_CHANNEL = "submissionMailChannel";
-
-  public static final String SUBMISSION_LEGACY_CLIENT_CHANNEL = "submissionLegacyClientChannel";
-
-  public static final String SUBMISSION_LEGACY_LOCATION_CHANNEL = "submissionLegacyLocationChannel";
-  public static final String SUBMISSION_LEGACY_CONTACT_CHANNEL = "submissionLegacyContactChannel";
-  public static final String SUBMISSION_LEGACY_AGGREGATE_CHANNEL = "submissionLegacyAggregateChannel";
-
-  public static final String SUBMISSION_LEGACY_NOTIFY_CHANNEL = "submissionLegacyNotifyChannel";
-
-
-  public static final String CONTACT_QUERY = """
-      SELECT
-        sc.contact_type_code,
-        sc.first_name,
-        sc.last_name,
-        sc.business_phone_number,
-        sc.email_address,
-        DENSE_RANK() OVER (ORDER BY slc.submission_location_id) - 1 AS submission_contact_id
-      FROM nrfc.submission_contact sc
-      LEFT JOIN nrfc.submission_location_contact_xref slc ON slc.submission_contact_id = sc.submission_contact_id
-      WHERE sc.submission_id = :submissionId""";
+  public static final String CREATED_BY = "createdBy";
+  public static final String UPDATED_BY = "updatedBy";
+  public static final String FOREST_CLIENT_NUMBER = "forestClientNumber";
+  public static final String FOREST_CLIENT_NAME = "forestClientName";
+  public static final String INCORPORATION_NUMBER = "incorporationNumber";
+  public static final String LOCATION_ID = "locationId";
+  public static final String TOTAL = "total";
+  public static final String INDEX = "index";
+  public static final String PROCESSOR_USER_NAME = "AUTO-PROCESSOR";
+  public static final long ORG_UNIT = 70L;
 }
