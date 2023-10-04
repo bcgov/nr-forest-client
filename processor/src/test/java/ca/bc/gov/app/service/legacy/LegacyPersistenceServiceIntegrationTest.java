@@ -56,6 +56,9 @@ class LegacyPersistenceServiceIntegrationTest extends AbstractTestContainer {
         .createForestClient(
             MessageBuilder
             .withPayload(2)
+                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
+                .setHeader(ApplicationConstant.CREATED_BY,ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.UPDATED_BY,ApplicationConstant.PROCESSOR_USER_NAME)
             .build()
         )
         .as(StepVerifier::create)
@@ -80,17 +83,17 @@ class LegacyPersistenceServiceIntegrationTest extends AbstractTestContainer {
           assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME))
               .isNotNull()
               .isInstanceOf(String.class)
-              .isEqualTo("Billy");
+              .isEqualTo("STAR DOT STAR VENTURES");
 
           assertThat(message.getHeaders().get(ApplicationConstant.INCORPORATION_NUMBER))
               .isNotNull()
               .isInstanceOf(String.class)
-              .isEqualTo("123456789");
+              .isEqualTo("FM0159297");
 
           assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
               .isNotNull()
               .isInstanceOf(String.class)
-              .isEqualTo("123456789");
+              .isEqualTo("00000000");
 
         })
         .verifyComplete();

@@ -26,9 +26,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ContextConfiguration
 public abstract class AbstractTestContainer {
 
-  static final OracleContainer oracle;
-  static final PostgreSQLContainer postgres;
-
   static {
     Path finalFile = Paths.get("./src", "test", "resources", "init_pg.sql").normalize();
 
@@ -74,16 +71,6 @@ public abstract class AbstractTestContainer {
   }
 
   static {
-    postgres = (PostgreSQLContainer) new PostgreSQLContainer("postgres:13")
-        .withInitScript("init_pg.sql")
-        .withDatabaseName("nfrc")
-        .withUsername("nrfc")
-        .withPassword(genPassword());
-
-    postgres.start();
-  }
-
-  static {
 
     Path finalFile = Paths.get("./src", "test", "resources","db","migration", "V1__init_oracle.sql").normalize();
 
@@ -117,6 +104,20 @@ public abstract class AbstractTestContainer {
     }
 
   }
+  static final OracleContainer oracle;
+  static final PostgreSQLContainer postgres;
+
+  static {
+    postgres = (PostgreSQLContainer) new PostgreSQLContainer("postgres:13")
+        .withInitScript("init_pg.sql")
+        .withDatabaseName("nfrc")
+        .withUsername("nrfc")
+        .withPassword(genPassword());
+
+    postgres.start();
+  }
+
+
 
   static {
 
