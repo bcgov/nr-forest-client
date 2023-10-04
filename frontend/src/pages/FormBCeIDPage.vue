@@ -361,7 +361,6 @@ const isSmallScreen = useMediaQuery("(max-width: 671px)");
     <error-notification-grouping-component
       :form-data="formData"
       :scroll-to-element-fn="scrollToNewContact"
-      scroll-to-element-name="addNewContact"
     />
   </div>
 
