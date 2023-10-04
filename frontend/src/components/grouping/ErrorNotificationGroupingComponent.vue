@@ -13,7 +13,8 @@ import type { Address, FormDataDto } from "@/dto/ApplyClientNumberDto";
 
 const props = defineProps<{
   formData: FormDataDto;
-  scrollToNewContact: () => void;
+  scrollToElementFn: () => void;
+  scrollToElementName: string;
 }>();
 
 const nonAssociatedAddressList = reactive<string[]>([]);
@@ -114,7 +115,7 @@ const goToStep = (step: number) => {
       open="true"
       kind="error"
       title="Assigned contact required:">
-    <span>You must associate "{{ globalErrorMessage.errorMsg }}" address with an existing contact or <a href="#" @click="goToStep(2)">add a new contact</a> before submitting the application again.</span>
+      <span>You must associate "{{ globalErrorMessage.errorMsg }}" address with an existing contact or <a href="#" @click="goToStep(2)">add a new contact</a> before submitting the application again.</span>
     </cds-inline-notification>
 
     <cds-actionable-notification
@@ -126,12 +127,12 @@ const goToStep = (step: number) => {
       kind="error"
       title="Your application could not be submitted:"      
     >    
-    <div v-if="globalErrorMessage.errorMsg">
-      Review the "{{ globalErrorMessage.errorMsg }}" before submitting the application again.
-    </div>
-    <div v-else>
-      Review the information in the sections below before submitting the application again.
-    </div>
+      <div v-if="globalErrorMessage.errorMsg">
+        Review the "{{ globalErrorMessage.errorMsg }}" before submitting the application again.
+      </div>
+      <div v-else>
+        Review the information in the sections below before submitting the application again.
+      </div>
     </cds-actionable-notification>
 
     <cds-actionable-notification
@@ -143,22 +144,24 @@ const goToStep = (step: number) => {
       kind="error"
       title="Your application could not be submitted:"      
     >    
-    <div>{{ globalErrorMessage.errorMsg }}</div>    
-  </cds-actionable-notification>
+      <div>{{ globalErrorMessage.errorMsg }}</div>    
+    </cds-actionable-notification>
 
-  <cds-inline-notification
-    v-for="item in nonAssociatedAddressList"
-    :key="item"
-    v-shadow="true"
-    low-contrast="true"
-    hide-close-button="true"
-    open="true"
-    kind="error"
-  >
-    <p class="body-compact-01">
-      <span class="heading-compact-01 heading-compact-01-dark">Assigned contact required:</span>
-      You must associate <span class="heading-compact-01 heading-compact-01-dark">“{{ item }}”</span> address with an existing contact or <a href="#" @click.prevent="scrollToNewContact">add a new contact</a> before submitting the application again.
-    </p>
-  </cds-inline-notification>
+    <span v-if="scrollToElementName === 'addNewContact'">
+      <cds-inline-notification
+        v-for="item in nonAssociatedAddressList"
+        :key="item"
+        v-shadow="true"
+        low-contrast="true"
+        hide-close-button="true"
+        open="true"
+        kind="error"
+      >
+        <p class="body-compact-01">
+          <span class="heading-compact-01 heading-compact-01-dark">Assigned contact required:</span>
+          You must associate <span class="heading-compact-01 heading-compact-01-dark">“{{ item }}”</span> address with an existing contact or <a href="#" @click.prevent="scrollToElementFn">add a new contact</a> before submitting the application again.
+        </p>
+      </cds-inline-notification>
+    </span>
   </div>
 </template>
