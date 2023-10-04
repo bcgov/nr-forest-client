@@ -1,5 +1,8 @@
 import AddressGroupComponent from '@/components/grouping/AddressGroupComponent.vue'
 
+// load app validations
+import '@/helpers/validators/BCeIDFormValidations'
+
 describe('<AddressGroupComponent />', () => {
   const dummyValidation = (): ((key: string, field: string) => (value: string) => string) => {
     return (key: string, fieldId: string) => (value: string) => {
@@ -172,5 +175,106 @@ describe('<AddressGroupComponent />', () => {
       .shadow()
       .find('label')
       .and('include.text', 'Zip code')
+  })
+
+  describe('when it has last emitted "valid" with false due to a single, not empty, invalid field', () => {
+    const genericTest = (
+      fieldSelector: string,
+      firstContent: string,
+      additionalContent: string,
+    ) => {
+      const calls: boolean[] = []
+      const onValid = (valid: boolean) => {
+        calls.push(valid)
+      }
+      cy.get('@addressFixture').then((address) => {
+        cy.get('@countriesFixture').then((countries) => {
+          cy.mount(AddressGroupComponent, {
+            props: {
+              id: 1,
+              modelValue: address,
+              countryList: countries,
+              validations: [],
+              onValid,
+            },
+          })
+        })
+      })
+      cy.wait('@getProvinces')
+
+      // Prevents issues due to moving focus in the middle of the test.
+      cy.get('#name_1').should('be.focused')
+
+      cy.get(fieldSelector).shadow().find('input').clear() // emits false
+      cy.get(fieldSelector).blur() // (doesn't emit)
+      cy.get(fieldSelector).shadow().find('input').type(firstContent) // emits true before blurring
+      cy.get(fieldSelector).blur() // emits false
+      cy.get(fieldSelector).should('be.visible').and('have.value', firstContent)
+      cy.get(fieldSelector).shadow().find('input').type(additionalContent) // emits true (last2)
+      cy.get(fieldSelector).blur() // emits false (last1)
+      cy.get(fieldSelector)
+        .should('be.visible')
+        .and('have.value', `${firstContent}${additionalContent}`)
+
+      // For some reason on Electron we need to wait a millisecond now.
+      // Otherwise this test either fails or can't be trusted on Electron.
+      cy.wait(1)
+
+      return calls
+    }
+    const checkValidFalseAgain = (calls: boolean[]) => {
+      cy.wrap(calls).then((value) => {
+        const last1 = value.pop()
+        const last2 = value.pop()
+        const last3 = value.pop()
+        expect(last3).to.equal(false)
+        expect(last2).to.equal(true)
+        expect(last1).to.equal(false)
+      })
+    }
+    const checkValidTrue = (calls: boolean[]) => {
+      cy.wrap(calls).then((value) => {
+        const last1 = value.pop()
+        const last2 = value.pop()
+        expect(last2).to.equal(false)
+        expect(last1).to.equal(true)
+      })
+    }
+    describe('Location name', () => {
+      it('should emit "valid" with false again', () => {
+        const calls = genericTest('#name_1', '1', '2')
+
+        checkValidFalseAgain(calls)
+      })
+      it('should emit "valid" with true', () => {
+        const calls = genericTest('#name_1', '12', '3')
+
+        checkValidTrue(calls)
+      })
+    })
+    describe('City', () => {
+      it('should emit "valid" with false again', () => {
+        const calls = genericTest('#city_1', 'A', 'b')
+
+        checkValidFalseAgain(calls)
+      })
+      it('should emit "valid" with true', () => {
+        const calls = genericTest('#city_1', 'Ab', 'c')
+
+        checkValidTrue(calls)
+      })
+    })
+    describe('Postal code', () => {
+      it('should emit "valid" with false again', () => {
+        const calls = genericTest('#postalCode_1', 'A1B', '2C')
+
+        checkValidFalseAgain(calls)
+      })
+      it('should emit "valid" with true', () => {
+        const calls = genericTest('#postalCode_1', 'A1B', '2C3')
+
+        checkValidTrue(calls)
+      })
+    })
   })
 })
