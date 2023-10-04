@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.Message;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -20,24 +21,22 @@ public class ProcessorUtil {
 
   public static String extractLetters(String input) {
     Pattern pattern = Pattern.compile("[A-Z]+");
-    Matcher matcher = pattern.matcher(input);
-
-    if (matcher.find()) {
-      return matcher.group();
-    } else {
-      return ""; // Return an empty string if no letters are found.
-    }
+    return getStringFromPattern(input, pattern);
   }
 
   public static String extractNumbers(String input) {
     Pattern pattern = Pattern.compile("\\d+");
-    Matcher matcher = pattern.matcher(input);
+    return getStringFromPattern(input, pattern);
+  }
 
+  private static String getStringFromPattern(String input, Pattern pattern) {
+    Matcher matcher = pattern.matcher(input);
     if (matcher.find()) {
       return matcher.group();
     } else {
-      return ""; // Return an empty string if no numbers are found.
+      return StringUtils.EMPTY;
     }
   }
+
 
 }

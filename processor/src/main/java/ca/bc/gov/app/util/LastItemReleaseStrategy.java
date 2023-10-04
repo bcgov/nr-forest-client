@@ -1,6 +1,7 @@
 package ca.bc.gov.app.util;
 
 import java.util.Optional;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.integration.aggregator.ReleaseStrategy;
 import org.springframework.integration.store.MessageGroup;
 import org.springframework.messaging.Message;
@@ -19,6 +20,7 @@ public class LastItemReleaseStrategy implements ReleaseStrategy {
             Optional
                 .ofNullable(headers.get("total"))
                 .map(Object::toString)
+                .filter(NumberUtils::isDigits)
                 .map(Integer::parseInt)
                 .orElse(0)
         )
