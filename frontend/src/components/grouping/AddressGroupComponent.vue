@@ -193,7 +193,7 @@ const detailsData = ref<Address | null>(null);
 
 watch([autoCompleteResult], () => {
   addressControl.value = false;
-  if (autoCompleteResult.value) {
+  if (autoCompleteResult.value && autoCompleteResult.value.code) {
     showDetailsLoading.value = true;
     const { error, loading: detailsLoading } = useFetchTo(
       `/api/clients/addresses/${encodeURIComponent(
