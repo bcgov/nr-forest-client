@@ -360,7 +360,8 @@ const isSmallScreen = useMediaQuery("(max-width: 671px)");
     </cds-progress-indicator>
     <error-notification-grouping-component
       :form-data="formData"
-      :scroll-to-new-contact="scrollToNewContact"
+      :scroll-to-element-fn="scrollToNewContact"
+      scroll-to-element-name="addNewContact"
     />
   </div>
 
