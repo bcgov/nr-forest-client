@@ -37,7 +37,6 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class LegacyPersistenceService {
 
-  public static final String LOCATION_CODE = "locationCode";
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionRepository submissionRepository;
   private final SubmissionLocationRepository locationRepository;
@@ -164,7 +163,7 @@ public class LegacyPersistenceService {
                         .map(count ->
                             MessageBuilder
                                 .fromMessage(message)
-                                .setHeader(LOCATION_CODE, forestClient.getClientLocnCode())
+                                .setHeader(ApplicationConstant.LOCATION_CODE, forestClient.getClientLocnCode())
                                 .setHeader(ApplicationConstant.LOCATION_ID, detail.getSubmissionLocationId())
                                 .setHeader(ApplicationConstant.TOTAL, count)
                                 .setHeader(ApplicationConstant.INDEX, index)
@@ -194,7 +193,7 @@ public class LegacyPersistenceService {
                         message.getPayload(),
                         submissionContact.getFirstName(),
                         submissionContact.getLastName(),
-                        message.getHeaders().get(LOCATION_CODE, String.class)
+                        message.getHeaders().get(ApplicationConstant.LOCATION_CODE, String.class)
                     )
                 )
                 .map(this::toForestClientContactEntity)
@@ -204,7 +203,7 @@ public class LegacyPersistenceService {
                     ApplicationConstant.UPDATED_BY)))
                 .doOnNext(forestClient -> forestClient.setClientNumber(getClientNumber(message)))
                 .doOnNext(forestClientContact -> forestClientContact.setClientLocnCode(
-                    message.getHeaders().get(LOCATION_CODE, String.class)
+                    message.getHeaders().get(ApplicationConstant.LOCATION_CODE, String.class)
                     )
                 )
                 .flatMap(forestClientContactRepository::save)

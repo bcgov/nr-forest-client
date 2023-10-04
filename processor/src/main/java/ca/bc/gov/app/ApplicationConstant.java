@@ -37,4 +37,5 @@ public final class ApplicationConstant {
   public static final String INDEX = "index";
   public static final String PROCESSOR_USER_NAME = "AUTO-PROCESSOR";
   public static final long ORG_UNIT = 70L;
+  public static final String LOCATION_CODE = "locationCode";
 }
