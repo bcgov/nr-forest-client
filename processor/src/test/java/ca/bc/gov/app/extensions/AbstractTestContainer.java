@@ -85,10 +85,11 @@ public abstract class AbstractTestContainer {
 
   static {
 
-    Path finalFile = Paths.get("./src", "test", "resources","db","migration", "V1__init_pg.sql").normalize();
+    Path finalFile = Paths.get("./src", "test", "resources","db","migration", "V1__init_oracle.sql").normalize();
 
     if (!finalFile.toFile().exists()) {
       try {
+        finalFile.toFile().getParentFile().mkdirs();
         finalFile.toFile().createNewFile();
       } catch (IOException e) {
         throw new RuntimeException(e);
