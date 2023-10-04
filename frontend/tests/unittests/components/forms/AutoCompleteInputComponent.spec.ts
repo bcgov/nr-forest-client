@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 
 import { VueWrapper, mount } from '@vue/test-utils'
 import AutoCompleteInputComponent from '@/components/forms/AutoCompleteInputComponent.vue'
+import CDSComboBox from "@carbon/web-components/es/components/combo-box/combo-box"
 
 describe('Auto Complete Input Component', () => {
   const id = 'my-input'
@@ -83,6 +84,35 @@ describe('Auto Complete Input Component', () => {
 
     expect(wrapper.emitted('empty')).toBeTruthy()
     expect(wrapper.emitted('empty')![0][0]).toBe(true)
+  })
+
+  describe('when the contents prop is empty', () => {
+    const emptyContents: any[] = []
+    it('emits "empty" when the input becomes empty', async () => {
+      const wrapper = mount(AutoCompleteInputComponent, {
+        props: {
+          id,
+          modelValue: 'a',
+          contents: emptyContents,
+          validations: [],
+          label: id,
+        },
+      })
+
+      wrapper.find<CDSComboBox>(`#${id}`).element.value = ''
+      await wrapper.find(`#${id}`).trigger('input')
+
+      expect(wrapper.emitted('empty')).toBeTruthy()
+
+      // the first event is from the initialization
+      expect(wrapper.emitted('empty')![0][0]).toBe(true)
+
+      // the second event is the result from changing the input value
+      // Note: before FSADT1-907, it would be a "not empty" (false) one.
+      expect(wrapper.emitted('empty')![1][0]).toBe(true)
+
+      expect(wrapper.emitted('empty')).toHaveLength(2)
+    })
   })
 
   it('emits the "update:selected-value" event when an option from the list is clicked', async () => {
