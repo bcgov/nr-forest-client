@@ -12,12 +12,15 @@ const formData = {
   }
 }
 
+const scrollToElementName = "";
+
 describe('Error Notification Grouping Component', () => {
   it('renders no error by default', () => {
     const wrapper = mount(ErrorNotificationGroupingComponent, {
       props: {
         formData,
-        scrollToNewContact: () => {}
+        scrollToElementFn: () => {},
+        scrollToElementName
       },
     })
     expect(wrapper.find('cds-inline-notification').exists()).toBe(false)
@@ -27,7 +30,8 @@ describe('Error Notification Grouping Component', () => {
       const wrapper = mount(ErrorNotificationGroupingComponent, {
         props: {
           formData,
-          scrollToNewContact: () => {}
+          scrollToElementFn: () => {},
+          scrollToElementName
         },
       })
       const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification");
@@ -46,7 +50,8 @@ describe('Error Notification Grouping Component', () => {
       const wrapper = mount(ErrorNotificationGroupingComponent, {
         props: {
           formData,
-          scrollToNewContact: () => {}
+          scrollToElementFn: () => {},
+          scrollToElementName
         },
       })
       const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification");
@@ -85,7 +90,8 @@ describe('Error Notification Grouping Component', () => {
                 addresses: locationNames.map(locationName => ({ locationName }))
               }
             },
-            scrollToNewContact: () => {}
+            scrollToElementFn: () => {},
+            scrollToElementName: ""
           },
         })
         notificationBus.emit({
@@ -135,7 +141,8 @@ describe('Error Notification Grouping Component', () => {
               addresses: newLocationNames.map(locationName => ({ locationName }))
             }
           },
-          scrollToNewContact: () => {}
+          scrollToElementFn: () => {},
+          scrollToElementName: ""
         })
     
         const elements = wrapper.findAll('cds-inline-notification');
