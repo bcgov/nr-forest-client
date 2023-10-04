@@ -57,7 +57,7 @@ class ProcessorUtilTest {
         Arguments.of("ABC1234", "ABC", "1234"),
         Arguments.of("ABC", "ABC", ""),
         Arguments.of("1234", "", "1234"),
-        Arguments.of("ABC1234ABC", "ABC", "1234ABC")
+        Arguments.of("ABC1234ABC", "ABC", "1234")
     );
   }
 
