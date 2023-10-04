@@ -14,7 +14,6 @@ import type { Address, FormDataDto } from "@/dto/ApplyClientNumberDto";
 const props = defineProps<{
   formData: FormDataDto;
   scrollToElementFn: () => void;
-  scrollToElementName: string;
 }>();
 
 const nonAssociatedAddressList = reactive<string[]>([]);
@@ -147,21 +146,19 @@ const goToStep = (step: number) => {
       <div>{{ globalErrorMessage.errorMsg }}</div>    
     </cds-actionable-notification>
 
-    <span v-if="scrollToElementName === 'addNewContact'">
-      <cds-inline-notification
-        v-for="item in nonAssociatedAddressList"
-        :key="item"
-        v-shadow="true"
-        low-contrast="true"
-        hide-close-button="true"
-        open="true"
-        kind="error"
-      >
-        <p class="body-compact-01">
-          <span class="heading-compact-01 heading-compact-01-dark">Assigned contact required:</span>
-          You must associate <span class="heading-compact-01 heading-compact-01-dark">“{{ item }}”</span> address with an existing contact or <a href="#" @click.prevent="scrollToElementFn">add a new contact</a> before submitting the application again.
-        </p>
-      </cds-inline-notification>
-    </span>
+    <cds-inline-notification
+      v-for="item in nonAssociatedAddressList"
+      :key="item"
+      v-shadow="true"
+      low-contrast="true"
+      hide-close-button="true"
+      open="true"
+      kind="error"
+    >
+      <p class="body-compact-01">
+        <span class="heading-compact-01 heading-compact-01-dark">Assigned contact required:</span>
+        You must associate <span class="heading-compact-01 heading-compact-01-dark">“{{ item }}”</span> address with an existing contact or <a href="#" @click.prevent="scrollToElementFn">add a new contact</a> before submitting the application again.
+      </p>
+    </cds-inline-notification>
   </div>
 </template>
