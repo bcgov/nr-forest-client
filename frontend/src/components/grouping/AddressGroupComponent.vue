@@ -193,7 +193,7 @@ const detailsData = ref<Address | null>(null);
 
 watch([autoCompleteResult], () => {
   addressControl.value = false;
-  if (autoCompleteResult.value) {
+  if (autoCompleteResult.value && autoCompleteResult.value.code) {
     showDetailsLoading.value = true;
     const { error, loading: detailsLoading } = useFetchTo(
       `/api/clients/addresses/${encodeURIComponent(
@@ -253,6 +253,7 @@ onMounted(() => {
     ]"
     :error-message="nameError"
     @empty="validation.locationName = !$event"
+    @error="validation.locationName = !$event"
     v-if="id !== 0"
   />
 
@@ -312,6 +313,7 @@ onMounted(() => {
       submissionValidation(`location.addresses[${id}].city`)
     ]"
     @empty="validation.city = !$event"
+    @error="validation.city = !$event"
   />
 
   <data-fetcher

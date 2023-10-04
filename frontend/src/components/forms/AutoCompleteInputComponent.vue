@@ -56,7 +56,8 @@ let selectedValue: BusinessSearchResult | undefined = undefined;
 
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
-  selectedValue = inputList.value.find((entry) => entry.code === newValue);
+  // Prevent selecting the empty value provided when props.contents is empty.
+  selectedValue = newValue ? inputList.value.find((entry) => entry.code === newValue) : undefined;
   emit("update:model-value", selectedValue?.name ?? newValue);
   emit("update:selected-value", selectedValue);
   emit("empty", isEmpty(selectedValue));
