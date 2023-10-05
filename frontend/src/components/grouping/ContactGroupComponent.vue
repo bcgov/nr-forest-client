@@ -145,6 +145,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
     :enabled="enabled"
     :error-message="error"
     @empty="validation.firstName = !$event"
+    @error="validation.firstName = !$event"
   />
 
   <text-input-component
@@ -159,6 +160,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
     :enabled="enabled"
     :error-message="error"
     @empty="validation.lastName = !$event"
+    @error="validation.lastName = !$event"
   />
 
   <text-input-component
@@ -172,6 +174,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
     ]"
     :enabled="enabled"
     @empty="validation.email = !$event"
+    @error="validation.email = !$event"
   />
 
   <text-input-component
@@ -186,6 +189,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
       submissionValidation(`location.contacts[${id}].phoneNumber`)
     ]"
     @empty="validation.phoneNumber = !$event"
+    @error="validation.phoneNumber = !$event"
   />
 
   <div class="grouping-06">
