@@ -44,7 +44,7 @@ const setError = (errorMessage: string | undefined) => {
   changes.
   Because the empty event is always emitted, even when it remains the same payload, and then we
   rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
-  an empty one to be able to make the field go invalid again when needed.
+  an empty one to allow subscribers to know in case the field still has the same error.
   */
   emit('error', error.value);
 }
