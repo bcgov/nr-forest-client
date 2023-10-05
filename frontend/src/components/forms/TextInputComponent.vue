@@ -66,7 +66,14 @@ const emitValueChange = (newValue: string): void => {
   emit("empty", isEmpty(newValue));
 };
 //Watch for changes on the input
-watch([selectedValue], () => emitValueChange(selectedValue.value));
+watch([selectedValue], () => {
+  emitValueChange(selectedValue.value);
+
+  // We don't to validate at each key pressed, but we do want to validate when it's changed from outside
+  if (document.activeElement?.id !== props.id) {
+    validateInput(selectedValue.value);
+  }
+});
 
 //We call all the validations
 const validateInput = (newValue: string) => {
