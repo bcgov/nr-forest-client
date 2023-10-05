@@ -870,7 +870,7 @@ div#app {
 
 cds-accordion-item[open]:not([disabled])::part(content) ,:host(cds-accordion-item[open]:not([disabled])) .cds-ce--accordion__content--md {
   padding-right: 1rem !important;
-  padding-top: inherit;
+  padding-top: 0rem;
   padding-bottom: inherit;
   display: flex;
   flex-direction: column;

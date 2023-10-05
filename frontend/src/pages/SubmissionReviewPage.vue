@@ -8,6 +8,7 @@ import '@carbon/web-components/es/components/accordion/index';
 import '@carbon/web-components/es/components/notification/index';
 import '@carbon/web-components/es/components/button/index';
 import '@carbon/web-components/es/components/modal/index';
+import '@carbon/web-components/es/components/tooltip/index';
 // Composables
 import { useFetchTo,usePost } from '@/composables/useFetch'
 import { useRouter } from 'vue-router'
@@ -151,6 +152,19 @@ const goodStanding = (goodStanding:string):string => {
     return goodStanding === 'Y' ? 'Good standing' : 'Not in good standing'
   return 'Unknown'
 }
+
+const tagColor = (status: string) =>{
+  switch(status){
+    case 'New':
+      return 'blue'
+    case 'Approved':
+      return 'green'
+    case 'Rejected':
+      return 'red'
+    default:
+      return 'purple'
+  }
+}
 </script>
 
 <template>
@@ -169,13 +183,11 @@ const goodStanding = (goodStanding:string):string => {
 
   <div id="screen" class="submission-content">
     <div class="submission-header">
-      <cds-breadcrumb no-trailing-slash>
+      <cds-breadcrumb>
         <cds-breadcrumb-item>
           <cds-breadcrumb-link href="/submissions">Submissions</cds-breadcrumb-link>
         </cds-breadcrumb-item>
-        <cds-breadcrumb-item>
-          <cds-breadcrumb-link aria-current="page">{{ normalizeString(data.business.organizationName) }}</cds-breadcrumb-link>
-        </cds-breadcrumb-item>      
+        
       </cds-breadcrumb>
 
       <p class="submission-details--title heading-05">
@@ -188,6 +200,8 @@ const goodStanding = (goodStanding:string):string => {
           {{ data.submissionType }}: {{ normalizeString(data.business.organizationName) }}
         </span>
       </p>
+      <p class="body-01" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
+      <p class="body-01" v-else>Check and manage this submission for a new client number</p>
     </div>
 
     <cds-actionable-notification
@@ -268,15 +282,20 @@ const goodStanding = (goodStanding:string):string => {
               <span class="body-compact-01">{{ data.business.incorporationNumber }}</span>
             </read-only-component>
 
-            <read-only-component label="Last updated">
-              <span class="body-compact-01">{{ data.updateUser }} | {{ friendlyDate(data.updateTimestamp) }}</span>
-            </read-only-component>
-
             <read-only-component label="B.C. Registries standing">
               <span class="body-compact-01">{{ goodStanding(data.business.goodStanding) }}</span>
             </read-only-component>
+
+            <read-only-component label="Last updated">
+              <span class="body-compact-01">{{ friendlyDate(data.updateTimestamp) }} | {{ data.updateUser }}</span>
+            </read-only-component>
+            
             <read-only-component label="Submission status">
-              <cds-tag type="green"><span>{{ data.submissionStatus }}</span></cds-tag>
+              <cds-tag :type="tagColor(data.submissionStatus)"><span>{{ data.submissionStatus }}</span></cds-tag>
+            </read-only-component>
+
+            <read-only-component label="Approved on" v-if="data.submissionStatus === 'Approved'">
+              <span class="body-compact-01">{{ friendlyDate(data.updateTimestamp) }}</span>
             </read-only-component>
           </div>
         </div>
@@ -293,20 +312,31 @@ const goodStanding = (goodStanding:string):string => {
             </read-only-component>
 
             <read-only-component label="Email">
-              <span class="body-compact-01">{{ data.contact[0].emailAddress }}</span>
-            </read-only-component>
+                  <cds-tooltip>
+                    <div class="sb-tooltip-trigger" aria-labelledby="content">
+                      <a :href="'mailto:'+data.contact[0].emailAddress"><span class="body-compact-01-colorless">{{ data.contact[0].emailAddress }}</span></a>
+                    </div>
+                    <cds-tooltip-content id="content">
+                      Click to send email
+                    </cds-tooltip-content>
+                  </cds-tooltip>
+                </read-only-component>
 
-            <read-only-component label="Phone number">
-              <span class="body-compact-01">{{ data.contact[0].phoneNumber }}</span>
-            </read-only-component>
+                <read-only-component label="Phone number">
+                  <cds-tooltip>
+                    <div class="sb-tooltip-trigger" aria-labelledby="content">
+                      <a :href="'tel:'+data.contact[0].phoneNumber"><span class="body-compact-01-colorless">{{ data.contact[0].phoneNumber }}</span></a>
+                    </div>
+                    <cds-tooltip-content id="content">
+                      Click to call
+                    </cds-tooltip-content>
+                  </cds-tooltip>
+                </read-only-component>
 
             <read-only-component label="Submitted on">
               <span class="body-compact-01">{{ formattedDate(data.updateTimestamp) }}</span>
             </read-only-component>
 
-            <read-only-component label="Approved on">
-              <span class="body-compact-01">{{ formattedDate(data.updateTimestamp) }}</span>
-            </read-only-component>
           </div>
           </cds-accordion-item>
         </cds-accordion>
@@ -365,11 +395,25 @@ const goodStanding = (goodStanding:string):string => {
                 </read-only-component>
                 
                 <read-only-component label="Email">
-                  <a :href="'mailto:'+contact.emailAddress"><span class="body-compact-01-colorless">{{ contact.emailAddress }}</span></a>
+                  <cds-tooltip>
+                    <div class="sb-tooltip-trigger" aria-labelledby="content">
+                      <a :href="'mailto:'+contact.emailAddress"><span class="body-compact-01-colorless">{{ contact.emailAddress }}</span></a>
+                    </div>
+                    <cds-tooltip-content id="content">
+                      Click to send email
+                    </cds-tooltip-content>
+                  </cds-tooltip>
                 </read-only-component>
 
                 <read-only-component label="Phone number">
-                  <a :href="'tel:'+contact.phoneNumber"><span class="body-compact-01-colorless">{{ contact.phoneNumber }}</span></a>
+                  <cds-tooltip>
+                    <div class="sb-tooltip-trigger" aria-labelledby="content">
+                      <a :href="'tel:'+contact.phoneNumber"><span class="body-compact-01-colorless">{{ contact.phoneNumber }}</span></a>
+                    </div>
+                    <cds-tooltip-content id="content">
+                      Click to call
+                    </cds-tooltip-content>
+                  </cds-tooltip>
                 </read-only-component>
             </div>
           </div>
@@ -378,13 +422,13 @@ const goodStanding = (goodStanding:string):string => {
 
       <div class="grouping-15" v-if="data.submissionType === 'Review new client' && (data.submissionStatus === 'New')">
         <cds-button kind="primary" @click="approveModal = !approveModal">
-          <span>Approve</span>
-          <Logout16 slot="icon" />
+          <span>Approve submission</span>
+          <Check16 slot="icon" />
         </cds-button>
         <span class="spacer"></span>
         <cds-button kind="danger" @click="rejectModal = !rejectModal">
-          <span>Reject</span>
-          <Logout16 slot="icon" />
+          <span>Reject submission</span>
+          <Error16 slot="icon" />
         </cds-button>
       </div>
     </div>
