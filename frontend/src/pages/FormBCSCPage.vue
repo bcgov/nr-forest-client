@@ -1,6 +1,79 @@
 <template>
-    <div>
-      <h1>Test</h1>
+<!--   <div class="cds--css-grid">
+    <div class="cds--col-span-4">Span 4 columns</div>
+    <div class="cds--col-span-2">Span 2 columns</div>
+  </div> -->
+  <div class="form-header">
+    <div class="form-header-title">
+      <span class="heading-05" data-scroll="top">
+        New client application
+      </span>
     </div>
-  </template>
-  
+    
+    <span class="heading-04" data-scroll="scroll-0">
+      Personal information
+    </span>
+    <p class="body-compact-01">
+      Review the personal information below. It’s from your BC Services card.<br />
+      We use it to know who we're giving a number to and for communicating with clients. 
+    </p>
+
+   
+    <div class="grouping-01">
+      <p class="heading-02">
+        Full name
+      </p>
+      <p class="body-compact-01">
+        {{ formData.businessInformation.businessName }}
+      </p>
+    </div>
+    <div class="grouping-06">
+      <!-- <cds-button kind="tertiary" @click.prevent="goToStep(0)">
+        <span>Edit business information</span>
+        <Edit16 slot="icon" />
+      </cds-button> -->
+    </div>
+
+    
+  </div>
+</template>
+
+
+<script setup lang="ts">
+import { reactive, watch, toRef, ref, getCurrentInstance, computed } from "vue";
+import { newFormDataDto } from "@/dto/ApplyClientNumberDto";
+import { ClientTypeEnum, LegalTypeEnum } from "@/dto/CommonTypesDto";
+import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
+
+
+const instance = getCurrentInstance();
+const session = instance?.appContext.config.globalProperties.$session;
+
+const submitterContact: Contact = {
+  locationNames: [],
+  contactType: { value: "", text: "" },
+  phoneNumber: "",
+  firstName: session?.user?.firstName ?? "",
+  lastName: session?.user?.lastName ?? "",
+  email: session?.user?.email ?? "",
+};
+
+let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
+
+//---- Form Data ----//
+let formData = reactive<FormDataDto>({
+  ...formDataDto.value,
+  businessInformation :{
+    businessType: ClientTypeEnum.U.toString(),
+    legalType: LegalTypeEnum.SP.toString(),
+    clientType: '',
+    incorporationNumber: '',
+    businessName: 'Test',
+    goodStandingInd: '',
+  },
+  location: {
+    addresses: formDataDto.value.location.addresses,
+    contacts: [submitterContact],
+  },
+});
+</script>

@@ -34,6 +34,11 @@ export enum ClientTypeEnum {
   U
 }
 
+export enum LegalTypeEnum {
+  Unknow,
+  SP,
+}
+
 export interface ProgressData {
   kind: string
   title: string
