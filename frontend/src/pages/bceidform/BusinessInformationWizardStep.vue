@@ -11,7 +11,7 @@ import type {
   BusinessSearchResult,
   ProgressNotification,
 } from "@/dto/CommonTypesDto";
-import { ClientTypeEnum } from "@/dto/CommonTypesDto";
+import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
 import type {
   FormDataDto,
   ForestClientDetailsDto,
@@ -67,11 +67,11 @@ emit("valid", checkValid());
 const selectedOption = computed(() => {
   switch (formData.value.businessInformation.businessType) {
     case "R":
-      return ClientTypeEnum.R;
+      return BusinessTypeEnum.R;
     case "U":
-      return ClientTypeEnum.U;
+      return BusinessTypeEnum.U;
     default:
-      return ClientTypeEnum.Unknow;
+      return BusinessTypeEnum.Unknow;
   }
 });
 
@@ -180,7 +180,7 @@ watch([detailsData], () => {
 
 // -- Unregistered Proprietorship
 watch([selectedOption], () => {
-  if (selectedOption.value === ClientTypeEnum.U) {
+  if (selectedOption.value === BusinessTypeEnum.U) {
     const fromName = `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`;
 
     formData.value.businessInformation.businessType = "U";
@@ -226,7 +226,7 @@ watch([selectedOption], () => {
     #="{ content, loading, error }"
   >
     <AutoCompleteInputComponent
-      v-if="selectedOption === ClientTypeEnum.R"
+      v-if="selectedOption === BusinessTypeEnum.R"
       id="business"
       label="BC registered business name"
       tip=""
@@ -245,10 +245,10 @@ watch([selectedOption], () => {
     <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
     <div
       class="grouping-02"
-      v-if="(showAutoCompleteInfo && selectedOption === ClientTypeEnum.R) || showGoodStandingError || showDuplicatedError">
+      v-if="(showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R) || showGoodStandingError || showDuplicatedError">
       <cds-inline-notification
         v-shadow="2"
-        v-if="showAutoCompleteInfo && selectedOption === ClientTypeEnum.R"
+        v-if="showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R"
         low-contrast="true"
         open="true"
         kind="info"
@@ -315,7 +315,7 @@ watch([selectedOption], () => {
   </data-fetcher>
 
   <text-input-component
-    v-if="selectedOption === ClientTypeEnum.U"
+    v-if="selectedOption === BusinessTypeEnum.U"
     id="businessName"
     label="Unregistered proprietorship"
     placeholder=""
