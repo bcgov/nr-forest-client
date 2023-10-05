@@ -47,10 +47,10 @@ emit("empty", isEmpty(props.initialValue));
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
   const reference = newValue
-    ? props.modelValue.find((entry) => entry.code === newValue)
-    : undefined;
+    ? props.modelValue.find((entry) => entry.name === newValue)
+    : { code: '', name: '' };
 
-  emit("update:modelValue", newValue);
+  emit("update:modelValue", reference?.name);
   emit("update:selectedValue", reference);
   emit("empty", isEmpty(newValue));
 };
@@ -70,7 +70,7 @@ const validateInput = (newValue: any) => {
 };
 
 const selectItem = (event: any) => {
-  selectedValue.value = event?.detail?.item?.getAttribute("data-id");
+  selectedValue.value = event?.detail?.item?.getAttribute("data-value");
 };
 
 /**
