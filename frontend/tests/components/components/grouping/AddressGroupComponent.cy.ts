@@ -180,6 +180,10 @@ describe('<AddressGroupComponent />', () => {
       .and('include.text', 'Zip code')
   })
 
+  /**
+   * @see FSADT1-905
+   * @see FSADT1-907
+   */
   describe('when it has last emitted "valid" with false due to a single, not empty, invalid field', () => {
     const genericTest = (
       fieldSelector: string,
