@@ -8,7 +8,7 @@ describe('DropdownInputComponent', () => {
     (value: any) => (value === 'A' ? 'A is not supported' : '')
   ]
 
-  const eventContent = (value:string) => {return { detail: { item: { 'data-id': value, getAttribute: (key:string) => value } }}}
+  const eventContent = (value:string) => {return { detail: { item: { 'data-value': value, getAttribute: (key:string) => value } }}}
 
 
   it('should render', () => {
@@ -48,10 +48,10 @@ describe('DropdownInputComponent', () => {
 
     const dropdown = wrapper.find('cds-combo-box')
 
-    await dropdown.trigger('cds-combo-box-selected', eventContent('A'))
+    await dropdown.trigger('cds-combo-box-selected', eventContent('Value A'))
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy()
-    expect(wrapper.emitted('update:modelValue')![0][0]).toBe('A')
+    expect(wrapper.emitted('update:modelValue')![0][0]).toBe('Value A')
 
     expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
     expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual({
@@ -80,7 +80,7 @@ describe('DropdownInputComponent', () => {
 
     const dropdown = wrapper.find('cds-combo-box')
 
-    await dropdown.trigger('cds-combo-box-selected', eventContent('A'))
+    await dropdown.trigger('cds-combo-box-selected', eventContent('Value A'))
 
     expect(wrapper.emitted('empty')).toBeTruthy()
     expect(wrapper.emitted('empty')![1][0]).toBe(false)
@@ -103,10 +103,10 @@ describe('DropdownInputComponent', () => {
 
     const dropdown = wrapper.find('cds-combo-box')
 
-    await dropdown.trigger('cds-combo-box-selected', eventContent('A'))
+    await dropdown.trigger('cds-combo-box-selected', eventContent('Value A'))
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy()
-    expect(wrapper.emitted('update:modelValue')![0][0]).toBe('A')
+    expect(wrapper.emitted('update:modelValue')![0][0]).toBe('Value A')
 
     expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
     expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual({
@@ -135,10 +135,10 @@ describe('DropdownInputComponent', () => {
 
     const dropdown = wrapper.find('cds-combo-box')
 
-    await dropdown.trigger('cds-combo-box-selected', eventContent('B'))
+    await dropdown.trigger('cds-combo-box-selected', eventContent('Value B'))
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy()
-    expect(wrapper.emitted('update:modelValue')![0][0]).toBe('B')
+    expect(wrapper.emitted('update:modelValue')![0][0]).toBe('Value B')
 
     expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
     expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual({
@@ -167,10 +167,10 @@ describe('DropdownInputComponent', () => {
 
     const dropdown = wrapper.find('cds-combo-box')
 
-    await dropdown.trigger('cds-combo-box-selected', eventContent('A'))
+    await dropdown.trigger('cds-combo-box-selected', eventContent('Value A'))
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy()
-    expect(wrapper.emitted('update:modelValue')![0][0]).toBe('A')
+    expect(wrapper.emitted('update:modelValue')![0][0]).toBe('Value A')
 
     expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
     expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual({
@@ -189,8 +189,9 @@ describe('DropdownInputComponent', () => {
     expect(wrapper.emitted('update:modelValue')![1][0]).toBe('')
 
     expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
-    expect(wrapper.emitted('update:selectedValue')![1][0]).toStrictEqual(
-      undefined
-    )
+    expect(wrapper.emitted('update:selectedValue')![1][0]).toStrictEqual({
+      code: '',
+      name: '',
+    })
   })
 })

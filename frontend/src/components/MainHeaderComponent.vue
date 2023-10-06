@@ -35,7 +35,6 @@ const logoutModalActive = ref(false);
       alt="Go to the Government of British Columbia website"
       v-else
     />
-    <logo />
   </a>
   <div class="heading">
     <span class="heading-compact-01" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
