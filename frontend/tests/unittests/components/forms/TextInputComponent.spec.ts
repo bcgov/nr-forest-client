@@ -70,7 +70,7 @@ describe('Text Input Component', () => {
     expect(wrapper.emitted('error')![0][0]).toBe('Field is required')
   })
 
-  it('emits the "error" event even when the error message is the same as before', async () => {
+  it('revalidates when changed from outside (i.e. not directly by the user)', async () => {
     const errorMessage = "sample error message";
     const wrapper = mount(TextInputComponent, {
       props: {
@@ -86,19 +86,40 @@ describe('Text Input Component', () => {
       },
     });
 
-    console.log(wrapper.html());
+    /*
+    Note: we are not triggerring "input" nor "blur".
+    Just like on a programmatic change, which was not performed by a user.
+    */
+    await wrapper.setProps({ modelValue: "1"});
+
+    expect(wrapper.emitted("error")).toBeTruthy();
+    expect(wrapper.emitted("error")).toHaveLength(1);
+    expect(wrapper.emitted("error")![0][0]).toBe(errorMessage);
+  });
+
+  it.only('emits the "error" event even when the error message is the same as before', async () => {
+    const errorMessage = "sample error message";
+    const wrapper = mount(TextInputComponent, {
+      props: {
+        id,
+        label: 'TestField',
+        placeholder: '',
+        modelValue: '',
+        validations: [isMinSize(errorMessage)(5)],
+        enabled: true,
+      },
+      directives: {
+        masked: () => {},
+      },
+    });
 
     await wrapper.setProps({ modelValue: "1"});
-    await wrapper.find(`#${id}`).trigger("input");
-    await wrapper.find(`#${id}`).trigger("blur");
 
     expect(wrapper.emitted("error")).toBeTruthy();
     expect(wrapper.emitted("error")).toHaveLength(1);
     expect(wrapper.emitted("error")![0][0]).toBe(errorMessage);
 
     await wrapper.setProps({ modelValue: "12"}); // adds another character
-    await wrapper.find(`#${id}`).trigger("input");
-    await wrapper.find(`#${id}`).trigger("blur");
 
     expect(wrapper.emitted("error")).toHaveLength(2);
     expect(wrapper.emitted("error")![1][0]).toBe(errorMessage);
