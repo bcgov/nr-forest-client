@@ -33,7 +33,7 @@
         Date of birth
       </p>
       <p class="body-compact-01">
-        {{ formData.businessInformation.businessName }}
+        {{ formData.businessInformation.birthDate }}
       </p>
     </div>
 
@@ -55,7 +55,6 @@ import { newFormDataDto } from "@/dto/ApplyClientNumberDto";
 import { BusinessTypeEnum, ClientTypeEnum, LegalTypeEnum } from "@/dto/CommonTypesDto";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 
-
 const instance = getCurrentInstance();
 const session = instance?.appContext.config.globalProperties.$session;
 
@@ -72,6 +71,15 @@ console.log(session);
 
 let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
 
+const formatter = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+
+const birthDate = new Date(session?.user?.birthDate ?? "");
+const formattedDate = formatter.format(birthDate);
+
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
   ...formDataDto.value,
@@ -82,6 +90,7 @@ let formData = reactive<FormDataDto>({
     incorporationNumber: '',
     businessName: session?.user?.name ?? "",
     goodStandingInd: "Y",
+    birthDate: formattedDate,
   },
   location: {
     addresses: formDataDto.value.location.addresses,
