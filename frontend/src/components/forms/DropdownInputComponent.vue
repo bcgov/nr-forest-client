@@ -87,7 +87,10 @@ watch([selectedValue], () => {
   if (selectedValue.value === "") {
     comboBoxMountTime.value = [Date.now()];
   }
-  validateInput(selectedValue.value);
+  const reference = selectedValue.value
+    ? props.modelValue.find((entry) => entry.name === selectedValue.value)
+    : { code: "", name: "" };
+  validateInput(reference ? reference.code : "");
   emitValueChange(selectedValue.value);
 });
 
