@@ -55,17 +55,30 @@ const emitValueChange = (newValue: string): void => {
   emit("empty", isEmpty(newValue));
 };
 
-//We call all the validations
-const validateInput = (newValue: any) => {
+/**
+ * Performs all validations and returns the first error message.
+ * If there's no error from the validations, returns props.errorMessage.
+ *
+ * @param {string} newValue
+ * @returns {string | undefined} the error message or props.errorMessage
+ */
+const validatePurely = (newValue: string): string | undefined => {
   if (props.validations) {
-    error.value =
+    return (
       props.validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
           if (errorMessage) return true;
           return false;
         })
-        .shift() ?? props.errorMessage;
+        .shift() ?? props.errorMessage
+    );
+  }
+}
+
+const validateInput = (newValue: any) => {
+  if (props.validations) {
+    error.value = validatePurely(newValue);
   }
 };
 
@@ -90,7 +103,19 @@ watch([selectedValue], () => {
   const reference = selectedValue.value
     ? props.modelValue.find((entry) => entry.name === selectedValue.value)
     : { code: "", name: "" };
-  validateInput(reference ? reference.code : "");
+  const errorMessage = validatePurely(reference ? reference.code : "");
+
+  /*
+  If the element is not active, we don't want to set a non-empty error message
+  on it.
+  We don't want to call user's attention for something they didn't do wrong.
+  Note: we still want to UPDATE the error message in case it already had an
+  error, because the type of error could have changed.
+  */
+  if (document.activeElement?.id === props.id || !errorMessage || error.value) {
+    error.value = errorMessage
+  }
+
   emitValueChange(selectedValue.value);
 });
 
