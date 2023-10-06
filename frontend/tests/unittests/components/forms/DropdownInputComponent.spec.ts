@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 
 import DropdownInputComponent from '@/components/forms/DropdownInputComponent.vue'
@@ -94,16 +94,31 @@ describe('DropdownInputComponent', () => {
         tip: '',
         modelValue: [
           { code: 'A', name: 'Value A' },
-          { code: 'B', name: 'Value B' }
+          { code: 'B', name: 'Value B' },
         ],
         initialValue: '',
-        validations
-      }
+        validations,
+      },
     })
 
     const dropdown = wrapper.find('cds-combo-box')
 
+    const originalActiveElement = document.activeElement
+
+    // Make the combo-box active
+    Object.defineProperty(document, 'activeElement', {
+      value: { id: 'test' },
+      writable: true,
+    })
+
     await dropdown.trigger('cds-combo-box-selected', eventContent('Value A'))
+
+    // Restore document's activeElement
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    document.activeElement = originalActiveElement
+
+    await wrapper.trigger('click')
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy()
     expect(wrapper.emitted('update:modelValue')![0][0]).toBe('Value A')
@@ -111,11 +126,78 @@ describe('DropdownInputComponent', () => {
     expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
     expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual({
       code: 'A',
-      name: 'Value A'
+      name: 'Value A',
     })
 
     expect(wrapper.emitted('error')).toBeTruthy()
     expect(wrapper.emitted('error')![0][0]).toBe('A is not supported')
+  })
+
+  it('should not emit error if the component is not focused', async () => {
+    const wrapper = mount(DropdownInputComponent, {
+      props: {
+        id: 'test',
+        label: 'test',
+        tip: '',
+        modelValue: [
+          { code: 'A', name: 'Value A' },
+          { code: 'B', name: 'Value B' },
+        ],
+        initialValue: '',
+        validations,
+      },
+    })
+
+    // const dropdown = wrapper.find('cds-combo-box')
+    // await dropdown.trigger('cds-combo-box-selected', eventContent('Value A'))
+
+    await wrapper.setProps({ initialValue: 'Value A' })
+
+    expect(wrapper.emitted('update:modelValue')).toBeTruthy()
+    expect(wrapper.emitted('update:modelValue')![0][0]).toBe('Value A')
+
+    expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
+    expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual({
+      code: 'A',
+      name: 'Value A',
+    })
+
+    expect(wrapper.emitted('error')).toBeFalsy()
+  })
+
+  it('should emit error with empty payload (meaning it is valid) even if the component is not focused', async () => {
+    const wrapper = mount(DropdownInputComponent, {
+      props: {
+        id: 'test',
+        label: 'test',
+        tip: '',
+        modelValue: [
+          { code: 'A', name: 'Value A' },
+          { code: 'B', name: 'Value B' },
+        ],
+        initialValue: '',
+        validations,
+      },
+    })
+
+    // const dropdown = wrapper.find('cds-combo-box')
+    // await dropdown.trigger('cds-combo-box-selected', eventContent('Value B'))
+
+    await wrapper.setProps({ initialValue: 'Value B' })
+
+    expect(wrapper.emitted('update:modelValue')).toBeTruthy()
+    expect(wrapper.emitted('update:modelValue')![0][0]).toBe('Value B')
+
+    expect(wrapper.emitted('update:selectedValue')).toBeTruthy()
+    expect(wrapper.emitted('update:selectedValue')![0][0]).toStrictEqual({
+      code: 'B',
+      name: 'Value B',
+    })
+
+    expect(wrapper.emitted('error')).toBeTruthy()
+
+    // Error payload is empty - i.e. it is valid
+    expect(wrapper.emitted('error')![0][0]).toBe(undefined)
   })
 
   it('should validate and emit no error if required', async () => {
