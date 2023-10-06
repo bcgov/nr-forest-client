@@ -27,6 +27,16 @@
         {{ formData.businessInformation.businessName }}
       </p>
     </div>
+
+    <div class="grouping-01">
+      <p class="heading-02">
+        Date of birth
+      </p>
+      <p class="body-compact-01">
+        {{ formData.businessInformation.businessName }}
+      </p>
+    </div>
+
     <div class="grouping-06">
       <!-- <cds-button kind="tertiary" @click.prevent="goToStep(0)">
         <span>Edit business information</span>
@@ -42,7 +52,7 @@
 <script setup lang="ts">
 import { reactive, watch, toRef, ref, getCurrentInstance, computed } from "vue";
 import { newFormDataDto } from "@/dto/ApplyClientNumberDto";
-import { ClientTypeEnum, LegalTypeEnum } from "@/dto/CommonTypesDto";
+import { BusinessTypeEnum, ClientTypeEnum, LegalTypeEnum } from "@/dto/CommonTypesDto";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 
 
@@ -58,18 +68,20 @@ const submitterContact: Contact = {
   email: session?.user?.email ?? "",
 };
 
+console.log(session);
+
 let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
 
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
   ...formDataDto.value,
   businessInformation :{
-    businessType: ClientTypeEnum.U.toString(),
+    businessType: BusinessTypeEnum.U.toString(),
     legalType: LegalTypeEnum.SP.toString(),
-    clientType: '',
+    clientType: ClientTypeEnum.I.toString(),
     incorporationNumber: '',
-    businessName: 'Test',
-    goodStandingInd: '',
+    businessName: session?.user?.name ?? "",
+    goodStandingInd: "Y",
   },
   location: {
     addresses: formDataDto.value.location.addresses,
