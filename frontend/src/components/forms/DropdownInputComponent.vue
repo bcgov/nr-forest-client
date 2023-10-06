@@ -82,8 +82,12 @@ const validateInput = (newValue: any) => {
   }
 };
 
+// Tells whether the current value change was done manually by the user.
+const isUserEvent = ref(false)
+
 const selectItem = (event: any) => {
   selectedValue.value = event?.detail?.item?.getAttribute("data-value");
+  isUserEvent.value = true
 };
 
 /**
@@ -106,15 +110,18 @@ watch([selectedValue], () => {
   const errorMessage = validatePurely(reference ? reference.code : "");
 
   /*
-  If the element is not active, we don't want to set a non-empty error message
-  on it.
+  If the current change was not directly performed by the user, we don't want
+  to set a non-empty error message on it.
   We don't want to call user's attention for something they didn't do wrong.
   Note: we still want to UPDATE the error message in case it already had an
-  error, because the type of error could have changed.
+  error, since the type of error could have changed.
   */
-  if (document.activeElement?.id === props.id || !errorMessage || error.value) {
+  if (isUserEvent.value || !errorMessage || error.value) {
     error.value = errorMessage
   }
+
+  // resets variable
+  isUserEvent.value = false;
 
   emitValueChange(selectedValue.value);
 });
