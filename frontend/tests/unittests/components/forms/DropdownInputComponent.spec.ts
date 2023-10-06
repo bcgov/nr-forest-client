@@ -103,20 +103,7 @@ describe('DropdownInputComponent', () => {
 
     const dropdown = wrapper.find('cds-combo-box')
 
-    const originalActiveElement = document.activeElement
-
-    // Make the combo-box active
-    Object.defineProperty(document, 'activeElement', {
-      value: { id: 'test' },
-      writable: true,
-    })
-
     await dropdown.trigger('cds-combo-box-selected', eventContent('Value A'))
-
-    // Restore document's activeElement
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    document.activeElement = originalActiveElement
 
     await wrapper.trigger('click')
 
@@ -133,7 +120,7 @@ describe('DropdownInputComponent', () => {
     expect(wrapper.emitted('error')![0][0]).toBe('A is not supported')
   })
 
-  it('should not emit error if the component is not focused', async () => {
+  it('should not emit error if the change on selected value was not made by the user', async () => {
     const wrapper = mount(DropdownInputComponent, {
       props: {
         id: 'test',
@@ -147,9 +134,6 @@ describe('DropdownInputComponent', () => {
         validations,
       },
     })
-
-    // const dropdown = wrapper.find('cds-combo-box')
-    // await dropdown.trigger('cds-combo-box-selected', eventContent('Value A'))
 
     await wrapper.setProps({ initialValue: 'Value A' })
 
@@ -165,7 +149,7 @@ describe('DropdownInputComponent', () => {
     expect(wrapper.emitted('error')).toBeFalsy()
   })
 
-  it('should emit error with empty payload (meaning it is valid) even if the component is not focused', async () => {
+  it('should emit error with empty payload (meaning it is valid) even if the change on selected value was not made by the user', async () => {
     const wrapper = mount(DropdownInputComponent, {
       props: {
         id: 'test',
@@ -179,9 +163,6 @@ describe('DropdownInputComponent', () => {
         validations,
       },
     })
-
-    // const dropdown = wrapper.find('cds-combo-box')
-    // await dropdown.trigger('cds-combo-box-selected', eventContent('Value B'))
 
     await wrapper.setProps({ initialValue: 'Value B' })
 
