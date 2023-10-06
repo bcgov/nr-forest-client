@@ -82,7 +82,7 @@ const validateInput = (newValue: any) => {
   }
 };
 
-// Tells whether the current value change was done manually by the user.
+// Tells whether the current change was done manually by the user.
 const isUserEvent = ref(false)
 
 const selectItem = (event: any) => {
