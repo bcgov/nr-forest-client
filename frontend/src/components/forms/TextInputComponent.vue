@@ -44,7 +44,7 @@ const setError = (errorMessage: string | undefined) => {
   changes.
   Because the empty event is always emitted, even when it remains the same payload, and then we
   rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
-  an empty one to be able to make the field go invalid again when needed.
+  an empty one to allow subscribers to know in case the field still has the same error.
   */
   emit('error', error.value);
 }
@@ -66,7 +66,14 @@ const emitValueChange = (newValue: string): void => {
   emit("empty", isEmpty(newValue));
 };
 //Watch for changes on the input
-watch([selectedValue], () => emitValueChange(selectedValue.value));
+watch([selectedValue], () => {
+  emitValueChange(selectedValue.value);
+
+  // We don't to validate at each key pressed, but we do want to validate when it's changed from outside
+  if (document.activeElement?.id !== props.id) {
+    validateInput(selectedValue.value);
+  }
+});
 
 //We call all the validations
 const validateInput = (newValue: string) => {

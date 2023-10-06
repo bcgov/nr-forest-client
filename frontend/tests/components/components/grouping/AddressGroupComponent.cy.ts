@@ -162,6 +162,9 @@ describe('<AddressGroupComponent />', () => {
 
     cy.wait('@getStates')
 
+    // Value effectively displayed has got cleared (see FSADT1-900).
+    cy.get('#province_0').find('input').should('have.value', '')
+
     cy.get('#province_0')
       .should('be.visible')
       .and('have.value', '')
@@ -177,6 +180,10 @@ describe('<AddressGroupComponent />', () => {
       .and('include.text', 'Zip code')
   })
 
+  /**
+   * @see FSADT1-905
+   * @see FSADT1-907
+   */
   describe('when it has last emitted "valid" with false due to a single, not empty, invalid field', () => {
     const genericTest = (
       fieldSelector: string,
@@ -277,4 +284,23 @@ describe('<AddressGroupComponent />', () => {
       })
     })
   })
+  // TODO: FSADT1-915
+  // it('should update the province when changed manually', () => {
+  // })
+  // it('should update the province when a Street address option gets selected', () => {
+  // })
+  // describe('when Province is cleared by the user', () => {
+  //   /**
+  //    * @see FSADT1-914
+  //    */
+  //   it('should update the Province when a Street address in the same province gets selected', () => {
+  //   })
+
+  //   it('should update the Province when a Street address in a different province gets selected', () => {
+  //   })
+  // })
+  // describe('when the following fields are displayed as invalid: City, Province, Postal code', () => {
+  //   it('should display them as valid when they get filled by selecting a Street address option', () => {
+  //   })
+  // })
 })
