@@ -162,6 +162,9 @@ describe('<AddressGroupComponent />', () => {
 
     cy.wait('@getStates')
 
+    // Value effectively displayed has got cleared (see FSADT1-900).
+    cy.get('#province_0').find('input').should('have.value', '')
+
     cy.get('#province_0')
       .should('be.visible')
       .and('have.value', '')
