@@ -121,6 +121,7 @@ revalidateBus.on(() => validateInput(inputValue.value));
       :data-focus="id"
       :data-scroll="id"
       :data-id="'input-' + id"
+      v-shadow="3"
     >
       <cds-combo-box-item
         v-for="item in inputList"

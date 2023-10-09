@@ -157,7 +157,9 @@ revalidateBus.on(() => validateInput(selectedValue.value));
       :invalidText="error"
       @cds-combo-box-selected="selectItem"
       :data-focus="id"
-      :data-scroll="id">
+      :data-scroll="id"
+      v-shadow="3"
+    >
       <cds-combo-box-item 
         v-for="option in inputList"
         :key="option.code"

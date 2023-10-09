@@ -159,6 +159,15 @@ cds-combo-box::part(trigger-button) {
   padding: 0px 3rem 0px 0;
 }
 
+cds-combo-box::part(input) {
+  outline: none;
+}
+
+cds-combo-box:where(:active, :focus)::part(cds--combo-box) {
+  outline: 2px solid var(--cds-focus,#0f62fe);
+  outline-offset: -2px;
+}
+
 .top-notification {
   margin-top: 3rem;
   display: flex;
