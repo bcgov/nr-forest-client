@@ -20,7 +20,6 @@ import ca.bc.gov.app.util.ProcessorUtil;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.function.Function;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +32,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class LegacyPersistenceService {
 
@@ -45,6 +43,24 @@ public class LegacyPersistenceService {
   private final SubmissionContactRepository contactRepository;
   private final SubmissionLocationContactRepository locationContactRepository;
   private final R2dbcEntityTemplate legacyR2dbcEntityTemplate;
+
+  public LegacyPersistenceService(SubmissionDetailRepository submissionDetailRepository,
+      SubmissionRepository submissionRepository, SubmissionLocationRepository locationRepository,
+      ForestClientRepository forestClientRepository,
+      ForestClientContactRepository forestClientContactRepository,
+      SubmissionContactRepository contactRepository,
+      SubmissionLocationContactRepository locationContactRepository,
+      R2dbcEntityTemplate legacyR2dbcEntityTemplate
+  ) {
+    this.submissionDetailRepository = submissionDetailRepository;
+    this.submissionRepository = submissionRepository;
+    this.locationRepository = locationRepository;
+    this.forestClientRepository = forestClientRepository;
+    this.forestClientContactRepository = forestClientContactRepository;
+    this.contactRepository = contactRepository;
+    this.locationContactRepository = locationContactRepository;
+    this.legacyR2dbcEntityTemplate = legacyR2dbcEntityTemplate;
+  }
 
 
   @ServiceActivator(
@@ -91,7 +107,11 @@ public class LegacyPersistenceService {
                 ApplicationConstant.CREATED_BY)))
             .doOnNext(forestClient -> forestClient.setUpdatedBy(getUser(message,
                 ApplicationConstant.UPDATED_BY)))
-            .flatMap(forestClientRepository::save)
+            .flatMap(forestClient ->
+                    legacyR2dbcEntityTemplate
+                        .insert(ForestClientEntity.class)
+                        .using(forestClient)
+                )
             .map(ForestClientEntity::getClientNumber)
             .doOnNext(forestClientNumber ->
                 log.info(
