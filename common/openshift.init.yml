@@ -19,6 +19,11 @@ parameters:
     required: true
   - name: ORACLEDB_PASSWORD
     description: Oracle database password
+  - name: ORACLEDB_USER_W
+    description: Oracle database user name with write permission
+    required: true
+  - name: ORACLEDB_PASSWORD_W
+    description: Oracle database password with write permission
     required: true
   - name: ORACLEDB_DATABASE
     description: Oracle database database name
@@ -93,6 +98,8 @@ objects:
       database-user: ${NAME}  
       oracle-user: ${ORACLEDB_USER}
       oracle-password: ${ORACLEDB_PASSWORD}
+      oracle-user-write: ${ORACLEDB_USER_W}
+      oracle-password-write: ${ORACLEDB_PASSWORD_W}
       oracle-database: ${ORACLEDB_DATABASE}
       oracle-host: ${ORACLEDB_HOST}
       oracle-service: ${ORACLEDB_SERVICENAME}
