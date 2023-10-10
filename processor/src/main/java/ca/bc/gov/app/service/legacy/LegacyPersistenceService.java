@@ -264,7 +264,7 @@ public class LegacyPersistenceService {
   ) {
     return ForestClientEntity
         .builder()
-        .clientNumber(null)
+        .clientNumber(StringUtils.EMPTY)
         .legalFirstName(null)
         .legalMiddleName(null)
         .clientIdTypeCode(null)
