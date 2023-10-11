@@ -54,7 +54,6 @@ class LegacyPersistenceServiceTest {
       submissionDetailRepository,
       submissionRepository,
       locationRepository,
-      forestClientRepository,
       forestClientContactRepository,
       contactRepository,
       locationContactRepository,
