@@ -134,11 +134,23 @@ public class ClientService {
         bcRegistryService
             .requestDocumentData(clientNumber)
             .next()
+            .doOnNext(document ->
+                log.info("Searching on Oracle legacy db for {} {}",
+                         document.business().identifier(),
+                         document.business().legalName()
+                )
+            )
             .flatMap(document ->
                 legacyService
                     .searchLegacy(document.business().identifier(), document.business().legalName())
                     .next()
                     .filter(isMatchWith(document))
+                    .doOnNext(legacy ->
+                        log.info("Found legacy entry for {} {}",
+                                 document.business().identifier(),
+                                 document.business().legalName()
+                        )
+                    )
                     .flatMap(legacy -> Mono
                         .error(
                             new ClientAlreadyExistException(
@@ -148,6 +160,11 @@ public class ClientService {
                         )
                     )
                     .defaultIfEmpty(document)
+                    .doOnNext(value ->
+                        log.info("No entry found on legacy for {} {}",
+                            document.business().identifier(), document.business().legalName()
+                          )
+                    )
             )
             .map(BcRegistryDocumentDto.class::cast)
             .flatMap(buildDetails());
