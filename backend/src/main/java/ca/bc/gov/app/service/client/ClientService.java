@@ -7,7 +7,7 @@ import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
-import ca.bc.gov.app.dto.client.ClientNameCodeDto;
+import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
@@ -57,14 +57,14 @@ public class ClientService {
    * <p>The order is by description.</p>
    *
    * @param targetDate The date to be used as reference.
-   * @return A list of {@link ClientNameCodeDto}
+   * @return A list of {@link CodeNameDto}
    */
-  public Flux<ClientNameCodeDto> findActiveClientTypeCodes(LocalDate targetDate) {
+  public Flux<CodeNameDto> findActiveClientTypeCodes(LocalDate targetDate) {
 
     return
         clientTypeCodeRepository
             .findActiveAt(targetDate)
-            .map(entity -> new ClientNameCodeDto(
+            .map(entity -> new CodeNameDto(
                     entity.getCode(),
                     entity.getDescription()
                 )
@@ -79,12 +79,12 @@ public class ClientService {
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
-   * @return A list of {@link ClientNameCodeDto} entries.
+   * @return A list of {@link CodeNameDto} entries.
    */
-  public Flux<ClientNameCodeDto> listCountries(int page, int size) {
+  public Flux<CodeNameDto> listCountries(int page, int size) {
     return countryCodeRepository
         .findBy(PageRequest.of(page, size, Sort.by("order", "description")))
-        .map(entity -> new ClientNameCodeDto(entity.getCountryCode(), entity.getDescription()));
+        .map(entity -> new CodeNameDto(entity.getCountryCode(), entity.getDescription()));
   }
 
   /**
@@ -95,12 +95,12 @@ public class ClientService {
    * @param countryCode The code of the country to list provinces from.
    * @param page        The page number, it is a 0-index base.
    * @param size        The amount of entries per page.
-   * @return A list of {@link ClientNameCodeDto} entries.
+   * @return A list of {@link CodeNameDto} entries.
    */
-  public Flux<ClientNameCodeDto> listProvinces(String countryCode, int page, int size) {
+  public Flux<CodeNameDto> listProvinces(String countryCode, int page, int size) {
     return provinceCodeRepository
         .findByCountryCode(countryCode, PageRequest.of(page, size, Sort.by("description")))
-        .map(entity -> new ClientNameCodeDto(entity.getProvinceCode(), entity.getDescription()));
+        .map(entity -> new CodeNameDto(entity.getProvinceCode(), entity.getDescription()));
   }
 
   /**
@@ -109,12 +109,12 @@ public class ClientService {
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
-   * @return A list of {@link ClientNameCodeDto} entries.
+   * @return A list of {@link CodeNameDto} entries.
    */
-  public Flux<ClientNameCodeDto> listClientContactTypeCodes(int page, int size) {
+  public Flux<CodeNameDto> listClientContactTypeCodes(int page, int size) {
     return contactTypeCodeRepository
         .findBy(PageRequest.of(page, size))
-        .map(entity -> new ClientNameCodeDto(
+        .map(entity -> new CodeNameDto(
             entity.getContactTypeCode(),
             entity.getDescription()));
   }

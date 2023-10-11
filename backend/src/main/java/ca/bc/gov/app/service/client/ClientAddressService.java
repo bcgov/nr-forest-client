@@ -5,7 +5,7 @@ import ca.bc.gov.app.dto.client.AddressCompleteFindListDto;
 import ca.bc.gov.app.dto.client.AddressCompleteRetrieveListDto;
 import ca.bc.gov.app.dto.client.AddressError;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientNameCodeDto;
+import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.exception.AddressLookupException;
 import java.util.List;
@@ -34,7 +34,7 @@ public class ClientAddressService {
     this.addressCompleteApi = addressCompleteApi;
   }
 
-  public Flux<ClientNameCodeDto> findPossibleAddresses(
+  public Flux<CodeNameDto> findPossibleAddresses(
       String country, Integer maxSuggestions, String searchTerm) {
     log.info("Searching for address {} for country {}", searchTerm, country);
     return
@@ -95,7 +95,7 @@ public class ClientAddressService {
             })
             .flatMapMany(Flux::fromIterable)
             .filter(address -> "Retrieve" .equalsIgnoreCase(address.next()))
-            .map(address -> new ClientNameCodeDto(
+            .map(address -> new CodeNameDto(
                     address.id(),
                     String.format("%s %s", address.text().trim(), address.description().trim())
                 )

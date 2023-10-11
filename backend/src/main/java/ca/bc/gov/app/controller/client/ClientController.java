@@ -2,7 +2,7 @@ package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
-import ca.bc.gov.app.dto.client.ClientNameCodeDto;
+import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientService;
@@ -40,7 +40,7 @@ public class ClientController {
   }
 
   @GetMapping("/activeCountryCodes")
-  public Flux<ClientNameCodeDto> listCountries(
+  public Flux<CodeNameDto> listCountries(
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10")
@@ -50,7 +50,7 @@ public class ClientController {
   }
 
   @GetMapping("/activeCountryCodes/{countryCode}")
-  public Flux<ClientNameCodeDto> listProvinces(
+  public Flux<CodeNameDto> listProvinces(
       @PathVariable String countryCode,
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
@@ -61,13 +61,13 @@ public class ClientController {
   }
 
   @GetMapping("/activeClientTypeCodes")
-  public Flux<ClientNameCodeDto> findActiveClientTypeCodes() {
+  public Flux<CodeNameDto> findActiveClientTypeCodes() {
     return clientService
         .findActiveClientTypeCodes(LocalDate.now());
   }
 
   @GetMapping("/activeContactTypeCodes")
-  public Flux<ClientNameCodeDto> listClientContactTypeCodes(
+  public Flux<CodeNameDto> listClientContactTypeCodes(
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10")

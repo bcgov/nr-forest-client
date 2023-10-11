@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
           "name": "BAXTER"
         }"""
 )
-public record ClientNameCodeDto(
+public record CodeNameDto(
 
     @Schema(description = "The code for that specific object", example = "00000002")
     String code,
