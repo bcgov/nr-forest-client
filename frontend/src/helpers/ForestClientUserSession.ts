@@ -1,5 +1,6 @@
 import type { SessionProperties, Submitter } from "@/dto/CommonTypesDto";
 import { backendUrl } from "@/CoreConstants";
+import { toTitleCase } from "@/services/ForestClientService";
 
 class ForestClientUserSession implements SessionProperties {
   public user: Submitter | undefined;
@@ -81,8 +82,8 @@ class ForestClientUserSession implements SessionProperties {
         birthDate: parsedUser["birthdate"],
         address: {
           locationName: "",
-          streetAddress: streetAddress.street_address,
-          city: streetAddress.locality,
+          streetAddress: toTitleCase(streetAddress.street_address),
+          city: toTitleCase(streetAddress.locality),
           country: {
             code: streetAddress.country,
             text: ""

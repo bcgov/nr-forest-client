@@ -28,3 +28,11 @@ export const addNewContact = (contacts: Contact[]): number => {
   const newContacts = contacts.push(blankContact);
   return newContacts;
 };
+
+export const toTitleCase = (inputString: string): string => {
+  return inputString
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
