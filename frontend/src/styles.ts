@@ -1,4 +1,4 @@
 // Importing BC typography
-import '@bcgov/bc-sans/css/BCSans.css'
+import "@bcgov/bc-sans/css/BCSans.css";
 
-import '@/assets/styles/global.scss'
+import "@/assets/styles/global.scss";
