@@ -1,7 +1,7 @@
 {
   "mappings": [
     {
-      "name":"Autocomplete BC Registry",
+      "name": "Autocomplete BC Registry",
       "request": {
         "urlPattern": "/api/clients/name/(.*)",
         "method": "GET"
@@ -9,11 +9,13 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-autocomplete.json",
-        "transformers": ["response-template"]
+        "transformers": [
+          "response-template"
+        ]
       }
     },
     {
-      "name":"BC Registry Details OK",
+      "name": "BC Registry Details OK",
       "request": {
         "urlPattern": "/api/clients/(XX|YY|UU|JJ|FM)(.*)",
         "method": "GET"
@@ -21,12 +23,14 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-details-{{regexExtract request.path.[2] '(XX|YY|UU|JJ|FM)(.*)' 'parts'}}{{parts.0}}.json",
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "fixedDelayMilliseconds": 2500
       }
     },
     {
-      "name":"BC Registry Details Duplicated",
+      "name": "BC Registry Details Duplicated",
       "request": {
         "urlPattern": "/api/clients/ZZ(.*)",
         "method": "GET"
@@ -34,12 +38,13 @@
       "response": {
         "status": 409,
         "body": "The Edgar Paciolli already exists with the Incorporation number {{request.path.[2]}} and client number 999999",
-        "transformers": ["response-template"]
+        "transformers": [
+          "response-template"
+        ]
       }
     },
-
     {
-      "name":"Country Codes",
+      "name": "Country Codes",
       "request": {
         "url": "/api/clients/activeCountryCodes?page=0&size=250",
         "method": "GET"
@@ -50,20 +55,21 @@
       }
     },
     {
-      "name":"Province Codes",
+      "name": "Province Codes",
       "request": {
         "urlPattern": "/api/clients/activeCountryCodes/(.*)?page=0&size=250",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "bodyFileName": "response-provinces-{{request.path.[3]}}.json"
       }
     },
-
     {
-      "name":"Contact Type Codes",
+      "name": "Contact Type Codes",
       "request": {
         "url": "/api/clients/activeContactTypeCodes?page=0&size=250",
         "method": "GET"
@@ -73,9 +79,8 @@
         "body": "[{\"code\":\"P\",\"name\":\"Person\"}]"
       }
     },
-
     {
-      "name":"Submission Success for XX",
+      "name": "Submission Success for XX",
       "request": {
         "url": "/api/clients/submissions",
         "method": "POST",
@@ -97,7 +102,7 @@
       }
     },
     {
-      "name":"Submission Error for UU",
+      "name": "Submission Error for UU",
       "request": {
         "url": "/api/clients/submissions",
         "method": "POST",
@@ -116,7 +121,7 @@
       }
     },
     {
-      "name":"Send email for ZZ",
+      "name": "Send email for ZZ",
       "request": {
         "url": "/api/clients/mail",
         "method": "POST",
@@ -134,7 +139,7 @@
       }
     },
     {
-      "name":"Submission Error for FM1234567",
+      "name": "Submission Error for FM1234567",
       "request": {
         "url": "/api/clients/submissions",
         "method": "POST",
@@ -149,12 +154,11 @@
       },
       "response": {
         "status": 400,
-        "body":"[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]"
+        "body": "[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]"
       }
     },
-
     {
-      "name":"Autocompete Canada Post Canada",
+      "name": "Autocompete Canada Post Canada",
       "request": {
         "urlPath": "/api/clients/addresses",
         "method": "GET",
@@ -176,7 +180,7 @@
       }
     },
     {
-      "name":"Autocompete Canada Post US",
+      "name": "Autocompete Canada Post US",
       "request": {
         "urlPath": "/api/clients/addresses",
         "method": "GET",
@@ -198,7 +202,7 @@
       }
     },
     {
-      "name":"Canada Post details for success",
+      "name": "Canada Post details for success",
       "request": {
         "urlPattern": "/api/clients/addresses/(.*)",
         "method": "GET"
@@ -206,19 +210,23 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-address-{{request.path.[3]}}.json",
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "fixedDelayMilliseconds": 2500
       }
     },
     {
-      "name":"Canada Post error details for F8F8F8",
+      "name": "Canada Post error details for F8F8F8",
       "request": {
         "url": "/api/clients/addresses/F8F8F8",
         "method": "GET"
       },
       "response": {
         "status": 404,
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "fixedDelayMilliseconds": 2500
       }
     }
