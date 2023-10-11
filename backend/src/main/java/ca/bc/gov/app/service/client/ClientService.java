@@ -86,6 +86,12 @@ public class ClientService {
         .findBy(PageRequest.of(page, size, Sort.by("order", "description")))
         .map(entity -> new CodeNameDto(entity.getCountryCode(), entity.getDescription()));
   }
+  
+  public Mono<Object> getCountryByCode(String countryCode) {
+    return countryCodeRepository
+            .findByCountryCode(countryCode)
+            .map(entity -> new CodeNameDto(entity.getCountryCode(), entity.getDescription()));
+  }
 
   /**
    * <p><b>List Provinces</b></p>

@@ -43,6 +43,16 @@
       </p>
       <p class="body-compact-01">
         {{ formData.businessInformation.address }}
+        <data-fetcher
+          v-model:url="countryTest"
+          :min-length="0"
+          :init-value="[]"
+          :init-fetch="true"
+          :params="{ method: 'GET' }"
+          #="{ content }"
+        >
+        --{{ content }}
+        </data-fetcher>
       </p>
     </div>
 
@@ -76,8 +86,6 @@ const submitterContact: Contact = {
   email: session?.user?.email ?? "",
 };
 
-console.log(session);
-
 let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
 
 const formatter = new Intl.DateTimeFormat('en-US', {
@@ -88,6 +96,7 @@ const formatter = new Intl.DateTimeFormat('en-US', {
 
 const birthDate = new Date(session?.user?.birthDate ?? "");
 const formattedDate = formatter.format(birthDate);
+
 
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
@@ -107,4 +116,11 @@ let formData = reactive<FormDataDto>({
     contacts: [submitterContact],
   },
 });
+
+const countryTest = computed(
+        () =>
+          `/api/clients/getCountryByCode/${session?.user?.address?.country?.code}`
+      );
+
+console.log(session?.user?.address?.country?.code);
 </script>
