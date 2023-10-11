@@ -1,5 +1,6 @@
 package ca.bc.gov.app.configuration;
 
+import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.dto.OrgBookTopicDto;
 import ca.bc.gov.app.dto.OrgBookTopicListResponse;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
@@ -8,7 +9,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-@RegisterReflectionForBinding({OrgBookTopicDto.class, OrgBookTopicListResponse.class})
+@RegisterReflectionForBinding({
+    OrgBookTopicDto.class,
+    OrgBookTopicListResponse.class,
+    ForestClientDto.class
+})
 public class GlobalServiceConfiguration {
 
   /**
