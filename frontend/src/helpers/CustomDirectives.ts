@@ -16,13 +16,14 @@ export const masking = (shadowSelector: string) => (el: any, binding: any) => {
 const setPart = (nodes: HTMLCollection, currentLevel: number, maxLevel: number) => {
   for (const node of nodes) {
     if (node.nodeType === Node.ELEMENT_NODE) {
-      if (node.getAttribute('part')) continue
-
-      const partValues = [node.tagName.toLowerCase()]
-      if (node.className) {
-        partValues.push(node.className)
+      if (!node.getAttribute('part')) {
+        const partValues = [node.tagName.toLowerCase()]
+        if (node.className) {
+          partValues.push(node.className)
+        }
+        node.setAttribute('part', partValues.join(' '))
       }
-      node.setAttribute('part', partValues.join(' '))
+
       if (currentLevel < maxLevel) {
         setPart(node.children, currentLevel + 1, maxLevel)
       }

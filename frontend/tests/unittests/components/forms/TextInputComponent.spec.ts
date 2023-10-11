@@ -1,11 +1,16 @@
 import { describe, it, expect } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { DOMWrapper, mount } from '@vue/test-utils'
 import TextInputComponent from '@/components/forms/TextInputComponent.vue'
 import { isMinSize } from "@/helpers/validators/GlobalValidators"
 
 describe('Text Input Component', () => {
   const id = 'my-input'
   const validations = [(value: any) => (value ? '' : 'Field is required')]
+
+  const setInputValue = async (inputWrapper: DOMWrapper<HTMLInputElement>, value: string) => {
+    inputWrapper.element.value = value
+    await inputWrapper.trigger('input')
+  }
 
   it('renders the input field with the provided id', () => {
     const wrapper = mount(TextInputComponent, {
@@ -40,9 +45,9 @@ describe('Text Input Component', () => {
       }
     })
 
-    await wrapper.setProps({ modelValue: 'John Doe' })
-    await wrapper.find(`#${id}`).trigger('blur')
-    await wrapper.find(`#${id}`).trigger('input')
+    const inputWrapper = wrapper.find<HTMLInputElement>(`#${id}`)
+    await setInputValue(inputWrapper, 'John Doe')
+    await inputWrapper.trigger('blur')
 
     expect(wrapper.emitted('update:model-value')).toBeTruthy()
     expect(wrapper.emitted('update:model-value')![0][0]).toEqual('John Doe')
@@ -97,7 +102,7 @@ describe('Text Input Component', () => {
     expect(wrapper.emitted("error")![0][0]).toBe(errorMessage);
   });
 
-  it.only('emits the "error" event even when the error message is the same as before', async () => {
+  it('emits the "error" event even when the error message is the same as before', async () => {
     const errorMessage = "sample error message";
     const wrapper = mount(TextInputComponent, {
       props: {
@@ -113,13 +118,19 @@ describe('Text Input Component', () => {
       },
     });
 
-    await wrapper.setProps({ modelValue: "1"});
+    const inputWrapper = wrapper.find<HTMLInputElement>(`#${id}`)
+    await setInputValue(inputWrapper, '1')
+    await inputWrapper.trigger('blur')
 
     expect(wrapper.emitted("error")).toBeTruthy();
     expect(wrapper.emitted("error")).toHaveLength(1);
     expect(wrapper.emitted("error")![0][0]).toBe(errorMessage);
 
-    await wrapper.setProps({ modelValue: "12"}); // adds another character
+    await setInputValue(inputWrapper, '12') // adds another character
+    await inputWrapper.trigger('blur')
+
+    // Just a sanity check on the updated element value
+    expect(inputWrapper.element.value).toEqual('12')
 
     expect(wrapper.emitted("error")).toHaveLength(2);
     expect(wrapper.emitted("error")![1][0]).toBe(errorMessage);

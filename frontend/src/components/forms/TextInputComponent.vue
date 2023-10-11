@@ -70,9 +70,12 @@ watch([selectedValue], () => {
   emitValueChange(selectedValue.value);
 
   // We don't to validate at each key pressed, but we do want to validate when it's changed from outside
-  if (document.activeElement?.id !== props.id) {
+  if (!isUserEvent.value) {
     validateInput(selectedValue.value);
   }
+
+  // resets variable
+  isUserEvent.value = false;
 });
 
 //We call all the validations
@@ -98,6 +101,14 @@ watch(
   () => props.modelValue,
   () => (selectedValue.value = props.modelValue)
 );
+
+// Tells whether the current change was done manually by the user.
+const isUserEvent = ref(false)
+
+const selectValue = (event: any) => {
+  selectedValue.value = event.target.value;
+  isUserEvent.value = true
+};
 </script>
 
 <template>
@@ -114,7 +125,7 @@ watch(
       :invalid-text="error"
       v-masked="mask"
       @blur="(event:any) => validateInput(event.target.value)"
-      @input="(event:any) => selectedValue = event.target.value"
+      @input="selectValue"
       :data-focus="id"
       :data-scroll="id"
       :data-id="'input-' + id"
