@@ -141,3 +141,5 @@ BEGIN
     INTO :NEW.CLIENT_CONTACT_ID
     FROM dual;
 END;
+
+
