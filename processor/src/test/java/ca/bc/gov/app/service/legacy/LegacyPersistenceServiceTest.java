@@ -63,6 +63,8 @@ class LegacyPersistenceServiceTest {
   @Test
   @DisplayName("create forest client")
   void shouldCreateForestClient() {
+    ReactiveInsert<ForestClientEntity> reactiveInsert = mock(ReactiveInsert.class);
+
     SubmissionDetailEntity entity = SubmissionDetailEntity.builder()
         .submissionId(2)
         .submissionDetailId(2)
@@ -83,6 +85,20 @@ class LegacyPersistenceServiceTest {
         );
     when(submissionDetailRepository.save(any(SubmissionDetailEntity.class)))
         .thenReturn(Mono.just(entity));
+    when(legacyR2dbcEntityTemplate.selectOne(any(), any()))
+        .thenReturn(Mono.just(ForestClientEntity.builder()
+                .clientNumber("00000000")
+                .build()
+            )
+        );
+    when(legacyR2dbcEntityTemplate.insert(eq(ForestClientEntity.class)))
+        .thenReturn(reactiveInsert);
+    when(reactiveInsert.using(any()))
+        .thenReturn(Mono.just(ForestClientEntity.builder()
+                .clientNumber("00000000")
+                .build()
+            )
+        );
 
     service
         .createForestClient(
@@ -159,6 +175,8 @@ class LegacyPersistenceServiceTest {
                 .build()
             )
         );
+    when(legacyR2dbcEntityTemplate.selectOne(any(), any()))
+        .thenReturn(Mono.empty());
 
     service
         .createLocations(
@@ -234,6 +252,8 @@ class LegacyPersistenceServiceTest {
   @Test
   @DisplayName("create contacts")
   void shouldCreateContacts() {
+    ReactiveInsert<ForestClientContactEntity> insert = mock(ReactiveInsert.class);
+
     when(locationContactRepository.findBySubmissionLocationId(eq(1)))
         .thenReturn(Flux.just(
                 SubmissionLocationContactEntity
@@ -257,8 +277,12 @@ class LegacyPersistenceServiceTest {
                     .build()
             )
         );
-    when(forestClientContactRepository.save(any(ForestClientContactEntity.class)))
-        .thenReturn(Mono.just(ForestClientContactEntity.builder().build()));
+    when(legacyR2dbcEntityTemplate.insert(ForestClientContactEntity.class))
+        .thenReturn(insert);
+    when(insert.using(any()))
+        .thenReturn(Mono.just(ForestClientContactEntity.builder().contactName("Text").build()));
+    when(legacyR2dbcEntityTemplate.selectOne(any(), any()))
+        .thenReturn(Mono.empty());
 
     service.createContact(
             MessageBuilder

@@ -119,9 +119,13 @@ public class LegacyPersistenceService {
 
     // Grabs the next forest client number for insertion
     Mono<String> nextClientNumber = legacyR2dbcEntityTemplate
-        .select(ForestClientEntity.class)
-        .matching(Query.empty().sort(Sort.by(Direction.DESC, "CLIENT_NUMBER")).limit(1))
-        .first()
+        .selectOne(
+            Query
+                .empty()
+                .sort(Sort.by(Direction.DESC, "CLIENT_NUMBER"))
+                .limit(1),
+            ForestClientEntity.class
+        )
         .map(ForestClientEntity::getClientNumber)
         .map(lastForestClientNumber -> String.format("%08d",
             Integer.parseInt(lastForestClientNumber) + 1)

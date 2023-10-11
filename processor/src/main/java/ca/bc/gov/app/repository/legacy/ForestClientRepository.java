@@ -21,8 +21,9 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
   Flux<ForestClientEntity> matchBy(String companyName);
 
   @Query("""
-      select * from THE.FOREST_CLIENT x
-       where (x.REGISTRY_COMPANY_TYPE_CODE || x.CORP_REGN_NMBR) = :incorporationNumber""")
+      SELECT *
+      FROM THE.FOREST_CLIENT
+      WHERE (REGISTRY_COMPANY_TYPE_CODE || CORP_REGN_NMBR) = :incorporationNumber""")
   Flux<ForestClientEntity> findByIncorporationNumber(String incorporationNumber);
 
 }
