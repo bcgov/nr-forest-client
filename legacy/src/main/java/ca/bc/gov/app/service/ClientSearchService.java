@@ -22,6 +22,10 @@ public class ClientSearchService {
       String companyName
   ) {
 
+    log.info("Searching on oracle for incorporationNumber: {} or companyName: {}",
+        incorporationNumber, companyName
+    );
+
     if (StringUtils.isAllBlank(incorporationNumber, companyName)) {
       throw new MissingRequiredParameterException("incorporationNumber or companyName");
     }
