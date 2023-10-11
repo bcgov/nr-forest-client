@@ -27,6 +27,7 @@ export interface FormDataDto {
     businessName: string;
     goodStandingInd: string;
     birthDate: string;
+    address: Address;
   };
   location: {
     addresses: Address[];
@@ -51,6 +52,14 @@ export const formDataDto: FormDataDto = {
     businessName: "",
     goodStandingInd: "",
     birthDate: "",
+    address: {
+      locationName: "",
+      streetAddress: "",
+      country: { value: "", text: "" },
+      province: { value: "", text: "" },
+      city: "",
+      postalCode: "",
+    },
   },
   location: {
     addresses: [

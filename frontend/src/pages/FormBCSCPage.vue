@@ -37,6 +37,15 @@
       </p>
     </div>
 
+    <div class="grouping-01">
+      <p class="heading-02">
+        Address
+      </p>
+      <p class="body-compact-01">
+        {{ formData.businessInformation.address }}
+      </p>
+    </div>
+
     <div class="grouping-06">
       <!-- <cds-button kind="tertiary" @click.prevent="goToStep(0)">
         <span>Edit business information</span>
@@ -91,6 +100,7 @@ let formData = reactive<FormDataDto>({
     businessName: session?.user?.name ?? "",
     goodStandingInd: "Y",
     birthDate: formattedDate,
+    address: session?.user?.address,
   },
   location: {
     addresses: formDataDto.value.location.addresses,

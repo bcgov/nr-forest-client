@@ -71,11 +71,28 @@ class ForestClientUserSession implements SessionProperties {
     const accessToken = this.getCookie("idToken");
     if (accessToken) {
       const parsedUser = this.parseJwt(accessToken);
+      const address = parsedUser["address"];
+      const streetAddress = JSON.parse(address.formatted);
+
       this.user = {
         name: parsedUser["custom:idp_display_name"],
         provider: parsedUser["custom:idp_name"],
         userId: parsedUser["custom:idp_user_id"],
         birthDate: parsedUser["birthdate"],
+        address: {
+          locationName: "",
+          streetAddress: streetAddress.street_address,
+          city: streetAddress.locality,
+          country: {
+            code: streetAddress.country,
+            text: ""
+          },
+          province: {
+            code: streetAddress.region,
+            text: ""
+          },
+          postalCode: streetAddress.postal_code
+        },
         email: parsedUser.email,
         ...this.processName(parsedUser, parsedUser["custom:idp_name"]),
       };
