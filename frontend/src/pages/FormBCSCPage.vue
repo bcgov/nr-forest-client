@@ -44,8 +44,8 @@
       <p class="body-compact-01">
         TBD => {{ formData.businessInformation.address }} <br />
         {{ formData.businessInformation.address.streetAddress }} <br />
-        {{ formData.businessInformation.address.city }} <br />
-        {{ formData.businessInformation.address.country }} <br />
+        {{ formData.businessInformation.address.city }}, {{ formData.businessInformation.address.province.value }} <br />
+        {{ formData.businessInformation.address.country.text }} <br />
         {{ formData.location.addresses }}
       </p>
     </div>
@@ -68,6 +68,7 @@ import { newFormDataDto } from "@/dto/ApplyClientNumberDto";
 import { BusinessTypeEnum, ClientTypeEnum, CodeNameType, LegalTypeEnum } from "@/dto/CommonTypesDto";
 import { useFetchTo } from "@/composables/useFetch";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
+import { codeConversionFn } from "@/services/ForestClientService";
 
 const instance = getCurrentInstance();
 const session = instance?.appContext.config.globalProperties.$session;
@@ -120,12 +121,17 @@ useFetchTo(`/api/clients/getCountryByCode/${session?.user?.address?.country?.cod
 
 const country = computed(
   () => {
-    return { value: receviedCountry.value.code, text: receviedCountry.value.name };
+    return codeConversionFn(receviedCountry.value);
   }
 );
 
 watch(country, (newValue) => {
-  formData.businessInformation.address.country = { value: newValue.value, text: newValue.text };
+  formData.businessInformation.address = {
+    ...formData.businessInformation.address,
+    country: { value: newValue.value, text: newValue.text },
+    locationName: "Mailing address",
+  };
+
   formData.location.addresses.push(formData.businessInformation.address);
 })
 

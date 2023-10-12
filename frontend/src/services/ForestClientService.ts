@@ -1,5 +1,5 @@
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
-import type { CodeDescrType, CodeNameType } from "@/dto/CommonTypesDto";
+import type { CodeDescrType } from "@/dto/CommonTypesDto";
 
 export const addNewAddress = (addresses: Address[]): number => {
   const blankAddress: Address = {
@@ -41,5 +41,5 @@ export const codeConversionFn = (code: any) => {
   return {
     value: code.code,
     text: code.name,
-  }
+  } as CodeDescrType;
 };
