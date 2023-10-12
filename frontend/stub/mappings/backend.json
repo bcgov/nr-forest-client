@@ -55,6 +55,20 @@
       }
     },
     {
+      "name": "Country Code",
+      "request": {
+        "urlPattern": "/api/clients/getCountryByCode/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-country-{{request.path.[3]}}.json"
+      }
+    },
+    {
       "name": "Province Codes",
       "request": {
         "urlPattern": "/api/clients/activeCountryCodes/(.*)?page=0&size=250",

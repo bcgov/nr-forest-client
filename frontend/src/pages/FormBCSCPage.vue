@@ -42,17 +42,11 @@
         Address
       </p>
       <p class="body-compact-01">
-        {{ formData.businessInformation.address }}
-        <data-fetcher
-          v-model:url="countryTest"
-          :min-length="0"
-          :init-value="[]"
-          :init-fetch="true"
-          :params="{ method: 'GET' }"
-          #="{ content }"
-        >
-        --{{ content }}
-        </data-fetcher>
+        TBD => {{ formData.businessInformation.address }} <br />
+        {{ formData.businessInformation.address.streetAddress }} <br />
+        {{ formData.businessInformation.address.city }} <br />
+        {{ formData.businessInformation.address.country }} <br />
+        {{ formData.location.addresses }}
       </p>
     </div>
 
@@ -71,7 +65,8 @@
 <script setup lang="ts">
 import { reactive, watch, toRef, ref, getCurrentInstance, computed } from "vue";
 import { newFormDataDto } from "@/dto/ApplyClientNumberDto";
-import { BusinessTypeEnum, ClientTypeEnum, LegalTypeEnum } from "@/dto/CommonTypesDto";
+import { BusinessTypeEnum, ClientTypeEnum, CodeNameType, LegalTypeEnum } from "@/dto/CommonTypesDto";
+import { useFetchTo } from "@/composables/useFetch";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 
 const instance = getCurrentInstance();
@@ -112,15 +107,26 @@ let formData = reactive<FormDataDto>({
     address: session?.user?.address,
   },
   location: {
-    addresses: formDataDto.value.location.addresses,
+    addresses: [],
     contacts: [submitterContact],
   },
 });
 
-const countryTest = computed(
-        () =>
-          `/api/clients/getCountryByCode/${session?.user?.address?.country?.code}`
-      );
 
-console.log(session?.user?.address?.country?.code);
+const receviedCountry = ref({} as CodeNameType);
+
+useFetchTo(`/api/clients/getCountryByCode/${session?.user?.address?.country?.code}`, 
+            receviedCountry);
+
+const country = computed(
+  () => {
+    return { value: receviedCountry.value.code, text: receviedCountry.value.name };
+  }
+);
+
+watch(country, (newValue) => {
+  formData.businessInformation.address.country = { value: newValue.value, text: newValue.text };
+  formData.location.addresses.push(formData.businessInformation.address);
+})
+
 </script>

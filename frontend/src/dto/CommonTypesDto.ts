@@ -1,4 +1,5 @@
 import { isRef } from "vue";
+import type { Address } from "./ApplyClientNumberDto";
 
 export interface CodeDescrType {
   value: string;
@@ -79,7 +80,7 @@ export interface Submitter {
   lastName: string;
   businessName: string;
   birthDate: string;
-  address: {};
+  address: Address;
 }
 
 export interface ModalNotification {

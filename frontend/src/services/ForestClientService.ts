@@ -1,5 +1,5 @@
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
-import type { CodeDescrType } from "@/dto/CommonTypesDto";
+import type { CodeDescrType, CodeNameType } from "@/dto/CommonTypesDto";
 
 export const addNewAddress = (addresses: Address[]): number => {
   const blankAddress: Address = {
@@ -35,4 +35,11 @@ export const toTitleCase = (inputString: string): string => {
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
+};
+
+export const codeConversionFn = (code: any) => {
+  return {
+    value: code.code,
+    text: code.name,
+  }
 };
