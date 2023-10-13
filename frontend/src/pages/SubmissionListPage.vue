@@ -1,3 +1,4 @@
+// TODO: Review all breakpoints
 <script setup lang="ts">
 import { ref,computed, watch, onMounted } from 'vue';
 // Carbon
@@ -12,6 +13,7 @@ import '@carbon/web-components/es/components/tooltip/index';
 // Composables
 import { useFetchTo } from '@/composables/useFetch'
 import { useRouter } from 'vue-router'
+import { isSmallScreen, isMediumScreen } from '@/composables/useScreenSize';
 // Types
 import type {SubmissionList} from '@/dto/CommonTypesDto'
 import { formatDistanceToNow, format} from 'date-fns'
@@ -111,17 +113,14 @@ onMounted(() => {
 
 <template>
 
-  <div id="side" class="submission-sidebar"> 
-    <cds-side-nav>
-      <cds-side-nav-items>
-        <cds-side-nav-link active href="/submissions" large>
-          <span>Submissions</span>
-          <Result16 slot="title-icon" />
-        </cds-side-nav-link>
-      </cds-side-nav-items>
-    </cds-side-nav>    
-  
-  </div>
+  <cds-side-nav v-shadow=1 v-if="!isSmallScreen && !isMediumScreen">
+    <cds-side-nav-items v-shadow=1>
+      <cds-side-nav-link active href="/submissions" large>
+        <span>Submissions</span>
+        <Result16 slot="title-icon" />
+      </cds-side-nav-link>
+    </cds-side-nav-items>
+  </cds-side-nav>
 
   <div id="screen" class="submission-list">
     

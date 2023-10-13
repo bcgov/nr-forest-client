@@ -117,8 +117,9 @@ export interface SubmissionDetails {
   submissionId: number
   submissionStatus: string
   submissionType: string
-  submittedTimestamp: string
-  updateTimestamp: string
+  submittedTimestamp: Date
+  updateTimestamp: Date
+  approvedTimestamp: Date
   updateUser: string
   business: SubmissionDetailsBusiness
   contact: SubmissionDetailsContact[]

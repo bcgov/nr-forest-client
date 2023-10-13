@@ -1,16 +1,17 @@
 {
-    "submissionId": 8,
+    "submissionId": "{{randomValue length=4 type='NUMERIC'}}",
     "submissionStatus": "Approved",
     "submissionType": "Auto approved client",
-    "submittedTimestamp": "2023-09-14T10:08:47.365675",
-    "updateTimestamp": "2023-09-14T10:08:47.365675",
-    "updateUser": "AUTO-PROCESSOR",
+    "submittedTimestamp": "{{now offset='-18 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "updateTimestamp": "{{now offset='-9 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "approvedTimestamp": "{{now offset='-1 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "updateUser": "CLIADMIN",
     "business": {
         "businessType": "Registered Business",
-        "incorporationNumber": "XX7654321",
-        "clientNumber":"03441141",
-        "organizationName": "Christiansen LLC",
-        "clientType": "Unregistered sole proprietorship",
+        "incorporationNumber": "XX{{randomValue length=8 type='NUMERIC'}}",
+        "clientNumber":"{{randomValue length=8 type='NUMERIC'}}",
+        "organizationName": "THE TIMBER SOCIETY OF NORTH SASKATCHEWAN AND REGION LLC",
+        "clientType": "Corporation",
         "goodStanding": "Y"
     },
     "contact": [
@@ -19,32 +20,32 @@
             "contactType": "Accounts Receivable",
             "firstName": "Test",
             "lastName": "Uat",
-            "phoneNumber": "(123) 123-1231",
+            "phoneNumber": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
             "emailAddress": "uattest@gov.bc.ca",
             "locations": [
                 "Mailing address",
                 "Accountant's address"
             ],
-            "userId": "1d676db1-7b48-4ed3-bdd3-10718bb39c5b"
+            "userId": "{{randomValue type='UUID'}}"
         }
     ],
     "address": [
         {
             "index": 0,
-            "streetAddress":"547 Richmond Ave",
+            "streetAddress":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
             "country":"Canada",
             "province":"Saskatchewan",
             "city":"Hampton",
-            "postalCode":"P5Q7S4",
+            "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
             "name": "Mailing address"
         },
         {
             "index": 1,
-            "streetAddress":"6163 Oak St",
+            "streetAddress":"{{randomValue length=4 type='NUMERIC'}} Oak St",
             "country":"Canada",
             "province":"British Columbia",
             "city":"Deer Lake",
-            "postalCode":"G3F6J5",
+            "postalCode":"{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
             "name": "Accountant's address"
         }
     ],

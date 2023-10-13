@@ -23,12 +23,12 @@ export const useFetch = (url: string | Ref, config: any = {}) => {
  * @returns a series of parameters containing the data fetched, the response, the error and the loading status
  */
 export const useFetchTo = (
-  url: string | Ref<string>,
-  data: any,
+  url: string | Ref<string> = '',
+  data: any = ref({}),
   config: any = {}
 ) => {
   const response = ref<any>({})
-  const error = ref<AxiosError>({})
+  const error = ref<AxiosError|null>(null)
   const loading = ref<boolean>(false)
 
   const parameters = {
@@ -52,7 +52,7 @@ export const useFetchTo = (
       response.value = result
       data.value = result.data
     } catch (ex) {
-      error.value = ex
+      error.value = ex as AxiosError
     } finally {
       loading.value = false
     }

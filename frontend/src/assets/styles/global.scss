@@ -81,6 +81,10 @@
   box-sizing: unset;
 }
 
+b {
+  font-weight: 700;
+}
+
 .heading-buttons {
   display: flex;
   flex-grow: 1;
@@ -477,32 +481,49 @@ div#app {
   flex-grow: 1;
   align-self: stretch;
   display: flex;
-  align-items: stretch;
+  align-items: stretch;  
 }
 
 .submission-list {  
   padding: 2.5rem 0rem;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 2rem;
+  align-items: stretch;  
   flex-shrink: 0;
   flex-grow: 1;
 }
 
 .submission-sidebar {
-  width: 16rem;
-  border-right: solid 1px var(--light-theme-background-background-selected);
+  flex: 1;
+  display: flex;
 }
 
-.submission-content {  
-  padding: 2.5rem;
+cds-side-nav::part(div  cds--side-nav__navigation cds--side-nav cds--side-nav--ux ){
+  border-right: solid 1px var(--light-theme-background-background-selected);  
+  z-index: inherit;
+  max-width: 22rem !important;
+  width: 22rem !important;
+  position: inherit;
+}
+cds-side-nav {
+  flex:1;
+  display: flex;
+  width: 22rem !important;
+  max-width: 22rem !important;
+}
+
+cds-side-nav-items{
+  width: 22rem !important;
+  max-width: 22rem !important;
+}
+
+.submission-content {
+  padding: 2.5rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 3rem;
-  flex-shrink: 0;
-  flex-grow: 1;
+  flex:4;
 }
 
 .submission-details--title{
@@ -758,7 +779,8 @@ div#app {
   display: flex;
   align-items: flex-start;
   gap: 2rem;
-  padding: 2rem;  
+  padding: 2rem;
+  flex-wrap: wrap;
 }
 .grouping-10-internal {
   display: flex;
@@ -918,6 +940,7 @@ cds-accordion-item.grouping-05-internal::part(title) {
 
 cds-modal {
   height: 100%;
+  border-radius: 0.25rem;
 }
 
 /* Small (up to 671px) */
@@ -945,12 +968,26 @@ cds-modal {
     width: 100%;
   }
 
+  cds-modal#reject-modal::part(dialog) {
+    max-height: 37rem;    
+  }  
+
+  cds-modal#reject-modal cds-modal-header,
+  cds-modal#approve-modal cds-modal-header {
+    margin: 1rem;
+  }
+
+  cds-modal#reject-modal cds-modal-body.grouping-12,
+  cds-modal#approve-modal cds-modal-body {
+    margin: 1rem 1rem 3rem 1rem;
+  }
+
   cds-modal-footer {
     display: flex;
     padding: 0rem 1rem 1rem 1rem;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 0rem;
     align-self: stretch;
   }
 
@@ -959,7 +996,6 @@ cds-modal {
     flex-direction: column;
     align-items: center;
   }
-
 
   .headers {
     padding: 0rem 1rem;
@@ -1002,6 +1038,32 @@ cds-modal {
     flex-direction: column-reverse;
     justify-content: flex-end;
   }
+
+  .submission-sidebar{
+    width: 0rem;
+  }
+
+  .submission-content {    
+    padding: 2.5rem 1rem !important;
+  }
+
+  .grouping-10{
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+  }
+
+  .grouping-10-internal {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  .grouping-15 {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 1rem;
+  }
 }
 
 /* Medium (from 672px to 1055px) */
@@ -1022,6 +1084,31 @@ cds-modal {
   .form-header {
     align-self: stretch;
   }
+  
+  .grouping-10 .grouping-11:first-child{
+    width: 40%;
+  }
+
+  cds-modal#reject-modal::part(dialog) {
+    max-height: 37rem;    
+  }  
+
+  cds-modal#reject-modal cds-modal-header,
+  cds-modal#approve-modal cds-modal-header {
+    margin: 1rem;
+  }
+
+  cds-modal#reject-modal cds-modal-body.grouping-12,
+  cds-modal#approve-modal cds-modal-body {
+    margin: 1rem 1rem 3rem 1rem;
+  }
+  cds-modal#reject-modal cds-modal-footer,
+  cds-modal#approve-modal cds-modal-footer {
+    height: 6rem;
+    margin: -2rem 0 -2rem 0;
+    padding: 0 1rem 1rem 1rem !important;
+  }
+
 }
 
 /* Large (from 1056px to 1311px) */
@@ -1032,6 +1119,41 @@ cds-modal {
   }
   .grouping-02, .grouping-03 {
     width: 50.4375rem;
+  }
+ 
+  cds-modal#reject-modal cds-modal-header,
+  cds-modal#approve-modal cds-modal-header {
+    margin: 1rem;
+  }
+
+  cds-modal#reject-modal cds-modal-body.grouping-12 {
+    margin: 1rem 1rem 3rem 1rem;
+    height: 19rem;
+  }
+  cds-modal#reject-modal cds-modal-footer,
+  cds-modal#approve-modal cds-modal-footer {
+    height: 6rem;
+    margin: -2rem 0 -2rem 0;
+    padding: 0 1rem 1rem 1rem !important;
+  }
+
+  cds-modal#reject-modal cds-modal-body.grouping-12 .grouping-02, 
+  cds-modal#reject-modal cds-modal-body.grouping-12 .grouping-03 {
+    width: auto;
+  }
+
+  cds-side-nav::part(div  cds--side-nav__navigation cds--side-nav cds--side-nav--ux ){  
+    max-width: 16rem !important;
+    width: 16rem !important;  
+  }
+  cds-side-nav {  
+    width: 16rem !important;
+    max-width: 16rem !important;
+  }
+
+  cds-side-nav-items{
+    width: 16rem !important;
+    max-width: 16rem !important;
   }
 }
 
@@ -1044,6 +1166,27 @@ cds-modal {
   .grouping-02, .grouping-03 {
     width: 50.4375rem;
   }
+
+  cds-modal#reject-modal cds-modal-header,
+  cds-modal#approve-modal cds-modal-header {
+    margin: 1rem;
+  }
+
+  cds-modal#reject-modal cds-modal-body.grouping-12 {
+    margin: 1rem 1rem 3rem 1rem;
+    height: 19rem;
+  }
+  cds-modal#reject-modal cds-modal-footer,
+  cds-modal#approve-modal cds-modal-footer {
+    height: 6rem;
+    margin: -2rem 0 -2rem 0;
+    padding: 0 1rem 1rem 1rem !important;
+  }
+
+  cds-modal#reject-modal cds-modal-body.grouping-12 .grouping-02, 
+  cds-modal#reject-modal cds-modal-body.grouping-12 .grouping-03 {
+    width: auto;
+  }
 }
 
 /* XX-Large (from 1584px to 1783px) */
@@ -1055,6 +1198,29 @@ cds-modal {
   .grouping-02, .grouping-03 {
     width: 50.4375rem;
   }
+
+
+  cds-modal#reject-modal cds-modal-header,
+  cds-modal#approve-modal cds-modal-header {
+    margin: 1rem;
+  }
+
+  cds-modal#reject-modal cds-modal-body.grouping-12 {
+    margin: 1rem 1rem 3rem 1rem;
+    height: 19rem;
+  }
+  cds-modal#reject-modal cds-modal-footer,
+  cds-modal#approve-modal cds-modal-footer {
+    height: 6rem;
+    margin: -2rem 0 -2rem 0;
+    padding: 0 1rem 1rem 1rem !important;
+  }
+
+  cds-modal#reject-modal cds-modal-body.grouping-12 .grouping-02, 
+  cds-modal#reject-modal cds-modal-body.grouping-12 .grouping-03 {
+    width: auto;
+  }
+  
 }
 
 /* XXX-Large (1784px and above) */
@@ -1066,11 +1232,28 @@ cds-modal {
   .grouping-02, .grouping-03 {
     width: 50.4375rem;
   }
+
+
+  cds-modal#reject-modal cds-modal-header,
+  cds-modal#approve-modal cds-modal-header {
+    margin: 1rem;
+  }
+
+  cds-modal#reject-modal cds-modal-body.grouping-12 {
+    margin: 1rem 1rem 3rem 1rem;
+    height: 19rem;
+  }
+  cds-modal#reject-modal cds-modal-footer,
+  cds-modal#approve-modal cds-modal-footer {
+    height: 6rem;
+    margin: -2rem 0 -2rem 0;
+    padding: 0 1rem 1rem 1rem !important;
+  }
+
+  cds-modal#reject-modal cds-modal-body.grouping-12 .grouping-02, 
+  cds-modal#reject-modal cds-modal-body.grouping-12 .grouping-03 {
+    width: auto;
+  }
+
 }
 
-b {
-  font-weight: 700;
-}
-cds-modal {
-  border-radius: 0.25rem;
-}
