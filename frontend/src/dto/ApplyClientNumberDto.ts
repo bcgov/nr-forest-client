@@ -16,7 +16,6 @@ export interface Contact {
   lastName: string;
   phoneNumber: string;
   email: string;
-  idpUserId: string;
 }
 
 export interface FormDataDto {
