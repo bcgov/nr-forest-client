@@ -63,7 +63,7 @@ const emitValueChange = (newValue: string): void => {
   emit("empty", isEmpty(newValue));
 };
 
-emit("empty", true);
+emit("empty", isEmpty(props.modelValue));
 watch(
   () => props.modelValue,
   () => {
