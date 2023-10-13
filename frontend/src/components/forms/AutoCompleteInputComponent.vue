@@ -34,11 +34,9 @@ const error = ref<string | undefined>(props.errorMessage || "");
 
 const revalidateBus = useEventBus<void>("revalidate-bus");
 
-//We watch for error changes to emit events
-watch(error, () => emit("error", error.value));
 watch(
   () => props.errorMessage,
-  () => (error.value = props.errorMessage)
+  () => setError(props.errorMessage),
 );
 
 //We set the value prop as a reference for update reason
@@ -62,38 +60,44 @@ const emitValueChange = (newValue: string): void => {
 
   emit("update:model-value", selectedValue?.name ?? newValue);
   emit("update:selected-value", selectedValue);
-  emit("empty", isEmpty(selectedValue));
+  emit("empty", isEmpty(newValue));
 };
 
-emit("empty", true);
+emit("empty", isEmpty(props.modelValue));
 watch(
   () => props.modelValue,
   () => {
     inputValue.value = props.modelValue;
-    validateInput(inputValue.value);
-  }
+  },
 );
 watch([inputValue], () => {
-  validateInput(inputValue.value);
   emitValueChange(inputValue.value);
 });
+
+const setError = (errorMessage: string | undefined) => {
+  error.value = errorMessage;
+  emit("error", error.value);
+}
 
 //We call all the validations
 const validateInput = (newValue: string) => {
   if (props.validations) {
-    error.value =
+    setError(
       props.validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
           if (errorMessage) return true;
           return false;
         })
-        .shift() ?? props.errorMessage;
+        .shift() ?? props.errorMessage,
+    );
   }
 };
 
 const selectAutocompleteItem = (event: any) => {
-  emitValueChange(event?.detail?.item?.getAttribute("data-id"));
+  const newValue = event?.detail?.item?.getAttribute("data-id");
+  emitValueChange(newValue);
+  validateInput(newValue);
 };
 
 const onTyping = (event: any) => {

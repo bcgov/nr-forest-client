@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { VueWrapper, mount } from '@vue/test-utils'
 import AutoCompleteInputComponent from '@/components/forms/AutoCompleteInputComponent.vue'
 import CDSComboBox from "@carbon/web-components/es/components/combo-box/combo-box"
+import { isMinSize } from '@/helpers/validators/GlobalValidators'
 
 describe('Auto Complete Input Component', () => {
   const id = 'my-input'
@@ -68,6 +69,38 @@ describe('Auto Complete Input Component', () => {
     expect(wrapper.emitted('error')![0][0]).toBe('Field is required')
   })
 
+  it('emits the "error" event even when the error message is the same as before', async () => {
+    const errorMessage = 'sample error message'
+    const wrapper = mount(AutoCompleteInputComponent, {
+      props: {
+        id,
+        modelValue: '',
+        contents,
+        validations: [isMinSize(errorMessage)(5)],
+        label: id,
+      }
+    })
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    wrapper.find<CDSComboBox>(`#${id}`).element._filterInputValue = 'a'
+    await wrapper.find(`#${id}`).trigger('input')
+    await wrapper.find(`#${id}`).trigger('blur')
+
+    expect(wrapper.emitted('error')).toBeTruthy()
+    expect(wrapper.emitted('error')).toHaveLength(1)
+    expect(wrapper.emitted('error')![0][0]).toBe(errorMessage)
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    wrapper.find<CDSComboBox>(`#${id}`).element._filterInputValue = 'ab' // adds another character
+    await wrapper.find(`#${id}`).trigger('input')
+    await wrapper.find(`#${id}`).trigger('blur')
+
+    expect(wrapper.emitted('error')).toHaveLength(2)
+    expect(wrapper.emitted('error')![1][0]).toBe(errorMessage)
+  })
+
   it('emits the "empty" event when the input field is empty', async () => {
     const wrapper = mount(AutoCompleteInputComponent, {
       props: {
@@ -86,6 +119,27 @@ describe('Auto Complete Input Component', () => {
     expect(wrapper.emitted('empty')![0][0]).toBe(true)
   })
 
+  it('emits the "empty" event with false when the input field is not empty', async () => {
+    const wrapper = mount(AutoCompleteInputComponent, {
+      props: {
+        id,
+        modelValue: '',
+        contents,
+        validations: [],
+        label: id
+      }
+    })
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    wrapper.find<CDSComboBox>(`#${id}`).element._filterInputValue = 'a'
+    await wrapper.find(`#${id}`).trigger('input')
+    await wrapper.find(`#${id}`).trigger('blur')
+
+    expect(wrapper.emitted('empty')).toHaveLength(2)
+    expect(wrapper.emitted('empty')![1][0]).toBe(false)
+  })
+
   describe('when the contents prop is empty', () => {
     const emptyContents: any[] = []
     it('emits "empty" when the input becomes empty', async () => {
@@ -99,7 +153,9 @@ describe('Auto Complete Input Component', () => {
         },
       })
 
-      wrapper.find<CDSComboBox>(`#${id}`).element.value = ''
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      wrapper.find<CDSComboBox>(`#${id}`).element._filterInputValue = ''
       await wrapper.find(`#${id}`).trigger('input')
 
       expect(wrapper.emitted('empty')).toBeTruthy()
