@@ -291,11 +291,9 @@ onMounted(() => {
       ]"
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
-      @update:model-value="validation.streetAddress = false"
       :error-message="addressError"
-      @empty="
-        validation.streetAddress = selectedValue.streetAddress ? true : false
-      "
+      @empty="validation.streetAddress = !$event"
+      @error="validation.streetAddress = !$event"
     />
     <cds-inline-loading status="active" v-if="showDetailsLoading">Loading address details...</cds-inline-loading>
   </data-fetcher>
