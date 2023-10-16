@@ -37,7 +37,7 @@ const logoutModalActive = ref(false);
       button-label-inactive="Open menu">
     </cds-header-menu-button>
 
-    <a href="https://gov.bc.ca" v-if="$session.user?.provider !== 'idirem'" class="bclogotop">
+    <a href="https://gov.bc.ca" v-if="$session.user?.provider !== 'idir'" class="bclogotop">
       <img
         src="/img/logo-vertical1.svg"
         alt="Go to the Government of British Columbia website"
@@ -57,11 +57,9 @@ const logoutModalActive = ref(false);
       <span class="heading-compact-01" v-if="env !== 'Prod'">Env. {{ env }} - Rel. {{appVersion}}</span>
     </cds-header-name>
     
-    <cds-header-global-action panel-id="apanel" v-if="$route.meta.profile">      
-      <Avatar16 slot="icon"/>
-    </cds-header-global-action>
     <div class="heading-buttons">
     <cds-button
+    v-if="!$route.meta.profile"
       id="help-btn"
       data-id="help-btn"
       kind="ghost"
@@ -72,8 +70,8 @@ const logoutModalActive = ref(false);
       <Help16 slot="icon" />
     </cds-button>
 
-    <cds-button
-      v-if="$session?.isLoggedIn()"
+    <cds-button    
+      v-if="$session?.isLoggedIn() && !$route.meta.profile"
       data-id="logout-btn"
       kind="tertiary"
       size="sm"
@@ -83,6 +81,11 @@ const logoutModalActive = ref(false);
       <Logout16 slot="icon" />
     </cds-button>
     </div>
+
+    <cds-header-global-action panel-id="apanel" v-if="$route.meta.profile">      
+      <Avatar16 slot="icon"/>
+    </cds-header-global-action>
+    
     <cds-header-panel id="apanel" v-if="$route.meta.profile">
       <div class="grouping-16" id="panel-title">
         <span class="heading-03">My profile</span>

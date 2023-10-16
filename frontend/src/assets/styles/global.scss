@@ -1029,15 +1029,10 @@ cds-header-name::part(link){
 
 cds-header-global-action {
   display: flex;  
-  flex: 0 0 0%;
+  flex: 1 1 0%;
   justify-content: flex-end;
-  margin-right: 2.5rem;
-  margin-left: 1.5rem;
 }
 
-cds-header-global-action:first-of-type {
-  flex: 1 1 0%;
-}
 
 cds-header-global-action svg {
   fill: var(--dark-theme-focus-focus);
