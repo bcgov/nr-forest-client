@@ -1,0 +1,8 @@
+{
+  "locationName": "",
+  "streetAddress": "",
+  "country": { "value": "CA", "text": "Canada" },
+  "province": { "value": "BC", "text": "British Columbia" },
+  "city": "",
+  "postalCode": ""
+}

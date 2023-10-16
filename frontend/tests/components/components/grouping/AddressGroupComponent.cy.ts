@@ -1,4 +1,5 @@
 import AddressGroupComponent from '@/components/grouping/AddressGroupComponent.vue'
+import { Address } from '@/dto/ApplyClientNumberDto'
 
 // load app validations
 import '@/helpers/validators/BCeIDFormValidations'
@@ -22,6 +23,29 @@ describe('<AddressGroupComponent />', () => {
 
     cy.fixture('address.json').as('addressFixture')
     cy.fixture('countries.json').as('countriesFixture')
+
+    cy.fixture('emptyAddress.json').as('emptyAddressFixture')
+
+    cy.intercept(
+      'GET',
+      `/api/clients/addresses?country=CA&maxSuggestions=10&searchTerm=${encodeURI(
+        '2975 Jutland Rd',
+      )}*`,
+      {
+        fixture: 'addressSearch.json',
+      },
+    ).as('searchAddress')
+
+    cy.intercept('GET', `/api/clients/addresses?country=CA&maxSuggestions=10&searchTerm=111`, [
+      {
+        code: 'A1A1A1',
+        name: '111 A St Victoria, BC, A1A 1A1',
+      },
+    ]).as('searchAddress111')
+
+    cy.intercept('GET', '/api/clients/addresses/V8T5J9', {
+      fixture: 'address.json',
+    }).as('getAddress')
   })
 
   it('should render the component', () => {
@@ -178,6 +202,109 @@ describe('<AddressGroupComponent />', () => {
       .shadow()
       .find('label')
       .and('include.text', 'Zip code')
+  })
+
+  const streetAddressMatchingScenarios = [
+    {
+      description: 'when a partial matching address is typed in',
+      value: '2975 Jutland Rd',
+      identical: false,
+    },
+    {
+      description: 'when a complete matching address is typed in',
+      value: '2975 Jutland Rd Victoria, BC, V8T 5J9',
+      identical: true,
+    },
+  ]
+  streetAddressMatchingScenarios.forEach((scenario) => {
+    describe(scenario.description, () => {
+      it('should update the address related fields', () => {
+        cy.get('@emptyAddressFixture').then((emptyAddress) => {
+          cy.get('@countriesFixture').then((countries) => {
+            cy.mount(AddressGroupComponent, {
+              props: {
+                id: 0,
+                modelValue: emptyAddress,
+                countryList: countries,
+                validations: [],
+              },
+            })
+          })
+        })
+
+        cy.wait('@getProvinces')
+
+        cy.get('#addr_0').shadow().find('input').type(scenario.value, { delay: 0 })
+
+        cy.wait('@searchAddress')
+
+        if (scenario.identical) {
+          // Sanity check to make sure the option's full text content is the exact same value typed by the user.
+          cy.get('cds-combo-box-item').contains(scenario.value).should('have.text', scenario.value)
+        }
+
+        cy.get('cds-combo-box-item').contains(scenario.value).click()
+
+        cy.wait('@getAddress')
+
+        cy.get('@addressFixture').then((address: Address) => {
+          cy.get('#city_0').should('have.value', address.city)
+
+          cy.get('#province_0').should('be.visible').and('have.value', address.province.text)
+
+          cy.get('#postalCode_0').should('be.visible').and('have.value', address.postalCode)
+        })
+      })
+    })
+  })
+
+  it('loads pre-filled Street address value properly', () => {
+    cy.get('@addressFixture').then((address) => {
+      cy.get('@countriesFixture').then((countries) => {
+        cy.mount(AddressGroupComponent, {
+          props: {
+            id: 0,
+            modelValue: address,
+            countryList: countries,
+            validations: [],
+          },
+        })
+      })
+    })
+
+    cy.wait('@getProvinces')
+
+    cy.get('#addr_0').should('be.visible').and('have.value', '2975 Jutland Rd')
+  })
+
+  it('keeps working normally to search and load new address options after clearing the Street address with the x button', () => {
+    cy.get('@addressFixture').then((address) => {
+      cy.get('@countriesFixture').then((countries) => {
+        cy.mount(AddressGroupComponent, {
+          props: {
+            id: 0,
+            modelValue: address,
+            countryList: countries,
+            validations: [],
+          },
+        })
+      })
+    })
+
+    cy.wait('@getProvinces')
+
+    cy.get('#addr_0').should('be.visible').and('have.value', '2975 Jutland Rd')
+
+    // Click the clear (x) button
+    cy.get('#addr_0').shadow().find('#selection-button').click()
+
+    cy.get('#addr_0').should('have.value', '')
+
+    cy.get('#addr_0').shadow().find('input').type('111', { delay: 0 })
+
+    cy.wait('@searchAddress111')
+
+    cy.get('cds-combo-box-item').contains('111 A St Victoria, BC, A1A 1A1')
   })
 
   /**
