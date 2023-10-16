@@ -42,15 +42,35 @@
         Address
       </p>
       <p class="body-compact-01">
-        TBD => {{ formData.businessInformation.address }} <br />
         {{ formData.businessInformation.address.streetAddress }} <br />
         {{ formData.businessInformation.address.city }}, {{ formData.businessInformation.address.province.value }} <br />
         {{ formData.businessInformation.address.country.text }} <br />
-        {{ formData.location.addresses }}
+        {{ formData.businessInformation.address.postalCode }}
       </p>
     </div>
 
+    <div class="grouping-01">
+      <p class="heading-02">
+        Email address
+      </p>
+      <p class="body-compact-01">
+        {{ formData.location.contacts[0].email }}
+      </p>
+    </div>
+
+    <div class="grouping-01">
+      <text-input-component
+        id="phoneNumberId"
+        label="Phone number"
+        placeholder=""
+        :enabled="true" 
+        v-model="formData.location.contacts[0].phoneNumber"
+        mask="(###) ###-####"
+      />
+    </div>
+
     <div class="grouping-06">
+
       <!-- <cds-button kind="tertiary" @click.prevent="goToStep(0)">
         <span>Edit business information</span>
         <Edit16 slot="icon" />
@@ -129,10 +149,11 @@ watch(country, (newValue) => {
   formData.businessInformation.address = {
     ...formData.businessInformation.address,
     country: { value: newValue.value, text: newValue.text },
+    province: codeConversionFn(formData.businessInformation.address.province),
+    postalCode: formData.businessInformation.address.postalCode.replace(/\s/g, ""),
     locationName: "Mailing address",
   };
 
   formData.location.addresses.push(formData.businessInformation.address);
-})
-
+});
 </script>

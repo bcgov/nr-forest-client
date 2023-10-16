@@ -40,6 +40,6 @@ export const toTitleCase = (inputString: string): string => {
 export const codeConversionFn = (code: any) => {
   return {
     value: code.code,
-    text: code.name,
+    text: code.name ?? '',
   } as CodeDescrType;
 };
