@@ -12,6 +12,7 @@ public record SubmissionDetailsDto(
     String submissionType,
     LocalDateTime submittedTimestamp,
     LocalDateTime updateTimestamp,
+    LocalDateTime approvedTimestamp,
     String updateUser,
     SubmissionBusinessDto business,
     List<SubmissionContactDto> contact,

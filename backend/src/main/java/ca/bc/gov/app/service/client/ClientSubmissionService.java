@@ -37,6 +37,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -196,6 +197,7 @@ public class ClientSubmissionService {
                     row.get("submission_type", String.class),
                     row.get("submission_date", LocalDateTime.class),
                     row.get("update_timestamp", LocalDateTime.class),
+                    null,
                     row.get("update_user", String.class),
                     new SubmissionBusinessDto(
                         row.get("business_type", String.class),
@@ -218,7 +220,7 @@ public class ClientSubmissionService {
             )
             .bind("submissionId", id)
             .map((row, metadata) -> new SubmissionContactDto(
-                row.get("index", Integer.class) - 1,
+                Objects.requireNonNull(row.get("index", Integer.class)) - 1,
                 row.get("contact_desc", String.class),
                 row.get("first_name", String.class),
                 row.get("last_name", String.class),
@@ -235,7 +237,7 @@ public class ClientSubmissionService {
             )
             .bind("submissionId", id)
             .map((row, metadata) -> new SubmissionAddressDto(
-                row.get("index", Integer.class) - 1,
+                Objects.requireNonNull(row.get("index", Integer.class)) - 1,
                 row.get("street_address", String.class),
                 row.get("country_desc", String.class),
                 row.get("province_desc", String.class),
@@ -259,10 +261,15 @@ public class ClientSubmissionService {
         .flatMap(submissionDetailsDto ->
             submissionMatchDetailRepository
                 .findBySubmissionId(id.intValue())
-                .map(SubmissionMatchDetailEntity::getMatchers)
-                .switchIfEmpty(Mono.just(Map.of()))
-                .map(submissionDetailsDto::withMatchers)
-
+                .map(matched ->
+                    submissionDetailsDto
+                        .withApprovedTimestamp(matched.getUpdatedAt())
+                        .withMatchers(matched.getMatchers())
+                )
+                .defaultIfEmpty(
+                    submissionDetailsDto
+                        .withMatchers(Map.of())
+                )
         );
 
   }
