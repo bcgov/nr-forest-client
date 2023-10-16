@@ -24,6 +24,7 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TextInputComponent: typeof import('./src/components/forms/TextInputComponent.vue')['default']
+    UserProfileComponent: typeof import('./src/components/UserProfileComponent.vue')['default']
     WizardProgressIndicatorComponent: typeof import('./src/components/wizard/WizardProgressIndicatorComponent.vue')['default']
     WizardTabComponent: typeof import('./src/components/wizard/WizardTabComponent.vue')['default']
     WizardWrapperComponent: typeof import('./src/components/wizard/WizardWrapperComponent.vue')['default']

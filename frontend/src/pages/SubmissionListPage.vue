@@ -1,4 +1,3 @@
-// TODO: Review all breakpoints
 <script setup lang="ts">
 import { ref,computed, watch, onMounted } from 'vue';
 // Carbon
@@ -129,13 +128,12 @@ onMounted(() => {
         <div class="form-header-title mg-sd-25">
           <p class="heading-05">Submissions</p>
           <p class="body-compact-01">Check and manage client submissions</p>
-        </div>
+        </div>        
       </div>
     </div>
-
+    
     <div id="datatable">
       <cds-table use-zebra-styles v-if="!loading">
-
         <cds-table-head>
           <cds-table-header-row>
             <cds-table-header-cell>Submission type</cds-table-header-cell>
@@ -145,7 +143,6 @@ onMounted(() => {
             <cds-table-header-cell>Submission status</cds-table-header-cell>
           </cds-table-header-row>
         </cds-table-head>
-
         <cds-table-body>
           <cds-table-row v-for="row in tableData" :key="row.name" @click="selectEntry(row)">
             <cds-table-cell>
@@ -179,26 +176,28 @@ onMounted(() => {
       </cds-table>
 
       <cds-table-skeleton
-        v-else
-        ref="skeletonReference"
-        zebra
-        :row-count="pageSize"
-        :headers="['Submission type','Client name','Client type','Last updated','Submission status']"
-        />
-      
+      v-else
+      ref="skeletonReference"
+      zebra
+      :row-count="pageSize"
+      :headers="['Submission type','Client name','Client type','Last updated','Submission status']"
+      />
+            
+    </div>
+    <div class="paginator">
       <cds-pagination 
-        ref="paginationReference"
-        items-per-page-text="Submissions per page"        
-        :page-size="pageSize" 
-        :total-items="totalItems"
-        @cds-pagination-changed-current="paginate"
-        >
-          <cds-select-item :value="10" selected>10</cds-select-item>
-          <cds-select-item :value="20">20</cds-select-item>
-          <cds-select-item :value="30">30</cds-select-item>
-          <cds-select-item :value="40">40</cds-select-item>
-          <cds-select-item :value="50">50</cds-select-item>
-      </cds-pagination>
+          ref="paginationReference"
+          items-per-page-text="Submissions per page"        
+          :page-size="pageSize" 
+          :total-items="totalItems"
+          @cds-pagination-changed-current="paginate"
+          >
+            <cds-select-item :value="10" selected>10</cds-select-item>
+            <cds-select-item :value="20">20</cds-select-item>
+            <cds-select-item :value="30">30</cds-select-item>
+            <cds-select-item :value="40">40</cds-select-item>
+            <cds-select-item :value="50">50</cds-select-item>
+        </cds-pagination>
     </div>
   </div>
 

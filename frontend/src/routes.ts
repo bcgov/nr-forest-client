@@ -35,6 +35,8 @@ const routes = [
       },
       style: 'content-landing',
       headersStyle: 'headers',
+      sideMenu: false,
+      profile: false,
     },
   },
   {
@@ -55,6 +57,8 @@ const routes = [
       },
       style: 'content',
       headersStyle: 'headers',
+      sideMenu: false,
+      profile: false,
     },
   },
   {
@@ -75,6 +79,8 @@ const routes = [
       },
       style: 'content',
       headersStyle: 'headers',
+      sideMenu: false,
+      profile: false,
     },
   },
   {
@@ -93,6 +99,8 @@ const routes = [
       },
       style: 'content',
       headersStyle: 'headers',
+      sideMenu: false,
+      profile: false,
     },
   },
   {
@@ -112,6 +120,8 @@ const routes = [
       },
       style: 'content-stretched',
       headersStyle: 'headers-compact',
+      sideMenu: true,
+      profile: true,
     },
   },
   {
@@ -131,6 +141,8 @@ const routes = [
       },
       style: 'content-stretched',
       headersStyle: 'headers-compact',
+      sideMenu: true,
+      profile: true,
     },
   },
   {
@@ -151,6 +163,8 @@ const routes = [
       },
       style: 'content',
       headersStyle: 'headers',
+      sideMenu: false,
+      profile: false,
     },
   },
   {
@@ -167,6 +181,8 @@ const routes = [
     },
     style: 'content',
     headersStyle: 'headers',
+    sideMenu: false,
+    profile: false,
   },
   {
     path: '/:pathMatch(.*)*',
@@ -182,6 +198,8 @@ const routes = [
     },
     style: 'content',
     headersStyle: 'headers',
+    sideMenu: false,
+    profile: false,
   },
 ]
 
@@ -236,6 +254,8 @@ declare module 'vue-router' {
     visibleTo: Array<string> // Which user types/providers can see this page
     redirectTo?: Record<string, string> // Where to redirect the user if they are not allowed to see this page
     style: string // Main body style class
-    heaerStyle: string // Header style class
+    headersStyle: string // Header style class
+    sideMenu: boolean // Show/Hide the side menu
+    profile: boolean // Show/Hide the profile menu
   }
 }
