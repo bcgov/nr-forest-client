@@ -2,10 +2,11 @@
 import { ref, computed, watch } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/combo-box/index";
+import type { CDSComboBox } from "@carbon/web-components";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
-import type { BusinessSearchResult } from "@/dto/CommonTypesDto";
+import type { BusinessSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
 import { isEmpty } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
@@ -43,12 +44,18 @@ watch(
 const inputValue = ref(props.modelValue);
 
 // This is to make the input list contains the selected value to show when component render
-const inputList = computed<Array<BusinessSearchResult>>(() =>
-  (!props.contents || props.contents.length === 0
-    ? [{ name: props.modelValue, code: "", status: "", legalType: "" }]
-    : props.contents
-  ).filter((entry) => entry.name)
-);
+const inputList = computed<Array<BusinessSearchResult>>(() => {
+  if (props.contents?.length > 0) {
+    return props.contents.filter((entry) => entry.name);
+  } else if (props.modelValue !== userValue.value) {
+    // Needed when the component mounts with a pre-filled value.
+    return [{ name: props.modelValue, code: "", status: "", legalType: "" }]
+  } else if (props.modelValue && props.loading) {
+    // Just to give a "loading" feedback.
+    return [{ name: "...", code: "", status: "", legalType: "" }];
+  }
+  return [];
+});
 
 let selectedValue: BusinessSearchResult | undefined = undefined;
 
@@ -64,10 +71,19 @@ const emitValueChange = (newValue: string): void => {
 };
 
 emit("empty", isEmpty(props.modelValue));
+
+const isUserEvent = ref(false);
+const userValue = ref("");
+
+const cdsComboBoxRef = ref<InstanceType<typeof CDSComboBox> | null>(null);
 watch(
   () => props.modelValue,
   () => {
     inputValue.value = props.modelValue;
+    if (!isUserEvent.value && cdsComboBoxRef.value) {
+      cdsComboBoxRef.value._filterInputValue = props.modelValue || "";
+    }
+    isUserEvent.value = false;
   },
 );
 watch([inputValue], () => {
@@ -101,16 +117,35 @@ const selectAutocompleteItem = (event: any) => {
 };
 
 const onTyping = (event: any) => {
+  isUserEvent.value = true;
   inputValue.value = event.srcElement._filterInputValue;
+  userValue.value = inputValue.value;
   emit("update:model-value", inputValue.value);
 };
 
 revalidateBus.on(() => validateInput(inputValue.value));
+
+/*
+By applying a suffix which is impossible to be typed to the items' names, the search input will
+never be exactly the same as any item name.
+This allows the user to select the item even when the provided search input is exactly the same as
+the item name. (see: FSADT1-918)
+Note: removing the value prop from the cds-combo-box-item is not an option, since it causes another
+kind of issue when the field gets cleared.
+*/
+const nameSuffix = "\0";
+
+/*
+By checking the item has a code, we know this is a real option instead of a mock one.
+We need the mock one (with no suffix) when the component mounts with a pre-filled value.
+*/
+const getComboBoxItemValue = (item: CodeNameType) => item.name + (item.code ? nameSuffix : "");
 </script>
 
 <template>
   <div class="grouping-02">
     <cds-combo-box
+      ref="cdsComboBoxRef"
       :id="id"
       :name="id"
       :helper-text="tip"
@@ -132,7 +167,7 @@ revalidateBus.on(() => validateInput(inputValue.value));
         :key="item.code"
         :data-id="item.code"
         :data-value="item.name"
-        :value="item.name"
+        :value="getComboBoxItemValue(item)"
       >
         {{ item.name }}
       </cds-combo-box-item>
