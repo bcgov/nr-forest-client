@@ -229,7 +229,7 @@ watch([selectedOption], () => {
       v-if="selectedOption === BusinessTypeEnum.R"
       id="business"
       label="BC registered business name"
-      tip=""
+      tip="Start typing to search for your BC registered business name"
       v-model="formData.businessInformation.businessName"
       :contents="content"
       :validations="[
