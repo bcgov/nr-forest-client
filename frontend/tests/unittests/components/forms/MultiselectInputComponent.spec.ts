@@ -5,12 +5,13 @@ import MultiselectInputComponent from '@/components/forms/MultiselectInputCompon
 
 describe('MultiselectInputComponent', () => {
   const validations = [
-    (value: any) =>
-      value === 'A' || value === 'Value A' ? 'A is not supported' : ''
+    (value: any[]) =>
+      value.includes('A') || value.includes('Value A') ? 'A is not supported' : ''
   ]
 
-  const eventContent = (value:string) => {return { data:  value }}
-
+  const eventContent = (value: string) => {
+    return { data: value }
+  }
 
   it('should render', () => {
     const wrapper = mount(MultiselectInputComponent, {
@@ -128,7 +129,7 @@ describe('MultiselectInputComponent', () => {
 
     const dropdown = wrapper.find('cds-multi-select')
 
-    await dropdown.trigger('cds-multi-select-selected',eventContent('Value A'))
+    await dropdown.trigger('cds-multi-select-selected', eventContent('Value A'))
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy()
     expect(wrapper.emitted('update:modelValue')![0][0]).toStrictEqual(['Value A'])
@@ -142,7 +143,7 @@ describe('MultiselectInputComponent', () => {
     ])
 
     expect(wrapper.emitted('error')).toBeTruthy()
-    expect(wrapper.emitted('error')![1][0]).toBe('A is not supported')
+    expect(wrapper.emitted('error')![0][0]).toBe('A is not supported')
   })
 
   it('should validate and emit no error if required', async () => {

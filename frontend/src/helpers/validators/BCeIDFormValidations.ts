@@ -12,6 +12,7 @@ import {
   isNoSpecialCharacters,
   isNot,
   formFieldValidations,
+  isNotEmptyArray,
 } from "@/helpers/validators/GlobalValidators";
 
 
@@ -70,8 +71,8 @@ formFieldValidations[
 ];
 
 // Step 3: Contacts
-formFieldValidations["location.contacts.*.locationNames.*.text"] = [
-  isNotEmpty("You must select at least one location"),
+formFieldValidations["location.contacts.*.locationNames"] = [
+  isNotEmptyArray("You must select at least one location"),
 ];
 formFieldValidations["location.contacts.*.contactType.text"] = [
   isNotEmpty("You must select at least one contact type"),
