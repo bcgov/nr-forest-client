@@ -112,15 +112,6 @@ onMounted(() => {
 
 <template>
 
-  <cds-side-nav v-shadow=1 v-if="!isSmallScreen && !isMediumScreen">
-    <cds-side-nav-items v-shadow=1>
-      <cds-side-nav-link active href="/submissions" large>
-        <span>Submissions</span>
-        <Result16 slot="title-icon" />
-      </cds-side-nav-link>
-    </cds-side-nav-items>
-  </cds-side-nav>
-
   <div id="screen" class="submission-list">
     
     <div id="title">

@@ -37,6 +37,7 @@
   --light-theme-focus: #0073e6;
   --light-theme-miscellaneous-interactive:#0073E6;
   --light-theme-background-background-selected: #93939533;
+  --light-theme-text-text-disabled: rgba(19, 19, 21, 0.25);
 
   //Buttons
   --cds-button-disabled: #C6C6C8;
@@ -498,37 +499,22 @@ div#app {
   align-items: stretch;  
 }
 
-.submission-list {  
-  padding: 2.5rem 0rem;
+.submission-list, 
+.submission-content {  
+  padding: 2.5rem 0rem 2.5rem 16rem;
   display: flex;
   flex-direction: column;
   align-items: stretch;  
-  flex-shrink: 0;
-  flex-grow: 1;
-}
-
-.submission-sidebar {
-  flex: 1;
-  display: flex;
+  flex: 1 0 0%;
+  width: calc(100vw - 18.5rem);
 }
 
 cds-side-nav::part(div  cds--side-nav__navigation cds--side-nav cds--side-nav--ux ){
-  border-right: solid 1px var(--light-theme-background-background-selected);  
-  z-index: inherit;
-  max-width: 22rem !important;
-  width: 22rem !important;
-  position: inherit;
+  border-right: solid 1px var(--light-theme-background-background-selected);
 }
 cds-side-nav {
   flex:1;
   display: flex;
-  width: 22rem !important;
-  max-width: 22rem !important;
-}
-
-cds-side-nav-items{
-  width: 22rem !important;
-  max-width: 22rem !important;
 }
 
 .submission-content {
@@ -1004,7 +990,7 @@ cds-modal {
 }
 
 .paginator {
-  width: 100vw;
+  width: calc(100vw - 16rem);
 }
 #datatable {  
   overflow: scroll;
@@ -1054,6 +1040,18 @@ cds-header a.bclogotop {
 
 .unbolded::part(link) {
   font-weight: 400;
+}
+
+.disabled {  
+  color: var(--light-theme-text-text-disabled);
+  fill: var(--light-theme-text-text-disabled);
+}
+
+cds-side-nav-items.lower-side-nav {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 2.5rem;
 }
 
 /* Small (up to 671px) */
@@ -1181,6 +1179,13 @@ cds-header a.bclogotop {
   .mg-sd-25 {
     margin: 0rem 1rem 2rem 1rem;
   }
+
+  .submission-list {  
+    padding: 2.5rem 0rem;
+  }
+  .paginator {
+    width: 100vw;
+  }
 }
 
 /* Medium (from 672px to 1055px) */
@@ -1233,6 +1238,19 @@ cds-header a.bclogotop {
     margin-left: 1rem;
   }
 
+  .submission-list {  
+    padding: 2.5rem 0rem;
+    width:fit-content;
+  }
+   
+  .submission-content {
+    padding: 2.5rem 2rem;
+  }
+
+  .paginator {
+    width: 100vw;
+  }
+
 }
 
 /* Large (from 1056px to 1311px) */
@@ -1266,22 +1284,12 @@ cds-header a.bclogotop {
     width: auto;
   }
 
-  cds-side-nav::part(div  cds--side-nav__navigation cds--side-nav cds--side-nav--ux ){  
-    max-width: 16rem !important;
-    width: 16rem !important;  
+  div#screen div#title {
+    margin-bottom: 2rem;
   }
-  cds-side-nav {  
-    width: 16rem !important;
-    max-width: 16rem !important;
-  }
-
-  cds-side-nav-items{
-    width: 16rem !important;
-    max-width: 16rem !important;
-  }
-
-  cds-table-header-title {
-    margin-left: 1.5rem;
+  .submission-content {
+    padding: 2.5rem 2rem 2.5rem 18.5rem;
+    max-width: calc(100vw - 21rem);
   }
 }
 
@@ -1314,6 +1322,14 @@ cds-header a.bclogotop {
   cds-modal#reject-modal cds-modal-body.grouping-12 .grouping-02, 
   cds-modal#reject-modal cds-modal-body.grouping-12 .grouping-03 {
     width: auto;
+  }
+  div#screen div#title {
+    margin-bottom: 2rem;
+  }
+
+  .submission-content {
+    padding: 2.5rem 2rem 2.5rem 18.5rem;
+    max-width: calc(100vw - 21rem);
   }
 }
 
@@ -1348,6 +1364,15 @@ cds-header a.bclogotop {
   cds-modal#reject-modal cds-modal-body.grouping-12 .grouping-03 {
     width: auto;
   }
+
+  div#screen div#title {
+    margin-bottom: 2rem;
+  }
+
+  .submission-content {
+    padding: 2.5rem 2rem 2.5rem 18.5rem;
+    max-width: calc(100vw - 21rem);
+  }
   
 }
 
@@ -1360,7 +1385,6 @@ cds-header a.bclogotop {
   .grouping-02, .grouping-03 {
     width: 50.4375rem;
   }
-
 
   cds-modal#reject-modal cds-modal-header,
   cds-modal#approve-modal cds-modal-header {
@@ -1382,6 +1406,13 @@ cds-header a.bclogotop {
   cds-modal#reject-modal cds-modal-body.grouping-12 .grouping-03 {
     width: auto;
   }
+  div#screen div#title {
+    margin-bottom: 2rem;
+  }
 
+  .submission-content {
+    padding: 2.5rem 2.5rem 2.5rem 18.5rem;
+    max-width: calc(100vw - 21rem);
+  }
 }
 

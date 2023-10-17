@@ -54,7 +54,7 @@ const logoutModalActive = ref(false);
     <cds-header-name href="javascript:void 0">
       <span class="heading-compact-01" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
       <span class="heading-compact-01" v-else>Client Management System</span>
-      <span class="heading-compact-01" v-if="env !== 'Prod'">Env. {{ env }} - Rel. {{appVersion}}</span>
+      <span class="heading-compact-01" v-if="env !== 'Prod' && !isSmallScreen">Env. {{ env }} - Rel. {{appVersion}}</span>
     </cds-header-name>
     
     <div class="heading-buttons">
@@ -85,7 +85,7 @@ const logoutModalActive = ref(false);
     <cds-header-global-action panel-id="apanel" v-if="$route.meta.profile">      
       <Avatar16 slot="icon"/>
     </cds-header-global-action>
-    
+
     <cds-header-panel id="apanel" v-if="$route.meta.profile">
       <div class="grouping-16" id="panel-title">
         <span class="heading-03">My profile</span>
@@ -116,13 +116,29 @@ const logoutModalActive = ref(false);
     </cds-header-panel>
   </cds-header>
 
-  <cds-side-nav v-if="$route.meta.sideMenu">
-    <cds-side-nav-items>      
+  <cds-side-nav v-if="$route.meta.sideMenu" v-shadow=1>
+    <cds-side-nav-items v-shadow=1>      
       <cds-side-nav-link active href="/submissions" large>
         <span>Submissions</span>
         <Result16 slot="title-icon" />
       </cds-side-nav-link>
     </cds-side-nav-items>
+
+    <cds-side-nav-items v-shadow=1 class="lower-side-nav"> 
+      <cds-side-nav-link href="#" class="unbolded">
+        <span>Support</span>
+      </cds-side-nav-link>
+      <cds-side-nav-link 
+        href="#" 
+        large 
+        class="unbolded" 
+        @click.prevent="helpModalActive = true"
+      >
+        <span class="body-compact-02 disabled">Need help?</span>
+        <Help16 slot="title-icon" class="disabled" />
+      </cds-side-nav-link>
+    </cds-side-nav-items>
+  
   </cds-side-nav>
 
   <cds-modal
