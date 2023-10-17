@@ -168,6 +168,16 @@ cds-combo-box:where(:active, :focus)::part(cds--combo-box) {
   outline-offset: -2px;
 }
 
+cds-combo-box-item[data-loading="true"] {
+  display: flex;
+  align-items: center;
+}
+
+cds-combo-box-item[data-loading="true"]::part(cds--list-box__menu-item__option) {
+  padding: 0;
+  border-top: 0;
+}
+
 .top-notification {
   margin-top: 3rem;
   display: flex;
