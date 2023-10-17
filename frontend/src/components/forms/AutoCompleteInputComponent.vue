@@ -11,17 +11,22 @@ import type { BusinessSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
 import { isEmpty } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
-const props = defineProps<{
-  id: string;
-  label: string;
-  tip?: string;
-  placeholder?: string;
-  modelValue: string;
-  contents: Array<BusinessSearchResult>;
-  validations: Array<Function>;
-  errorMessage?: string;
-  loading?: boolean;
-}>();
+const props = withDefaults(defineProps<{
+    id: string;
+    label: string;
+    tip?: string;
+    placeholder?: string;
+    modelValue: string;
+    contents: Array<BusinessSearchResult>;
+    validations: Array<Function>;
+    errorMessage?: string;
+    loading?: boolean;
+    showLoadingAfterTime?: number;
+  }>(),
+  {
+    showLoadingAfterTime: 2000,
+  },
+);
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
@@ -46,6 +51,25 @@ const inputValue = ref(props.modelValue);
 
 const LOADING_NAME = "loading...";
 
+const showLoadingTimer = ref<number>();
+
+const showLoading = ref(false);
+
+watch(
+  () => props.loading && props.modelValue,
+  (value, oldValue) => {
+    if (oldValue || !value) {
+      clearTimeout(showLoadingTimer.value);
+      showLoading.value = false;
+    }
+    if (value) {
+      showLoadingTimer.value = setTimeout(() => {
+        showLoading.value = true;
+      }, props.showLoadingAfterTime);
+    }
+  },
+)
+
 // This is to make the input list contains the selected value to show when component render
 const inputList = computed<Array<BusinessSearchResult>>(() => {
   if (props.contents?.length > 0) {
@@ -53,7 +77,7 @@ const inputList = computed<Array<BusinessSearchResult>>(() => {
   } else if (props.modelValue !== userValue.value) {
     // Needed when the component mounts with a pre-filled value.
     return [{ name: props.modelValue, code: "", status: "", legalType: "" }]
-  } else if (props.modelValue && props.loading) {
+  } else if (props.modelValue && showLoading.value) {
     // Just to give a "loading" feedback.
     return [{ name: LOADING_NAME, code: "", status: "", legalType: "" }];
   }
