@@ -1,5 +1,5 @@
 import AddressGroupComponent from '@/components/grouping/AddressGroupComponent.vue'
-import { Address } from '@/dto/ApplyClientNumberDto'
+import type { Address } from '@/dto/ApplyClientNumberDto'
 
 // load app validations
 import '@/helpers/validators/BCeIDFormValidations'
