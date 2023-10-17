@@ -18,45 +18,42 @@
       We use it to know who we're giving a number to and for communicating with clients. 
     </p>
 
-   
-    <div class="grouping-01">
-      <p class="heading-02">
-        Full name
-      </p>
-      <p class="body-compact-01">
-        {{ formData.businessInformation.businessName }}
-      </p>
+    <div class="grouping-tbd">
+      <div class="cds--css-grid">
+        <div class="cds--css-grid-column cds--sm:col-span-3">
+          <p class="body-compact-01">Full name</p>
+          <p>{{ formData.businessInformation.businessName }}</p>
+        </div>
+        <div class="cds--css-grid-column cds--sm:col-span-3">
+          <p class="body-compact-01">Date of birth</p>
+          <p>{{ formData.businessInformation.birthDate }}</p>
+        </div>
+        <div class="cds--css-grid-column cds--sm:col-span-3">
+          <p class="body-compact-01">Email address</p>
+          <p>{{ formData.location.contacts[0].email }}</p>
+        </div>
+        <div class="cds--css-grid-column cds--sm:col-span-3">
+          <p class="body-compact-01">Address</p>
+          <p>
+            {{ formData.businessInformation.address.streetAddress }} <br />
+            {{ formData.businessInformation.address.city }}, {{ formData.businessInformation.address.province.value }} <br />
+            {{ formData.businessInformation.address.country.text }} <br />
+            {{ formData.businessInformation.address.postalCode }}
+          </p>
+        </div>
+      </div>
     </div>
 
-    <div class="grouping-01">
-      <p class="heading-02">
-        Date of birth
-      </p>
-      <p class="body-compact-01">
-        {{ formData.businessInformation.birthDate }}
-      </p>
-    </div>
+    TODO
 
-    <div class="grouping-01">
-      <p class="heading-02">
-        Address
-      </p>
-      <p class="body-compact-01">
-        {{ formData.businessInformation.address.streetAddress }} <br />
-        {{ formData.businessInformation.address.city }}, {{ formData.businessInformation.address.province.value }} <br />
-        {{ formData.businessInformation.address.country.text }} <br />
-        {{ formData.businessInformation.address.postalCode }}
-      </p>
-    </div>
+    <hr class="divider" />
 
-    <div class="grouping-01">
-      <p class="heading-02">
-        Email address
-      </p>
-      <p class="body-compact-01">
-        {{ formData.location.contacts[0].email }}
-      </p>
-    </div>
+    <span class="heading-04" data-scroll="scroll-0">
+      Contact information
+    </span>
+    <p class="body-compact-01">
+      We need your phone number to communicate with you.
+    </p>
 
     <div class="grouping-01">
       <text-input-component
@@ -69,14 +66,11 @@
       />
     </div>
 
-    <div class="grouping-06">
-
-      <!-- <cds-button kind="tertiary" @click.prevent="goToStep(0)">
-        <span>Edit business information</span>
-        <Edit16 slot="icon" />
-      </cds-button> -->
-    </div>
-
+    <p class="body-compact-01">
+      You can add contacts to the aacount. For example, a person you want to give or receive information on your behalf.
+    </p>
+    
+    TODO
     
   </div>
 </template>

@@ -30,6 +30,8 @@ export const addNewContact = (contacts: Contact[]): number => {
 };
 
 export const toTitleCase = (inputString: string): string => {
+  if (inputString === undefined) 
+    return "";
   return inputString
     .toLowerCase()
     .split(" ")

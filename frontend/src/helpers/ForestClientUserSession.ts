@@ -73,7 +73,7 @@ class ForestClientUserSession implements SessionProperties {
     if (accessToken) {
       const parsedUser = this.parseJwt(accessToken);
       const address = parsedUser["address"];
-      const streetAddress = JSON.parse(address.formatted);
+      const streetAddress = address !== undefined ? JSON.parse(address.formatted) : {};
 
       this.user = {
         name: parsedUser["custom:idp_display_name"],
