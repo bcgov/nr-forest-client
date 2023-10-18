@@ -45,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.r2dbc.core.DatabaseClient;
@@ -403,7 +404,8 @@ public class ClientSubmissionService {
                     .and(SubmissionPredicates.orStatus(requestStatus))
                     .and(SubmissionPredicates.orUpdatedAt(updatedAt))
             )
-                .with(PageRequest.of(page, size)),
+                .with(PageRequest.of(page, size))
+                .sort(Sort.by("submissionDate").descending()),
             SubmissionEntity.class
         );
   }

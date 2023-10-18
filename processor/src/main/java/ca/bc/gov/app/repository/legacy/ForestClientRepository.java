@@ -17,7 +17,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       SELECT *
       FROM THE.FOREST_CLIENT
       WHERE
-      UTL_MATCH.JARO_WINKLER_SIMILARITY(UPPER(CLIENT_NAME),UPPER(:companyName)) >= 90
+      UTL_MATCH.JARO_WINKLER_SIMILARITY(UPPER(CLIENT_NAME),UPPER(:companyName)) >= 95
       AND CLIENT_STATUS_CODE = 'ACT'
       ORDER BY CLIENT_NUMBER""")
   Flux<ForestClientEntity> matchBy(String companyName);
