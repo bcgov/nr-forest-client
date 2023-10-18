@@ -431,7 +431,7 @@ div#app {
 
 .content {
   flex-grow: 1;
-  align-self: stretch;
+  align-self: flex-start;
   display: flex;
   flex-direction: column;
   gap: 3rem;
