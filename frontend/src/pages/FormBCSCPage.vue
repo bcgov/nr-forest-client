@@ -9,7 +9,9 @@
         New client application
       </span>
     </div>
-    
+  </div>
+   
+  <div class="form-steps-section">
     <span class="heading-04" data-scroll="scroll-0">
       Personal information
     </span>
@@ -67,25 +69,40 @@
     </div>
 
     <p class="body-compact-01">
-      You can add contacts to the aacount. For example, a person you want to give or receive information on your behalf.
+      You can add contacts to the account. For example, a person you want to give or receive information on your behalf.
     </p>
     
-    TODO
-    
+    <cds-button
+      kind="tertiary"
+      @click.prevent="addContact"
+      v-if="formData.location.contacts.length < 5">
+      <span>Add another contact</span>
+      <Add16 slot="icon" />
+    </cds-button>
+
+    {{ formData.location.contacts }}
   </div>
+
 </template>
 
 
 <script setup lang="ts">
-import { reactive, watch, toRef, ref, getCurrentInstance, computed } from "vue";
+import { reactive, watch, ref, getCurrentInstance, computed, onMounted } from "vue";
 import { newFormDataDto } from "@/dto/ApplyClientNumberDto";
-import { BusinessTypeEnum, ClientTypeEnum, CodeNameType, LegalTypeEnum } from "@/dto/CommonTypesDto";
+import { BusinessTypeEnum, ClientTypeEnum, LegalTypeEnum } from "@/dto/CommonTypesDto";
 import { useFetchTo } from "@/composables/useFetch";
-import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
+import { useEventBus } from "@vueuse/core";
+import { useFocus } from "@/composables/useFocus";
 import { codeConversionFn } from "@/services/ForestClientService";
+import { emptyContact } from "@/dto/ApplyClientNumberDto";
+import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
+import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
+import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";
+import Add16 from "@carbon/icons-vue/es/add/16";
 
 const instance = getCurrentInstance();
 const session = instance?.appContext.config.globalProperties.$session;
+const { setFocusedComponent } = useFocus();
 
 const submitterContact: Contact = {
   locationNames: [],
@@ -127,7 +144,6 @@ let formData = reactive<FormDataDto>({
   },
 });
 
-
 const receviedCountry = ref({} as CodeNameType);
 
 useFetchTo(`/api/clients/getCountryByCode/${session?.user?.address?.country?.code}`, 
@@ -149,5 +165,96 @@ watch(country, (newValue) => {
   };
 
   formData.location.addresses.push(formData.businessInformation.address);
+});
+
+//New contact being added
+const otherContacts = computed(() => formData.location.contacts.slice(1));
+const addContact = (autoFocus = true) => {
+  const newLength = formData.location.contacts.push(
+    JSON.parse(JSON.stringify(emptyContact))
+  );
+  if (autoFocus) {
+    const focusIndex = newLength - 1;
+    setFocusedComponent(`addressname_${focusIndex}`);
+  }
+  return newLength;
+};
+
+const uniqueValues = isUniqueDescriptive();
+
+const removeContact = (index: number) => () => {
+  updateContact(undefined, index);
+  delete validation[index];
+  uniqueValues.remove("Name", index + "");
+  bus.emit({
+    active: false,
+    message: "",
+    kind: "",
+    toastTitle: "",
+    handler: () => {},
+  });
+};
+
+const revalidate = ref(false);
+
+const updateContact = (value: Contact | undefined, index: number) => {
+  if (index < formData.location.contacts.length) {
+    if (value) formData.location.contacts[index] = value;
+    else {
+      const contactCopy: Contact[] = [...formData.location.contacts];
+      contactCopy.splice(index, 1);
+      formData.location.contacts = contactCopy;
+    }
+  }
+  revalidate.value = !revalidate.value;
+};
+
+//Validation
+const validation = reactive<Record<string, boolean>>({
+  0: false,
+});
+
+const updateValidState = (index: number, valid: boolean) => {
+  if (validation[index] !== valid) {
+    validation[index] = valid;
+  }
+};
+
+const checkValid = () =>
+  Object.values(validation).reduce(
+    (accumulator: boolean, currentValue: boolean) =>
+      accumulator && currentValue,
+    true
+  );
+
+const emit = defineEmits<{
+  (e: "update:data", value: FormDataDto): void;
+  (e: "valid", value: boolean): void;
+}>();
+
+
+watch([validation], () => emit("valid", checkValid()));
+emit("valid", false);
+
+const bus = useEventBus<ModalNotification>("modal-notification");
+
+const handleRemove = (index: number) => {
+  const selectedContact =
+    formData.location.contacts[index].firstName.length !== 0
+      ? `${formData.location.contacts[index].firstName} ${formData.location.contacts[index].lastName}`
+      : "Contact #" + index;
+  bus.emit({
+    message: selectedContact,
+    kind: "Contact deleted",
+    toastTitle: "The additional contact was deleted",
+    handler: removeContact(index),
+    active: true,
+  });
+};
+
+//onMounted(() => setFocusedComponent("addressname_0", 800));
+
+defineExpose({
+  addContact,
 });
 </script>
