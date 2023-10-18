@@ -36,33 +36,20 @@ public class ClientSubmissionAutoProcessingService {
   public Mono<Message<Integer>> approved(Message<List<MatcherResult>> message) {
     Integer submissionId = message.getHeaders()
         .get(ApplicationConstant.SUBMISSION_ID, Integer.class);
-    persistData(submissionId, SubmissionTypeCodeEnum.AAC);
-    log.info("Request {} was approved",submissionId);
-
-
-    submissionMatchDetailRepository
-        .save(
-            SubmissionMatchDetailEntity
-                .builder()
-                .matchers(Map.of())
-                .submissionId(
-                    message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class)
+    return
+        persistData(submissionId, SubmissionTypeCodeEnum.AAC)
+            .doOnNext(id -> log.info("Request {} was approved", id))
+            .flatMap(this::loadFirstOrNew)
+            .doOnNext(entity -> entity.setStatus("Y"))
+            .doOnNext(entity -> entity.setMatchers(Map.of()))
+            .flatMap(submissionMatchDetailRepository::save)
+            .doOnNext(entity -> log.info(
+                    "Added matches for submission {} {}",
+                    entity.getSubmissionId(),
+                    entity.getMatchingField()
                 )
-                .status("Y")
-                .createdBy("AUTO-PROCESSOR")
-                .updatedAt(LocalDateTime.now())
-                .build()
-        )
-        .subscribe(entity -> log.info(
-                "Added matches for submission {} {}",
-                entity.getSubmissionId(),
-                entity.getMatchingField()
             )
-        );
-
-
-
-    return Mono.just(MessageBuilder.withPayload(submissionId).build());
+            .thenReturn(MessageBuilder.withPayload(submissionId).build());
   }
 
 
@@ -73,12 +60,13 @@ public class ClientSubmissionAutoProcessingService {
   )
   public Mono<Message<EmailRequestDto>> completeProcessing(Message<EmailRequestDto> message) {
     return
-      submissionMatchDetailRepository
-          .findBySubmissionId(message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class))
-          .doOnNext(entity -> entity.setProcessed(true))
-          .doOnNext(entity -> entity.setUpdatedAt(LocalDateTime.now()))
-          .flatMap(submissionMatchDetailRepository::save)
-          .thenReturn(message);
+        submissionMatchDetailRepository
+            .findBySubmissionId(
+                message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class))
+            .doOnNext(entity -> entity.setProcessed(true))
+            .doOnNext(entity -> entity.setUpdatedAt(LocalDateTime.now()))
+            .flatMap(submissionMatchDetailRepository::save)
+            .thenReturn(message);
   }
 
   //TODO: must send an email to admin team
@@ -87,27 +75,17 @@ public class ClientSubmissionAutoProcessingService {
     persistData(
         message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class),
         SubmissionTypeCodeEnum.RNC
-    );
-
-    log.info("Request {} was put into review",
-        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class));
-
-    submissionMatchDetailRepository
-        .save(
-            SubmissionMatchDetailEntity
-                .builder()
-                .matchers(message
+    )
+        .doOnNext(id -> log.info("Request {} was put into review", id))
+        .flatMap(this::loadFirstOrNew)
+        .doOnNext(entity -> entity.setMatchers(
+                message
                     .getPayload()
                     .stream()
                     .collect(Collectors.toMap(MatcherResult::fieldName, MatcherResult::value))
-                )
-                .submissionId(
-                    message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class)
-                )
-                .createdBy("AUTO-PROCESSOR")
-                .updatedAt(LocalDateTime.now())
-                .build()
+            )
         )
+        .flatMap(submissionMatchDetailRepository::save)
         .subscribe(entity -> log.info(
                 "Added matches for submission {} {}",
                 entity.getSubmissionId(),
@@ -119,26 +97,43 @@ public class ClientSubmissionAutoProcessingService {
         message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class));
   }
 
-  private void persistData(Integer submissionId, SubmissionTypeCodeEnum typeCode) {
-    submissionRepository
-        .findById(submissionId)
-        .doOnNext(entity -> entity.setSubmissionType(typeCode))
-        .doOnNext(entity -> entity
-            .setSubmissionStatus(
-                SubmissionTypeCodeEnum.AAC.equals(typeCode)
-                    ? SubmissionStatusEnum.A
-                    : SubmissionStatusEnum.N
+  private Mono<Integer> persistData(Integer submissionId, SubmissionTypeCodeEnum typeCode) {
+    return
+        submissionRepository
+            .findById(submissionId)
+            .doOnNext(entity -> entity.setSubmissionType(typeCode))
+            .doOnNext(entity -> entity
+                .setSubmissionStatus(
+                    SubmissionTypeCodeEnum.AAC.equals(typeCode)
+                        ? SubmissionStatusEnum.A
+                        : SubmissionStatusEnum.N
                 )
-        )
-        .doOnNext(entity -> entity.setUpdatedBy("AUTO-PROCESSOR"))
-        .doOnNext(entity -> entity.setUpdatedAt(LocalDateTime.now()))
-        .flatMap(submissionRepository::save)
-        .subscribe(entity -> log.info(
-                "Updated submission {} with typeCode {}",
-                entity.getSubmissionId(),
-                entity.getSubmissionType().getDescription()
             )
-        );
+            .doOnNext(entity -> entity.setUpdatedBy(ApplicationConstant.PROCESSOR_USER_NAME))
+            .doOnNext(entity -> entity.setUpdatedAt(LocalDateTime.now()))
+            .flatMap(submissionRepository::save)
+            .doOnNext(entity -> log.info(
+                    "Updated submission {} with typeCode {}",
+                    entity.getSubmissionId(),
+                    entity.getSubmissionType().getDescription()
+                )
+            )
+            .thenReturn(submissionId);
+  }
+
+  private Mono<SubmissionMatchDetailEntity> loadFirstOrNew(Integer submissionId) {
+    return
+        submissionMatchDetailRepository
+            .findAllBySubmissionId(submissionId)
+            .next()
+            .defaultIfEmpty(
+                SubmissionMatchDetailEntity
+                    .builder()
+                    .submissionId(submissionId)
+                    .createdBy(ApplicationConstant.PROCESSOR_USER_NAME)
+                    .updatedAt(LocalDateTime.now())
+                    .build()
+            );
   }
 
 }
