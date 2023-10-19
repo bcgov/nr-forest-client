@@ -42,9 +42,9 @@
     "legalType": "GP"
   },
   {
-    "code":"FM1234567",
-    "name":"The Great Pacific  Forest Company",
-    "status":"ACTIVE",
+    "code": "FM1234567",
+    "name": "The Great Pacific  Forest Company",
+    "status": "ACTIVE",
     "legalType": "SP"
   }
 ]

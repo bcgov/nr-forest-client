@@ -45,14 +45,14 @@ const updateAddress = (value: Address | undefined, index: number) => {
       // (the condition is just a sanity check)
       if (removedAddressArray.length > 0) {
         const removedAddress = removedAddressArray[0];
-        formData.location.contacts.forEach(contact => {
+        formData.location.contacts.forEach((contact) => {
           const indexWithinContact = contact.locationNames.findIndex(
-            (locationName) => locationName.text === removedAddress.locationName,
+            (locationName) => locationName.text === removedAddress.locationName
           );
           if (indexWithinContact !== -1) {
             contact.locationNames.splice(indexWithinContact, 1);
-          } 
-        })
+          }
+        });
       }
     }
     revalidate.value = !revalidate.value;

@@ -1,22 +1,18 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useMediaQuery } from '@vueuse/core';
+import { ref } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/button/index';
+import "@carbon/web-components/es/components/button/index";
 // Types
-import { nodeEnv, appVersion } from '@/CoreConstants';
+import { nodeEnv, appVersion, isSmallScreen } from "@/CoreConstants";
 // @ts-ignore
-import Logout16 from '@carbon/icons-vue/es/logout/16';
+import Logout16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
-import Help16 from '@carbon/icons-vue/es/help/16';
+import Help16 from "@carbon/icons-vue/es/help/16";
 
 const envPrefix = "openshift-";
 const env = ref(nodeEnv);
 env.value = env.value.slice(envPrefix.length);
 env.value = env.value.charAt(0).toUpperCase() + env.value.slice(1);
-
-const isSmallScreen = useMediaQuery('(max-width: 671px)')
-const isMediumScreen = useMediaQuery('(min-width: 672px) and (max-width: 1055px)')
 
 const helpModalActive = ref(false);
 const logoutModalActive = ref(false);
