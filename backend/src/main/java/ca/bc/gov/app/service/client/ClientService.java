@@ -7,8 +7,8 @@ import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
-import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
+import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
@@ -87,6 +87,21 @@ public class ClientService {
         .map(entity -> new CodeNameDto(entity.getCountryCode(), entity.getDescription()));
   }
   
+  /**
+   * Retrieves country information by its country code.
+   *
+   * This method queries the {@code countryCodeRepository} to find a country entity with the specified
+   * country code. If a matching entity is found, it is mapped to a {@code CodeNameDto} object, which
+   * encapsulates the country code and description. The resulting data is wrapped in a Mono, which
+   * represents the asynchronous result of the operation.
+   *
+   * @param countryCode The code of the country to retrieve information for.
+   * @return A Mono that emits the {@code CodeNameDto} object if a matching country is found,
+   *         or an empty result if no match is found.
+   *
+   * @see CodeNameDto
+   * @see countryCodeRepository
+   */
   public Mono<Object> getCountryByCode(String countryCode) {
     return countryCodeRepository
             .findByCountryCode(countryCode)
