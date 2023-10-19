@@ -346,11 +346,11 @@ public class ClientSubmissionService {
       String email,
       String userName
   ) {
-    return chesService.sendEmail("registration", 
-                                 email, 
-                                 "Client number application received",
-                                 clientSubmissionDto.description(userName))
-                      .thenReturn(submissionId);
+    return chesService.sendEmail("registration",
+            email,
+            "Client number application received",
+            clientSubmissionDto.description(userName))
+        .thenReturn(submissionId);
   }
 
 
@@ -359,7 +359,10 @@ public class ClientSubmissionService {
         .select(
             query(
                 QueryPredicates.isAfter(LocalDateTime.now(), "effectiveAt")
-                    .and(QueryPredicates.isBefore(LocalDateTime.now(), "expiredAt"))
+                    .and(
+                        QueryPredicates.isBefore(LocalDateTime.now(), "expiredAt")
+                            .or(QueryPredicates.isNull("expiredAt"))
+                    )
             ),
             ClientTypeCodeEntity.class
         )
@@ -394,16 +397,34 @@ public class ClientSubmissionService {
 
   private Flux<SubmissionEntity> loadSubmissions(int page, int size, String[] requestType,
       SubmissionStatusEnum[] requestStatus, String[] updatedAt) {
+
+    Criteria userQuery = SubmissionPredicates
+        .orUpdatedAt(updatedAt)
+        .and(SubmissionPredicates.orStatus(requestStatus))
+        .and(QueryPredicates.orEqualTo(requestType, "submissionType"));
+
+    //If no user provided query found, then use the default one
+    if (userQuery.isEmpty()) {
+      //List all submission of type SPP, or submissions of type AAC and RNC that were updated in the last 24 hours
+      userQuery = QueryPredicates
+          .orEqualTo(new String[]{"SPP"}, "submissionType")
+          .or(
+              QueryPredicates
+                  .isAfter(LocalDateTime.now().minusDays(1L), "submissionDate")
+                  .and(
+                      QueryPredicates
+                          //When I said AAC and RNC, I meant AAC or RNC for query purpose
+                          .orEqualTo(new String[]{"AAC", "RNC"}, "submissionType")
+                  )
+          );
+    }
+
+
     return template
         .select(
-            query(
-                QueryPredicates
-                    .orEqualTo(requestType, "submissionType")
-                    .and(SubmissionPredicates.orStatus(requestStatus))
-                    .and(SubmissionPredicates.orUpdatedAt(updatedAt))
-            )
+            query(userQuery)
                 .with(PageRequest.of(page, size))
-                .sort(Sort.by("submissionDate").descending()),
+                .sort(Sort.by("updatedAt").descending()),
             SubmissionEntity.class
         );
   }

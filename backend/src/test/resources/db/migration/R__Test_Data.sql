@@ -16,3 +16,5 @@ insert into nrfc.client_type_code (client_type_code, description, effective_date
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('S', 'Society', current_timestamp, 'mariamar') ON CONFLICT (client_type_code) DO NOTHING;
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('T', 'First Nation Tribal Council', current_timestamp, 'mariamar') ON CONFLICT (client_type_code) DO NOTHING;
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('U', 'Unregistered Company', current_timestamp, 'mariamar') ON CONFLICT (client_type_code) DO NOTHING;
+
+update nrfc.client_type_code set effective_date = '1970-01-01 00:00:00.000';
