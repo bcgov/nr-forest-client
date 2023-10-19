@@ -88,16 +88,15 @@ public class ClientService {
   }
   
   /**
-   * Retrieves country information by its country code.
-   *
-   * This method queries the {@code countryCodeRepository} to find a country entity with the specified
-   * country code. If a matching entity is found, it is mapped to a {@code CodeNameDto} object, which
-   * encapsulates the country code and description. The resulting data is wrapped in a Mono, which
-   * represents the asynchronous result of the operation.
+   * Retrieves country information by its country code. This method queries the
+   * {@code countryCodeRepository} to find a country entity with the specified country code. If a
+   * matching entity is found, it is mapped to a {@code CodeNameDto} object, which encapsulates the
+   * country code and description. The resulting data is wrapped in a Mono, which represents the
+   * asynchronous result of the operation.
    *
    * @param countryCode The code of the country to retrieve information for.
-   * @return A Mono that emits the {@code CodeNameDto} object if a matching country is found,
-   *         or an empty result if no match is found.
+   * @return A Mono that emits the {@code CodeNameDto} object if a matching country is found, or an
+   *         empty result if no match is found.
    *
    * @see CodeNameDto
    * @see countryCodeRepository
@@ -105,7 +104,8 @@ public class ClientService {
   public Mono<Object> getCountryByCode(String countryCode) {
     return countryCodeRepository
             .findByCountryCode(countryCode)
-            .map(entity -> new CodeNameDto(entity.getCountryCode(), entity.getDescription()));
+            .map(entity -> new CodeNameDto(entity.getCountryCode(), 
+                                           entity.getDescription()));
   }
 
   /**
