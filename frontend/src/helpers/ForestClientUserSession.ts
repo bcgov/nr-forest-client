@@ -87,13 +87,18 @@ class ForestClientUserSession implements SessionProperties {
 
   private getCookie = (name:string): string | null => {
     const cookieString = document.cookie
-    if (cookieString !== '') {
+    if (cookieString !== '') {      
       const cookies = cookieString.split(';')
-      for (const cookie of cookies) {
-        const [cookieName, cookieValue] = cookie.trim().split('=')
-        if (cookieName === name) {
-          return decodeURIComponent(cookieValue)
-        }
+
+      const cookieMap = cookies
+                        .map(cookie => cookie.trim().split('='))
+                        .map(cookie => {return{[cookie[0]]:cookie[1]}})
+                        .reduce((acc,cookie) => {return {...acc,...cookie}},{})
+
+      const selectedCookie = cookieMap[name]
+
+      if (selectedCookie) {
+        return decodeURIComponent(selectedCookie)
       }
     }
     return null
