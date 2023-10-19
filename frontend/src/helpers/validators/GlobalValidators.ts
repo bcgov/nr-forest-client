@@ -36,6 +36,23 @@ export const isNotEmpty =
   };
 
 /**
+ * Checks if the array is not empty
+ * @param array - The array to check
+ * @returns An empty string if the array is not empty, error message otherwise
+ * @example
+ * isNotEmptyArray([]) // false
+ * isNotEmptyArray('a') // true
+ * isNotEmptyArray([' ']) // true
+ * isNotEmptyArray([undefined]) // true
+ */
+export const isNotEmptyArray =
+  (message: string = "This field is required") =>
+  (array: any[]): string => {
+    if (array && array.length > 0) return "";
+    return message;
+  };
+
+/**
  * Checks if the value is an email
  * @param value - The value to check
  * @returns An empty string if the value is an email, error message otherwise

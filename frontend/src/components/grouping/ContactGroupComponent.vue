@@ -110,7 +110,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
     :model-value="addressList"
     :selectedValues="selectedValue.locationNames?.map((location:CodeDescrType) => location?.text)"
     :validations="[
-      ...getValidations('location.contacts.*.locationNames.*.text'),
+      ...getValidations('location.contacts.*.locationNames'),
       submissionValidation(`location.contacts[${id}].locationNames`)
     ]"
     @update:selected-value="
