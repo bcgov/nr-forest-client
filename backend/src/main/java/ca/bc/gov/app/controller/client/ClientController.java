@@ -48,6 +48,12 @@ public class ClientController {
     return clientService
         .listCountries(page, size);
   }
+  
+  @GetMapping("/getCountryByCode/{countryCode}")
+  public Mono<Object> getCountryByCode(
+      @PathVariable String countryCode) {
+    return clientService.getCountryByCode(countryCode);
+  }
 
   @GetMapping("/activeCountryCodes/{countryCode}")
   public Flux<CodeNameDto> listProvinces(
