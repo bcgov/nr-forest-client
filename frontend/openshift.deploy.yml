@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: ${NAME}
   annotations:
-    description: "Nr-Old-Growth"
+    description: "Forest Client Frontend"
     tags: "nrfc"
     iconClass: icon-js
 labels:
@@ -16,6 +16,9 @@ parameters:
   - name: COMPONENT
     description: Component name
     value: frontend
+  - name: GREEN_DOMAIN
+    description: Green interface domain
+    required: true
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
@@ -29,7 +32,7 @@ parameters:
     value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
-    value: bcgov/nr-old-growth:prod-frontend
+    value: bcgov/nr-forest-client/frontend:prod
   - name: CPU_REQUEST
     value: 10m
   - name: CPU_LIMIT
@@ -39,11 +42,7 @@ parameters:
   - name: MEMORY_LIMIT
     value: 50Mi
   - name: VITE_NODE_ENV
-    value: ""
-  - name: VITE_KEYCLOAK_URL
-    value: https://loginproxy.gov.bc.ca/auth
-  - name: VITE_KEYCLOAK_CLIENT_ID
-    value: ""
+    value: ""  
   - name: LOG_LEVEL
     description: Caddy log level (debug, info, warn, error, panic, fatal)
     value: "info"
@@ -75,8 +74,7 @@ objects:
         window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${ZONE}-backend.${DOMAIN}');
         window.localStorage.setItem('VITE_FRONTEND_URL', 'https://${NAME}-${ZONE}-frontend.${DOMAIN}');
         window.localStorage.setItem('VITE_NODE_ENV', '${VITE_NODE_ENV}');
-        window.localStorage.setItem('VITE_KEYCLOAK_URL', '${VITE_KEYCLOAK_URL}');
-        window.localStorage.setItem('VITE_KEYCLOAK_CLIENT_ID', '${VITE_KEYCLOAK_CLIENT_ID}');
+        window.localStorage.setItem('VITE_GREEN_DOMAIN','${GREEN_DOMAIN}')
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:

@@ -276,10 +276,9 @@ jobs:
           penetration_test: false
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/frontend:${{ env.ZONE }}
-            -p VITE_KEYCLOAK_URL=https://test.loginproxy.gov.bc.ca/auth
-            -p VITE_KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
+            -p PROMOTE=${{ github.repository }}/frontend:${{ env.ZONE }}            
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
+            -p VITE_GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -425,10 +424,9 @@ jobs:
           penetration_test: false
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}
-            -p VITE_KEYCLOAK_URL=https://loginproxy.gov.bc.ca/auth
-            -p VITE_KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
+            -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}            
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
+            -p VITE_GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v1.0.2

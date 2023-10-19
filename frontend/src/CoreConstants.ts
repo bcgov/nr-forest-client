@@ -6,8 +6,7 @@ export const checkEnv = (key: string) =>
 export const featureFlags = JSON.parse(checkEnv('VITE_FEATURE_FLAGS') || '{}')
 export const backendUrl = checkEnv('VITE_BACKEND_URL')
 export const frontendUrl = checkEnv('VITE_FRONTEND_URL')
-export const keycloakUrl = checkEnv('VITE_KEYCLOAK_URL')
-export const keycloakClientId = checkEnv('VITE_KEYCLOAK_CLIENT_ID')
+export const greenDomain = checkEnv('VITE_GREEN_DOMAIN')
 export const nodeEnv = checkEnv('VITE_NODE_ENV')
 
 export const appVersion = version

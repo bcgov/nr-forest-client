@@ -16,6 +16,7 @@ import { isSmallScreen, isMediumScreen } from '@/composables/useScreenSize';
 // Types
 import type { SubmissionDetails,CodeNameType } from '@/dto/CommonTypesDto'
 import { formatDistanceToNow, format} from 'date-fns'
+import { greenDomain } from '@/CoreConstants'
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // @ts-ignore
@@ -36,9 +37,9 @@ const data = ref<SubmissionDetails>({
     submissionId: 0,
     submissionType: '',
     submissionStatus: '',
-    submittedTimestamp: '',
-    updateTimestamp: '',
-    approvedTimestamp: '',
+    submittedTimestamp: new Date(0),
+    updateTimestamp: new Date(0),
+    approvedTimestamp: new Date(0),
     updateUser: '',
     business: {
       businessType: '',
@@ -245,7 +246,7 @@ const tagColor = (status: string) =>{
             <li 
               v-for="duplicatedClient in data.matchers.legalName.split(',')" 
               :key="duplicatedClient">
-                Client number: <a target="_blank" :href="`https://testapps.nrs.gov.bc.ca/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+                Client number: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
             </li>
           </ul>
         </div>    
