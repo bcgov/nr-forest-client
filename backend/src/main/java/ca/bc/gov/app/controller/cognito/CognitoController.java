@@ -102,7 +102,7 @@ public class CognitoController {
             + "&logout_uri=%s",
         configuration.getCognito().getUrl(),
         configuration.getCognito().getClientId(),
-        configuration.getCognito().getLogoutUri(),
+        configuration.getCognito().getRedirectUri(),
         configuration.getCognito().getLogoutUri()
     );
 
@@ -119,6 +119,14 @@ public class CognitoController {
         .add(LOCATION, famUrl);
 
     return Mono.empty();
+  }
+
+  @GetMapping("/refresh")
+  @ResponseStatus(HttpStatus.FOUND)
+  public Mono<Void> refresh(
+      @RequestParam(name = "code", required = false, defaultValue = "IDIR") String code
+  ){
+    return service.refreshToken(code);
   }
 
   /**

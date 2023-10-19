@@ -37,7 +37,7 @@ import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
-import ca.bc.gov.app.dto.cognito.AuthResponse;
+import ca.bc.gov.app.dto.cognito.AuthResponseDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
@@ -82,7 +82,7 @@ import org.springframework.web.reactive.function.client.WebClient;
     ChesMailRequest.class,
     ChesMailResponse.class,
     ChesMailErrorResponse.class,
-    AuthResponse.class,
+    AuthResponseDto.class,
     BcRegistryDocumentRequestBodyDto.class,
     BcRegistryDocumentAccessRequestDto.class,
     BcRegistryDocumentAccessTypeDto.class,
