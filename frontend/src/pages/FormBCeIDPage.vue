@@ -6,7 +6,7 @@ import "@carbon/web-components/es/components/progress-indicator/index";
 import "@carbon/web-components/es/components/notification/index";
 import "@carbon/web-components/es/components/tooltip/index";
 // Composables
-import { useEventBus, useMediaQuery } from "@vueuse/core";
+import { useEventBus } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useFocus } from "@/composables/useFocus";
 import { usePost } from "@/composables/useFetch";
@@ -23,6 +23,7 @@ import type {
   ProgressNotification,
   CodeDescrType,
 } from "@/dto/CommonTypesDto";
+import { isSmallScreen } from "@/CoreConstants";
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // Imported global validations
@@ -41,11 +42,18 @@ import LogOut16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 
-const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
-const notificationBus = useEventBus<ValidationMessageType | undefined>("error-notification");
-const exitBus = useEventBus<Record<string, boolean | null>>("exit-notification");
+const errorBus = useEventBus<ValidationMessageType[]>(
+  "submission-error-notification"
+);
+const notificationBus = useEventBus<ValidationMessageType | undefined>(
+  "error-notification"
+);
+const exitBus =
+  useEventBus<Record<string, boolean | null>>("exit-notification");
 const revalidateBus = useEventBus<void>("revalidate-bus");
-const progressIndicatorBus = useEventBus<ProgressNotification>("progress-indicator-bus");
+const progressIndicatorBus = useEventBus<ProgressNotification>(
+  "progress-indicator-bus"
+);
 
 const router = useRouter();
 const { setScrollPoint, setFocusedComponent } = useFocus();
@@ -221,9 +229,16 @@ const checkStepValidity = (stepNumber: number): boolean => {
     }
   });
 
-  if(!progressData[stepNumber]
-    .extraValidations
-    .every((validation: any) => runValidation(validation.field, formData, validation.validation, true, true))
+  if (
+    !progressData[stepNumber].extraValidations.every((validation: any) =>
+      runValidation(
+        validation.field,
+        formData,
+        validation.validation,
+        true,
+        true
+      )
+    )
   )
     return false;
 
@@ -337,8 +352,6 @@ const scrollToNewContact = () => {
     });
   }
 };
-
-const isSmallScreen = useMediaQuery("(max-width: 671px)");
 </script>
 
 <template>
