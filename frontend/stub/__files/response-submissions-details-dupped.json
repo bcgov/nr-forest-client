@@ -1,18 +1,18 @@
 {
     "submissionId": "{{randomValue length=4 type='NUMERIC'}}",
-    "submissionStatus": "New",
+    "submissionStatus": "In progress",
     "submissionType": "Review new client",
     "submittedTimestamp": "{{now offset='-18 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
     "updateTimestamp": "{{now offset='-9 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
     "approvedTimestamp": "{{now offset='-1 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
-    "updateUser": "Isador Driver",
+    "updateUser": "Rinaldo Hendrix",
     "business": {
         "businessType": "Registered Business",
-        "incorporationNumber": "GP{{randomValue length=8 type='NUMERIC'}}",
+        "incorporationNumber": "BC{{randomValue length=8 type='NUMERIC'}}",
         "clientNumber":"",
-        "organizationName": "KOVACEK, THOMPSON AND BOYER",
-        "clientType": "General partnership",
-        "goodStanding": null
+        "organizationName": "Ziemann Group",
+        "clientType": "Corporation",
+        "goodStanding": "Y"
     },
     "contact": [
         {
@@ -50,6 +50,6 @@
         }
     ],
     "matchers": {
-        "goodStanding": "Value not found"
+        "legalName": "0000{{randomValue length=4 type='NUMERIC'}},000{{randomValue length=5 type='NUMERIC'}}"
     }
 }

@@ -328,6 +328,18 @@
       }
     },
     {
+      "name":"Submission Details Review Dupped",
+      "request": {
+        "urlPath": "/api/clients/submissions/5f1f7209-fb2f-487d-9619-786c63a52a07",
+        "method": "GET"        
+      },
+      "response": {
+        "status": 200,        
+        "bodyFileName": "response-submissions-details-dupped.json",
+        "transformers": ["response-template"]
+      }
+    },
+    {
       "name":"Submission processed successfully",
       "request": {
         "urlPattern": "/api/clients/submissions/(.*)",

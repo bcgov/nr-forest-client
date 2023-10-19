@@ -4,8 +4,24 @@
   "name": "KOVACEK, Thompson and Boyer",
   "clientType": "General partnership",
   "updated": "{{now offset='-9 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
-  "status": "Approved",
+  "status": "New",
   "user": "Isador Driver"
+}, {
+  "id": "5f1f7209-fb2f-487d-9619-786c63a52a07",
+  "requestType": "Review new client",
+  "name": "Ziemann Group",
+  "clientType": "Corporation",
+  "updated": "{{now offset='-2 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "In progres",
+  "user": "Rinaldo Hendrix"
+}, {
+  "id": "a17d274f-3f5f-425b-b94e-757fea4dcfbb",
+  "requestType": "Auto approved client",
+  "name": "Christiansen LLC",
+  "clientType": "Unregistered sole proprietorship",
+  "updated": "{{now offset='-1 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Sholom Philippeaux"
 }, {
   "id": "9ceca504-f014-44f9-8a62-24e9b4311865",
   "requestType": "Review new client",
@@ -14,14 +30,6 @@
   "updated": "{{now offset='-9 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
   "status": "New",
   "user": "Christie Overill"
-}, {
-  "id": "a17d274f-3f5f-425b-b94e-757fea4dcfbb",
-  "requestType": "Auto approved client",
-  "name": "Christiansen LLC",
-  "clientType": "Unregistered sole proprietorship",
-  "updated": "{{now offset='-1 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
-  "status": "New",
-  "user": "Sholom Philippeaux"
 }, {
   "id": "1bebe566-2b16-4e62-b5ae-83700ddafb49",
   "requestType": "Review new client",
@@ -54,14 +62,6 @@
   "updated": "{{now offset='-5 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
   "status": "Approved",
   "user": "Dionis Pulman"
-}, {
-  "id": "5f1f7209-fb2f-487d-9619-786c63a52a07",
-  "requestType": "Auto approved client",
-  "name": "Ziemann Group",
-  "clientType": "Corporation",
-  "updated": "{{now offset='-2 hours' format='yyyy-MM-dd HH:mm:ss'}}",
-  "status": "In progres",
-  "user": "Rinaldo Hendrix"
 }, {
   "id": "9d1809a0-7f9c-43b4-a320-0b5d2db3316c",
   "requestType": "Auto approved client",
