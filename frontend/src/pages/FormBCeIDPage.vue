@@ -280,7 +280,7 @@ const processAndLogOut = () => {
         name: formData.businessInformation.businessName,
         userName: submitterInformation?.name ?? "",
         userId: submitterInformation?.userId ?? "",
-        mail: submitterInformation?.email ?? "",
+        email: submitterInformation?.email ?? "",
       },
       {}
     );
