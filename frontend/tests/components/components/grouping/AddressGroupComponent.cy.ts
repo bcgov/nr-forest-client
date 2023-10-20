@@ -171,13 +171,10 @@ describe('<AddressGroupComponent />', () => {
       .find('label')
       .and('include.text', 'Postal code')
 
-    cy.get('#country_0').should('be.visible').and('have.value', 'Canada').click()
+    // wait for the option's inner, standard HTML element to exist before clicking the combo-box
+    cy.get('#country_0').find('cds-combo-box-item[data-id="US"]').shadow().find('div')
 
-    cy.get('#country_0')
-      .find('cds-combo-box-item[data-id="US"]')
-      .shadow()
-      .find('div')
-      .should('be.visible') // wait for the option's inner, standard HTML element to become visible before clicking it.
+    cy.get('#country_0').should('be.visible').and('have.value', 'Canada').click()
 
     cy.get('#country_0')
       .find('cds-combo-box-item[data-id="US"]')
