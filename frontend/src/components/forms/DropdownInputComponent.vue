@@ -29,7 +29,7 @@ const emit = defineEmits<{
 }>();
 
 //We initialize the error message handling for validation
-const error = ref<string | undefined>(props.errorMessage || "");
+const error = ref<string | undefined>(props.errorMessage ?? "");
 
 const revalidateBus = useEventBus<void>("revalidate-bus");
 

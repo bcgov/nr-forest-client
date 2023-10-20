@@ -88,13 +88,12 @@
 
 <script setup lang="ts">
 import { reactive, watch, ref, getCurrentInstance, computed, onMounted } from "vue";
-import { newFormDataDto } from "@/dto/ApplyClientNumberDto";
+import { newFormDataDto, emptyContact } from "@/dto/ApplyClientNumberDto";
 import { BusinessTypeEnum, ClientTypeEnum, LegalTypeEnum } from "@/dto/CommonTypesDto";
 import { useFetchTo } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
 import { useFocus } from "@/composables/useFocus";
 import { codeConversionFn } from "@/services/ForestClientService";
-import { emptyContact } from "@/dto/ApplyClientNumberDto";
 import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";

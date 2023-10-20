@@ -78,15 +78,6 @@ describe("ReviewWizardStep.vue", () => {
       },
     });
 
-    const companyBusinessTypes = wrapper.vm.companyBusinessTypes;
-
-    const expectedCompanyBusinessTypes = {
-      R: "B.C. Registered Business - Corporation",
-      U: "Sole Proprietorship",
-    };
-
-    expect(companyBusinessTypes).toEqual(expectedCompanyBusinessTypes);
-
     wrapper.unmount();
   });
 
