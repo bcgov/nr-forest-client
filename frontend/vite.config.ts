@@ -66,7 +66,8 @@ export default defineConfig(({ command, mode }) => {
           '.eslintrc.js',
         ]
       },
-      environment: 'jsdom'
+      environment: 'jsdom',
+      setupFiles: 'vitest.setup.ts',
     },
     optimizeDeps: {
       exclude: ['@carbon/web-components'],

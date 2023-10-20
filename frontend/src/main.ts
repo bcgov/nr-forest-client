@@ -2,8 +2,8 @@ import { createApp } from "vue";
 import VueTheMask from "vue-the-mask";
 import App from "@/App.vue";
 import { router } from "@/routes";
+import directivesMap from "@/directivesMap";
 import { featureFlags, backendUrl } from "@/CoreConstants";
-import { masking, shadowPart } from "@/helpers/CustomDirectives";
 import type { SessionProperties } from "@/dto/CommonTypesDto";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -14,8 +14,10 @@ const app = createApp(App);
 
 app.use(router);
 app.use(VueTheMask);
-app.directive("masked", masking(".cds--text-input__field-wrapper input"));
-app.directive("shadow", shadowPart);
+for (const directiveName in directivesMap) {
+  const directive = directivesMap[directiveName as keyof typeof directivesMap];
+  app.directive(directiveName, directive);
+}
 app.config.globalProperties.$session = ForestClientUserSession;
 app.config.globalProperties.$features = featureFlags;
 app.config.globalProperties.$backend = backendUrl;
