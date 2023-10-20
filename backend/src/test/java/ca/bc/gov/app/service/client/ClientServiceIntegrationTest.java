@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -25,7 +26,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
   @Autowired
   private ClientService service;
   
-  @Autowired
+  @Mock
   private CountryCodeRepository countryCodeRepository;
 
   @ParameterizedTest
