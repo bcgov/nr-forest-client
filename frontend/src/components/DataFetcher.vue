@@ -55,9 +55,6 @@ watch(
         if (curRequestTime >= lastUpdateRequestTime.value) {
           content.value = response.value;
           lastUpdateRequestTime.value = curRequestTime;
-          // console.log('yes');
-        } else {
-          // console.log('no', curUrl, curRequestId, lastUpdateRequestId.value);
         }
       });
     }
