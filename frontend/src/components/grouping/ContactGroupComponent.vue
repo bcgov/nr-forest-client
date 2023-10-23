@@ -195,6 +195,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
   <div class="grouping-06">
   <cds-button
     v-if="id > 0"
+    :id="'deleteContact_' + id"
     kind="danger--tertiary"
     @click.prevent="emit('remove', id)"
   >
