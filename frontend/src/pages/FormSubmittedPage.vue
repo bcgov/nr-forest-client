@@ -21,6 +21,7 @@ const SVG = useSvg(badgePictogram);
     <div class="form-header form-header-application-submitted">
       <p class="fluid-heading-05">Application submitted!</p>
       <p class="fluid-paragraph-01">Your application for a client number has been submitted.</p>
+      <p class="fluid-paragraph-01">&nbsp;</p>
       <p class="fluid-paragraph-01">
         We’ll send the client number to {{ $session.user?.email }} once
         we confirm the information you provided.

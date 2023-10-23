@@ -383,6 +383,8 @@ div#app {
   font-style: normal;
   font-weight: 400;
   line-height: 4.375rem; /* 116.667% */
+
+  margin-bottom: 1.5rem;
 }
 .fluid-paragraph-01 {
   align-self: stretch;
@@ -454,10 +456,12 @@ div#app {
 }
 .form-header-application-submitted {
   width: 47%;
+  gap: 0;
 }
 
-.form-header-application-submitted cds-button{
+.form-header-application-submitted cds-button {
   width: 15rem;
+  margin-top: 3rem;
 }
 
 .form-header-title {
@@ -842,6 +846,10 @@ cds-modal {
     width: unset;
   }
 
+  .form-header-application-submitted cds-button {
+    margin-top: 2rem;
+  }
+
   .frame-03 {
     flex-direction: column-reverse;
     align-items: flex-start;
@@ -892,6 +900,10 @@ cds-modal {
     width: unset;
   }
 
+  .form-header-application-submitted cds-button {
+    margin-top: 2rem;
+  }
+
   .frame-03 {
     flex-direction: column-reverse;
     align-items: flex-start;
@@ -923,6 +935,9 @@ cds-modal {
   }
   .grouping-02, .grouping-03 {
     width: 50.4375rem;
+  }
+  .form-header-application-submitted cds-button {
+    margin-top: 2rem;
   }
   .frame-03 {
     column-gap: 4.0625rem;
