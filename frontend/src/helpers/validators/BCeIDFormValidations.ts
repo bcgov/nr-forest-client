@@ -72,7 +72,7 @@ formFieldValidations[
 
 // Step 3: Contacts
 formFieldValidations["location.contacts.*.locationNames.*.text"] = [
-  isNotEmpty("You must select at least one location"),
+  isNotEmpty("You must select at least one location"),]
 formFieldValidations["location.contacts.*.locationNames"] = [
   isNotEmptyArray("You must select at least one location"),
 ];
