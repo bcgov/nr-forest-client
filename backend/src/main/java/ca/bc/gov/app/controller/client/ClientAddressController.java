@@ -1,7 +1,7 @@
 package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientNameCodeDto;
+import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.service.client.ClientAddressService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,14 +45,14 @@ public class ClientAddressController {
                   array = @ArraySchema(
                       schema = @Schema(
                           name = "NameCode",
-                          implementation = ClientNameCodeDto.class
+                          implementation = CodeNameDto.class
                       )
                   )
               )
           )
       }
   )
-  public Flux<ClientNameCodeDto> findPossibleAddresses(
+  public Flux<CodeNameDto> findPossibleAddresses(
       @Parameter(description =
           "The name or ISO 2 or 3 character code for the country to search in, defaults to CA",
           example = "UK")

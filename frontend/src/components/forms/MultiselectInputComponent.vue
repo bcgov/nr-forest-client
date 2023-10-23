@@ -1,137 +1,141 @@
-<template>
-  <div class="grouping-03">
-    <div class="frame-02">
-      <bx-dropdown
-        :id="id"
-        :data-scroll="id"
-        :value="selectedValue"
-        :label-text="label"
-        :helper-text="tip"
-        :invalid="error ? true : false"
-        :validityMessage="error"
-        @bx-dropdown-beingselected="(target:any) => validateInput(target.detail.item.__value)"
-        @bx-dropdown-selected="(target:any) => addFromSelection(target.detail.item.__value)"
-      >
-        <bx-dropdown-item
-          v-for="option in modelValue"
-          :data-item="option.code"
-          :key="option.code"
-          :value="option.code"
-          >{{ option.name }}</bx-dropdown-item
-        >
-      </bx-dropdown>
-      <div class="bx-tag-box">
-        <bx-tag
-          v-for="(tag, index) in items"
-          title="Clear selection"
-          class="bx-tag"
-          :data-tag="'tag_' + id + '_' + index"
-          :id="'tag_' + id + '_' + index"
-          :key="index"
-        >
-          {{ tag }}
-          <CloseOutline16
-            :id="'close_' + id + '_' + index"
-            @click="removeFromSelection(tag)"
-          />
-        </bx-tag>
-      </div>
-    </div>
-  </div>
-</template>
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { type CodeNameType } from '@/dto/CommonTypesDto'
-import CloseOutline16 from '@carbon/icons-vue/es/close/16'
+import { ref, computed, watch } from "vue";
+// Carbon
+import "@carbon/web-components/es/components/multi-select/index";
+import "@carbon/web-components/es/components/tag/index";
+// Composables
+import { useEventBus } from "@vueuse/core";
+// Types
+import type { CodeNameType } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
 const props = defineProps<{
-  id: string
-  label: string
-  tip: string
-  modelValue: Array<CodeNameType>
-  selectedValues?: Array<string>
-  initialValue: string
-  validations: Array<Function>
-  errorMessage?: string
-}>()
+  id: string;
+  label: string;
+  tip: string;
+  modelValue: Array<CodeNameType>;
+  selectedValues?: Array<string>;
+  initialValue: string;
+  validations: Array<Function>;
+  errorMessage?: string;
+}>();
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: 'error', value: string | undefined): void
-  (e: 'empty', value: boolean): void
-  (e: 'update:modelValue', value: string[] | undefined): void
-  (e: 'update:selectedValue', value: Array<CodeNameType> | undefined): void
-}>()
+  (e: "error", value: string | undefined): void;
+  (e: "empty", value: boolean): void;
+  (e: "update:modelValue", value: string[] | undefined): void;
+  (e: "update:selectedValue", value: Array<CodeNameType> | undefined): void;
+}>();
 
 //We initialize the error message handling for validation
-const error = ref<string | undefined>(props.errorMessage || '')
+const error = ref<string | undefined>(props.errorMessage ?? "");
 
-//We watch for error changes to emit events
-watch(error, () => emit('error', error.value))
-watch(
-  () => props.errorMessage,
-  () => (error.value = props.errorMessage)
-)
+const revalidateBus = useEventBus<void>("revalidate-bus");
 
 //We set it as a separated ref due to props not being updatable
-const selectedValue = ref(props.initialValue)
-//We set the value prop as a reference for update reason
-emit('empty', props.selectedValues ? props.initialValue.length === 0 : true)
+const selectedValue = ref(props.initialValue);
+// This is to make the input list contains the selected value to show when component render
+const inputList = computed<Array<CodeNameType>>(() =>
+  !props.modelValue || props.modelValue.length === 0
+    ? [{ name: props.initialValue, code: "", status: "", legalType: "" }]
+    : props.modelValue
+);
 
-//Watch for changes on the input
-watch([selectedValue], () => validateInput(selectedValue.value))
+//We set the value prop as a reference for update reason
+emit("empty", props.selectedValues ? props.selectedValues.length === 0 : true);
 
 //Controls the selected values
-const items = ref<string[]>([])
+const items = ref<string[]>([]);
 
 //We call all the validations
 const validateInput = (newValue: any) => {
   if (props.validations && props.validations.length > 0) {
     const hasError = (message: string) => {
-      if (message) return true
-      return false
-    }
-    const validate = (value: string) =>
+      if (message) return true;
+      return false;
+    };
+    const validate = (value: string[]) =>
       props.validations
         .map((validation) => validation(value))
         .filter(hasError)
-        .shift() ?? props.errorMessage
+        .shift() ?? props.errorMessage;
 
-    error.value =
-      items.value
-        .map((item: string) => validate(item))
-        .filter(hasError)
-        .shift() ?? props.errorMessage
+    error.value = validate(items.value);
   }
-}
-watch(
-  () => props.modelValue,
-  () => (selectedValue.value = props.initialValue)
-)
+};
 
 const emitChange = () => {
   const reference = props.modelValue.filter((entry) =>
     items.value.includes(entry.name)
-  )
-  emit('update:modelValue', items.value)
-  emit('update:selectedValue', reference)
-  emit('empty', reference.length === 0)
-}
+  );
+  emit("update:modelValue", items.value);
+  emit("update:selectedValue", reference);
+  emit("empty", reference.length === 0);
+};
 
 const addFromSelection = (itemCode: string) => {
-  const reference = props.modelValue.find((entry) => entry.code === itemCode)
-  if (reference) items.value.push(reference.name)
-  emitChange()
-}
+  const reference = props.modelValue.find((entry) => entry.name === itemCode);
+  if (reference) {
+    items.value.push(reference.name);
+    selectedValue.value = items.value.join(",");
+  }
+};
 
-const removeFromSelection = (itemName: string) => {
-  items.value = items.value.filter((entry) => entry !== itemName)
-  emitChange()
-}
+const selectItems = (event: any) => {
+  // Why this undefined data check is here you might ask? Well, it's because I can't emit the event with value on target
+  const contentValue =
+    event?.data !== undefined ? event?.data : event.target.value;
+  selectedValue.value = contentValue;
+  items.value = contentValue.split(",").filter((value: string) => value);
+};
 
-watch([items], () => emitChange())
+props.selectedValues?.forEach((value: string) => addFromSelection(value));
 
-props.selectedValues?.forEach((value: string) => addFromSelection(value))
-validateInput(selectedValue.value)
+watch([items], () => emitChange());
+
+watch(
+  () => props.modelValue,
+  () => (selectedValue.value = props.initialValue)
+);
+
+watch([selectedValue], () => validateInput(selectedValue.value));
+
+//We watch for error changes to emit events
+watch(error, () => emit("error", error.value));
+watch(
+  () => props.errorMessage,
+  () => (error.value = props.errorMessage)
+);
+
+revalidateBus.on(() => validateInput(selectedValue.value));
 </script>
+
+<template>
+  <div class="grouping-03">
+    <div class="frame-02">
+      <cds-multi-select
+        :id="id"
+        :value="selectedValue"
+        :label="selectedValue"
+        :title-text="label"
+        :helper-text="tip"
+        :invalid="error ? true : false"
+        :invalid-text="error"
+        filterable
+        @cds-multi-select-selected="selectItems"
+        :data-focus="id"
+        :data-scroll="id"
+      >
+        <cds-multi-select-item
+          v-for="option in inputList"
+          :key="option.code"
+          :value="option.name"
+          :data-id="option.code"
+          :data-value="option.name">
+          {{ option.name }}
+        </cds-multi-select-item>
+      </cds-multi-select>
+    </div>
+  </div>
+</template>

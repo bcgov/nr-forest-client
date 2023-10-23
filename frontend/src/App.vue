@@ -1,62 +1,14 @@
-<template>
-  <div class="headers">
-    <main-header-component v-if="!$route.meta.hideHeader"></main-header-component>
-  </div>
-  <div class="screen">
-    <div class="content">
-    <router-view></router-view>
-    </div>
-  </div>
-
-  <div class="modals">
-    
-  <bx-modal
-    id="modal-example"
-    size="sm"
-    :open="modalContent.active"
-    @bx-modal-closed="closeModal"
-  >
-    <bx-modal-header>
-      <bx-modal-close-button></bx-modal-close-button>
-      <bx-modal-label>Delete additional {{ modalContent.kind }}</bx-modal-label>
-      <bx-modal-heading
-        >Are you sure you want to delete "{{ modalContent.message }}" additional
-        {{ modalContent.kind }}</bx-modal-heading
-      >
-    </bx-modal-header>
-    <bx-modal-body><p></p></bx-modal-body>
-
-    <bx-modal-footer>
-      <bx-btn kind="secondary" 
-              data-modal-close
-              class="bx--modal-btn bx--modal-btn1">
-        Cancel
-      </bx-btn>
-      <span class="bx--modal-btn-divider"></span>
-      <bx-btn kind="danger" 
-              @click.prevent="deleteContentModal"
-              class="bx--modal-btn bx--modal-btn2">
-        Delete additional {{ modalContent.kind }}
-      </bx-btn>
-    </bx-modal-footer>
-  </bx-modal>
-</div>
-
-  <bx-toast-notification
-      v-if="toastContent.active"
-      class="wizard-head-toast"
-      timeout="8000"
-      kind="success"
-      :title="toastContent.kind"
-      :subtitle="toastContent.message"
-    >
-  </bx-toast-notification>
-</template>
-
 <script setup lang="ts">
-import { ref, computed, useSlots, reactive, provide } from 'vue'
+import { ref } from 'vue'
+// Carbon
+import '@carbon/web-components/es/components/modal/index';
+import '@carbon/web-components/es/components/notification/index';
+// Composables
 import { useEventBus } from '@vueuse/core'
+// Imported Types
 import type { ModalNotification } from '@/dto/CommonTypesDto'
+// @ts-ignore
+import Delete16 from '@carbon/icons-vue/es/trash-can/16'
 
 const modalBus = useEventBus<ModalNotification>('modal-notification')
 const toastBus = useEventBus<ModalNotification>('toast-notification')
@@ -66,6 +18,7 @@ const modalContent = ref<ModalNotification>({
   active: false,
   message: '',
   kind: '',
+  toastTitle: '',
   handler: () => {}
 })
 
@@ -73,6 +26,7 @@ const toastContent = ref<ModalNotification>({
   active: false,
   message: '',
   kind: '',
+  toastTitle: '',
   handler: () => {}
 })
 
@@ -90,6 +44,7 @@ const deleteContentModal = () => {
   openToast({
     message: `“${modalContent.value.message}” additional ${modalContent.value.kind} was deleted successfully`,
     kind: 'Success',
+    toastTitle: modalContent.value.toastTitle,
     active: true,
     handler: () => {}
   })
@@ -98,4 +53,64 @@ const deleteContentModal = () => {
 }
 
 modalBus.on(openModal)
+toastBus.on(openToast)
 </script>
+
+<template>
+  <div class="headers" v-if="$session?.isLoggedIn()">
+    <main-header-component v-if="!$route.meta.hideHeader"></main-header-component>
+  </div>
+  <div :class="{[`${$route.meta.format}`]:true}">
+    <div :class="$route.meta.style">
+    <router-view></router-view>
+    </div>
+  </div>
+
+  <div class="modals">
+    
+    <cds-modal
+      id="modal-global"
+      size="sm"
+      :open="modalContent.active"
+      @cds-modal-closed="closeModal"
+    >
+      <cds-modal-header>
+        <cds-modal-close-button></cds-modal-close-button>
+        <cds-modal-heading
+          >Are you sure you want to delete "{{ modalContent.message }}" additional
+          {{ modalContent.kind }}?
+        </cds-modal-heading>
+      </cds-modal-header>
+      
+
+      <cds-modal-footer>
+          <cds-modal-footer-button 
+            kind="secondary"
+            data-modal-close
+            class="cds--modal-close-btn">
+            Cancel
+          </cds-modal-footer-button>
+          
+          <cds-modal-footer-button 
+            kind="danger"
+            class="cds--modal-submit-btn"
+            v-on:click="deleteContentModal">
+            Delete
+            <Delete16 slot="icon" />
+          </cds-modal-footer-button>
+
+        </cds-modal-footer>
+    </cds-modal>
+  </div>
+
+  <cds-toast-notification
+      v-if="toastContent.active"
+      class="wizard-head-toast"
+      timeout="8000"
+      kind="success"
+      :title="toastContent.toastTitle"
+      subtitle=""
+    >
+  </cds-toast-notification>
+</template>
+

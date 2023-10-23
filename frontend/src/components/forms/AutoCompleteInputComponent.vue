@@ -1,180 +1,210 @@
-<template>
-  <bx-form-item class="grouping-02">
-    <bx-input
-      :id="id"
-      :name="id"
-      type="text"
-      :data-scroll="id"
-      :data-id="'input-' + id"
-      :placeholder="'Start typing to search for your ' + label"
-      :value="inputValue"
-      :label-text="label"
-      :helper-text="tip"
-      @focus="autoCompleteVisible = true"
-      :invalid="error ? true : false"
-      :validityMessage="error"
-      @blur="(event:any) => blur(event.target.value)"
-      @input="(event:any) => inputValue = event.target.value"
-    />
-    <div
-      class="autocomplete-items"
-      :id="id + 'list'"
-      v-show="
-        autoCompleteVisible && inputValue.length > 2 && contents.length > 0
-      "
-    >
-      <div class="autocomplete-items-ct" v-if="loading">
-        <bx-inline-loading status="active">Loading data...</bx-inline-loading>
-      </div>
-      <div class="autocomplete-items-ct" v-else>
-        <div
-          v-for="item in contents"
-          :key="item.code"
-          :data-id="item.code"
-          :data-value="item.name"
-          class="autocomplete-items-cell"
-          @click="selectAutocompleteItem"
-        >
-          <strong :data-id="item.code" :data-value="item.name">{{
-            item.name
-          }}</strong>
-        </div>
-      </div>
-    </div>
-  </bx-form-item>
-</template>
-
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { isEmpty, type BusinessSearchResult } from '@/dto/CommonTypesDto'
+import { ref, computed, watch } from "vue";
+// Carbon
+import "@carbon/web-components/es/components/combo-box/index";
+import "@carbon/web-components/es/components/inline-loading/index";
+import type { CDSComboBox } from "@carbon/web-components";
+// Composables
+import { useEventBus } from "@vueuse/core";
+// Types
+import type { BusinessSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
+import { isEmpty } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
-const props = defineProps<{
-  id: string
-  label: string
-  tip?: string
-  modelValue: string
-  contents: Array<BusinessSearchResult>
-  validations: Array<Function>
-  errorMessage?: string
-  loading?: boolean
-}>()
+const props = withDefaults(defineProps<{
+    id: string;
+    label: string;
+    tip?: string;
+    placeholder?: string;
+    modelValue: string;
+    contents: Array<BusinessSearchResult>;
+    validations: Array<Function>;
+    errorMessage?: string;
+    loading?: boolean;
+    showLoadingAfterTime?: number;
+  }>(),
+  {
+    showLoadingAfterTime: 2000,
+  },
+);
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: 'error', value: string | undefined): void
-  (e: 'empty', value: boolean): void
-  (e: 'update:model-value', value: string): void
-  (e: 'update:selected-value', value: BusinessSearchResult | undefined): void
-}>()
-
-const autoCompleteVisible = ref(false)
+  (e: "error", value: string | undefined): void;
+  (e: "empty", value: boolean): void;
+  (e: "update:model-value", value: string): void;
+  (e: "update:selected-value", value: BusinessSearchResult | undefined): void;
+}>();
 
 //We initialize the error message handling for validation
-const error = ref<string | undefined>(props.errorMessage || '')
+const error = ref<string | undefined>(props.errorMessage ?? "");
 
-//We watch for error changes to emit events
-watch(error, () => emit('error', error.value))
+const revalidateBus = useEventBus<void>("revalidate-bus");
+
 watch(
   () => props.errorMessage,
-  () => (error.value = props.errorMessage)
-)
+  () => setError(props.errorMessage),
+);
 
 //We set the value prop as a reference for update reason
-const inputValue = ref(props.modelValue)
+const inputValue = ref(props.modelValue);
 
-let selectedValue: BusinessSearchResult | undefined = undefined
+const LOADING_NAME = "loading...";
+
+const showLoadingTimer = ref<number>();
+
+const showLoading = ref(false);
+
+watch(
+  () => props.loading && props.modelValue,
+  (value, oldValue) => {
+    if (oldValue || !value) {
+      clearTimeout(showLoadingTimer.value);
+      showLoading.value = false;
+    }
+    if (value) {
+      showLoadingTimer.value = setTimeout(() => {
+        showLoading.value = true;
+      }, props.showLoadingAfterTime);
+    }
+  },
+)
+
+// This is to make the input list contains the selected value to show when component render
+const inputList = computed<Array<BusinessSearchResult>>(() => {
+  if (props.contents?.length > 0) {
+    return props.contents.filter((entry) => entry.name);
+  } else if (props.modelValue !== userValue.value) {
+    // Needed when the component mounts with a pre-filled value.
+    return [{ name: props.modelValue, code: "", status: "", legalType: "" }]
+  } else if (props.modelValue && showLoading.value) {
+    // Just to give a "loading" feedback.
+    return [{ name: LOADING_NAME, code: "", status: "", legalType: "" }];
+  }
+  return [];
+});
+
+let selectedValue: BusinessSearchResult | undefined = undefined;
 
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
-  const reference = props.contents.find((entry) => entry.name === newValue)
-  emit('update:model-value', newValue)
-  emit('empty', isEmpty(reference))
 
-  /* 
-  Fire the update:selected-value with undefined when:
-  - there was an item previously selected (clicked);
-  - and the value in the input was changed by typing or removing some
-  characters.
-  Note: we know the change was not due to selecting (clicking) a new item
-  because otherwise the newValue would already correspond to the
-  selectedValue.name.
-  */
-  if (selectedValue && newValue !== selectedValue.name) {
-    selectedValue = undefined
-    emit('update:selected-value', selectedValue)
-  }
-}
+  // Prevent selecting the empty value included when props.contents is empty.
+  selectedValue = newValue ? inputList.value.find((entry) => entry.code === newValue) : undefined;
 
-emit('empty', true)
+  emit("update:model-value", selectedValue?.name ?? newValue);
+  emit("update:selected-value", selectedValue);
+  emit("empty", isEmpty(newValue));
+};
+
+emit("empty", isEmpty(props.modelValue));
+
+const isUserEvent = ref(false);
+const userValue = ref("");
+
+const cdsComboBoxRef = ref<InstanceType<typeof CDSComboBox> | null>(null);
 watch(
   () => props.modelValue,
   () => {
-    inputValue.value = props.modelValue
-    validateInput(inputValue.value)
-  }
-)
+    inputValue.value = props.modelValue;
+    if (!isUserEvent.value && cdsComboBoxRef.value) {
+      cdsComboBoxRef.value._filterInputValue = props.modelValue || "";
+    }
+    isUserEvent.value = false;
+  },
+);
 watch([inputValue], () => {
-  validateInput(inputValue.value)
-  emitValueChange(inputValue.value)
-})
+  emitValueChange(inputValue.value);
+});
 
-const blur = (newValue: string) => {
-  validateInput(newValue)
-  setTimeout(() => (autoCompleteVisible.value = false), 150)
+const setError = (errorMessage: string | undefined) => {
+  error.value = errorMessage;
+  emit("error", error.value);
 }
+
 //We call all the validations
 const validateInput = (newValue: string) => {
   if (props.validations) {
-    error.value =
+    setError(
       props.validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
-          if (errorMessage) return true
-          return false
+          if (errorMessage) return true;
+          return false;
         })
-        .shift() ?? props.errorMessage
+        .shift() ?? props.errorMessage,
+    );
   }
-}
+};
 
 const selectAutocompleteItem = (event: any) => {
-  const newValue = event.target.getAttribute('data-value')
-  selectedValue = props.contents.find((entry) => entry.name === newValue)
-  inputValue.value = newValue
-  emit('update:selected-value', selectedValue)
-  autoCompleteVisible.value = false
-}
-</script>
-<style scoped>
-.autocomplete {
-  /*the container must be positioned relative:*/
-  position: relative;
-  display: inline-block;
-}
-.autocomplete-items {
-  border-bottom: none;
-  border-top: none;
-  z-index: 99;
-  left: 0;
-  right: 0;
-}
-.autocomplete-items-ct {
-  border: 1px solid #d4d4d4;
-  position: absolute;
-  padding: 10px;
-  cursor: pointer;
-  background-color: #fff;
-  border-bottom: 1px solid #d4d4d4;
-}
+  const newValue = event?.detail?.item?.getAttribute("data-id");
+  emitValueChange(newValue);
+  validateInput(newValue);
+};
 
-.autocomplete-items-cell {
-  padding: 10px;
-  cursor: pointer;
-  background-color: #fff;
-  border-bottom: 1px solid #d4d4d4;
-}
-.autocomplete-items-cell:hover {
-  /*when hovering an item:*/
-  background-color: #e9e9e9;
-}
-</style>
+const onTyping = (event: any) => {
+  isUserEvent.value = true;
+  inputValue.value = event.srcElement._filterInputValue;
+  userValue.value = inputValue.value;
+  emit("update:model-value", inputValue.value);
+};
+
+revalidateBus.on(() => validateInput(inputValue.value));
+
+/*
+By applying a suffix which is impossible to be typed to the items' names, the search input will
+never be exactly the same as any item name.
+This allows the user to select the item even when the provided search input is exactly the same as
+the item name. (see: FSADT1-918)
+Note: removing the value prop from the cds-combo-box-item is not an option, since it causes another
+kind of issue when the field gets cleared.
+*/
+const nameSuffix = "\0";
+
+/*
+By checking the item has a code, we know this is a real option instead of a mock one.
+We need the mock one (with no suffix) when the component mounts with a pre-filled value.
+*/
+const getComboBoxItemValue = (item: CodeNameType) => item.name + (item.code ? nameSuffix : "");
+</script>
+
+<template>
+  <div class="grouping-02">
+    <cds-combo-box
+      ref="cdsComboBoxRef"
+      :id="id"
+      :name="id"
+      :helper-text="tip"
+      :title-text="label"
+      :value="inputValue"
+      filterable
+      :invalid="error ? true : false"
+      :invalid-text="error"
+      @cds-combo-box-selected="selectAutocompleteItem"
+      v-on:input="onTyping"
+      v-on:blur="(event: any) => validateInput(event.srcElement._filterInputValue)"
+      :data-focus="id"
+      :data-scroll="id"
+      :data-id="'input-' + id"
+      v-shadow="3"
+    >
+      <cds-combo-box-item
+        v-for="item in inputList"
+        :key="item.code"
+        :data-id="item.code"
+        :data-value="item.name"
+        :value="getComboBoxItemValue(item)"
+        v-shadow
+        :data-loading="item.name === LOADING_NAME"
+      >
+        <template v-if="item.name === LOADING_NAME">
+          <cds-inline-loading />
+        </template>
+        <template v-else>
+          {{ item.name }}
+        </template>
+      </cds-combo-box-item>
+    </cds-combo-box>
+  </div>
+</template>

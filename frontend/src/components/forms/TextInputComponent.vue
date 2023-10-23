@@ -1,106 +1,143 @@
-<template>
-    <bx-form-item class="grouping-02" v-if="enabled">
-      <bx-input
-        v-if="enabled"
-        :id="id"
-        :data-scroll="id"
-        :data-id="'input-' + id"
-        :placeholder="placeholder"
-        :value="selectedValue"
-        :label-text="enabled ? label : null"
-        :helper-text="tip"
-        :disabled="!enabled"
-        :color-scheme="enabled ? '' : 'light'"
-        :invalid="error ? true : false"
-        :validityMessage="error"
-        v-mask="mask"
-        @blur="(event:any) => validateInput(event.target.value)"
-        @input="(event:any) => selectedValue = event.target.value"
-      />
-    </bx-form-item>
-
-    <div v-if="!enabled" class="grouping-04">
-      <div :data-scroll="id" class="grouping-04-label"><span :for="id" class="label-01">{{ label }}</span></div>
-      <span class="text-01">{{ selectedValue }}</span>
-    </div>
-
-</template>
-
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { isEmpty } from '@/dto/CommonTypesDto'
+import { ref, watch } from "vue";
+// Carbon
+import "@carbon/web-components/es/components/text-input/index";
+// Composables
+import { useEventBus } from "@vueuse/core";
+// Types
+import { isEmpty } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
 const props = defineProps<{
-  id: string
-  label: string
-  tip?: string
-  enabled?: boolean
-  placeholder: string
-  modelValue: string
-  validations: Array<Function>
-  errorMessage?: string
-  mask?: string
-}>()
+  id: string;
+  label: string;
+  tip?: string;
+  enabled?: boolean;
+  placeholder: string;
+  modelValue: string;
+  validations: Array<Function>;
+  errorMessage?: string;
+  mask?: string;
+}>();
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: 'error', value: string | undefined): void
-  (e: 'empty', value: boolean): void
-  (e: 'update:model-value', value: string): void
-}>()
+  (e: "error", value: string | undefined): void;
+  (e: "empty", value: boolean): void;
+  (e: "update:model-value", value: string): void;
+}>();
 
 //We initialize the error message handling for validation
-const error = ref<string | undefined>(props.errorMessage || '')
+const error = ref<string | undefined>(props.errorMessage ?? "");
 
-//We watch for error changes to emit events
-watch(error, () => emit('error', error.value))
+const revalidateBus = useEventBus<void>("revalidate-bus");
+
+/**
+ * Sets the error and emits an error event.
+ * @param errorMessage - the error message
+ */
+const setError = (errorMessage: string | undefined) => {
+  error.value = errorMessage;
+
+  /*
+  The error should be emitted whenever it is found, instead of watching and emitting only when it
+  changes.
+  Because the empty event is always emitted, even when it remains the same payload, and then we
+  rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
+  an empty one to allow subscribers to know in case the field still has the same error.
+  */
+  emit('error', error.value);
+}
+
 watch(
   () => props.errorMessage,
-  () => (error.value = props.errorMessage)
-)
+  () => setError(props.errorMessage),
+);
 
 //We set it as a separated ref due to props not being updatable
-const selectedValue = ref<string>(props.modelValue)
+const selectedValue = ref<string>(props.modelValue);
 
 //We set the value prop as a reference for update reason
-emit('empty', isEmpty(props.modelValue))
-watch(
-  () => props.modelValue,
-  () => {
-    selectedValue.value = props.modelValue
-    validateInput(selectedValue.value)
-  }
-)
+emit("empty", isEmpty(props.modelValue));
 
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
-  emit('update:model-value', newValue)
-  emit('empty', isEmpty(newValue))
-}
+  emit("update:model-value", newValue);
+  emit("empty", isEmpty(newValue));
+};
 //Watch for changes on the input
-watch([selectedValue], () => emitValueChange(selectedValue.value))
+watch([selectedValue], () => {
+  emitValueChange(selectedValue.value);
+
+  // We don't to validate at each key pressed, but we do want to validate when it's changed from outside
+  if (!isUserEvent.value) {
+    validateInput(selectedValue.value);
+  }
+
+  // resets variable
+  isUserEvent.value = false;
+});
 
 //We call all the validations
 const validateInput = (newValue: string) => {
   if (props.validations) {
-    error.value =
+    setError(
       props.validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
-          if (errorMessage) return true
-          return false
+          if (errorMessage) return true;
+          return false;
         })
-        .shift() ?? props.errorMessage
+        .shift() ?? props.errorMessage,
+    );
   }
-}
+};
 
+revalidateBus.on(() => {
+  validateInput(selectedValue.value);
+});
+
+watch(
+  () => props.modelValue,
+  () => (selectedValue.value = props.modelValue)
+);
+
+// Tells whether the current change was done manually by the user.
+const isUserEvent = ref(false)
+
+const selectValue = (event: any) => {
+  selectedValue.value = event.target.value;
+  isUserEvent.value = true
+};
 </script>
 
+<template>
+  <div class="grouping-02" v-if="enabled">
+    <cds-text-input
+      v-if="enabled"
+      :id="id"
+      :placeholder="placeholder"
+      :value="selectedValue"
+      :label="enabled ? label : null"
+      :helper-text="tip"
+      :disabled="!enabled"
+      :invalid="error ? true : false"
+      :invalid-text="error"
+      v-masked="mask"
+      @blur="(event:any) => validateInput(event.target.value)"
+      @input="selectValue"
+      :data-focus="id"
+      :data-scroll="id"
+      :data-id="'input-' + id"
+    />
+  </div>
+
+  <div v-if="!enabled" class="grouping-04">
+    <div :data-scroll="id" class="grouping-04-label"><span :for="id" class="label-01">{{ label }}</span></div>
+    <span class="text-01">{{ modelValue }}</span>
+  </div>
+
+</template>
+
 <style scoped>
-.bx-input-disabled {
-  height: 2.5rem;
-  color: #131315; /*Change to common color*/
-  padding-top: 0.69rem;
-}
 </style>

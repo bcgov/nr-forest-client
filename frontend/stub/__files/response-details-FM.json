@@ -1,5 +1,5 @@
 {
-  "name": "The Great Fake Forest Company",
+  "name": "The Great Pacific  Forest Company",
   "id": "{{request.path.[2]}}",
   "goodStanding": true,
   "addresses": [
@@ -16,14 +16,14 @@
       "city": "Fakest City",
       "postalCode": "A0A0A0",
       "index": 0,
-      "locationName": "Mailing Address"
+      "locationName": "Mailing address"
     }
   ],
   "contacts": [
     {
       "contactType": {
-        "value": "person",
-        "text": "person"
+        "value": "P",
+        "text": "Person"
       },
       "firstName": "Jhon",
       "lastName": "Wick",

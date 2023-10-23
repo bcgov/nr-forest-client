@@ -2,13 +2,14 @@ package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
-import ca.bc.gov.app.dto.client.ClientNameCodeDto;
+import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.WordUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,7 +40,7 @@ public class ClientController {
   }
 
   @GetMapping("/activeCountryCodes")
-  public Flux<ClientNameCodeDto> listCountries(
+  public Flux<CodeNameDto> listCountries(
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10")
@@ -47,9 +48,15 @@ public class ClientController {
     return clientService
         .listCountries(page, size);
   }
+  
+  @GetMapping("/getCountryByCode/{countryCode}")
+  public Mono<Object> getCountryByCode(
+      @PathVariable String countryCode) {
+    return clientService.getCountryByCode(countryCode);
+  }
 
   @GetMapping("/activeCountryCodes/{countryCode}")
-  public Flux<ClientNameCodeDto> listProvinces(
+  public Flux<CodeNameDto> listProvinces(
       @PathVariable String countryCode,
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
@@ -60,13 +67,13 @@ public class ClientController {
   }
 
   @GetMapping("/activeClientTypeCodes")
-  public Flux<ClientNameCodeDto> findActiveClientTypeCodes() {
+  public Flux<CodeNameDto> findActiveClientTypeCodes() {
     return clientService
         .findActiveClientTypeCodes(LocalDate.now());
   }
 
   @GetMapping("/activeContactTypeCodes")
-  public Flux<ClientNameCodeDto> listClientContactTypeCodes(
+  public Flux<CodeNameDto> listClientContactTypeCodes(
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10")
@@ -76,12 +83,19 @@ public class ClientController {
         .listClientContactTypeCodes(page, size);
   }
 
+  /**
+   * Retrieve a Flux of ClientLookUpDto objects by searching for clients with a specific name.
+   *
+   * @param name The name to search for.
+   * @return A Flux of ClientLookUpDto objects that match the given name.
+   */
   @GetMapping(value = "/name/{name}")
   public Flux<ClientLookUpDto> findByClientName(
       @PathVariable String name
   ) {
     return clientService
-        .findByClientNameOrIncorporation(name);
+        .findByClientNameOrIncorporation(name)
+        .map(client -> client.withName(WordUtils.capitalize(client.name())));
   }
 
   @GetMapping(value = "/incorporation/{incorporationId}")

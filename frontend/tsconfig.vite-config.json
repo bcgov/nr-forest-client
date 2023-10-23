@@ -3,6 +3,7 @@
   "include": ["vite.config.*"],
   "compilerOptions": {
     "composite": true,
+    "verbatimModuleSyntax": true,
     "types": ["node", "vitest"]
   }
 }

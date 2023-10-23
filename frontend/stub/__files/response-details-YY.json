@@ -1,5 +1,5 @@
 {
-  "name": "The Shady Company",
+  "name": "Powel of the Pacific",
   "id": "{{request.path.[2]}}",
   "goodStanding": false,
   "addresses": [
@@ -16,7 +16,7 @@
       "city": "Fakest City",
       "postalCode": "A0A0A0",
       "index": 0,
-      "locationName": "Mailing Address"
+      "locationName": "Mailing address"
     }
   ],
   "contacts": [
@@ -33,7 +33,7 @@
       "locationNames": [
         {
           "value": "0",
-          "text": "Mailing Address"
+          "text": "Mailing address"
         }
       ]
     }

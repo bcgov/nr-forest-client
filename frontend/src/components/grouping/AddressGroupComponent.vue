@@ -1,96 +1,95 @@
 <script setup lang="ts">
-import { reactive, watch, computed, ref, onMounted } from 'vue'
-import { useEventBus } from '@vueuse/core'
-import Delete16 from '@carbon/icons-vue/es/trash-can/16'
-import type { CodeNameType, BusinessSearchResult } from '@/dto/CommonTypesDto'
-import type { Address } from '@/dto/ApplyClientNumberDto'
-import {
-  isNotEmpty,
-  isCanadianPostalCode,
-  isUsZipCode,
-  isOnlyNumbers,
-  isMaxSize,
-  isMinSize,
-  isNoSpecialCharacters
-} from '@/helpers/validators/GlobalValidators'
-import { submissionValidation } from '@/helpers/validators/SubmissionValidators'
-import { useFetchTo } from '@/composables/useFetch'
-import useFocus from '@/composables/useFocus'
+import { reactive, watch, computed, ref, onMounted } from "vue";
+// Carbon
+import "@carbon/web-components/es/components/button/index";
+// Composables
+import { useEventBus } from "@vueuse/core";
+import { useFetchTo } from "@/composables/useFetch";
+import { useFocus } from "@/composables/useFocus";
+// Types
+import type { CodeNameType, BusinessSearchResult } from "@/dto/CommonTypesDto";
+import type { Address } from "@/dto/ApplyClientNumberDto";
+// Validators
+import { getValidations } from "@/helpers/validators/GlobalValidators";
+import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
+// @ts-ignore
+import Delete16 from "@carbon/icons-vue/es/trash-can/16";
 
 //Define the input properties for this component
 const props = defineProps<{
-  id: number
-  modelValue: Address
-  countryList: Array<CodeNameType>
-  validations: Array<Function>
-  revalidate?: boolean
-}>()
+  id: number;
+  modelValue: Address;
+  countryList: Array<CodeNameType>;
+  validations: Array<Function>;
+  revalidate?: boolean;
+}>();
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: 'valid', value: boolean): void
-  (e: 'update:model-value', value: Address | undefined): void
-  (e: 'remove', value: number): void
-}>()
+  (e: "valid", value: boolean): void;
+  (e: "update:model-value", value: Address | undefined): void;
+  (e: "remove", value: number): void;
+}>();
 
-const generalErrorBus = useEventBus<string>('general-error-notification')
+const generalErrorBus = useEventBus<string>("general-error-notification");
 const { setFocusedComponent } = useFocus();
 
-const noValidation = (value: string) => ''
+const noValidation = (value: string) => "";
 
 //We set it as a separated ref due to props not being updatable
-const selectedValue = reactive<Address>(props.modelValue)
+const selectedValue = reactive<Address>(props.modelValue);
 const validateAddressData =
   props.validations.length === 0
     ? noValidation
-    : props.validations[0]('Address', props.id + '')
+    : props.validations[0]("Address", props.id + "");
 const validateAddressNameData =
   props.validations.length === 0
     ? noValidation
-    : props.validations[0]('Names', props.id + '')
-const addressError = ref<string | undefined>('')
-const nameError = ref<string | undefined>('')
-const showDetailsLoading = ref<boolean>(false)
+    : props.validations[0]("Names", props.id + "");
+const addressError = ref<string | undefined>("");
+const nameError = ref<string | undefined>("");
+const showDetailsLoading = ref<boolean>(false);
 
 const uniquenessValidation = () => {
   addressError.value = validateAddressData(
     `${selectedValue.streetAddress} ${selectedValue.country.value} ${selectedValue.province.value} ${selectedValue.city} ${selectedValue.city} ${selectedValue.postalCode}`
-  )
-  nameError.value = validateAddressNameData(selectedValue.locationName)
-  
-}
+  );
+  nameError.value = validateAddressNameData(selectedValue.locationName);
+};
 
 //Watch for changes on the input
-watch([selectedValue], () =>{ 
-  uniquenessValidation()
-  emit('update:model-value', selectedValue)
-})
+watch([selectedValue], () => {
+  uniquenessValidation();
+  emit("update:model-value", selectedValue);
+});
 
 watch(
   () => props.revalidate,
   () => uniquenessValidation(),
   { immediate: true }
-)
+);
 
 const updateStateProvince = (
   value: CodeNameType | undefined,
   property: string
 ) => {
-  if (value && (property === 'country' || property === 'province')) {
-    selectedValue[property] = { value: value.code, text: value.name }
+  if (value && (property === "country" || property === "province")) {
+    selectedValue[property] = { value: value.code, text: value.name };
   }
-}
+};
 
 //Province related data
 const provinceUrl = computed(
   () =>
     `/api/clients/activeCountryCodes/${selectedValue.country.value}?page=0&size=250`
-)
+);
 
 const resetProvinceOnChange = (receivedCountry: any) => {
   if (selectedValue.country.value !== receivedCountry && receivedCountry)
-    selectedValue.province = { value: '', text: '' }
-}
+    selectedValue.province = { value: "", text: "" };
+};
+
+const addressControl = ref(false);
 
 //Validations
 const validation = reactive<Record<string, boolean>>({
@@ -99,151 +98,173 @@ const validation = reactive<Record<string, boolean>>({
   country: false,
   province: false,
   city: false,
-  postalCode: false
-})
+  postalCode: false,
+});
 
 const checkValid = () =>
   Object.values(validation).reduce(
     (accumulator: boolean, currentValue: boolean) =>
       accumulator && currentValue,
     true
-  )
+  );
 
-watch([validation], () => emit('valid', checkValid()))
-emit('valid', false)
+watch([validation], () => emit("valid", checkValid()));
+emit("valid", false);
 
 const postalCodeValidators = computed(() => {
   switch (selectedValue.country.value) {
-    case 'CA':
+    case "CA":
       return [
-        isCanadianPostalCode,
-        submissionValidation(`location.adresses[${props.id}].postalCode`)
-      ]
-    case 'US':
+        ...getValidations(
+          'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'
+        ),
+        submissionValidation(`location.addresses[${props.id}].postalCode`),
+      ];
+    case "US":
       return [
-        isUsZipCode,
-        submissionValidation(`location.adresses[${props.id}].postalCode`)
-      ]
+        ...getValidations(
+          'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")'
+        ),
+        submissionValidation(`location.addresses[${props.id}].postalCode`),
+      ];
     default:
       return [
-        isOnlyNumbers,
-        isMinSize(5),
-        isMaxSize(10),
-        submissionValidation(`location.adresses[${props.id}].postalCode`)
-      ]
+        ...getValidations(
+          'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")'
+        ),
+        submissionValidation(`location.addresses[${props.id}].postalCode`),
+      ];
   }
-})
+});
 
 const postalCodeMask = computed(() => {
   switch (selectedValue.country.value) {
-    case 'CA':
-      return 'A#A#A#'
-    case 'US':
-      return '#####'
+    case "CA":
+      return "A#A#A#";
+    case "US":
+      return ["#####", "#####-####"];
     default:
-      return '##########'
+      return "##########";
   }
-})
+});
+
+const postalCodeShowHint = ref(false);
 
 const postalCodePlaceholder = computed(() => {
-  switch (selectedValue.country.value) {
-    case 'CA':
-      return 'A1A1A1'
-    case 'US':
-      return '99999'
-    default:
-      return '12345'
+  if (postalCodeShowHint.value) {
+    switch (selectedValue.country.value) {
+      case "CA":
+        return "Use A1A1A1 format";
+      case "US":
+        return "Use 00000 or 00000-0000 format";
+      default:
+        return "Use 00000 format";
+    }
+  } else {
+    return "";
   }
-})
+});
 
 const provinceNaming = computed(() => {
   switch (selectedValue.country.value) {
-    case 'CA':
-      return 'Province or territory'
-    case 'US':
-      return 'State'
+    case "CA":
+      return "Province or territory";
+    case "US":
+      return "State";
     default:
-      return 'Province/terrytory or state'
+      return "Province/territory or state";
   }
-})
+});
 
 const postalCodeNaming = computed(() =>
-  selectedValue.country.value === 'US' ? 'Zip code' : 'Postal code'
-)
+  selectedValue.country.value === "US" ? "Zip code" : "Postal code"
+);
 
 const autoCompleteUrl = computed(
   () =>
-    `/api/clients/addresses?country=${selectedValue.country.value}&maxSuggestions=10&searchTerm=${selectedValue.streetAddress}`
-)
-const autoCompleteResult = ref<BusinessSearchResult|undefined>({} as BusinessSearchResult)
-const detailsData = ref<Address | null>(null)
+    `/api/clients/addresses?country=${
+      selectedValue.country.value ?? ""
+    }&maxSuggestions=10&searchTerm=${selectedValue.streetAddress ?? ""}`,
+);
+const autoCompleteResult = ref<BusinessSearchResult | undefined>(
+  {} as BusinessSearchResult
+);
+const detailsData = ref<Address | null>(null);
 
 watch([autoCompleteResult], () => {
-  if (autoCompleteResult.value) {
-    showDetailsLoading.value = true
+  addressControl.value = false;
+  if (autoCompleteResult.value && autoCompleteResult.value.code) {
+    showDetailsLoading.value = true;
     const { error, loading: detailsLoading } = useFetchTo(
       `/api/clients/addresses/${encodeURIComponent(
         autoCompleteResult.value.code
       )}`,
       detailsData,
       {}
-    )
+    );
 
     watch([error], () => {
-      generalErrorBus.emit(error.value.response.data.message)
-    })
+      // @ts-ignore
+      generalErrorBus.emit(error.response?.data.message);
+      postalCodeShowHint.value = true;
+    });
 
     watch(
       [detailsLoading],
       () => (showDetailsLoading.value = detailsLoading.value)
-    )
+    );
   }
-})
+});
 
 watch([detailsData], () => {
   if (detailsData.value) {
-    selectedValue.streetAddress = detailsData.value.streetAddress
-    selectedValue.city = detailsData.value.city
-    selectedValue.province = detailsData.value.province
-    selectedValue.postalCode = detailsData.value.postalCode.replace(/\s/g, '')
+    console.log(JSON.stringify(detailsData.value));
+    selectedValue.streetAddress = detailsData.value.streetAddress.trim();
+    selectedValue.city = detailsData.value.city;
+    selectedValue.province = detailsData.value.province;
+    selectedValue.postalCode = detailsData.value.postalCode.replace(/\s/g, "");
+    if (!selectedValue.postalCode) postalCodeShowHint.value = true;
+    else postalCodeShowHint.value = false;
+    addressControl.value = true;
+    //Why is this here? Because Address response differs from the street address value
+    //addressControl is responsible for giving an empty list instead of the AC value
+    setTimeout(() => (addressControl.value = false), 200);
   }
-})
+});
 
-onMounted(() =>{
-  if(props.id == 0) setFocusedComponent(`addr_${props.id}`)
-  else setFocusedComponent(`name_${props.id}`)
-})
+onMounted(() => {
+  if (props.id == 0) setFocusedComponent(`addr_${props.id}`, 800);
+  else setFocusedComponent(`name_${props.id}`, 200);
+});
 </script>
 
 <template>
   <div class="frame-01">
   <text-input-component
     :id="'name_' + id"
-        label="Location or address name"
+    label="Location or address name"
     placeholder=""
     tip="For example, 'Campbell River Region' or 'Castlegar Woods Division'"
     v-model="selectedValue.locationName"
     :enabled="true"
     :validations="[
-      isNotEmpty,
-      isMinSize(3),
-      isMaxSize(50),
-      isNoSpecialCharacters,
-      submissionValidation(`location.adresses[${id}].locationName`)
+      ...getValidations('location.addresses.*.locationName'),
+      submissionValidation(`location.addresses[${id}].locationName`)
     ]"
     :error-message="nameError"
     @empty="validation.locationName = !$event"
+    @error="validation.locationName = !$event"
     v-if="id !== 0"
   />
 
   <dropdown-input-component
     :id="'country_' + id"
     label="Country"
-    :initial-value="selectedValue.country.value"
+    :initial-value="selectedValue.country.text"
     tip=""
     :enabled="true"
     :model-value="countryList"
-    :validations="[submissionValidation(`location.adresses[${id}].country`)]"
+    :validations="[...getValidations('location.addresses.*.country.text'),submissionValidation(`location.addresses[${id}].country`)]"
     :error-message="addressError"
     @update:selected-value="updateStateProvince($event, 'country')"
     @update:model-value="resetProvinceOnChange"
@@ -259,44 +280,38 @@ onMounted(() =>{
   >
     <AutoCompleteInputComponent
       :id="'addr_' + id"
-            label="Street address or PO box"
-      placeholder="Start typing to search for your address or PO box"
-      tip=""
+      label="Street address or PO box"
+      placeholder=""
+      tip="Start typing to search for your street address or PO box"
       v-model="selectedValue.streetAddress"
-      :contents="content"
+      :contents="addressControl ? [] : content"
       :validations="[
-        isNotEmpty,
-        isMinSize(5),
-        isMaxSize(50),
-        submissionValidation(`location.adresses[${id}].streetAddress`)
+        ...getValidations('location.addresses.*.streetAddress'),
+        submissionValidation(`location.addresses[${id}].streetAddress`)
       ]"
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
-      @update:model-value="validation.streetAddress = false"
       :error-message="addressError"
-      @empty="
-        validation.streetAddress = selectedValue.streetAddress ? true : false
-      "
+      @empty="validation.streetAddress = !$event"
+      @error="validation.streetAddress = !$event"
     />
-    <bx-inline-loading status="active" v-if="showDetailsLoading">Loading address details...</bx-inline-loading>
+    <cds-inline-loading status="active" v-if="showDetailsLoading">Loading address details...</cds-inline-loading>
   </data-fetcher>
 
   <text-input-component
     :id="'city_' + id"
     label="City"
-    placeholder="City"
+    placeholder=""
     v-model="selectedValue.city"
     tip=""
     :enabled="true"
     :error-message="addressError"
     :validations="[
-      isNotEmpty,
-      isMinSize(3),
-      isMaxSize(50),
-      isNoSpecialCharacters,
-      submissionValidation(`location.adresses[${id}].city`)
+      ...getValidations('location.addresses.*.city'),
+      submissionValidation(`location.addresses[${id}].city`)
     ]"
     @empty="validation.city = !$event"
+    @error="validation.city = !$event"
   />
 
   <data-fetcher
@@ -310,11 +325,11 @@ onMounted(() =>{
     <dropdown-input-component
       :id="'province_' + id"
       :label="provinceNaming"
-      :initial-value="selectedValue.province.value"
+      :initial-value="selectedValue.province.text"
       :model-value="content"
       :enabled="true"
       tip=""
-      :validations="[submissionValidation(`location.adresses[${id}].province`)]"
+      :validations="[...getValidations('location.addresses.*.province.text'),submissionValidation(`location.addresses[${id}].province`)]"
       :error-message="addressError"
       @update:selected-value="updateStateProvince($event, 'province')"
       @empty="validation.province = !$event"
@@ -324,9 +339,9 @@ onMounted(() =>{
   <text-input-component
     :id="'postalCode_' + id"
     :label="postalCodeNaming"
-    :placeholder="postalCodePlaceholder"
+    placeholder=""
+    :tip="postalCodePlaceholder"
     :enabled="true"
-    tip=""
     :error-message="addressError"
     v-model="modelValue.postalCode"
     :mask="postalCodeMask"
@@ -334,17 +349,15 @@ onMounted(() =>{
     @error="validation.postalCode = !$event"
     @empty="validation.postalCode = !$event"
   />
-
-  <bx-btn
-    v-show="id > 0"
-    kind="danger-ghost"
-    iconLayout=""
-    class="bx--btn"
+<div class="grouping-06">
+  <cds-button
+    v-if="id > 0"
+    kind="danger--tertiary"
     @click.prevent="emit('remove', id)"
-    size="field"
   >
     <span>Delete address</span>
     <Delete16 slot="icon" />
-  </bx-btn>
+  </cds-button>
+</div>
   </div>
 </template>
