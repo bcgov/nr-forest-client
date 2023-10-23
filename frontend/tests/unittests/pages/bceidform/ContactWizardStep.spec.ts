@@ -1,14 +1,14 @@
-import { mount } from '@vue/test-utils'
-import { describe, it, expect } from 'vitest'
-import ContactWizardStep from '@/pages/bceidform/ContactWizardStep.vue'
-import type { Contact, FormDataDto } from '@/dto/ApplyClientNumberDto'
-import { emptyContact } from '@/dto/ApplyClientNumberDto'
-import { useEventBus } from '@vueuse/core'
-import type { ModalNotification } from '@/dto/CommonTypesDto'
+import { mount } from "@vue/test-utils";
+import { describe, it, expect } from "vitest";
+import ContactWizardStep from "@/pages/bceidform/ContactWizardStep.vue";
+import { emptyContact } from "@/dto/ApplyClientNumberDto";
+import { useEventBus } from "@vueuse/core";
+import type { ModalNotification } from "@/dto/CommonTypesDto";
+import type { Contact, FormDataDto } from "@/dto/ApplyClientNumberDto";
 
-describe('ContactWizardStep.vue', () => {
+describe("ContactWizardStep.vue", () => {
   describe("when contact's firstName is null", () => {
-    it('emits the confirmation event properly when Delete contact is clicked', async () => {
+    it("emits the confirmation event properly when Delete contact is clicked", async () => {
       const wrapper = mount(ContactWizardStep, {
         props: {
           data: {
@@ -17,8 +17,8 @@ describe('ContactWizardStep.vue', () => {
               contacts: [
                 {
                   ...emptyContact,
-                  firstName: 'John',
-                  lastName: 'Doe',
+                  firstName: "John",
+                  lastName: "Doe",
                 } as Contact,
                 // And here is the contact to be deleted
                 {
@@ -31,21 +31,21 @@ describe('ContactWizardStep.vue', () => {
           } as unknown as FormDataDto,
           active: false,
         },
-      })
+      });
 
-      const bus = useEventBus<ModalNotification>('modal-notification')
+      const bus = useEventBus<ModalNotification>("modal-notification");
 
-      let payload: ModalNotification
+      let payload: ModalNotification;
       bus.on((_payload) => {
-        payload = _payload
-      })
+        payload = _payload;
+      });
 
-      await wrapper.find('#deleteContact_1').trigger('click')
+      await wrapper.find("#deleteContact_1").trigger("click");
 
       expect(payload!).toMatchObject({
-        message: 'Contact #1',
-        kind: 'Contact deleted',
-      })
-    })
-  })
-})
+        message: "Contact #1",
+        kind: "Contact deleted",
+      });
+    });
+  });
+});
