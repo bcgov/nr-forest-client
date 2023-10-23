@@ -226,6 +226,5 @@ buildNumber.properties
 config/application-dev-*.yml
 .checkstyle
 
-
 temp/
 config/*.jks
