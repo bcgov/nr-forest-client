@@ -13,18 +13,13 @@ declare module '@vue/runtime-core' {
     AutoCompleteInputComponent: typeof import('./src/components/forms/AutoCompleteInputComponent.vue')['default']
     ContactGroupComponent: typeof import('./src/components/grouping/ContactGroupComponent.vue')['default']
     DataFetcher: typeof import('./src/components/DataFetcher.vue')['default']
-    DisplayBlockComponent: typeof import('./src/components/visuals/DisplayBlockComponent.vue')['default']
     DropdownInputComponent: typeof import('./src/components/forms/DropdownInputComponent.vue')['default']
     ErrorNotificationGroupingComponent: typeof import('./src/components/grouping/ErrorNotificationGroupingComponent.vue')['default']
     MainHeaderComponent: typeof import('./src/components/MainHeaderComponent.vue')['default']
     MultiselectInputComponent: typeof import('./src/components/forms/MultiselectInputComponent.vue')['default']
-    NoteComponent: typeof import('./src/components/NoteComponent.vue')['default']
     RadioInputComponent: typeof import('./src/components/forms/RadioInputComponent.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TextInputComponent: typeof import('./src/components/forms/TextInputComponent.vue')['default']
-    WizardProgressIndicatorComponent: typeof import('./src/components/wizard/WizardProgressIndicatorComponent.vue')['default']
-    WizardTabComponent: typeof import('./src/components/wizard/WizardTabComponent.vue')['default']
-    WizardWrapperComponent: typeof import('./src/components/wizard/WizardWrapperComponent.vue')['default']
   }
 }
