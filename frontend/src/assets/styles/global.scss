@@ -22,10 +22,10 @@
   --dark-theme-link-link-visited: #c59af1;
   --dark-theme-focus-focus: #ffffff;
   --dark-theme-button-button-tertiary: #ffffff;
-  --dark-theme-button-button-tertiary-active: #C6C6C8;
+  --dark-theme-button-button-tertiary-active: #c6c6c8;
   --dark-theme-background-background-hover: rgba(147, 147, 149, 0.16);
-  --dark-theme-background-background-active: rgba(147, 147, 149, 0.40);
-  --dark-theme-text-text-primary: #F3F3F5;
+  --dark-theme-background-background-active: rgba(147, 147, 149, 0.4);
+  --dark-theme-text-text-primary: #f3f3f5;
   --light-theme-support-support-info: #00478f;
   --light-theme-notifications-support-info-border: rgba(0, 102, 204, 1);
   --light-theme-notifications-notification-info-background: #c2e0ff;
@@ -38,12 +38,12 @@
   --light-theme-miscellaneous-interactive: #0073e6;
 
   //Buttons
-  --cds-button-disabled: #C6C6C8;
+  --cds-button-disabled: #c6c6c8;
 
   //Primary button
   --cds-button-primary: #0073e6;
-  --cds-button-primary-hover: #0066CC;
-  --cds-button-primary-active: #00478F;
+  --cds-button-primary-hover: #0066cc;
+  --cds-button-primary-active: #00478f;
 
   //Secondary button
   --cds-button-secondary: #464648;
@@ -53,7 +53,7 @@
   //Tertiary button
   --cds-button-tertiary: #005cb8;
   --cds-button-tertiary-hover: #0052a3;
-  --cds-button-tertiary-active: #00478F;
+  --cds-button-tertiary-active: #00478f;
 
   //Danger button
   --cds-button-danger: #e72000;
@@ -61,22 +61,24 @@
   --cds-button-danger-active: #801701;
 
   //Notifications
-  --cds-notification-background-info: #C2E0FF;
-  --cds-support-info: #00478F;
+  --cds-notification-background-info: #c2e0ff;
+  --cds-support-info: #00478f;
 
-  --cds-notification-background-success: #CCE5CC;
-  --cds-support-success: #007B00;
+  --cds-notification-background-success: #cce5cc;
+  --cds-support-success: #007b00;
 
-  --cds-notification-background-warning: #FFF3CC;
-  --cds-support-warning: #FFC300;
+  --cds-notification-background-warning: #fff3cc;
+  --cds-support-warning: #ffc300;
 
-  --cds-notification-background-error: #FFEAE5;
-  --cds-support-error: #E72000;
+  --cds-notification-background-error: #ffeae5;
+  --cds-support-error: #e72000;
 
   --light-theme-background-background-selected: #93939533;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: unset;
 }
 
@@ -89,18 +91,18 @@
   --cds-button-tertiary: var(--dark-theme-button-button-tertiary);
   --cds-button-tertiary-hover: var(--dark-theme-focus-focus);
   --cds-button-tertiary-active: var(--dark-theme-button-button-tertiary-active);
-  
+
   --cds-link-primary: var(--border-subtle-02);
   --cds-link-primary-hover: var(--dark-theme-link-link-primary-hover);
   --cds-layer-hover: var(--dark-theme-background-background-hover);
   --cds-background-active: var(--dark-theme-background-background-active);
 }
 
-.heading-buttons cds-button[kind='tertiary']{
+.heading-buttons cds-button[kind="tertiary"] {
   --cds-button-tertiary: var(--dark-theme-button-button-tertiary);
 }
 
-.heading-buttons cds-button[kind='ghost']{
+.heading-buttons cds-button[kind="ghost"] {
   --cds-button-tertiary: var(--dark-theme-text-text-primary);
 }
 
@@ -134,7 +136,7 @@ cds-progress-step::part(cds--progress-label) {
 }
 
 cds-progress-step.step-inactive::part(cds--progress-optional) {
-  color:#939395;
+  color: #939395;
 }
 
 cds-inline-notification::part(div),
@@ -151,7 +153,7 @@ cds-actionable-notification,
   border-radius: 0.25rem;
 }
 
-cds-radio-button:not(:last-child){
+cds-radio-button:not(:last-child) {
   margin-bottom: 0.5rem;
 }
 
@@ -164,7 +166,7 @@ cds-combo-box::part(input) {
 }
 
 cds-combo-box:where(:active, :focus)::part(cds--combo-box) {
-  outline: 2px solid var(--cds-focus,#0f62fe);
+  outline: 2px solid var(--cds-focus, #0f62fe);
   outline-offset: -2px;
 }
 
@@ -173,7 +175,9 @@ cds-combo-box-item[data-loading="true"] {
   align-items: center;
 }
 
-cds-combo-box-item[data-loading="true"]::part(cds--list-box__menu-item__option) {
+cds-combo-box-item[data-loading="true"]::part(
+    cds--list-box__menu-item__option
+  ) {
   padding: 0;
   border-top: 0;
 }
@@ -204,6 +208,7 @@ a:hover {
 a:visited {
   color: var(--light-theme-link-link-visited, #7c1cdf);
 }
+
 hr {
   display: block;
   border: 0;
@@ -213,8 +218,8 @@ hr {
   width: 100%;
 }
 
-.cds--inline-notification-content{
-  width:100%;
+.cds--inline-notification-content {
+  width: 100%;
 }
 
 div#app {
@@ -234,8 +239,7 @@ div#app {
   right: 1.5625rem;
   top: 5rem;
   border-radius: 0.25rem;
-  z-index: 999; /* Higher value to ensure it's on top */
-  /* Light Theme/Shadows/Menu */
+  z-index: 999;
   box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.3);
 }
 
@@ -257,6 +261,7 @@ div#app {
 .landing-subtitle {
   margin: 1.5rem 0rem 0rem 0rem;
 }
+
 .full-centered {
   display: flex;
   padding: 8.125rem 0 2rem 0;
@@ -264,20 +269,23 @@ div#app {
   background: var(--light-theme-layer-layer-02, #fff);
   flex-grow: 1;
 }
+
 .full {
   margin: 0rem;
   padding-bottom: 0px;
   display: flex;
-  align-items: stretch;  
+  align-items: stretch;
   background: var(--light-theme-background-background, #fff);
   flex-grow: 1;
 }
+
 .screen {
   display: flex;
-  align-items: stretch;  
+  align-items: stretch;
   background: var(--light-theme-background-background, #fff);
   flex-grow: 1;
 }
+
 .headers {
   display: flex;
   padding: 0.25rem 2rem;
@@ -286,16 +294,19 @@ div#app {
   gap: 1.5rem;
   background: var(--light-theme-background-background-brand, #0073e6);
 }
+
 .headers a img {
   width: 7.5rem;
   flex-shrink: 0;
 }
+
 .heading {
   display: flex;
   padding: 0.9375rem 0.5rem 0.9375rem 0.5rem;
   align-items: flex-start;
   gap: 0.1875rem;
 }
+
 .heading-button-transparent {
   display: flex;
   width: 12.375rem;
@@ -307,6 +318,7 @@ div#app {
   background: var(--others-transparent-transparent, #fff);
   background-blend-mode: multiply;
 }
+
 .heading-button {
   display: flex;
   width: 9.6875rem;
@@ -319,20 +331,23 @@ div#app {
   background: var(--others-transparent-transparent, #fff);
   background-blend-mode: multiply;
 }
+
 .heading-compact-01 {
-  color: var(--dark-theme-text-text-primary, #F3F3F5);
+  color: var(--dark-theme-text-text-primary, #f3f3f5);
 
   /* Fixed heading styles/heading-compact-01 */
   font-family: BC Sans, sans-serif;
   font-size: 0.875rem;
   font-style: normal;
   font-weight: 700;
-  line-height: 1.125rem; /* 128.571% */
+  line-height: 1.125rem;
   letter-spacing: 0.01rem;
 }
+
 .heading-compact-01-dark {
   color: var(--light-theme-text-text-primary, #131315) !important;
 }
+
 .heading-02 {
   color: var(--light-theme-text-text-primary, #131315) !important;
 
@@ -341,8 +356,9 @@ div#app {
   font-size: 1rem;
   font-style: normal;
   font-weight: 700;
-  line-height: 1.5rem; /* 150% */
+  line-height: 1.5rem;
 }
+
 .heading-03 {
   color: var(--light-theme-text-text-primary, #131315);
 
@@ -351,8 +367,9 @@ div#app {
   font-size: 1.25rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 1.75rem; /* 140% */
+  line-height: 1.75rem;
 }
+
 .heading-04 {
   color: var(--light-theme-text-text-primary, #131315);
 
@@ -361,8 +378,9 @@ div#app {
   font-size: 1.75rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 2.25rem; /* 128.571% */
+  line-height: 2.25rem;
 }
+
 .heading-05 {
   color: var(--light-theme-text-text-primary, #131315);
 
@@ -371,8 +389,9 @@ div#app {
   font-size: 2rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 2.5rem; /* 125% */
+  line-height: 2.5rem;
 }
+
 .fluid-heading-05 {
   align-self: stretch;
   color: var(--light-theme-text-text-primary, #131315);
@@ -382,10 +401,10 @@ div#app {
   font-size: 3.75rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 4.375rem; /* 116.667% */
-
+  line-height: 4.375rem;
   margin-bottom: 1.5rem;
 }
+
 .fluid-paragraph-01 {
   align-self: stretch;
   color: var(--light-theme-text-text-secondary, #606062);
@@ -395,8 +414,9 @@ div#app {
   font-size: 2rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 2.5rem; /* 125% */
+  line-height: 2.5rem;
 }
+
 .body-01 {
   color: var(--light-theme-text-text-secondary, #606062);
 
@@ -405,9 +425,10 @@ div#app {
   font-size: 0.875rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 1.25rem; /* 142.857% */
+  line-height: 1.25rem;
   letter-spacing: 0.01rem;
 }
+
 .body-02 {
   color: var(--light-theme-text-text-secondary, #606062);
 
@@ -416,8 +437,9 @@ div#app {
   font-size: 1rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 1.5rem; /* 150% */
+  line-height: 1.5rem;
 }
+
 .body-compact-01 {
   color: var(--light-theme-text-text-primary, #131315);
 
@@ -426,7 +448,7 @@ div#app {
   font-size: 0.875rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 1.25rem; /* 142.857% */
+  line-height: 1.25rem;
   letter-spacing: 0.01rem;
 }
 
@@ -454,6 +476,7 @@ div#app {
   gap: 1.5rem;
   --cds-icon-primary: var(--light-theme-miscellaneous-interactive);
 }
+
 .form-header-application-submitted {
   width: 47%;
   gap: 0;
@@ -678,6 +701,7 @@ div#app {
   gap: 0.125rem;
   flex: 1 0 0;
 }
+
 .grouping-09 {
   align-self: stretch;
   display: flex;
@@ -696,7 +720,7 @@ div#app {
   font-size: 0.75rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 1rem; /* 133.333% */
+  line-height: 1rem;
   letter-spacing: 0.02rem;
 }
 
@@ -858,13 +882,13 @@ cds-modal {
   .fluid-heading-05 {
     /* Fluid styles/SM/fluid-heading-05 */
     font-size: 2rem;
-    line-height: 2.5rem; /* 125% */
+    line-height: 2.5rem;
   }
 
   .fluid-paragraph-01 {
     /* Fluid styles/XLG/fluid-paragraph-01 */
     font-size: 1.5rem;
-    line-height: 1.875rem; /* 125% */
+    line-height: 1.875rem;
   }
 
   .submission-badge {
@@ -875,7 +899,6 @@ cds-modal {
 
 /* Medium (from 672px to 1055px) */
 @media screen and (min-width: 672px) and (max-width: 1055px) {
-
   /* Lower range width is still a mess */
 
   .screen {
@@ -912,13 +935,13 @@ cds-modal {
   .fluid-heading-05 {
     /* Fluid styles/MED/fluid-heading-05 */
     font-size: 2.25rem;
-    line-height: 2.75rem; /* 122.222% */
+    line-height: 2.75rem;
   }
 
   .fluid-paragraph-01 {
     /* Fluid styles/XLG/fluid-paragraph-01 */
     font-size: 1.5rem;
-    line-height: 1.875rem; /* 125% */
+    line-height: 1.875rem;
   }
 
   .submission-badge {
@@ -933,25 +956,32 @@ cds-modal {
     padding: 2.5rem 2rem;
     align-items: center;
   }
-  .grouping-02, .grouping-03 {
+
+  .grouping-02,
+  .grouping-03 {
     width: 50.4375rem;
   }
+
   .form-header-application-submitted cds-button {
     margin-top: 2rem;
   }
+
   .frame-03 {
     column-gap: 4.0625rem;
   }
+
   .fluid-heading-05 {
     /* Fluid styles/MED/fluid-heading-05 */
     font-size: 2.25rem;
-    line-height: 2.75rem; /* 122.222% */
+    line-height: 2.75rem;
   }
+
   .fluid-paragraph-01 {
     /* Fluid styles/XLG/fluid-paragraph-01 */
     font-size: 1.5rem;
-    line-height: 1.875rem; /* 125% */
+    line-height: 1.875rem;
   }
+
   .submission-badge {
     width: 16rem;
     height: 16rem;
@@ -964,22 +994,28 @@ cds-modal {
     padding: 2.5rem 2rem;
     align-items: center;
   }
-  .grouping-02, .grouping-03 {
+
+  .grouping-02,
+  .grouping-03 {
     width: 50.4375rem;
   }
+
   .frame-03 {
     column-gap: 3.3125rem;
   }
+
   .fluid-heading-05 {
     /* Fluid styles/XLG/fluid-heading-05 */
     font-size: 3rem;
-    line-height: 56px; /* 116.667% */
+    line-height: 56px;
   }
+
   .fluid-paragraph-01 {
     /* Fluid styles/XLG/fluid-paragraph-01 */
     font-size: 28px;
-    line-height: 2.25rem; /* 128.571% */
+    line-height: 2.25rem;
   }
+
   .submission-badge {
     width: 22rem;
     height: 22rem;
@@ -992,12 +1028,16 @@ cds-modal {
     padding: 2.5rem 2rem;
     align-items: center;
   }
-  .grouping-02, .grouping-03 {
+
+  .grouping-02,
+  .grouping-03 {
     width: 50.4375rem;
   }
+
   .frame-03 {
     column-gap: 4.125rem;
   }
+
   .submission-badge {
     width: 29.8125rem;
     height: 29.8125rem;
@@ -1010,12 +1050,16 @@ cds-modal {
     padding: 2.5rem 7.75rem;
     align-items: center;
   }
-  .grouping-02, .grouping-03 {
+
+  .grouping-02,
+  .grouping-03 {
     width: 50.4375rem;
   }
+
   .frame-03 {
     column-gap: 4.3125rem;
   }
+
   .submission-badge {
     width: 31.375rem;
     height: 31.375rem;
