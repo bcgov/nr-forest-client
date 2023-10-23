@@ -183,7 +183,7 @@ describe("<AddressGroupComponent />", () => {
       .find("label")
       .and("include.text", "Postal code");
 
-    // wait for the option's inner, standard HTML element to exist before clicking the combo-box
+    // Wait for the option's inner, standard HTML element to exist before clicking the combo-box
     cy.get("#country_0")
       .find('cds-combo-box-item[data-id="US"]')
       .shadow()
@@ -196,6 +196,7 @@ describe("<AddressGroupComponent />", () => {
 
     cy.get("#country_0")
       .find('cds-combo-box-item[data-id="US"]')
+      .should("be.visible")
       .click()
       .and("have.value", "United States of America");
 
@@ -209,6 +210,7 @@ describe("<AddressGroupComponent />", () => {
       .and("have.value", "")
       .click()
       .find('cds-combo-box-item[data-id="IL"]')
+      .should("be.visible")
       .click()
       .and("have.value", "Illinois");
 

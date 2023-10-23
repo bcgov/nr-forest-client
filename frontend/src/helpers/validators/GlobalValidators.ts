@@ -341,7 +341,7 @@ export const validate = (
         }
         const result = condition.replace(targetGlobalRegex, "target.");
         return result;
-      }
+      };
       const runValidation = (
         item: any,
         condition: string,
@@ -367,7 +367,9 @@ export const validate = (
               (subItem: any) =>
                 runValidation(
                   subItem,
-                  buildEval(fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)),
+                  buildEval(
+                    fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)
+                  ),
                   fieldKey.replace(".*.", `[${index}].`)
                 ) === ""
             );
@@ -376,7 +378,9 @@ export const validate = (
           return (
             runValidation(
               item,
-              buildEval(fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)),
+              buildEval(
+                fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)
+              ),
               fieldKey.replace(".*.", `[${index}].`)
             ) === ""
           );
@@ -409,13 +413,13 @@ export const runValidation = (
     }
     const result = condition.replace(targetGlobalRegex, "target.");
     return result;
-  }
+  };
   const executeValidation = (
     item: any,
     condition: string,
     fieldId: string = fieldKey
   ): string => {
-    if (eval(condition)) {// NOSONAR
+    if (eval(condition)) { // NOSONAR
       const validationResponse = validation(item);
       if (notify) {
         // Note: also notifies when valid - errorMsg will be empty.
@@ -439,7 +443,9 @@ export const runValidation = (
           const valid =
             executeValidation(
               subItem,
-              buildEval(fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)),
+              buildEval(
+                fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)
+              ),
               fieldKey.replace(".*.", `[${index}].`)
             ) === "";
           if (!valid) {
@@ -455,7 +461,9 @@ export const runValidation = (
       const valid =
         executeValidation(
           item,
-          buildEval(fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)),
+          buildEval(
+            fieldCondition.replace(arrayIndexGlobalRegex, `[${index}].`)
+          ),
           fieldKey.replace(".*.", `[${index}].`)
         ) === "";
       if (!valid) {
@@ -470,3 +478,7 @@ export const runValidation = (
   // If the field value is not an array we run the validation for the field
   return executeValidation(fieldValue, fieldCondition) === "";
 };
+
+export const isNullOrUndefinedOrBlank = (
+  input: string | null | undefined
+): boolean => input === null || input === undefined || input.trim() === "";
