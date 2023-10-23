@@ -1,6 +1,7 @@
 package ca.bc.gov.app.dto.client;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.With;
 
 
 @Schema(
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
         "legalType": "SP"
         }"""
 )
+@With
 public record ClientLookUpDto(
     @Schema(description = "The code for that specific object", example = "00000002")
     String code,

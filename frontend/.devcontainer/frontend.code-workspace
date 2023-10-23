@@ -23,7 +23,6 @@
 			"vue"
 		],
 		"prettier.requireConfig": true,
-		
 		"workbench.tree.indent": 20,
 		"workbench.iconTheme": "material-icon-theme",
 		"[vue]": {
@@ -35,5 +34,10 @@
 		"[xml]": {
 			"editor.defaultFormatter": "redhat.vscode-xml"
 		},
+		"typescript.tsdk": "node_modules/typescript/lib",
+		"eslint.ignoreUntitled": true,
+		"eslint.options": {
+			"configFile": "./.eslintrc.js"
+		}
 	}
 }

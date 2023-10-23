@@ -1,11 +1,12 @@
 {
   "extends": "./tsconfig.app.json",
   "exclude": [],
+  "include": ["tests/**/*"],
   "compilerOptions": {
     "composite": true,
-    "lib": [],
+    "lib": ["es2017", "dom", "dom.iterable"],
     "types": ["node", "jsdom"],
     "ignoreDeprecations": "5.0",
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
   }
 }

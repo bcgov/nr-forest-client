@@ -1,46 +1,32 @@
 <!DOCTYPE html>
-<html 
-	lang="en" 
-	xmlns="http://www.w3.org/1999/xhtml"
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:v="urn:schemas-microsoft-com:vml"
 	xmlns:o="urn:schemas-microsoft-com:office:office">
 
 <#include "emailHead.html">
 
-<body 
-	width="100%"
+<body width="100%"
 	style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly;">
 
-	<div style="text-align: left;">
-
+	<div class="text" style="padding: 0 2.5em; text-align: left;">
+		
 		<#include "emailLogo.html">
 
 		<p>
-			Dear <b>${userName}</b>,
+			Client Admin,
 		</p>
 		<div>&nbsp;</div>
 
 		<p>
-			Your application for a client number for <b>${business.name}</b> is approved.
+			An application for a client number for <b>${userName}</b> has been approved.
 		</p>
-		<p>The client number is ${business.clientNumber}. Be sure to keep it for your records.</p>
-		<div>&nbsp;</div>
-		
 		<p>
-			Here is the information you submitted. If you need to update it, contact your district office.
+			The client number is ${clientNumber}.
 		</p>
 		<div>&nbsp;</div>
-		
-		TODO:
-		
-		<p>
-			If you need to contact us, email <a
-				href="mailto:FORHVAP.CLIADMIN@gov.bc.ca">FORHVAP.CLIADMIN@gov.bc.ca.</a>
-		</p>
-		<div>&nbsp;</div>
-		
+			
 		<p>Thank you,</p>
-		<p>The Client Management Team</p>
+		<p>Client Management System</p>
 		<div>&nbsp;</div>
 		
 		<p>
