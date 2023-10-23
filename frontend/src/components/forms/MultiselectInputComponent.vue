@@ -7,7 +7,6 @@ import "@carbon/web-components/es/components/tag/index";
 import { useEventBus } from "@vueuse/core";
 // Types
 import type { CodeNameType } from "@/dto/CommonTypesDto";
-import { isEmpty } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -30,7 +29,7 @@ const emit = defineEmits<{
 }>();
 
 //We initialize the error message handling for validation
-const error = ref<string | undefined>(props.errorMessage || "");
+const error = ref<string | undefined>(props.errorMessage ?? "");
 
 const revalidateBus = useEventBus<void>("revalidate-bus");
 
@@ -56,17 +55,13 @@ const validateInput = (newValue: any) => {
       if (message) return true;
       return false;
     };
-    const validate = (value: string) =>
+    const validate = (value: string[]) =>
       props.validations
         .map((validation) => validation(value))
         .filter(hasError)
         .shift() ?? props.errorMessage;
 
-    error.value =
-      items.value
-        .map((item: string) => validate(item))
-        .filter(hasError)
-        .shift() ?? props.errorMessage;
+    error.value = validate(items.value);
   }
 };
 
@@ -113,7 +108,6 @@ watch(
   () => (error.value = props.errorMessage)
 );
 
-validateInput(selectedValue.value);
 revalidateBus.on(() => validateInput(selectedValue.value));
 </script>
 

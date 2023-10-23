@@ -1,7 +1,7 @@
 /**
  * Router configuration for the application.
  */
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from "vue-router";
 
 import SubmissionList from '@/pages/SubmissionListPage.vue'
 import SubmissionReview from '@/pages/SubmissionReviewPage.vue'

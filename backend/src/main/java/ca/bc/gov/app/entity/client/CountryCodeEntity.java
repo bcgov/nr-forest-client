@@ -33,4 +33,11 @@ public class CountryCodeEntity extends ExpirableBaseEntity {
   @NotNull
   private Integer order;
 
+  public CountryCodeEntity(
+      @NotNull @Size(min = 2, max = 2) String countryCode,
+      @NotNull String description) {
+    this.countryCode = countryCode;
+    this.description = description;
+  }
+  
 }

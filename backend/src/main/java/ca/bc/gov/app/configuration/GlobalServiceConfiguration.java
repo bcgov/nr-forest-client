@@ -37,6 +37,8 @@ import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientNameCodeDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
+import ca.bc.gov.app.dto.client.CodeNameDto;
+import ca.bc.gov.app.dto.cognito.AuthResponse;
 import ca.bc.gov.app.dto.cognito.AuthResponseDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import lombok.extern.slf4j.Slf4j;
@@ -68,6 +70,7 @@ import org.springframework.web.reactive.function.client.WebClient;
     ClientNameCodeDto.class,
     ClientSubmissionDto.class,
     ClientValueTextDto.class,
+    CodeNameDto.class,
     BcRegistryAddressDto.class,
     BcRegistryBusinessAdressesDto.class,
     BcRegistryBusinessDto.class,

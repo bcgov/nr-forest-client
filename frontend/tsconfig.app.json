@@ -6,7 +6,6 @@
     "composite": true,
     "lib": ["es2017", "dom", "dom.iterable"],
     "verbatimModuleSyntax": true,
-    "isolatedModules":false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

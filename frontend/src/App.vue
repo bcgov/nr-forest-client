@@ -67,7 +67,7 @@ toastBus.on(openToast)
   </div>
 
   <div class="modals">
-    
+
     <cds-modal
       id="modal-global"
       size="sm"
@@ -81,17 +81,17 @@ toastBus.on(openToast)
           {{ modalContent.kind }}?
         </cds-modal-heading>
       </cds-modal-header>
-      
+
 
       <cds-modal-footer>
-          <cds-modal-footer-button 
+          <cds-modal-footer-button
             kind="secondary"
             data-modal-close
             class="cds--modal-close-btn">
             Cancel
           </cds-modal-footer-button>
-          
-          <cds-modal-footer-button 
+
+          <cds-modal-footer-button
             kind="danger"
             class="cds--modal-submit-btn"
             v-on:click="deleteContentModal">
@@ -99,9 +99,9 @@ toastBus.on(openToast)
             <Delete16 slot="icon" />
           </cds-modal-footer-button>
 
-      </cds-modal-footer>
-  </cds-modal>
-</div>
+        </cds-modal-footer>
+    </cds-modal>
+  </div>
 
   <cds-toast-notification
       v-if="toastContent.active"

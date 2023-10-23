@@ -29,7 +29,7 @@ const emit = defineEmits<{
 }>();
 
 //We initialize the error message handling for validation
-const error = ref<string | undefined>(props.errorMessage || "");
+const error = ref<string | undefined>(props.errorMessage ?? "");
 
 const revalidateBus = useEventBus<void>("revalidate-bus");
 
@@ -47,30 +47,47 @@ emit("empty", isEmpty(props.initialValue));
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
   const reference = newValue
-    ? props.modelValue.find((entry) => entry.code === newValue)
-    : undefined;
+    ? props.modelValue.find((entry) => entry.name === newValue)
+    : { code: '', name: '' };
 
-  emit("update:modelValue", newValue);
+  emit("update:modelValue", reference?.name);
   emit("update:selectedValue", reference);
   emit("empty", isEmpty(newValue));
 };
 
-//We call all the validations
-const validateInput = (newValue: any) => {
+/**
+ * Performs all validations and returns the first error message.
+ * If there's no error from the validations, returns props.errorMessage.
+ *
+ * @param {string} newValue
+ * @returns {string | undefined} the error message or props.errorMessage
+ */
+const validatePurely = (newValue: string): string | undefined => {
   if (props.validations) {
-    error.value =
+    return (
       props.validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
           if (errorMessage) return true;
           return false;
         })
-        .shift() ?? props.errorMessage;
+        .shift() ?? props.errorMessage
+    );
+  }
+}
+
+const validateInput = (newValue: any) => {
+  if (props.validations) {
+    error.value = validatePurely(newValue);
   }
 };
 
+// Tells whether the current change was done manually by the user.
+const isUserEvent = ref(false)
+
 const selectItem = (event: any) => {
-  selectedValue.value = event?.detail?.item?.getAttribute("data-id");
+  selectedValue.value = event?.detail?.item?.getAttribute("data-value");
+  isUserEvent.value = true
 };
 
 /**
@@ -87,7 +104,25 @@ watch([selectedValue], () => {
   if (selectedValue.value === "") {
     comboBoxMountTime.value = [Date.now()];
   }
-  validateInput(selectedValue.value);
+  const reference = selectedValue.value
+    ? props.modelValue.find((entry) => entry.name === selectedValue.value)
+    : { code: "", name: "" };
+  const errorMessage = validatePurely(reference ? reference.code : "");
+
+  /*
+  If the current change was not directly performed by the user, we don't want
+  to set a non-empty error message on it.
+  We don't want to call user's attention for something they didn't do wrong.
+  Note: we still want to UPDATE the error message in case it already had an
+  error, since the type of error could have changed.
+  */
+  if (isUserEvent.value || !errorMessage || error.value) {
+    error.value = errorMessage
+  }
+
+  // resets variable
+  isUserEvent.value = false;
+
   emitValueChange(selectedValue.value);
 });
 
@@ -122,7 +157,9 @@ revalidateBus.on(() => validateInput(selectedValue.value));
       :invalidText="error"
       @cds-combo-box-selected="selectItem"
       :data-focus="id"
-      :data-scroll="id">
+      :data-scroll="id"
+      v-shadow="3"
+    >
       <cds-combo-box-item 
         v-for="option in inputList"
         :key="option.code"

@@ -4,8 +4,9 @@ import { reactive, watch, toRef, ref, getCurrentInstance, computed } from "vue";
 import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/progress-indicator/index";
 import "@carbon/web-components/es/components/notification/index";
+import "@carbon/web-components/es/components/tooltip/index";
 // Composables
-import { useEventBus, useMediaQuery } from "@vueuse/core";
+import { useEventBus } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useFocus } from "@/composables/useFocus";
 import { usePost } from "@/composables/useFetch";
@@ -22,6 +23,7 @@ import type {
   ProgressNotification,
   CodeDescrType,
 } from "@/dto/CommonTypesDto";
+import { isSmallScreen } from "@/CoreConstants";
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // Imported global validations
@@ -40,11 +42,18 @@ import LogOut16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 
-const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
-const notificationBus = useEventBus<ValidationMessageType | undefined>("error-notification");
-const exitBus = useEventBus<Record<string, boolean | null>>("exit-notification");
+const errorBus = useEventBus<ValidationMessageType[]>(
+  "submission-error-notification"
+);
+const notificationBus = useEventBus<ValidationMessageType | undefined>(
+  "error-notification"
+);
+const exitBus =
+  useEventBus<Record<string, boolean | null>>("exit-notification");
 const revalidateBus = useEventBus<void>("revalidate-bus");
-const progressIndicatorBus = useEventBus<ProgressNotification>("progress-indicator-bus");
+const progressIndicatorBus = useEventBus<ProgressNotification>(
+  "progress-indicator-bus"
+);
 
 const router = useRouter();
 const { setScrollPoint, setFocusedComponent } = useFocus();
@@ -220,9 +229,16 @@ const checkStepValidity = (stepNumber: number): boolean => {
     }
   });
 
-  if(!progressData[stepNumber]
-    .extraValidations
-    .every((validation: any) => runValidation(validation.field, formData, validation.validation, true, true))
+  if (
+    !progressData[stepNumber].extraValidations.every((validation: any) =>
+      runValidation(
+        validation.field,
+        formData,
+        validation.validation,
+        true,
+        true
+      )
+    )
   )
     return false;
 
@@ -280,7 +296,7 @@ const processAndLogOut = () => {
         name: formData.businessInformation.businessName,
         userName: submitterInformation?.name ?? "",
         userId: submitterInformation?.userId ?? "",
-        email: submitterInformation?.email ?? "",
+        mail: submitterInformation?.email ?? "",
       },
       {}
     );
@@ -336,8 +352,6 @@ const scrollToNewContact = () => {
     });
   }
 };
-
-const isSmallScreen = useMediaQuery("(max-width: 671px)");
 </script>
 
 <template>
@@ -369,7 +383,7 @@ const isSmallScreen = useMediaQuery("(max-width: 671px)");
     <div v-if="currentTab == 0" class="form-steps-01">
       <div class="form-steps-01-title">
         <span class="heading-04" data-scroll="scroll-0">Before you begin</span>
-        <ol type="1" class="numbered-list body-compact-01">
+        <ol type="1" class="bulleted-list body-compact-01">
           <li>
             A registered business must be in good standing with BC
             Registries
@@ -485,18 +499,23 @@ const isSmallScreen = useMediaQuery("(max-width: 671px)");
             <span>Back</span>
           </cds-button>
 
-          <cds-button
-            v-if="!isLast && !endAndLogOut && !mailAndLogOut"
-            id="nextBtn"
-            kind="primary"
-            size="lg"
-            v-on:click="onNext"
-            :disabled="progressData[currentTab].valid === false"
-            data-test="wizard-next-button"
-            >
-            <span>Next</span>
-            <ArrowRight16 slot="icon" />
-          </cds-button>
+          <cds-tooltip>
+            <cds-button
+              v-if="!isLast && !endAndLogOut && !mailAndLogOut"
+              id="nextBtn"
+              kind="primary"
+              size="lg"
+              v-on:click="onNext"
+              :disabled="progressData[currentTab].valid === false"
+              data-test="wizard-next-button"
+              >
+              <span>Next</span>
+              <ArrowRight16 slot="icon" />
+            </cds-button>
+            <cds-tooltip-content v-show="progressData[currentTab].valid === false">
+              All fields must be filled in correctly.
+            </cds-tooltip-content>
+          </cds-tooltip>
 
           <cds-button
             v-if="isLast && !endAndLogOut && !mailAndLogOut"

@@ -1,4 +1,5 @@
-import { version } from '../package.json'
+import { version } from "../package.json";
+import { useMediaQuery } from "@vueuse/core";
 
 export const checkEnv = (key: string) =>
   window.localStorage.getItem(key) || import.meta.env[key]
@@ -12,5 +13,8 @@ export const nodeEnv = checkEnv('VITE_NODE_ENV')
 export const appVersion = version
 
 // constant
-export const maxFileSizePerFile = 1000000 * 20 // 20 mb
-export const maxTotalFileSize = 1000000 * 20 * 5 // 100 mb
+export const maxFileSizePerFile = 1000000 * 20; // 20 mb
+export const maxTotalFileSize = 1000000 * 20 * 5; // 100 mb
+
+export const isSmallScreen = useMediaQuery("(max-width: 671px)");
+export const isMediumScreen = useMediaQuery("(min-width: 672px) and (max-width: 1055px)");

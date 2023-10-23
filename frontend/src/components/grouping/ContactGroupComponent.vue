@@ -110,7 +110,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
     :model-value="addressList"
     :selectedValues="selectedValue.locationNames?.map((location:CodeDescrType) => location?.text)"
     :validations="[
-      ...getValidations('location.contacts.*.locationNames.*.text'),
+      ...getValidations('location.contacts.*.locationNames'),
       submissionValidation(`location.contacts[${id}].locationNames`)
     ]"
     @update:selected-value="
@@ -123,7 +123,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
     :id="'role_' + id"
     label="Primary role"
     tip="Choose the primary role for this contact"
-    :initial-value="selectedValue.contactType.value"
+    :initial-value="selectedValue.contactType.text"
     :model-value="roleList"
     :validations="[
       ...getValidations('location.contacts.*.contactType.text'),

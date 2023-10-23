@@ -7,9 +7,9 @@
         "method": "GET",
         "queryParameters": {
           "code": {
-            "equalTo": "idir"
+              "equalTo": "idir"
           }
-        }
+      }
       },
       "response": {
         "status": 302,
@@ -29,9 +29,9 @@
         "method": "GET",
         "queryParameters": {
           "code": {
-            "equalTo": "bceidbusiness"
+              "equalTo": "bceidbusiness"
           }
-        }
+      }
       },
       "response": {
         "status": 302,
@@ -51,9 +51,9 @@
         "method": "GET",
         "queryParameters": {
           "code": {
-            "equalTo": "bcsc"
+              "equalTo": "bcsc"
           }
-        }
+      }
       },
       "response": {
         "status": 302,
@@ -90,9 +90,9 @@
         "method": "GET",
         "queryParameters": {
           "code": {
-            "matches": "(.*)"
+              "matches": "(.*)"
           }
-        }
+      }
       },
       "response": {
         "status": 302,

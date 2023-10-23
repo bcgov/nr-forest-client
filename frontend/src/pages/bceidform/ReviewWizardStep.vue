@@ -27,7 +27,7 @@ const revalidateBus = useEventBus<void>("revalidate-bus");
 const formData = ref<FormDataDto>(props.data);
 watch([formData], () => emit("update:data", formData.value));
 
-//So far, hardcoded the value but should be coming from somewhere else
+//TODO: So far, hardcoded the value but should be coming from the database
 const companyBusinessTypes: Record<string, string> = {
   R: "B.C. Registered Business - Corporation",
   U: "Sole Proprietorship",
@@ -48,7 +48,7 @@ onMounted(() => {
       <p class="heading-02">
         {{ formData.businessInformation.businessName }}
       </p>
-      <p class="body-compact-01">
+      <p class="body-compact-01" id="businessTypeId">
         {{ companyBusinessTypes[`${formData.businessInformation.businessType}`] }}
       </p>
     </div>

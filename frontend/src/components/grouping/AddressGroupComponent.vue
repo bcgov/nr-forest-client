@@ -264,7 +264,7 @@ onMounted(() => {
     tip=""
     :enabled="true"
     :model-value="countryList"
-    :validations="[...getValidations('location.addresses.country.text'),submissionValidation(`location.addresses[${id}].country`)]"
+    :validations="[...getValidations('location.addresses.*.country.text'),submissionValidation(`location.addresses[${id}].country`)]"
     :error-message="addressError"
     @update:selected-value="updateStateProvince($event, 'country')"
     @update:model-value="resetProvinceOnChange"
@@ -291,11 +291,9 @@ onMounted(() => {
       ]"
       :loading="loading"
       @update:selected-value="autoCompleteResult = $event"
-      @update:model-value="validation.streetAddress = false"
       :error-message="addressError"
-      @empty="
-        validation.streetAddress = selectedValue.streetAddress ? true : false
-      "
+      @empty="validation.streetAddress = !$event"
+      @error="validation.streetAddress = !$event"
     />
     <cds-inline-loading status="active" v-if="showDetailsLoading">Loading address details...</cds-inline-loading>
   </data-fetcher>

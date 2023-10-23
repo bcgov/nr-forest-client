@@ -38,8 +38,22 @@ const updateAddress = (value: Address | undefined, index: number) => {
     if (value) formData.location.addresses[index] = value;
     else {
       const addressesCopy: Address[] = [...formData.location.addresses];
-      addressesCopy.splice(index, 1);
+      const removedAddressArray = addressesCopy.splice(index, 1);
       formData.location.addresses = addressesCopy;
+
+      // Remove the deleted address from the contacts that are associated to it.
+      // (the condition is just a sanity check)
+      if (removedAddressArray.length > 0) {
+        const removedAddress = removedAddressArray[0];
+        formData.location.contacts.forEach((contact) => {
+          const indexWithinContact = contact.locationNames.findIndex(
+            (locationName) => locationName.text === removedAddress.locationName
+          );
+          if (indexWithinContact !== -1) {
+            contact.locationNames.splice(indexWithinContact, 1);
+          }
+        });
+      }
     }
     revalidate.value = !revalidate.value;
   }

@@ -50,7 +50,21 @@
       }
     },
     {
-      "name":"Province Codes",
+      "name": "Country Code",
+      "request": {
+        "urlPattern": "/api/clients/getCountryByCode/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-country-{{request.path.[3]}}.json"
+      }
+    },
+    {
+      "name": "Province Codes",
       "request": {
         "urlPattern": "/api/clients/activeCountryCodes/(.*)?page=0&size=250",
         "method": "GET"
@@ -149,7 +163,7 @@
       },
       "response": {
         "status": 400,
-        "body":"[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]"
+        "body": "[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]"
       }
     },
 
@@ -176,7 +190,7 @@
       }
     },
     {
-      "name":"Autocompete Canada Post US",
+      "name": "Autocompete Canada Post US",
       "request": {
         "urlPath": "/api/clients/addresses",
         "method": "GET",
@@ -198,7 +212,7 @@
       }
     },
     {
-      "name":"Canada Post details for success",
+      "name": "Canada Post details for success",
       "request": {
         "urlPattern": "/api/clients/addresses/(.*)",
         "method": "GET"
@@ -307,10 +321,10 @@
       "name":"Submission Details Review",
       "request": {
         "urlPattern": "/api/clients/submissions/(.*)",
-        "method": "GET"        
+        "method": "GET"
       },
       "response": {
-        "status": 200,        
+        "status": 200,
         "bodyFileName": "response-submissions-details-review.json",
         "transformers": ["response-template"]
       }
@@ -319,10 +333,10 @@
       "name":"Submission Details Approved",
       "request": {
         "urlPath": "/api/clients/submissions/a17d274f-3f5f-425b-b94e-757fea4dcfbb",
-        "method": "GET"        
+        "method": "GET"
       },
       "response": {
-        "status": 200,        
+        "status": 200,
         "bodyFileName": "response-submissions-details-approved.json",
         "transformers": ["response-template"]
       }
@@ -331,10 +345,10 @@
       "name":"Submission Details Review Dupped",
       "request": {
         "urlPath": "/api/clients/submissions/5f1f7209-fb2f-487d-9619-786c63a52a07",
-        "method": "GET"        
+        "method": "GET"
       },
       "response": {
-        "status": 200,        
+        "status": 200,
         "bodyFileName": "response-submissions-details-dupped.json",
         "transformers": ["response-template"]
       }
@@ -355,7 +369,7 @@
             "equalTo": "Uat Test"
           }
           }
-        
+
       },
       "response": {
         "status": 202
@@ -363,4 +377,3 @@
     }
   ]
 }
-
