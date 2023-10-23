@@ -135,6 +135,12 @@ cds-progress-step::part(cds--progress-label) {
   padding-right: 0.5rem;
 }
 
+cds-progress-step::part(cds--progress-label):hover {
+  box-shadow: none;
+  color: unset;
+  cursor: auto;
+}
+
 cds-progress-step.step-inactive::part(cds--progress-optional) {
   color: #939395;
 }
