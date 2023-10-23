@@ -220,6 +220,9 @@ hr {
 
 .cds--inline-notification-content {
   width: 100%;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
 }
 
 div#app {
@@ -616,6 +619,21 @@ div#app {
   row-gap: 1.5rem;
 }
 
+.card {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
+  background: #fff;
+  max-width: 50.4375rem;
+}
+
+.divider {
+  margin: 1.5rem 0 1.5rem 0;
+}
+
 .grouping-01 {
   align-self: stretch;
   display: flex;
@@ -664,16 +682,6 @@ div#app {
   flex-direction: column;
   padding: 2rem;
   gap: 2.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
-  background: #fff;
-}
-
-.grouping-tbd {
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem 0 1.5rem 0;
   border-radius: 0.5rem;
   border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
   background: #fff;

@@ -16,39 +16,49 @@
       Personal information
     </span>
     <p class="body-compact-01">
-      Review the personal information below. It’s from your BC Services card.<br />
+      Review the personal information below. It’s from your BC Services card.<br /><br />
       We use it to know who we're giving a number to and for communicating with clients. 
     </p>
 
-    <div class="grouping-tbd">
-      <div class="cds--css-grid">
-        <div class="cds--css-grid-column cds--sm:col-span-3">
-          <p class="body-compact-01">Full name</p>
-          <p>{{ formData.businessInformation.businessName }}</p>
-        </div>
-        <div class="cds--css-grid-column cds--sm:col-span-3">
-          <p class="body-compact-01">Date of birth</p>
-          <p>{{ formData.businessInformation.birthDate }}</p>
-        </div>
-        <div class="cds--css-grid-column cds--sm:col-span-3">
-          <p class="body-compact-01">Email address</p>
-          <p>{{ formData.location.contacts[0].email }}</p>
-        </div>
-        <div class="cds--css-grid-column cds--sm:col-span-3">
-          <p class="body-compact-01">Address</p>
-          <p>
-            {{ formData.businessInformation.address.streetAddress }} <br />
-            {{ formData.businessInformation.address.city }}, {{ formData.businessInformation.address.province.value }} <br />
-            {{ formData.businessInformation.address.country.text }} <br />
-            {{ formData.businessInformation.address.postalCode }}
+    <div class="card">
+      <div>
+        <cds-inline-notification
+          v-shadow="2"
+          low-contrast="true"
+          open="true"
+          kind="info"
+          hide-close-button="true"
+          title="">
+          <p class="cds--inline-notification-content">
+            <strong>Read-only: </strong>If something is incorrect change your personal information and then restart your application.
           </p>
-        </div>
+        </cds-inline-notification>
+        <br /><br />
+
+        <p class="body-compact-01">Full name</p>
+        <p>{{ formData.businessInformation.businessName }}</p>
+      </div>
+      <hr class="divider" />
+      <div>
+        <p class="body-compact-01">Date of birth</p>
+        <p>{{ formData.businessInformation.birthDate }}</p>
+      </div>
+      <hr class="divider" />
+      <div>
+        <p class="body-compact-01">Email address</p>
+        <p>{{ formData.location.contacts[0].email }}</p>
+      </div>
+      <hr class="divider" />
+      <div>
+        <p class="body-compact-01">Address</p>
+        <p>
+          {{ formData.businessInformation.address.streetAddress }} <br />
+          {{ formData.businessInformation.address.city }}, {{ formData.businessInformation.address.province.value }} <br />
+          {{ formData.businessInformation.address.country.text }} <br />
+          {{ formData.businessInformation.address.postalCode }}
+        </p>
       </div>
     </div>
-
-    TODO
-
-    <hr class="divider" />
 
     <span class="heading-04" data-scroll="scroll-0">
       Contact information

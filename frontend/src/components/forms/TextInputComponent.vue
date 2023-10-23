@@ -18,6 +18,7 @@ const props = defineProps<{
   validations: Array<Function>;
   errorMessage?: string;
   mask?: string;
+  requiredLabel?: boolean;
 }>();
 
 //Events we emit during component lifecycle
@@ -133,7 +134,10 @@ const selectValue = (event: any) => {
   </div>
 
   <div v-if="!enabled" class="grouping-04">
-    <div :data-scroll="id" class="grouping-04-label"><span :for="id" class="label-01">{{ label }}</span></div>
+    <div :data-scroll="id" class="grouping-04-label">
+      <span :for="id" class="label-01">{{ label }}</span>
+      --{{  requiredLabel }}
+    </div>
     <span class="text-01">{{ modelValue }}</span>
   </div>
 
