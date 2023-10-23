@@ -3,7 +3,7 @@ import { ref } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
 // Types
-import { nodeEnv, appVersion, isSmallScreen } from "@/CoreConstants";
+import { nodeEnv, appVersion, isSmallScreen, isMediumScreen } from "@/CoreConstants";
 // @ts-ignore
 import Logout16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
