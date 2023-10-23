@@ -11,7 +11,10 @@ import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 import { emptyContact } from "@/dto/ApplyClientNumberDto";
 import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";
 // Validators
-import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
+import {
+  isUniqueDescriptive,
+  isNullOrUndefinedOrBlank,
+} from "@/helpers/validators/GlobalValidators";
 // @ts-ignore
 import Add16 from "@carbon/icons-vue/es/add/16";
 
@@ -112,10 +115,11 @@ watch([validation], () => emit("valid", checkValid()));
 emit("valid", false);
 
 const handleRemove = (index: number) => {
-  const selectedContact =
-    formData.location.contacts[index].firstName.length !== 0
-      ? `${formData.location.contacts[index].firstName} ${formData.location.contacts[index].lastName}`
-      : "Contact #" + index;
+  const selectedContact = !isNullOrUndefinedOrBlank(
+    formData.location.contacts[index].firstName
+  )
+    ? `${formData.location.contacts[index].firstName} ${formData.location.contacts[index].lastName}`
+    : "Contact #" + index;
   bus.emit({
     message: selectedContact,
     kind: "Contact deleted",
