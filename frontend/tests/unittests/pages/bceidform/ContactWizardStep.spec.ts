@@ -17,7 +17,10 @@ describe('ContactWizardStep.vue', () => {
               contacts: [
                 {
                   ...emptyContact,
+                  firstName: 'John',
+                  lastName: 'Doe',
                 } as Contact,
+                // And here is the contact to be deleted
                 {
                   ...emptyContact,
                   firstName: null,
