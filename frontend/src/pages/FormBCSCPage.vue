@@ -26,7 +26,16 @@
           hide-close-button="true"
           title="">
           <p class="cds--inline-notification-content">
-            <strong>Read-only: </strong>If something is incorrect change your personal information and then restart your application.
+            <strong>Read-only: </strong>
+            If something is incorrect visit 
+            <a
+              href=""
+              target="_blank"
+              rel="noopener noreferrer"
+              @click.prevent="changePersonalInfoModalActive = true"
+              >Change your personal information
+            </a> 
+            and then restart your application.
           </p>
         </cds-inline-notification>
         <br /><br />
@@ -87,27 +96,106 @@
       <Add16 slot="icon" />
     </cds-button>
 
-    {{ formData.location.contacts }}
+    <!-- <contact-group-component
+      :id="0"
+      v-model="formData.location.contacts[0]"
+      :roleList="roleList"
+      :validations="[uniqueValues.add]"
+      :revalidate="revalidate"
+      :enabled="false"
+      @update:model-value="updateContact($event, 0)"
+      @valid="updateValidState(0, $event)"
+    /> -->
 
+    <div class="frame-01" v-if="otherContacts.length > 0">
+      <div v-for="(contact, index) in otherContacts">
+        <hr />
+        <div class="grouping-09" :data-scroll="`additional-contact-${index + 1}`">
+          <span class="heading-03">Additional contact</span>
+        </div>
+        <contact-group-component
+          :key="index + 1"
+          :id="index + 1"
+          v-bind:modelValue="contact"
+          :roleList="roleList"
+          :validations="[uniqueValues.add]"
+          :enabled="true"
+          :revalidate="revalidate"
+          @update:model-value="updateContact($event, index + 1)"
+          @valid="updateValidState(index + 1, $event)"
+          @remove="handleRemove(index + 1)"
+        />
+      </div>
+    </div>
 
+    <hr class="divider" />
+
+    <cds-button
+        data-test="wizard-submit-button"
+        kind="primary"
+        size="lg"
+        @click.prevent="submit"
+        :disabled="submitBtnDisabled"
+      >
+      <span>Submit application</span>
+      <Check16 slot="icon" />
+    </cds-button>
+
+    <cds-modal
+      id="help-modal"
+      size="sm"
+      :open="changePersonalInfoModalActive"
+      @cds-modal-closed="changePersonalInfoModalActive = false"
+    >
+      <cds-modal-header>
+        <cds-modal-close-button></cds-modal-close-button>
+        <cds-modal-heading>
+          Change your personal information and logout
+        </cds-modal-heading>
+      </cds-modal-header>
+      <cds-modal-body>
+        <p>
+          Visit Change your personal information to update your name, address or date of birth. Go to your BC Services account to update your email address. 
+          You can then log back into this application using your BC Services Card.
+        </p>
+      </cds-modal-body>
+      <cds-modal-footer>
+        <cds-modal-footer-button 
+          kind="secondary"
+          data-modal-close
+          class="cds--modal-close-btn">
+          Cancel
+        </cds-modal-footer-button>
+        
+        <cds-modal-footer-button 
+          kind="primary"
+          class="cds--modal-submit-btn"
+          v-on:click="$session?.logOut"
+        >
+          Logout
+          <Logout16 slot="icon" />
+        </cds-modal-footer-button>
+
+      </cds-modal-footer>
+    </cds-modal>
 
   </div>
 
 </template>
 
-
 <script setup lang="ts">
-import { reactive, watch, ref, getCurrentInstance, computed, onMounted } from "vue";
+import { ref, reactive, computed, watch, getCurrentInstance } from "vue";
 import { newFormDataDto, emptyContact } from "@/dto/ApplyClientNumberDto";
-import { BusinessTypeEnum, ClientTypeEnum, LegalTypeEnum } from "@/dto/CommonTypesDto";
+import { BusinessTypeEnum, ClientTypeEnum, LegalTypeEnum  } from "@/dto/CommonTypesDto";
 import { useFetchTo } from "@/composables/useFetch";
-import { useEventBus } from "@vueuse/core";
 import { useFocus } from "@/composables/useFocus";
+import { useEventBus } from "@vueuse/core";
 import { codeConversionFn } from "@/services/ForestClientService";
 import { isUniqueDescriptive, isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
-import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";
+import type { CodeNameType, ModalNotification, ValidationMessageType } from "@/dto/CommonTypesDto";
 import Add16 from "@carbon/icons-vue/es/add/16";
+import Check16 from "@carbon/icons-vue/es/checkmark/16";
 
 const instance = getCurrentInstance();
 const session = instance?.appContext.config.globalProperties.$session;
@@ -175,6 +263,13 @@ watch(country, (newValue) => {
 
   formData.location.addresses.push(formData.businessInformation.address);
 });
+
+//Role related data
+const roleList = ref([]);
+const fetch = () => {
+  useFetchTo("/api/clients/activeContactTypeCodes?page=0&size=250", roleList);
+};
+fetch();
 
 //New contact being added
 const otherContacts = computed(() => formData.location.contacts.slice(1));
@@ -262,9 +357,28 @@ const handleRemove = (index: number) => {
   });
 };
 
-//onMounted(() => setFocusedComponent("addressname_0", 800));
-
 defineExpose({
   addContact,
 });
+
+let submitBtnDisabled = ref(false);
+
+const errorBus = useEventBus<ValidationMessageType[]>(
+  "submission-error-notification"
+);
+const notificationBus = useEventBus<ValidationMessageType | undefined>(
+  "error-notification"
+);
+const submit = () => {
+  errorBus.emit([]);
+  notificationBus.emit(undefined);
+
+  //TODO
+  /*if (checkStepValidity(currentTab.value)) {
+    submitBtnDisabled.value = true;
+    fetch();
+  }*/
+};
+
+const changePersonalInfoModalActive = ref(false);
 </script>

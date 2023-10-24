@@ -99,22 +99,18 @@ const logoutModalActive = ref(false);
     <cds-modal-body><p></p></cds-modal-body>
 
     <cds-modal-footer>
-        <cds-modal-footer-button 
-          kind="secondary"
-          data-modal-close
-          class="cds--modal-close-btn">
-          Cancel
-        </cds-modal-footer-button>
-        
-        <cds-modal-footer-button 
-          kind="danger"
-          class="cds--modal-submit-btn"
-          v-on:click="$session?.logOut"
-        >
-          Logout
-          <Logout16 slot="icon" />
-        </cds-modal-footer-button>
-
-      </cds-modal-footer>
+      <cds-modal-footer-button 
+        kind="secondary" 
+        data-modal-close class="cds--modal-close-btn">
+        Cancel
+      </cds-modal-footer-button>
+      <cds-modal-footer-button 
+        kind="danger" 
+        class="cds--modal-submit-btn" 
+        v-on:click="$session?.logOut">
+        Logout
+        <Logout16 slot="icon" />
+      </cds-modal-footer-button>
+    </cds-modal-footer>
   </cds-modal>
 </template>
