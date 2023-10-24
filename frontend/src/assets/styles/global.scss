@@ -763,6 +763,21 @@ div#app {
   align-self: stretch;
 }
 
+.cds-text-input-label {
+  color: var(--light-theme-text-text-primary, #131315);
+  font-family: BC Sans;
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1rem;
+  letter-spacing: 0.02rem;
+  padding-bottom: 0.5rem;
+}
+
+.cds-text-input-required-label {
+  color: var(--light-theme-text-text-error, #B32001);
+}
+
 cds-modal::part(dialog) {
   border-radius: 0.5rem;
 }

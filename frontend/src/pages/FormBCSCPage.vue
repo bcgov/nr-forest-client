@@ -1,8 +1,4 @@
 <template>
-<!--   <div class="cds--css-grid">
-    <div class="cds--col-span-4">Span 4 columns</div>
-    <div class="cds--col-span-2">Span 2 columns</div>
-  </div> -->
   <div class="form-header">
     <div class="form-header-title">
       <span class="heading-05" data-scroll="top">
@@ -75,6 +71,7 @@
         :enabled="true" 
         v-model="formData.location.contacts[0].phoneNumber"
         mask="(###) ###-####"
+        required-label="true"
       />
     </div>
 
@@ -91,6 +88,9 @@
     </cds-button>
 
     {{ formData.location.contacts }}
+
+
+
   </div>
 
 </template>
@@ -104,7 +104,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
 import { useFocus } from "@/composables/useFocus";
 import { codeConversionFn } from "@/services/ForestClientService";
-import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
+import { isUniqueDescriptive, isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";
 import Add16 from "@carbon/icons-vue/es/add/16";
@@ -248,10 +248,11 @@ emit("valid", false);
 const bus = useEventBus<ModalNotification>("modal-notification");
 
 const handleRemove = (index: number) => {
-  const selectedContact =
-    formData.location.contacts[index].firstName.length !== 0
-      ? `${formData.location.contacts[index].firstName} ${formData.location.contacts[index].lastName}`
-      : "Contact #" + index;
+  const selectedContact = !isNullOrUndefinedOrBlank(
+    formData.location.contacts[index].firstName
+  )
+    ? `${formData.location.contacts[index].firstName} ${formData.location.contacts[index].lastName}`
+    : "Contact #" + index;
   bus.emit({
     message: selectedContact,
     kind: "Contact deleted",
