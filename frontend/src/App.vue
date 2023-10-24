@@ -57,10 +57,10 @@ toastBus.on(openToast)
 </script>
 
 <template>
-  <div class="headers" v-if="$session?.isLoggedIn()">
+  <div :class="$route.meta.headersStyle" v-if="$session?.isLoggedIn()">
     <main-header-component v-if="!$route.meta.hideHeader"></main-header-component>
   </div>
-  <div :class="{[`${$route.meta.format}`]:true}">
+  <div :class="$route.meta.format">
     <div :class="$route.meta.style">
     <router-view></router-view>
     </div>

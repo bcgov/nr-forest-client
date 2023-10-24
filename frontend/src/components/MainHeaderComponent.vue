@@ -1,18 +1,28 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue';
 // Carbon
-import "@carbon/web-components/es/components/button/index";
+import '@carbon/web-components/es/components/button/index';
+import '@carbon/web-components/es/components/ui-shell/index';
+// Composables
+import { isSmallScreen, isMediumScreen } from '@/composables/useScreenSize';
 // Types
-import { nodeEnv, appVersion, isSmallScreen, isMediumScreen } from "@/CoreConstants";
+import { nodeEnv, appVersion } from '@/CoreConstants';
 // @ts-ignore
-import Logout16 from "@carbon/icons-vue/es/logout/16";
+import Logout16 from '@carbon/icons-vue/es/logout/16';
 // @ts-ignore
-import Help16 from "@carbon/icons-vue/es/help/16";
+import Help16 from '@carbon/icons-vue/es/help/16';
+// @ts-ignore
+import Avatar16 from '@carbon/icons-vue/es/user--avatar/24';
+// @ts-ignore
+import Result16 from '@carbon/icons-vue/es/result/16';
+// @ts-ignore
+import SignOut16 from '@carbon/icons-vue/es/user--follow/16';
 
 const envPrefix = "openshift-";
 const env = ref(nodeEnv);
 env.value = env.value.slice(envPrefix.length);
 env.value = env.value.charAt(0).toUpperCase() + env.value.slice(1);
+
 
 const helpModalActive = ref(false);
 const logoutModalActive = ref(false);
@@ -20,29 +30,36 @@ const logoutModalActive = ref(false);
 
 <template>
 
-  <a href="https://gov.bc.ca">
-    <img
-      src="/img/logo-vertical1.svg"
-      alt="Go to the Government of British Columbia website"
-      v-if="isSmallScreen"
-    />
-    <img
-      src="/img/BCID_H_rgb_rev.svg"
-      alt="Go to the Government of British Columbia website"
-      v-else
-    />
-  </a>
-  <div class="heading">
-    <span class="heading-compact-01" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
-    <span class="heading-compact-01" v-else>Client Management System</span>
-    <span class="heading-compact-01" v-if="env !== 'Prod'">Env. {{ env }} - Rel. {{appVersion}}</span>
-  </div>
+  <cds-header aria-label="Client Management System">
 
-  <div class="heading-buttons">
+    <cds-header-menu-button
+      button-label-active="Close menu"
+      button-label-inactive="Open menu">
+    </cds-header-menu-button>
 
-    <!-- Remember to add profile button here -->
+    <a href="https://gov.bc.ca" v-if="$session.user?.provider !== 'idir'" class="bclogotop">
+      <img
+        src="/img/logo-vertical1.svg"
+        alt="Go to the Government of British Columbia website"
+        v-if="isSmallScreen"
+      />
+      <img
+        src="/img/BCID_H_rgb_rev.svg"
+        alt="Go to the Government of British Columbia website"
+        v-else
+      />
+      <logo />
+    </a>
     
+    <cds-header-name href="javascript:void 0">
+      <span class="heading-compact-01" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
+      <span class="heading-compact-01" v-else>Client Management System</span>
+      <span class="heading-compact-01" v-if="env !== 'Prod' && !isSmallScreen">Env. {{ env }} - Rel. {{appVersion}}</span>
+    </cds-header-name>
+    
+    <div class="heading-buttons">
     <cds-button
+    v-if="!$route.meta.profile"
       id="help-btn"
       data-id="help-btn"
       kind="ghost"
@@ -53,8 +70,8 @@ const logoutModalActive = ref(false);
       <Help16 slot="icon" />
     </cds-button>
 
-    <cds-button
-      v-if="$session?.isLoggedIn()"
+    <cds-button    
+      v-if="$session?.isLoggedIn() && !$route.meta.profile"
       data-id="logout-btn"
       kind="tertiary"
       size="sm"
@@ -63,7 +80,66 @@ const logoutModalActive = ref(false);
       <span v-if="!isSmallScreen && !isMediumScreen">Logout</span>
       <Logout16 slot="icon" />
     </cds-button>
-  </div>
+    </div>
+
+    <cds-header-global-action panel-id="apanel" v-if="$route.meta.profile">      
+      <Avatar16 slot="icon"/>
+    </cds-header-global-action>
+
+    <cds-header-panel id="apanel" v-if="$route.meta.profile">
+      <div class="grouping-16" id="panel-title">
+        <span class="heading-03">My profile</span>
+      </div>
+      <div class="grouping-17" id="panel-content">
+        <div class="grouping-18" id="panel-content--user">
+          <div class="grouping-19" id="panel-content--user-avatar-desc">
+            <user-profile-component 
+              :name="$session.user?.name || ''" 
+              :email="$session.user?.email || ''"
+              :identifier="$session.user?.userId || ''"
+              :provider="$session.user?.provider || ''"
+              
+              />
+          </div>
+        </div>
+        <hr class="divider" />
+        <div class="grouping-21" id="panel-content--links">
+          <cds-side-nav-items>
+            <cds-side-nav-link href="#" title="Options" class="unbolded" />
+            <cds-side-nav-link href="#" title="Sign Out" @click.prevent="logoutModalActive = true">            
+              <SignOut16 slot="title-icon" />
+            </cds-side-nav-link>
+          </cds-side-nav-items>
+        </div>
+      </div>
+      
+    </cds-header-panel>
+  </cds-header>
+
+  <cds-side-nav v-if="$route.meta.sideMenu" v-shadow=1>
+    <cds-side-nav-items v-shadow=1>      
+      <cds-side-nav-link active href="/submissions" large>
+        <span>Submissions</span>
+        <Result16 slot="title-icon" />
+      </cds-side-nav-link>
+    </cds-side-nav-items>
+
+    <cds-side-nav-items v-shadow=1 class="lower-side-nav"> 
+      <cds-side-nav-link href="#" class="unbolded">
+        <span>Support</span>
+      </cds-side-nav-link>
+      <cds-side-nav-link 
+        href="#" 
+        large 
+        class="unbolded" 
+        @click.prevent="helpModalActive = true"
+      >
+        <span class="body-compact-02 disabled">Need help?</span>
+        <Help16 slot="title-icon" class="disabled" />
+      </cds-side-nav-link>
+    </cds-side-nav-items>
+  
+  </cds-side-nav>
 
   <cds-modal
     id="help-modal"
@@ -117,4 +193,5 @@ const logoutModalActive = ref(false);
 
       </cds-modal-footer>
   </cds-modal>
+
 </template>

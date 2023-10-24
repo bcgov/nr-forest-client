@@ -3,7 +3,8 @@
  */
 import { createRouter, createWebHistory } from "vue-router";
 
-import ReviewApplicationPage from "@/pages/ReviewApplicationPage.vue";
+import SubmissionList from '@/pages/SubmissionListPage.vue'
+import SubmissionReview from '@/pages/SubmissionReviewPage.vue'
 import BCeIDForm from "@/pages/FormBCeIDPage.vue";
 import BCSCForm from "@/pages/FormBCSCPage.vue";
 import FormSubmittedPage from "@/pages/FormSubmittedPage.vue";
@@ -32,7 +33,10 @@ const routes = [
         bceidbusiness: "form",
         bcsc: "bcsc-form",
       },
-      style: "content-landing",
+      style: 'content-landing',
+      headersStyle: 'headers',
+      sideMenu: false,
+      profile: false,
     },
   },
   {
@@ -52,6 +56,9 @@ const routes = [
         bcsc: "bcsc-form",
       },
       style: "content",
+      headersStyle: 'headers',
+      sideMenu: false,
+      profile: false,
     },
   },
   {
@@ -71,6 +78,9 @@ const routes = [
         bceidbusiness: "form",
       },
       style: "content",
+      headersStyle: 'headers',
+      sideMenu: false,
+      profile: false,
     },
   },
   {
@@ -88,24 +98,51 @@ const routes = [
         idir: "internal",
       },
       style: "content",
+      headersStyle: 'headers',
+      sideMenu: false,
+      profile: false,
     },
   },
   {
-    path: "/submissions",
-    name: "internal",
-    component: ReviewApplicationPage,
+    path: '/submissions',
+    name: 'internal',
+    component: SubmissionList,
     props: true,
     meta: {
-      format: "screen",
+      format: 'full',
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ["idir"],
+      visibleTo: ['idir'],
       redirectTo: {
-        bceidbusiness: "form",
-        bcsc: "form",
+        bceidbusiness: 'form',
+        bcsc: 'form',
       },
-      style: "content",
+      style: 'content-stretched',
+      headersStyle: 'headers-compact',
+      sideMenu: true,
+      profile: true,
+    },
+  },
+  {
+    path: '/submissions/:id',
+    name: 'review',
+    component: SubmissionReview,
+    props: true,
+    meta: {
+      format: 'full',
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ['idir'],
+      redirectTo: {
+        bceidbusiness: 'form',
+        bcsc: 'form',
+      },
+      style: 'content-stretched',
+      headersStyle: 'headers-compact',
+      sideMenu: true,
+      profile: true,
     },
   },
   {
@@ -125,6 +162,9 @@ const routes = [
         bcsc: "bcsc-form",
       },
       style: "content",
+      headersStyle: 'headers',
+      sideMenu: false,
+      profile: false,
     },
   },
   {
@@ -140,6 +180,9 @@ const routes = [
       visibleTo: ["idir", "bceidbusiness", "bcsc"],
     },
     style: "content",
+    headersStyle: 'headers',
+    sideMenu: false,
+    profile: false,
   },
   {
     path: "/:pathMatch(.*)*",
@@ -154,6 +197,9 @@ const routes = [
       visibleTo: ["idir", "bceidbusiness", "bcsc"],
     },
     style: "content",
+    headersStyle: 'headers',
+    sideMenu: false,
+    profile: false,
   },
 ];
 
@@ -200,15 +246,18 @@ router.beforeEach(async (to, from, next) => {
 
 export { routes, router };
 
-declare module "vue-router" {
+declare module 'vue-router' {
   // eslint-disable-next-line no-unused-vars
   interface RouteMeta {
-    format: string;
-    hideHeader: boolean;
-    requireAuth: boolean;
-    showLoggedIn: boolean;
-    visibleTo: Array<string>;
-    redirectTo?: Record<string, string>;
-    style: string;
+    format: string // Main body style class
+    hideHeader: boolean // Show/Hide the header
+    requireAuth: boolean // Force user to be logged in to see this page
+    showLoggedIn: boolean // Show/Hide the page for a logged user
+    visibleTo: Array<string> // Which user types/providers can see this page
+    redirectTo?: Record<string, string> // Where to redirect the user if they are not allowed to see this page
+    style: string // Main body style class
+    headersStyle: string // Header style class
+    sideMenu: boolean // Show/Hide the side menu
+    profile: boolean // Show/Hide the profile menu
   }
 }

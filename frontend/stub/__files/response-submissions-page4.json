@@ -1,0 +1,81 @@
+[{
+  "id": "82686bcf-86b7-4787-83ea-c65ed2a15a94",
+  "requestType": "Auto approved client",
+  "name": "Beahan-Torphy",
+  "clientType": "Individual",
+  "updated": "{{now offset='-5 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "In progres",
+  "user": "Edithe Plastow"
+}, {
+  "id": "860c47d7-2f61-4ec2-b003-1cf7d68fd5e3",
+  "requestType": "Auto approved client",
+  "name": "Walsh-Murray",
+  "clientType": "Unregistered sole proprietorship",
+  "updated": "{{now offset='-7 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Nerissa Mayte"
+}, {
+  "id": "6c8dd1f6-23c2-4ceb-a591-42f79e9b75de",
+  "requestType": "Review new client",
+  "name": "Bartoletti, Haley and Gutkowski",
+  "clientType": "Corporation",
+  "updated": "{{now offset='-5 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "In progres",
+  "user": "Lorine Wavell"
+}, {
+  "id": "603f799f-160b-4477-be8f-dd80805f37a1",
+  "requestType": "Auto approved client",
+  "name": "Johnston-Weimann",
+  "clientType": "Corporation",
+  "updated": "{{now offset='-7 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Gretal Allchorne"
+}, {
+  "id": "4ac1a5e9-a992-46d4-b967-5a5733cf1c2f",
+  "requestType": "Auto approved client",
+  "name": "Leannon, Kuvalis and Baumbach",
+  "clientType": "General partnership",
+  "updated": "{{now offset='-7 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Valdemar Dewbury"
+}, {
+  "id": "07e58991-1fde-44c4-b3ce-600dff292403",
+  "requestType": "Review new client",
+  "name": "Roob, Kuvalis and Borer",
+  "clientType": "General partnership",
+  "updated": "{{now offset='-5 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Rejected",
+  "user": "Bambi Landsman"
+}, {
+  "id": "eb65cd54-0181-48c7-a04d-7d90de67951a",
+  "requestType": "Review new client",
+  "name": "Prohaska LLC",
+  "clientType": "Corporation",
+  "updated": "{{now offset='-7 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "In progres",
+  "user": "Tobie Grindley"
+}, {
+  "id": "14d9ad41-acb9-4795-a6d8-4b386b79e75e",
+  "requestType": "Auto approved client",
+  "name": "Robel-Feil",
+  "clientType": "Individual",
+  "updated": "{{now offset='-5 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Leigha Chilcotte"
+}, {
+  "id": "b6bae903-e917-4691-b012-0cdf4b4120a1",
+  "requestType": "Auto approved client",
+  "name": "Bartoletti, Schmidt and Ritchie",
+  "clientType": "Unregistered sole proprietorship",
+  "updated": "{{now offset='-8 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "In progres",
+  "user": "Gracia Cockayme"
+}, {
+  "id": "39123a8f-7755-42a6-8bdc-a3afc5d64b41",
+  "requestType": "Review new client",
+  "name": "Bradtke-Morar",
+  "clientType": "Corporation",
+  "updated": "{{now offset='-5 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+  "status": "Approved",
+  "user": "Fabian Brooksbank"
+}]
