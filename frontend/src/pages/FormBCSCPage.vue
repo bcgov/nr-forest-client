@@ -6,7 +6,12 @@
       </span>
     </div>
   </div>
-   
+  
+  <error-notification-grouping-component
+    :form-data="formData"
+    :scroll-to-element-fn="scrollToNewContact"
+  />
+    
   <div class="form-steps-section">
     <span class="heading-04" data-scroll="scroll-0">
       Personal information
@@ -80,7 +85,14 @@
         :enabled="true" 
         v-model="formData.location.contacts[0].phoneNumber"
         mask="(###) ###-####"
-        required-label="true"
+        :required-label="true"
+        :validations="[
+          ...getValidations('location.contacts.*.phoneNumber'),
+          submissionValidation(`location.contacts[0].phoneNumber`)
+        ]"
+        :error-message="error"
+        @empty="validation.phoneNumber = !$event"
+        @error="validation.phoneNumber = !$event"
       />
     </div>
 
@@ -155,7 +167,17 @@
       </cds-modal-header>
       <cds-modal-body>
         <p>
-          Visit Change your personal information to update your name, address or date of birth. Go to your BC Services account to update your email address. 
+          Visit 
+          <a 
+            href='https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card/your-card/change-personal-information' 
+            target="_blank">Change your personal information
+          </a> 
+          to update your name, address or date of birth. Go to your 
+          <a 
+            href='https://id.gov.bc.ca/account/'
+            target="_blank">BC Services account
+          </a> 
+          to update your email address. 
           You can then log back into this application using your BC Services Card.
         </p>
       </cds-modal-body>
@@ -191,7 +213,8 @@ import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 import { useEventBus } from "@vueuse/core";
 import { codeConversionFn } from "@/services/ForestClientService";
-import { isUniqueDescriptive, isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
+import { isUniqueDescriptive, isNullOrUndefinedOrBlank, runValidation, validate, getValidations } from "@/helpers/validators/GlobalValidators";
+import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 import type { CodeNameType, ModalNotification, ValidationMessageType } from "@/dto/CommonTypesDto";
 import Add16 from "@carbon/icons-vue/es/add/16";
@@ -200,10 +223,11 @@ import Check16 from "@carbon/icons-vue/es/checkmark/16";
 const instance = getCurrentInstance();
 const session = instance?.appContext.config.globalProperties.$session;
 const { setFocusedComponent } = useFocus();
+const error = ref<string | undefined>("");
 
 const submitterContact: Contact = {
   locationNames: [],
-  contactType: { value: "", text: "" },
+  contactType: { value: "BL", text: "Billing" }, //TODO: Verify this
   phoneNumber: "",
   firstName: session?.user?.firstName ?? "",
   lastName: session?.user?.lastName ?? "",
@@ -263,6 +287,16 @@ watch(country, (newValue) => {
 
   formData.location.addresses.push(formData.businessInformation.address);
 });
+
+//Scroll Fn
+const { setScrollPoint } = useFocus();
+
+//TODO
+const scrollToNewContact = () => {
+  setScrollPoint("", undefined, () => {
+     setFocusedComponent("");
+  });
+};
 
 //Role related data
 const roleList = ref([]);
@@ -361,24 +395,72 @@ defineExpose({
   addContact,
 });
 
+const changePersonalInfoModalActive = ref(false);
+
+const progressData = reactive([
+  {
+    title: "New client application",
+    subtitle: "Step 1",
+    kind: "current",
+    disabled: false,
+    valid: false,
+    step: 0,
+    fields: [
+      "businessInformation.businessType",
+      "businessInformation.businessName",
+      "location.contacts.*.contactType.text",
+      "location.contacts.*.firstName",
+      "location.contacts.*.lastName",
+      "location.contacts.*.email",
+      "location.contacts.*.phoneNumber",
+    ],
+    extraValidations: [],
+  },
+]);
+
 let submitBtnDisabled = ref(false);
 
 const errorBus = useEventBus<ValidationMessageType[]>(
   "submission-error-notification"
 );
+
 const notificationBus = useEventBus<ValidationMessageType | undefined>(
   "error-notification"
 );
+
+const currentTab = ref(0);
+
+const checkStepValidity = (stepNumber: number): boolean => {
+  progressData.forEach((step: any) => {
+    if (step.step <= stepNumber) {
+      step.valid = validate(step.fields, formData, true);
+    }
+  });
+
+  if (
+    !progressData[stepNumber].extraValidations.every((validation: any) =>
+      runValidation(
+        validation.field,
+        formData,
+        validation.validation,
+        true,
+        true
+      )
+    )
+  )
+    return false;
+
+  return progressData[stepNumber].valid;
+};
+
 const submit = () => {
   errorBus.emit([]);
   notificationBus.emit(undefined);
 
-  //TODO
-  /*if (checkStepValidity(currentTab.value)) {
+  if (checkStepValidity(currentTab.value)) {
     submitBtnDisabled.value = true;
     fetch();
-  }*/
+  }
 };
 
-const changePersonalInfoModalActive = ref(false);
 </script>
