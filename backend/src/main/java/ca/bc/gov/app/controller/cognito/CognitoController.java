@@ -54,14 +54,14 @@ public class CognitoController {
 
       String famUrl = String.format(
           "%s/oauth2/authorize"
-              + "?client_id=%s"
-              + "&response_type=code"
-              + "&identity_provider=%s-%s"
-              + "&scope=openid"
-              + "&state=%s"
-              + "&code_challenge=%s"
-              + "&code_challenge_method=S256"
-              + "&redirect_uri=%s",
+          + "?client_id=%s"
+          + "&response_type=code"
+          + "&identity_provider=%s-%s"
+          + "&scope=openid"
+          + "&state=%s"
+          + "&code_challenge=%s"
+          + "&code_challenge_method=S256"
+          + "&redirect_uri=%s",
           configuration.getCognito().getUrl(),
           configuration.getCognito().getClientId(),
           configuration.getCognito().getEnvironment(),
@@ -95,14 +95,14 @@ public class CognitoController {
 
     final String famUrl = String.format(
         "%s/logout"
-            + "?client_id=%s"
-            + "&response_type=code"
-            + "&scope=openid"
-            + "&redirect_uri=%s"
-            + "&logout_uri=%s",
+        + "?client_id=%s"
+        + "&response_type=code"
+        + "&scope=openid"
+        + "&redirect_uri=%s"
+        + "&logout_uri=%s",
         configuration.getCognito().getUrl(),
         configuration.getCognito().getClientId(),
-        configuration.getCognito().getLogoutUri(),
+        configuration.getCognito().getRedirectUri(),
         configuration.getCognito().getLogoutUri()
     );
 
@@ -119,6 +119,14 @@ public class CognitoController {
         .add(LOCATION, famUrl);
 
     return Mono.empty();
+  }
+
+  @GetMapping("/refresh")
+  @ResponseStatus(HttpStatus.FOUND)
+  public Mono<Void> refresh(
+      @RequestParam(name = "code", required = false, defaultValue = "IDIR") String code
+  ){
+    return service.refreshToken(code);
   }
 
   /**

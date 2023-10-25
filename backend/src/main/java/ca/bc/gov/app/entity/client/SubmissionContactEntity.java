@@ -38,4 +38,7 @@ public class SubmissionContactEntity {
 
   @Column("email_address")
   private String emailAddress;
+
+  @Column("idp_user_id")
+  private String userId;
 }

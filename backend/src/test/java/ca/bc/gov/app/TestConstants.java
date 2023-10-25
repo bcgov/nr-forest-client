@@ -9,7 +9,7 @@ import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
-import ca.bc.gov.app.dto.cognito.AuthResponse;
+import ca.bc.gov.app.dto.cognito.AuthResponseDto;
 
 public class TestConstants {
 
@@ -509,7 +509,7 @@ public class TestConstants {
         "id_token": "g.h.i"
       }""";
 
-  public static final AuthResponse AUTH_RESPONSE = new AuthResponse(
+  public static final AuthResponseDto AUTH_RESPONSE = new AuthResponseDto(
       "a.b.c",
       300,
 
