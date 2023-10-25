@@ -26,9 +26,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ContextConfiguration
 public abstract class AbstractTestContainer {
 
-  static final OracleContainer oracle;
-  static final PostgreSQLContainer postgres;
-
   static {
     Path finalFile = Paths.get("./src", "test", "resources", "init_pg.sql").normalize();
 
@@ -75,13 +72,42 @@ public abstract class AbstractTestContainer {
 
   static {
 
-    oracle = new OracleContainer("gvenzl/oracle-xe:21.3.0-slim-faststart")
-        .withDatabaseName("legacyfsa")
-        .withUsername("THE")
-        .withPassword(genPassword());
-    oracle.start();
+    Path finalFile = Paths.get("./src", "test", "resources","db","migration", "V1__init_oracle.sql").normalize();
 
+    if (!finalFile.toFile().exists()) {
+      try {
+        finalFile.toFile().getParentFile().mkdirs();
+        finalFile.toFile().createNewFile();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
 
+    Path legacyFolder =
+        Paths.get("../legacy", "src", "test", "resources", "db", "migration").normalize();
+
+    try{
+      Stream<Path> legacyStream = Files.list(legacyFolder).map(Path::normalize);
+      Files
+          .write(
+              finalFile,
+              legacyStream
+                  .filter(path -> path.toFile().exists())
+                  .map(AbstractTestContainer::readAll)
+                  .flatMap(List::stream)
+                  .toList(),
+              StandardOpenOption.TRUNCATE_EXISTING
+          );
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+  }
+  static final OracleContainer oracle;
+  static final PostgreSQLContainer postgres;
+
+  static {
     postgres = (PostgreSQLContainer) new PostgreSQLContainer("postgres:13")
         .withInitScript("init_pg.sql")
         .withDatabaseName("nfrc")
@@ -89,6 +115,18 @@ public abstract class AbstractTestContainer {
         .withPassword(genPassword());
 
     postgres.start();
+  }
+
+
+
+  static {
+
+    oracle = new OracleContainer("gvenzl/oracle-xe:21.3.0-slim-faststart")
+        .withDatabaseName("legacyfsa")
+        .withUsername("THE")
+        .withPassword(genPassword());
+    oracle.start();
+
   }
 
   @DynamicPropertySource

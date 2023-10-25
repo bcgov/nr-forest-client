@@ -1,5 +1,5 @@
 ### Builder
-FROM ghcr.io/graalvm/native-image:ol8-java17-22.3.3 AS build
+FROM eclipse-temurin:17.0.8.1_1-jdk-jammy AS build
 
 # Receiving app version
 ARG APP_VERSION=0.0.1
@@ -18,15 +18,15 @@ RUN ./mvnw versions:set -DnewVersion=${APP_VERSION} -f pom.xml -DskipTests -Dtes
     ./mvnw versions:commit -f pom.xml -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
 
 # Build
-RUN ./mvnw -Pnative native:compile
+RUN ./mvnw clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
 
 ### Deployer
-FROM gcr.io/distroless/java-base:nonroot AS deploy
+FROM eclipse-temurin:17.0.8.1_1-jre-jammy AS deploy
 ARG PORT=3100
 
 # Copy
 WORKDIR /app
-COPY --from=build /app/target/nr-forest-client-processor ./nr-forest-client-processor
+COPY --from=build /app/target/nr-forest-client-processor.jar ./nr-forest-client-processor.jar
 
 # User, port and health check
 USER 1001
@@ -34,4 +34,4 @@ EXPOSE ${PORT}
 HEALTHCHECK CMD curl -f http://localhost:${PORT}/actuator/health | grep '"status":"UP"'
 
 # Startup
-ENTRYPOINT ["/app/nr-forest-client-processor"]
+ENTRYPOINT ["java", "-jar","/app/nr-forest-client-processor.jar"]
