@@ -1,0 +1,13 @@
+{
+  "streetAddress": "2351 Rojem Rd",
+  "country": {
+    "value": "CA",
+    "text": "Canada"
+  },
+  "province": {
+    "value": "BC",
+    "text": "British Columbia"
+  },
+  "city": "Kelowna",
+  "postalCode": "V1V 2G3"
+}
