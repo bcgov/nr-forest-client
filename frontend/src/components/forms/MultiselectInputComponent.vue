@@ -18,6 +18,7 @@ const props = defineProps<{
   initialValue: string;
   validations: Array<Function>;
   errorMessage?: string;
+  requiredLabel?: boolean;
 }>();
 
 //Events we emit during component lifecycle
@@ -114,28 +115,38 @@ revalidateBus.on(() => validateInput(selectedValue.value));
 <template>
   <div class="grouping-03">
     <div class="frame-02">
-      <cds-multi-select
-        :id="id"
-        :value="selectedValue"
-        :label="selectedValue"
-        :title-text="label"
-        :helper-text="tip"
-        :invalid="error ? true : false"
-        :invalid-text="error"
-        filterable
-        @cds-multi-select-selected="selectItems"
-        :data-focus="id"
-        :data-scroll="id"
-      >
-        <cds-multi-select-item
-          v-for="option in inputList"
-          :key="option.code"
-          :value="option.name"
-          :data-id="option.code"
-          :data-value="option.name">
-          {{ option.name }}
-        </cds-multi-select-item>
-      </cds-multi-select>
+      <div class="input-group">
+        <div class="cds--text-input__label-wrapper">
+          <label :for="id" class="cds-text-input-label">
+            {{ label }}
+            <span v-if="requiredLabel"
+                  class="cds-text-input-required-label">
+                  (required)
+            </span>
+          </label>
+        </div>
+        <cds-multi-select
+          :id="id"
+          :value="selectedValue"
+          :label="selectedValue"
+          :helper-text="tip"
+          :invalid="error ? true : false"
+          :invalid-text="error"
+          filterable
+          @cds-multi-select-selected="selectItems"
+          :data-focus="id"
+          :data-scroll="id"
+        >
+          <cds-multi-select-item
+            v-for="option in inputList"
+            :key="option.code"
+            :value="option.name"
+            :data-id="option.code"
+            :data-value="option.name">
+            {{ option.name }}
+          </cds-multi-select-item>
+        </cds-multi-select>
+      </div>
     </div>
   </div>
 </template>

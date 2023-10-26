@@ -5,12 +5,11 @@
         New client application
       </span>
     </div>
+    <error-notification-grouping-component
+      :form-data="formData"
+      :scroll-to-element-fn="scrollToNewContact"
+    />
   </div>
-  
-  <error-notification-grouping-component
-    :form-data="formData"
-    :scroll-to-element-fn="scrollToNewContact"
-  />
     
   <div class="form-steps-section">
     <span class="heading-04" data-scroll="scroll-0">
@@ -108,17 +107,6 @@
       <Add16 slot="icon" />
     </cds-button>
 
-    <!-- <contact-group-component
-      :id="0"
-      v-model="formData.location.contacts[0]"
-      :roleList="roleList"
-      :validations="[uniqueValues.add]"
-      :revalidate="revalidate"
-      :enabled="false"
-      @update:model-value="updateContact($event, 0)"
-      @valid="updateValidState(0, $event)"
-    /> -->
-
     <div class="frame-01" v-if="otherContacts.length > 0">
       <div v-for="(contact, index) in otherContacts">
         <hr />
@@ -133,6 +121,8 @@
           :validations="[uniqueValues.add]"
           :enabled="true"
           :revalidate="revalidate"
+          :hide-address-name-field="true"
+          :required-label="true"
           @update:model-value="updateContact($event, index + 1)"
           @valid="updateValidState(index + 1, $event)"
           @remove="handleRemove(index + 1)"
@@ -190,7 +180,7 @@
         </cds-modal-footer-button>
         
         <cds-modal-footer-button 
-          kind="primary"
+          kind="danger" 
           class="cds--modal-submit-btn"
           v-on:click="$session?.logOut"
         >
