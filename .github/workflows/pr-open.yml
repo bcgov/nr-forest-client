@@ -72,6 +72,7 @@ jobs:
     name: PR Greeting
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
+      URL_ZONE: $((${{ github.event.number }} % 50))
       PREFIX: ${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))
     runs-on: ubuntu-22.04
     permissions:
