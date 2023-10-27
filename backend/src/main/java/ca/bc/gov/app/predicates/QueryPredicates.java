@@ -4,6 +4,7 @@ import static org.springframework.data.relational.core.query.Criteria.where;
 
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.relational.core.query.Criteria;
 
 public interface QueryPredicates {
@@ -13,6 +14,7 @@ public interface QueryPredicates {
       return
           Stream
               .of(values)
+              .filter(StringUtils::isNotBlank)
               .map(value -> where(fieldName).is(value))
               .reduce(Criteria::or)
               .orElse(Criteria.empty());
@@ -25,6 +27,7 @@ public interface QueryPredicates {
       return
           Stream
               .of(values)
+              .filter(StringUtils::isNotBlank)
               .map(value -> where(fieldName).like(value).ignoreCase(true))
               .reduce(Criteria::or)
               .orElse(Criteria.empty());
