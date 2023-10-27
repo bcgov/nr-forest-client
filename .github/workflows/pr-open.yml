@@ -174,6 +174,7 @@ jobs:
             -p COGNITO_ENVIRONMENT=DEV
             -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
             -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+            -p URL_ZONE=$((${{ github.event.number }} % 50))
 
       - name: Deploy Database
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
@@ -204,6 +205,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
+            -p URL_ZONE=$((${{ github.event.number }} % 50))
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
@@ -217,6 +219,7 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
+            -p URL_ZONE=$((${{ github.event.number }} % 50))
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
@@ -230,6 +233,7 @@ jobs:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
+            -p URL_ZONE=$((${{ github.event.number }} % 50))
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v1.0.3
@@ -243,6 +247,8 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ github.event.number }}
+            -p URL_ZONE=$((${{ github.event.number }} % 50))
+            
   cypress-run:
     name: "User flow test"
     runs-on: ubuntu-22.04

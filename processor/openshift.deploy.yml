@@ -37,6 +37,9 @@ parameters:
   - name: CERT_PVC_SIZE
     description: The amount of storage the cert PVC should have
     value: 25Mi
+    - name: URL_ZONE
+    description: Zone to use for URL
+    required: true
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -226,7 +229,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
+      host: ${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
       port:
         targetPort: 3100-tcp
       to:

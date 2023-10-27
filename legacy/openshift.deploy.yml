@@ -37,6 +37,9 @@ parameters:
   - name: CERT_PVC_SIZE
     description: The amount of storage the cert PVC should have
     value: 25Mi
+  - name: URL_ZONE
+    description: Zone to use for URL
+    required: true
 objects:  
   - apiVersion: v1
     kind: ImageStream
@@ -132,9 +135,9 @@ objects:
               name: ${NAME}
               env:
                 - name: BACKEND_URL
-                  value: https://${NAME}-${ZONE}-backend.${DOMAIN}
+                  value: https://${NAME}-${URL_ZONE}-backend.${DOMAIN}
                 - name: FOREST_API_URL
-                  value: https://${NAME}-${ZONE}-legacy.${DOMAIN}
+                  value: https://${NAME}-${URL_ZONE}-legacy.${DOMAIN}
                 - name: ORACLEDB_USER
                   valueFrom:
                     secretKeyRef:
@@ -223,7 +226,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
+      host: ${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
       port:
         targetPort: 9000-tcp
       to:

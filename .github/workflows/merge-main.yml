@@ -250,6 +250,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
+            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -264,6 +265,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
+            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -279,6 +281,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.ZONE }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
+            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -293,6 +296,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ env.ZONE }}
+            -p URL_ZONE=${{ env.ZONE }}
 
   image-promotions:
     name: Promote images to PROD
@@ -398,6 +402,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
+            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -412,6 +417,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
+            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -427,6 +433,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
+            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -441,3 +448,4 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ env.PREV }}
+            -p URL_ZONE=${{ env.ZONE }}
