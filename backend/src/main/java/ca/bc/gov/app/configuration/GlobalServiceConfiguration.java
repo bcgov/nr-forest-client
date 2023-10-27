@@ -1,5 +1,7 @@
 package ca.bc.gov.app.configuration;
 
+import ca.bc.gov.app.converters.AwsJsonMessageDecoder;
+import ca.bc.gov.app.converters.AwsJsonMessageEncoder;
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
@@ -38,12 +40,16 @@ import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.cognito.AuthResponseDto;
+import ca.bc.gov.app.dto.cognito.RefreshRequestDto;
+import ca.bc.gov.app.dto.cognito.RefreshResponseDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -96,7 +102,9 @@ import org.springframework.web.reactive.function.client.WebClient;
     BcRegistryBusinessAdressesDto.class,
     BcRegistryOfficerDto.class,
     BcRegistryRoleDto.class,
-    ForestClientDto.class
+    ForestClientDto.class,
+    RefreshResponseDto.class,
+    RefreshRequestDto.class
 })
 public class GlobalServiceConfiguration {
 
@@ -171,5 +179,30 @@ public class GlobalServiceConfiguration {
   @Bean
   public WebClient addressCompleteApi(ForestClientConfiguration configuration) {
     return WebClient.builder().baseUrl(configuration.getAddressComplete().getUrl()).build();
+  }
+
+  /**
+   * Returns a configured instance of WebClient for accessing the Cognito API.
+   * @param objectMapper the object mapper
+   * @return A configured instance of WebClient for accessing the Cognito API.
+   */
+  @Bean
+ public WebClient cognitoApi(ObjectMapper objectMapper) {
+   return WebClient
+       .builder()
+       .codecs(clientCodecConfigurer -> {
+             clientCodecConfigurer
+                 .customCodecs()
+                 .register(new AwsJsonMessageEncoder(objectMapper));
+             clientCodecConfigurer
+                 .customCodecs()
+                     .register(new AwsJsonMessageDecoder(objectMapper));
+       })
+       .build();
+ }
+
+  @Bean
+  public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+    return builder.build();
   }
 }

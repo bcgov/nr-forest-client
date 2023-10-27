@@ -123,10 +123,29 @@ public class CognitoController {
 
   @GetMapping("/refresh")
   @ResponseStatus(HttpStatus.FOUND)
-  public Mono<Void> refresh(
-      @RequestParam(name = "code", required = false, defaultValue = "IDIR") String code
-  ){
-    return service.refreshToken(code);
+  public Mono<Void> refresh(@RequestParam String code,ServerHttpResponse serverResponse){
+
+    return
+        service
+            .refreshToken(code)
+            .map(authResponse -> {
+              serverResponse
+                  .addCookie(buildCookie("accessToken", authResponse.accessToken(),
+                      authResponse.expiresIn()));
+              serverResponse
+                  .addCookie(
+                      buildCookie("idToken", authResponse.idToken(), authResponse.expiresIn()));
+              serverResponse
+                  .addCookie(buildCookie("refreshToken", code,
+                      authResponse.expiresIn()));
+              serverResponse
+                  .setStatusCode(HttpStatus.FOUND);
+              serverResponse
+                  .getHeaders()
+                  .add(LOCATION, configuration.getFrontend().getUrl());
+              return serverResponse;
+            })
+            .then();
   }
 
   /**

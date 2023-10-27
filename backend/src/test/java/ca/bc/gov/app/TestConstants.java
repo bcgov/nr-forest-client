@@ -224,7 +224,7 @@ public class TestConstants {
         "goodStanding": true,
         "addresses": [
           {
-            "locationName": "Mailing Address",
+            "locationName": "Mailing address",
             "streetAddress": "501 Belleville Street",
             "country": {"value":"CA","text":"Canada"},
             "province": {"value":"BC","text":"British Columbia"},
@@ -245,7 +245,7 @@ public class TestConstants {
             "email": "",
             "index": 1,
             "locationNames": [{
-            "text": "Mailing Address",
+            "text": "Mailing address",
             "value": "0"
             }]
           }
@@ -373,8 +373,9 @@ public class TestConstants {
           "id":1,
           "requestType":"Submission pending processing",
           "name":"Goldfinger",
-          "clientType":"P",
-          "updated":"testUserId | %s",
+          "clientType":"General Partnership",
+          "updated":"%s",
+          "user":"Test User",
           "status":"New"
         }
       ]""";
@@ -496,7 +497,9 @@ public class TestConstants {
           Map.of(
               "key1", "value1",
               "key2", 42,
-              "key3", true
+              "key3", true,
+              "userName", "John Doe",
+              "name", "Example Inc."
           )
           );
 
@@ -517,4 +520,60 @@ public class TestConstants {
       "d.e.f",
       "g.h.i"
   );
+  public static final String SUBMISSION_DETAILS = """
+      {
+        "submissionId": 2,
+        "submissionStatus": "New",
+        "submissionType": "Submission pending processing",
+        "submittedTimestamp": "2023-09-21T12:44:28.840456",
+        "updateTimestamp": "2023-09-21T12:44:27.829389",
+        "updateUser": "Test User",
+        "business": {
+          "businessType": "Unegistered Business",
+          "incorporationNumber": "",
+          "clientNumber": null,
+          "organizationName": "James",
+          "clientType": "Individual",
+          "goodStanding": ""
+        },
+        "contact": [
+          {
+            "index": 0,
+            "contactType": "Limited Partner",
+            "firstName": "James",
+            "lastName": "Bond",
+            "phoneNumber": "9876543210",
+            "emailAddress": "bond_james_bond@007.com",
+            "locations": [
+              "Billing Address"
+            ],
+            "userId": "testUserId"
+          }
+        ],
+        "address": [
+          {
+            "index": 0,
+            "streetAddress": "3570 S Las Vegas Blvd",
+            "country": "United States of America",
+            "province": "Nevada",
+            "city": "Las Vegas",
+            "postalCode": "89109",
+            "name": "Billing Address"
+          }
+        ],
+        "matchers": {}
+      }""";
+
+  public static final String TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiaWRpciIsImN1c3RvbTppZHBfZGlzcGxheV9uYW1lIjoiVGVzdCwgVUFUIFdMUlM6RVgiLCJnaXZlbl9uYW1lIjoiVWF0IiwiZmFtaWx5X25hbWUiOiJUZXN0IiwiZW1haWwiOiJ1YXR0ZXN0QHRlc3QuY29tIiwiaWRwX2J1c2luZXNzX25hbWUiOiJBdXRvbWF0ZWQgVGVzdCJ9.lzTcimHRjALlD2sNDH8nPqMnAHvt2j_vt-l1IuLJYcE";
+
+  public static final String COGNITO_REFRESH = """
+      {
+          "AuthenticationResult": {
+              "AccessToken": "eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiaWRpciIsImN1c3RvbTppZHBfZGlzcGxheV9uYW1lIjoiVGVzdCwgVUFUIFdMUlM6RVgiLCJnaXZlbl9uYW1lIjoiVWF0IiwiZmFtaWx5X25hbWUiOiJUZXN0IiwiZW1haWwiOiJ1YXR0ZXN0QHRlc3QuY29tIiwiaWRwX2J1c2luZXNzX25hbWUiOiJBdXRvbWF0ZWQgVGVzdCJ9.lzTcimHRjALlD2sNDH8nPqMnAHvt2j_vt-l1IuLJYcE",
+              "ExpiresIn": 300,
+              "IdToken": "eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiaWRpciIsImN1c3RvbTppZHBfZGlzcGxheV9uYW1lIjoiVGVzdCwgVUFUIFdMUlM6RVgiLCJnaXZlbl9uYW1lIjoiVWF0IiwiZmFtaWx5X25hbWUiOiJUZXN0IiwiZW1haWwiOiJ1YXR0ZXN0QHRlc3QuY29tIiwiaWRwX2J1c2luZXNzX25hbWUiOiJBdXRvbWF0ZWQgVGVzdCJ9.lzTcimHRjALlD2sNDH8nPqMnAHvt2j_vt-l1IuLJYcE",
+              "TokenType": "Bearer"
+          },
+          "ChallengeParameters": {}
+      }""";
 }

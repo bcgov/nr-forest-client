@@ -11,5 +11,4 @@ public record RefreshRequestDto(
     @JsonProperty("AuthParameters")
     Map<String,Object> authParameters
 ) {
-
 }

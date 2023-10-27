@@ -134,6 +134,7 @@ public class ForestClientConfiguration {
     private String userPool;
     private String domain;
     private String url;
+    private String refreshUrl;
     private String environment;
     private String redirectUri;
     private String logoutUri;
@@ -152,7 +153,10 @@ public class ForestClientConfiguration {
     }
 
     public String getRefreshUrl(){
-      return String.format("https://cognito-idp.%s.amazonaws.com/",domain);
+      if(StringUtils.isNotBlank(refreshUrl)){
+        return refreshUrl;
+      }
+      return String.format("https://cognito-idp.%s.amazonaws.com/",region);
     }
   }
 }

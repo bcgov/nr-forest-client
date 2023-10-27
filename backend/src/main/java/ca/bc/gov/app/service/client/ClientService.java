@@ -99,9 +99,8 @@ public class ClientService {
    *         empty result if no match is found.
    *
    * @see CodeNameDto
-   * @see countryCodeRepository
    */
-  public Mono<Object> getCountryByCode(String countryCode) {
+  public Mono<CodeNameDto> getCountryByCode(String countryCode) {
     return countryCodeRepository
             .findByCountryCode(countryCode)
             .map(entity -> new CodeNameDto(entity.getCountryCode(), 
@@ -273,7 +272,7 @@ public class ClientService {
                     addressDto.addressCity(),
                     addressDto.postalCode().trim().replaceAll("\\s+", ""),
                     index.getAndIncrement(),
-                    WordUtils.capitalize(addressDto.addressType()).concat(" Address")
+                    WordUtils.capitalize(addressDto.addressType()).concat(" address")
                 )
             )
             .flatMap(address -> loadCountry(address.country().text()).map(address::withCountry))

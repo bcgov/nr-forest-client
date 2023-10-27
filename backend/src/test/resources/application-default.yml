@@ -32,6 +32,7 @@ ca:
           logout-uri: http://localhost:1234/
           cookie-domain: localhost
           url: http://localhost:10070
+          refreshUrl: http://localhost:10070
 
 
 logging:

@@ -4,8 +4,10 @@ import static ca.bc.gov.app.TestConstants.AUTH_RESPONSE_OK;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
+import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -87,14 +89,43 @@ class CognitoControllerIntegrationTest extends AbstractTestContainerIntegrationT
   }
 
   @Test
+  @DisplayName("refresh token")
+  void shouldRefreshToken() {
+
+    wireMockExtension
+        .stubFor(
+            post("/")
+                .withHeader("Content-Type",
+                    equalTo("application/x-amz-json-1.1")
+                )
+                .withHeader("x-amz-target",
+                    equalTo("AWSCognitoIdentityProviderService.InitiateAuth")
+                )
+                .willReturn(okJson(TestConstants.COGNITO_REFRESH))
+        );
+
+    client
+        .get()
+        .uri(builder -> builder
+            .path("/refresh")
+            .queryParam("code",TestConstants.TOKEN)
+            .build()
+        )
+        .exchange()
+        .expectStatus().isFound()
+        .expectHeader().exists("Location");
+  }
+
+  @Test
   @DisplayName("should get token from callback")
   void shouldGetTokenFromCallback() {
 
     wireMockExtension
         .stubFor(
             post("/oauth2/token")
-                .withHeader("Content-Type",equalTo(MediaType.APPLICATION_FORM_URLENCODED_VALUE+";charset=UTF-8"))
-                .withHeader("Accept",equalTo(MediaType.APPLICATION_JSON_VALUE))
+                .withHeader("Content-Type",
+                    equalTo(MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8"))
+                .withHeader("Accept", equalTo(MediaType.APPLICATION_JSON_VALUE))
                 .withCookie("XSRF-TOKEN", WireMock.matching("(.*)"))
                 .willReturn(okJson(AUTH_RESPONSE_OK))
         );

@@ -3,15 +3,16 @@ package ca.bc.gov.app.service.cognito;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.cognito.AuthResponseDto;
 import ca.bc.gov.app.dto.cognito.RefreshRequestDto;
+import ca.bc.gov.app.dto.cognito.RefreshResponseDto;
+import ca.bc.gov.app.dto.cognito.RefreshResponseResultDto;
 import ca.bc.gov.app.util.PkceUtil;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -24,14 +25,19 @@ import reactor.core.publisher.Mono;
  */
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class CognitoService {
 
   private final ForestClientConfiguration configuration;
-  private final WebClient webClient = WebClient
-      .builder()
-      .build();
+  private final WebClient cognitoApi;
   private final String codeVerify = PkceUtil.generateCodeVerifier();
+
+  public CognitoService(
+      ForestClientConfiguration configuration,
+      @Qualifier("cognitoApi") WebClient cognitoApi
+  ) {
+    this.configuration = configuration;
+    this.cognitoApi = cognitoApi;
+  }
 
   /**
    * Handles auth code exchange with Cognito.
@@ -47,7 +53,7 @@ public class CognitoService {
     requestBody.add("redirect_uri", configuration.getCognito().getRedirectUri());
     requestBody.add("code_verifier", codeVerify);
 
-    return webClient
+    return cognitoApi
         .post()
         .uri(configuration.getCognito().getUrl() + "/oauth2/token")
         .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -57,15 +63,15 @@ public class CognitoService {
         .exchangeToMono(clientResponse -> clientResponse.bodyToMono(AuthResponseDto.class));
   }
 
-  public Mono<Void> refreshToken(String refreshToken) {
+  public Mono<RefreshResponseResultDto> refreshToken(String refreshToken) {
     return
-        webClient
+        cognitoApi
             .post()
             .uri(configuration.getCognito().getRefreshUrl())
-            .header("Content-Type", "application/x-amz-json-1.1")
+            .contentType(MediaType.parseMediaType("application/x-amz-json-1.1"))
             .header("x-amz-target", "AWSCognitoIdentityProviderService.InitiateAuth")
-            .header("x-amz-user-agent", "aws-amplify/5.0.4 auth framework/4")
-            .bodyValue(new RefreshRequestDto(
+            .body(Mono.just(
+            new RefreshRequestDto(
                     configuration.getCognito().getClientId(),
                     "REFRESH_TOKEN_AUTH",
                     Map.of(
@@ -73,9 +79,11 @@ public class CognitoService {
                         "DEVICE_KEY", StringUtils.EMPTY
                     )
                 )
+            ),
+                RefreshRequestDto.class
             )
-            .exchangeToMono(clientResponse -> clientResponse.bodyToMono(Objects.class))
-            .then();
+            .exchangeToMono(clientResponse -> clientResponse.bodyToMono(RefreshResponseDto.class))
+            .map(RefreshResponseDto::result);
   }
 
   /**
