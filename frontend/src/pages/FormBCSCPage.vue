@@ -89,7 +89,7 @@
           ...getValidations('location.contacts.*.phoneNumber'),
           submissionValidation(`location.contacts[0].phoneNumber`)
         ]"
-        :error-message="error"
+        :error-message="errorMessage"
         @empty="validation.phoneNumber = !$event"
         @error="validation.phoneNumber = !$event"
       />
@@ -196,10 +196,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, getCurrentInstance } from "vue";
+import { ref, reactive, computed, watch, getCurrentInstance, toRef } from "vue";
 import { newFormDataDto, emptyContact } from "@/dto/ApplyClientNumberDto";
 import { BusinessTypeEnum, ClientTypeEnum, LegalTypeEnum  } from "@/dto/CommonTypesDto";
-import { useFetchTo } from "@/composables/useFetch";
+import { useFetchTo, usePost } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 import { useEventBus } from "@vueuse/core";
 import { codeConversionFn } from "@/services/ForestClientService";
@@ -209,19 +209,22 @@ import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 import type { CodeNameType, ModalNotification, ValidationMessageType } from "@/dto/CommonTypesDto";
 import Add16 from "@carbon/icons-vue/es/add/16";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
+import ForestClientUserSession from "@/helpers/ForestClientUserSession";
+import { useRouter } from "vue-router";
 
 const instance = getCurrentInstance();
-const session = instance?.appContext.config.globalProperties.$session;
 const { setFocusedComponent } = useFocus();
-const error = ref<string | undefined>("");
+const errorMessage = ref<string | undefined>("");
+const submitterInformation = ForestClientUserSession.user;
+console.log(JSON.stringify(submitterInformation));
 
 const submitterContact: Contact = {
   locationNames: [],
-  contactType: { value: "BL", text: "Billing" }, //TODO: Verify this
+  contactType: { value: "BL", text: "Billing" },
   phoneNumber: "",
-  firstName: session?.user?.firstName ?? "",
-  lastName: session?.user?.lastName ?? "",
-  email: session?.user?.email ?? "",
+  firstName: submitterInformation?.firstName ?? "",
+  lastName: submitterInformation?.lastName ?? "",
+  email: submitterInformation?.email ?? "",
 };
 
 let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
@@ -232,7 +235,7 @@ const formatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
 });
 
-const birthDate = new Date(session?.user?.birthDate ?? "");
+const birthDate = new Date(submitterInformation?.birthDate ?? "");
 const formattedDate = formatter.format(birthDate);
 
 
@@ -244,10 +247,10 @@ let formData = reactive<FormDataDto>({
     legalType: LegalTypeEnum.SP.toString(),
     clientType: ClientTypeEnum.I.toString(),
     incorporationNumber: '',
-    businessName: session?.user?.name ?? "",
+    businessName: submitterInformation?.name ?? "",
     goodStandingInd: "Y",
     birthDate: formattedDate,
-    address: session?.user?.address,
+    address: submitterInformation?.address,
   },
   location: {
     addresses: [],
@@ -257,7 +260,7 @@ let formData = reactive<FormDataDto>({
 
 const receviedCountry = ref({} as CodeNameType);
 
-useFetchTo(`/api/clients/getCountryByCode/${session?.user?.address?.country?.code}`, 
+useFetchTo(`/api/clients/getCountryByCode/${submitterInformation?.address?.country?.code}`, 
             receviedCountry);
 
 const country = computed(
@@ -281,7 +284,6 @@ watch(country, (newValue) => {
 //Scroll Fn
 const { setScrollPoint } = useFocus();
 
-//TODO
 const scrollToNewContact = () => {
   setScrollPoint("", undefined, () => {
      setFocusedComponent("");
@@ -443,6 +445,22 @@ const checkStepValidity = (stepNumber: number): boolean => {
   return progressData[stepNumber].valid;
 };
 
+// Submission
+const router = useRouter();
+
+const { response, error } = usePost(
+  "/api/clients/submissions",
+  toRef(formData).value,
+  {
+    skip: true,
+    headers: {
+      "x-user-id": submitterInformation?.userId ?? "",
+      "x-user-email": submitterInformation?.email ?? "",
+      "x-user-name": submitterInformation?.firstName ?? "",
+    },
+  }
+);
+
 const submit = () => {
   errorBus.emit([]);
   notificationBus.emit(undefined);
@@ -453,4 +471,19 @@ const submit = () => {
   }
 };
 
+watch([response], () => {
+  if (response.value.status === 201) {
+    router.push({ name: "confirmation" });
+  }
+});
+
+watch([error], () => {
+  const validationErrors: ValidationMessageType[] = error.value.response
+    ?.data as ValidationMessageType[];
+
+  validationErrors.forEach((errorItem: ValidationMessageType) =>
+    notificationBus.emit(errorItem)
+  );
+  setScrollPoint("top");
+});
 </script>
