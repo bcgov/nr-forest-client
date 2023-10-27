@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -47,7 +46,7 @@ class SubmissionPredicatesTest {
     assertTrue(
         areCriteriaEqual(
             expected,
-            QueryPredicates.orContains(values,"submissionId")
+            QueryPredicates.orContains(values, "submissionId")
         )
     );
   }
@@ -59,7 +58,7 @@ class SubmissionPredicatesTest {
     assertTrue(
         areCriteriaEqual(
             expected,
-            QueryPredicates.orEqualTo(values,"submissionId")
+            QueryPredicates.orEqualTo(values, "submissionId")
         )
     );
   }
@@ -71,7 +70,7 @@ class SubmissionPredicatesTest {
     assertTrue(
         areCriteriaEqual(
             expected,
-            QueryPredicates.isBefore(value,"updatedAt")
+            QueryPredicates.isBefore(value, "updatedAt")
         )
     );
   }
@@ -83,7 +82,7 @@ class SubmissionPredicatesTest {
     assertTrue(
         areCriteriaEqual(
             expected,
-            QueryPredicates.isAfter(value,"updatedAt")
+            QueryPredicates.isAfter(value, "updatedAt")
         )
     );
   }
