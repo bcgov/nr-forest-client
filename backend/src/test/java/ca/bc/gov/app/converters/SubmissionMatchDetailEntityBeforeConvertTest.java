@@ -98,6 +98,10 @@ class SubmissionMatchDetailEntityBeforeConvertTest {
                 SubmissionMatchDetailEntity.builder().matchers(Map.of()).build()
             ),
             Arguments.of(
+                SubmissionMatchDetailEntity.builder().matchingField(Json.of("")).build(),
+                SubmissionMatchDetailEntity.builder().matchers(Map.of()).build()
+            ),
+            Arguments.of(
                 SubmissionMatchDetailEntity.builder()
                     .matchingField(
                         Json.of(

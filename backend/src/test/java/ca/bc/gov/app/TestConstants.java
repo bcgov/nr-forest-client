@@ -1,7 +1,5 @@
 package ca.bc.gov.app;
 
-import java.util.List;
-import java.util.Map;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
@@ -10,6 +8,10 @@ import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.dto.cognito.AuthResponseDto;
+import ca.bc.gov.app.dto.cognito.RefreshResponseDto;
+import ca.bc.gov.app.dto.cognito.RefreshResponseResultDto;
+import java.util.List;
+import java.util.Map;
 
 public class TestConstants {
 
@@ -484,7 +486,7 @@ public class TestConstants {
               )
           )
       );
-  
+
   public static final EmailRequestDto EMAIL_REQUEST =
       new EmailRequestDto(
           "XX1234567",
@@ -501,7 +503,7 @@ public class TestConstants {
               "userName", "John Doe",
               "name", "Example Inc."
           )
-          );
+      );
 
   public static final String AUTH_RESPONSE_OK = """
       {
@@ -576,4 +578,14 @@ public class TestConstants {
           },
           "ChallengeParameters": {}
       }""";
+
+  public static final RefreshResponseDto COGNITO_DTO = new RefreshResponseDto(
+      new RefreshResponseResultDto(
+          "eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiaWRpciIsImN1c3RvbTppZHBfZGlzcGxheV9uYW1lIjoiVGVzdCwgVUFUIFdMUlM6RVgiLCJnaXZlbl9uYW1lIjoiVWF0IiwiZmFtaWx5X25hbWUiOiJUZXN0IiwiZW1haWwiOiJ1YXR0ZXN0QHRlc3QuY29tIiwiaWRwX2J1c2luZXNzX25hbWUiOiJBdXRvbWF0ZWQgVGVzdCJ9.lzTcimHRjALlD2sNDH8nPqMnAHvt2j_vt-l1IuLJYcE",
+          300,
+          "Bearer",
+          "eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiaWRpciIsImN1c3RvbTppZHBfZGlzcGxheV9uYW1lIjoiVGVzdCwgVUFUIFdMUlM6RVgiLCJnaXZlbl9uYW1lIjoiVWF0IiwiZmFtaWx5X25hbWUiOiJUZXN0IiwiZW1haWwiOiJ1YXR0ZXN0QHRlc3QuY29tIiwiaWRwX2J1c2luZXNzX25hbWUiOiJBdXRvbWF0ZWQgVGVzdCJ9.lzTcimHRjALlD2sNDH8nPqMnAHvt2j_vt-l1IuLJYcE"
+      ),
+      Map.of()
+  );
 }
