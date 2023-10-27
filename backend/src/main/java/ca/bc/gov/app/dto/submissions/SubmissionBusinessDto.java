@@ -6,7 +6,7 @@ public record SubmissionBusinessDto(
     String clientNumber,
     String organizationName,
     String clientType,
-    String goodStanding
+    String goodStandingInd
 ) {
 
 }
