@@ -12,6 +12,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
@@ -435,6 +436,20 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .exchange()
         .expectStatus().isAccepted()
         .expectBody().isEmpty();
+
+  }
+
+  @Test
+  @DisplayName("get country by code")
+  void shoulGgetCountryByCode(){
+
+    client
+        .get()
+        .uri("/api/clients/getCountryByCode/{countryCode}", Map.of("countryCode", "CA"))
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody(CodeNameDto.class)
+        .isEqualTo(new CodeNameDto("CA", "Canada"));
 
   }
 
