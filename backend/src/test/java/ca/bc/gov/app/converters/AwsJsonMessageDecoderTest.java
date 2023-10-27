@@ -13,6 +13,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.codec.DecodingException;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.util.MimeType;
@@ -29,6 +30,7 @@ class AwsJsonMessageDecoderTest {
       .wrap(COGNITO_REFRESH.getBytes(StandardCharsets.UTF_8));
 
   @Test
+  @DisplayName("should get decodable mime")
   void shouldGetDecodableMime() {
     assertEquals(
         List.of(MimeType.valueOf("application/x-amz-json-1.1")),
@@ -37,6 +39,7 @@ class AwsJsonMessageDecoderTest {
   }
 
   @Test
+  @DisplayName("should get mime")
   void shouldBeAbleToDecode() {
     assertTrue(
         sut.canDecode(
@@ -47,6 +50,7 @@ class AwsJsonMessageDecoderTest {
   }
 
   @Test
+  @DisplayName("should not be able to decode")
   void shouldDecodeToFlux() {
     sut.decode(
             Mono.just(buffer),
@@ -60,6 +64,21 @@ class AwsJsonMessageDecoderTest {
   }
 
   @Test
+  @DisplayName("should fail to decode")
+  void shouldFailToDecodeToFlux() {
+    sut.decode(
+            Mono.just(new DefaultDataBufferFactory().wrap("potato chips".getBytes(StandardCharsets.UTF_8))),
+            ResolvableType.forType(RefreshRequestDto.class),
+            MimeType.valueOf("application/x-amz-json-1.1"),
+            null
+        )
+        .as(StepVerifier::create)
+        .expectError(DecodingException.class)
+        .verify();
+  }
+
+  @Test
+  @DisplayName("should decode to mono")
   void shouldDecodeToMono() {
     sut.decodeToMono(
             Mono.just(buffer),

@@ -1,6 +1,5 @@
 package ca.bc.gov.app.converters;
 
-import ca.bc.gov.app.dto.cognito.RefreshRequestDto;
 import ca.bc.gov.app.dto.cognito.RefreshResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;

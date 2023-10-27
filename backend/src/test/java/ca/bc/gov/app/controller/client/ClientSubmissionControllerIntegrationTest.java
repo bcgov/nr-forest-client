@@ -11,12 +11,14 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.submissions.SubmissionApproveRejectDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -214,6 +216,41 @@ class ClientSubmissionControllerIntegrationTest
           .jsonPath("$.[0].clientType").isEqualTo("General Partnership")
           .jsonPath("$.[0].user").isEqualTo("Test User");
     }
+  }
+
+  @Test
+  @DisplayName("Submission Details")
+  @Order(5)
+  void shouldGetSubmissionDetails() {
+
+    client
+        .get()
+        .uri("/api/clients/submissions/1")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$.submissionId").isEqualTo(1)
+        .jsonPath("$.updateUser").isEqualTo("Test User")
+        .jsonPath("$.submissionType").isEqualTo("Submission pending processing");
+  }
+
+  @Test
+  @DisplayName("Submission Approval / Rejection")
+  @Order(6)
+  void shouldApproveOrReject() {
+
+    client
+        .post()
+        .uri("/api/clients/submissions/1")
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
+        .body(Mono.just(new SubmissionApproveRejectDto(true, List.of(), null)),
+            SubmissionApproveRejectDto.class)
+        .exchange()
+        .expectStatus().isAccepted()
+        .expectBody()
+        .isEmpty();
   }
 
   private static Stream<Arguments> listValues() {

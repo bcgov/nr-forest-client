@@ -18,28 +18,42 @@ import reactor.test.StepVerifier;
 @DisplayName("Unit Test | AwsJsonMessageEncoder")
 class AwsJsonMessageEncoderTest {
 
-  private final AwsJsonMessageEncoder sut = new AwsJsonMessageEncoder(new ObjectMapper());
+  private final AwsJsonMessageEncoder encoder = new AwsJsonMessageEncoder(new ObjectMapper());
 
   @Test
   @DisplayName("should get mime")
   void shouldGetMime() {
     assertEquals(
         List.of(MimeType.valueOf("application/x-amz-json-1.1")),
-        sut.getEncodableMimeTypes()
+        encoder.getEncodableMimeTypes()
     );
   }
 
   @Test
   @DisplayName("should encode")
   void shouldEncode() {
-    sut.encode(
-            Mono.just(
-                new RefreshRequestDto(
-                    "username",
-                    "refreshToken",
-                    Map.of()
-                )
-            ),
+    encoder.encode(
+            Mono.just(new RefreshRequestDto("username", "refreshToken", Map.of())),
+            new DefaultDataBufferFactory(),
+            ResolvableType.forType(RefreshRequestDto.class),
+            MimeType.valueOf("application/x-amz-json-1.1"),
+            null
+        )
+        .as(StepVerifier::create)
+        .assertNext(dataBuffer -> {
+          assertEquals(
+              "{\"ClientId\":\"username\",\"AuthFlow\":\"refreshToken\",\"AuthParameters\":{}}",
+              new String(dataBuffer.asByteBuffer().array())
+          );
+        })
+        .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("should fail when encoding")
+  void shouldFailWhenEncode() {
+    encoder.encode(
+            Mono.just(new RefreshRequestDto("username", "refreshToken", Map.of())),
             new DefaultDataBufferFactory(),
             ResolvableType.forType(RefreshRequestDto.class),
             MimeType.valueOf("application/x-amz-json-1.1"),
@@ -59,7 +73,7 @@ class AwsJsonMessageEncoderTest {
   @DisplayName("should be able to encode")
   void shouldBeAbleToEncode() {
     assertTrue(
-        sut.canEncode(
+        encoder.canEncode(
             ResolvableType.forType(RefreshRequestDto.class),
             MimeType.valueOf("application/x-amz-json-1.1")
         )
