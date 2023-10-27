@@ -261,10 +261,11 @@ jobs:
     runs-on: ubuntu-22.04
     needs:
       - deploy
+      - pr-validation
     environment: dev
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))
+      PREFIX: ${{ github.event.repository.name }}-${{ needs.pr-validation.outputs.url_zone }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
