@@ -99,9 +99,8 @@ public class ClientService {
    *         empty result if no match is found.
    *
    * @see CodeNameDto
-   * @see countryCodeRepository
    */
-  public Mono<Object> getCountryByCode(String countryCode) {
+  public Mono<CodeNameDto> getCountryByCode(String countryCode) {
     return countryCodeRepository
             .findByCountryCode(countryCode)
             .map(entity -> new CodeNameDto(entity.getCountryCode(), 
@@ -155,11 +154,23 @@ public class ClientService {
         bcRegistryService
             .requestDocumentData(clientNumber)
             .next()
+            .doOnNext(document ->
+                log.info("Searching on Oracle legacy db for {} {}",
+                    document.business().identifier(),
+                    document.business().legalName()
+                )
+            )
             .flatMap(document ->
                 legacyService
                     .searchLegacy(document.business().identifier(), document.business().legalName())
                     .next()
                     .filter(isMatchWith(document))
+                    .doOnNext(legacy ->
+                        log.info("Found legacy entry for {} {}",
+                            document.business().identifier(),
+                            document.business().legalName()
+                        )
+                    )
                     .flatMap(legacy -> Mono
                         .error(
                             new ClientAlreadyExistException(
@@ -169,6 +180,11 @@ public class ClientService {
                         )
                     )
                     .defaultIfEmpty(document)
+                    .doOnNext(value ->
+                        log.info("No entry found on legacy for {} {}",
+                            document.business().identifier(), document.business().legalName()
+                        )
+                    )
             )
             .map(BcRegistryDocumentDto.class::cast)
             .flatMap(buildDetails());
@@ -256,7 +272,7 @@ public class ClientService {
                     addressDto.addressCity(),
                     addressDto.postalCode().trim().replaceAll("\\s+", ""),
                     index.getAndIncrement(),
-                    WordUtils.capitalize(addressDto.addressType()).concat(" Address")
+                    WordUtils.capitalize(addressDto.addressType()).concat(" address")
                 )
             )
             .flatMap(address -> loadCountry(address.country().text()).map(address::withCountry))

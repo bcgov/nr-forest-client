@@ -4,11 +4,16 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import ca.bc.gov.app.dto.client.ClientTypeEnum;
+import ca.bc.gov.app.dto.client.LegalTypeEnum;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,8 +22,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.ObjectError;
-import ca.bc.gov.app.dto.client.ClientTypeEnum;
-import ca.bc.gov.app.dto.client.LegalTypeEnum;
 
 @DisplayName("Unit Test | Client Validation")
 class ClientValidationUtilsTest {
@@ -35,7 +38,7 @@ class ClientValidationUtilsTest {
       assertNull(ClientValidationUtils.getClientType(legal));
     }
   }
-  
+
   @ParameterizedTest(name = "For phone number {0} I will have {1} errors with message {2}")
   @MethodSource("validatePhoneNumberContents")
   @DisplayName("validating phone numbers")
@@ -45,7 +48,7 @@ class ClientValidationUtilsTest {
     Errors errors = new MapBindingResult(target, "");
 
     ClientValidationUtils.validatePhoneNumber(phoneNumber, field, errors);
-    
+
     System.out.println("Expected Error Count: " + errorCount);
     System.out.println("Actual Error Count: " + errors.getErrorCount());
 
@@ -53,9 +56,9 @@ class ClientValidationUtilsTest {
     if (errorCount > 0) {
       System.out.println("Errors:");
       for (ObjectError error : errors.getAllErrors()) {
-          System.out.println(error.getDefaultMessage());
+        System.out.println(error.getDefaultMessage());
       }
-      
+
       assertThat(
           errors
               .getAllErrors()
@@ -64,17 +67,17 @@ class ClientValidationUtilsTest {
               .map(DefaultMessageSourceResolvable::getCodes)
               .flatMap(Stream::of)
       )
-      .isNotNull()
-      .hasSizeBetween(2,3)
-      .contains(errorMessage);
+          .isNotNull()
+          .hasSizeBetween(2, 3)
+          .contains(errorMessage);
     }
   }
-  
+
   private static Stream<Arguments> validatePhoneNumberContents() {
     return Stream.of(Arguments.of("1234567890", 0, StringUtils.EMPTY),
-                     Arguments.of(StringUtils.EMPTY, 1, "The phone number must be a 10-digit number"),
-                     Arguments.of("abc", 1, "The phone number must be a 10-digit number"),
-                     Arguments.of("123", 1, "The phone number must be a 10-digit number")
+        Arguments.of(StringUtils.EMPTY, 1, "The phone number must be a 10-digit number"),
+        Arguments.of("abc", 1, "The phone number must be a 10-digit number"),
+        Arguments.of("123", 1, "The phone number must be a 10-digit number")
     );
   }
 
@@ -98,10 +101,22 @@ class ClientValidationUtilsTest {
               .map(DefaultMessageSourceResolvable::getCodes)
               .flatMap(Stream::of)
       )
-      .isNotNull()
-      .hasSize(3)
-      .contains(errorMessage);   
+          .isNotNull()
+          .hasSize(3)
+          .contains(errorMessage);
     }
+  }
+
+  @Test
+  @DisplayName("should check if enum is valid")
+  void shouldCheckIfEnumIsValid() {
+    Map<String, Object> target = new HashMap<>();
+    Errors errors = new MapBindingResult(target, "");
+
+    assertTrue(
+        ClientValidationUtils.isValidEnum("A", "legalType", LegalTypeEnum.class, errors)
+    );
+
   }
 
   private static Stream<Arguments> validateEmailContents() {
@@ -109,7 +124,7 @@ class ClientValidationUtilsTest {
         Stream.of(
             Arguments.of("jhon@email.ca", 0, StringUtils.EMPTY),
             Arguments.of("jhon", 1, "You must enter an email address in a valid format. "
-                + "For example: name@example.com"),
+                                    + "For example: name@example.com"),
             Arguments.of(StringUtils.EMPTY, 1, "You must enter an email address")
         );
   }

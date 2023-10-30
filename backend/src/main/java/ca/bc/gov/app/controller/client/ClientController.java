@@ -24,10 +24,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@Tag(
-    name = "FSA Clients",
-    description = "The FSA Client endpoint, responsible for handling client data"
-)
 @RequestMapping(value = "/api/clients", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class ClientController {
@@ -50,7 +46,7 @@ public class ClientController {
   }
   
   @GetMapping("/getCountryByCode/{countryCode}")
-  public Mono<Object> getCountryByCode(
+  public Mono<CodeNameDto> getCountryByCode(
       @PathVariable String countryCode) {
     return clientService.getCountryByCode(countryCode);
   }

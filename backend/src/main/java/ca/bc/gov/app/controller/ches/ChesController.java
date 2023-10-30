@@ -26,7 +26,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ChesController {
   
-  private ClientService clientService;
+  private final ClientService clientService;
   
   /**
    * Endpoint for sending an email using CHES.

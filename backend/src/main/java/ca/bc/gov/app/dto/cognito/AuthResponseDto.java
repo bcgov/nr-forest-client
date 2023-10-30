@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * AuthResponse represents the response from Cognito when authenticating a user.
  */
-public record AuthResponse(
+public record AuthResponseDto(
     @JsonProperty("access_token")
     String accessToken,
     @JsonProperty("expires_in")

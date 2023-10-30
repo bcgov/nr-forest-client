@@ -10,6 +10,7 @@ import { useEventBus } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useFocus } from "@/composables/useFocus";
 import { usePost } from "@/composables/useFetch";
+import { isSmallScreen } from "@/composables/useScreenSize";
 // Imported Pages
 import BusinessInformationWizardStep from "@/pages/bceidform/BusinessInformationWizardStep.vue";
 import AddressWizardStep from "@/pages/bceidform/AddressWizardStep.vue";
@@ -23,7 +24,6 @@ import type {
   ProgressNotification,
   CodeDescrType,
 } from "@/dto/CommonTypesDto";
-import { isSmallScreen } from "@/CoreConstants";
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // Imported global validations

@@ -18,8 +18,10 @@ declare module '@vue/runtime-core' {
     MainHeaderComponent: typeof import('./src/components/MainHeaderComponent.vue')['default']
     MultiselectInputComponent: typeof import('./src/components/forms/MultiselectInputComponent.vue')['default']
     RadioInputComponent: typeof import('./src/components/forms/RadioInputComponent.vue')['default']
+    ReadOnlyComponent: typeof import('./src/components/forms/ReadOnlyComponent.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TextInputComponent: typeof import('./src/components/forms/TextInputComponent.vue')['default']
+    UserProfileComponent: typeof import('./src/components/UserProfileComponent.vue')['default']
   }
 }

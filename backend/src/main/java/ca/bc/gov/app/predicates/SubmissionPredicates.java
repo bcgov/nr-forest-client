@@ -5,9 +5,11 @@ import static org.springframework.data.relational.core.query.Criteria.where;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.relational.core.query.Criteria;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -18,6 +20,7 @@ public class SubmissionPredicates implements QueryPredicates {
       return
           Stream
               .of(values)
+              .filter(Objects::nonNull)
               .map(value ->
                   where("submissionStatus")
                       .is(value)
@@ -33,17 +36,10 @@ public class SubmissionPredicates implements QueryPredicates {
       return
           Stream
               .of(values)
-              .map(value ->
-                  where("updatedAt")
-                      .lessThanOrEquals(
-                          LocalDate
-                              .parse(
-                                  value,
-                                  DateTimeFormatter.ISO_DATE
-                              )
-                              .plusDays(1)
-                      )
-              )
+              .filter(StringUtils::isNotBlank)
+              .map(value -> LocalDate.parse(value,DateTimeFormatter.ISO_DATE))
+              .map(value -> value.plusDays(1))
+              .map(value -> QueryPredicates.isBefore(value.atStartOfDay(),"updatedAt"))
               .reduce(Criteria::or)
               .orElse(Criteria.empty());
     }

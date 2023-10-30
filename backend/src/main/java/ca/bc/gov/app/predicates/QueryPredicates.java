@@ -2,7 +2,9 @@ package ca.bc.gov.app.predicates;
 
 import static org.springframework.data.relational.core.query.Criteria.where;
 
+import java.time.LocalDateTime;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.relational.core.query.Criteria;
 
 public interface QueryPredicates {
@@ -12,6 +14,7 @@ public interface QueryPredicates {
       return
           Stream
               .of(values)
+              .filter(StringUtils::isNotBlank)
               .map(value -> where(fieldName).is(value))
               .reduce(Criteria::or)
               .orElse(Criteria.empty());
@@ -24,9 +27,24 @@ public interface QueryPredicates {
       return
           Stream
               .of(values)
+              .filter(StringUtils::isNotBlank)
               .map(value -> where(fieldName).like(value).ignoreCase(true))
               .reduce(Criteria::or)
               .orElse(Criteria.empty());
+    }
+    return Criteria.empty();
+  }
+
+  static Criteria isBefore(LocalDateTime endDate, String fieldName) {
+    if (endDate != null) {
+      return where(fieldName).greaterThanOrEquals(endDate);
+    }
+    return Criteria.empty();
+  }
+
+  static Criteria isAfter(LocalDateTime startDate, String fieldName) {
+    if (startDate != null) {
+      return where(fieldName).lessThanOrEquals(startDate);
     }
     return Criteria.empty();
   }

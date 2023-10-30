@@ -1,7 +1,7 @@
 {
   "mappings": [
     {
-      "name": "Autocomplete BC Registry",
+      "name":"Autocomplete BC Registry",
       "request": {
         "urlPattern": "/api/clients/name/(.*)",
         "method": "GET"
@@ -9,13 +9,11 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-autocomplete.json",
-        "transformers": [
-          "response-template"
-        ]
+        "transformers": ["response-template"]
       }
     },
     {
-      "name": "BC Registry Details OK",
+      "name":"BC Registry Details OK",
       "request": {
         "urlPattern": "/api/clients/(XX|YY|UU|JJ|FM)(.*)",
         "method": "GET"
@@ -23,14 +21,12 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-details-{{regexExtract request.path.[2] '(XX|YY|UU|JJ|FM)(.*)' 'parts'}}{{parts.0}}.json",
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "fixedDelayMilliseconds": 2500
       }
     },
     {
-      "name": "BC Registry Details Duplicated",
+      "name":"BC Registry Details Duplicated",
       "request": {
         "urlPattern": "/api/clients/ZZ(.*)",
         "method": "GET"
@@ -38,13 +34,12 @@
       "response": {
         "status": 409,
         "body": "The Edgar Paciolli already exists with the Incorporation number {{request.path.[2]}} and client number 999999",
-        "transformers": [
-          "response-template"
-        ]
+        "transformers": ["response-template"]
       }
     },
+
     {
-      "name": "Country Codes",
+      "name":"Country Codes",
       "request": {
         "url": "/api/clients/activeCountryCodes?page=0&size=250",
         "method": "GET"
@@ -55,35 +50,20 @@
       }
     },
     {
-      "name": "Country Code",
-      "request": {
-        "urlPattern": "/api/clients/getCountryByCode/(.*)",
-        "method": "GET"
-      },
-      "response": {
-        "status": 200,
-        "transformers": [
-          "response-template"
-        ],
-        "bodyFileName": "response-country-{{request.path.[3]}}.json"
-      }
-    },
-    {
-      "name": "Province Codes",
+      "name":"Province Codes",
       "request": {
         "urlPattern": "/api/clients/activeCountryCodes/(.*)?page=0&size=250",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "bodyFileName": "response-provinces-{{request.path.[3]}}.json"
       }
     },
+
     {
-      "name": "Contact Type Codes",
+      "name":"Contact Type Codes",
       "request": {
         "url": "/api/clients/activeContactTypeCodes?page=0&size=250",
         "method": "GET"
@@ -93,8 +73,9 @@
         "body": "[{\"code\":\"P\",\"name\":\"Person\"}]"
       }
     },
+
     {
-      "name": "Submission Success for XX",
+      "name":"Submission Success for XX",
       "request": {
         "url": "/api/clients/submissions",
         "method": "POST",
@@ -116,7 +97,7 @@
       }
     },
     {
-      "name": "Submission Error for UU",
+      "name":"Submission Error for UU",
       "request": {
         "url": "/api/clients/submissions",
         "method": "POST",
@@ -135,7 +116,7 @@
       }
     },
     {
-      "name": "Send email for ZZ",
+      "name":"Send email for ZZ",
       "request": {
         "url": "/api/clients/mail",
         "method": "POST",
@@ -153,7 +134,7 @@
       }
     },
     {
-      "name": "Submission Error for FM1234567",
+      "name":"Submission Error for FM1234567",
       "request": {
         "url": "/api/clients/submissions",
         "method": "POST",
@@ -168,11 +149,12 @@
       },
       "response": {
         "status": 400,
-        "body": "[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]"
+        "body":"[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]"
       }
     },
+
     {
-      "name": "Autocompete Canada Post Canada",
+      "name":"Autocompete Canada Post Canada",
       "request": {
         "urlPath": "/api/clients/addresses",
         "method": "GET",
@@ -194,7 +176,7 @@
       }
     },
     {
-      "name": "Autocompete Canada Post US",
+      "name":"Autocompete Canada Post US",
       "request": {
         "urlPath": "/api/clients/addresses",
         "method": "GET",
@@ -216,7 +198,7 @@
       }
     },
     {
-      "name": "Canada Post details for success",
+      "name":"Canada Post details for success",
       "request": {
         "urlPattern": "/api/clients/addresses/(.*)",
         "method": "GET"
@@ -224,25 +206,161 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-address-{{request.path.[3]}}.json",
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "fixedDelayMilliseconds": 2500
       }
     },
     {
-      "name": "Canada Post error details for F8F8F8",
+      "name":"Canada Post error details for F8F8F8",
       "request": {
         "url": "/api/clients/addresses/F8F8F8",
         "method": "GET"
       },
       "response": {
         "status": 404,
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "fixedDelayMilliseconds": 2500
+      }
+    },
+
+
+    {
+      "name":"Submission List Page",
+      "request": {
+        "urlPath": "/api/clients/submissions",
+        "method": "GET",
+        "queryParameters": {
+          "page": {
+            "matches": "^[0-5]$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-total-count": "57",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "bodyFileName": "response-submissions-page{{request.query.page}}.json",
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 2500
+      }
+    },
+    {
+      "name":"Submission List Empty",
+      "request": {
+        "urlPath": "/api/clients/submissions",
+        "method": "GET",
+        "queryParameters": {
+          "page": {
+            "matches": "^[6-9]\\d*$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-total-count": "57",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "body": "[]",
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "name":"Submission List Search",
+      "request": {
+        "urlPath": "/api/clients/submissions",
+        "method": "GET",
+        "queryParameters": {
+          "page": {
+            "matches": "^\\d+$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          },
+          "keyword":{
+            "matches": "^(.*)$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-total-count": "3",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "bodyFileName": "response-submissions-search.json",
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "name":"Submission Details Review",
+      "request": {
+        "urlPattern": "/api/clients/submissions/(.*)",
+        "method": "GET"        
+      },
+      "response": {
+        "status": 200,        
+        "bodyFileName": "response-submissions-details-review.json",
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "name":"Submission Details Approved",
+      "request": {
+        "urlPath": "/api/clients/submissions/a17d274f-3f5f-425b-b94e-757fea4dcfbb",
+        "method": "GET"        
+      },
+      "response": {
+        "status": 200,        
+        "bodyFileName": "response-submissions-details-approved.json",
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "name":"Submission Details Review Dupped",
+      "request": {
+        "urlPath": "/api/clients/submissions/5f1f7209-fb2f-487d-9619-786c63a52a07",
+        "method": "GET"        
+      },
+      "response": {
+        "status": 200,        
+        "bodyFileName": "response-submissions-details-dupped.json",
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "name":"Submission processed successfully",
+      "request": {
+        "urlPattern": "/api/clients/submissions/(.*)",
+        "method": "POST",
+        "headers": {
+          "x-user-id": {
+            "equalTo": "uattest"
+          },
+          "x-user-email": {
+            "equalTo": "uattest@gov.bc.ca"
+          },
+          "x-user-name": {
+            "equalTo": "Uat Test"
+          }
+          }
+        
+      },
+      "response": {
+        "status": 202
       }
     }
   ]
 }
+

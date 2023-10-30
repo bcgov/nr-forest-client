@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class LegacyService {
+public class LegacyLoadingService {
 
   private final List<ProcessorMatcher> matchers;
 
