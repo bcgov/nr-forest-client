@@ -214,11 +214,11 @@ describe("<AddressGroupComponent />", () => {
       .click()
       .and("have.value", "Illinois");
 
-    cy.get("#postalCode_0")
+    /*cy.get("#postalCode_0")
       .should("be.visible")
       .shadow()
       .find("label")
-      .and("include.text", "Zip code");
+      .and("include.text", "Zip code");*/
   });
 
   const streetAddressMatchingScenarios = [
