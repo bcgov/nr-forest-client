@@ -119,6 +119,8 @@ objects:
                       key: oracle-secret
                 - name: ORACLEDB_PORT
                   value: "1543"
+                - name: CLIENT_URI
+                  value:  https://${NAME}-${ZONE}-backend.${DOMAIN}/api
               volumeMounts:
                 - name: ${NAME}-${ZONE}-${COMPONENT}-certs
                   mountPath: /cert
