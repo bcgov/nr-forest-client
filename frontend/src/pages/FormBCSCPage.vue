@@ -202,7 +202,7 @@ import { BusinessTypeEnum, ClientTypeEnum, LegalTypeEnum  } from "@/dto/CommonTy
 import { useFetchTo, usePost } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 import { useEventBus } from "@vueuse/core";
-import { codeConversionFn } from "@/services/ForestClientService";
+import { codeConversionFn,getEnumKeyByEnumValue } from "@/services/ForestClientService";
 import { isUniqueDescriptive, isNullOrUndefinedOrBlank, runValidation, validate, getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
@@ -212,14 +212,13 @@ import Check16 from "@carbon/icons-vue/es/checkmark/16";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import { useRouter } from "vue-router";
 
-const instance = getCurrentInstance();
 const { setFocusedComponent } = useFocus();
 const errorMessage = ref<string | undefined>("");
 const submitterInformation = ForestClientUserSession.user;
 console.log(JSON.stringify(submitterInformation));
 
 const submitterContact: Contact = {
-  locationNames: [],
+  locationNames: [{ value: "0", text: "Mailing address" }],
   contactType: { value: "BL", text: "Billing" },
   phoneNumber: "",
   firstName: submitterInformation?.firstName ?? "",
@@ -238,14 +237,13 @@ const formatter = new Intl.DateTimeFormat('en-US', {
 const birthDate = new Date(submitterInformation?.birthDate ?? "");
 const formattedDate = formatter.format(birthDate);
 
-
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
   ...formDataDto.value,
   businessInformation :{
-    businessType: BusinessTypeEnum.U.toString(),
-    legalType: LegalTypeEnum.SP.toString(),
-    clientType: ClientTypeEnum.I.toString(),
+    businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
+    legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
+    clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.I),
     incorporationNumber: '',
     businessName: submitterInformation?.name ?? "",
     goodStandingInd: "Y",
@@ -448,7 +446,7 @@ const checkStepValidity = (stepNumber: number): boolean => {
 // Submission
 const router = useRouter();
 
-const { response, error } = usePost(
+const { response, error, fetch: fecthSubmit } = usePost(
   "/api/clients/submissions",
   toRef(formData).value,
   {
@@ -467,7 +465,7 @@ const submit = () => {
 
   if (checkStepValidity(currentTab.value)) {
     submitBtnDisabled.value = true;
-    fetch();
+    fecthSubmit();
   }
 };
 
