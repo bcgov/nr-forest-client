@@ -121,6 +121,8 @@ objects:
                   value: "1543"
                 - name: CLIENT_URI
                   value:  https://${NAME}-${ZONE}-backend.${DOMAIN}/api
+                - name: TIMING
+                  value: 30S
               volumeMounts:
                 - name: ${NAME}-${ZONE}-${COMPONENT}-certs
                   mountPath: /cert

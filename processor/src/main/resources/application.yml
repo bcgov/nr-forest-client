@@ -38,7 +38,7 @@ ca:
     gov:
       nrs:
         processor:
-          poolTime: 5M
+          poolTime: ${TIMING:5M}
         backend:
           uri: ${CLIENT_URI:http://localhost:8080/api}
         oracle:
