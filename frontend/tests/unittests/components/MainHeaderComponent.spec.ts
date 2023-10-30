@@ -4,6 +4,12 @@ import { mount } from "@vue/test-utils";
 import MainHeaderComponent from "@/components/MainHeaderComponent.vue";
 
 describe("MainHeaderComponent.vue", () => {
+  const mockRoute = {
+    path: "/",
+    meta:{
+      profile: false
+    }
+  };
   describe("Authenticated Scenario", () => {
     it("renders the component correctly when authenticated", async () => {
       const session = {
@@ -13,9 +19,10 @@ describe("MainHeaderComponent.vue", () => {
       };
 
       const wrapper = mount(MainHeaderComponent, {
-        global: {
+        global: {          
           mocks: {
             $session: session,
+            $route: mockRoute,
           },
         },
       });
@@ -37,6 +44,7 @@ describe("MainHeaderComponent.vue", () => {
         global: {
           mocks: {
             $session: session,
+            $route: mockRoute,
           },
         },
       });

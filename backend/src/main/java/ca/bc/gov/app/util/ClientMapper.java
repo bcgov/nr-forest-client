@@ -33,7 +33,7 @@ public class ClientMapper {
         .withOrganizationName(clientBusinessInformationDto.businessName())
         .withBusinessTypeCode(clientBusinessInformationDto.businessType())
         .withClientTypeCode(clientBusinessInformationDto.clientType())
-        .withGoodStandingInd(clientBusinessInformationDto.goodStanding());
+        .withGoodStandingInd(clientBusinessInformationDto.goodStandingInd());
   }
 
   /**

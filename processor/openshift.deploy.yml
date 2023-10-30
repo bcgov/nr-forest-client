@@ -31,12 +31,15 @@ parameters:
   - name: CPU_LIMIT
     value: 200m
   - name: MEMORY_REQUEST
-    value: 75Mi
+    value: 300Mi
   - name: MEMORY_LIMIT
-    value: 75Mi
+    value: 400Mi
   - name: CERT_PVC_SIZE
     description: The amount of storage the cert PVC should have
     value: 25Mi
+  - name: URL_ZONE
+    description: Zone to use for URL
+    required: true
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -116,6 +119,10 @@ objects:
                       key: oracle-secret
                 - name: ORACLEDB_PORT
                   value: "1543"
+                - name: CLIENT_URI
+                  value:  https://${NAME}-${ZONE}-backend.${DOMAIN}/api
+                - name: TIMING
+                  value: 30S
               volumeMounts:
                 - name: ${NAME}-${ZONE}-${COMPONENT}-certs
                   mountPath: /cert
@@ -152,12 +159,12 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
-                      key: oracle-user
+                      key: oracle-user-write
                 - name: ORACLEDB_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
-                      key: oracle-password
+                      key: oracle-password-write
                 - name: ORACLEDB_DATABASE
                   valueFrom:
                     secretKeyRef:
@@ -182,6 +189,10 @@ objects:
                       key: oracle-secret
                 - name: ORACLEDB_KEYSTORE
                   value: /cert/jssecacerts
+                - name: CLIENT_URI
+                  value: https://${NAME}-${ZONE}-backend.${DOMAIN}/api
+                - name: TIMING
+                  value: 30S
               ports:
                 - containerPort: 3000
                   protocol: TCP
@@ -226,7 +237,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
+      host: ${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
       port:
         targetPort: 3100-tcp
       to:

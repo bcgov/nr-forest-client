@@ -164,6 +164,8 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
+            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
+            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
             -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
@@ -180,7 +182,7 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=TEST
             -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
-            -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/
+            -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
 
       - name: Conventional Changelog Update
         uses: TriPSs/conventional-changelog-action@v3
@@ -248,6 +250,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
+            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -262,6 +265,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
+            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -275,9 +279,9 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.ZONE }}
-            -p VITE_KEYCLOAK_URL=https://test.loginproxy.gov.bc.ca/auth
-            -p VITE_KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
+            -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
+            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -292,6 +296,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ env.ZONE }}
+            -p URL_ZONE=${{ env.ZONE }}
 
   image-promotions:
     name: Promote images to PROD
@@ -333,6 +338,8 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
+            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
+            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
             -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
@@ -349,7 +356,7 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=PROD
             -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
-            -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/
+            -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
 
   prod-deploy:
     name: PROD Deployment
@@ -395,6 +402,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
+            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -409,6 +417,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
+            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -422,9 +431,9 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}
-            -p VITE_KEYCLOAK_URL=https://loginproxy.gov.bc.ca/auth
-            -p VITE_KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}
+            -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
+            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v1.0.2
@@ -439,5 +448,4 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ env.PREV }}
-
-      
+            -p URL_ZONE=${{ env.ZONE }}

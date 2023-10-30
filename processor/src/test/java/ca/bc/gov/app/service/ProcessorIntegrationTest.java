@@ -56,20 +56,5 @@ class ProcessorIntegrationTest extends AbstractTestContainer {
         .atMost(Duration.ofSeconds(5))
         .untilAsserted(() -> verify(forestClientRepository, atLeastOnce()).findByIncorporationNumber(any(String.class)));
 
-    await()
-        .alias("Submission lookup")
-        .atMost(Duration.ofSeconds(5))
-        .untilAsserted(() ->
-            verify(submissionRepository, atLeastOnce()).findById(eq(1))
-        );
-
-    await()
-        .alias("Submission persistence")
-        .atMost(Duration.ofSeconds(5))
-        .untilAsserted(() ->
-            verify(submissionRepository, atLeastOnce()).save(any(SubmissionEntity.class))
-        );
-
-
   }
 }

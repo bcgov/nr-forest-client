@@ -48,9 +48,11 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     when(countryCodeRepository.findByCountryCode("CA")).thenReturn(Mono.just(countryCodeEntity));
 
-    Mono<Object> resultMono = service.getCountryByCode("CA");
-
-    StepVerifier.create(resultMono).expectNext(expectedDto).verifyComplete();
+    service
+        .getCountryByCode("CA")
+            .as(StepVerifier::create)
+        .expectNext(expectedDto)
+        .verifyComplete();
   }
 
   private static Stream<LocalDate> date() {

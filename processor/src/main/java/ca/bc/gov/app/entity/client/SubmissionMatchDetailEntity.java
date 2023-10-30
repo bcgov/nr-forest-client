@@ -2,6 +2,7 @@ package ca.bc.gov.app.entity.client;
 
 import ca.bc.gov.app.ApplicationConstant;
 import io.r2dbc.postgresql.codec.Json;
+import java.time.LocalDateTime;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,18 @@ public class SubmissionMatchDetailEntity {
 
   @Column("confirmed_match_status_ind")
   private String status;
+
+  @Column("confirmed_match_message")
+  private String matchingMessage;
+
+  @Column("confirmed_match_timestamp")
+  private LocalDateTime updatedAt;
+
+  @Column("confirmed_match_userid")
+  private String createdBy;
+
+  @Column("submission_matching_processed")
+  private boolean processed;
 
   @Transient
   private Map<String,Object> matchers;

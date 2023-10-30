@@ -1,0 +1,46 @@
+{
+  "businessInformation": {
+    "businessType": "R",
+    "legalType": "BC",
+    "clientType": "C",
+    "incorporationNumber": "XX1234567",
+    "businessName": "FOREST OF FORESTS",
+    "goodStandingInd": ""
+  },
+  "location": {
+    "addresses": [
+      {
+        "locationName": "Mailing address",
+        "streetAddress": "511-439 Nowhere St",
+        "country": {
+          "value": "CA",
+          "text": "Canada"
+        },
+        "province": {
+          "value": "BC",
+          "text": "British Columbia"
+        },
+        "city": "Victoria",
+        "postalCode": "V8V8V8"
+      }
+    ],
+    "contacts": [
+      {
+        "locationNames": [
+          {
+            "value": "0",
+            "text": "Mailing address"
+          }
+        ],
+        "contactType": {
+          "value": "AR",
+          "text": "Accounts Receivable"
+        },
+        "phoneNumber": "(123) 123-1231",
+        "firstName": "Test",
+        "lastName": "Uat",
+        "email": "uattest@gov.bc.ca"
+      }
+    ]
+  }
+}
