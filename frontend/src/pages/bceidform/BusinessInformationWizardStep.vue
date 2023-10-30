@@ -190,6 +190,7 @@ watch([selectedOption], () => {
       ? ForestClientUserSession.user?.businessName
       : fromName;
     validation.business = true;
+    formData.value.businessInformation.goodStandingInd = "Y";
     emit("update:data", formData.value);
   } else {
     formData.value.businessInformation.businessName = "";

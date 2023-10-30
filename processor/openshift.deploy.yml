@@ -189,6 +189,10 @@ objects:
                       key: oracle-secret
                 - name: ORACLEDB_KEYSTORE
                   value: /cert/jssecacerts
+                - name: CLIENT_URI
+                  value: https://${NAME}-${ZONE}-backend.${DOMAIN}/api
+                - name: TIMING
+                  value: 30S
               ports:
                 - containerPort: 3000
                   protocol: TCP
