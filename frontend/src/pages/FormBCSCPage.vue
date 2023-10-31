@@ -197,7 +197,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch, getCurrentInstance, toRef } from "vue";
-import { newFormDataDto, emptyContact } from "@/dto/ApplyClientNumberDto";
+import { newFormDataDto, emptyContact, locationName as defaultLocation } from "@/dto/ApplyClientNumberDto";
 import { BusinessTypeEnum, ClientTypeEnum, LegalTypeEnum  } from "@/dto/CommonTypesDto";
 import { useFetchTo, usePost } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
@@ -217,7 +217,7 @@ const errorMessage = ref<string | undefined>("");
 const submitterInformation = ForestClientUserSession.user;
 
 const submitterContact: Contact = {
-  locationNames: [{ value: "0", text: "Mailing address" }],
+  locationNames: [defaultLocation],
   contactType: { value: "BL", text: "Billing" },
   phoneNumber: "",
   firstName: submitterInformation?.firstName ?? "",
@@ -272,7 +272,7 @@ watch(country, (newValue) => {
     country: { value: newValue.value, text: newValue.text },
     province: codeConversionFn(formData.businessInformation.address.province),
     postalCode: formData.businessInformation.address.postalCode.replace(/\s/g, ""),
-    locationName: "Mailing address",
+    locationName: defaultLocation.text,
   };
 
   formData.location.addresses.push(formData.businessInformation.address);
@@ -297,7 +297,7 @@ fetch();
 //New contact being added
 const otherContacts = computed(() => formData.location.contacts.slice(1));
 const addContact = (autoFocus = true) => {
-  emptyContact.locationNames.push({ value: "0", text: "Mailing address" });
+  emptyContact.locationNames.push(defaultLocation);
   const newLength = formData.location.contacts.push(
     JSON.parse(JSON.stringify(emptyContact))
   );
