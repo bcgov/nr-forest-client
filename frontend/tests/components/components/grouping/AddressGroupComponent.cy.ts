@@ -29,6 +29,8 @@ describe("<AddressGroupComponent />", () => {
 
     cy.fixture("emptyAddress.json").as("emptyAddressFixture");
 
+    cy.fixture("addressKelownaBC.json").as("addressKelownaBCFixture");
+
     cy.intercept(
       "GET",
       `/api/clients/addresses?country=CA&maxSuggestions=10&searchTerm=${encodeURI(
@@ -38,6 +40,16 @@ describe("<AddressGroupComponent />", () => {
         fixture: "addressSearch.json",
       }
     ).as("searchAddress");
+
+    cy.intercept(
+      "GET",
+      `/api/clients/addresses?country=CA&maxSuggestions=10&searchTerm=${encodeURI(
+        "158 Hargrave St"
+      )}*`,
+      {
+        fixture: "addressSearchMB.json",
+      }
+    ).as("searchaddressMB");
 
     cy.intercept(
       "GET",
@@ -53,6 +65,10 @@ describe("<AddressGroupComponent />", () => {
     cy.intercept("GET", "/api/clients/addresses/V8T5J9", {
       fixture: "address.json",
     }).as("getAddress");
+
+    cy.intercept("GET", "/api/clients/addresses/R3C3N2", {
+      fixture: "addressMB.json",
+    }).as("getaddressMB");
   });
 
   it("should render the component", () => {
@@ -439,23 +455,233 @@ describe("<AddressGroupComponent />", () => {
       });
     });
   });
-  // TODO: FSADT1-915
-  // it('should update the province when changed manually', () => {
-  // })
-  // it('should update the province when a Street address option gets selected', () => {
-  // })
-  // describe('when Province is cleared by the user', () => {
-  //   /**
-  //    * @see FSADT1-914
-  //    */
-  //   it('should update the Province when a Street address in the same province gets selected', () => {
-  //   })
+  describe("province", () => {
+    it('should update the province when changed manually', () => {
+      cy.get("@addressFixture").then((address) => {
+        cy.get("@countriesFixture").then((countries) => {
+          cy.mount(AddressGroupComponent, {
+            props: {
+              id: 0,
+              modelValue: address,
+              countryList: countries,
+              validations: [],
+            },
+          });
+        });
+      });
 
-  //   it('should update the Province when a Street address in a different province gets selected', () => {
-  //   })
-  // })
-  // describe('when the following fields are displayed as invalid: City, Province, Postal code', () => {
-  //   it('should display them as valid when they get filled by selecting a Street address option', () => {
-  //   })
-  // })
+      cy.wait("@getProvinces");
+
+      cy.get("#province_0")
+        .should("be.visible")
+        .and("have.value", "British Columbia");
+
+      cy.get("#province_0")
+        .click()
+        .find('cds-combo-box-item[data-id="MB"]')
+        .should("be.visible")
+        .click();
+
+      cy.get("#province_0")
+        .should("be.visible")
+        .and("have.value", "Manitoba");
+    });
+    it('should update the province when a Street address option gets selected', () => {
+      cy.get("@emptyAddressFixture").then((emptyAddress) => {
+        cy.get("@countriesFixture").then((countries) => {
+          cy.mount(AddressGroupComponent, {
+            props: {
+              id: 0,
+              modelValue: emptyAddress,
+              countryList: countries,
+              validations: [],
+            },
+          });
+        });
+      });
+
+      cy.wait("@getProvinces");
+
+      cy.get("@addressFixture").then((address: Address) => {
+        cy.get("#province_0")
+          .should("be.visible")
+          .and("have.value", "British Columbia");
+      });
+
+      const typedAddress = "158 Hargrave St";
+
+      cy.get("#addr_0")
+        .shadow()
+        .find("input")
+        .type(typedAddress, { delay: 0 });
+
+      cy.wait("@searchaddressMB");
+
+      cy.get("cds-combo-box-item").contains(typedAddress).click();
+
+      cy.wait("@getaddressMB");
+
+      cy.get("@addressFixture").then((address: Address) => {
+        cy.get("#province_0")
+          .should("be.visible")
+          .and("have.value", "Manitoba");
+      });
+    });
+    describe('when Province has been cleared by the user', () => {
+      /**
+       * @see FSADT1-914
+       */
+      it('should update the Province when a Street address in the same province gets selected', () => {
+        cy.get("@addressKelownaBCFixture").then((initialAddress) => {
+          cy.get("@countriesFixture").then((countries) => {
+            cy.mount(AddressGroupComponent, {
+              props: {
+                id: 0,
+                modelValue: initialAddress,
+                countryList: countries,
+                validations: [],
+              },
+            });
+          });
+        });
+
+        cy.wait("@getProvinces");
+
+        // Original province is BC
+        cy.get("#province_0")
+          .should("be.visible")
+          .and("have.value", "British Columbia");
+
+        // Click the clear (x) button
+        cy.get("#province_0").shadow().find("#selection-button").click();
+
+        // Province got cleared.
+        cy.get("#province_0")
+          .should("be.visible")
+          .and("have.value", "");
+
+        const typedAddress = "2975 Jutland Rd";
+
+        cy.get("#addr_0")
+          .shadow()
+          .find("input")
+          .clear()
+          .type(typedAddress, { delay: 0 });
+
+        cy.wait("@searchAddress");
+
+        cy.get("cds-combo-box-item").contains(typedAddress).click();
+
+        cy.wait("@getAddress");
+
+        // Province is BC again
+        cy.get("@addressFixture").then((address: Address) => {
+          cy.get("#province_0")
+            .should("be.visible")
+            .and("have.value", "British Columbia");
+        });
+      });
+
+      it('should update the Province when a Street address in a different province gets selected', () => {
+        cy.get("@addressKelownaBCFixture").then((initialAddress) => {
+          cy.get("@countriesFixture").then((countries) => {
+            cy.mount(AddressGroupComponent, {
+              props: {
+                id: 0,
+                modelValue: initialAddress,
+                countryList: countries,
+                validations: [],
+              },
+            });
+          });
+        });
+
+        cy.wait("@getProvinces");
+
+        // Original province is BC
+        cy.get("#province_0")
+          .should("be.visible")
+          .and("have.value", "British Columbia");
+
+        // Click the clear (x) button
+        cy.get("#province_0").shadow().find("#selection-button").click();
+
+        // Province got cleared.
+        cy.get("#province_0")
+          .should("be.visible")
+          .and("have.value", "");
+
+        const typedAddress = "158 Hargrave St";
+
+        cy.get("#addr_0")
+          .shadow()
+          .find("input")
+          .clear()
+          .type(typedAddress, { delay: 0 });
+
+        cy.wait("@searchaddressMB");
+
+        cy.get("cds-combo-box-item").contains(typedAddress).click();
+
+        cy.wait("@getaddressMB");
+
+        // Province is now MB
+        cy.get("@addressFixture").then((address: Address) => {
+          cy.get("#province_0")
+            .should("be.visible")
+            .and("have.value", "Manitoba");
+        });
+      });
+    });
+  });
+  describe('when the following fields are displayed as invalid: City, Province, Postal code', () => {
+    it('should display them as valid once they get filled by selecting a Street address option', () => {
+      cy.get("@emptyAddressFixture").then((emptyAddress) => {
+        cy.get("@countriesFixture").then((countries) => {
+          cy.mount(AddressGroupComponent, {
+            props: {
+              id: 0,
+              modelValue: emptyAddress,
+              countryList: countries,
+              validations: [],
+            },
+          });
+        });
+      });
+
+      cy.wait("@getProvinces");
+
+      cy.get("#city_0").click();
+
+      cy.get("#province_0").shadow().find("#selection-button").click();
+
+      cy.get("#postalCode_0").click();
+
+      // Only to unfocus the previous field
+      cy.get("#addr_0").click();
+
+      // Fields are displayed as invalid
+      cy.get("#city_0").shadow().find("input").should("have.class", "cds--text-input--invalid");
+      cy.get("#province_0").shadow().find("div[role='listbox'").should("have.class", "cds--dropdown--invalid");
+      cy.get("#postalCode_0").shadow().find("input").should("have.class", "cds--text-input--invalid");
+
+      const typedAddress = "2975 Jutland Rd";
+
+      cy.get("#addr_0")
+        .shadow()
+        .find("input")
+        .type(typedAddress, { delay: 0 });
+
+      cy.wait("@searchAddress");
+
+      cy.get("cds-combo-box-item").contains(typedAddress).click();
+
+      cy.wait("@getAddress");
+
+      // Fields are now displayed as valid
+      cy.get("#city_0").shadow().find("input").should("not.have.class", "cds--text-input--invalid");
+      cy.get("#province_0").shadow().find("div[role='listbox'").should("not.have.class", "cds--dropdown--invalid");
+      cy.get("#postalCode_0").shadow().find("input").should("not.have.class", "cds--text-input--invalid");
+    });
+  });
 });
