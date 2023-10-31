@@ -50,6 +50,10 @@ parameters:
   - name: URL_ZONE
     description: Zone to use for URL
     required: true
+  - name: GREEN_DOMAIN
+    description: Green domain
+    required: true
+objects:
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -78,8 +82,7 @@ objects:
         window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${URL_ZONE}-backend.${DOMAIN}');
         window.localStorage.setItem('VITE_FRONTEND_URL', 'https://${NAME}-${URL_ZONE}-frontend.${DOMAIN}');
         window.localStorage.setItem('VITE_NODE_ENV', '${VITE_NODE_ENV}');
-        window.localStorage.setItem('VITE_KEYCLOAK_URL', '${VITE_KEYCLOAK_URL}');
-        window.localStorage.setItem('VITE_KEYCLOAK_CLIENT_ID', '${VITE_KEYCLOAK_CLIENT_ID}');
+        window.localStorage.setItem('VITE_GREEN_DOMAIN', '${GREEN_DOMAIN}');
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
