@@ -1,5 +1,3 @@
-import { useEventBus } from "@vueuse/core";
-
 import {
   isNotEmpty,
   isEmail,
@@ -10,7 +8,6 @@ import {
   isMinSize,
   isOnlyNumbers,
   isNoSpecialCharacters,
-  isNot,
   formFieldValidations,
   isNotEmptyArray,
 } from "@/helpers/validators/GlobalValidators";

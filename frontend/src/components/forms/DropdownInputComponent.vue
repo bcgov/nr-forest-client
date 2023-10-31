@@ -18,6 +18,7 @@ const props = defineProps<{
   initialValue: string;
   validations: Array<Function>;
   errorMessage?: string;
+  requiredLabel?: boolean;
 }>();
 
 //Events we emit during component lifecycle
@@ -144,30 +145,40 @@ revalidateBus.on(() => validateInput(selectedValue.value));
 
 <template>
   <div class="grouping-03">
-    <cds-combo-box
-      v-for="time in comboBoxMountTime"
-      :key="time"
-      :id="id"
-      filterable
-      :helper-text="tip"
-      :label="placeholder"
-      :title-text="label"
-      :value="selectedValue"
-      :invalid="error ? true : false"
-      :invalidText="error"
-      @cds-combo-box-selected="selectItem"
-      :data-focus="id"
-      :data-scroll="id"
-      v-shadow="3"
-    >
-      <cds-combo-box-item 
-        v-for="option in inputList"
-        :key="option.code"
-        :value="option.name"
-        :data-id="option.code"
-        :data-value="option.name">
-        {{ option.name }}
-      </cds-combo-box-item>
-    </cds-combo-box>
+    <div class="input-group">
+      <div class="cds--text-input__label-wrapper">
+        <label :for="id" class="cds-text-input-label">
+          {{ label }}
+          <span v-if="requiredLabel"
+                class="cds-text-input-required-label">
+                 (required)
+          </span>
+        </label>
+      </div>
+      <cds-combo-box
+        v-for="time in comboBoxMountTime"
+        :key="time"
+        :id="id"
+        filterable
+        :helper-text="tip"
+        :label="placeholder"
+        :value="selectedValue"
+        :invalid="error ? true : false"
+        :invalidText="error"
+        @cds-combo-box-selected="selectItem"
+        :data-focus="id"
+        :data-scroll="id"
+        v-shadow="3"
+      >
+        <cds-combo-box-item 
+          v-for="option in inputList"
+          :key="option.code"
+          :value="option.name"
+          :data-id="option.code"
+          :data-value="option.name">
+          {{ option.name }}
+        </cds-combo-box-item>
+      </cds-combo-box>
+    </div>
   </div>
 </template>
