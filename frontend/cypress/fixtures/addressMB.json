@@ -1,0 +1,13 @@
+{
+  "streetAddress": "158 Hargrave St",
+  "country": {
+    "value": "CA",
+    "text": "Canada"
+  },
+  "province": {
+    "value": "MB",
+    "text": "Manitoba"
+  },
+  "city": "Winnipeg",
+  "postalCode": "R3C 3N2"
+}
