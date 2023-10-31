@@ -215,7 +215,6 @@ import { useRouter } from "vue-router";
 const { setFocusedComponent } = useFocus();
 const errorMessage = ref<string | undefined>("");
 const submitterInformation = ForestClientUserSession.user;
-console.log(JSON.stringify(submitterInformation));
 
 const submitterContact: Contact = {
   locationNames: [{ value: "0", text: "Mailing address" }],
@@ -298,6 +297,7 @@ fetch();
 //New contact being added
 const otherContacts = computed(() => formData.location.contacts.slice(1));
 const addContact = (autoFocus = true) => {
+  emptyContact.locationNames.push({ value: "0", text: "Mailing address" });
   const newLength = formData.location.contacts.push(
     JSON.parse(JSON.stringify(emptyContact))
   );
