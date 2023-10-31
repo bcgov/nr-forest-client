@@ -229,6 +229,9 @@ hr {
 
 .cds--inline-notification-content {
   width: 100%;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
 }
 
 div#app {
@@ -635,6 +638,21 @@ div#app {
   row-gap: 1.5rem;
 }
 
+.card {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
+  background: #fff;
+  max-width: 50.4375rem;
+}
+
+.divider {
+  margin: 1.5rem 0 1.5rem 0;
+}
+
 .grouping-01 {
   align-self: stretch;
   display: flex;
@@ -702,16 +720,6 @@ div#app {
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
-  background: #fff;
-}
-
-.grouping-tbd {
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem 0 1.5rem 0;
   border-radius: 0.5rem;
   border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
   background: #fff;
@@ -887,6 +895,21 @@ div#app {
   padding-left: 1rem;
   align-items: flex-start;
   align-self: stretch;
+}
+
+.cds-text-input-label {
+  color: var(--light-theme-text-text-primary, #131315);
+  font-family: BC Sans;
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1rem;
+  letter-spacing: 0.02rem;
+  padding-bottom: 0.5rem;
+}
+
+.cds-text-input-required-label {
+  color: var(--light-theme-text-text-error, #B32001);
 }
 
 cds-modal::part(dialog) {

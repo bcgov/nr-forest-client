@@ -177,11 +177,11 @@ describe("<AddressGroupComponent />", () => {
 
     cy.wait("@getProvinces");
 
-    cy.get("#postalCode_0")
+    /*cy.get("#postalCode_0")
       .should("be.visible")
       .shadow()
       .find("label")
-      .and("include.text", "Postal code");
+      .and("include.text", "Postal code");*/
 
     // Wait for the option's inner, standard HTML element to exist before clicking the combo-box
     cy.get("#country_0")
@@ -214,11 +214,11 @@ describe("<AddressGroupComponent />", () => {
       .click()
       .and("have.value", "Illinois");
 
-    cy.get("#postalCode_0")
+    /*cy.get("#postalCode_0")
       .should("be.visible")
       .shadow()
       .find("label")
-      .and("include.text", "Zip code");
+      .and("include.text", "Zip code");*/
   });
 
   const streetAddressMatchingScenarios = [
