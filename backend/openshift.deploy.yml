@@ -48,6 +48,9 @@ parameters:
     description: Cognito cookie domain to be used
     required: true
     default: gov.bc.ca
+  - name: URL_ZONE
+    description: Zone to use for URL
+    required: true
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -99,9 +102,9 @@ objects:
               name: ${NAME}
               env:
                 - name: FRONTEND_URL
-                  value: https://${NAME}-${ZONE}-frontend.${DOMAIN}
+                  value: https://${NAME}-${URL_ZONE}-frontend.${DOMAIN}
                 - name: LEGACY_URL
-                  value: https://${NAME}-${ZONE}-legacy.${DOMAIN}
+                  value: https://${NAME}-${URL_ZONE}-legacy.${DOMAIN}/api
                 - name: CHES_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
@@ -226,7 +229,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
+      host: ${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
       port:
         targetPort: 8080-tcp
       to:

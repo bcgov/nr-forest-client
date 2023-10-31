@@ -31,7 +31,7 @@ import lombok.With;
               "province": {"value": "QC", text": "Quebec"},
               "city": "Montreal",
               "postalCode": "H3B1A7",
-              "locationName":"Mailing Address",
+              "locationName":"Mailing address",
               "index": 1,
             },
           ],

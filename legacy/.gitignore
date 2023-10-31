@@ -228,3 +228,4 @@ config/application-dev-*.yml
 
 
 temp/
+config/*.jks

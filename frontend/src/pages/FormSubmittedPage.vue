@@ -23,10 +23,11 @@ const SVG = useSvg(badgePictogram);
       <p class="fluid-paragraph-01">Your application for a client number has been submitted.</p>
       <p class="fluid-paragraph-01">&nbsp;</p>
       <p class="fluid-paragraph-01">
-        We’ll send the client number to {{ $session.user?.email }} once
+        We’ll send the client number to <strong>{{ $session.user?.email }}</strong> once
         we confirm the information you provided.
       </p>
       <cds-button
+        v-if="!$features.BCSC_LOGIN"
         kind="primary"
         @click.prevent="newFormSubmission()"
         size="field">

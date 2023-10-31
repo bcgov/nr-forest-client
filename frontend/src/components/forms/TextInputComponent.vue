@@ -18,6 +18,7 @@ const props = defineProps<{
   validations: Array<Function>;
   errorMessage?: string;
   mask?: string;
+  requiredLabel?: boolean;
 }>();
 
 //Events we emit during component lifecycle
@@ -103,7 +104,7 @@ watch(
 );
 
 // Tells whether the current change was done manually by the user.
-const isUserEvent = ref(false)
+const isUserEvent = ref(false);
 
 const selectValue = (event: any) => {
   selectedValue.value = event.target.value;
@@ -113,27 +114,39 @@ const selectValue = (event: any) => {
 
 <template>
   <div class="grouping-02" v-if="enabled">
-    <cds-text-input
-      v-if="enabled"
-      :id="id"
-      :placeholder="placeholder"
-      :value="selectedValue"
-      :label="enabled ? label : null"
-      :helper-text="tip"
-      :disabled="!enabled"
-      :invalid="error ? true : false"
-      :invalid-text="error"
-      v-masked="mask"
-      @blur="(event:any) => validateInput(event.target.value)"
-      @input="selectValue"
-      :data-focus="id"
-      :data-scroll="id"
-      :data-id="'input-' + id"
-    />
+    <div class="input-group">
+      <div class="cds--text-input__label-wrapper">
+        <label :for="id" class="cds-text-input-label">
+          {{ enabled ? label : null }}
+          <span v-if="requiredLabel"
+                class="cds-text-input-required-label">
+                 (required)
+          </span>
+        </label>
+      </div>
+      <cds-text-input
+        v-if="enabled"
+        :id="id"
+        :placeholder="placeholder"
+        :value="selectedValue"
+        :helper-text="tip"
+        :disabled="!enabled"
+        :invalid="error ? true : false"
+        :invalid-text="error"
+        v-masked="mask"
+        @blur="(event:any) => validateInput(event.target.value)"
+        @input="selectValue"
+        :data-focus="id"
+        :data-scroll="id"
+        :data-id="'input-' + id" 
+      />
+    </div>
   </div>
 
   <div v-if="!enabled" class="grouping-04">
-    <div :data-scroll="id" class="grouping-04-label"><span :for="id" class="label-01">{{ label }}</span></div>
+    <div :data-scroll="id" class="grouping-04-label">
+      <span :for="id" class="label-01">{{ label }}</span>
+    </div>
     <span class="text-01">{{ modelValue }}</span>
   </div>
 

@@ -30,8 +30,7 @@ export const addNewContact = (contacts: Contact[]): number => {
 };
 
 export const toTitleCase = (inputString: string): string => {
-  if (inputString === undefined) 
-    return "";
+  if (inputString === undefined) return "";
   return inputString
     .toLowerCase()
     .split(" ")
@@ -42,6 +41,11 @@ export const toTitleCase = (inputString: string): string => {
 export const codeConversionFn = (code: any) => {
   return {
     value: code.code,
-    text: code.name ?? '',
+    text: code.name ?? "",
   } as CodeDescrType;
+};
+
+export const getEnumKeyByEnumValue = <T extends Record<string, any>>(enumObject: T, enumValue: any): string => {
+  const key = Object.keys(enumObject).find((x) => enumObject[x] === enumValue);
+  return key ? String(key) : "Unknown";
 };

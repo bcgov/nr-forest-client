@@ -8,7 +8,7 @@ public record ClientBusinessInformationDto(
     String businessName,
     String businessType, 
     String clientType, 
-    String goodStanding, 
+    String goodStandingInd,
     String legalType) {
   /**
    * Returns a map containing the description of the client's business information.
@@ -21,7 +21,7 @@ public record ClientBusinessInformationDto(
         "name", StringUtils.isBlank(businessName) ? "" : businessName, 
         "businessType", StringUtils.isBlank(businessType) ? "" : businessType, 
         "clientType", StringUtils.isBlank(clientType) ? "" : clientType,
-        "goodStanding", StringUtils.isBlank(goodStanding) ? "" : goodStanding,
+        "goodStanding", StringUtils.isBlank(goodStandingInd) ? "" : goodStandingInd,
         "legalType", StringUtils.isBlank(legalType) ? "" : legalType
         );
   }

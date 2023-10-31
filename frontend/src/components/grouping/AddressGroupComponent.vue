@@ -218,7 +218,6 @@ watch([autoCompleteResult], () => {
 
 watch([detailsData], () => {
   if (detailsData.value) {
-    console.log(JSON.stringify(detailsData.value));
     selectedValue.streetAddress = detailsData.value.streetAddress.trim();
     selectedValue.city = detailsData.value.city;
     selectedValue.province = detailsData.value.province;

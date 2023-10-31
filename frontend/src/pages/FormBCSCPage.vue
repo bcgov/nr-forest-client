@@ -1,54 +1,73 @@
 <template>
-<!--   <div class="cds--css-grid">
-    <div class="cds--col-span-4">Span 4 columns</div>
-    <div class="cds--col-span-2">Span 2 columns</div>
-  </div> -->
   <div class="form-header">
     <div class="form-header-title">
       <span class="heading-05" data-scroll="top">
         New client application
       </span>
     </div>
+    <error-notification-grouping-component
+      :form-data="formData"
+      :scroll-to-element-fn="scrollToNewContact"
+    />
   </div>
-   
+    
   <div class="form-steps-section">
     <span class="heading-04" data-scroll="scroll-0">
       Personal information
     </span>
     <p class="body-compact-01">
-      Review the personal information below. It’s from your BC Services card.<br />
+      Review the personal information below. It’s from your BC Services card.<br /><br />
       We use it to know who we're giving a number to and for communicating with clients. 
     </p>
 
-    <div class="grouping-tbd">
-      <div class="cds--css-grid">
-        <div class="cds--css-grid-column cds--sm:col-span-3">
-          <p class="body-compact-01">Full name</p>
-          <p>{{ formData.businessInformation.businessName }}</p>
-        </div>
-        <div class="cds--css-grid-column cds--sm:col-span-3">
-          <p class="body-compact-01">Date of birth</p>
-          <p>{{ formData.businessInformation.birthDate }}</p>
-        </div>
-        <div class="cds--css-grid-column cds--sm:col-span-3">
-          <p class="body-compact-01">Email address</p>
-          <p>{{ formData.location.contacts[0].email }}</p>
-        </div>
-        <div class="cds--css-grid-column cds--sm:col-span-3">
-          <p class="body-compact-01">Address</p>
-          <p>
-            {{ formData.businessInformation.address.streetAddress }} <br />
-            {{ formData.businessInformation.address.city }}, {{ formData.businessInformation.address.province.value }} <br />
-            {{ formData.businessInformation.address.country.text }} <br />
-            {{ formData.businessInformation.address.postalCode }}
+    <div class="card">
+      <div>
+        <cds-inline-notification
+          v-shadow="2"
+          low-contrast="true"
+          open="true"
+          kind="info"
+          hide-close-button="true"
+          title="">
+          <p class="cds--inline-notification-content">
+            <strong>Read-only: </strong>
+            If something is incorrect visit 
+            <a
+              href=""
+              target="_blank"
+              rel="noopener noreferrer"
+              @click.prevent="changePersonalInfoModalActive = true"
+              >Change your personal information
+            </a> 
+            and then restart your application.
           </p>
-        </div>
+        </cds-inline-notification>
+        <br /><br />
+
+        <p class="body-compact-01">Full name</p>
+        <p>{{ formData.businessInformation.businessName }}</p>
+      </div>
+      <hr class="divider" />
+      <div>
+        <p class="body-compact-01">Date of birth</p>
+        <p>{{ formData.businessInformation.birthDate }}</p>
+      </div>
+      <hr class="divider" />
+      <div>
+        <p class="body-compact-01">Email address</p>
+        <p>{{ formData.location.contacts[0].email }}</p>
+      </div>
+      <hr class="divider" />
+      <div>
+        <p class="body-compact-01">Address</p>
+        <p>
+          {{ formData.businessInformation.address.streetAddress }} <br />
+          {{ formData.businessInformation.address.city }}, {{ formData.businessInformation.address.province.value }} <br />
+          {{ formData.businessInformation.address.country.text }} <br />
+          {{ formData.businessInformation.address.postalCode }}
+        </p>
       </div>
     </div>
-
-    TODO
-
-    <hr class="divider" />
 
     <span class="heading-04" data-scroll="scroll-0">
       Contact information
@@ -65,6 +84,14 @@
         :enabled="true" 
         v-model="formData.location.contacts[0].phoneNumber"
         mask="(###) ###-####"
+        :required-label="true"
+        :validations="[
+          ...getValidations('location.contacts.*.phoneNumber'),
+          submissionValidation(`location.contacts[0].phoneNumber`)
+        ]"
+        :error-message="errorMessage"
+        @empty="validation.phoneNumber = !$event"
+        @error="validation.phoneNumber = !$event"
       />
     </div>
 
@@ -80,36 +107,123 @@
       <Add16 slot="icon" />
     </cds-button>
 
-    {{ formData.location.contacts }}
+    <div class="frame-01" v-if="otherContacts.length > 0">
+      <div v-for="(contact, index) in otherContacts">
+        <hr />
+        <div class="grouping-09" :data-scroll="`additional-contact-${index + 1}`">
+          <span class="heading-03">Additional contact</span>
+        </div>
+        <contact-group-component
+          :key="index + 1"
+          :id="index + 1"
+          v-bind:modelValue="contact"
+          :roleList="roleList"
+          :validations="[uniqueValues.add]"
+          :enabled="true"
+          :revalidate="revalidate"
+          :hide-address-name-field="true"
+          :required-label="true"
+          @update:model-value="updateContact($event, index + 1)"
+          @valid="updateValidState(index + 1, $event)"
+          @remove="handleRemove(index + 1)"
+        />
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <cds-button
+        data-test="wizard-submit-button"
+        kind="primary"
+        size="lg"
+        @click.prevent="submit"
+        :disabled="submitBtnDisabled"
+      >
+      <span>Submit application</span>
+      <Check16 slot="icon" />
+    </cds-button>
+
+    <cds-modal
+      id="help-modal"
+      size="sm"
+      :open="changePersonalInfoModalActive"
+      @cds-modal-closed="changePersonalInfoModalActive = false"
+    >
+      <cds-modal-header>
+        <cds-modal-close-button></cds-modal-close-button>
+        <cds-modal-heading>
+          Change your personal information and logout
+        </cds-modal-heading>
+      </cds-modal-header>
+      <cds-modal-body>
+        <p>
+          Visit 
+          <a 
+            href='https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card/your-card/change-personal-information' 
+            target="_blank">Change your personal information
+          </a> 
+          to update your name, address or date of birth. Go to your 
+          <a 
+            href='https://id.gov.bc.ca/account/'
+            target="_blank">BC Services account
+          </a> 
+          to update your email address. 
+          You can then log back into this application using your BC Services Card.
+        </p>
+      </cds-modal-body>
+      <cds-modal-footer>
+        <cds-modal-footer-button 
+          kind="secondary"
+          data-modal-close
+          class="cds--modal-close-btn">
+          Cancel
+        </cds-modal-footer-button>
+        
+        <cds-modal-footer-button 
+          kind="danger" 
+          class="cds--modal-submit-btn"
+          v-on:click="$session?.logOut"
+        >
+          Logout
+          <Logout16 slot="icon" />
+        </cds-modal-footer-button>
+
+      </cds-modal-footer>
+    </cds-modal>
+
   </div>
 
 </template>
 
-
 <script setup lang="ts">
-import { reactive, watch, ref, getCurrentInstance, computed, onMounted } from "vue";
+import { ref, reactive, computed, watch, getCurrentInstance, toRef } from "vue";
 import { newFormDataDto, emptyContact } from "@/dto/ApplyClientNumberDto";
-import { BusinessTypeEnum, ClientTypeEnum, LegalTypeEnum } from "@/dto/CommonTypesDto";
-import { useFetchTo } from "@/composables/useFetch";
-import { useEventBus } from "@vueuse/core";
+import { BusinessTypeEnum, ClientTypeEnum, LegalTypeEnum  } from "@/dto/CommonTypesDto";
+import { useFetchTo, usePost } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
-import { codeConversionFn } from "@/services/ForestClientService";
-import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
+import { useEventBus } from "@vueuse/core";
+import { codeConversionFn,getEnumKeyByEnumValue } from "@/services/ForestClientService";
+import { isUniqueDescriptive, isNullOrUndefinedOrBlank, runValidation, validate, getValidations } from "@/helpers/validators/GlobalValidators";
+import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
-import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";
+import type { CodeNameType, ModalNotification, ValidationMessageType } from "@/dto/CommonTypesDto";
 import Add16 from "@carbon/icons-vue/es/add/16";
+import Check16 from "@carbon/icons-vue/es/checkmark/16";
+import ForestClientUserSession from "@/helpers/ForestClientUserSession";
+import { useRouter } from "vue-router";
 
-const instance = getCurrentInstance();
-const session = instance?.appContext.config.globalProperties.$session;
 const { setFocusedComponent } = useFocus();
+const errorMessage = ref<string | undefined>("");
+const submitterInformation = ForestClientUserSession.user;
+console.log(JSON.stringify(submitterInformation));
 
 const submitterContact: Contact = {
-  locationNames: [],
-  contactType: { value: "", text: "" },
+  locationNames: [{ value: "0", text: "Mailing address" }],
+  contactType: { value: "BL", text: "Billing" },
   phoneNumber: "",
-  firstName: session?.user?.firstName ?? "",
-  lastName: session?.user?.lastName ?? "",
-  email: session?.user?.email ?? "",
+  firstName: submitterInformation?.firstName ?? "",
+  lastName: submitterInformation?.lastName ?? "",
+  email: submitterInformation?.email ?? "",
 };
 
 let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
@@ -120,22 +234,21 @@ const formatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
 });
 
-const birthDate = new Date(session?.user?.birthDate ?? "");
+const birthDate = new Date(submitterInformation?.birthDate ?? "");
 const formattedDate = formatter.format(birthDate);
-
 
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
   ...formDataDto.value,
   businessInformation :{
-    businessType: BusinessTypeEnum.U.toString(),
-    legalType: LegalTypeEnum.SP.toString(),
-    clientType: ClientTypeEnum.I.toString(),
+    businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
+    legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
+    clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.I),
     incorporationNumber: '',
-    businessName: session?.user?.name ?? "",
+    businessName: submitterInformation?.name ?? "",
     goodStandingInd: "Y",
     birthDate: formattedDate,
-    address: session?.user?.address,
+    address: submitterInformation?.address,
   },
   location: {
     addresses: [],
@@ -145,7 +258,7 @@ let formData = reactive<FormDataDto>({
 
 const receviedCountry = ref({} as CodeNameType);
 
-useFetchTo(`/api/clients/getCountryByCode/${session?.user?.address?.country?.code}`, 
+useFetchTo(`/api/clients/getCountryByCode/${submitterInformation?.address?.country?.code}`, 
             receviedCountry);
 
 const country = computed(
@@ -165,6 +278,22 @@ watch(country, (newValue) => {
 
   formData.location.addresses.push(formData.businessInformation.address);
 });
+
+//Scroll Fn
+const { setScrollPoint } = useFocus();
+
+const scrollToNewContact = () => {
+  setScrollPoint("", undefined, () => {
+     setFocusedComponent("");
+  });
+};
+
+//Role related data
+const roleList = ref([]);
+const fetch = () => {
+  useFetchTo("/api/clients/activeContactTypeCodes?page=0&size=250", roleList);
+};
+fetch();
 
 //New contact being added
 const otherContacts = computed(() => formData.location.contacts.slice(1));
@@ -238,10 +367,11 @@ emit("valid", false);
 const bus = useEventBus<ModalNotification>("modal-notification");
 
 const handleRemove = (index: number) => {
-  const selectedContact =
-    formData.location.contacts[index].firstName.length !== 0
-      ? `${formData.location.contacts[index].firstName} ${formData.location.contacts[index].lastName}`
-      : "Contact #" + index;
+  const selectedContact = !isNullOrUndefinedOrBlank(
+    formData.location.contacts[index].firstName
+  )
+    ? `${formData.location.contacts[index].firstName} ${formData.location.contacts[index].lastName}`
+    : "Contact #" + index;
   bus.emit({
     message: selectedContact,
     kind: "Contact deleted",
@@ -251,9 +381,107 @@ const handleRemove = (index: number) => {
   });
 };
 
-//onMounted(() => setFocusedComponent("addressname_0", 800));
-
 defineExpose({
   addContact,
+});
+
+const changePersonalInfoModalActive = ref(false);
+
+const progressData = reactive([
+  {
+    title: "New client application",
+    subtitle: "Step 1",
+    kind: "current",
+    disabled: false,
+    valid: false,
+    step: 0,
+    fields: [
+      "businessInformation.businessType",
+      "businessInformation.businessName",
+      "location.contacts.*.contactType.text",
+      "location.contacts.*.firstName",
+      "location.contacts.*.lastName",
+      "location.contacts.*.email",
+      "location.contacts.*.phoneNumber",
+    ],
+    extraValidations: [],
+  },
+]);
+
+let submitBtnDisabled = ref(false);
+
+const errorBus = useEventBus<ValidationMessageType[]>(
+  "submission-error-notification"
+);
+
+const notificationBus = useEventBus<ValidationMessageType | undefined>(
+  "error-notification"
+);
+
+const currentTab = ref(0);
+
+const checkStepValidity = (stepNumber: number): boolean => {
+  progressData.forEach((step: any) => {
+    if (step.step <= stepNumber) {
+      step.valid = validate(step.fields, formData, true);
+    }
+  });
+
+  if (
+    !progressData[stepNumber].extraValidations.every((validation: any) =>
+      runValidation(
+        validation.field,
+        formData,
+        validation.validation,
+        true,
+        true
+      )
+    )
+  )
+    return false;
+
+  return progressData[stepNumber].valid;
+};
+
+// Submission
+const router = useRouter();
+
+const { response, error, fetch: fecthSubmit } = usePost(
+  "/api/clients/submissions",
+  toRef(formData).value,
+  {
+    skip: true,
+    headers: {
+      "x-user-id": submitterInformation?.userId ?? "",
+      "x-user-email": submitterInformation?.email ?? "",
+      "x-user-name": submitterInformation?.firstName ?? "",
+    },
+  }
+);
+
+const submit = () => {
+  errorBus.emit([]);
+  notificationBus.emit(undefined);
+
+  if (checkStepValidity(currentTab.value)) {
+    submitBtnDisabled.value = true;
+    fecthSubmit();
+  }
+};
+
+watch([response], () => {
+  if (response.value.status === 201) {
+    router.push({ name: "confirmation" });
+  }
+});
+
+watch([error], () => {
+  const validationErrors: ValidationMessageType[] = error.value.response
+    ?.data as ValidationMessageType[];
+
+  validationErrors.forEach((errorItem: ValidationMessageType) =>
+    notificationBus.emit(errorItem)
+  );
+  setScrollPoint("top");
 });
 </script>

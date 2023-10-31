@@ -22,6 +22,8 @@ const props = defineProps<{
   addressList: Array<CodeNameType>;
   validations: Array<Function>;
   revalidate?: boolean;
+  hideAddressNameField?: boolean;
+  requiredLabel?: boolean;
 }>();
 
 //Events we emit during component lifecycle
@@ -104,6 +106,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
   <div class="frame-01">
   <multiselect-input-component
     :id="'addressname_' + id"
+    v-if="!hideAddressNameField"
     label="Address name"
     tip="Select an address name for the contact. A contact can have more than one address"
     :initial-value="''"
@@ -113,6 +116,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
       ...getValidations('location.contacts.*.locationNames'),
       submissionValidation(`location.contacts[${id}].locationNames`)
     ]"
+    :requiredLabel="requiredLabel"
     @update:selected-value="
       selectedValue.locationNames = nameTypesToCodeDescr($event)
     "
@@ -129,6 +133,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
       ...getValidations('location.contacts.*.contactType.text'),
       submissionValidation(`location.contacts[${id}].contactType`)
     ]"
+    :requiredLabel="requiredLabel"
     @update:selected-value="updateContactType($event)"
     @empty="validation.contactType = !$event"
   />
@@ -143,6 +148,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
       submissionValidation(`location.contacts[${id}].firstName`)
     ]"
     :enabled="enabled"
+    :requiredLabel="requiredLabel"
     :error-message="error"
     @empty="validation.firstName = !$event"
     @error="validation.firstName = !$event"
@@ -158,6 +164,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
       submissionValidation(`location.contacts[${id}].lastName`)
     ]"
     :enabled="enabled"
+    :requiredLabel="requiredLabel"
     :error-message="error"
     @empty="validation.lastName = !$event"
     @error="validation.lastName = !$event"
@@ -173,6 +180,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
       submissionValidation(`location.contacts[${id}].email`)
     ]"
     :enabled="enabled"
+    :requiredLabel="requiredLabel"
     @empty="validation.email = !$event"
     @error="validation.email = !$event"
   />
@@ -188,6 +196,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
       ...getValidations('location.contacts.*.phoneNumber'),
       submissionValidation(`location.contacts[${id}].phoneNumber`)
     ]"
+    :requiredLabel="requiredLabel"
     @empty="validation.phoneNumber = !$event"
     @error="validation.phoneNumber = !$event"
   />

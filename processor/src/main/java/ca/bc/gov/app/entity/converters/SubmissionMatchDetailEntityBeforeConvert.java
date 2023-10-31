@@ -29,14 +29,12 @@ public class SubmissionMatchDetailEntityBeforeConvert
       SubmissionMatchDetailEntity entity,
       SqlIdentifier table
   ) {
-    log.info("Converting to");
     return Mono.justOrEmpty(entity.withMatchingField(convertTo(entity)));
   }
 
   @Override
   public Publisher<SubmissionMatchDetailEntity> onAfterConvert(SubmissionMatchDetailEntity entity,
                                                                SqlIdentifier table) {
-    log.info("Converting from");
     return Mono.justOrEmpty(entity.withMatchers(convertFrom(entity)));
   }
 

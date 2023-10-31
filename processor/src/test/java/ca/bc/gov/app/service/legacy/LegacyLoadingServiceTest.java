@@ -25,9 +25,9 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @DisplayName("Unit Test | Legacy Service")
-class LegacyServiceTest {
+class LegacyLoadingServiceTest {
 
-  private final LegacyService service = new LegacyService(List.of(new TestProcessorMatcher()));
+  private final LegacyLoadingService service = new LegacyLoadingService(List.of(new TestProcessorMatcher()));
 
   @Test
   @DisplayName("Forward it")

@@ -1,6 +1,8 @@
 package ca.bc.gov.app.service.client;
 
+import static ca.bc.gov.app.TestConstants.EMAIL_REQUEST;
 import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -17,14 +19,16 @@ import ca.bc.gov.app.repository.client.SubmissionRepository;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.integration.support.MessageBuilder;
+import reactor.test.StepVerifier;
 
 @DisplayName("Integrated Test | Client Service")
-class ClientServiceIntegrationTest extends AbstractTestContainer {
+class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestContainer {
 
   @SpyBean
   private SubmissionRepository submissionRepository;
@@ -32,7 +36,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainer {
   private SubmissionMatchDetailRepository submissionMatchDetailRepository;
 
   @Autowired
-  private ClientService service;
+  private ClientSubmissionAutoProcessingService service;
 
   @Test
   @DisplayName("approved")
@@ -46,7 +50,10 @@ class ClientServiceIntegrationTest extends AbstractTestContainer {
                 .withPayload(matchers)
                 .setHeader(ApplicationConstant.SUBMISSION_ID, 1)
                 .build()
-        );
+        )
+        .as(StepVerifier::create)
+        .assertNext(message -> Assertions.assertEquals(Integer.valueOf(1), message.getPayload()))
+        .verifyComplete();
 
     await()
         .alias("Submission lookup")
@@ -64,6 +71,38 @@ class ClientServiceIntegrationTest extends AbstractTestContainer {
   }
 
   @Test
+  @DisplayName("complete processing")
+  void shouldCompleteProcessing() {
+
+    service
+        .completeProcessing(
+            MessageBuilder
+                .withPayload(EMAIL_REQUEST)
+                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
+                .build()
+        )
+        .as(StepVerifier::create)
+        .expectNextCount(1)
+        .verifyComplete();
+
+    await()
+        .alias("Submission matches and loads")
+        .atMost(Duration.ofSeconds(5))
+        .untilAsserted(() ->
+            verify(submissionMatchDetailRepository, times(1)).findBySubmissionId(eq(2))
+        );
+
+    await()
+        .alias("Submission matches")
+        .atMost(Duration.ofSeconds(5))
+        .untilAsserted(() ->
+            verify(submissionMatchDetailRepository, atLeastOnce())
+                .save(any(SubmissionMatchDetailEntity.class))
+        );
+
+  }
+
+  @Test
   @DisplayName("reviewed")
   void shouldReviewSubmission() {
 
@@ -76,7 +115,6 @@ class ClientServiceIntegrationTest extends AbstractTestContainer {
                 .setHeader(ApplicationConstant.SUBMISSION_ID, 1)
                 .build()
         );
-
 
     await()
         .alias("Submission lookup")

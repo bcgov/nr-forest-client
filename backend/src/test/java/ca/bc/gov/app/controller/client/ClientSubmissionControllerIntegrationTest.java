@@ -11,14 +11,14 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.submissions.SubmissionApproveRejectDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -39,6 +39,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.BodyContentSpec;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
@@ -121,7 +122,7 @@ class ClientSubmissionControllerIntegrationTest
         .uri("/api/clients/submissions")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
         .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-        .header(ApplicationConstant.USERNAME_HEADER,"Test User")
+        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .body(Mono.just(REGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
@@ -139,7 +140,7 @@ class ClientSubmissionControllerIntegrationTest
         .uri("/api/clients/submissions")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
         .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-        .header(ApplicationConstant.USERNAME_HEADER,"Test User")
+        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
@@ -159,7 +160,7 @@ class ClientSubmissionControllerIntegrationTest
         .uri("/api/clients/submissions")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
         .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-        .header(ApplicationConstant.USERNAME_HEADER,"Test User")
+        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .body(Mono.just(clientSubmissionDto), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isBadRequest()
@@ -193,20 +194,63 @@ class ClientSubmissionControllerIntegrationTest
             .apply(uriBuilder.path("/api/clients/submissions"))
             .build(Map.of());
 
+    BodyContentSpec expectedBody =
+        client
+            .get()
+            .uri(uri)
+            .header(ApplicationConstant.USERID_HEADER, "testUserId")
+            .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+            .header(ApplicationConstant.USERNAME_HEADER, "Test User")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody();
+
+    if (!found) {
+      expectedBody.json(TestConstants.SUBMISSION_LIST_CONTENT_EMPTY);
+    } else {
+      expectedBody
+          .jsonPath("$.[0].id").isEqualTo(1)
+          .jsonPath("$.[0].name").isEqualTo("Goldfinger")
+          .jsonPath("$.[0].requestType").isEqualTo("Submission pending processing")
+          .jsonPath("$.[0].status").isEqualTo("New")
+          .jsonPath("$.[0].clientType").isEqualTo("General Partnership")
+          .jsonPath("$.[0].user").isEqualTo("Test User");
+    }
+  }
+
+  @Test
+  @DisplayName("Submission Details")
+  @Order(5)
+  void shouldGetSubmissionDetails() {
+
     client
         .get()
-        .uri(uri)
-        .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-        .header(ApplicationConstant.USERNAME_HEADER,"Test User")
+        .uri("/api/clients/submissions/1")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
-        .json(found ?
-            String.format(TestConstants.SUBMISSION_LIST_CONTENT, LocalDate.now().format(
-                DateTimeFormatter.ISO_DATE)) :
-            TestConstants.SUBMISSION_LIST_CONTENT_EMPTY
-        );
+        .jsonPath("$.submissionId").isEqualTo(1)
+        .jsonPath("$.updateUser").isEqualTo("Test User")
+        .jsonPath("$.submissionType").isEqualTo("Submission pending processing");
+  }
+
+  @Test
+  @DisplayName("Submission Approval / Rejection")
+  @Order(6)
+  void shouldApproveOrReject() {
+
+    client
+        .post()
+        .uri("/api/clients/submissions/1")
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
+        .body(Mono.just(new SubmissionApproveRejectDto(true, List.of(), null)),
+            SubmissionApproveRejectDto.class)
+        .exchange()
+        .expectStatus().isAccepted()
+        .expectBody()
+        .isEmpty();
   }
 
   private static Stream<Arguments> listValues() {

@@ -25,6 +25,9 @@ public class SubmissionDetailEntity {
   @Column("submission_id")
   private Integer submissionId;
 
+  @Column("client_number")
+  private String clientNumber;
+
   @Column("incorporation_number")
   private String incorporationNumber;
 
