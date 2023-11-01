@@ -1,4 +1,4 @@
-import { type Address, emptyAddress } from "@/dto/ApplyClientNumberDto";
+import { type Address, emptyAddress, locationName } from "@/dto/ApplyClientNumberDto";
 
 export const retrieveClientType = (legalType: string): string => {
   if (legalType) {
@@ -38,5 +38,5 @@ export const exportAddress = (addresses: Address[]): Address[] => {
   if (addresses && addresses.length > 0) {
     return addresses;
   }
-  return [{ ...emptyAddress(), locationName: "Mailing address" }];
+  return [{ ...emptyAddress(), locationName: locationName.text }];
 };

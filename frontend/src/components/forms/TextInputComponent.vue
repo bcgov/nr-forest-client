@@ -116,7 +116,9 @@ const selectValue = (event: any) => {
   <div class="grouping-02" v-if="enabled">
     <div class="input-group">
       <div class="cds--text-input__label-wrapper">
-        <label :for="id" class="cds-text-input-label">
+        <label :id="id + 'Label'" 
+               :for="id" 
+               class="cds-text-input-label">
           {{ enabled ? label : null }}
           <span v-if="requiredLabel"
                 class="cds-text-input-required-label">
