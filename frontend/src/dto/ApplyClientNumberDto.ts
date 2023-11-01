@@ -43,6 +43,8 @@ export interface ForestClientDetailsDto {
   contacts: Contact[];
 }
 
+export const locationName = { value: "0", text: "Mailing address" };
+
 export const formDataDto: FormDataDto = {
   businessInformation: {
     businessType: "",
@@ -64,7 +66,7 @@ export const formDataDto: FormDataDto = {
   location: {
     addresses: [
       {
-        locationName: "Mailing address",
+        locationName: locationName.text,
         streetAddress: "",
         country: { value: "CA", text: "Canada" },
         province: { value: "BC", text: "British Columbia" },

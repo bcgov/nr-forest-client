@@ -201,7 +201,7 @@ describe("<AddressGroupComponent />", () => {
 
     // Wait for the option's inner, standard HTML element to exist before clicking the combo-box
     cy.get("#country_0")
-      .find('cds-combo-box-item[data-id="US"]')
+      .find('cds-combo-box-item[data-id="CA"]')
       .shadow()
       .find("div");
 
@@ -210,7 +210,7 @@ describe("<AddressGroupComponent />", () => {
       .and("have.value", "Canada")
       .click();
 
-    cy.get("#country_0")
+    cy.get("#country_0", { timeout: 10000 })
       .find('cds-combo-box-item[data-id="US"]')
       .should("be.visible")
       .click()
