@@ -199,6 +199,7 @@ class ClientSubmissionControllerIntegrationTest
             .header(ApplicationConstant.USERNAME_HEADER, "Test User")
             .exchange()
             .expectStatus().isOk()
+
             .expectBody();
 
     if (!found) {

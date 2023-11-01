@@ -358,9 +358,9 @@ public class ClientSubmissionService {
     return template
         .select(
             query(
-                QueryPredicates.isAfter(LocalDateTime.now(), "effectiveAt")
+                QueryPredicates.isBefore(LocalDateTime.now(), "effectiveAt")
                     .and(
-                        QueryPredicates.isBefore(LocalDateTime.now(), "expiredAt")
+                        QueryPredicates.isAfter(LocalDateTime.now(), "expiredAt")
                             .or(QueryPredicates.isNull("expiredAt"))
                     )
             ),
