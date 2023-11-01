@@ -78,5 +78,7 @@ public final class ApplicationConstant {
       left join nrfc.province_code pc on (pc.province_code = sl.province_code and pc.country_code = cc.country_code)
       where sl.submission_id = :submissionId
       order by sl.submission_location_id""";
+  public static final String SUBMISSION_TYPE = "submissionType";
+  public static final String SUBMISSION_ID = "submissionId";
 }
 
