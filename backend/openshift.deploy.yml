@@ -187,7 +187,8 @@ objects:
                   value: ${COGNITO_REGION}
                 - name: COGNITO_COOKIE_DOMAIN
                   value: ${COGNITO_COOKIE_DOMAIN}
-                
+                - name: TZ
+                  value: America/Vancouver
               ports:
                 - containerPort: 8080
                   protocol: TCP

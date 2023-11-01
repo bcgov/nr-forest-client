@@ -172,6 +172,8 @@ objects:
                       key: oracle-secret
                 - name: ORACLEDB_KEYSTORE
                   value: /cert/jssecacerts
+                - name: TZ
+                  value: America/Vancouver
               ports:
                 - containerPort: 9000
                   protocol: TCP
