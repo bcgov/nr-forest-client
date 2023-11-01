@@ -23,7 +23,7 @@ parameters:
     value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
-    value: bcgov/nr-old-growth:prod-backend
+    value: bcgov/nr-forest-client-backend:prod
   - name: CHES_TOKEN_URL
     description: CHES service authentication url
     required: true
