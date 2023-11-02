@@ -186,12 +186,12 @@ public class CognitoController {
   }
 
 
-  private ResponseCookie buildCookie(String cookieName, String cookieValue, int expiresInSeconds) {
+  private ResponseCookie buildCookie(String cookieName, String cookieValue, Integer expiresInSeconds) {
     return ResponseCookie.from(cookieName, cookieValue)
         .httpOnly(false)
         .sameSite("Lax")
         .path("/")
-        .maxAge(Duration.ofSeconds(expiresInSeconds))
+        .maxAge(Duration.ofSeconds(expiresInSeconds != null ? expiresInSeconds : 3600))
         .secure(!isLocal())
         .domain(configuration.getCognito().getCookieDomain())
         .build();
