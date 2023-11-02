@@ -10,6 +10,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import type {
   BusinessSearchResult,
   ProgressNotification,
+  ValidationMessageType,
 } from "@/dto/CommonTypesDto";
 import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
 import type {
@@ -31,6 +32,10 @@ const emit = defineEmits<{
   (e: "update:data", value: FormDataDto): void;
   (e: "valid", value: boolean): void;
 }>();
+
+const notificationBus = useEventBus<ValidationMessageType | undefined>(
+  "error-notification"
+);
 
 //Defining the event bus to send notifications up
 const progressIndicatorBus = useEventBus<ProgressNotification>(
@@ -147,6 +152,11 @@ watch([autoCompleteResult], () => {
         validation.business = true;
         emit("update:data", formData.value);
         return;
+      }
+      if (error.value.response?.status === 500) {
+        //alert(error.value.response?.status);
+        notificationBus.emit({ fieldId: "internal.server.error", errorMsg: "" });
+        scroll(0,0);
       }
       // @ts-ignore
       generalErrorBus.emit(error.value.response?.data.message);
