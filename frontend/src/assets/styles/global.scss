@@ -1074,9 +1074,11 @@ cds-accordion-item.grouping-05-internal:not([open]) {
 
 .submission-details--title{
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
 }
+
+
 
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
@@ -1243,6 +1245,9 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   }
   .paginator {
     width: 100vw;
+  }
+  .submission-details--title svg{
+    width: 5rem;
   }
 }
 
