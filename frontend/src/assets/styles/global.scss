@@ -946,9 +946,7 @@ cds-modal {
 .paginator {
   width: calc(100vw - 16rem);
 }
-#datatable {  
-  overflow: scroll !important;
-}
+
 
 cds-header ~ cds-side-nav {
   margin-top: 3rem;
@@ -1252,6 +1250,9 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   .sp-1 svg{
     width: 2rem;
   }
+  #datatable {  
+    overflow-x: scroll !important;
+  }
 }
 
 /* Medium (from 672px to 1055px) */
@@ -1348,6 +1349,9 @@ cds-accordion-item.grouping-05-internal:not([open]) {
 
   .paginator {
     width: 100vw;
+  }
+  #datatable {  
+    overflow-x: scroll !important;
   }
 }
 

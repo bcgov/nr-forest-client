@@ -202,7 +202,7 @@ const tagColor = (status: string) =>{
         hide-close-button="true"
         open="true"
         kind="info"
-        title="This submission was automatically approved by system"      
+        title="This submission was automatically approved by the system"      
       >    
         <div>No matching client records or BC Registries standing issues were found. Review the details in the read-only version below.</div>    
       </cds-actionable-notification>
@@ -238,8 +238,12 @@ const tagColor = (status: string) =>{
           title="Possible matching record found"      
         >    
         <div>
-          <p>
-            {{ data.matchers.legalName.split(',').length }} similar client record were found. 
+          <p v-if="data.matchers.legalName.split(',').length === 1" class="body-compact-01">
+            {{ data.matchers.legalName.split(',').length }} similar client record was found. 
+            Review their information in the Client Management System to determine if this submission should be approved or rejected:
+          </p>
+          <p v-else class="body-compact-01">
+            {{ data.matchers.legalName.split(',').length }} similar client records were found. 
             Review their information in the Client Management System to determine if this submission should be approved or rejected:
           </p>
           <ul class="bulleted-list-disc body-compact-01">
@@ -273,12 +277,12 @@ const tagColor = (status: string) =>{
                 <span class="body-compact-01">{{ data.business.incorporationNumber }}</span>
               </read-only-component>
 
-              <read-only-component label="Last updated">
-                <span class="body-compact-01">{{ friendlyDate(data.updateTimestamp) }} | {{ data.updateUser }}</span>
-              </read-only-component>
-
               <read-only-component label="B.C. Registries standing">
                 <span class="body-compact-01">{{ goodStanding(data.business.goodStanding) }}</span>
+              </read-only-component>
+
+              <read-only-component label="Last updated">
+                <span class="body-compact-01">{{ friendlyDate(data.updateTimestamp) }} | {{ data.updateUser }}</span>
               </read-only-component>
 
               <read-only-component label="Submission status">
@@ -438,7 +442,7 @@ const tagColor = (status: string) =>{
         </cds-modal-header>
         
         <cds-modal-body>
-          <p>A new client number will be created and an email will be sent to the submitter</p>
+          <p>A new client number will be created and an email will be sent to the submitter.</p>
         </cds-modal-body>
 
         <cds-modal-footer>
@@ -452,7 +456,7 @@ const tagColor = (status: string) =>{
             kind="primary" 
             @click="submit(true)"
             class="cds--modal-submit-btn">
-            <span>Approve</span>
+            <span>Approve submission</span>
             <Check16 slot="icon" />
           </cds-modal-footer-button>
         </cds-modal-footer>
