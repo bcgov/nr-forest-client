@@ -433,6 +433,7 @@ const tagColor = (status: string) =>{
         >
         
         <cds-modal-header>
+          <cds-modal-close-button></cds-modal-close-button>
           <cds-modal-heading>Approve submission</cds-modal-heading>
         </cds-modal-header>
         
@@ -466,6 +467,7 @@ const tagColor = (status: string) =>{
         >
 
         <cds-modal-header>
+          <cds-modal-close-button></cds-modal-close-button>
           <cds-modal-heading>Reject submission</cds-modal-heading>
         </cds-modal-header>
 
@@ -502,7 +504,7 @@ const tagColor = (status: string) =>{
           </cds-modal-footer-button>
           
           <cds-modal-footer-button 
-            kind="primary"
+            kind="danger"
             @click="submit(false)"
             :disabled="rejectYesDisabled"
             class="cds--modal-close-btn">
