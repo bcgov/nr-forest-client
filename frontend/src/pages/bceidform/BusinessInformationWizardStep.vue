@@ -154,7 +154,6 @@ watch([autoCompleteResult], () => {
         return;
       }
       if (error.value.response?.status === 500) {
-        //alert(error.value.response?.status);
         notificationBus.emit({ fieldId: "internal.server.error", errorMsg: "" });
         scroll(0,0);
       }
