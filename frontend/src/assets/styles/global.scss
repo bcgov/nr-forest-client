@@ -1077,6 +1077,14 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   gap: 1rem;
 }
 
+:is(cds-table-header-cell, cds-table-cell):first-child {
+  padding-left: 2.5rem; // 1 (default value) + 1.5
+}
+
+:is(cds-table-header-cell, cds-table-cell):last-child {
+  padding-right: 2.5rem; // 1 (default value) + 1.5
+}
+
 
 
 /* Small (up to 671px) */
@@ -1248,11 +1256,13 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   .submission-details--title svg{
     width: 5rem;
   }
-  .sp-1 svg{
-    width: 2rem;
+  #datatable {
+    position: relative;
+    right: 0;
+    overflow-x: scroll;
   }
-  #datatable {  
-    overflow-x: scroll !important;
+  cds-table {
+    width: 82rem;
   }
 }
 
@@ -1341,13 +1351,13 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   .mg-sd-25 {
     margin: 0rem 2.5rem 2rem 2rem;
   }
+
   cds-table-header-title {
     margin-left: 1rem;
   }
 
   .submission-list {  
     padding: 2.5rem 0rem;
-    width:fit-content;
   }
 
   .submission-content {
@@ -1357,8 +1367,13 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   .paginator {
     width: 100vw;
   }
-  #datatable {  
-    overflow-x: scroll !important;
+  #datatable {
+    position: relative;
+    right: 0;
+    overflow-x: scroll;
+  }
+  cds-table {
+    width: 82rem;
   }
 }
 
@@ -1426,6 +1441,15 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   .submission-content {
     padding: 2.5rem 2rem 2.5rem 18.5rem;
     max-width: calc(100vw - 21rem);
+  }
+
+  #datatable {
+    position: relative;
+    right: 0;
+    overflow-x: scroll;
+  }
+  cds-table {
+    min-width: 66rem;
   }
 }
 
