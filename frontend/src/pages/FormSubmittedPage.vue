@@ -27,7 +27,7 @@ const SVG = useSvg(badgePictogram);
         we confirm the information you provided.
       </p>
       <cds-button
-        v-if="!$features.BCSC_LOGIN"
+        v-if="$session.user?.provider === 'bceidbusiness'"
         kind="primary"
         @click.prevent="newFormSubmission()"
         size="field">
