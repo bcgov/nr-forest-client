@@ -250,7 +250,7 @@ const tagColor = (status: string) =>{
             <li 
               v-for="duplicatedClient in data.matchers.legalName.split(',')" 
               :key="duplicatedClient">
-                Client number: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+                Legal name: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
             </li>
           </ul>
         </div>    
