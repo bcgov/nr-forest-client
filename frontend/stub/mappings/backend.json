@@ -340,6 +340,18 @@
       }
     },
     {
+      "name":"Submission Details Review Unregistered",
+      "request": {
+        "urlPath": "/api/clients/submissions/9ceca504-f014-44f9-8a62-24e9b4311865",
+        "method": "GET"        
+      },
+      "response": {
+        "status": 200,        
+        "bodyFileName": "response-submissions-details-unregistered.json",
+        "transformers": ["response-template"]
+      }
+    },
+    {
       "name":"Submission processed successfully",
       "request": {
         "urlPattern": "/api/clients/submissions/(.*)",

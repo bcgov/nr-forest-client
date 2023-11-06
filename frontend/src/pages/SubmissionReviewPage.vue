@@ -265,7 +265,7 @@ const tagColor = (status: string) =>{
                 <span class="body-compact-01">{{ normalizeString(data.business.organizationName) }}</span>
               </read-only-component>
               
-              <read-only-component label="Client number">
+              <read-only-component label="Client number" v-if="data.business.clientNumber">
                 <span class="body-compact-01">{{ data.business.clientNumber }}</span>
               </read-only-component>
 
@@ -273,7 +273,7 @@ const tagColor = (status: string) =>{
                 <span class="body-compact-01">{{ data.business.clientType }}</span>
               </read-only-component>
 
-              <read-only-component label="Incorporation number">
+              <read-only-component label="Incorporation number" v-if="data.business.incorporationNumber">
                 <span class="body-compact-01">{{ data.business.incorporationNumber }}</span>
               </read-only-component>
 
