@@ -25,7 +25,9 @@ class ForestClientUserSession implements SessionProperties {
   loadDetails = (): Submitter | undefined => {
     if (this.user === undefined) {
       this.loadUser();
+      
     }
+    console.log(this.user)
     return this.user;
   };
 
@@ -72,13 +74,14 @@ class ForestClientUserSession implements SessionProperties {
     const accessToken = this.getCookie("idToken");
     if (accessToken) {
       const parsedUser = this.parseJwt(accessToken);
+      console.log(parsedUser)
       const address = parsedUser["address"];
       const streetAddress = address !== undefined ? JSON.parse(address.formatted) : {};
 
       this.user = {
         name: parsedUser["custom:idp_display_name"],
         provider: parsedUser["custom:idp_name"],
-        userId: parsedUser["custom:idp_user_id"],
+        userId: `${parsedUser["custom:idp_name"]}\\${parsedUser["custom:idp_username"]}`,
         birthDate: parsedUser["birthdate"],
         address: {
           locationName: "",
