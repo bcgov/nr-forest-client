@@ -207,8 +207,20 @@ const tagColor = (status: string) =>{
         <div>No matching client records or BC Registries standing issues were found. Review the details in the read-only version below.</div>    
       </cds-actionable-notification>
 
+      <cds-inline-notification
+        v-if="data.submissionType === 'Review new client' && data.submissionStatus === 'Approved'"
+        v-shadow="true"
+        low-contrast="true"
+        hide-close-button="true"
+        open="true"
+        kind="info"
+        title="Submission approved:"      
+      >    
+        <div>This new client submission has already been reviewed and approved.</div>    
+      </cds-inline-notification>
+
       <cds-actionable-notification
-        v-if="data.submissionType === 'Review new client' && data.matchers.goodStanding"
+        v-if="data.submissionType === 'Review new client' && !data.matchers.goodStanding && data.submissionStatus !== 'Approved'"
         v-shadow="true"
         low-contrast="true"
         hide-close-button="true"
@@ -229,7 +241,7 @@ const tagColor = (status: string) =>{
       </cds-actionable-notification>
 
       <cds-actionable-notification
-          v-if="data.submissionType === 'Review new client' && data.matchers.legalName"
+          v-if="data.submissionType === 'Review new client' && data.matchers.legalName && data.submissionStatus !== 'Approved'"
           v-shadow="true"
           low-contrast="true"
           hide-close-button="true"

@@ -1,0 +1,55 @@
+{
+    "submissionId": "{{randomValue length=4 type='NUMERIC'}}",
+    "submissionStatus": "Approved",
+    "submissionType": "Review new client",
+    "submittedTimestamp": "{{now offset='-18 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "updateTimestamp": "{{now offset='-9 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "approvedTimestamp": "{{now offset='-1 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "updateUser": "Dionis Pulman",
+    "business": {
+        "businessType": "Individual",
+        "incorporationNumber": "",
+        "clientNumber":"{{randomValue length=8 type='NUMERIC'}}",
+        "organizationName": "Carter, Mante and Rau",
+        "clientType": "Individual",
+        "goodStanding": "Y"
+    },
+    "contact": [
+        {
+            "index": 0,
+            "contactType": "Accounts Receivable",
+            "firstName": "Test",
+            "lastName": "Uat",
+            "phoneNumber": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
+            "emailAddress": "uattest@gov.bc.ca",
+            "locations": [
+                "Mailing address",
+                "Accountant's address"
+            ],
+            "userId": "{{randomValue type='UUID'}}"
+        }
+    ],
+    "address": [
+        {
+            "index": 0,
+            "streetAddress":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
+            "country":"Canada",
+            "province":"Saskatchewan",
+            "city":"Hampton",
+            "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+            "name": "Mailing address"
+        },
+        {
+            "index": 1,
+            "streetAddress":"{{randomValue length=4 type='NUMERIC'}} Oak St",
+            "country":"Canada",
+            "province":"British Columbia",
+            "city":"Deer Lake",
+            "postalCode":"{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+            "name": "Accountant's address"
+        }
+    ],
+    "matchers": {
+        "legalName": "0000{{randomValue length=4 type='NUMERIC'}},000{{randomValue length=5 type='NUMERIC'}}"
+    }
+}

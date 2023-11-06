@@ -339,6 +339,19 @@
         "transformers": ["response-template"]
       }
     },
+
+    {
+      "name":"Submission Details Review Approved",
+      "request": {
+        "urlPath": "/api/clients/submissions/e14ad3a8-c7a1-4bd4-8cdf-8a6e9e013888",
+        "method": "GET"        
+      },
+      "response": {
+        "status": 200,        
+        "bodyFileName": "response-submissions-details-reviewedapproved.json",
+        "transformers": ["response-template"]
+      }
+    },
     {
       "name":"Submission Details Review Unregistered",
       "request": {
