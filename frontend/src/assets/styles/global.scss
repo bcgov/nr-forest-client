@@ -980,6 +980,11 @@ cds-header-global-action svg {
 cds-header-global-action[active] svg {
   fill: #000;
 }
+
+cds-side-nav-link svg {
+  fill: var(--light-theme-link-link-primary, #005cb8);
+}
+
 cds-header-global-action[active]::part(button):hover, 
 cds-header-global-action[active]::part(button):active,
 cds-header-global-action[active]::part(button):focus {
