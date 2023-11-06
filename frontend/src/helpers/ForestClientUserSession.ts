@@ -26,8 +26,7 @@ class ForestClientUserSession implements SessionProperties {
     if (this.user === undefined) {
       this.loadUser();
       
-    }
-    console.log(this.user)
+    }    
     return this.user;
   };
 
@@ -73,15 +72,18 @@ class ForestClientUserSession implements SessionProperties {
   private loadUser = (): void => {
     const accessToken = this.getCookie("idToken");
     if (accessToken) {
-      const parsedUser = this.parseJwt(accessToken);
-      console.log(parsedUser)
+      const parsedUser = this.parseJwt(accessToken);      
       const address = parsedUser["address"];
       const streetAddress = address !== undefined ? JSON.parse(address.formatted) : {};
 
+      const provider =parsedUser["custom:idp_name"].startsWith("ca.bc.gov.flnr.fam.")
+        ? "bcsc"
+        : parsedUser["custom:idp_name"];
+
       this.user = {
         name: parsedUser["custom:idp_display_name"],
-        provider: parsedUser["custom:idp_name"],
-        userId: `${parsedUser["custom:idp_name"]}\\${parsedUser["custom:idp_username"]}`,
+        provider: provider,
+        userId: `${provider}\\${parsedUser["custom:idp_username"] ?? parsedUser["custom:idp_user_id"]}`,
         birthDate: parsedUser["birthdate"],
         address: {
           locationName: "",
@@ -100,9 +102,6 @@ class ForestClientUserSession implements SessionProperties {
         email: parsedUser.email,
         ...this.processName(parsedUser, parsedUser["custom:idp_name"]),
       };
-      this.user.provider = this.user.provider.startsWith("ca.bc.gov.flnr.fam.")
-        ? "bcsc"
-        : this.user.provider;
     }
   };
 
