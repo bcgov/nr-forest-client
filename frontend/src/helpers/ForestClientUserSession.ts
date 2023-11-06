@@ -76,7 +76,7 @@ class ForestClientUserSession implements SessionProperties {
       const streetAddress = address !== undefined ? JSON.parse(address.formatted) : {};
 
       this.user = {
-        name: parsedUser["custom:idp_display_name"],
+        name: toTitleCase(parsedUser["custom:idp_display_name"]),
         provider: parsedUser["custom:idp_name"],
         userId: parsedUser["custom:idp_user_id"],
         birthDate: parsedUser["birthdate"],

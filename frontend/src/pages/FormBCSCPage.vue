@@ -205,12 +205,13 @@ import { useEventBus } from "@vueuse/core";
 import { codeConversionFn,getEnumKeyByEnumValue } from "@/services/ForestClientService";
 import { isUniqueDescriptive, isNullOrUndefinedOrBlank, runValidation, validate, getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
+import { useRouter } from "vue-router";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 import type { CodeNameType, ModalNotification, ValidationMessageType } from "@/dto/CommonTypesDto";
 import Add16 from "@carbon/icons-vue/es/add/16";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
+import Logout16 from '@carbon/icons-vue/es/logout/16';
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
-import { useRouter } from "vue-router";
 
 const { setFocusedComponent } = useFocus();
 const errorMessage = ref<string | undefined>("");
@@ -283,7 +284,7 @@ const { setScrollPoint } = useFocus();
 
 const scrollToNewContact = () => {
   setScrollPoint("", undefined, () => {
-     setFocusedComponent("");
+    setFocusedComponent("");
   });
 };
 
@@ -476,8 +477,8 @@ watch([response], () => {
 });
 
 watch([error], () => {
-  const validationErrors: ValidationMessageType[] = error.value.response
-    ?.data as ValidationMessageType[];
+  const validationErrors: ValidationMessageType[] = error.value.response?.data ?? 
+    [] as ValidationMessageType[];
 
   validationErrors.forEach((errorItem: ValidationMessageType) =>
     notificationBus.emit(errorItem)
