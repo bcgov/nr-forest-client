@@ -10,6 +10,7 @@ import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientLocationEntity;
+import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
@@ -17,7 +18,9 @@ import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.repository.legacy.ForestClientContactRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
+import jakarta.annotation.PostConstruct;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -52,6 +55,23 @@ public class LegacyPersistenceService {
   private final SubmissionContactRepository contactRepository;
   private final SubmissionLocationContactRepository locationContactRepository;
   private final R2dbcEntityTemplate legacyR2dbcEntityTemplate;
+  private final CountryCodeRepository countryCodeRepository;
+
+  private final Map<String, String> countryList = new HashMap<>();
+
+  @PostConstruct
+  public void setUp() {
+    countryCodeRepository
+        .findAll()
+        .doOnNext(countryCode ->
+            countryList.put(
+                countryCode.getCountryCode(),
+                countryCode.getDescription()
+            )
+        )
+        .collectList()
+        .subscribe();
+  }
 
 
   @ServiceActivator(
@@ -210,7 +230,7 @@ public class LegacyPersistenceService {
             );
 
     BiFunction<Long, SubmissionLocationEntity, Mono<ForestClientLocationEntity>> createClientLocation = (index, detail) ->
-        toForestClientLocationEntity(detail, index)
+        toForestClientLocationEntity(index, detail)
             .doOnNext(submissionLocation ->
                 log.info(
                     "Loaded submission location for persistence on oracle {} {} {}",
@@ -459,8 +479,8 @@ public class LegacyPersistenceService {
   }
 
   private Mono<ForestClientLocationEntity> toForestClientLocationEntity(
-      SubmissionLocationEntity submissionLocation,
-      long index
+      long index,
+      SubmissionLocationEntity submissionLocation
   ) {
     return Mono.just(ForestClientLocationEntity
         .builder()
@@ -469,7 +489,13 @@ public class LegacyPersistenceService {
         .addressOne(submissionLocation.getStreetAddress())
         .city(submissionLocation.getCityName())
         .province(submissionLocation.getProvinceCode())
-        .country(submissionLocation.getCountryCode()) //TODO: Read the country from the table -_-
+        .country(
+            countryList
+                .getOrDefault(
+                    submissionLocation.getCountryCode(),
+                    submissionLocation.getCountryCode()
+                )
+        )
         .postalCode(submissionLocation.getPostalCode())
         .businessPhone(null)
         .homePhone(null)

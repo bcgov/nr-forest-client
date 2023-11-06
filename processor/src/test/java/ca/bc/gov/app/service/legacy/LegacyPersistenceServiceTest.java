@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.EmailRequestDto;
+import ca.bc.gov.app.entity.client.CountryCodeEntity;
 import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
@@ -16,6 +17,7 @@ import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientLocationEntity;
+import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
@@ -24,6 +26,7 @@ import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.repository.legacy.ForestClientContactRepository;
 import ca.bc.gov.app.repository.legacy.ForestClientRepository;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -50,6 +53,8 @@ class LegacyPersistenceServiceTest {
       SubmissionLocationContactRepository.class);
   private final R2dbcEntityTemplate legacyR2dbcEntityTemplate = mock(R2dbcEntityTemplate.class);
 
+  private final CountryCodeRepository countryCodeRepository = mock(CountryCodeRepository.class);
+
   private final LegacyPersistenceService service = new LegacyPersistenceService(
       submissionDetailRepository,
       submissionRepository,
@@ -57,8 +62,15 @@ class LegacyPersistenceServiceTest {
       forestClientContactRepository,
       contactRepository,
       locationContactRepository,
-      legacyR2dbcEntityTemplate
+      legacyR2dbcEntityTemplate,
+      countryCodeRepository
   );
+
+  @BeforeEach
+  void beforeEach(){
+    when(countryCodeRepository.findAll())
+        .thenReturn(Flux.just(new CountryCodeEntity("CA", "Canada")));
+  }
 
   @Test
   @DisplayName("create forest client")
