@@ -152,6 +152,30 @@
         "body":"[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]"
       }
     },
+    {
+      "name":"Submission for Unregistered",
+      "request": {
+        "url": "/api/clients/submissions",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessType",
+              "contains": "U"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "contains": "U"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 201
+      }
+    },
 
     {
       "name":"Autocompete Canada Post Canada",
