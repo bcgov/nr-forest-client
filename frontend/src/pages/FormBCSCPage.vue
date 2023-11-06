@@ -284,7 +284,7 @@ const { setScrollPoint } = useFocus();
 
 const scrollToNewContact = () => {
   setScrollPoint("", undefined, () => {
-     setFocusedComponent("");
+    setFocusedComponent("");
   });
 };
 
@@ -477,8 +477,8 @@ watch([response], () => {
 });
 
 watch([error], () => {
-  const validationErrors: ValidationMessageType[] = error.value.response
-    ?.data as ValidationMessageType[];
+  const validationErrors: ValidationMessageType[] = error.value.response?.data ?? 
+    [] as ValidationMessageType[];
 
   validationErrors.forEach((errorItem: ValidationMessageType) =>
     notificationBus.emit(errorItem)
