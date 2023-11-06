@@ -9,8 +9,7 @@ import { useFetchTo } from "@/composables/useFetch";
 // Importing types
 import type {
   BusinessSearchResult,
-  ProgressNotification,
-  ValidationMessageType,
+  ProgressNotification
 } from "@/dto/CommonTypesDto";
 import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
 import type {
@@ -32,10 +31,6 @@ const emit = defineEmits<{
   (e: "update:data", value: FormDataDto): void;
   (e: "valid", value: boolean): void;
 }>();
-
-const notificationBus = useEventBus<ValidationMessageType | undefined>(
-  "error-notification"
-);
 
 //Defining the event bus to send notifications up
 const progressIndicatorBus = useEventBus<ProgressNotification>(
