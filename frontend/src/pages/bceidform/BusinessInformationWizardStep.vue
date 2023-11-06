@@ -153,10 +153,6 @@ watch([autoCompleteResult], () => {
         emit("update:data", formData.value);
         return;
       }
-      if (error.value.response?.status === 500) {
-        notificationBus.emit({ fieldId: "internal.server.error", errorMsg: "" });
-        scroll(0,0);
-      }
       // @ts-ignore
       generalErrorBus.emit(error.value.response?.data.message);
     });

@@ -156,7 +156,7 @@ const goToStep = (step: number) => {
       title="Something went wrong:"      
     >    
       <div>
-        We're working to fix a problem with our database. Please try re-submitting your application later.<br />
+        We're working to fix a problem with our network. Please try re-submitting your application later.<br />
         We're sorry for inconveniencing you.
       </div>    
     </cds-actionable-notification>

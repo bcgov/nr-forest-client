@@ -1,6 +1,12 @@
-import { ref, type Ref } from 'vue'
-import axios, { type AxiosError } from 'axios'
-import { backendUrl, frontendUrl } from '@/CoreConstants'
+import { ref, type Ref } from "vue";
+import axios, { type AxiosError } from "axios";
+import { backendUrl, frontendUrl } from "@/CoreConstants";
+import { useEventBus } from "@vueuse/core";
+import type { ValidationMessageType } from "@/dto/CommonTypesDto";
+
+const notificationBus = useEventBus<ValidationMessageType | undefined>(
+  "error-notification"
+);
 
 /**
  * Fetch data from external resource
@@ -9,11 +15,11 @@ import { backendUrl, frontendUrl } from '@/CoreConstants'
  * @returns the data fetched
  */
 export const useFetch = (url: string | Ref, config: any = {}) => {
-  const data: any = ref(config.initialData || {})
-  const info = useFetchTo(url, data, config)
+  const data: any = ref(config.initialData || {});
+  const info = useFetchTo(url, data, config);
 
-  return { ...info, data }
-}
+  return { ...info, data };
+};
 
 /**
  * Fetch data from external resource and store it into the data parameter
@@ -27,41 +33,42 @@ export const useFetchTo = (
   data: any,
   config: any = {}
 ) => {
-  const response = ref<any>({})
-  const error = ref<AxiosError>({})
-  const loading = ref<boolean>(false)
+  const response = ref<any>({});
+  const error = ref<AxiosError>({});
+  const loading = ref<boolean>(false);
 
   const parameters = {
     ...config,
     headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': frontendUrl,
-      ...config.headers
-    }
-  }
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": frontendUrl,
+      ...config.headers,
+    },
+  };
 
   const fetch = async () => {
-    loading.value = true
-    const actualURL = typeof url === 'string' ? url : url.value
+    loading.value = true;
+    const actualURL = typeof url === "string" ? url : url.value;
     try {
       const result = await axios.request({
         ...parameters,
         url: actualURL,
-        baseURL: backendUrl
-      })
-      response.value = result
-      data.value = result.data
+        baseURL: backendUrl,
+      });
+      response.value = result;
+      data.value = result.data;
     } catch (ex) {
-      error.value = ex
+      error.value = ex;
+      notificationBus.emit({ fieldId: "internal.server.error", errorMsg: "" });
     } finally {
-      loading.value = false
+      loading.value = false;
     }
-  }
+  };
 
-  !config.skip && fetch()
+  !config.skip && fetch();
 
-  return { response, error, data, loading, fetch }
-}
+  return { response, error, data, loading, fetch };
+};
 
 /**
  * Sends a POST request to the backend
@@ -71,39 +78,40 @@ export const useFetchTo = (
  * @returns a series of parameters containing the data fetched, the response, the error and the loading status
  */
 export const usePost = (url: string, body: any, config: any = {}) => {
-  const responseBody: any = ref({})
-  const response = ref<any>({})
-  const error = ref<AxiosError>({})
-  const loading = ref<boolean>(false)
+  const responseBody: any = ref({});
+  const response = ref<any>({});
+  const error = ref<AxiosError>({});
+  const loading = ref<boolean>(false);
 
   const parameters = {
     ...config,
     headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': frontendUrl,
-      ...config.headers
-    }
-  }
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": frontendUrl,
+      ...config.headers,
+    },
+  };
 
   const fetch = async () => {
-    loading.value = true
+    loading.value = true;
     try {
       const result = await axios.request({
         ...parameters,
         url,
         baseURL: backendUrl,
-        method: 'POST',
-        data: body
-      })
-      response.value = result
-      responseBody.value = result.data
+        method: "POST",
+        data: body,
+      });
+      response.value = result;
+      responseBody.value = result.data;
     } catch (ex: any) {
-      error.value = ex
+      error.value = ex;
+      notificationBus.emit({ fieldId: "internal.server.error", errorMsg: "" });
     } finally {
-      loading.value = false
+      loading.value = false;
     }
-  }
-  !config.skip && fetch()
+  };
+  !config.skip && fetch();
 
-  return { response, error, responseBody, loading, fetch }
-}
+  return { response, error, responseBody, loading, fetch };
+};
