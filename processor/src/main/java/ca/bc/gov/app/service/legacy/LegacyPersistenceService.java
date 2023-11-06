@@ -463,7 +463,7 @@ public class LegacyPersistenceService {
         .ocgSupplierNmbr(null)
         .clientComment(null)
         .clientStatusCode("ACT")
-        .clientName(submissionDetail.getOrganizationName())
+        .clientName(submissionDetail.getOrganizationName().toUpperCase())
         .clientTypeCode(submissionDetail.getClientTypeCode())
         .registryCompanyTypeCode(
             ProcessorUtil.extractLetters(submissionDetail.getIncorporationNumber()))
@@ -485,7 +485,7 @@ public class LegacyPersistenceService {
     return Mono.just(ForestClientLocationEntity
         .builder()
         .clientLocnCode(String.format("%02d", index))
-        .clientLocnName(submissionLocation.getName())
+        .clientLocnName(submissionLocation.getName().toUpperCase())
         .addressOne(submissionLocation.getStreetAddress())
         .city(submissionLocation.getCityName())
         .province(submissionLocation.getProvinceCode())
@@ -524,7 +524,7 @@ public class LegacyPersistenceService {
         .builder()
         .contactCode(submissionContact.getContactTypeCode())
         .contactName(String.format("%s %s", submissionContact.getFirstName(),
-            submissionContact.getLastName()))
+            submissionContact.getLastName()).toUpperCase())
         .businessPhone(RegExUtils.replaceAll(submissionContact.getBusinessPhoneNumber(), "\\D",
             StringUtils.EMPTY))
         .emailAddress(submissionContact.getEmailAddress())
