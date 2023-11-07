@@ -146,6 +146,21 @@ const goToStep = (step: number) => {
       <div>{{ globalErrorMessage.errorMsg }}</div>    
     </cds-actionable-notification>
 
+    <cds-actionable-notification
+      v-if="globalErrorMessage?.fieldId === 'internal.server.error'"
+      v-shadow="true"
+      low-contrast="true"
+      hide-close-button="true"
+      open="true"
+      kind="error"
+      title="Something went wrong:"      
+    >    
+      <div>
+        We're working to fix a problem with our network. Please try re-submitting your application later.<br />
+        We're sorry for inconveniencing you.
+      </div>    
+    </cds-actionable-notification>
+
     <cds-inline-notification
       v-for="item in nonAssociatedAddressList"
       :key="item"

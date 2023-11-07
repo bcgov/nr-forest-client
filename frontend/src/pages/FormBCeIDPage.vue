@@ -117,8 +117,8 @@ watch([response], () => {
 });
 
 watch([error], () => {
-  const validationErrors: ValidationMessageType[] = error.value.response
-    ?.data as ValidationMessageType[];
+  const validationErrors: ValidationMessageType[] = error.value.response?.data ?? 
+    [] as ValidationMessageType[];
 
   validationErrors.forEach((errorItem: ValidationMessageType) =>
     notificationBus.emit(errorItem)
