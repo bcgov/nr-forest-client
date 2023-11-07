@@ -7,6 +7,7 @@ import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
+import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientLocationEntity;
@@ -86,7 +87,7 @@ public class LegacyPersistenceService {
             submission.getSubmissionId())
         )
         .map(submission -> MessageBuilder
-            .withPayload(message.getPayload())
+            .fromMessage(message)
             .setHeader(ApplicationConstant.SUBMISSION_ID, message.getPayload())
             .setHeader(ApplicationConstant.CREATED_BY, submission.getCreatedBy())
             .setHeader(ApplicationConstant.UPDATED_BY, submission.getUpdatedBy())
@@ -189,6 +190,7 @@ public class LegacyPersistenceService {
                     .map(forestClientDetail ->
                         MessageBuilder
                             .fromMessage(message)
+                            .copyHeaders(message.getHeaders())
                             .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, forestClientNumber)
                             .setHeader(ApplicationConstant.FOREST_CLIENT_NAME,
                                 forestClientDetail.getOrganizationName())
@@ -269,6 +271,7 @@ public class LegacyPersistenceService {
                         .map(count ->
                             MessageBuilder
                                 .fromMessage(message)
+                                .copyHeaders(message.getHeaders())
                                 .setHeader(ApplicationConstant.LOCATION_CODE,
                                     forestClient.getClientLocnCode())
                                 .setHeader(ApplicationConstant.LOCATION_ID,
@@ -399,52 +402,16 @@ public class LegacyPersistenceService {
 
   @ServiceActivator(
       inputChannel = ApplicationConstant.SUBMISSION_LEGACY_NOTIFY_CHANNEL,
-      outputChannel = ApplicationConstant.SUBMISSION_COMPLETION_CHANNEL,
+      outputChannel = ApplicationConstant.SUBMISSION_MAIL_BUILD_CHANNEL,
       async = "true"
   )
-  public Mono<Message<EmailRequestDto>> sendNotification(Message<Integer> message) {
-
-    return
-        contactRepository
-            .findFirstBySubmissionId(message.getPayload())
-            .doOnNext(submissionContact ->
-                log.info(
-                    "All data saved onto oracle {} {} {}",
-                    message.getPayload(),
-                    message.getHeaders()
-                        .get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class),
-                    message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME, String.class)
-                )
-            )
-            .map(submissionContact ->
-                new EmailRequestDto(
-                    message.getHeaders()
-                        .get(ApplicationConstant.INCORPORATION_NUMBER, String.class),
-                    message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME, String.class),
-                    submissionContact.getUserId(),
-                    submissionContact.getFirstName(),
-                    submissionContact.getEmailAddress(),
-                    "approval",
-                    "Success",
-                    Map.of(
-                        "userName", submissionContact.getFirstName(),
-                        "business", Map.of(
-                            "name", Objects.requireNonNull(message.getHeaders()
-                                .get(ApplicationConstant.FOREST_CLIENT_NAME, String.class)),
-                            "clientNumber",
-                            Objects.requireNonNull(message.getHeaders()
-                                .get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
-                        )
-                    )
-                )
-            )
-            .map(emailRequestDto ->
-                MessageBuilder
-                    .withPayload(emailRequestDto)
-                    .copyHeaders(message.getHeaders())
-                    .build()
-            );
-
+  public Mono<Message<Integer>> sendNotification(Message<Integer> message) {
+    return Mono.just(
+        MessageBuilder
+            .fromMessage(message)
+            .setHeader(ApplicationConstant.SUBMISSION_TYPE, SubmissionTypeCodeEnum.RAC)
+            .build()
+    );
   }
 
 

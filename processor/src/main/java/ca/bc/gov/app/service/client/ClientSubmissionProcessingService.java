@@ -36,7 +36,9 @@ public class ClientSubmissionProcessingService {
       outputChannel = ApplicationConstant.NOTIFICATION_PROCESSING_CHANNEL,
       async = "true"
   )
-  public Mono<Message<SubmissionMatchDetailEntity>> processSubmission(Integer submissionId) {
+  public Mono<Message<SubmissionMatchDetailEntity>> processSubmission(Message<Integer> submissionMessage) {
+    Integer submissionId = submissionMessage.getPayload();
+
     return
         submissionRepository
             .findById(submissionId)
@@ -51,6 +53,7 @@ public class ClientSubmissionProcessingService {
                             .map(matching ->
                                 MessageBuilder
                                     .withPayload(matching)
+                                    .copyHeaders(submissionMessage.getHeaders())
                                     .setHeader(ApplicationConstant.SUBMISSION_ID, submissionId)
                                     .setHeader(ApplicationConstant.SUBMISSION_STATUS,
                                         event.getSubmissionStatus())
@@ -87,6 +90,7 @@ public class ClientSubmissionProcessingService {
           .just(
               MessageBuilder
                   .withPayload(submissionId)
+                  .copyHeaders(message.getHeaders())
                   .setReplyChannelName(ApplicationConstant.SUBMISSION_LEGACY_CHANNEL)
                   .setHeader("output-channel", ApplicationConstant.SUBMISSION_LEGACY_CHANNEL)
                   .setHeader(MessageHeaders.REPLY_CHANNEL, ApplicationConstant.SUBMISSION_LEGACY_CHANNEL)
@@ -128,6 +132,7 @@ public class ClientSubmissionProcessingService {
           .map(emailRequestDto ->
               MessageBuilder
                   .withPayload(emailRequestDto)
+                  .copyHeaders(message.getHeaders())
                   .setReplyChannelName(ApplicationConstant.SUBMISSION_COMPLETION_CHANNEL)
                   .setHeader(ApplicationConstant.SUBMISSION_ID,submissionId)
                   .setHeader("output-channel", ApplicationConstant.SUBMISSION_COMPLETION_CHANNEL)

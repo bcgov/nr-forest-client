@@ -11,6 +11,7 @@ import ca.bc.gov.app.repository.client.SubmissionRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,11 @@ public class ClientSubmissionAutoProcessingService {
                     entity.getMatchingField()
                 )
             )
-            .thenReturn(MessageBuilder.withPayload(submissionId).build());
+            .thenReturn(MessageBuilder
+                .withPayload(submissionId)
+                .setHeader(ApplicationConstant.SUBMISSION_TYPE, SubmissionTypeCodeEnum.AAC)
+                .build()
+            );
   }
 
 
@@ -69,32 +74,44 @@ public class ClientSubmissionAutoProcessingService {
             .thenReturn(message);
   }
 
-  //TODO: must send an email to admin team
-  @ServiceActivator(inputChannel = ApplicationConstant.REVIEW_CHANNEL)
-  public void reviewed(Message<List<MatcherResult>> message) {
-    persistData(
-        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class),
-        SubmissionTypeCodeEnum.RNC
-    )
-        .doOnNext(id -> log.info("Request {} was put into review", id))
-        .flatMap(this::loadFirstOrNew)
-        .doOnNext(entity -> entity.setMatchers(
-                message
-                    .getPayload()
-                    .stream()
-                    .collect(Collectors.toMap(MatcherResult::fieldName, MatcherResult::value))
-            )
+  @ServiceActivator(
+      inputChannel = ApplicationConstant.REVIEW_CHANNEL,
+      outputChannel = ApplicationConstant.SUBMISSION_MAIL_BUILD_CHANNEL,
+      async = "true"
+  )
+  public Mono<Message<Integer>> reviewed(Message<List<MatcherResult>> message) {
+    return
+        persistData(
+            message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class),
+            SubmissionTypeCodeEnum.RNC
         )
-        .flatMap(submissionMatchDetailRepository::save)
-        .subscribe(entity -> log.info(
-                "Added matches for submission {} {}",
-                entity.getSubmissionId(),
-                entity.getMatchingField()
+            .doOnNext(id -> log.info("Request {} was put into review", id))
+            .flatMap(this::loadFirstOrNew)
+            .doOnNext(entity -> entity.setMatchers(
+                    message
+                        .getPayload()
+                        .stream()
+                        .collect(Collectors.toMap(MatcherResult::fieldName, MatcherResult::value))
+                )
             )
-        );
-
-    log.info("Request {} was put into review",
-        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class));
+            .flatMap(submissionMatchDetailRepository::save)
+            .doOnNext(entity -> log.info(
+                    "Added matches for submission {} {}",
+                    entity.getSubmissionId(),
+                    entity.getMatchingField()
+                )
+            )
+            .doOnNext(entity ->
+                log.info("Request {} was put into review",
+                    message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class)
+                )
+            )
+            .map(entity -> MessageBuilder
+                .withPayload(entity.getSubmissionId())
+                .copyHeaders(message.getHeaders())
+                .setHeader(ApplicationConstant.SUBMISSION_TYPE, SubmissionTypeCodeEnum.RNC)
+                .build()
+            );
   }
 
   private Mono<Integer> persistData(Integer submissionId, SubmissionTypeCodeEnum typeCode) {

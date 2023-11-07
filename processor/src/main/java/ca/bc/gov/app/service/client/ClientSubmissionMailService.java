@@ -2,6 +2,8 @@ package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.EmailRequestDto;
+import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -18,7 +20,20 @@ public class ClientSubmissionMailService {
   private final WebClient forestClientApi;
 
   @ServiceActivator(inputChannel = ApplicationConstant.SUBMISSION_MAIL_CHANNEL)
-  public void sendMail(Message<EmailRequestDto> mailMessage){
+  public void sendMail(Message<EmailRequestDto> mailMessage) {
+
+    if (
+        Objects.equals(mailMessage.getHeaders().get(
+            ApplicationConstant.SUBMISSION_TYPE, SubmissionTypeCodeEnum.class
+        ), SubmissionTypeCodeEnum.RNC)
+    ) {
+      log.info("Receiving a review notification, mail not sent {} {} -> {}",
+          mailMessage.getPayload().email(),
+          mailMessage.getPayload().subject(),
+          mailMessage.getPayload().variables()
+      );
+      return;
+    }
     log.info("Sending email to {} {} -> {}",
         mailMessage.getPayload().email(),
         mailMessage.getPayload().subject(),
