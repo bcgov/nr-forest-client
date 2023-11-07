@@ -122,26 +122,24 @@ const submit = (approved: boolean) => {
     if (response.status) {
       console.log(response);
       router.push({ name: "internal" })
-      const commonToastNotification = {
+      const toastNotification: ModalNotification = {
         kind: "Success",
         active: true,
         handler: () => {},
-      };
-      const toastNotification: ModalNotification = approved
-        ? {
-            message: `New client number has been created for “${normalizeString(
-            data.value.business.organizationName,
-            )}”`,
-            toastTitle: "Submission approved",
-            ...commonToastNotification,
-          }
-        : {
-            message: `New client number has been rejected for “${normalizeString(
-              data.value.business.organizationName,
-            )}”`,
-            toastTitle: 'Submission rejected',
-            ...commonToastNotification,
-          };
+        ...(approved
+          ? {
+              message: `New client number has been created for “${normalizeString(
+                data.value.business.organizationName,
+              )}”`,
+              toastTitle: "Submission approved",
+            }
+          : {
+              message: `New client number has been rejected for “${normalizeString(
+                data.value.business.organizationName,
+              )}”`,
+              toastTitle: "Submission rejected",
+            }),
+      }
       toastBus.emit(toastNotification);
     }
   });
