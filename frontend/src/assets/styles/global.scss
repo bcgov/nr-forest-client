@@ -372,6 +372,17 @@ div#app {
   color: var(--light-theme-text-text-primary, #131315) !important;
 }
 
+.heading-01, cds-accordion-item.grouping-05-internal::part(title) {
+  color: var(--light-theme-text-text-primary, #131315);
+  /* Fixed heading styles/heading-01 */
+  font-family: BC Sans;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.25rem; /* 142.857% */
+  letter-spacing: 0.01rem;
+}
+
 .heading-02 {
   color: var(--light-theme-text-text-primary, #131315) !important;
 
@@ -715,6 +726,7 @@ div#app {
   flex-direction: column;  
   gap: 2.5rem;
   background: #fff;
+  padding: 1rem;
 }
 
 .grouping-05-short {
@@ -771,7 +783,7 @@ div#app {
   display: flex;
   align-items: flex-start;
   gap: 2rem;
-  padding: 0 0 2rem 1rem;
+  padding-bottom: 1rem;
 }
 
 .grouping-11 {
@@ -1055,10 +1067,6 @@ cds-accordion-item[open]:not([disabled])::part(content) ,:host(cds-accordion-ite
   display: flex;
   flex-direction: column;
   gap: 2rem;
-}
-
-cds-accordion-item.grouping-05-internal:not([open]) {  
-  padding-bottom: 2rem;
 }
 
 .mg-sd-25 {

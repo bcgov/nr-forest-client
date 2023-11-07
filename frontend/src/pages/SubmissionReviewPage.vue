@@ -331,7 +331,7 @@ const tagColor = (status: string) =>{
           </div>
 
           <cds-accordion>
-            <cds-accordion-item open  title="Submitter information" size="lg" class="grouping-05-internal">
+            <cds-accordion-item open title="Submitter information" size="lg" class="grouping-05-internal">
               <div class="grouping-10-internal">
               <read-only-component label="First name">
                 <span class="body-compact-01">{{ normalizeString(data.contact[0].firstName) }}</span>
