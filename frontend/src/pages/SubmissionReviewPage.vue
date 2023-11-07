@@ -10,12 +10,13 @@ import '@carbon/web-components/es/components/button/index';
 import '@carbon/web-components/es/components/modal/index';
 import '@carbon/web-components/es/components/tooltip/index';
 // Composables
-import { useFetchTo,usePost } from '@/composables/useFetch'
+import { useFetchTo, usePost } from '@/composables/useFetch'
 import { useRouter } from 'vue-router'
 import { isSmallScreen, isMediumScreen } from '@/composables/useScreenSize';
+import { useEventBus } from '@vueuse/core';
 // Types
-import type { SubmissionDetails,CodeNameType } from '@/dto/CommonTypesDto'
-import { formatDistanceToNow, format} from 'date-fns'
+import type { SubmissionDetails, CodeNameType, ModalNotification } from '@/dto/CommonTypesDto'
+import { formatDistanceToNow, format } from 'date-fns'
 import { greenDomain } from '@/CoreConstants'
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
@@ -27,6 +28,8 @@ import Review16 from '@carbon/icons-vue/es/data--view--alt/32';
 import Check16 from '@carbon/icons-vue/es/checkmark/16';
 // @ts-ignore
 import Error16 from '@carbon/icons-vue/es/error--outline/16';
+
+const toastBus = useEventBus<ModalNotification>('toast-notification')
 
 //Route related
 const router = useRouter()
@@ -96,11 +99,11 @@ const rejectionReasonMessage = computed(() => {
 })
 
 // Submit the form changes to the backend
-const submit = (approved:boolean) => {
+const submit = (approved: boolean) => {
   
   rejectModal.value = false
   approveModal.value = false
-  const { loading } = usePost(
+  const { response } = usePost(
     `/api/clients/submissions/${id.value}`,
     { 
       approved,
@@ -115,11 +118,33 @@ const submit = (approved:boolean) => {
     },
     }
   );
-  watch(loading, (loading) => {
-    if (!loading) {
-      router.push({name:'internal'})
+  watch(response, (response) => {
+    if (response.status) {
+      console.log(response);
+      router.push({ name: "internal" })
+      const commonToastNotification = {
+        kind: "Success",
+        active: true,
+        handler: () => {},
+      };
+      const toastNotification: ModalNotification = approved
+        ? {
+            message: `New client number has been created for “${normalizeString(
+            data.value.business.organizationName,
+            )}”`,
+            toastTitle: "Submission approved",
+            ...commonToastNotification,
+          }
+        : {
+            message: `New client number has been rejected for “${normalizeString(
+              data.value.business.organizationName,
+            )}”`,
+            toastTitle: 'Submission rejected',
+            ...commonToastNotification,
+          };
+      toastBus.emit(toastNotification);
     }
-  })  
+  });
 }
 
 // Normalize the string to capitalize the first letter of each word
