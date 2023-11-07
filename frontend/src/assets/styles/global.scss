@@ -7,6 +7,7 @@
   --light-theme-button-button-primary: #0073e6;
   --light-theme-button-button-secondary: #464648;
   --light-theme-button-button-tertiary: #005cb8;
+  --light-theme-button-danger-hover: #b32001;
   --cds-focus: #0073e6;
   --light-theme-link-link-primary: #005cb8;
   --light-theme-link-link-primary-hover: #00478f;
@@ -59,7 +60,8 @@
 
   //Danger button
   --cds-button-danger: #e72000;
-  --cds-button-danger-hover: #b32001;
+  --cds-button-danger-primary: #e72000;
+  --cds-button-danger-hover: var(--light-theme-button-danger-hover);
   --cds-button-danger-active: #801701;
 
   //Notifications
@@ -930,6 +932,8 @@ cds-modal-footer-button::part(button) {
   margin-bottom: 0;
   margin-top: auto;
   white-space: nowrap;
+
+  --cds-button-danger-hover: var(--light-theme-button-danger-hover, #b32001);
 }
 
 .cds--modal-close-btn {
