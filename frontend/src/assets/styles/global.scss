@@ -1102,6 +1102,12 @@ cds-accordion-item[open]:not([disabled])::part(content) ,:host(cds-accordion-ite
   padding-right: 2.5rem; // 1 (default value) + 1.5
 }
 
+cds-table-row[even]:hover{
+  background-color: var(--dark-theme-background-background-active);
+}
+cds-table-row[odd]:hover{
+  background-color: var(--dark-theme-background-background-hover);
+}
 
 
 /* Small (up to 671px) */
