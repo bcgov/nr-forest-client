@@ -1130,14 +1130,9 @@ cds-accordion-item.grouping-05-internal:not([open]) {
     max-height: 37rem;
   }
 
-  cds-modal#reject-modal cds-modal-header,
-  cds-modal#approve-modal cds-modal-header {
-    margin: 1rem;
-  }
-
   cds-modal#reject-modal cds-modal-body.grouping-12,
   cds-modal#approve-modal cds-modal-body {
-    margin: 1rem 1rem 3rem 1rem;
+    margin-bottom: 3rem;
   }
 
   .screen {
@@ -1332,14 +1327,9 @@ cds-accordion-item.grouping-05-internal:not([open]) {
     width: 95%;
   }
 
-  cds-modal#reject-modal cds-modal-header,
-  cds-modal#approve-modal cds-modal-header {
-    margin: 1rem;
-  }
-
   cds-modal#reject-modal cds-modal-body.grouping-12,
   cds-modal#approve-modal cds-modal-body {
-    margin: 1rem 1rem 3rem 1rem;
+    margin-bottom: 3rem;
   }
 
   cds-modal#reject-modal cds-modal-body.grouping-12 {
@@ -1419,11 +1409,6 @@ cds-accordion-item.grouping-05-internal:not([open]) {
     height: 16rem;
   }
 
-  cds-modal#reject-modal cds-modal-header,
-  cds-modal#approve-modal cds-modal-header {
-    margin: 1rem;
-  }
-
   cds-modal#reject-modal cds-modal-body.grouping-12 {
     margin: 1rem 1rem 3rem 1rem;
     height: 19rem;
@@ -1491,11 +1476,6 @@ cds-accordion-item.grouping-05-internal:not([open]) {
     height: 22rem;
   }
 
-  cds-modal#reject-modal cds-modal-header,
-  cds-modal#approve-modal cds-modal-header {
-    margin: 1rem;
-  }
-
   cds-modal#reject-modal cds-modal-body.grouping-12 {
     margin: 1rem 1rem 3rem 1rem;
     height: 19rem;
@@ -1540,11 +1520,6 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   .submission-badge {
     width: 29.8125rem;
     height: 29.8125rem;
-  }
-
-  cds-modal#reject-modal cds-modal-header,
-  cds-modal#approve-modal cds-modal-header {
-    margin: 1rem;
   }
 
   cds-modal#reject-modal cds-modal-body.grouping-12 {
@@ -1592,11 +1567,6 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   .submission-badge {
     width: 31.375rem;
     height: 31.375rem;
-  }
-
-  cds-modal#reject-modal cds-modal-header,
-  cds-modal#approve-modal cds-modal-header {
-    margin: 1rem;
   }
 
   cds-modal#reject-modal cds-modal-body.grouping-12 {
