@@ -86,12 +86,8 @@ public class ClientSubmissionLoadingService {
                             Map.of(
                                 "userName", submissionContact.getFirstName(),
                                 "business", Map.of(
-                                    "name", Objects.requireNonNull(message.getHeaders()
-                                        .get(ApplicationConstant.FOREST_CLIENT_NAME, String.class)),
-                                    "clientNumber",
-                                    Objects.requireNonNull(message.getHeaders()
-                                        .get(ApplicationConstant.FOREST_CLIENT_NUMBER,
-                                            String.class))
+                                    "name", details.getOrganizationName(),
+                                    "clientNumber", details.getClientNumber()
                                 )
                             )
                         )
