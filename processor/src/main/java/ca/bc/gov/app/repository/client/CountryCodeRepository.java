@@ -9,11 +9,16 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
+/**
+ * CountryCodeRepository
+ * Repository responsible for retrieving CountryCodeEntity objects from the database.
+ */
 public interface CountryCodeRepository extends ReactiveCrudRepository<CountryCodeEntity, String>,
     ReactiveSortingRepository<CountryCodeEntity, String> {
 
   Flux<CountryCodeEntity> findBy(Pageable pageable);
 
   Mono<CountryCodeEntity> findByCountryCode(String code);
+
   Mono<CountryCodeEntity> findByDescription(String description);
 }

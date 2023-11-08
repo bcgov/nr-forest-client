@@ -36,7 +36,11 @@ public class ClientSubmissionProcessingService {
       outputChannel = ApplicationConstant.NOTIFICATION_PROCESSING_CHANNEL,
       async = "true"
   )
-  public Mono<Message<SubmissionMatchDetailEntity>> processSubmission(Message<Integer> submissionMessage) {
+  /**
+   * This method will process the submission and send the notification to the user.
+   */
+  public Mono<Message<SubmissionMatchDetailEntity>> processSubmission(
+      Message<Integer> submissionMessage) {
     Integer submissionId = submissionMessage.getPayload();
 
     return
@@ -74,13 +78,19 @@ public class ClientSubmissionProcessingService {
       outputChannel = ApplicationConstant.FORWARD_CHANNEL,
       async = "true"
   )
+  /**
+   * This method will process the submission and send the notification to the user.
+   */
+  @SuppressWarnings("java:S1452")
   public Mono<Message<?>> notificationProcessing(Message<SubmissionMatchDetailEntity> message) {
 
-    SubmissionStatusEnum status = ProcessorUtil.readHeader(message, ApplicationConstant.SUBMISSION_STATUS,
-        SubmissionStatusEnum.class)
+    SubmissionStatusEnum status = ProcessorUtil.readHeader(message,
+            ApplicationConstant.SUBMISSION_STATUS,
+            SubmissionStatusEnum.class)
         .orElse(SubmissionStatusEnum.R);
 
-    Integer submissionId = ProcessorUtil.readHeader(message, ApplicationConstant.SUBMISSION_ID, Integer.class).orElse(0);
+    Integer submissionId = ProcessorUtil.readHeader(message, ApplicationConstant.SUBMISSION_ID,
+        Integer.class).orElse(0);
 
     if (SubmissionStatusEnum.A.equals(status)) {
 
@@ -92,8 +102,12 @@ public class ClientSubmissionProcessingService {
                   .withPayload(submissionId)
                   .copyHeaders(message.getHeaders())
                   .setReplyChannelName(ApplicationConstant.SUBMISSION_LEGACY_CHANNEL)
-                  .setHeader("output-channel", ApplicationConstant.SUBMISSION_LEGACY_CHANNEL)
-                  .setHeader(MessageHeaders.REPLY_CHANNEL, ApplicationConstant.SUBMISSION_LEGACY_CHANNEL)
+                  .setHeader(
+                      "output-channel",
+                      ApplicationConstant.SUBMISSION_LEGACY_CHANNEL
+                  )
+                  .setHeader(MessageHeaders.REPLY_CHANNEL,
+                      ApplicationConstant.SUBMISSION_LEGACY_CHANNEL)
                   .build()
           );
 
@@ -102,43 +116,47 @@ public class ClientSubmissionProcessingService {
     log.info("Submission {} was rejected", submissionId);
 
     return
-      submissionMatchDetailRepository
-          .findBySubmissionId(submissionId)
-          .map(SubmissionMatchDetailEntity::getMatchingMessage)
-          .flatMap(matchingReason ->
-              submissionDetailRepository
-                .findBySubmissionId(submissionId)
-                .flatMap(submissionDetails ->
-                    contactRepository
-                        .findFirstBySubmissionId(submissionId)
-                        .map(submissionContact ->
-                              new EmailRequestDto(
-                                  submissionDetails.getIncorporationNumber(),
-                                  submissionDetails.getOrganizationName(),
-                                  submissionContact.getUserId(),
-                                  submissionContact.getFirstName(),
-                                  submissionContact.getEmailAddress(),
-                                  "rejection",
-                                  "Failure",
-                                  Map.of(
-                                      "userName", submissionContact.getFirstName(),
-                                      "name", submissionDetails.getOrganizationName(),
-                                      "reason", matchingReason
-                                  )
-                              )
-                        )
-                )
-          )
-          .map(emailRequestDto ->
-              MessageBuilder
-                  .withPayload(emailRequestDto)
-                  .copyHeaders(message.getHeaders())
-                  .setReplyChannelName(ApplicationConstant.SUBMISSION_COMPLETION_CHANNEL)
-                  .setHeader(ApplicationConstant.SUBMISSION_ID,submissionId)
-                  .setHeader("output-channel", ApplicationConstant.SUBMISSION_COMPLETION_CHANNEL)
-                  .setHeader(MessageHeaders.REPLY_CHANNEL, ApplicationConstant.SUBMISSION_COMPLETION_CHANNEL)
-                  .build()
-          );
+        submissionMatchDetailRepository
+            .findBySubmissionId(submissionId)
+            .map(SubmissionMatchDetailEntity::getMatchingMessage)
+            .flatMap(matchingReason ->
+                submissionDetailRepository
+                    .findBySubmissionId(submissionId)
+                    .flatMap(submissionDetails ->
+                        contactRepository
+                            .findFirstBySubmissionId(submissionId)
+                            .map(submissionContact ->
+                                new EmailRequestDto(
+                                    submissionDetails.getIncorporationNumber(),
+                                    submissionDetails.getOrganizationName(),
+                                    submissionContact.getUserId(),
+                                    submissionContact.getFirstName(),
+                                    submissionContact.getEmailAddress(),
+                                    "rejection",
+                                    "Failure",
+                                    Map.of(
+                                        "userName", submissionContact.getFirstName(),
+                                        "name", submissionDetails.getOrganizationName(),
+                                        "reason", matchingReason
+                                    )
+                                )
+                            )
+                    )
+            )
+            .map(emailRequestDto ->
+                MessageBuilder
+                    .withPayload(emailRequestDto)
+                    .copyHeaders(message.getHeaders())
+                    .setReplyChannelName(ApplicationConstant.SUBMISSION_COMPLETION_CHANNEL)
+                    .setHeader(ApplicationConstant.SUBMISSION_ID, submissionId)
+                    .setHeader(
+                        "output-channel",
+                        ApplicationConstant.SUBMISSION_COMPLETION_CHANNEL
+                    )
+                    .setHeader(MessageHeaders.REPLY_CHANNEL,
+                        ApplicationConstant.SUBMISSION_COMPLETION_CHANNEL)
+                    .build()
+            );
   }
 
 }

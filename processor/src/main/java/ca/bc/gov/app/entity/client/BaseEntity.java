@@ -11,6 +11,10 @@ import org.springframework.data.relational.core.mapping.Column;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * The type Base entity.
+ * Contains base entity fields
+ */
 public abstract class BaseEntity {
 
   @Column("update_timestamp")

@@ -17,6 +17,13 @@ import org.springframework.data.relational.core.mapping.Column;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * The type Expirable base entity.
+ * @param <T> the type parameter
+ *           the type parameter
+ *
+ * Contains description and effective/expiry dates
+ */
 public abstract class ExpirableBaseEntity extends BaseEntity {
   @NotNull
   protected String description;

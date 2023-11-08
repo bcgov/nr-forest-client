@@ -24,6 +24,10 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+/**
+ * This class is responsible for processing the submission and persisting the data on oracle.
+ * It does through a few steps that are interconnected.
+ */
 public class ClientSubmissionAutoProcessingService {
 
   private final SubmissionRepository submissionRepository;
@@ -34,9 +38,16 @@ public class ClientSubmissionAutoProcessingService {
       outputChannel = ApplicationConstant.SUBMISSION_POSTPROCESSOR_CHANNEL,
       async = "true"
   )
+  /**
+   * This method is responsible for marking the submission as approved
+   * and sending to the nexty step.
+   */
   public Mono<Message<Integer>> approved(Message<List<MatcherResult>> message) {
-    Integer submissionId = message.getHeaders()
-        .get(ApplicationConstant.SUBMISSION_ID, Integer.class);
+    int submissionId =
+        Objects.requireNonNull(
+            message.getHeaders()
+                .get(ApplicationConstant.SUBMISSION_ID, Integer.class)
+        );
     return
         persistData(submissionId, SubmissionTypeCodeEnum.AAC)
             .doOnNext(id -> log.info("Request {} was approved", id))
@@ -63,6 +74,9 @@ public class ClientSubmissionAutoProcessingService {
       outputChannel = ApplicationConstant.SUBMISSION_MAIL_CHANNEL,
       async = "true"
   )
+  /**
+   * This method is responsible for marking the submission as processed
+   */
   public Mono<Message<EmailRequestDto>> completeProcessing(Message<EmailRequestDto> message) {
     return
         submissionMatchDetailRepository
@@ -79,6 +93,9 @@ public class ClientSubmissionAutoProcessingService {
       outputChannel = ApplicationConstant.SUBMISSION_MAIL_BUILD_CHANNEL,
       async = "true"
   )
+  /**
+   * This method is responsible for marking the submission as reviewed
+   */
   public Mono<Message<Integer>> reviewed(Message<List<MatcherResult>> message) {
     return
         persistData(

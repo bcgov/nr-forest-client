@@ -18,6 +18,9 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+/**
+ * This class is responsible for loading the submission details and submission contact details
+ */
 public class ClientSubmissionLoadingService {
 
   private final SubmissionDetailRepository submissionDetailRepository;
@@ -28,6 +31,9 @@ public class ClientSubmissionLoadingService {
       outputChannel = ApplicationConstant.MATCH_CHECKING_CHANNEL,
       async = "true"
   )
+  /**
+   * Load the submission details to be processed later on
+   */
   public Mono<Message<SubmissionInformationDto>> loadSubmissionDetails(Integer submissionId) {
 
     return
@@ -56,6 +62,9 @@ public class ClientSubmissionLoadingService {
       outputChannel = ApplicationConstant.SUBMISSION_MAIL_CHANNEL,
       async = "true"
   )
+  /**
+   * Build the email request dto to be sent to the email service
+   */
   public Mono<Message<EmailRequestDto>> sendNotification(Message<Integer> message) {
 
     return

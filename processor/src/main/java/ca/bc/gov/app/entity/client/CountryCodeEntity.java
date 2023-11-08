@@ -22,6 +22,10 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @With
+/**
+ * Country Code Entity
+ * Represents a country by code and description
+ */
 public class CountryCodeEntity extends ExpirableBaseEntity {
   @Id
   @Column("country_code")

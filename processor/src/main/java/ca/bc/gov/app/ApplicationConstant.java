@@ -41,4 +41,5 @@ public final class ApplicationConstant {
   public static final long ORG_UNIT = 70L;
   public static final String LOCATION_CODE = "locationCode";
   public static final String SUBMISSION_MAIL_BUILD_CHANNEL = "submissionMailBuildChannel";
+  public static final String CLIENT_NUMBER = "CLIENT_NUMBER";
 }

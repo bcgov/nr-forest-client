@@ -47,12 +47,14 @@ import reactor.core.publisher.Mono;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+/**
+ * This class is responsible for persisting the submission into the legacy database.
+ */
 public class LegacyPersistenceService {
 
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionRepository submissionRepository;
   private final SubmissionLocationRepository locationRepository;
-  private final ForestClientContactRepository forestClientContactRepository;
   private final SubmissionContactRepository contactRepository;
   private final SubmissionLocationContactRepository locationContactRepository;
   private final R2dbcEntityTemplate legacyR2dbcEntityTemplate;
@@ -61,6 +63,9 @@ public class LegacyPersistenceService {
   private final Map<String, String> countryList = new HashMap<>();
 
   @PostConstruct
+  /**
+   * Loads the country list from the database.
+   */
   public void setUp() {
     countryCodeRepository
         .findAll()
@@ -80,6 +85,9 @@ public class LegacyPersistenceService {
       outputChannel = ApplicationConstant.SUBMISSION_LEGACY_CLIENT_CHANNEL,
       async = "true"
   )
+  /**
+   * Loads the submission from the database and prepares the message for next step.
+   */
   public Mono<Message<Integer>> loadSubmission(Message<Integer> message) {
     return submissionRepository
         .findById(message.getPayload())
@@ -101,6 +109,9 @@ public class LegacyPersistenceService {
       outputChannel = ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL,
       async = "true"
   )
+  /**
+   * Creates a client if does not exist on oracle and get back the client number.
+   */
   public Mono<Message<Integer>> createForestClient(Message<Integer> message) {
 
     // Load the details of the submission
@@ -143,7 +154,7 @@ public class LegacyPersistenceService {
         .selectOne(
             Query
                 .empty()
-                .sort(Sort.by(Direction.DESC, "CLIENT_NUMBER"))
+                .sort(Sort.by(Direction.DESC, ApplicationConstant.CLIENT_NUMBER))
                 .limit(1),
             ForestClientEntity.class
         )
@@ -206,6 +217,9 @@ public class LegacyPersistenceService {
       outputChannel = ApplicationConstant.SUBMISSION_LEGACY_CONTACT_CHANNEL,
       async = "true"
   )
+  /**
+   * Creates a location if does not exist on oracle.
+   */
   public Flux<Message<Integer>> createLocations(Message<Integer> message) {
 
     Flux<SubmissionLocationEntity> data = locationRepository.findBySubmissionId(
@@ -218,7 +232,7 @@ public class LegacyPersistenceService {
                 Query.query(
                     Criteria
                         .where("CLIENT_LOCN_CODE").is(locationCode)
-                        .and("CLIENT_NUMBER").is(clientNumber)
+                        .and(ApplicationConstant.CLIENT_NUMBER).is(clientNumber)
                 ),
                 ForestClientLocationEntity.class
             )
@@ -291,6 +305,10 @@ public class LegacyPersistenceService {
       outputChannel = ApplicationConstant.SUBMISSION_LEGACY_AGGREGATE_CHANNEL,
       async = "true"
   )
+  /**
+   * Creates a contact if does not exist on oracle.
+   * It first checks for an existing entry and if it does not have, create it.
+   */
   public Mono<Message<Integer>> createContact(Message<Integer> message) {
 
     // Load the contact in case it exists
@@ -304,7 +322,7 @@ public class LegacyPersistenceService {
                             Query
                                 .query(
                                     Criteria
-                                        .where("CLIENT_NUMBER").is(getClientNumber(message))
+                                        .where(ApplicationConstant.CLIENT_NUMBER).is(getClientNumber(message))
                                         .and("CLIENT_LOCN_CODE").is(
                                             Objects.requireNonNull(message.getHeaders()
                                                 .get(ApplicationConstant.LOCATION_CODE, String.class)
@@ -405,6 +423,9 @@ public class LegacyPersistenceService {
       outputChannel = ApplicationConstant.SUBMISSION_MAIL_BUILD_CHANNEL,
       async = "true"
   )
+  /**
+   * Sends a notification to the user that the submission has been processed
+   */
   public Mono<Message<Integer>> sendNotification(Message<Integer> message) {
     return Mono.just(
         MessageBuilder

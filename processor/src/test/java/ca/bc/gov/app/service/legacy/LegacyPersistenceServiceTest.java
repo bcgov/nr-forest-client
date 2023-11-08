@@ -22,7 +22,6 @@ import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
-import ca.bc.gov.app.repository.legacy.ForestClientContactRepository;
 import ca.bc.gov.app.repository.legacy.ForestClientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,8 +42,7 @@ class LegacyPersistenceServiceTest {
   private final SubmissionLocationRepository locationRepository = mock(
       SubmissionLocationRepository.class);
   private final ForestClientRepository forestClientRepository = mock(ForestClientRepository.class);
-  private final ForestClientContactRepository forestClientContactRepository = mock(
-      ForestClientContactRepository.class);
+
   private final SubmissionContactRepository contactRepository = mock(
       SubmissionContactRepository.class);
   private final SubmissionLocationContactRepository locationContactRepository = mock(
@@ -57,7 +55,6 @@ class LegacyPersistenceServiceTest {
       submissionDetailRepository,
       submissionRepository,
       locationRepository,
-      forestClientContactRepository,
       contactRepository,
       locationContactRepository,
       legacyR2dbcEntityTemplate,
