@@ -80,5 +80,8 @@ public final class ApplicationConstant {
       order by sl.submission_location_id""";
   public static final String SUBMISSION_TYPE = "submissionType";
   public static final String SUBMISSION_ID = "submissionId";
+  public static final String REFRESH_TOKEN = "refreshToken";
+  public static final String ID_TOKEN = "idToken";
+  public static final String ACCESS_TOKEN = "accessToken";
 }
 

@@ -6,7 +6,6 @@ import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.WordUtils;
@@ -44,7 +43,7 @@ public class ClientController {
     return clientService
         .listCountries(page, size);
   }
-  
+
   @GetMapping("/getCountryByCode/{countryCode}")
   public Mono<CodeNameDto> getCountryByCode(
       @PathVariable String countryCode) {
@@ -108,5 +107,5 @@ public class ClientController {
   public Mono<Void> sendEmail(@RequestBody EmailRequestDto emailRequestDto) {
     return clientService.triggerEmailDuplicatedClient(emailRequestDto);
   }
-  
+
 }
