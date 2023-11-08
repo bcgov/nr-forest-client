@@ -284,7 +284,6 @@ public class ClientService {
             .defaultIfEmpty(new ArrayList<>())
             .flatMap(addresses ->
                 Flux.fromIterable(document.parties())
-                    .filter(BcRegistryPartyDto::isValid)
                     .map(party ->
                         new ClientContactDto(
                             new ClientValueTextDto(party.officer().partyType(), ""),
