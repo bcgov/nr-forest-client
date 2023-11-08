@@ -6,5 +6,6 @@ public enum ClientTypeEnum {
   A,
   I,
   P,
-  L
+  L,
+  RSP
 }

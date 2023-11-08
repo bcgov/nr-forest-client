@@ -7,8 +7,9 @@ import "@carbon/web-components/es/components/notification/index";
 import { useEventBus } from "@vueuse/core";
 import { useFetchTo } from "@/composables/useFetch";
 // Importing types
-import type {
+import {
   BusinessSearchResult,
+  ClientTypeEnum,
   ProgressNotification
 } from "@/dto/CommonTypesDto";
 import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
@@ -23,6 +24,7 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
 // Importing session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
+import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>();
@@ -183,8 +185,8 @@ watch([selectedOption], () => {
   if (selectedOption.value === BusinessTypeEnum.U) {
     const fromName = `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`;
 
-    formData.value.businessInformation.businessType = "U";
-    formData.value.businessInformation.clientType = "U";
+    formData.value.businessInformation.businessType = getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U);
+    formData.value.businessInformation.clientType = getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.USP);
     formData.value.businessInformation.businessName = ForestClientUserSession
       .user?.businessName
       ? ForestClientUserSession.user?.businessName
