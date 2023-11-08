@@ -20,8 +20,8 @@ public class ClientMapper {
    * @param submissionId                 the submission ID to be set on the {@link SubmissionDetailEntity}
    * @param clientBusinessInformationDto the {@link ClientBusinessInformationDto} object to be
    *                                     mapped to a {@link SubmissionDetailEntity}
-   * @return the {@link SubmissionDetailEntity}
-   * object mapped from {@link ClientBusinessInformationDto}
+   * @return the {@link SubmissionDetailEntity} object mapped from
+   *         {@link ClientBusinessInformationDto}
    */
   public static SubmissionDetailEntity mapToSubmissionDetailEntity(
       Integer submissionId,

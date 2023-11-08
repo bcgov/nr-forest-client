@@ -66,7 +66,7 @@ public class ClientAddressDtoValidator implements Validator {
       if ("CA".equalsIgnoreCase(country)) {
         errors.rejectValue(provinceField, "You must select a province or territory.");
         return;
-      } 
+      }
       else if ("US".equalsIgnoreCase(country)) {
         errors.rejectValue(provinceField, "You must select a state.");
         return;

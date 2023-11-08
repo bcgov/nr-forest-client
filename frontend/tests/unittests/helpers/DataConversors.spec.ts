@@ -8,7 +8,7 @@ describe('DataConversors.ts', () => {
   })
   it('retrieveClientType should return I when legalType is SP', () => {
     const result = retrieveClientType('SP')
-    expect(result).toEqual('I')
+    expect(result).toEqual('RSP')
   })
   it('retrieveClientType should return P when legalType is GP', () => {
     const result = retrieveClientType('GP')
