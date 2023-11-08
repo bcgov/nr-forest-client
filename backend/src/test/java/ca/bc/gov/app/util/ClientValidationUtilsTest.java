@@ -144,7 +144,7 @@ class ClientValidationUtilsTest {
             Arguments.of(LegalTypeEnum.S, ClientTypeEnum.S),
             Arguments.of(LegalTypeEnum.XS, ClientTypeEnum.S),
             Arguments.of(LegalTypeEnum.XCP, ClientTypeEnum.A),
-            Arguments.of(LegalTypeEnum.SP, ClientTypeEnum.I),
+            Arguments.of(LegalTypeEnum.SP, ClientTypeEnum.RSP),
             Arguments.of(LegalTypeEnum.GP, ClientTypeEnum.P),
             Arguments.of(LegalTypeEnum.LP, ClientTypeEnum.L),
             Arguments.of(LegalTypeEnum.XL, ClientTypeEnum.L),

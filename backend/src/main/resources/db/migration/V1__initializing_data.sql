@@ -29,7 +29,7 @@ drop sequence if exists nrfc.submission_submitter_seq;
 create schema if not exists nrfc;
 
 create table if not exists nrfc.client_type_code (
-    client_type_code            varchar(1)      not null,
+    client_type_code            varchar(5)      not null,
     description                 varchar(100)    not null,
     effective_date              date            not null,
     expiry_date                 date            default to_date('99991231','YYYYMMDD') not null,
@@ -51,7 +51,7 @@ comment on column nrfc.client_type_code.create_user is 'The user or proxy accoun
 comment on column nrfc.client_type_code.update_user is 'The user or proxy account that created or last updated the record.';
 
 create table if not exists nrfc.submission_status_code (
-    submission_status_code  	  varchar(5)      not null,
+    submission_status_code  	varchar(5)      not null,
     description                 varchar(100)    not null,
     effective_date              date            not null,
     expiry_date                 date            default to_date('99991231','YYYYMMDD') not null,
@@ -217,7 +217,7 @@ create table if not exists nrfc.submission_detail (
 	business_type_code		varchar(1)    	not null,
 	incorporation_number	varchar(50)    	null,
     organization_name       varchar(100)    null,
-	client_type_code        varchar(1)    	not null,
+	client_type_code        varchar(5)    	not null,
     good_standing_ind       varchar(1)      null,
 	constraint submission_detail_id_pk primary key (submission_detail_id),
 	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),

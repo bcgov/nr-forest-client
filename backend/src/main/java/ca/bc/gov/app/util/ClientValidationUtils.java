@@ -65,7 +65,7 @@ public class ClientValidationUtils {
       case A, B, BC, C, CP, EPR, FOR, LIC, REG -> ClientTypeEnum.C;
       case S, XS -> ClientTypeEnum.S;
       case XCP -> ClientTypeEnum.A;
-      case SP -> ClientTypeEnum.I;
+      case SP -> ClientTypeEnum.RSP;
       case GP -> ClientTypeEnum.P;
       case LP, XL, XP -> ClientTypeEnum.L;
     };

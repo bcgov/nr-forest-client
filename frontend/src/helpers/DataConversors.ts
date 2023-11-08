@@ -19,7 +19,7 @@ export const retrieveClientType = (legalType: string): string => {
       case "XCP":
         return "A";
       case "SP":
-        return "I";
+        return "RSP";
       case "GP":
         return "P";
       case "LP":
