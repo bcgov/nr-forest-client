@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +21,9 @@ class ClientSubmissionLoadingServiceTest {
 
   private final SubmissionDetailRepository submissionDetailRepository =
       mock(SubmissionDetailRepository.class);
-  private final ClientSubmissionLoadingService service = new ClientSubmissionLoadingService(submissionDetailRepository);
+  private final SubmissionContactRepository contactRepository =
+      mock(SubmissionContactRepository.class);
+  private final ClientSubmissionLoadingService service = new ClientSubmissionLoadingService(submissionDetailRepository,contactRepository);
 
 
   @Test
