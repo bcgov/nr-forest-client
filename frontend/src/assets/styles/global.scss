@@ -1109,6 +1109,11 @@ cds-table-row[odd]:hover{
   background-color: var(--dark-theme-background-background-hover);
 }
 
+cds-tag {
+  margin: 0;
+}
+
+
 
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
