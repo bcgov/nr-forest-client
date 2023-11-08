@@ -131,11 +131,13 @@ public class CognitoController {
             .refreshToken(code)
             .map(authResponse -> {
               serverResponse
-                  .addCookie(buildCookie(ApplicationConstant.ACCESS_TOKEN, authResponse.accessToken(),
-                      authResponse.expiresIn()));
+                  .addCookie(
+                      buildCookie(ApplicationConstant.ACCESS_TOKEN, authResponse.accessToken(),
+                          authResponse.expiresIn()));
               serverResponse
                   .addCookie(
-                      buildCookie(ApplicationConstant.ID_TOKEN, authResponse.idToken(), authResponse.expiresIn()));
+                      buildCookie(ApplicationConstant.ID_TOKEN, authResponse.idToken(),
+                          authResponse.expiresIn()));
               serverResponse
                   .addCookie(buildCookie(ApplicationConstant.REFRESH_TOKEN, code,
                       authResponse.expiresIn()));
@@ -168,14 +170,17 @@ public class CognitoController {
             .flatMap(service::exchangeAuthorizationCodeForTokens)
             .map(authResponse -> {
               serverResponse
-                  .addCookie(buildCookie(ApplicationConstant.ACCESS_TOKEN, authResponse.accessToken(),
-                      authResponse.expiresIn()));
+                  .addCookie(
+                      buildCookie(ApplicationConstant.ACCESS_TOKEN, authResponse.accessToken(),
+                          authResponse.expiresIn()));
               serverResponse
                   .addCookie(
-                      buildCookie(ApplicationConstant.ID_TOKEN, authResponse.idToken(), authResponse.expiresIn()));
+                      buildCookie(ApplicationConstant.ID_TOKEN, authResponse.idToken(),
+                          authResponse.expiresIn()));
               serverResponse
-                  .addCookie(buildCookie(ApplicationConstant.REFRESH_TOKEN, authResponse.refreshToken(),
-                      authResponse.expiresIn()));
+                  .addCookie(
+                      buildCookie(ApplicationConstant.REFRESH_TOKEN, authResponse.refreshToken(),
+                          authResponse.expiresIn()));
               serverResponse
                   .setStatusCode(HttpStatus.FOUND);
               serverResponse
