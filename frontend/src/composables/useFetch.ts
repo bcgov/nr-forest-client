@@ -114,7 +114,6 @@ export const usePost = (url: string, body: any, config: any = {}) => {
       responseBody.value = result.data;
     } catch (ex: any) {
       error.value = ex;
-      console.log(error.value);
       if (
         error.value.code === "ERR_BAD_RESPONSE" ||
         error.value.code === "ERR_NETWORK"

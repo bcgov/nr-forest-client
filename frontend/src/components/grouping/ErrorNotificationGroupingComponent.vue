@@ -92,6 +92,7 @@ const goToStep = (step: number) => {
 </script>
 
 <template>
+      --{{ globalErrorMessage?.fieldId }}
   <div class="top-notification" v-if="globalErrorMessage?.fieldId || nonAssociatedAddressList.length > 0">
 
     <cds-inline-notification

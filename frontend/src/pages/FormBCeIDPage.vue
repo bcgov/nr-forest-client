@@ -121,7 +121,10 @@ watch([error], () => {
     [] as ValidationMessageType[];
 
   validationErrors.forEach((errorItem: ValidationMessageType) =>
-    notificationBus.emit(errorItem)
+    notificationBus.emit({
+      fieldId: "server.validation.error",
+      errorMsg: errorItem.errorMsg,
+    })
   );
   setScrollPoint("top");
 });
