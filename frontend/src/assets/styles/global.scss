@@ -7,6 +7,7 @@
   --light-theme-button-button-primary: #0073e6;
   --light-theme-button-button-secondary: #464648;
   --light-theme-button-button-tertiary: #005cb8;
+  --light-theme-button-danger-hover: #b32001;
   --cds-focus: #0073e6;
   --light-theme-link-link-primary: #005cb8;
   --light-theme-link-link-primary-hover: #00478f;
@@ -59,7 +60,8 @@
 
   //Danger button
   --cds-button-danger: #e72000;
-  --cds-button-danger-hover: #b32001;
+  --cds-button-danger-primary: #e72000;
+  --cds-button-danger-hover: var(--light-theme-button-danger-hover);
   --cds-button-danger-active: #801701;
 
   //Notifications
@@ -129,6 +131,10 @@ cds-button span {
   width: 11rem;
 }
 
+.close-panel-button svg {
+  color: var(--light-theme-text-text-primary, #131315);
+}
+
 .step-active {
   --cds-border-subtle: var(--light-theme-miscellaneous-interactive);
 }
@@ -164,6 +170,7 @@ cds-actionable-notification,
 .cds--actionable-notification {
   max-width: 100%;
   border-radius: 0.25rem;
+  box-shadow: none;
 }
 
 cds-radio-button:not(:last-child) {
@@ -206,7 +213,7 @@ cds-combo-box-item[data-loading="true"]::part(
   font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
 }
 
-a {
+a:link {
   color: var(--light-theme-link-link-primary, #005cb8);
 }
 
@@ -370,6 +377,17 @@ div#app {
   color: var(--light-theme-text-text-primary, #131315) !important;
 }
 
+.heading-01, cds-accordion-item.grouping-05-internal::part(title) {
+  color: var(--light-theme-text-text-primary, #131315);
+  /* Fixed heading styles/heading-01 */
+  font-family: BC Sans;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.25rem; /* 142.857% */
+  letter-spacing: 0.01rem;
+}
+
 .heading-02 {
   color: var(--light-theme-text-text-primary, #131315) !important;
 
@@ -452,7 +470,7 @@ div#app {
 }
 
 .body-02 {
-  color: var(--light-theme-text-text-secondary, #606062);
+  color: var(--light-theme-text-text-primary, #131315);
 
   /* Body styles/body-02 */
   
@@ -462,7 +480,7 @@ div#app {
   line-height: 1.5rem;
 }
 
-.body-compact-01 {
+.body-compact-01, cds-actionable-notification * {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Body styles/body-compact-01 */
@@ -713,6 +731,7 @@ div#app {
   flex-direction: column;  
   gap: 2.5rem;
   background: #fff;
+  padding: 1rem;
 }
 
 .grouping-05-short {
@@ -769,7 +788,7 @@ div#app {
   display: flex;
   align-items: flex-start;
   gap: 2rem;
-  padding: 0 0 2rem 1rem;
+  padding-bottom: 1rem;
 }
 
 .grouping-11 {
@@ -861,7 +880,7 @@ div#app {
 
 .label-01 {
   align-self: stretch;
-  color: var(--light-theme-text-text-primary, #131315);
+  color: var(--light-theme-text-text-secondary, #606062);
 
   /* Utility styles/label-01 */
   
@@ -929,6 +948,9 @@ cds-modal-footer-button::part(button) {
   height: 75%;
   margin-bottom: 0;
   margin-top: auto;
+  white-space: nowrap;
+
+  --cds-button-danger-hover: var(--light-theme-button-danger-hover, #b32001);
 }
 
 .cds--modal-close-btn {
@@ -946,9 +968,7 @@ cds-modal {
 .paginator {
   width: calc(100vw - 16rem);
 }
-#datatable {  
-  overflow: scroll !important;
-}
+
 
 cds-header ~ cds-side-nav {
   margin-top: 3rem;
@@ -981,6 +1001,11 @@ cds-header-global-action svg {
 cds-header-global-action[active] svg {
   fill: #000;
 }
+
+cds-side-nav-link svg {
+  fill: var(--light-theme-link-link-primary, #005cb8);
+}
+
 cds-header-global-action[active]::part(button):hover, 
 cds-header-global-action[active]::part(button):active,
 cds-header-global-action[active]::part(button):focus {
@@ -1049,10 +1074,6 @@ cds-accordion-item[open]:not([disabled])::part(content) ,:host(cds-accordion-ite
   gap: 2rem;
 }
 
-cds-accordion-item.grouping-05-internal:not([open]) {  
-  padding-bottom: 2rem;
-}
-
 .mg-sd-25 {
   margin: 0rem 2.5rem;
 }
@@ -1074,9 +1095,30 @@ cds-accordion-item.grouping-05-internal:not([open]) {
 
 .submission-details--title{
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
 }
+
+:is(cds-table-header-cell, cds-table-cell):first-child {
+  padding-left: 2.5rem; // 1 (default value) + 1.5
+}
+
+:is(cds-table-header-cell, cds-table-cell):last-child {
+  padding-right: 2.5rem; // 1 (default value) + 1.5
+}
+
+cds-table-row[even]:hover{
+  background-color: var(--dark-theme-background-background-active);
+}
+cds-table-row[odd]:hover{
+  background-color: var(--dark-theme-background-background-hover);
+}
+
+cds-tag {
+  margin: 0;
+}
+
+
 
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
@@ -1113,17 +1155,12 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   }
 
   cds-modal#reject-modal::part(dialog) {
-    max-height: 37rem;    
-  }  
-
-  cds-modal#reject-modal cds-modal-header,
-  cds-modal#approve-modal cds-modal-header {
-    margin: 1rem;
+    max-height: 37rem;
   }
 
   cds-modal#reject-modal cds-modal-body.grouping-12,
   cds-modal#approve-modal cds-modal-body {
-    margin: 1rem 1rem 3rem 1rem;
+    margin-bottom: 3rem;
   }
 
   .screen {
@@ -1244,6 +1281,17 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   .paginator {
     width: 100vw;
   }
+  .submission-details--title svg{
+    width: 5rem;
+  }
+  #datatable {
+    position: relative;
+    right: 0;
+    overflow-x: scroll;
+  }
+  cds-table {
+    width: 82rem;
+  }
 }
 
 /* Medium (from 672px to 1055px) */
@@ -1301,20 +1349,21 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   .grouping-10 .grouping-11:first-child{
     width: 40%;
   }
-
-  cds-modal#reject-modal::part(dialog) {
-    max-height: 37rem;    
-  }  
-
-  cds-modal#reject-modal cds-modal-header,
-  cds-modal#approve-modal cds-modal-header {
-    margin: 1rem;
+  
+  cds-modal#reject-modal::part(dialog),
+  cds-modal#approve-modal::part(dialog) {
+    width: 95%;
   }
 
   cds-modal#reject-modal cds-modal-body.grouping-12,
   cds-modal#approve-modal cds-modal-body {
-    margin: 1rem 1rem 3rem 1rem;
+    margin-bottom: 3rem;
   }
+
+  cds-modal#reject-modal cds-modal-body.grouping-12 {
+    height: 19rem;
+  }
+
   cds-modal#reject-modal cds-modal-footer,
   cds-modal#approve-modal cds-modal-footer {
     height: 6rem;
@@ -1325,13 +1374,13 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   .mg-sd-25 {
     margin: 0rem 2.5rem 2rem 2rem;
   }
+
   cds-table-header-title {
     margin-left: 1rem;
   }
 
   .submission-list {  
     padding: 2.5rem 0rem;
-    width:fit-content;
   }
 
   .submission-content {
@@ -1340,6 +1389,14 @@ cds-accordion-item.grouping-05-internal:not([open]) {
 
   .paginator {
     width: 100vw;
+  }
+  #datatable {
+    position: relative;
+    right: 0;
+    overflow-x: scroll;
+  }
+  cds-table {
+    width: 82rem;
   }
 }
 
@@ -1380,11 +1437,6 @@ cds-accordion-item.grouping-05-internal:not([open]) {
     height: 16rem;
   }
 
-  cds-modal#reject-modal cds-modal-header,
-  cds-modal#approve-modal cds-modal-header {
-    margin: 1rem;
-  }
-
   cds-modal#reject-modal cds-modal-body.grouping-12 {
     margin: 1rem 1rem 3rem 1rem;
     height: 19rem;
@@ -1407,6 +1459,15 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   .submission-content {
     padding: 2.5rem 2rem 2.5rem 18.5rem;
     max-width: calc(100vw - 21rem);
+  }
+
+  #datatable {
+    position: relative;
+    right: 0;
+    overflow-x: scroll;
+  }
+  cds-table {
+    min-width: 66rem;
   }
 }
 
@@ -1441,11 +1502,6 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   .submission-badge {
     width: 22rem;
     height: 22rem;
-  }
-
-  cds-modal#reject-modal cds-modal-header,
-  cds-modal#approve-modal cds-modal-header {
-    margin: 1rem;
   }
 
   cds-modal#reject-modal cds-modal-body.grouping-12 {
@@ -1494,11 +1550,6 @@ cds-accordion-item.grouping-05-internal:not([open]) {
     height: 29.8125rem;
   }
 
-  cds-modal#reject-modal cds-modal-header,
-  cds-modal#approve-modal cds-modal-header {
-    margin: 1rem;
-  }
-
   cds-modal#reject-modal cds-modal-body.grouping-12 {
     margin: 1rem 1rem 3rem 1rem;
     height: 19rem;
@@ -1544,11 +1595,6 @@ cds-accordion-item.grouping-05-internal:not([open]) {
   .submission-badge {
     width: 31.375rem;
     height: 31.375rem;
-  }
-
-  cds-modal#reject-modal cds-modal-header,
-  cds-modal#approve-modal cds-modal-header {
-    margin: 1rem;
   }
 
   cds-modal#reject-modal cds-modal-body.grouping-12 {

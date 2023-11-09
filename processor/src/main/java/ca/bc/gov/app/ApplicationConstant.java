@@ -24,6 +24,8 @@ public final class ApplicationConstant {
   public static final String SUBMISSION_ID = "submission-id";
   public static final String SUBMISSION_STATUS = "submission-status";
   public static final String SUBMISSION_CLIENTID = "submission-clientid";
+
+  public static final String SUBMISSION_TYPE = "submission-type-code";
   public static final String SUBMISSION_NAME = "submission-name";
   public static final String SUBMISSION_MESSAGE_SOURCE = "submissionMessages";
   public static final String PROCESSED_MESSAGE_SOURCE = "processedMessage";
@@ -35,7 +37,9 @@ public final class ApplicationConstant {
   public static final String LOCATION_ID = "locationId";
   public static final String TOTAL = "total";
   public static final String INDEX = "index";
-  public static final String PROCESSOR_USER_NAME = "CLIADMIN";
+  public static final String PROCESSOR_USER_NAME = "Otto Mated";
   public static final long ORG_UNIT = 70L;
   public static final String LOCATION_CODE = "locationCode";
+  public static final String SUBMISSION_MAIL_BUILD_CHANNEL = "submissionMailBuildChannel";
+  public static final String CLIENT_NUMBER = "CLIENT_NUMBER";
 }

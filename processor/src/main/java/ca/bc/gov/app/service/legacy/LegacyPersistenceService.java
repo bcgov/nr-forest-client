@@ -7,9 +7,11 @@ import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
+import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientLocationEntity;
+import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
@@ -17,7 +19,9 @@ import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.repository.legacy.ForestClientContactRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
+import jakarta.annotation.PostConstruct;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,6 +34,7 @@ import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
@@ -43,15 +48,37 @@ import reactor.core.publisher.Mono;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+/**
+ * This class is responsible for persisting the submission into the legacy database.
+ */
 public class LegacyPersistenceService {
 
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionRepository submissionRepository;
   private final SubmissionLocationRepository locationRepository;
-  private final ForestClientContactRepository forestClientContactRepository;
   private final SubmissionContactRepository contactRepository;
   private final SubmissionLocationContactRepository locationContactRepository;
-  private final R2dbcEntityTemplate legacyR2dbcEntityTemplate;
+  private final R2dbcEntityOperations legacyR2dbcEntityTemplate;
+  private final CountryCodeRepository countryCodeRepository;
+
+  private final Map<String, String> countryList = new HashMap<>();
+
+  @PostConstruct
+  /**
+   * Loads the country list from the database.
+   */
+  public void setUp() {
+    countryCodeRepository
+        .findAll()
+        .doOnNext(countryCode ->
+            countryList.put(
+                countryCode.getCountryCode(),
+                countryCode.getDescription()
+            )
+        )
+        .collectList()
+        .subscribe();
+  }
 
 
   @ServiceActivator(
@@ -59,6 +86,9 @@ public class LegacyPersistenceService {
       outputChannel = ApplicationConstant.SUBMISSION_LEGACY_CLIENT_CHANNEL,
       async = "true"
   )
+  /**
+   * Loads the submission from the database and prepares the message for next step.
+   */
   public Mono<Message<Integer>> loadSubmission(Message<Integer> message) {
     return submissionRepository
         .findById(message.getPayload())
@@ -66,7 +96,7 @@ public class LegacyPersistenceService {
             submission.getSubmissionId())
         )
         .map(submission -> MessageBuilder
-            .withPayload(message.getPayload())
+            .fromMessage(message)
             .setHeader(ApplicationConstant.SUBMISSION_ID, message.getPayload())
             .setHeader(ApplicationConstant.CREATED_BY, submission.getCreatedBy())
             .setHeader(ApplicationConstant.UPDATED_BY, submission.getUpdatedBy())
@@ -80,6 +110,9 @@ public class LegacyPersistenceService {
       outputChannel = ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL,
       async = "true"
   )
+  /**
+   * Creates a client if does not exist on oracle and get back the client number.
+   */
   public Mono<Message<Integer>> createForestClient(Message<Integer> message) {
 
     // Load the details of the submission
@@ -122,7 +155,7 @@ public class LegacyPersistenceService {
         .selectOne(
             Query
                 .empty()
-                .sort(Sort.by(Direction.DESC, "CLIENT_NUMBER"))
+                .sort(Sort.by(Direction.DESC, ApplicationConstant.CLIENT_NUMBER))
                 .limit(1),
             ForestClientEntity.class
         )
@@ -169,6 +202,7 @@ public class LegacyPersistenceService {
                     .map(forestClientDetail ->
                         MessageBuilder
                             .fromMessage(message)
+                            .copyHeaders(message.getHeaders())
                             .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, forestClientNumber)
                             .setHeader(ApplicationConstant.FOREST_CLIENT_NAME,
                                 forestClientDetail.getOrganizationName())
@@ -184,6 +218,9 @@ public class LegacyPersistenceService {
       outputChannel = ApplicationConstant.SUBMISSION_LEGACY_CONTACT_CHANNEL,
       async = "true"
   )
+  /**
+   * Creates a location if does not exist on oracle.
+   */
   public Flux<Message<Integer>> createLocations(Message<Integer> message) {
 
     Flux<SubmissionLocationEntity> data = locationRepository.findBySubmissionId(
@@ -196,7 +233,7 @@ public class LegacyPersistenceService {
                 Query.query(
                     Criteria
                         .where("CLIENT_LOCN_CODE").is(locationCode)
-                        .and("CLIENT_NUMBER").is(clientNumber)
+                        .and(ApplicationConstant.CLIENT_NUMBER).is(clientNumber)
                 ),
                 ForestClientLocationEntity.class
             )
@@ -210,7 +247,7 @@ public class LegacyPersistenceService {
             );
 
     BiFunction<Long, SubmissionLocationEntity, Mono<ForestClientLocationEntity>> createClientLocation = (index, detail) ->
-        toForestClientLocationEntity(detail, index)
+        toForestClientLocationEntity(index, detail)
             .doOnNext(submissionLocation ->
                 log.info(
                     "Loaded submission location for persistence on oracle {} {} {}",
@@ -249,6 +286,7 @@ public class LegacyPersistenceService {
                         .map(count ->
                             MessageBuilder
                                 .fromMessage(message)
+                                .copyHeaders(message.getHeaders())
                                 .setHeader(ApplicationConstant.LOCATION_CODE,
                                     forestClient.getClientLocnCode())
                                 .setHeader(ApplicationConstant.LOCATION_ID,
@@ -268,6 +306,10 @@ public class LegacyPersistenceService {
       outputChannel = ApplicationConstant.SUBMISSION_LEGACY_AGGREGATE_CHANNEL,
       async = "true"
   )
+  /**
+   * Creates a contact if does not exist on oracle.
+   * It first checks for an existing entry and if it does not have, create it.
+   */
   public Mono<Message<Integer>> createContact(Message<Integer> message) {
 
     // Load the contact in case it exists
@@ -281,7 +323,7 @@ public class LegacyPersistenceService {
                             Query
                                 .query(
                                     Criteria
-                                        .where("CLIENT_NUMBER").is(getClientNumber(message))
+                                        .where(ApplicationConstant.CLIENT_NUMBER).is(getClientNumber(message))
                                         .and("CLIENT_LOCN_CODE").is(
                                             Objects.requireNonNull(message.getHeaders()
                                                 .get(ApplicationConstant.LOCATION_CODE, String.class)
@@ -379,52 +421,19 @@ public class LegacyPersistenceService {
 
   @ServiceActivator(
       inputChannel = ApplicationConstant.SUBMISSION_LEGACY_NOTIFY_CHANNEL,
-      outputChannel = ApplicationConstant.SUBMISSION_COMPLETION_CHANNEL,
+      outputChannel = ApplicationConstant.SUBMISSION_MAIL_BUILD_CHANNEL,
       async = "true"
   )
-  public Mono<Message<EmailRequestDto>> sendNotification(Message<Integer> message) {
-
-    return
-        contactRepository
-            .findFirstBySubmissionId(message.getPayload())
-            .doOnNext(submissionContact ->
-                log.info(
-                    "All data saved onto oracle {} {} {}",
-                    message.getPayload(),
-                    message.getHeaders()
-                        .get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class),
-                    message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME, String.class)
-                )
-            )
-            .map(submissionContact ->
-                new EmailRequestDto(
-                    message.getHeaders()
-                        .get(ApplicationConstant.INCORPORATION_NUMBER, String.class),
-                    message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME, String.class),
-                    submissionContact.getUserId(),
-                    submissionContact.getFirstName(),
-                    submissionContact.getEmailAddress(),
-                    "approval",
-                    "Success",
-                    Map.of(
-                        "userName", submissionContact.getFirstName(),
-                        "business", Map.of(
-                            "name", Objects.requireNonNull(message.getHeaders()
-                                .get(ApplicationConstant.FOREST_CLIENT_NAME, String.class)),
-                            "clientNumber",
-                            Objects.requireNonNull(message.getHeaders()
-                                .get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
-                        )
-                    )
-                )
-            )
-            .map(emailRequestDto ->
-                MessageBuilder
-                    .withPayload(emailRequestDto)
-                    .copyHeaders(message.getHeaders())
-                    .build()
-            );
-
+  /**
+   * Sends a notification to the user that the submission has been processed
+   */
+  public Mono<Message<Integer>> sendNotification(Message<Integer> message) {
+    return Mono.just(
+        MessageBuilder
+            .fromMessage(message)
+            .setHeader(ApplicationConstant.SUBMISSION_TYPE, SubmissionTypeCodeEnum.RAC)
+            .build()
+    );
   }
 
 
@@ -443,7 +452,7 @@ public class LegacyPersistenceService {
         .ocgSupplierNmbr(null)
         .clientComment(null)
         .clientStatusCode("ACT")
-        .clientName(submissionDetail.getOrganizationName())
+        .clientName(submissionDetail.getOrganizationName().toUpperCase())
         .clientTypeCode(submissionDetail.getClientTypeCode())
         .registryCompanyTypeCode(
             ProcessorUtil.extractLetters(submissionDetail.getIncorporationNumber()))
@@ -459,17 +468,23 @@ public class LegacyPersistenceService {
   }
 
   private Mono<ForestClientLocationEntity> toForestClientLocationEntity(
-      SubmissionLocationEntity submissionLocation,
-      long index
+      long index,
+      SubmissionLocationEntity submissionLocation
   ) {
     return Mono.just(ForestClientLocationEntity
         .builder()
         .clientLocnCode(String.format("%02d", index))
-        .clientLocnName(submissionLocation.getName())
+        .clientLocnName(submissionLocation.getName().toUpperCase())
         .addressOne(submissionLocation.getStreetAddress())
         .city(submissionLocation.getCityName())
         .province(submissionLocation.getProvinceCode())
-        .country(submissionLocation.getCountryCode()) //TODO: Read the country from the table -_-
+        .country(
+            countryList
+                .getOrDefault(
+                    submissionLocation.getCountryCode(),
+                    submissionLocation.getCountryCode()
+                )
+        )
         .postalCode(submissionLocation.getPostalCode())
         .businessPhone(null)
         .homePhone(null)
@@ -498,7 +513,7 @@ public class LegacyPersistenceService {
         .builder()
         .contactCode(submissionContact.getContactTypeCode())
         .contactName(String.format("%s %s", submissionContact.getFirstName(),
-            submissionContact.getLastName()))
+            submissionContact.getLastName()).toUpperCase())
         .businessPhone(RegExUtils.replaceAll(submissionContact.getBusinessPhoneNumber(), "\\D",
             StringUtils.EMPTY))
         .emailAddress(submissionContact.getEmailAddress())

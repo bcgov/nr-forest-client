@@ -119,7 +119,7 @@ class SubmissionPredicatesTest {
         Arguments.of(
             new String[]{"2020-01-01"},
             Criteria.where("updatedAt")
-                .greaterThanOrEquals(LocalDateTime.of(2020, 1, 2, 0, 0))
+                .lessThanOrEquals(LocalDateTime.of(2020, 1, 2, 0, 0))
         )
 
     );
@@ -163,7 +163,7 @@ class SubmissionPredicatesTest {
     );
   }
 
-  private static Stream<Arguments> isBefore() {
+  private static Stream<Arguments> isAfter() {
     return Stream.of(
         Arguments.of(
             null, Criteria.empty()
@@ -177,7 +177,7 @@ class SubmissionPredicatesTest {
     );
   }
 
-  private static Stream<Arguments> isAfter() {
+  private static Stream<Arguments> isBefore() {
     return Stream.of(
         Arguments.of(
             null, Criteria.empty()

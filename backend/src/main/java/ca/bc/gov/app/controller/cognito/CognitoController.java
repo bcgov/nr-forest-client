@@ -1,5 +1,6 @@
 package ca.bc.gov.app.controller.cognito;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.exception.UnableToProcessRequestException;
 import ca.bc.gov.app.service.cognito.CognitoService;
@@ -107,12 +108,12 @@ public class CognitoController {
     );
 
     serverResponse
-        .addCookie(buildCookie("accessToken", StringUtils.EMPTY, -3600));
+        .addCookie(buildCookie(ApplicationConstant.ACCESS_TOKEN, StringUtils.EMPTY, -3600));
     serverResponse
         .addCookie(
-            buildCookie("idToken", StringUtils.EMPTY, -3600));
+            buildCookie(ApplicationConstant.ID_TOKEN, StringUtils.EMPTY, -3600));
     serverResponse
-        .addCookie(buildCookie("refreshToken", StringUtils.EMPTY, -3600));
+        .addCookie(buildCookie(ApplicationConstant.REFRESH_TOKEN, StringUtils.EMPTY, -3600));
 
     serverResponse
         .getHeaders()
@@ -123,20 +124,22 @@ public class CognitoController {
 
   @GetMapping("/refresh")
   @ResponseStatus(HttpStatus.FOUND)
-  public Mono<Void> refresh(@RequestParam String code,ServerHttpResponse serverResponse){
+  public Mono<Void> refresh(@RequestParam String code, ServerHttpResponse serverResponse) {
 
     return
         service
             .refreshToken(code)
             .map(authResponse -> {
               serverResponse
-                  .addCookie(buildCookie("accessToken", authResponse.accessToken(),
-                      authResponse.expiresIn()));
+                  .addCookie(
+                      buildCookie(ApplicationConstant.ACCESS_TOKEN, authResponse.accessToken(),
+                          authResponse.expiresIn()));
               serverResponse
                   .addCookie(
-                      buildCookie("idToken", authResponse.idToken(), authResponse.expiresIn()));
+                      buildCookie(ApplicationConstant.ID_TOKEN, authResponse.idToken(),
+                          authResponse.expiresIn()));
               serverResponse
-                  .addCookie(buildCookie("refreshToken", code,
+                  .addCookie(buildCookie(ApplicationConstant.REFRESH_TOKEN, code,
                       authResponse.expiresIn()));
               serverResponse
                   .setStatusCode(HttpStatus.FOUND);
@@ -167,14 +170,17 @@ public class CognitoController {
             .flatMap(service::exchangeAuthorizationCodeForTokens)
             .map(authResponse -> {
               serverResponse
-                  .addCookie(buildCookie("accessToken", authResponse.accessToken(),
-                      authResponse.expiresIn()));
+                  .addCookie(
+                      buildCookie(ApplicationConstant.ACCESS_TOKEN, authResponse.accessToken(),
+                          authResponse.expiresIn()));
               serverResponse
                   .addCookie(
-                      buildCookie("idToken", authResponse.idToken(), authResponse.expiresIn()));
+                      buildCookie(ApplicationConstant.ID_TOKEN, authResponse.idToken(),
+                          authResponse.expiresIn()));
               serverResponse
-                  .addCookie(buildCookie("refreshToken", authResponse.refreshToken(),
-                      authResponse.expiresIn()));
+                  .addCookie(
+                      buildCookie(ApplicationConstant.REFRESH_TOKEN, authResponse.refreshToken(),
+                          authResponse.expiresIn()));
               serverResponse
                   .setStatusCode(HttpStatus.FOUND);
               serverResponse
@@ -186,12 +192,13 @@ public class CognitoController {
   }
 
 
-  private ResponseCookie buildCookie(String cookieName, String cookieValue, int expiresInSeconds) {
+  private ResponseCookie buildCookie(String cookieName, String cookieValue,
+      Integer expiresInSeconds) {
     return ResponseCookie.from(cookieName, cookieValue)
         .httpOnly(false)
         .sameSite("Lax")
         .path("/")
-        .maxAge(Duration.ofSeconds(expiresInSeconds))
+        .maxAge(Duration.ofSeconds(expiresInSeconds != null ? expiresInSeconds : 3600))
         .secure(!isLocal())
         .domain(configuration.getCognito().getCookieDomain())
         .build();

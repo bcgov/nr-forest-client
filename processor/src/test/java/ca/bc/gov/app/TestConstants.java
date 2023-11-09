@@ -2,6 +2,7 @@ package ca.bc.gov.app;
 
 import ca.bc.gov.app.dto.EmailRequestDto;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
+import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -59,4 +60,28 @@ public class TestConstants {
           }
         }
         """;
+
+  public static final SubmissionContactEntity SUBMISSION_CONTACT = SubmissionContactEntity
+      .builder()
+      .firstName("James")
+      .emailAddress("mail@mail.ca")
+      .userId("abc1234")
+      .build();
+  public static final EmailRequestDto EMAIL_REQUEST_DTO = new EmailRequestDto(
+      SUBMISSION_DETAIL.getIncorporationNumber(),
+      SUBMISSION_DETAIL.getOrganizationName(),
+      SUBMISSION_CONTACT.getUserId(),
+      SUBMISSION_CONTACT.getFirstName(),
+      SUBMISSION_CONTACT.getEmailAddress(),
+      "approval",
+      "Success",
+      Map.of(
+          "userName", SUBMISSION_CONTACT.getFirstName(),
+          "business", Map.of(
+              "name", "TEST",
+              "clientNumber", "00001000"
+          )
+      )
+      );
+
 }

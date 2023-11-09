@@ -152,6 +152,30 @@
         "body":"[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]"
       }
     },
+    {
+      "name":"Submission for Unregistered",
+      "request": {
+        "url": "/api/clients/submissions",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessType",
+              "contains": "U"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "contains": "U"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 201
+      }
+    },
 
     {
       "name":"Autocompete Canada Post Canada",
@@ -336,6 +360,31 @@
       "response": {
         "status": 200,        
         "bodyFileName": "response-submissions-details-dupped.json",
+        "transformers": ["response-template"]
+      }
+    },
+
+    {
+      "name":"Submission Details Review Approved",
+      "request": {
+        "urlPath": "/api/clients/submissions/e14ad3a8-c7a1-4bd4-8cdf-8a6e9e013888",
+        "method": "GET"        
+      },
+      "response": {
+        "status": 200,        
+        "bodyFileName": "response-submissions-details-reviewedapproved.json",
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "name":"Submission Details Review Unregistered",
+      "request": {
+        "urlPath": "/api/clients/submissions/9ceca504-f014-44f9-8a62-24e9b4311865",
+        "method": "GET"        
+      },
+      "response": {
+        "status": 200,        
+        "bodyFileName": "response-submissions-details-unregistered.json",
         "transformers": ["response-template"]
       }
     },

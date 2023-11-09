@@ -37,7 +37,9 @@ ca:
 
 logging:
   level:
-    org:
-      springframework.test: OFF
-      testcontainers: OFF
+    org.springframework.r2dbc: DEBUG
+    io.r2dbc.postgresql.QUERY: DEBUG
+    io.r2dbc.postgresql.PARAM: DEBUG
+    org.springframework.test: OFF
+    org.testcontainers: OFF
     com.github.dockerjava: OFF
