@@ -131,6 +131,10 @@ cds-button span {
   width: 11rem;
 }
 
+.close-panel-button svg {
+  color: var(--light-theme-text-text-primary, #131315);
+}
+
 .step-active {
   --cds-border-subtle: var(--light-theme-miscellaneous-interactive);
 }

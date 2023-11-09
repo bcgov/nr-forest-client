@@ -17,6 +17,8 @@ import Avatar16 from '@carbon/icons-vue/es/user--avatar/24';
 import Result16 from '@carbon/icons-vue/es/result/16';
 // @ts-ignore
 import SignOut16 from '@carbon/icons-vue/es/user--follow/16';
+// @ts-ignore
+import Close16 from '@carbon/icons-vue/es/close/16';
 
 const envPrefix = "openshift-";
 const env = ref(nodeEnv);
@@ -26,6 +28,13 @@ env.value = env.value.charAt(0).toUpperCase() + env.value.slice(1);
 
 const helpModalActive = ref(false);
 const logoutModalActive = ref(false);
+const aPanelId = "apanel";
+const closePanel = () => {
+  const panel = document.querySelector(`#${aPanelId}`);
+  if (panel) {
+    panel.removeAttribute('expanded');
+  }
+}
 </script>
 
 <template>
@@ -82,13 +91,20 @@ const logoutModalActive = ref(false);
     </cds-button>
     </div>
 
-    <cds-header-global-action panel-id="apanel" v-if="$route.meta.profile">      
+    <cds-header-global-action
+      data-testid="panel-action"
+      :panel-id="aPanelId"
+      v-if="$route.meta.profile"
+    >
       <Avatar16 slot="icon"/>
     </cds-header-global-action>
 
-    <cds-header-panel id="apanel" v-if="$route.meta.profile">
+    <cds-header-panel :id="aPanelId" v-if="$route.meta.profile">
       <div class="grouping-16" id="panel-title">
         <span class="heading-03">My profile</span>
+        <cds-button kind="ghost" size="sm" @click.prevent="closePanel" class="close-panel-button">
+          <Close16 slot="icon" />
+        </cds-button>
       </div>
       <div class="grouping-17" id="panel-content">
         <div class="grouping-18" id="panel-content--user">
