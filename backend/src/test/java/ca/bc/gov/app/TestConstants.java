@@ -237,10 +237,7 @@ public class TestConstants {
         ],
         "contacts": [
           {
-            "contactType": {
-                "value": "DI",
-                "text": "Director"
-            },
+            "contactType": null,
             "firstName": "JAMES",
             "lastName": "BAXTER",
             "phoneNumber": "",
