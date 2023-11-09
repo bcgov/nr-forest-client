@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.client;
 
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -61,10 +62,11 @@ class ClientSubmissionLoadingServiceTest {
   @DisplayName("should send notification")
   void shouldSendNotification(){
 
-    when(submissionDetailRepository.findBySubmissionId(eq(1)))
-        .thenReturn(Mono.just(TestConstants.SUBMISSION_DETAIL));
-    when(contactRepository.findBySubmissionId(eq(1)))
-        .thenReturn(Flux.just(TestConstants.SUBMISSION_CONTACT));
+    when(submissionDetailRepository.findBySubmissionId(any()))
+        .thenReturn(Mono.just(TestConstants.SUBMISSION_DETAIL.withClientNumber("00001000")));
+    when(contactRepository.findFirstBySubmissionId(any()))
+        .thenReturn(Mono.just(TestConstants.SUBMISSION_CONTACT));
+
 
 
     service

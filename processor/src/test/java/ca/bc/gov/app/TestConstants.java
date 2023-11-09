@@ -78,7 +78,7 @@ public class TestConstants {
       Map.of(
           "userName", SUBMISSION_CONTACT.getFirstName(),
           "business", Map.of(
-              "name", "Test",
+              "name", "TEST",
               "clientNumber", "00001000"
           )
       )

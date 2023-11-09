@@ -34,6 +34,7 @@ import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
@@ -57,7 +58,7 @@ public class LegacyPersistenceService {
   private final SubmissionLocationRepository locationRepository;
   private final SubmissionContactRepository contactRepository;
   private final SubmissionLocationContactRepository locationContactRepository;
-  private final R2dbcEntityTemplate legacyR2dbcEntityTemplate;
+  private final R2dbcEntityOperations legacyR2dbcEntityTemplate;
   private final CountryCodeRepository countryCodeRepository;
 
   private final Map<String, String> countryList = new HashMap<>();

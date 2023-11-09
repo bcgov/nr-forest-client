@@ -80,7 +80,6 @@ public class ClientSubmissionLoadingService {
                             submissionContact.getUserId(),
                             submissionContact.getFirstName(),
                             submissionContact.getEmailAddress(),
-
                             "approval",
                             "Success",
                             Map.of(
