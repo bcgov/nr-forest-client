@@ -208,7 +208,7 @@ cds-combo-box-item[data-loading="true"]::part(
   font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
 }
 
-a {
+a:link {
   color: var(--light-theme-link-link-primary, #005cb8);
 }
 
@@ -475,7 +475,7 @@ div#app {
   line-height: 1.5rem;
 }
 
-.body-compact-01 {
+.body-compact-01, cds-actionable-notification * {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Body styles/body-compact-01 */
