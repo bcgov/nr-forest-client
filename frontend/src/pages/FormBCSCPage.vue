@@ -197,20 +197,41 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch, getCurrentInstance, toRef } from "vue";
-import { newFormDataDto, emptyContact, locationName as defaultLocation } from "@/dto/ApplyClientNumberDto";
-import { BusinessTypeEnum, ClientTypeEnum, LegalTypeEnum  } from "@/dto/CommonTypesDto";
+import {
+  newFormDataDto,
+  emptyContact,
+  locationName as defaultLocation,
+} from "@/dto/ApplyClientNumberDto";
+import {
+  BusinessTypeEnum,
+  ClientTypeEnum,
+  LegalTypeEnum,
+} from "@/dto/CommonTypesDto";
 import { useFetchTo, usePost } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 import { useEventBus } from "@vueuse/core";
-import { codeConversionFn,getEnumKeyByEnumValue } from "@/services/ForestClientService";
-import { isUniqueDescriptive, isNullOrUndefinedOrBlank, runValidation, validate, getValidations } from "@/helpers/validators/GlobalValidators";
+import {
+  codeConversionFn,
+  getEnumKeyByEnumValue,
+} from "@/services/ForestClientService";
+import {
+  isUniqueDescriptive,
+  isNullOrUndefinedOrBlank,
+  runValidation,
+  validate,
+  getValidations,
+} from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 import { useRouter } from "vue-router";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
-import type { CodeNameType, ModalNotification, ValidationMessageType } from "@/dto/CommonTypesDto";
+import type {
+  CodeNameType,
+  ModalNotification,
+  ValidationMessageType,
+} from "@/dto/CommonTypesDto";
 import Add16 from "@carbon/icons-vue/es/add/16";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
-import Logout16 from '@carbon/icons-vue/es/logout/16';
+import Logout16 from "@carbon/icons-vue/es/logout/16";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
 const { setFocusedComponent } = useFocus();
@@ -228,10 +249,10 @@ const submitterContact: Contact = {
 
 let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
 
-const formatter = new Intl.DateTimeFormat('en-US', {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
+const formatter = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
 });
 
 const birthDate = new Date(submitterInformation?.birthDate ?? "");
@@ -240,11 +261,11 @@ const formattedDate = formatter.format(birthDate);
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
   ...formDataDto.value,
-  businessInformation :{
+  businessInformation: {
     businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
     legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
     clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.I),
-    incorporationNumber: '',
+    incorporationNumber: "",
     businessName: submitterInformation?.name ?? "",
     goodStandingInd: "Y",
     birthDate: formattedDate,
@@ -258,21 +279,24 @@ let formData = reactive<FormDataDto>({
 
 const receviedCountry = ref({} as CodeNameType);
 
-useFetchTo(`/api/clients/getCountryByCode/${submitterInformation?.address?.country?.code}`, 
-            receviedCountry);
-
-const country = computed(
-  () => {
-    return codeConversionFn(receviedCountry.value);
-  }
+useFetchTo(
+  `/api/clients/getCountryByCode/${submitterInformation?.address?.country?.code}`,
+  receviedCountry
 );
+
+const country = computed(() => {
+  return codeConversionFn(receviedCountry.value);
+});
 
 watch(country, (newValue) => {
   formData.businessInformation.address = {
     ...formData.businessInformation.address,
     country: { value: newValue.value, text: newValue.text },
     province: codeConversionFn(formData.businessInformation.address.province),
-    postalCode: formData.businessInformation.address.postalCode.replace(/\s/g, ""),
+    postalCode: formData.businessInformation.address.postalCode.replace(
+      /\s/g,
+      ""
+    ),
     locationName: defaultLocation.text,
   };
 
@@ -361,7 +385,6 @@ const emit = defineEmits<{
   (e: "valid", value: boolean): void;
 }>();
 
-
 watch([validation], () => emit("valid", checkValid()));
 emit("valid", false);
 
@@ -447,18 +470,18 @@ const checkStepValidity = (stepNumber: number): boolean => {
 // Submission
 const router = useRouter();
 
-const { response, error, fetch: fecthSubmit } = usePost(
-  "/api/clients/submissions",
-  toRef(formData).value,
-  {
-    skip: true,
-    headers: {
-      "x-user-id": submitterInformation?.userId ?? "",
-      "x-user-email": submitterInformation?.email ?? "",
-      "x-user-name": submitterInformation?.firstName ?? "",
-    },
-  }
-);
+const {
+  response,
+  error,
+  fetch: fecthSubmit,
+} = usePost("/api/clients/submissions", toRef(formData).value, {
+  skip: true,
+  headers: {
+    "x-user-id": submitterInformation?.userId ?? "",
+    "x-user-email": submitterInformation?.email ?? "",
+    "x-user-name": submitterInformation?.firstName ?? "",
+  },
+});
 
 const submit = () => {
   errorBus.emit([]);
@@ -477,11 +500,14 @@ watch([response], () => {
 });
 
 watch([error], () => {
-  const validationErrors: ValidationMessageType[] = error.value.response?.data ?? 
-    [] as ValidationMessageType[];
+  const validationErrors: ValidationMessageType[] =
+    error.value.response?.data ?? ([] as ValidationMessageType[]);
 
   validationErrors.forEach((errorItem: ValidationMessageType) =>
-    notificationBus.emit(errorItem)
+    notificationBus.emit({
+      fieldId: "server.validation.error",
+      errorMsg: errorItem.errorMsg,
+    })
   );
   setScrollPoint("top");
 });
