@@ -62,6 +62,8 @@ export enum ClientTypeEnum {
   I,
   P,
   L,
+  RSP,
+  USP,
 }
 
 export interface ProgressData {
