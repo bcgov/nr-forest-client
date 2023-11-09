@@ -4,15 +4,17 @@ import ca.bc.gov.app.dto.client.ClientTypeEnum;
 import ca.bc.gov.app.dto.client.LegalTypeEnum;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.validation.Errors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientValidationUtils {
 
-  private static final EmailValidator emailValidator = EmailValidator.getInstance();
+  private static final String EMAIL_REGEX = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$";
+  private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
   public static void validateEmail(String email, String field, Errors errors) {
     if (StringUtils.isBlank(email)) {
@@ -20,7 +22,8 @@ public class ClientValidationUtils {
       return;
     }
 
-    if (!emailValidator.isValid(email)) {
+    Matcher emailMatcher = EMAIL_PATTERN.matcher(email);
+    if (!emailMatcher.matches()) {
       errors.rejectValue(field, "You must enter an email address in a valid format. "
           + "For example: name@example.com");
     }
