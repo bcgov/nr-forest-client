@@ -272,6 +272,7 @@ public class ClientSubmissionService {
 
   }
 
+  @SuppressWarnings("java:S1172")
   public Mono<Void> approveOrReject(
       Long id,
       String userId,
