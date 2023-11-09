@@ -166,6 +166,7 @@ cds-actionable-notification,
 .cds--actionable-notification {
   max-width: 100%;
   border-radius: 0.25rem;
+  box-shadow: none;
 }
 
 cds-radio-button:not(:last-child) {
