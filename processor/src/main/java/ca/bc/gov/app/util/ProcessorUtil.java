@@ -14,7 +14,8 @@ public class ProcessorUtil {
   @SuppressWarnings("unchecked:java:S3740")
   public static <T> Optional<T> readHeader(
       Message message,
-      String headerName, Class<T> clazz
+      String headerName,
+      Class<T> clazz
   ) {
     return Optional.ofNullable(message.getHeaders().get(headerName, clazz));
   }

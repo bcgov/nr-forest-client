@@ -187,10 +187,6 @@ class ClientSubmissionControllerIntegrationTest
             .andThen(
                 addQuery(StringUtils.isNotBlank(paramName), paramName, paramValue)
             )
-            //Added this as all new requests have this type before going through the processor
-            .andThen(
-                addQuery(true, "requestType", "SPP")
-            )
             .apply(uriBuilder.path("/api/clients/submissions"))
             .build(Map.of());
 
@@ -203,6 +199,7 @@ class ClientSubmissionControllerIntegrationTest
             .header(ApplicationConstant.USERNAME_HEADER, "Test User")
             .exchange()
             .expectStatus().isOk()
+
             .expectBody();
 
     if (!found) {

@@ -10,12 +10,13 @@ import '@carbon/web-components/es/components/button/index';
 import '@carbon/web-components/es/components/modal/index';
 import '@carbon/web-components/es/components/tooltip/index';
 // Composables
-import { useFetchTo,usePost } from '@/composables/useFetch'
+import { useFetchTo, usePost } from '@/composables/useFetch'
 import { useRouter } from 'vue-router'
 import { isSmallScreen, isMediumScreen } from '@/composables/useScreenSize';
+import { useEventBus } from '@vueuse/core';
 // Types
-import type { SubmissionDetails,CodeNameType } from '@/dto/CommonTypesDto'
-import { formatDistanceToNow, format} from 'date-fns'
+import type { SubmissionDetails, CodeNameType, ModalNotification } from '@/dto/CommonTypesDto'
+import { formatDistanceToNow, format } from 'date-fns'
 import { greenDomain } from '@/CoreConstants'
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
@@ -27,6 +28,8 @@ import Review16 from '@carbon/icons-vue/es/data--view--alt/32';
 import Check16 from '@carbon/icons-vue/es/checkmark/16';
 // @ts-ignore
 import Error16 from '@carbon/icons-vue/es/error--outline/16';
+
+const toastBus = useEventBus<ModalNotification>('toast-notification')
 
 //Route related
 const router = useRouter()
@@ -96,11 +99,11 @@ const rejectionReasonMessage = computed(() => {
 })
 
 // Submit the form changes to the backend
-const submit = (approved:boolean) => {
+const submit = (approved: boolean) => {
   
   rejectModal.value = false
   approveModal.value = false
-  const { loading } = usePost(
+  const { response } = usePost(
     `/api/clients/submissions/${id.value}`,
     { 
       approved,
@@ -115,11 +118,31 @@ const submit = (approved:boolean) => {
     },
     }
   );
-  watch(loading, (loading) => {
-    if (!loading) {
-      router.push({name:'internal'})
+  watch(response, (response) => {
+    if (response.status) {
+      console.log(response);
+      router.push({ name: "internal" })
+      const toastNotification: ModalNotification = {
+        kind: "Success",
+        active: true,
+        handler: () => {},
+        ...(approved
+          ? {
+              message: `New client number has been created for “${normalizeString(
+                data.value.business.organizationName,
+              )}”`,
+              toastTitle: "Submission approved",
+            }
+          : {
+              message: `New client number has been rejected for “${normalizeString(
+                data.value.business.organizationName,
+              )}”`,
+              toastTitle: "Submission rejected",
+            }),
+      }
+      toastBus.emit(toastNotification);
     }
-  })  
+  });
 }
 
 // Normalize the string to capitalize the first letter of each word
@@ -202,13 +225,25 @@ const tagColor = (status: string) =>{
         hide-close-button="true"
         open="true"
         kind="info"
-        title="This submission was automatically approved by system"      
+        title="This submission was automatically approved by the system"      
       >    
         <div>No matching client records or BC Registries standing issues were found. Review the details in the read-only version below.</div>    
       </cds-actionable-notification>
 
+      <cds-inline-notification
+        v-if="data.submissionType === 'Review new client' && data.submissionStatus === 'Approved'"
+        v-shadow="true"
+        low-contrast="true"
+        hide-close-button="true"
+        open="true"
+        kind="info"
+        title="Submission approved:"      
+      >    
+        <div>This new client submission has already been reviewed and approved.</div>    
+      </cds-inline-notification>
+
       <cds-actionable-notification
-        v-if="data.submissionType === 'Review new client' && data.matchers.goodStanding"
+        v-if="data.submissionType === 'Review new client' && !data.matchers.goodStanding && data.submissionStatus !== 'Approved'"
         v-shadow="true"
         low-contrast="true"
         hide-close-button="true"
@@ -229,7 +264,7 @@ const tagColor = (status: string) =>{
       </cds-actionable-notification>
 
       <cds-actionable-notification
-          v-if="data.submissionType === 'Review new client' && data.matchers.legalName"
+          v-if="data.submissionType === 'Review new client' && data.matchers.legalName && data.submissionStatus !== 'Approved'"
           v-shadow="true"
           low-contrast="true"
           hide-close-button="true"
@@ -238,15 +273,19 @@ const tagColor = (status: string) =>{
           title="Possible matching record found"      
         >    
         <div>
-          <p>
-            {{ data.matchers.legalName.split(',').length }} similar client record were found. 
+          <p v-if="data.matchers.legalName.split(',').length === 1" class="body-compact-01">
+            {{ data.matchers.legalName.split(',').length }} similar client record was found. 
+            Review their information in the Client Management System to determine if this submission should be approved or rejected:
+          </p>
+          <p v-else class="body-compact-01">
+            {{ data.matchers.legalName.split(',').length }} similar client records were found. 
             Review their information in the Client Management System to determine if this submission should be approved or rejected:
           </p>
           <ul class="bulleted-list-disc body-compact-01">
             <li 
               v-for="duplicatedClient in data.matchers.legalName.split(',')" 
               :key="duplicatedClient">
-                Client number: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+                Legal name: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
             </li>
           </ul>
         </div>    
@@ -261,7 +300,7 @@ const tagColor = (status: string) =>{
                 <span class="body-compact-01">{{ normalizeString(data.business.organizationName) }}</span>
               </read-only-component>
               
-              <read-only-component label="Client number">
+              <read-only-component label="Client number" v-if="data.business.clientNumber">
                 <span class="body-compact-01">{{ data.business.clientNumber }}</span>
               </read-only-component>
 
@@ -269,20 +308,20 @@ const tagColor = (status: string) =>{
                 <span class="body-compact-01">{{ data.business.clientType }}</span>
               </read-only-component>
 
-              <read-only-component label="Incorporation number">
+              <read-only-component label="Incorporation number" v-if="data.business.incorporationNumber">
                 <span class="body-compact-01">{{ data.business.incorporationNumber }}</span>
-              </read-only-component>
-
-              <read-only-component label="Last updated">
-                <span class="body-compact-01">{{ friendlyDate(data.updateTimestamp) }} | {{ data.updateUser }}</span>
               </read-only-component>
 
               <read-only-component label="B.C. Registries standing">
                 <span class="body-compact-01">{{ goodStanding(data.business.goodStanding) }}</span>
               </read-only-component>
 
+              <read-only-component label="Last updated">
+                <span class="body-compact-01">{{ friendlyDate(data.updateTimestamp) }} | {{ data.updateUser }}</span>
+              </read-only-component>
+
               <read-only-component label="Submission status">
-                <cds-tag :type="tagColor(data.submissionStatus)"><span>{{ data.submissionStatus }}</span></cds-tag>
+                <cds-tag :type="tagColor(data.submissionStatus)" title=""><span>{{ data.submissionStatus }}</span></cds-tag>
               </read-only-component>
 
               <read-only-component label="Approved on" v-if="data.submissionStatus === 'Approved'">
@@ -292,7 +331,7 @@ const tagColor = (status: string) =>{
           </div>
 
           <cds-accordion>
-            <cds-accordion-item open  title="Submitter information" size="lg" class="grouping-05-internal">
+            <cds-accordion-item open title="Submitter information" size="lg" class="grouping-05-internal">
               <div class="grouping-10-internal">
               <read-only-component label="First name">
                 <span class="body-compact-01">{{ normalizeString(data.contact[0].firstName) }}</span>
@@ -433,11 +472,12 @@ const tagColor = (status: string) =>{
         >
         
         <cds-modal-header>
+          <cds-modal-close-button></cds-modal-close-button>
           <cds-modal-heading>Approve submission</cds-modal-heading>
         </cds-modal-header>
         
         <cds-modal-body>
-          <p>A new client number will be created and an email will be sent to the submitter</p>
+          <p>A new client number will be created and an email will be sent to the submitter.</p>
         </cds-modal-body>
 
         <cds-modal-footer>
@@ -451,7 +491,7 @@ const tagColor = (status: string) =>{
             kind="primary" 
             @click="submit(true)"
             class="cds--modal-submit-btn">
-            <span>Approve</span>
+            <span>Approve submission</span>
             <Check16 slot="icon" />
           </cds-modal-footer-button>
         </cds-modal-footer>
@@ -466,6 +506,7 @@ const tagColor = (status: string) =>{
         >
 
         <cds-modal-header>
+          <cds-modal-close-button></cds-modal-close-button>
           <cds-modal-heading>Reject submission</cds-modal-heading>
         </cds-modal-header>
 
@@ -502,7 +543,7 @@ const tagColor = (status: string) =>{
           </cds-modal-footer-button>
           
           <cds-modal-footer-button 
-            kind="primary"
+            kind="danger"
             @click="submit(false)"
             :disabled="rejectYesDisabled"
             class="cds--modal-close-btn">

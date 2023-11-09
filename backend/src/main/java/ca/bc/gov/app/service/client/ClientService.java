@@ -86,7 +86,7 @@ public class ClientService {
         .findBy(PageRequest.of(page, size, Sort.by("order", "description")))
         .map(entity -> new CodeNameDto(entity.getCountryCode(), entity.getDescription()));
   }
-  
+
   /**
    * Retrieves country information by its country code. This method queries the
    * {@code countryCodeRepository} to find a country entity with the specified country code. If a
@@ -96,15 +96,14 @@ public class ClientService {
    *
    * @param countryCode The code of the country to retrieve information for.
    * @return A Mono that emits the {@code CodeNameDto} object if a matching country is found, or an
-   *         empty result if no match is found.
-   *
+   * empty result if no match is found.
    * @see CodeNameDto
    */
   public Mono<CodeNameDto> getCountryByCode(String countryCode) {
     return countryCodeRepository
-            .findByCountryCode(countryCode)
-            .map(entity -> new CodeNameDto(entity.getCountryCode(), 
-                                           entity.getDescription()));
+        .findByCountryCode(countryCode)
+        .map(entity -> new CodeNameDto(entity.getCountryCode(),
+            entity.getDescription()));
   }
 
   /**
@@ -215,7 +214,7 @@ public class ClientService {
   /**
    * <p><b>Send Email</b></p>
    * <p>Send email to a client.</p>
-   * 
+   *
    * @param emailRequestDto The request data containing client details.
    * @return A {@link Mono} of {@link Void}.
    */
@@ -226,7 +225,7 @@ public class ClientService {
   /**
    * <p><b>Send Email</b></p>
    * <p>Send email to the client when entry already exists.</p>
-   * 
+   *
    * @param emailRequestDto The request data containing user and client details.
    * @return A {@link Mono} of {@link Void}.
    */
@@ -235,7 +234,8 @@ public class ClientService {
         legacyService
             .searchLegacy(emailRequestDto.incorporation(), emailRequestDto.name())
             .next()
-            .flatMap(triggerEmailDuplicatedClient(emailRequestDto.email(), emailRequestDto.userName()))
+            .flatMap(
+                triggerEmailDuplicatedClient(emailRequestDto.email(), emailRequestDto.userName()))
             .then();
   }
 
@@ -284,10 +284,9 @@ public class ClientService {
             .defaultIfEmpty(new ArrayList<>())
             .flatMap(addresses ->
                 Flux.fromIterable(document.parties())
-                    .filter(BcRegistryPartyDto::isValid)
                     .map(party ->
                         new ClientContactDto(
-                            new ClientValueTextDto(party.officer().partyType(), ""),
+                            null,
                             party.officer().firstName(),
                             party.officer().lastName(),
                             "",
@@ -295,9 +294,6 @@ public class ClientService {
                             index.getAndIncrement(),
                             matchAddress(addresses, party)
                         )
-                    )
-                    .flatMap(contact -> loadContactType(contact.contactType().value())
-                        .map(contact::withContactType)
                     )
                     .collectList()
                     .defaultIfEmpty(new ArrayList<>())
@@ -329,18 +325,6 @@ public class ClientService {
         .toList();
   }
 
-  private Mono<ClientValueTextDto> loadContactType(String contactCode) {
-    return
-        contactTypeCodeRepository
-            .findByOrDescription(contactCode, contactCode)
-            .map(
-                entity -> new ClientValueTextDto(
-                    entity.getContactTypeCode(),
-                    entity.getDescription()
-                )
-            ).defaultIfEmpty(new ClientValueTextDto(contactCode, contactCode));
-  }
-
   private Mono<ClientValueTextDto> loadCountry(String countryCode) {
     return
         countryCodeRepository
@@ -365,30 +349,30 @@ public class ClientService {
     return legacy ->
         StringUtils.equals(
             StringUtils.defaultString(legacy.registryCompanyTypeCode()) +
-                StringUtils.defaultString(legacy.corpRegnNmbr()),
+            StringUtils.defaultString(legacy.corpRegnNmbr()),
             document.business().identifier()
         ) &&
-            StringUtils.equals(
-                document.business().legalName(),
-                legacy.legalName()
-            );
+        StringUtils.equals(
+            document.business().legalName(),
+            legacy.legalName()
+        );
   }
 
   private Function<ForestClientDto, Mono<ForestClientDto>> triggerEmailDuplicatedClient(
       String email, String userName) {
 
-    return legacy -> chesService.sendEmail("matched", 
-                                           email,
-                                           "Client number application can’t go ahead", 
-                                           legacy.description(userName))
-                                .thenReturn(legacy);
+    return legacy -> chesService.sendEmail("matched",
+            email,
+            "Client number application can’t go ahead",
+            legacy.description(userName))
+        .thenReturn(legacy);
   }
 
   private Mono<String> triggerEmail(EmailRequestDto emailRequestDto) {
-    return chesService.sendEmail(emailRequestDto.templateName(), 
-                                 emailRequestDto.email(),
-                                 emailRequestDto.subject(), 
-                                 emailRequestDto.variables());
+    return chesService.sendEmail(emailRequestDto.templateName(),
+        emailRequestDto.email(),
+        emailRequestDto.subject(),
+        emailRequestDto.variables());
   }
-  
+
 }

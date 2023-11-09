@@ -35,18 +35,22 @@ public interface QueryPredicates {
     return Criteria.empty();
   }
 
-  static Criteria isBefore(LocalDateTime endDate, String fieldName) {
+  static Criteria isAfter(LocalDateTime endDate, String fieldName) {
     if (endDate != null) {
       return where(fieldName).greaterThanOrEquals(endDate);
     }
     return Criteria.empty();
   }
 
-  static Criteria isAfter(LocalDateTime startDate, String fieldName) {
+  static Criteria isBefore(LocalDateTime startDate, String fieldName) {
     if (startDate != null) {
       return where(fieldName).lessThanOrEquals(startDate);
     }
     return Criteria.empty();
+  }
+
+  static Criteria isNull(String fieldName) {
+    return where(fieldName).isNull();
   }
 
 }

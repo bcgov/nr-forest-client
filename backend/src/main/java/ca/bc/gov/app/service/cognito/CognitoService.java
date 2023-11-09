@@ -71,15 +71,15 @@ public class CognitoService {
             .contentType(MediaType.parseMediaType("application/x-amz-json-1.1"))
             .header("x-amz-target", "AWSCognitoIdentityProviderService.InitiateAuth")
             .body(Mono.just(
-            new RefreshRequestDto(
-                    configuration.getCognito().getClientId(),
-                    "REFRESH_TOKEN_AUTH",
-                    Map.of(
-                        "REFRESH_TOKEN", refreshToken,
-                        "DEVICE_KEY", StringUtils.EMPTY
+                    new RefreshRequestDto(
+                        configuration.getCognito().getClientId(),
+                        "REFRESH_TOKEN_AUTH",
+                        Map.of(
+                            "REFRESH_TOKEN", refreshToken,
+                            "DEVICE_KEY", StringUtils.EMPTY
+                        )
                     )
-                )
-            ),
+                ),
                 RefreshRequestDto.class
             )
             .exchangeToMono(clientResponse -> clientResponse.bodyToMono(RefreshResponseDto.class))

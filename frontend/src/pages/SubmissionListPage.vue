@@ -156,7 +156,7 @@ onMounted(() => {
             </cds-table-cell>
             <cds-table-cell>
               <div>
-                <cds-tag :type="tagColor(row.status)"><span>{{ row.status }}</span></cds-tag>
+                <cds-tag :type="tagColor(row.status)" title=""><span>{{ row.status }}</span></cds-tag>
               </div>
             </cds-table-cell>
           </cds-table-row>

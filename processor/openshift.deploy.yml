@@ -193,6 +193,8 @@ objects:
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}/api
                 - name: TIMING
                   value: 30S
+                - name: TZ
+                  value: America/Vancouver
               ports:
                 - containerPort: 3000
                   protocol: TCP

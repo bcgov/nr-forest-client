@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.EmailRequestDto;
+import ca.bc.gov.app.entity.client.CountryCodeEntity;
 import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
@@ -16,14 +16,14 @@ import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientLocationEntity;
+import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
-import ca.bc.gov.app.repository.legacy.ForestClientContactRepository;
 import ca.bc.gov.app.repository.legacy.ForestClientRepository;
-import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -42,23 +42,30 @@ class LegacyPersistenceServiceTest {
   private final SubmissionLocationRepository locationRepository = mock(
       SubmissionLocationRepository.class);
   private final ForestClientRepository forestClientRepository = mock(ForestClientRepository.class);
-  private final ForestClientContactRepository forestClientContactRepository = mock(
-      ForestClientContactRepository.class);
+
   private final SubmissionContactRepository contactRepository = mock(
       SubmissionContactRepository.class);
   private final SubmissionLocationContactRepository locationContactRepository = mock(
       SubmissionLocationContactRepository.class);
   private final R2dbcEntityTemplate legacyR2dbcEntityTemplate = mock(R2dbcEntityTemplate.class);
 
+  private final CountryCodeRepository countryCodeRepository = mock(CountryCodeRepository.class);
+
   private final LegacyPersistenceService service = new LegacyPersistenceService(
       submissionDetailRepository,
       submissionRepository,
       locationRepository,
-      forestClientContactRepository,
       contactRepository,
       locationContactRepository,
-      legacyR2dbcEntityTemplate
+      legacyR2dbcEntityTemplate,
+      countryCodeRepository
   );
+
+  @BeforeEach
+  void beforeEach() {
+    when(countryCodeRepository.findAll())
+        .thenReturn(Flux.just(new CountryCodeEntity("CA", "Canada")));
+  }
 
   @Test
   @DisplayName("create forest client")
@@ -361,21 +368,6 @@ class LegacyPersistenceServiceTest {
   @DisplayName("send email")
   void shouldSendEmail() {
 
-    when(contactRepository.findFirstBySubmissionId(eq(2)))
-        .thenReturn(Mono.just(
-            SubmissionContactEntity
-                .builder()
-                .submissionContactId(1)
-                .submissionId(2)
-                .contactTypeCode("BL")
-                .firstName("JOHN")
-                .lastName("DOE")
-                .businessPhoneNumber("2505555555")
-                .emailAddress("mail@mail.ca")
-                .userId(ApplicationConstant.PROCESSOR_USER_NAME)
-                .build()
-        ));
-
     service
         .sendNotification(
             MessageBuilder
@@ -396,22 +388,8 @@ class LegacyPersistenceServiceTest {
         .assertNext(mailMessage ->
             assertThat(mailMessage.getPayload())
                 .isNotNull()
-                .isInstanceOf(EmailRequestDto.class)
-                .hasFieldOrPropertyWithValue("incorporation", "FM0159297")
-                .hasFieldOrPropertyWithValue("name", "STAR DOT STAR VENTURES")
-                .hasFieldOrPropertyWithValue("userId", ApplicationConstant.PROCESSOR_USER_NAME)
-                .hasFieldOrPropertyWithValue("userName", "JOHN")
-                .hasFieldOrPropertyWithValue("email", "mail@mail.ca")
-                .hasFieldOrPropertyWithValue("templateName", "approval")
-                .hasFieldOrPropertyWithValue("subject", "Success")
-                .hasFieldOrPropertyWithValue("variables", Map.of(
-                        "userName", "JOHN",
-                        "business", Map.of(
-                            "name", "STAR DOT STAR VENTURES",
-                            "clientNumber", "00000000"
-                        )
-                    )
-                )
+                .isInstanceOf(Integer.class)
+                .isEqualTo(2L)
         )
         .verifyComplete();
   }

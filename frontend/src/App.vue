@@ -42,7 +42,8 @@ const openToast = (event: ModalNotification) => {
 
 const deleteContentModal = () => {
   openToast({
-    message: `“${modalContent.value.message}” additional ${modalContent.value.kind} was deleted successfully`,
+    // message: `“${modalContent.value.message}” additional ${modalContent.value.kind} was deleted successfully`,
+    message: "",
     kind: 'Success',
     toastTitle: modalContent.value.toastTitle,
     active: true,
@@ -109,7 +110,7 @@ toastBus.on(openToast)
       timeout="8000"
       kind="success"
       :title="toastContent.toastTitle"
-      subtitle=""
+      :subtitle="toastContent.message"
     >
   </cds-toast-notification>
 </template>

@@ -1,6 +1,8 @@
 package ca.bc.gov.app.service.client;
 
 import static ca.bc.gov.app.TestConstants.EMAIL_REQUEST;
+import static org.assertj.core.api.Assertions.as;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,18 +15,21 @@ import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
+import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.extensions.AbstractTestContainer;
 import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.integration.support.MessageBuilder;
+import org.springframework.messaging.Message;
 import reactor.test.StepVerifier;
 
 @DisplayName("Integrated Test | Client Service")
@@ -108,13 +113,29 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
 
     List<MatcherResult> matchers = new ArrayList<>();
 
+    Message<List<MatcherResult>> message = MessageBuilder
+        .withPayload(matchers)
+        .setHeader(ApplicationConstant.SUBMISSION_ID, 1)
+        .build();
+
+
     service
-        .reviewed(
-            MessageBuilder
-                .withPayload(matchers)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 1)
-                .build()
-        );
+        .reviewed(message)
+        .as(StepVerifier::create)
+            .assertNext( received ->
+                assertThat(received)
+                    .isNotNull()
+                    .isInstanceOf(Message.class)
+                    .hasFieldOrPropertyWithValue("payload", 1)
+                    .hasFieldOrProperty("headers")
+                    .extracting(Message::getHeaders, as(InstanceOfAssertFactories.MAP))
+                    .isNotNull()
+                    .isNotEmpty()
+                    .containsKey("id")
+                    .containsKey("timestamp")
+                    .containsEntry(ApplicationConstant.SUBMISSION_ID, 1)
+            )
+                .verifyComplete();
 
     await()
         .alias("Submission lookup")

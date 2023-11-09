@@ -187,7 +187,7 @@ public class ClientSubmissionService {
     Mono<SubmissionDetailsDto> detailsBusiness =
         client
             .sql(ApplicationConstant.SUBMISSION_DETAILS_QUERY)
-            .bind("submissionId", id)
+            .bind(ApplicationConstant.SUBMISSION_ID, id)
             .map((row, metadata) ->
                 new SubmissionDetailsDto(
                     row.get("submission_id", Long.class),
@@ -216,7 +216,7 @@ public class ClientSubmissionService {
         client
             .sql(ApplicationConstant.SUBMISSION_CONTACTS_QUERY
             )
-            .bind("submissionId", id)
+            .bind(ApplicationConstant.SUBMISSION_ID, id)
             .map((row, metadata) -> new SubmissionContactDto(
                 Objects.requireNonNull(row.get("index", Integer.class)) - 1,
                 row.get("contact_desc", String.class),
@@ -224,7 +224,7 @@ public class ClientSubmissionService {
                 row.get("last_name", String.class),
                 row.get("business_phone_number", String.class),
                 row.get("email_address", String.class),
-                List.of(row.get("locations", String.class).split(", ")),
+                List.of(StringUtils.defaultString(row.get("locations", String.class)).split(", ")),
                 row.get("idp_user_id", String.class)
             ))
             .all();
@@ -233,7 +233,7 @@ public class ClientSubmissionService {
         client
             .sql(ApplicationConstant.SUBMISSION_LOCATION_QUERY
             )
-            .bind("submissionId", id)
+            .bind(ApplicationConstant.SUBMISSION_ID, id)
             .map((row, metadata) -> new SubmissionAddressDto(
                 Objects.requireNonNull(row.get("index", Integer.class)) - 1,
                 row.get("street_address", String.class),
@@ -272,6 +272,7 @@ public class ClientSubmissionService {
 
   }
 
+  @SuppressWarnings("java:S1172")
   public Mono<Void> approveOrReject(
       Long id,
       String userId,
@@ -346,11 +347,11 @@ public class ClientSubmissionService {
       String email,
       String userName
   ) {
-    return chesService.sendEmail("registration", 
-                                 email, 
-                                 "Client number application received",
-                                 clientSubmissionDto.description(userName))
-                      .thenReturn(submissionId);
+    return chesService.sendEmail("registration",
+            email,
+            "Client number application received",
+            clientSubmissionDto.description(userName))
+        .thenReturn(submissionId);
   }
 
 
@@ -358,8 +359,11 @@ public class ClientSubmissionService {
     return template
         .select(
             query(
-                QueryPredicates.isAfter(LocalDateTime.now(), "effectiveAt")
-                    .and(QueryPredicates.isBefore(LocalDateTime.now(), "expiredAt"))
+                QueryPredicates.isBefore(LocalDateTime.now(), "effectiveAt")
+                    .and(
+                        QueryPredicates.isAfter(LocalDateTime.now(), "expiredAt")
+                            .or(QueryPredicates.isNull("expiredAt"))
+                    )
             ),
             ClientTypeCodeEntity.class
         )
@@ -380,7 +384,7 @@ public class ClientSubmissionService {
         .selectOne(
             query(
                 Criteria
-                    .where("submissionId")
+                    .where(ApplicationConstant.SUBMISSION_ID)
                     .is(submission.getSubmissionId())
                     .and(
                         QueryPredicates
@@ -394,16 +398,35 @@ public class ClientSubmissionService {
 
   private Flux<SubmissionEntity> loadSubmissions(int page, int size, String[] requestType,
       SubmissionStatusEnum[] requestStatus, String[] updatedAt) {
+
+    Criteria userQuery = SubmissionPredicates
+        .orUpdatedAt(updatedAt)
+        .and(SubmissionPredicates.orStatus(requestStatus))
+        .and(QueryPredicates.orEqualTo(requestType, ApplicationConstant.SUBMISSION_TYPE));
+
+    //If no user provided query found, then use the default one
+    if (userQuery.isEmpty()) {
+      //List all submission of type SPP, or submissions of type AAC and RNC that were updated in the last 24 hours
+      userQuery = QueryPredicates
+          .orEqualTo(new String[]{"SPP"}, ApplicationConstant.SUBMISSION_TYPE)
+          .or(
+              QueryPredicates
+                  .isAfter(LocalDateTime.now().minusDays(1L), "submissionDate")
+                  .and(
+                      QueryPredicates
+                          //When I said AAC and RNC, I meant AAC or RNC for query purpose
+                          .orEqualTo(new String[]{"AAC", "RNC"},
+                              ApplicationConstant.SUBMISSION_TYPE)
+                  )
+          );
+    }
+
+
     return template
         .select(
-            query(
-                QueryPredicates
-                    .orEqualTo(requestType, "submissionType")
-                    .and(SubmissionPredicates.orStatus(requestStatus))
-                    .and(SubmissionPredicates.orUpdatedAt(updatedAt))
-            )
+            query(userQuery)
                 .with(PageRequest.of(page, size))
-                .sort(Sort.by("submissionDate").descending()),
+                .sort(Sort.by("updatedAt").descending()),
             SubmissionEntity.class
         );
   }

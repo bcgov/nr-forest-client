@@ -214,16 +214,16 @@ comment on column nrfc.submission.create_user is 'The user or proxy account that
 comment on column nrfc.submission.update_user is 'The user or proxy account that created or last updated the record.';
 
 create table if not exists nrfc.submission_detail (
-    submission_detail_id    integer		    	not null,
-	  submission_id				    integer   			not null,
+    submission_detail_id    integer		    not null,
+	submission_id		    integer   		not null,
     client_number           varchar(8)      null,
-	  business_type_code			varchar(1)    	not null,
-	  incorporation_number		varchar(50)    	null,
+	business_type_code		varchar(1)    	not null,
+	incorporation_number	varchar(50)    	null,
     organization_name       varchar(100)    null,
-	  client_type_code        varchar(1)    	not null,
+	client_type_code        varchar(1)    	not null,
     good_standing_ind       varchar(1)      null,
-	  constraint submission_detail_id_pk primary key (submission_detail_id),
-	  constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
+	constraint submission_detail_id_pk primary key (submission_detail_id),
+	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
     constraint submission_detail_business_type_code_fk foreign key (business_type_code) references nrfc.business_type_code(business_type_code),
     constraint submission_detail_client_type_code_fk foreign key (client_type_code) references nrfc.client_type_code(client_type_code)
 );
@@ -238,9 +238,9 @@ comment on column nrfc.submission_detail.client_type_code is 'A code representin
 comment on column nrfc.submission_detail.good_standing_ind is 'An indicator that determines whether a client is in good standing with respect to their financial obligations.';
 
 create table if not exists nrfc.submission_matching_detail (
-  submission_matching_detail_id   integer			  not null,
-	submission_id				            integer			  not null,
-	matching_fields		              jsonb 			  null,
+    submission_matching_detail_id   integer		  not null,
+	submission_id                   integer		  not null,
+	matching_fields		            jsonb 		  null,
 	confirmed_match_status_ind	    varchar(1)    null,
 	confirmed_match_message         varchar(255)  null,
 	confirmed_match_timestamp       timestamp     null,
@@ -261,8 +261,8 @@ comment on column nrfc.submission_matching_detail.confirmed_match_userid is 'The
 comment on column nrfc.submission_matching_detail.submission_matching_processed is 'A flag to indicate that the submission was finally processed.';
 
 create table if not exists nrfc.submission_location (
-    submission_location_id      integer			    not null,
-	  submission_id               integer			    not null,
+    submission_location_id      integer         not null,
+    submission_id               integer         not null,
     street_address              varchar(50)    	not null,
     country_code                varchar(2)      not null,
     province_code               varchar(2)      not null,
@@ -285,11 +285,11 @@ comment on column nrfc.submission_location.city_name is 'The name of the city of
 comment on column nrfc.submission_location.location_name is 'The location name of an address. Examples of location names include, but are not limited to, Mailing Address, Billing Address among others.';
 
 create table if not exists nrfc.submission_contact (
-    submission_contact_id      integer		      not null,
-	  submission_id              integer			    not null,
+    submission_contact_id      integer		    not null,
+	submission_id              integer			not null,
     contact_type_code          varchar(2)       not null,
     first_name                 varchar(100)     null,
-	  last_name                  varchar(100)     null,
+	last_name                  varchar(100)     null,
     business_phone_number      varchar(20)      not null,
     email_address              varchar(100)     not null,
     idp_user_id                varchar(50)      null,
@@ -309,8 +309,8 @@ comment on column nrfc.submission_contact.email_address is 'The email address of
 comment on column nrfc.submission_contact.idp_user_id is 'The unique identifier assigned to a user by the Identity Provider.';
 
 create table if not exists nrfc.submission_location_contact_xref (
-    submission_location_id      integer			not null,
-    submission_contact_id       integer		  not null,
+    submission_location_id      integer         not null,
+    submission_contact_id       integer		    not null,
     constraint submission_location_contact_xref_id_pk primary key (submission_location_id, submission_contact_id),
     constraint submission_location_id_fk foreign key (submission_location_id) references nrfc.submission_location(submission_location_id),
     constraint submission_contact_id_fk foreign key (submission_contact_id) references nrfc.submission_contact(submission_contact_id)
