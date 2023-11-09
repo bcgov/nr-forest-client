@@ -321,7 +321,7 @@ const tagColor = (status: string) =>{
               </read-only-component>
 
               <read-only-component label="Submission status">
-                <cds-tag :type="tagColor(data.submissionStatus)"><span>{{ data.submissionStatus }}</span></cds-tag>
+                <cds-tag :type="tagColor(data.submissionStatus)" title=""><span>{{ data.submissionStatus }}</span></cds-tag>
               </read-only-component>
 
               <read-only-component label="Approved on" v-if="data.submissionStatus === 'Approved'">
