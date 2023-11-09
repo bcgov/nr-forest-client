@@ -59,7 +59,15 @@ export const useFetchTo = (
       data.value = result.data;
     } catch (ex) {
       error.value = ex;
-      notificationBus.emit({ fieldId: "internal.server.error", errorMsg: "" });
+      if (
+        error.value.code === "ERR_BAD_RESPONSE" ||
+        error.value.code === "ERR_NETWORK"
+      ) {
+        notificationBus.emit({
+          fieldId: "internal.server.error",
+          errorMsg: "",
+        });
+      }
     } finally {
       loading.value = false;
     }
@@ -106,7 +114,15 @@ export const usePost = (url: string, body: any, config: any = {}) => {
       responseBody.value = result.data;
     } catch (ex: any) {
       error.value = ex;
-      notificationBus.emit({ fieldId: "internal.server.error", errorMsg: "" });
+      if (
+        error.value.code === "ERR_BAD_RESPONSE" ||
+        error.value.code === "ERR_NETWORK"
+      ) {
+        notificationBus.emit({
+          fieldId: "internal.server.error",
+          errorMsg: "",
+        });
+      }
     } finally {
       loading.value = false;
     }
