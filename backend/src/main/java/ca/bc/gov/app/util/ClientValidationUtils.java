@@ -2,10 +2,10 @@ package ca.bc.gov.app.util;
 
 import ca.bc.gov.app.dto.client.ClientTypeEnum;
 import ca.bc.gov.app.dto.client.LegalTypeEnum;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
@@ -25,7 +25,7 @@ public class ClientValidationUtils {
     Matcher emailMatcher = EMAIL_PATTERN.matcher(email);
     if (!emailMatcher.matches()) {
       errors.rejectValue(field, "You must enter an email address in a valid format. "
-          + "For example: name@example.com");
+                                + "For example: name@example.com");
     }
   }
 
