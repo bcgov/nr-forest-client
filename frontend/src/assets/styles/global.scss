@@ -1124,6 +1124,10 @@ cds-accordion-item[open]:not([disabled])::part(content) ,:host(cds-accordion-ite
   padding-right: 2.5rem; // 1 (default value) + 1.5
 }
 
+cds-table-row:hover{
+  cursor: pointer;
+}
+
 cds-table-row[even]:hover{
   background-color: var(--dark-theme-background-background-active);
 }
