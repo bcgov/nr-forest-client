@@ -1020,6 +1020,12 @@ cds-header a.bclogotop {
   font-weight: 400;
 }
 
+.side-nav-link--non-link::part(link) {
+  pointer-events: none;
+  cursor: default;
+  outline: none; // prevents displaying outline border when clicked
+}
+
 .disabled {  
   color: var(--light-theme-text-text-disabled);
   fill: var(--light-theme-text-text-disabled);

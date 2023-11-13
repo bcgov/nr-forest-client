@@ -121,7 +121,7 @@ const closePanel = () => {
         <hr class="divider" />
         <div class="grouping-21" id="panel-content--links">
           <cds-side-nav-items>
-            <cds-side-nav-link href="#" title="Options" class="unbolded" />
+            <cds-side-nav-link title="Options" class="unbolded side-nav-link--non-link" />
             <cds-side-nav-link href="#" title="Sign Out" @click.prevent="logoutModalActive = true">            
               <SignOut16 slot="title-icon" />
             </cds-side-nav-link>
