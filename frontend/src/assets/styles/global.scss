@@ -850,7 +850,6 @@ div#app {
 }
 .grouping-19 {
   display: flex;
-  width: 23rem;
   align-items: center;
   gap: 2rem;
 }
@@ -1116,6 +1115,11 @@ cds-table-row[odd]:hover{
 
 cds-tag {
   margin: 0;
+}
+
+cds-header-panel[expanded] {
+  width: 100%;
+  max-width: 25rem;
 }
 
 
