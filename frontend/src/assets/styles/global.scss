@@ -1005,6 +1005,14 @@ cds-side-nav-link svg {
   fill: var(--light-theme-link-link-primary, #005cb8);
 }
 
+cds-side-nav-link:hover {
+  background: var(--light-theme-background-background-hover, rgba(147, 147, 149, 0.12));
+}
+
+cds-side-nav-link:active {
+  background: var(--light-theme-background-background-active, rgba(147, 147, 149, 0.50));
+}
+
 cds-header-global-action[active]::part(button):hover, 
 cds-header-global-action[active]::part(button):active,
 cds-header-global-action[active]::part(button):focus {
@@ -1018,6 +1026,10 @@ cds-header a.bclogotop {
 
 .unbolded::part(link) {
   font-weight: 400;
+}
+
+.side-nav-link--non-link {
+  pointer-events: none;
 }
 
 .side-nav-link--non-link::part(link) {
