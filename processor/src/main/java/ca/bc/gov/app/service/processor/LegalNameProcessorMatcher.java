@@ -6,6 +6,7 @@ import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.repository.legacy.ForestClientRepository;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,22 +22,27 @@ public class LegalNameProcessorMatcher implements ProcessorMatcher {
   private final ForestClientRepository forestClientRepository;
 
   @Override
+  public boolean enabled(SubmissionInformationDto submission) {
+    return Arrays.asList("I","USP","RSP").contains(submission.clientType());
+  }
+
+  @Override
   public String name() {
-    return "Legal Name Matcher";
+    return "Legal Name Fuzzy Matcher";
   }
 
   @Override
   public Mono<MatcherResult> matches(SubmissionInformationDto submission) {
 
-    log.info("{} :: Validating {}",name(),submission.legalName());
+    log.info("{} :: Validating {}",name(),submission.corporationName());
 
     return
-        matchBy(submission.legalName())
+        matchBy(submission.corporationName())
             .map(ForestClientEntity::getClientNumber)
             .collectList()
             .filter(not(List::isEmpty))
             .map(values ->
-                new MatcherResult("legalName", String.join(",", values))
+                new MatcherResult("corporationName", String.join(",", values))
             );
   }
 
