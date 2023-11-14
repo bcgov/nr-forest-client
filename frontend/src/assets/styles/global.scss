@@ -10,6 +10,7 @@
   --light-theme-button-button-tertiary: #005cb8;
   --light-theme-button-danger-hover: #b32001;
   --cds-focus: #0073e6;
+  --light-theme-layer-accent-layer-accent-01: #DFDFE1;
   --light-theme-layer-layer-01: #F3F3F5;
   --light-theme-layer-layer-02: #FFF;
   --light-theme-link-link-primary: #005cb8;
@@ -1125,12 +1126,7 @@ cds-table {
   border-collapse: separate;
 }
 
-:is(cds-table-header-cell, cds-table-cell):is(:first-child, :last-child) {
-  padding: 0;
-  width: 1.5rem;
-}
-
-cds-table-row {
+cds-table-header-row, cds-table-row {
   box-shadow: 0 0.0625rem 0 0 var(--light-theme-border-subtle-01, #DFDFE1) inset;
 }
 
@@ -1153,6 +1149,22 @@ cds-table-row[even]:hover{
 }
 cds-table-row[odd]:hover{
   background-color: var(--dark-theme-background-background-hover);
+}
+
+cds-table-header-cell {
+  background: var(--light-theme-layer-accent-layer-accent-01, #DFDFE1);
+}
+
+:is(cds-table-header-cell, cds-table-cell):is(:first-child, :last-child) {
+  padding: 0;
+  width: 1.5rem;
+}
+
+cds-pagination {
+  border-radius: 0px 0px 4px 4px;
+  border-top: 1px solid var(--light-theme-border-border-subtle-01, #DFDFE1);
+  border-bottom: 1px solid var(--light-theme-border-border-subtle-01, #DFDFE1);
+  background: var(--light-theme-layer-accent-layer-accent-01, #DFDFE1);
 }
 
 cds-tag {
