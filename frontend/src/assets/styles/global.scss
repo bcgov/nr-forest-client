@@ -4,11 +4,14 @@
 
 :root {
   --others-transparent-transparent: rgba(255, 255, 255, 0);
+  --light-theme-border-subtle-01: #DFDFE1;
   --light-theme-button-button-primary: #0073e6;
   --light-theme-button-button-secondary: #464648;
   --light-theme-button-button-tertiary: #005cb8;
   --light-theme-button-danger-hover: #b32001;
   --cds-focus: #0073e6;
+  --light-theme-layer-layer-01: #F3F3F5;
+  --light-theme-layer-layer-02: #FFF;
   --light-theme-link-link-primary: #005cb8;
   --light-theme-link-link-primary-hover: #00478f;
   --light-theme-link-link-secondary: #00478f;
@@ -1128,7 +1131,7 @@ cds-table {
 }
 
 cds-table-row {
-  box-shadow: 0 0.0625rem 0 0 #DFDFE1 inset;
+  box-shadow: 0 0.0625rem 0 0 var(--light-theme-border-subtle-01, #DFDFE1) inset;
 }
 
 cds-table-row:hover{
