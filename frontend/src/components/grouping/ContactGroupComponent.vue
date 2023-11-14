@@ -127,7 +127,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
     :id="'role_' + id"
     label="Primary role"
     tip="Choose the primary role for this contact"
-    :initial-value="selectedValue.contactType.text"
+    :initial-value="selectedValue.contactType?.text"
     :model-value="roleList"
     :validations="[
       ...getValidations('location.contacts.*.contactType.text'),
