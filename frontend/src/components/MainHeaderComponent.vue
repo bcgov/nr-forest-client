@@ -162,7 +162,11 @@ watchEffect((onCleanup) => {
       </div>
       
     </cds-header-panel>
-    <div ref="myProfileBackdrop" class="cds--side-nav__overlay"></div>
+    <div
+      data-testid="my-profile-backdrop"
+      ref="myProfileBackdrop"
+      class="cds--side-nav__overlay"
+    ></div>
   </cds-header>
 
   <cds-side-nav v-if="$route.meta.sideMenu" v-shadow=1>
