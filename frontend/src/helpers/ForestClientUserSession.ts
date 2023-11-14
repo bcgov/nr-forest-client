@@ -84,7 +84,7 @@ class ForestClientUserSession implements SessionProperties {
         name: toTitleCase(parsedUser["custom:idp_display_name"]),
         provider: provider,
         userId: `${provider}\\${parsedUser["custom:idp_username"] ?? parsedUser["custom:idp_user_id"]}`,
-        birthDate: parsedUser["birthdate"],
+        birthdate: parsedUser["birthdate"],
         address: {
           locationName: "",
           streetAddress: toTitleCase(streetAddress.street_address),

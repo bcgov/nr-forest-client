@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
+import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -39,4 +40,7 @@ public class SubmissionDetailEntity {
 
   @Column("good_standing_ind")
   private String goodStandingInd;
+  
+  @Column("birthdate")
+  private Date birthdate;
 }

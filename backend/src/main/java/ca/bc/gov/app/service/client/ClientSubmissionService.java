@@ -34,6 +34,7 @@ import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.service.ches.ChesService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -203,7 +204,8 @@ public class ClientSubmissionService {
                         row.get("client_number", String.class),
                         row.get("organization_name", String.class),
                         row.get("client_type", String.class),
-                        row.get("good_standing", String.class)
+                        row.get("good_standing", String.class),
+                        row.get("birthdate", Date.class)
                     ),
                     List.of(),
                     List.of(),

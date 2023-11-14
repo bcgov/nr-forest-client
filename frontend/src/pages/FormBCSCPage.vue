@@ -50,7 +50,7 @@
       <hr class="divider" />
       <div>
         <p class="body-compact-01">Date of birth</p>
-        <p>{{ formData.businessInformation.birthDate }}</p>
+        <p>{{ formData.businessInformation.birthdate }}</p>
       </div>
       <hr class="divider" />
       <div>
@@ -255,8 +255,8 @@ const formatter = new Intl.DateTimeFormat("en-US", {
   day: "numeric",
 });
 
-const birthDate = new Date(submitterInformation?.birthDate ?? "");
-const formattedDate = formatter.format(birthDate);
+const birthdate = new Date(submitterInformation?.birthdate ?? "");
+const formattedDate = formatter.format(birthdate);
 
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
@@ -268,7 +268,7 @@ let formData = reactive<FormDataDto>({
     incorporationNumber: "",
     businessName: submitterInformation?.name ?? "",
     goodStandingInd: "Y",
-    birthDate: formattedDate,
+    birthdate: formattedDate,
     address: submitterInformation?.address,
   },
   location: {

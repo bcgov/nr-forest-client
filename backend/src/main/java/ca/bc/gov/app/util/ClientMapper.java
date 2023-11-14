@@ -6,7 +6,11 @@ import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -33,9 +37,25 @@ public class ClientMapper {
         .withOrganizationName(clientBusinessInformationDto.businessName())
         .withBusinessTypeCode(clientBusinessInformationDto.businessType())
         .withClientTypeCode(clientBusinessInformationDto.clientType())
-        .withGoodStandingInd(clientBusinessInformationDto.goodStandingInd());
+        .withGoodStandingInd(clientBusinessInformationDto.goodStandingInd())
+        .withBirthdate(convertStringToDate(clientBusinessInformationDto.birthdate()));
   }
+  
+  private static Date convertStringToDate(String dateString) {
+    if (dateString == null || dateString.trim().isEmpty()) {
+        return null;
+    }
 
+    SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH);
+
+    try {
+        return dateFormat.parse(dateString);
+    } catch (ParseException e) {
+        e.printStackTrace();
+        return null;
+    }
+  }
+  
   /**
    * Maps a {@link ClientAddressDto} object to a {@link SubmissionLocationEntity} object,
    * using the specified submission ID.
