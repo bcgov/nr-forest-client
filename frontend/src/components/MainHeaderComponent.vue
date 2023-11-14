@@ -4,6 +4,7 @@ import { ref, watchEffect } from 'vue';
 import '@carbon/web-components/es/components/button/index';
 import '@carbon/web-components/es/components/ui-shell/index';
 import type { CDSHeaderPanel } from "@carbon/web-components";
+import type CDSHeaderGlobalAction from "@carbon/web-components/es/components/ui-shell/header-global-action";
 // Composables
 import { isSmallScreen, isMediumScreen } from '@/composables/useScreenSize';
 // Types
@@ -26,14 +27,14 @@ const env = ref(nodeEnv);
 env.value = env.value.slice(envPrefix.length);
 env.value = env.value.charAt(0).toUpperCase() + env.value.slice(1);
 
-
-const helpModalActive = ref(false);
+const helpModalActive = ref(false)
 const logoutModalActive = ref(false);
-const aPanelId = "apanel";
+const myProfilePanelId = "my-profile-panel";
+
+const myProfileAction = ref<InstanceType<typeof CDSHeaderGlobalAction> | null>(null);
 const closePanel = () => {
-  const panel = document.querySelector(`#${aPanelId}`);
-  if (panel) {
-    panel.removeAttribute('expanded');
+  if (myProfileAction.value) {
+    myProfileAction.value.click();
   }
 }
 
@@ -126,13 +127,14 @@ watchEffect((onCleanup) => {
     <cds-header-global-action
       data-testid="panel-action"
       id="my-profile-action"
-      :panel-id="aPanelId"
+      :panel-id="myProfilePanelId"
+      ref="myProfileAction"
       v-if="$route.meta.profile"
     >
       <Avatar16 slot="icon"/>
     </cds-header-global-action>
 
-    <cds-header-panel :id="aPanelId" v-if="$route.meta.profile" ref="myProfilePanel">
+    <cds-header-panel :id="myProfilePanelId" v-if="$route.meta.profile" ref="myProfilePanel">
       <div class="grouping-16" id="panel-title">
         <span class="heading-03">My profile</span>
         <cds-button kind="ghost" size="sm" @click.prevent="closePanel" class="close-panel-button">
@@ -167,6 +169,7 @@ watchEffect((onCleanup) => {
       data-testid="my-profile-backdrop"
       ref="myProfileBackdrop"
       class="cds--side-nav__overlay"
+      @click.prevent="myProfileAction?.click"
     ></div>
   </cds-header>
 

@@ -78,7 +78,7 @@ describe("MainHeaderComponent.vue", () => {
 
           expect(panelAction.exists()).toBe(true);
           await panelAction.trigger("click");
-          const panel = wrapper.find("#apanel");
+          const panel = wrapper.find("#my-profile-panel");
           expect(panel.attributes().expanded).toEqual("true");
         });
         afterEach(() => {
@@ -88,7 +88,15 @@ describe("MainHeaderComponent.vue", () => {
           const button = wrapper.find(".close-panel-button");
           expect(button.exists()).toBe(true);
           await button.trigger("click");
-          const panel = wrapper.find("#apanel");
+          const panel = wrapper.find("#my-profile-panel");
+          expect(panel.attributes().expanded).toBeUndefined();
+        });
+
+        it("closes the panel when the backdrop is clicked", async () => {
+          const backdrop = wrapper.find("[data-testid='my-profile-backdrop']");
+          expect(backdrop.exists()).toBe(true);
+          await backdrop.trigger("click");
+          const panel = wrapper.find("#my-profile-panel");
           expect(panel.attributes().expanded).toBeUndefined();
         });
 
@@ -101,7 +109,7 @@ describe("MainHeaderComponent.vue", () => {
           const button = wrapper.find(".close-panel-button");
           expect(button.exists()).toBe(true);
           await button.trigger("click");
-          const panel = wrapper.find("#apanel");
+          const panel = wrapper.find("#my-profile-panel");
           expect(panel.attributes().expanded).toBeUndefined();
 
           // backdrop is not active
