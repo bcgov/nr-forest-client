@@ -1116,12 +1116,13 @@ cds-accordion-item[open]:not([disabled])::part(content) ,:host(cds-accordion-ite
   gap: 1rem;
 }
 
-:is(cds-table-header-cell, cds-table-cell):first-child {
-  padding-left: 2.5rem; // 1 (default value) + 1.5
+cds-table {
+  table-layout: fixed;
 }
 
-:is(cds-table-header-cell, cds-table-cell):last-child {
-  padding-right: 2.5rem; // 1 (default value) + 1.5
+:is(cds-table-header-cell, cds-table-cell):is(:first-child, :last-child) {
+  padding: 0;
+  width: 1.5rem;
 }
 
 cds-table-row:hover{
@@ -1140,7 +1141,7 @@ cds-tag {
 }
 
 cds-header-panel[expanded] {
-  width: min(25rem, 100%);
+  width: min(25rem, 100%); // instead of mixing min-width or max-width, this works perfectly while animating the panel opening/closing.
 }
 
 

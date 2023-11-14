@@ -124,15 +124,18 @@ onMounted(() => {
       <cds-table use-zebra-styles v-if="!loading">
         <cds-table-head>
           <cds-table-header-row>
+            <cds-table-header-cell />
             <cds-table-header-cell>Submission type</cds-table-header-cell>
             <cds-table-header-cell>Client name</cds-table-header-cell>
             <cds-table-header-cell>Client type</cds-table-header-cell>
             <cds-table-header-cell>Last updated</cds-table-header-cell>
             <cds-table-header-cell>Submission status</cds-table-header-cell>
+            <cds-table-header-cell />
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
           <cds-table-row v-for="row in tableData" :key="row.name" @click="selectEntry(row)">
+            <cds-table-cell />
             <cds-table-cell>
               <div class="sp-1">
                 <component
@@ -159,6 +162,7 @@ onMounted(() => {
                 <cds-tag :type="tagColor(row.status)" title=""><span>{{ row.status }}</span></cds-tag>
               </div>
             </cds-table-cell>
+            <cds-table-cell />
           </cds-table-row>
         </cds-table-body>
       </cds-table>
