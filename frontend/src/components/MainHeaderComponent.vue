@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 // Carbon
 import '@carbon/web-components/es/components/button/index';
 import '@carbon/web-components/es/components/ui-shell/index';
+import type { CDSHeaderPanel } from "@carbon/web-components";
 // Composables
 import { isSmallScreen, isMediumScreen } from '@/composables/useScreenSize';
 // Types
@@ -35,6 +36,37 @@ const closePanel = () => {
     panel.removeAttribute('expanded');
   }
 }
+
+const myProfilePanel = ref<InstanceType<typeof CDSHeaderPanel> | null>(null);
+const myProfileBackdrop = ref<HTMLDivElement | null>(null);
+
+const observer = new MutationObserver((mutationList) => {
+  if (!myProfilePanel.value || !myProfileBackdrop.value) {
+    return;
+  }
+  const overlayActiveClassName = "cds--side-nav__overlay-active";
+  for (const mutation of mutationList) {
+    if (mutation.attributeName === "expanded") {
+      if (myProfilePanel.value.expanded) {
+        myProfileBackdrop.value.classList.add(overlayActiveClassName);
+      } else {
+        myProfileBackdrop.value.classList.remove(overlayActiveClassName);
+      }
+    }
+  }
+});
+
+watchEffect((onCleanup) => {
+  if (myProfilePanel.value) {
+    const options = {
+      attributes: true,
+    };
+    observer.observe(myProfilePanel.value, options);
+    onCleanup(() => {
+      observer.disconnect()
+    });
+  }
+});
 </script>
 
 <template>
@@ -99,7 +131,7 @@ const closePanel = () => {
       <Avatar16 slot="icon"/>
     </cds-header-global-action>
 
-    <cds-header-panel :id="aPanelId" v-if="$route.meta.profile">
+    <cds-header-panel :id="aPanelId" v-if="$route.meta.profile" ref="myProfilePanel">
       <div class="grouping-16" id="panel-title">
         <span class="heading-03">My profile</span>
         <cds-button kind="ghost" size="sm" @click.prevent="closePanel" class="close-panel-button">
@@ -130,6 +162,7 @@ const closePanel = () => {
       </div>
       
     </cds-header-panel>
+    <div ref="myProfileBackdrop" class="cds--side-nav__overlay"></div>
   </cds-header>
 
   <cds-side-nav v-if="$route.meta.sideMenu" v-shadow=1>
