@@ -1119,6 +1119,7 @@ cds-accordion-item[open]:not([disabled])::part(content) ,:host(cds-accordion-ite
 
 cds-table {
   table-layout: fixed;
+  border-collapse: separate;
 }
 
 :is(cds-table-header-cell, cds-table-cell):is(:first-child, :last-child) {
@@ -1126,8 +1127,22 @@ cds-table {
   width: 1.5rem;
 }
 
+cds-table-row {
+  box-shadow: 0 0.0625rem 0 0 #DFDFE1 inset;
+}
+
 cds-table-row:hover{
   cursor: pointer;
+}
+
+cds-table-row[even] {
+  background: var(--light-theme-layer-layer-01, #F3F3F5);
+}
+cds-table-row[even] cds-table-cell {
+  background-color: unset;
+}
+cds-table-row[odd] {
+  background: var(--light-theme-layer-layer-02, #FFF);
 }
 
 cds-table-row[even]:hover{
