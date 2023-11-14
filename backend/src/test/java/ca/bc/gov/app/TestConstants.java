@@ -10,7 +10,7 @@ import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.dto.cognito.AuthResponseDto;
 import ca.bc.gov.app.dto.cognito.RefreshResponseDto;
 import ca.bc.gov.app.dto.cognito.RefreshResponseResultDto;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -455,7 +455,7 @@ public class TestConstants {
               "I",
               "",
               "SP",
-              "Nov 11, 1986"
+              LocalDate.now()
           ),
           new ClientLocationDto(
               List.of(

@@ -5,9 +5,8 @@ import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
@@ -38,7 +37,8 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     String businessType = accessor.getString(5);
     String legalType = accessor.getString(6);
     String goodStanding = accessor.getString(7);
-    String birthdate = accessor.getString(8);
+    String birthdateAsString = accessor.getString(8);
+    LocalDate birthdate = LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(birthdateAsString));
 
     return new ClientBusinessInformationDto(
                 incorporationNumber, 
@@ -84,21 +84,6 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     return new ClientAddressDto(
         streetAddress, new ClientValueTextDto(country, country),
         new ClientValueTextDto(province, ""), city, postalCode, 0, "test");
-  }
-  
-  private static Date convertStringToDate(String dateString) {
-    if (dateString == null || dateString.trim().isEmpty()) {
-        return null;
-    }
-
-    SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
-
-    try {
-        return dateFormat.parse(dateString);
-    } catch (ParseException e) {
-        e.printStackTrace();
-        return null;
-    }
   }
 
 }
