@@ -43,6 +43,12 @@ class ProcessorUtilTest {
     Assertions.assertEquals(expectedNumbers, ProcessorUtil.extractNumbers(input));
   }
 
+  @ParameterizedTest(name = "should split name {0} and get {1}")
+  @MethodSource("splitName")
+  @DisplayName("should split name")
+  void shouldSplitName(String input, String[] expected) {
+    Assertions.assertArrayEquals(expected, ProcessorUtil.splitName(input));
+  }
 
   private static Stream<Arguments> readHeader() {
     return Stream.of(
@@ -61,5 +67,31 @@ class ProcessorUtilTest {
     );
   }
 
+  private static Stream<Arguments> splitName() {
+    return
+        Stream.of(
+            Arguments.of(
+                "John Doe",
+                new String[]{"Doe", "John", ""}
+            ),
+            Arguments.of(
+                "Doe, John",
+                new String[]{"Doe", "John", ""}
+            ),
+            Arguments.of(
+                "John Doe Smith",
+                new String[]{"Smith", "John", "Doe"}
+            ),
+            Arguments.of(
+                "Doe, John Smith",
+                new String[]{"Doe", "John", "Smith"}
+            ),
+            Arguments.of(
+                "John Doe Smith Jones",
+                new String[]{"Jones", "John", "Doe Smith"}
+            ),
+            Arguments.of("Jhon", new String[]{"Jhon", "Jhon", ""})
+        );
+  }
 
 }
