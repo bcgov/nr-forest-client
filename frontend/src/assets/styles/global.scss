@@ -996,6 +996,10 @@ cds-header-global-action {
   justify-content: flex-end;
 }
 
+// Needs an id to beat Carbon shipped style on specificity.
+#my-profile-action[active]::part(button) {
+  background: var(--light-theme-layer-layer-02, #FFF) !important;
+}
 
 cds-header-global-action svg {
   fill: var(--dark-theme-focus-focus);
@@ -1173,6 +1177,7 @@ cds-tag {
 
 cds-header-panel[expanded] {
   width: min(25rem, 100%); // instead of mixing min-width or max-width, this works perfectly while animating the panel opening/closing.
+  background: var(--light-theme-layer-layer-02, #FFF);
 }
 
 

@@ -125,6 +125,7 @@ watchEffect((onCleanup) => {
 
     <cds-header-global-action
       data-testid="panel-action"
+      id="my-profile-action"
       :panel-id="aPanelId"
       v-if="$route.meta.profile"
     >
