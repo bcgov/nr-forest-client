@@ -217,11 +217,11 @@ cds-combo-box-item[data-loading="true"]::part(
   font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
 }
 
-a:link {
+a:link, cds-breadcrumb-link::part(link) {
   color: var(--light-theme-link-link-primary, #005cb8);
 }
 
-a:hover {
+a:hover, cds-breadcrumb-link::part(link):hover {
   color: var(--light-theme-link-link-primary-hover, #00478f);
 }
 
