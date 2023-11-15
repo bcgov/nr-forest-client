@@ -2,8 +2,14 @@ package ca.bc.gov.app;
 
 import ca.bc.gov.app.dto.EmailRequestDto;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryOfficerDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryRoleDto;
 import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -23,7 +29,7 @@ public class TestConstants {
       .build();
 
   public static final SubmissionInformationDto SUBMISSION_INFORMATION =
-      new SubmissionInformationDto("TEST",null, "00000000", "Y","C");
+      new SubmissionInformationDto("TEST", null, "00000000", "Y", "C");
 
   public static final EmailRequestDto EMAIL_REQUEST = new EmailRequestDto(
       "ABC1234",
@@ -43,23 +49,23 @@ public class TestConstants {
   );
 
   public static final String EMAIL_REQUEST_JSON = """
-        {
-          "incorporation": "ABC1234",
-          "name": "Test Corp",
-          "userId": "testuserid",
-          "userName": "Test User",
-          "email": "testuser@mail.tst",
-          "templateName": "test",
-          "subject": "Processor Tests",
-          "variables": {
-            "name": "Test User",
-            "business": {
-              "name": "Test Corp",
-              "identifier": "ABC1234"
-            }
+      {
+        "incorporation": "ABC1234",
+        "name": "Test Corp",
+        "userId": "testuserid",
+        "userName": "Test User",
+        "email": "testuser@mail.tst",
+        "templateName": "test",
+        "subject": "Processor Tests",
+        "variables": {
+          "name": "Test User",
+          "business": {
+            "name": "Test Corp",
+            "identifier": "ABC1234"
           }
         }
-        """;
+      }
+      """;
 
   public static final SubmissionContactEntity SUBMISSION_CONTACT = SubmissionContactEntity
       .builder()
@@ -82,6 +88,27 @@ public class TestConstants {
               "clientNumber", "00001000"
           )
       )
+  );
+  public static final BcRegistryDocumentDto BCREG_DOC_DATA =
+      new BcRegistryDocumentDto(
+          List.of(
+              new BcRegistryPartyDto(
+                  new BcRegistryOfficerDto(
+                      "baxterj@baxter.com",
+                      "James",
+                      "Baxter",
+                      "W",
+                      "Director"
+                  ),
+                  List.of(
+                      new BcRegistryRoleDto(
+                          LocalDate.of(2005, 7, 27),
+                          null,
+                          "Proprietor"
+                      )
+                  )
+              )
+          )
       );
 
 }

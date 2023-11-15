@@ -11,7 +11,7 @@ import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
-import java.util.Arrays;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
@@ -53,12 +53,13 @@ public class LegacyClientPersistenceService extends LegacyAbstractPersistenceSer
 
   /**
    * This method is responsible for filtering the submission based on the type.
+   *
    * @param clientTypeCode - the client type code.
    * @return - true if the type is not RSP, USP or I, otherwise false.
    */
   @Override
   boolean filterByType(String clientTypeCode) {
-    return !Arrays.asList("RSP", "USP", "I").contains(clientTypeCode);
+    return !List.of("RSP", "USP", "I").contains(clientTypeCode);
   }
 
   @ServiceActivator(
@@ -92,7 +93,8 @@ public class LegacyClientPersistenceService extends LegacyAbstractPersistenceSer
                     .withCorpRegnNmbr(
                         ProcessorUtil.extractNumbers(submissionDetail.getIncorporationNumber())
                     )
-                    .withClientNumber(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
+                    .withClientNumber(message.getHeaders()
+                        .get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
             )
             .map(forestClient ->
                 MessageBuilder

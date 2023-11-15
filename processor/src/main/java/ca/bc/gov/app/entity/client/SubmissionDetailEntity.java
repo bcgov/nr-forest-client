@@ -45,7 +45,6 @@ public class SubmissionDetailEntity {
   @Column("good_standing_ind")
   private String goodStandingInd;
 
-  //@Column("birthdate")
-  @Transient
-  private LocalDate dob;
+  @Column("birthdate")
+  private LocalDate birthdate;
 }

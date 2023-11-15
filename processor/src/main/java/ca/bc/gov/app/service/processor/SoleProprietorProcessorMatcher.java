@@ -7,7 +7,6 @@ import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.repository.legacy.ForestClientRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +22,7 @@ public class SoleProprietorProcessorMatcher implements ProcessorMatcher {
 
   @Override
   public boolean enabled(SubmissionInformationDto submission) {
-    return Arrays.asList("USP", "RSP").contains(submission.clientType());
+    return List.of("USP", "RSP").contains(submission.clientType());
   }
 
   @Override

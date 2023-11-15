@@ -6,7 +6,6 @@ import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.repository.legacy.ForestClientRepository;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +22,7 @@ public class LegalNameProcessorMatcher implements ProcessorMatcher {
 
   @Override
   public boolean enabled(SubmissionInformationDto submission) {
-    return Arrays.asList("I","USP","RSP").contains(submission.clientType());
+    return List.of("I", "USP", "RSP").contains(submission.clientType());
   }
 
   @Override
@@ -34,7 +33,7 @@ public class LegalNameProcessorMatcher implements ProcessorMatcher {
   @Override
   public Mono<MatcherResult> matches(SubmissionInformationDto submission) {
 
-    log.info("{} :: Validating {}",name(),submission.corporationName());
+    log.info("{} :: Validating {}", name(), submission.corporationName());
 
     return
         matchBy(submission.corporationName())

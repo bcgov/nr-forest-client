@@ -45,7 +45,7 @@ public class ClientSubmissionLoadingService {
             //Grab what we need for the match part
             .map(details -> new SubmissionInformationDto(
                     details.getOrganizationName(),
-                    details.getDob(),
+                    details.getBirthdate(),
                     details.getIncorporationNumber(),
                     details.getGoodStandingInd(),
                     details.getClientTypeCode()

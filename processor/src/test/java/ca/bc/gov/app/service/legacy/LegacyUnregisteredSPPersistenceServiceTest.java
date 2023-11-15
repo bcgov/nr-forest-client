@@ -20,7 +20,9 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.integration.support.MessageBuilder;
 import reactor.core.publisher.Flux;
@@ -55,6 +57,13 @@ class LegacyUnregisteredSPPersistenceServiceTest {
       countryCodeRepository,
       doingBusinessAsRepository
   );
+
+  @ParameterizedTest(name = "type: {0} expected: {1}")
+  @MethodSource("byType")
+  @DisplayName("filter by type")
+  void shouldFilterByType(String type, boolean expected){
+    assertEquals(expected, service.filterByType(type));
+  }
 
   @Test
   @DisplayName("create forest client")

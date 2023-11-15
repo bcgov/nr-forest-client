@@ -1,5 +1,9 @@
 package ca.bc.gov.app;
 
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentAccessRequestDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentAccessTypeDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestBodyDto;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -49,4 +53,14 @@ public final class ApplicationConstant {
   public static final String SUBMISSION_LEGACY_RSP_CHANNEL = "submissionLegacyRSPChannel";
   public static final String SUBMISSION_LEGACY_OTHER_CHANNEL = "submissionLegacyOtherChannel";
   public static final String CLIENT_EXISTS = "client-exists";
+
+  public static final BcRegistryDocumentRequestBodyDto
+      BUSINESS_SUMMARY_FILING_HISTORY =
+      new BcRegistryDocumentRequestBodyDto(
+          new BcRegistryDocumentAccessRequestDto(
+              List.of(
+                  new BcRegistryDocumentAccessTypeDto("BUSINESS_SUMMARY_FILING_HISTORY")
+              )
+          )
+      );
 }
