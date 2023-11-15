@@ -16,9 +16,11 @@ import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.integration.support.MessageBuilder;
 import reactor.core.publisher.Flux;
@@ -125,6 +127,15 @@ class LegacyUnregisteredSPPersistenceServiceTest {
 
         })
         .verifyComplete();
+  }
+
+  private static Stream<Arguments> byType(){
+    return Stream.of(
+        Arguments.of("I", false),
+        Arguments.of("C", false),
+        Arguments.of("USP", true),
+        Arguments.of("RSP", false)
+    );
   }
 
 }

@@ -16,8 +16,12 @@ import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.r2dbc.core.ReactiveInsertOperation.ReactiveInsert;
 import org.springframework.integration.support.MessageBuilder;
@@ -53,6 +57,12 @@ class LegacyIndividualPersistenceServiceTest {
       doingBusinessAsRepository
   );
 
+  @ParameterizedTest(name = "type: {0} expected: {1}")
+  @MethodSource("byType")
+  @DisplayName("filter by type")
+  void shouldFilterByType(String type, boolean expected){
+    assertEquals(expected, service.filterByType(type));
+  }
 
 
   @Test
@@ -126,6 +136,15 @@ class LegacyIndividualPersistenceServiceTest {
 
         })
         .verifyComplete();
+  }
+
+  private static Stream<Arguments> byType(){
+    return Stream.of(
+        Arguments.of("I", true),
+        Arguments.of("C", false),
+        Arguments.of("USP", false),
+        Arguments.of("RSP", false)
+    );
   }
 
 }
