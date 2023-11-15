@@ -388,7 +388,7 @@ public abstract class LegacyAbstractPersistenceService {
                 );
 
     // Load the next contact id
-    Function<Integer,Mono<String>> nextContactId = increment -> legacyR2dbcEntityTemplate
+    IntFunction<Mono<String>> nextContactId = increment -> legacyR2dbcEntityTemplate
         .selectOne(
             Query
                 .empty()
