@@ -90,7 +90,16 @@ class ProcessorUtilTest {
                 "John Doe Smith Jones",
                 new String[]{"Jones", "John", "Doe Smith"}
             ),
-            Arguments.of("Jhon", new String[]{"Jhon", "Jhon", ""})
+            Arguments.of("Jhon", new String[]{"Jhon", "Jhon", ""}),
+            Arguments.of(StringUtils.EMPTY,
+                new String[]{StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY}
+            ),
+            Arguments.of(null,
+                new String[]{StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY}
+            ),
+            Arguments.of("          ",
+                new String[]{StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY}
+            )
         );
   }
 
