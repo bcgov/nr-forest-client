@@ -5,8 +5,8 @@ import ca.bc.gov.app.dto.EmailRequestDto;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
+import java.time.LocalDate;
 import java.util.Map;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -15,25 +15,27 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-@Service
-@RequiredArgsConstructor
-@Slf4j
+
 /**
  * This class is responsible for loading the submission details and submission contact details
  */
+@Service
+@RequiredArgsConstructor
+@Slf4j
 public class ClientSubmissionLoadingService {
 
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionContactRepository contactRepository;
 
+
+  /**
+   * Load the submission details to be processed later on
+   */
   @ServiceActivator(
       inputChannel = ApplicationConstant.SUBMISSION_LIST_CHANNEL,
       outputChannel = ApplicationConstant.MATCH_CHECKING_CHANNEL,
       async = "true"
   )
-  /**
-   * Load the submission details to be processed later on
-   */
   public Mono<Message<SubmissionInformationDto>> loadSubmissionDetails(Integer submissionId) {
 
     return
@@ -43,8 +45,10 @@ public class ClientSubmissionLoadingService {
             //Grab what we need for the match part
             .map(details -> new SubmissionInformationDto(
                     details.getOrganizationName(),
+                    details.getDob(),
                     details.getIncorporationNumber(),
-                    details.getGoodStandingInd()
+                    details.getGoodStandingInd(),
+                    details.getClientTypeCode()
                 )
             )
 
@@ -57,14 +61,15 @@ public class ClientSubmissionLoadingService {
             );
   }
 
+
+  /**
+   * Build the email request dto to be sent to the email service
+   */
   @ServiceActivator(
       inputChannel = ApplicationConstant.SUBMISSION_MAIL_BUILD_CHANNEL,
       outputChannel = ApplicationConstant.SUBMISSION_MAIL_CHANNEL,
       async = "true"
   )
-  /**
-   * Build the email request dto to be sent to the email service
-   */
   public Mono<Message<EmailRequestDto>> sendNotification(Message<Integer> message) {
 
     return

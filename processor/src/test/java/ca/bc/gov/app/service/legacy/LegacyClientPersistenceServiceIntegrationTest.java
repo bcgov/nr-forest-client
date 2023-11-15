@@ -12,10 +12,10 @@ import org.springframework.integration.support.MessageBuilder;
 import reactor.test.StepVerifier;
 
 @DisplayName("Integration Test | Legacy Persistence Service")
-class LegacyPersistenceServiceIntegrationTest extends AbstractTestContainer {
+class LegacyClientPersistenceServiceIntegrationTest extends AbstractTestContainer {
 
   @Autowired
-  private LegacyPersistenceService service;
+  private LegacyClientPersistenceService service;
 
   @Test
   @DisplayName("load submission with id 2")

@@ -31,14 +31,15 @@ public class ClientSubmissionProcessingService {
   private final SubmissionMatchDetailRepository submissionMatchDetailRepository;
   private final SubmissionContactRepository contactRepository;
 
+
+  /**
+   * This method will process the submission and send the notification to the user.
+   */
   @ServiceActivator(
       inputChannel = ApplicationConstant.SUBMISSION_POSTPROCESSOR_CHANNEL,
       outputChannel = ApplicationConstant.NOTIFICATION_PROCESSING_CHANNEL,
       async = "true"
   )
-  /**
-   * This method will process the submission and send the notification to the user.
-   */
   public Mono<Message<SubmissionMatchDetailEntity>> processSubmission(
       Message<Integer> submissionMessage) {
     Integer submissionId = submissionMessage.getPayload();
@@ -73,15 +74,16 @@ public class ClientSubmissionProcessingService {
             );
   }
 
+
+  /**
+   * This method will process the submission and send the notification to the user.
+   */
+  @SuppressWarnings("java:S1452")
   @ServiceActivator(
       inputChannel = ApplicationConstant.NOTIFICATION_PROCESSING_CHANNEL,
       outputChannel = ApplicationConstant.FORWARD_CHANNEL,
       async = "true"
   )
-  /**
-   * This method will process the submission and send the notification to the user.
-   */
-  @SuppressWarnings("java:S1452")
   public Mono<Message<?>> notificationProcessing(Message<SubmissionMatchDetailEntity> message) {
 
     SubmissionStatusEnum status = ProcessorUtil.readHeader(message,
@@ -157,6 +159,15 @@ public class ClientSubmissionProcessingService {
                         ApplicationConstant.SUBMISSION_COMPLETION_CHANNEL)
                     .build()
             );
+  }
+
+  @ServiceActivator(inputChannel = ApplicationConstant.SUBMISSION_MAIL_BUILD_CHANNEL)
+  public void updateMatch(Message<Integer> message) {
+    submissionMatchDetailRepository
+        .findBySubmissionId(message.getPayload())
+        .map(match -> match.withProcessed(true))
+        .flatMap(submissionMatchDetailRepository::save)
+        .subscribe(match -> log.info("Updated match for submission {}", match.getSubmissionId()));
   }
 
 }

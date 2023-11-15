@@ -1,12 +1,14 @@
 package ca.bc.gov.app.entity.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -42,4 +44,8 @@ public class SubmissionDetailEntity {
 
   @Column("good_standing_ind")
   private String goodStandingInd;
+
+  //@Column("birthdate")
+  @Transient
+  private LocalDate dob;
 }

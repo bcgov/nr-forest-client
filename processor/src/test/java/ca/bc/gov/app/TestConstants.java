@@ -18,12 +18,12 @@ public class TestConstants {
       .incorporationNumber("00000000")
       .organizationName("TEST")
       .businessTypeCode("T")
-      .clientTypeCode("T")
+      .clientTypeCode("C")
       .goodStandingInd("Y")
       .build();
 
   public static final SubmissionInformationDto SUBMISSION_INFORMATION =
-      new SubmissionInformationDto("TEST", "00000000", "Y");
+      new SubmissionInformationDto("TEST",null, "00000000", "Y","C");
 
   public static final EmailRequestDto EMAIL_REQUEST = new EmailRequestDto(
       "ABC1234",
