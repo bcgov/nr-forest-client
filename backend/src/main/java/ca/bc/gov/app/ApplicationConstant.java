@@ -40,7 +40,8 @@ public final class ApplicationConstant {
         sd.client_number,
         sd.organization_name,
         ctc.description as client_type,
-        sd.good_standing_ind as good_standing
+        sd.good_standing_ind as good_standing,
+        sd.birthdate
       FROM nrfc.submission s
       left join nrfc.submission_status_code ssc on ssc.submission_status_code = s.submission_status_code\s
       left join nrfc.submission_type_code stc on stc.submission_type_code = s.submission_type_code
@@ -48,6 +49,7 @@ public final class ApplicationConstant {
       left join nrfc.business_type_code btc on btc.business_type_code = sd.business_type_code\s
       left join nrfc.client_type_code ctc on ctc.client_type_code = sd.client_type_code\s
       where s.submission_id = :submissionId""";
+  
   public static final String SUBMISSION_CONTACTS_QUERY = """
       SELECT
         ROW_NUMBER() OVER (order by sc.submission_contact_id ) AS index,
@@ -62,6 +64,7 @@ public final class ApplicationConstant {
       FROM nrfc.submission_contact sc
       left join nrfc.contact_type_code ctc on ctc.contact_type_code = sc.contact_type_code
       where sc.submission_id = :submissionId""";
+  
   public static final String SUBMISSION_LOCATION_QUERY = """
       SELECT
         ROW_NUMBER() OVER (order by sl.submission_location_id ) AS index,
@@ -78,6 +81,7 @@ public final class ApplicationConstant {
       left join nrfc.province_code pc on (pc.province_code = sl.province_code and pc.country_code = cc.country_code)
       where sl.submission_id = :submissionId
       order by sl.submission_location_id""";
+  
   public static final String SUBMISSION_TYPE = "submissionType";
   public static final String SUBMISSION_ID = "submissionId";
   public static final String REFRESH_TOKEN = "refreshToken";
