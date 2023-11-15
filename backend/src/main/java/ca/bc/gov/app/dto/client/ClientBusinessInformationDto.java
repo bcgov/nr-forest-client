@@ -2,6 +2,7 @@ package ca.bc.gov.app.dto.client;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 public record ClientBusinessInformationDto(
@@ -25,7 +26,7 @@ public record ClientBusinessInformationDto(
         "clientType", StringUtils.isBlank(clientType) ? "" : clientType,
         "goodStanding", StringUtils.isBlank(goodStandingInd) ? "" : goodStandingInd,
         "legalType", StringUtils.isBlank(legalType) ? "" : legalType,
-        "birthdate", birthdate
+        "birthdate", Optional.ofNullable(birthdate).isPresent() ? birthdate : LocalDate.now()
         );
   }
 }
