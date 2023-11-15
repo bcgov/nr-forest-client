@@ -16,8 +16,7 @@
       Personal information
     </span>
     <p class="body-compact-01">
-      Review the personal information below. It’s from your BC Services card.<br /><br />
-      We use it to know who we're giving a number to and for communicating with clients. 
+      Review the personal information below. It’s from your BC Services card. We use it to know who we're giving a number to and for communicating with clients. 
     </p>
 
     <div class="card">
@@ -44,23 +43,23 @@
         </cds-inline-notification>
         <br /><br />
 
-        <p class="body-compact-01">Full name</p>
-        <p>{{ formData.businessInformation.businessName }}</p>
+        <p class="label-01">Full name</p>
+        <p class="body-compact-01">{{ formData.businessInformation.businessName }}</p>
       </div>
       <hr class="divider" />
       <div>
-        <p class="body-compact-01">Date of birth</p>
-        <p>{{ formData.businessInformation.birthDate }}</p>
+        <p class="label-01">Date of birth</p>
+        <p class="body-compact-01">{{ figmaFormattedDate }}</p>
       </div>
       <hr class="divider" />
       <div>
-        <p class="body-compact-01">Email address</p>
-        <p>{{ formData.location.contacts[0].email }}</p>
+        <p class="label-01">Email address</p>
+        <p class="body-compact-01">{{ formData.location.contacts[0].email }}</p>
       </div>
       <hr class="divider" />
       <div>
-        <p class="body-compact-01">Address</p>
-        <p>
+        <p class="label-01">Address</p>
+        <p class="body-compact-01">
           {{ formData.businessInformation.address.streetAddress }} <br />
           {{ formData.businessInformation.address.city }}, {{ formData.businessInformation.address.province.value }} <br />
           {{ formData.businessInformation.address.country.text }} <br />
@@ -249,14 +248,20 @@ const submitterContact: Contact = {
 
 let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
 
-const formatter = new Intl.DateTimeFormat("en-US", {
+const figmaFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
   month: "short",
   day: "numeric",
 });
 
-const birthDate = new Date(submitterInformation?.birthDate ?? "");
-const formattedDate = formatter.format(birthDate);
+const birthdate = new Date(submitterInformation?.birthdate ?? "");
+
+const figmaFormattedDate = figmaFormatter.format(birthdate);
+
+const year = birthdate.getFullYear();
+const month = (birthdate.getMonth() + 1).toString().padStart(2, '0');
+const day = birthdate.getDate().toString().padStart(2, '0');
+const formattedDate = `${year}-${month}-${day}`;
 
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
@@ -268,7 +273,7 @@ let formData = reactive<FormDataDto>({
     incorporationNumber: "",
     businessName: submitterInformation?.name ?? "",
     goodStandingInd: "Y",
-    birthDate: formattedDate,
+    birthdate: formattedDate,
     address: submitterInformation?.address,
   },
   location: {
@@ -328,7 +333,7 @@ const addContact = (autoFocus = true) => {
   );
   if (autoFocus) {
     const focusIndex = newLength - 1;
-    setFocusedComponent(`addressname_${focusIndex}`);
+    setFocusedComponent(`role_${focusIndex}`);
   }
   return newLength;
 };
@@ -489,6 +494,7 @@ const submit = () => {
 
   if (checkStepValidity(currentTab.value)) {
     submitBtnDisabled.value = true;
+    console.log(toRef(formData).value);
     fecthSubmit();
   }
 };

@@ -33,9 +33,10 @@ public class ClientMapper {
         .withOrganizationName(clientBusinessInformationDto.businessName())
         .withBusinessTypeCode(clientBusinessInformationDto.businessType())
         .withClientTypeCode(clientBusinessInformationDto.clientType())
-        .withGoodStandingInd(clientBusinessInformationDto.goodStandingInd());
+        .withGoodStandingInd(clientBusinessInformationDto.goodStandingInd())
+        .withBirthdate(clientBusinessInformationDto.birthdate());
   }
-
+  
   /**
    * Maps a {@link ClientAddressDto} object to a {@link SubmissionLocationEntity} object,
    * using the specified submission ID.
