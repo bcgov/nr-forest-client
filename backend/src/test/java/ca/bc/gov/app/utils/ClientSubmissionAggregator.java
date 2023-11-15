@@ -5,6 +5,8 @@ import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
@@ -35,9 +37,17 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     String businessType = accessor.getString(5);
     String legalType = accessor.getString(6);
     String goodStanding = accessor.getString(7);
+    String birthdateAsString = accessor.getString(8);
+    LocalDate birthdate = LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(birthdateAsString));
 
-    return new ClientBusinessInformationDto(incorporationNumber, businessName, businessType,
-        clientType, goodStanding, legalType);
+    return new ClientBusinessInformationDto(
+                incorporationNumber, 
+                businessName, 
+                businessType,
+                clientType, 
+                goodStanding, 
+                legalType, 
+                birthdate);
   }
 
   private static ClientLocationDto createLocation(ArgumentsAccessor accessor) {

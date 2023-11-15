@@ -50,7 +50,7 @@
       <hr class="divider" />
       <div>
         <p class="body-compact-01">Date of birth</p>
-        <p>{{ formData.businessInformation.birthDate }}</p>
+        <p>{{ figmaFormattedDate }}</p>
       </div>
       <hr class="divider" />
       <div>
@@ -249,14 +249,20 @@ const submitterContact: Contact = {
 
 let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
 
-const formatter = new Intl.DateTimeFormat("en-US", {
+const figmaFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
   month: "short",
   day: "numeric",
 });
 
-const birthDate = new Date(submitterInformation?.birthDate ?? "");
-const formattedDate = formatter.format(birthDate);
+const birthdate = new Date(submitterInformation?.birthdate ?? "");
+
+const figmaFormattedDate = figmaFormatter.format(birthdate);
+
+const year = birthdate.getFullYear();
+const month = (birthdate.getMonth() + 1).toString().padStart(2, '0');
+const day = birthdate.getDate().toString().padStart(2, '0');
+const formattedDate = `${year}-${month}-${day}`;
 
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
@@ -268,7 +274,7 @@ let formData = reactive<FormDataDto>({
     incorporationNumber: "",
     businessName: submitterInformation?.name ?? "",
     goodStandingInd: "Y",
-    birthDate: formattedDate,
+    birthdate: formattedDate,
     address: submitterInformation?.address,
   },
   location: {
@@ -489,6 +495,7 @@ const submit = () => {
 
   if (checkStepValidity(currentTab.value)) {
     submitBtnDisabled.value = true;
+    console.log(toRef(formData).value);
     fecthSubmit();
   }
 };
