@@ -21,11 +21,12 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-@Service
-@Slf4j
+
 /**
  * This class is responsible for persisting the submission into the legacy database.
  */
+@Service
+@Slf4j
 public class LegacyClientPersistenceService extends LegacyAbstractPersistenceService {
 
   public LegacyClientPersistenceService(

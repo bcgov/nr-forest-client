@@ -11,6 +11,8 @@ import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
@@ -20,12 +22,13 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-@Service
-@Slf4j
+
 /**
  * This class is responsible for persisting the submission of unregistered sole proprietorship
  * into the legacy database.
  */
+@Service
+@Slf4j
 public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersistenceService {
 
   public LegacyUnregisteredSPPersistenceService(
@@ -103,11 +106,13 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                     .withPayload(forestClient)
                     .copyHeaders(message.getHeaders())
                     .setHeader(ApplicationConstant.FOREST_CLIENT_NAME,
-                        String.join(" ",
+                        Stream.of(
                             forestClient.getLegalFirstName(),
                             forestClient.getLegalMiddleName(),
                             forestClient.getClientName()
                         )
+                                .filter(StringUtils::isNotBlank)
+                                    .collect(Collectors.joining(" "))
                     )
                     .setHeader(ApplicationConstant.INCORPORATION_NUMBER,
                         "not applicable")

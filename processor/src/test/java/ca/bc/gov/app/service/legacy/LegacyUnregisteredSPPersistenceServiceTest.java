@@ -1,13 +1,14 @@
 package ca.bc.gov.app.service.legacy;
 
+import static ca.bc.gov.app.TestConstants.SUBMISSION_CONTACT;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
@@ -15,16 +16,18 @@ import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
-import org.springframework.data.r2dbc.core.ReactiveInsertOperation.ReactiveInsert;
 import org.springframework.integration.support.MessageBuilder;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-@DisplayName("Unit Test | Legacy Client Persistence Service")
-class LegacyClientPersistenceServiceTest {
+@DisplayName("Unit Test | Legacy Unregistered Sole Proprietor Persistence Service")
+class LegacyUnregisteredSPPersistenceServiceTest {
+
 
   private final SubmissionDetailRepository submissionDetailRepository = mock(
       SubmissionDetailRepository.class);
@@ -40,7 +43,7 @@ class LegacyClientPersistenceServiceTest {
   private final ClientDoingBusinessAsRepository doingBusinessAsRepository = mock(
       ClientDoingBusinessAsRepository.class);
 
-  private final LegacyClientPersistenceService service = new LegacyClientPersistenceService(
+  private final LegacyUnregisteredSPPersistenceService service = new LegacyUnregisteredSPPersistenceService(
       submissionDetailRepository,
       submissionRepository,
       locationRepository,
@@ -51,19 +54,16 @@ class LegacyClientPersistenceServiceTest {
       doingBusinessAsRepository
   );
 
-
   @Test
   @DisplayName("create forest client")
   void shouldCreateForestClient() {
-    ReactiveInsert<ForestClientEntity> reactiveInsert = mock(ReactiveInsert.class);
 
     SubmissionDetailEntity entity = SubmissionDetailEntity.builder()
         .submissionId(2)
         .submissionDetailId(2)
-        .organizationName("STAR DOT STAR VENTURES")
-        .incorporationNumber("FM0159297")
-        .businessTypeCode("R")
-        .clientTypeCode("C")
+        .organizationName("Baxter, James")
+        .businessTypeCode("U")
+        .clientTypeCode("USP")
         .goodStandingInd("Y")
         .build();
 
@@ -88,12 +88,12 @@ class LegacyClientPersistenceServiceTest {
 
           assertThat(message.getPayload())
               .isNotNull()
-              .hasFieldOrPropertyWithValue("clientName", "STAR DOT STAR VENTURES")
-              .hasFieldOrPropertyWithValue("clientTypeCode", "C")
-              .hasFieldOrPropertyWithValue("registryCompanyTypeCode", "FM")
-              .hasFieldOrPropertyWithValue("corpRegnNmbr", "0159297")
-              .hasFieldOrPropertyWithValue("clientNumber", "00000001")
-              .hasFieldOrPropertyWithValue("clientComment", "Client details acquired from BC Registry FM0159297");
+              .hasFieldOrPropertyWithValue("clientName", "BAXTER")
+              .hasFieldOrPropertyWithValue("legalFirstName", "JAMES")
+              .hasFieldOrPropertyWithValue("legalMiddleName", StringUtils.EMPTY)
+              .hasFieldOrPropertyWithValue("clientComment","Sole proprietorship with data acquired from BC Business eID")
+              .hasFieldOrPropertyWithValue("clientTypeCode", "I")
+              .hasFieldOrPropertyWithValue("clientNumber", "00000001");
 
           assertThat(message.getHeaders().get(ApplicationConstant.SUBMISSION_ID))
               .isNotNull()
@@ -111,12 +111,12 @@ class LegacyClientPersistenceServiceTest {
           assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME))
               .isNotNull()
               .isInstanceOf(String.class)
-              .isEqualTo("STAR DOT STAR VENTURES");
+              .isEqualTo("JAMES BAXTER");
 
           assertThat(message.getHeaders().get(ApplicationConstant.INCORPORATION_NUMBER))
               .isNotNull()
               .isInstanceOf(String.class)
-              .isEqualTo("FM0159297");
+              .isEqualTo("not applicable");
 
           assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
               .isNotNull()
@@ -126,6 +126,5 @@ class LegacyClientPersistenceServiceTest {
         })
         .verifyComplete();
   }
-
 
 }

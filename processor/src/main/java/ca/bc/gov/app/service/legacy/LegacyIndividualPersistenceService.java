@@ -10,6 +10,7 @@ import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
+import ca.bc.gov.app.util.ProcessorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
@@ -19,11 +20,12 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-@Service
-@Slf4j
+
 /**
  * This class is responsible for persisting the submission of individuals into the legacy database.
  */
+@Service
+@Slf4j
 public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenceService {
 
   public LegacyIndividualPersistenceService(
@@ -70,19 +72,19 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
   @Override
   public Mono<Message<ForestClientEntity>> generateForestClient(Message<String> message) {
     return
-        getContactRepository()
-            .findFirstBySubmissionId(
+        getSubmissionDetailRepository()
+            .findBySubmissionId(
                 message
                     .getHeaders()
                     .get(ApplicationConstant.SUBMISSION_ID, Integer.class)
             )
-            .map(contact ->
+            .map(detailEntity ->
                 getBaseForestClient(
                     getUser(message, ApplicationConstant.CREATED_BY),
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
-                    .withLegalFirstName(contact.getFirstName().toUpperCase())
-                    .withClientName(contact.getLastName().toUpperCase())
+                    .withLegalFirstName(ProcessorUtil.splitName(detailEntity.getOrganizationName())[1].toUpperCase())
+                    .withClientName(ProcessorUtil.splitName(detailEntity.getOrganizationName())[0].toUpperCase())
                     .withClientComment("Individual with data acquired from BC Services Card")
                     .withClientTypeCode("I")
                     .withClientNumber(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
