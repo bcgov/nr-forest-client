@@ -32,9 +32,9 @@ import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.service.ches.ChesService;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -205,7 +205,7 @@ public class ClientSubmissionService {
                         row.get("organization_name", String.class),
                         row.get("client_type", String.class),
                         row.get("good_standing", String.class),
-                        row.get("birthdate", Date.class)
+                        row.get("birthdate", LocalDate.class)
                     ),
                     List.of(),
                     List.of(),

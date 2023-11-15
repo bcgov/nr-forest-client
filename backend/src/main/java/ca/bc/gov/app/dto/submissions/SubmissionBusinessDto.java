@@ -1,6 +1,6 @@
 package ca.bc.gov.app.dto.submissions;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public record SubmissionBusinessDto(
     String businessType,
@@ -9,7 +9,7 @@ public record SubmissionBusinessDto(
     String organizationName,
     String clientType,
     String goodStandingInd,
-    Date birthdate
+    LocalDate birthdate
 ) {
 
 }
