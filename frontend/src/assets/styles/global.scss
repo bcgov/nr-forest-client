@@ -236,7 +236,7 @@ hr {
 
 .cds--inline-notification-content {
   width: 100%;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-style: normal;
   font-weight: 400;
 }
@@ -497,7 +497,7 @@ div#app {
   align-self: flex-start;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 2rem;
 }
 
 .content-landing {
@@ -1064,7 +1064,6 @@ cds-side-nav {
   flex:4;
 }
 
-
 cds-accordion-item[open]:not([disabled])::part(content) ,:host(cds-accordion-item[open]:not([disabled])) .cds-ce--accordion__content--md {
   padding-right: 1rem !important;
   padding-top: 0rem;
@@ -1403,7 +1402,7 @@ cds-tag {
 /* Large (from 1056px to 1311px) */
 @media screen and (min-width: 1056px) and (max-width: 1311px) {
   .screen {
-    padding: 2.5rem 2rem;
+    padding: 0rem 2rem 2rem;
     align-items: center;
   }
 
@@ -1579,7 +1578,7 @@ cds-tag {
 /* XXX-Large (1784px and above) */
 @media screen and (min-width: 1784px) {
   .screen {
-    padding: 2.5rem 7.75rem;
+    padding: 1rem 7.75rem 2.5rem;
     align-items: center;
   }
 
