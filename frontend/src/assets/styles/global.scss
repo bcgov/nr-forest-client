@@ -1081,6 +1081,7 @@ cds-side-nav {
   flex:1;
   display: flex;
   position: fixed;
+  z-index: 10;
 }
 
 .submission-content {
