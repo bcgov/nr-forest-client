@@ -973,9 +973,8 @@ cds-modal {
 }
 
 
-cds-header ~ cds-side-nav {
+.headers-compact ~ .full {
   margin-top: 3rem;
-  height: calc(100% - 3rem);
 }
 
 cds-header {
@@ -992,7 +991,7 @@ cds-header-name::part(link){
 
 cds-header-global-action {
   display: flex;  
-  flex: 1 1 0%;
+  flex: 0 1 0%;
   justify-content: flex-end;
 }
 
@@ -1081,6 +1080,7 @@ cds-side-nav::part(div  cds--side-nav__navigation cds--side-nav cds--side-nav--u
 cds-side-nav {
   flex:1;
   display: flex;
+  position: fixed;
 }
 
 .submission-content {
@@ -1178,6 +1178,16 @@ cds-tag {
 cds-header-panel[expanded] {
   width: min(25rem, 100%); // instead of mixing min-width or max-width, this works perfectly while animating the panel opening/closing.
   background: var(--light-theme-layer-layer-02, #FFF);
+}
+
+// Copied from .cds--side-nav__overlay-active in @carbon/styles/css/styles.css so to make it available on all breakpoints
+.overlay-active {
+  z-index: 6000;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--cds-overlay, rgba(22, 22, 22, 0.5));
+  opacity: 1;
+  transition: opacity 300ms cubic-bezier(0.5, 0, 0.1, 1), background-color 300ms cubic-bezier(0.5, 0, 0.1, 1);
 }
 
 

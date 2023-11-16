@@ -45,7 +45,7 @@ const observer = new MutationObserver((mutationList) => {
   if (!myProfilePanel.value || !myProfileBackdrop.value) {
     return;
   }
-  const overlayActiveClassName = "cds--side-nav__overlay-active";
+  const overlayActiveClassName = "overlay-active";
   for (const mutation of mutationList) {
     if (mutation.attributeName === "expanded") {
       if (myProfilePanel.value.expanded) {

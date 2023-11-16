@@ -104,7 +104,7 @@ describe("MainHeaderComponent.vue", () => {
           const backdrop = wrapper.find("[data-testid='my-profile-backdrop']");
 
           // backdrop is active
-          expect(backdrop.classes()).toContain("cds--side-nav__overlay-active");
+          expect(backdrop.classes()).toContain("overlay-active");
 
           const button = wrapper.find(".close-panel-button");
           expect(button.exists()).toBe(true);
@@ -113,7 +113,7 @@ describe("MainHeaderComponent.vue", () => {
           expect(panel.attributes().expanded).toBeUndefined();
 
           // backdrop is not active
-          expect(backdrop.classes()).not.toContain("cds--side-nav__overlay-active");
+          expect(backdrop.classes()).not.toContain("overlay-active");
         });
       });
     });
