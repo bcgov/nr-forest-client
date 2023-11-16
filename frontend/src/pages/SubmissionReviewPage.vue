@@ -252,15 +252,13 @@ const tagColor = (status: string) =>{
         title="Unknown standing"      
         >    
         <div>
-          <p>Check this client's standing with 
+          <p>Check this client's standing with
             <a href="https://www.bcregistry.gov.bc.ca/"
               target="_blank"
-              rel="noopener noreferrer">
-              BC Registries
-            </a> 
+              rel="noopener noreferrer">BC Registries</a>
             and update it below
-          </p>      
-        </div>    
+          </p>
+        </div>
       </cds-actionable-notification>
 
       <cds-actionable-notification
