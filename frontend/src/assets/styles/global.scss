@@ -95,6 +95,7 @@ b {
   flex-grow: 1;
   justify-content: flex-end;
   gap: 1.5rem;
+  margin-right: 2.5rem;
 
   --cds-text-inverse: var(--light-theme-text-text-primary);
   --cds-button-tertiary: var(--dark-theme-button-button-tertiary);
@@ -322,6 +323,10 @@ div#app {
   align-items: center;
   align-self: stretch;
   gap: 1.5rem;
+}
+
+.headers cds-header {
+  height: 3.5rem;
 }
 
 .headers a img {
