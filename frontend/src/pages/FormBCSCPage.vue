@@ -16,8 +16,7 @@
       Personal information
     </span>
     <p class="body-compact-01">
-      Review the personal information below. It’s from your BC Services card.<br /><br />
-      We use it to know who we're giving a number to and for communicating with clients. 
+      Review the personal information below. It’s from your BC Services card. We use it to know who we're giving a number to and for communicating with clients. 
     </p>
 
     <div class="card">
@@ -44,23 +43,23 @@
         </cds-inline-notification>
         <br /><br />
 
-        <p class="body-compact-01">Full name</p>
-        <p>{{ formData.businessInformation.businessName }}</p>
+        <p class="label-01">Full name</p>
+        <p class="body-compact-01">{{ formData.businessInformation.businessName }}</p>
       </div>
       <hr class="divider" />
       <div>
-        <p class="body-compact-01">Date of birth</p>
-        <p>{{ figmaFormattedDate }}</p>
+        <p class="label-01">Date of birth</p>
+        <p class="body-compact-01">{{ figmaFormattedDate }}</p>
       </div>
       <hr class="divider" />
       <div>
-        <p class="body-compact-01">Email address</p>
-        <p>{{ formData.location.contacts[0].email }}</p>
+        <p class="label-01">Email address</p>
+        <p class="body-compact-01">{{ formData.location.contacts[0].email }}</p>
       </div>
       <hr class="divider" />
       <div>
-        <p class="body-compact-01">Address</p>
-        <p>
+        <p class="label-01">Address</p>
+        <p class="body-compact-01">
           {{ formData.businessInformation.address.streetAddress }} <br />
           {{ formData.businessInformation.address.city }}, {{ formData.businessInformation.address.province.value }} <br />
           {{ formData.businessInformation.address.country.text }} <br />
@@ -334,7 +333,7 @@ const addContact = (autoFocus = true) => {
   );
   if (autoFocus) {
     const focusIndex = newLength - 1;
-    setFocusedComponent(`addressname_${focusIndex}`);
+    setFocusedComponent(`role_${focusIndex}`);
   }
   return newLength;
 };
