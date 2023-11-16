@@ -2,6 +2,9 @@
   "files": [],
   "references": [
     {
+      "path": "./node_modules/@vue/tsconfig/tsconfig.json"
+    },
+    {
       "path": "./tsconfig.vite-config.json"
     },
     {
