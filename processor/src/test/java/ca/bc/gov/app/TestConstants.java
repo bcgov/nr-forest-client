@@ -111,4 +111,44 @@ public class TestConstants {
           )
       );
 
+  public static final String BCREG_DOC_REQ_RES = """
+      {
+          "businessIdentifier": "AA0000001",
+          "documents": [
+              {
+                  "documentKey": "aa0a00a0a",
+                  "documentType": "BUSINESS_SUMMARY_FILING_HISTORY",
+                  "id": 18315
+              }
+          ]
+      }""";
+
+  public static final String BCREG__RES1 = """
+      {
+          "parties": [
+              {
+                  "officer": {
+                      "email": "",
+                      "firstName": "JAMES",
+                      "lastName": "BAXTER",
+                      "middleInitial": "G.",
+                      "partyType": "person"
+                  },
+                  "roles": [
+                      {
+                          "appointmentDate": "1992-09-11",
+                          "cessationDate": null,
+                          "roleType": "Proprietor"
+                      }
+                  ]
+              }
+          ]
+      }""";
+
+  public static final String BCREG_RES2 = """
+    {
+      "errorMessage": "API backend third party service error.",
+      "rootCause": "message:ResourceErrorCodes.NOT_FOUND_ERR: no Document found for 7QbI0M6uBxx. "
+  }""";
+
 }
