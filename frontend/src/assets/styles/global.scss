@@ -4,11 +4,15 @@
 
 :root {
   --others-transparent-transparent: rgba(255, 255, 255, 0);
+  --light-theme-border-subtle-01: #DFDFE1;
   --light-theme-button-button-primary: #0073e6;
   --light-theme-button-button-secondary: #464648;
   --light-theme-button-button-tertiary: #005cb8;
   --light-theme-button-danger-hover: #b32001;
   --cds-focus: #0073e6;
+  --light-theme-layer-accent-layer-accent-01: #DFDFE1;
+  --light-theme-layer-layer-01: #F3F3F5;
+  --light-theme-layer-layer-02: #FFF;
   --light-theme-link-link-primary: #005cb8;
   --light-theme-link-link-primary-hover: #00478f;
   --light-theme-link-link-secondary: #00478f;
@@ -214,11 +218,11 @@ cds-combo-box-item[data-loading="true"]::part(
   font-family: "BCSans", "Noto Sans", Verdana, Arial, sans-serif;
 }
 
-a:link {
+a:link, cds-breadcrumb-link::part(link) {
   color: var(--light-theme-link-link-primary, #005cb8);
 }
 
-a:hover {
+a:hover, cds-breadcrumb-link::part(link):hover {
   color: var(--light-theme-link-link-primary-hover, #00478f);
 }
 
@@ -855,7 +859,6 @@ div#app {
 }
 .grouping-19 {
   display: flex;
-  width: 23rem;
   align-items: center;
   gap: 2rem;
 }
@@ -975,9 +978,8 @@ cds-modal {
 }
 
 
-cds-header ~ cds-side-nav {
+.headers-compact ~ .full {
   margin-top: 3rem;
-  height: calc(100% - 3rem);
 }
 
 cds-header {
@@ -994,10 +996,14 @@ cds-header-name::part(link){
 
 cds-header-global-action {
   display: flex;  
-  flex: 1 1 0%;
+  flex: 0 1 0%;
   justify-content: flex-end;
 }
 
+// Needs an id to beat Carbon shipped style on specificity.
+#my-profile-action[active]::part(button) {
+  background: var(--light-theme-layer-layer-02, #FFF) !important;
+}
 
 cds-header-global-action svg {
   fill: var(--dark-theme-focus-focus);
@@ -1009,6 +1015,14 @@ cds-header-global-action[active] svg {
 
 cds-side-nav-link svg {
   fill: var(--light-theme-link-link-primary, #005cb8);
+}
+
+cds-side-nav-link:hover {
+  background: var(--light-theme-background-background-hover, rgba(147, 147, 149, 0.12));
+}
+
+cds-side-nav-link:active {
+  background: var(--light-theme-background-background-active, rgba(147, 147, 149, 0.50));
 }
 
 cds-header-global-action[active]::part(button):hover, 
@@ -1024,6 +1038,16 @@ cds-header a.bclogotop {
 
 .unbolded::part(link) {
   font-weight: 400;
+}
+
+.side-nav-link--non-link {
+  pointer-events: none;
+}
+
+.side-nav-link--non-link::part(link) {
+  pointer-events: none;
+  cursor: default;
+  outline: none; // prevents displaying outline border when clicked
 }
 
 .disabled {  
@@ -1061,6 +1085,8 @@ cds-side-nav::part(div  cds--side-nav__navigation cds--side-nav cds--side-nav--u
 cds-side-nav {
   flex:1;
   display: flex;
+  position: fixed;
+  z-index: 10;
 }
 
 .submission-content {
@@ -1084,6 +1110,7 @@ cds-accordion-item[open]:not([disabled])::part(content) ,:host(cds-accordion-ite
 .sp-1 {
   display: flex;
   gap: 1rem;
+  align-items: center;
 }
 .mg-tl-2 {
   margin-top: 2rem;
@@ -1103,12 +1130,27 @@ cds-accordion-item[open]:not([disabled])::part(content) ,:host(cds-accordion-ite
   gap: 1rem;
 }
 
-:is(cds-table-header-cell, cds-table-cell):first-child {
-  padding-left: 2.5rem; // 1 (default value) + 1.5
+cds-table {
+  table-layout: fixed;
+  border-collapse: separate;
 }
 
-:is(cds-table-header-cell, cds-table-cell):last-child {
-  padding-right: 2.5rem; // 1 (default value) + 1.5
+cds-table-header-row, cds-table-row {
+  box-shadow: 0 0.0625rem 0 0 var(--light-theme-border-subtle-01, #DFDFE1) inset;
+}
+
+cds-table-row:hover{
+  cursor: pointer;
+}
+
+cds-table-row[even] {
+  background: var(--light-theme-layer-layer-01, #F3F3F5);
+}
+cds-table-row[even] cds-table-cell {
+  background-color: unset;
+}
+cds-table-row[odd] {
+  background: var(--light-theme-layer-layer-02, #FFF);
 }
 
 cds-table-row[even]:hover{
@@ -1118,8 +1160,39 @@ cds-table-row[odd]:hover{
   background-color: var(--dark-theme-background-background-hover);
 }
 
+cds-table-header-cell {
+  background: var(--light-theme-layer-accent-layer-accent-01, #DFDFE1);
+}
+
+:is(cds-table-header-cell, cds-table-cell):is(:first-child, :last-child) {
+  padding: 0;
+  width: 1.5rem;
+}
+
+cds-pagination {
+  border-radius: 0px 0px 4px 4px;
+  border-top: 1px solid var(--light-theme-border-border-subtle-01, #DFDFE1);
+  border-bottom: 1px solid var(--light-theme-border-border-subtle-01, #DFDFE1);
+  background: var(--light-theme-layer-accent-layer-accent-01, #DFDFE1);
+}
+
 cds-tag {
   margin: 0;
+}
+
+cds-header-panel[expanded] {
+  width: min(25rem, 100%); // instead of mixing min-width or max-width, this works perfectly while animating the panel opening/closing.
+  background: var(--light-theme-layer-layer-02, #FFF);
+}
+
+// Copied from .cds--side-nav__overlay-active in @carbon/styles/css/styles.css so to make it available on all breakpoints
+.overlay-active {
+  z-index: 6000;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--cds-overlay, rgba(22, 22, 22, 0.5));
+  opacity: 1;
+  transition: opacity 300ms cubic-bezier(0.5, 0, 0.1, 1), background-color 300ms cubic-bezier(0.5, 0, 0.1, 1);
 }
 
 
