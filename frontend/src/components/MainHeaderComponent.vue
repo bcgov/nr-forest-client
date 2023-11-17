@@ -1,42 +1,44 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue';
+import { ref, watchEffect } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/button/index';
-import '@carbon/web-components/es/components/ui-shell/index';
+import "@carbon/web-components/es/components/button/index";
+import "@carbon/web-components/es/components/ui-shell/index";
 import type { CDSHeaderPanel } from "@carbon/web-components";
 import type CDSHeaderGlobalAction from "@carbon/web-components/es/components/ui-shell/header-global-action";
 // Composables
-import { isSmallScreen, isMediumScreen } from '@/composables/useScreenSize';
+import { isSmallScreen, isMediumScreen } from "@/composables/useScreenSize";
 // Types
-import { nodeEnv, appVersion } from '@/CoreConstants';
+import { nodeEnv, appVersion } from "@/CoreConstants";
 // @ts-ignore
-import Logout16 from '@carbon/icons-vue/es/logout/16';
+import Logout16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
-import Help16 from '@carbon/icons-vue/es/help/16';
+import Help16 from "@carbon/icons-vue/es/help/16";
 // @ts-ignore
-import Avatar16 from '@carbon/icons-vue/es/user--avatar/24';
+import Avatar16 from "@carbon/icons-vue/es/user--avatar/24";
 // @ts-ignore
-import Result16 from '@carbon/icons-vue/es/result/16';
+import Result16 from "@carbon/icons-vue/es/result/16";
 // @ts-ignore
-import SignOut16 from '@carbon/icons-vue/es/user--follow/16';
+import SignOut16 from "@carbon/icons-vue/es/user--follow/16";
 // @ts-ignore
-import Close16 from '@carbon/icons-vue/es/close/16';
+import Close16 from "@carbon/icons-vue/es/close/16";
 
 const envPrefix = "openshift-";
 const env = ref(nodeEnv);
 env.value = env.value.slice(envPrefix.length);
 env.value = env.value.charAt(0).toUpperCase() + env.value.slice(1);
 
-const helpModalActive = ref(false)
+const helpModalActive = ref(false);
 const logoutModalActive = ref(false);
 const myProfilePanelId = "my-profile-panel";
 
-const myProfileAction = ref<InstanceType<typeof CDSHeaderGlobalAction> | null>(null);
+const myProfileAction = ref<InstanceType<typeof CDSHeaderGlobalAction> | null>(
+  null
+);
 const closePanel = () => {
   if (myProfileAction.value) {
     myProfileAction.value.click();
   }
-}
+};
 
 const myProfilePanel = ref<InstanceType<typeof CDSHeaderPanel> | null>(null);
 const myProfileBackdrop = ref<HTMLDivElement | null>(null);
@@ -64,7 +66,7 @@ watchEffect((onCleanup) => {
     };
     observer.observe(myProfilePanel.value, options);
     onCleanup(() => {
-      observer.disconnect()
+      observer.disconnect();
     });
   }
 });

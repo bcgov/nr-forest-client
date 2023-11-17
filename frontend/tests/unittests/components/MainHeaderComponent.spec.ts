@@ -7,9 +7,9 @@ import { nextTick } from "vue";
 describe("MainHeaderComponent.vue", () => {
   const mockRoute = {
     path: "/",
-    meta:{
-      profile: false
-    }
+    meta: {
+      profile: false,
+    },
   };
   describe("Authenticated Scenario", () => {
     const session = {
@@ -22,9 +22,8 @@ describe("MainHeaderComponent.vue", () => {
     };
 
     it("renders the component correctly when authenticated", async () => {
-
       const wrapper = mount(MainHeaderComponent, {
-        global: {          
+        global: {
           mocks: {
             $session: session,
             $route: mockRoute,
@@ -83,7 +82,7 @@ describe("MainHeaderComponent.vue", () => {
         });
         afterEach(() => {
           wrapper.unmount();
-        })
+        });
         it("closes the panel when the inner close button is clicked", async () => {
           const button = wrapper.find(".close-panel-button");
           expect(button.exists()).toBe(true);
