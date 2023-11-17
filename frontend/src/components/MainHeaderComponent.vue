@@ -77,6 +77,7 @@ watchEffect((onCleanup) => {
   <cds-header aria-label="Client Management System">
 
     <cds-header-menu-button
+      v-if="$session?.user?.provider === 'idir'"
       button-label-active="Close menu"
       button-label-inactive="Open menu">
     </cds-header-menu-button>
