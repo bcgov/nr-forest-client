@@ -38,7 +38,7 @@ services:
 
   backend:
     container_name: backend
-    image: maven:3.9.3-eclipse-temurin-17
+    image: maven:3.9.5-eclipse-temurin-17
     entrypoint: sh -c "cd /app && mvn -ntp spring-boot:run -Dspring-boot.run.jvmArguments='-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n'"
     environment:
       POSTGRESQL_HOST: *POSTGRES_HOST
