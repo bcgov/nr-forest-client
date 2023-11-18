@@ -79,7 +79,7 @@
       <text-input-component
         id="phoneNumberId"
         label="Phone number"
-        placeholder=""
+        placeholder="( ) ___-____"
         :enabled="true" 
         v-model="formData.location.contacts[0].phoneNumber"
         mask="(###) ###-####"
