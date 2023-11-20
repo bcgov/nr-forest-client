@@ -1,40 +1,75 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watchEffect } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/button/index';
-import '@carbon/web-components/es/components/ui-shell/index';
+import "@carbon/web-components/es/components/button/index";
+import "@carbon/web-components/es/components/ui-shell/index";
+import type { CDSHeaderPanel } from "@carbon/web-components";
+import type CDSHeaderGlobalAction from "@carbon/web-components/es/components/ui-shell/header-global-action";
 // Composables
-import { isSmallScreen, isMediumScreen } from '@/composables/useScreenSize';
+import { isSmallScreen, isMediumScreen } from "@/composables/useScreenSize";
 // Types
-import { nodeEnv, appVersion } from '@/CoreConstants';
+import { nodeEnv, appVersion } from "@/CoreConstants";
 // @ts-ignore
-import Logout16 from '@carbon/icons-vue/es/logout/16';
+import Logout16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
-import Help16 from '@carbon/icons-vue/es/help/16';
+import Help16 from "@carbon/icons-vue/es/help/16";
 // @ts-ignore
-import Avatar16 from '@carbon/icons-vue/es/user--avatar/24';
+import Avatar16 from "@carbon/icons-vue/es/user--avatar/24";
 // @ts-ignore
-import Result16 from '@carbon/icons-vue/es/result/16';
+import Result16 from "@carbon/icons-vue/es/result/16";
 // @ts-ignore
-import SignOut16 from '@carbon/icons-vue/es/user--follow/16';
+import SignOut16 from "@carbon/icons-vue/es/user--follow/16";
 // @ts-ignore
-import Close16 from '@carbon/icons-vue/es/close/16';
+import Close16 from "@carbon/icons-vue/es/close/16";
 
 const envPrefix = "openshift-";
 const env = ref(nodeEnv);
 env.value = env.value.slice(envPrefix.length);
 env.value = env.value.charAt(0).toUpperCase() + env.value.slice(1);
 
-
 const helpModalActive = ref(false);
 const logoutModalActive = ref(false);
-const aPanelId = "apanel";
+const myProfilePanelId = "my-profile-panel";
+
+const myProfileAction = ref<InstanceType<typeof CDSHeaderGlobalAction> | null>(
+  null
+);
 const closePanel = () => {
-  const panel = document.querySelector(`#${aPanelId}`);
-  if (panel) {
-    panel.removeAttribute('expanded');
+  if (myProfileAction.value) {
+    myProfileAction.value.click();
   }
-}
+};
+
+const myProfilePanel = ref<InstanceType<typeof CDSHeaderPanel> | null>(null);
+const myProfileBackdrop = ref<HTMLDivElement | null>(null);
+
+const observer = new MutationObserver((mutationList) => {
+  if (!myProfilePanel.value || !myProfileBackdrop.value) {
+    return;
+  }
+  const overlayActiveClassName = "overlay-active";
+  for (const mutation of mutationList) {
+    if (mutation.attributeName === "expanded") {
+      if (myProfilePanel.value.expanded) {
+        myProfileBackdrop.value.classList.add(overlayActiveClassName);
+      } else {
+        myProfileBackdrop.value.classList.remove(overlayActiveClassName);
+      }
+    }
+  }
+});
+
+watchEffect((onCleanup) => {
+  if (myProfilePanel.value) {
+    const options = {
+      attributes: true,
+    };
+    observer.observe(myProfilePanel.value, options);
+    onCleanup(() => {
+      observer.disconnect();
+    });
+  }
+});
 </script>
 
 <template>
@@ -42,6 +77,7 @@ const closePanel = () => {
   <cds-header aria-label="Client Management System">
 
     <cds-header-menu-button
+      v-if="$session?.user?.provider === 'idir'"
       button-label-active="Close menu"
       button-label-inactive="Open menu">
     </cds-header-menu-button>
@@ -93,13 +129,15 @@ const closePanel = () => {
 
     <cds-header-global-action
       data-testid="panel-action"
-      :panel-id="aPanelId"
+      id="my-profile-action"
+      :panel-id="myProfilePanelId"
+      ref="myProfileAction"
       v-if="$route.meta.profile"
     >
       <Avatar16 slot="icon"/>
     </cds-header-global-action>
 
-    <cds-header-panel :id="aPanelId" v-if="$route.meta.profile">
+    <cds-header-panel :id="myProfilePanelId" v-if="$route.meta.profile" ref="myProfilePanel">
       <div class="grouping-16" id="panel-title">
         <span class="heading-03">My profile</span>
         <cds-button kind="ghost" size="sm" @click.prevent="closePanel" class="close-panel-button">
@@ -121,7 +159,7 @@ const closePanel = () => {
         <hr class="divider" />
         <div class="grouping-21" id="panel-content--links">
           <cds-side-nav-items>
-            <cds-side-nav-link href="#" title="Options" class="unbolded" />
+            <cds-side-nav-link title="Options" class="unbolded side-nav-link--non-link" />
             <cds-side-nav-link href="#" title="Sign Out" @click.prevent="logoutModalActive = true">            
               <SignOut16 slot="title-icon" />
             </cds-side-nav-link>
@@ -130,6 +168,12 @@ const closePanel = () => {
       </div>
       
     </cds-header-panel>
+    <div
+      data-testid="my-profile-backdrop"
+      ref="myProfileBackdrop"
+      class="cds--side-nav__overlay"
+      @click.prevent="myProfileAction?.click"
+    ></div>
   </cds-header>
 
   <cds-side-nav v-if="$route.meta.sideMenu" v-shadow=1>

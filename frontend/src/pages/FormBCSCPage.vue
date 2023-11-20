@@ -79,7 +79,7 @@
       <text-input-component
         id="phoneNumberId"
         label="Phone number"
-        placeholder=""
+        placeholder="( ) ___-____"
         :enabled="true" 
         v-model="formData.location.contacts[0].phoneNumber"
         mask="(###) ###-####"
@@ -93,25 +93,15 @@
         @error="validation.phoneNumber = !$event"
       />
     </div>
-
-    <p class="body-compact-01">
-      You can add contacts to the account. For example, a person you want to give or receive information on your behalf.
-    </p>
     
-    <cds-button
-      kind="tertiary"
-      @click.prevent="addContact"
-      v-if="formData.location.contacts.length < 5">
-      <span>Add another contact</span>
-      <Add16 slot="icon" />
-    </cds-button>
-
     <div class="frame-01" v-if="otherContacts.length > 0">
       <div v-for="(contact, index) in otherContacts">
         <hr />
+
         <div class="grouping-09" :data-scroll="`additional-contact-${index + 1}`">
           <span class="heading-03">Additional contact</span>
         </div>
+
         <contact-group-component
           :key="index + 1"
           :id="index + 1"
@@ -128,6 +118,18 @@
         />
       </div>
     </div>
+
+    <p class="body-compact-01">
+      You can add contacts to the account. For example, a person you want to give or receive information on your behalf.
+    </p>
+
+    <cds-button
+      kind="tertiary"
+      @click.prevent="addContact"
+      v-if="formData.location.contacts.length < 5">
+      <span>Add another contact</span>
+      <Add16 slot="icon" />
+    </cds-button>
 
     <hr class="divider" />
 
