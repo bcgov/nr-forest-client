@@ -1,11 +1,12 @@
 package ca.bc.gov.app.validator.client;
 
 import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
-
+import java.time.LocalDate;
 import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +60,13 @@ public class ClientSubmitRequestValidator implements Validator {
       errors.popNestedPath();
       return;
     }
+
+    String clientType = businessInformation.clientType();
+    if (!StringUtils.isAllBlank(clientType) && 
+        (ClientTypeCodeEntity.REGISTERED_SOLE_PROPRIETORSHIP.equals(clientType) ||
+         ClientTypeCodeEntity.UNREGISTERED_SOLE_PROPRIETORSHIP.equals(clientType))) {
+      validateBirthdate(businessInformation.birthdate(), errors);
+    }
     
     errors.popNestedPath();
 
@@ -69,6 +77,19 @@ public class ClientSubmitRequestValidator implements Validator {
       //Only option left is Business Type == R (Registered)
       ValidationUtils
           .invokeValidator(registeredBusinessInformationValidator, businessInformation, errors);
+    }
+  }
+
+  private void validateBirthdate(LocalDate birthdate, Errors errors) {
+    String dobFieldName = "birthdate";
+    if (birthdate == null) {
+      errors.rejectValue(dobFieldName, fieldIsMissingErrorMessage("Birthdate"));
+    }
+    else {
+      LocalDate minAgeDate = LocalDate.now().minusYears(18);
+      if (birthdate.isAfter(minAgeDate)) {
+        errors.rejectValue(dobFieldName, "Sole proprietorship must be at least 18 years old");
+      }
     }
   }
 

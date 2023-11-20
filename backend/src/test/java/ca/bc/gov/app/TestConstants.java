@@ -414,7 +414,7 @@ public class TestConstants {
               "P",
               "Y",
               "GP",
-              null
+              LocalDate.now()
           ),
           new ClientLocationDto(
               List.of(

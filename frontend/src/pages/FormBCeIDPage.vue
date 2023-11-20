@@ -75,6 +75,10 @@ let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
   ...formDataDto.value,
+  businessInformation: {
+    ...formDataDto.value.businessInformation,
+    birthdate: "",
+  },
   location: {
     addresses: formDataDto.value.location.addresses,
     contacts: [submitterContact],
