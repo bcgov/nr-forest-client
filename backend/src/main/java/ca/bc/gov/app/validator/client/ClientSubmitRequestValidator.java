@@ -1,7 +1,9 @@
 package ca.bc.gov.app.validator.client;
 
 import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
+
 import ca.bc.gov.app.ApplicationConstant;
+
 import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
