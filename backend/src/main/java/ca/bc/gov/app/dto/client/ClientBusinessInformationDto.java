@@ -26,7 +26,7 @@ public record ClientBusinessInformationDto(
         "clientType", StringUtils.isBlank(clientType) ? "" : clientType,
         "goodStanding", StringUtils.isBlank(goodStandingInd) ? "" : goodStandingInd,
         "legalType", StringUtils.isBlank(legalType) ? "" : legalType,
-        "birthdate", Optional.ofNullable(birthdate).isPresent() ? birthdate : LocalDate.now()
+        "birthdate", Optional.ofNullable(birthdate).isPresent() ? birthdate : LocalDate.of(1975, 1, 31)
         );
   }
 }

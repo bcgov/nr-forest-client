@@ -1,11 +1,11 @@
 package ca.bc.gov.app.validator.client;
 
 import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
@@ -63,9 +63,9 @@ public class ClientSubmitRequestValidator implements Validator {
 
     String clientType = businessInformation.clientType();
     if (!StringUtils.isAllBlank(clientType) 
-        && (ClientTypeCodeEntity.REGISTERED_SOLE_PROPRIETORSHIP.equals(clientType) 
-            || ClientTypeCodeEntity.UNREGISTERED_SOLE_PROPRIETORSHIP.equals(clientType) 
-            || ClientTypeCodeEntity.INDIVIDUAL.equals(clientType))) {
+        && (ApplicationConstant.REG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientType) 
+            || ApplicationConstant.UNREG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientType) 
+            || ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientType))) {
       validateBirthdate(businessInformation.birthdate(), errors);
     }
     
