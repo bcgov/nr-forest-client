@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.processor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -9,6 +10,7 @@ import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.repository.legacy.ForestClientRepository;
+import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +43,7 @@ class SoleProprietorProcessorMatcherTest {
       Flux<ForestClientEntity> mockData
   ) {
 
-    when(repository.findByIndividualNames(anyString(),anyString()))
+    when(repository.findByIndividual(anyString(), anyString(), any()))
         .thenReturn(mockData);
 
     StepVerifier.FirstStep<MatcherResult> verifier =
@@ -62,19 +64,22 @@ class SoleProprietorProcessorMatcherTest {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto("James Frank", null, null, null, "USP"),
+                new SubmissionInformationDto("James Frank", LocalDate.of(2023, 4, 5), null, null,
+                    "USP"),
                 true,
                 null,
                 Flux.empty()
             ),
             Arguments.of(
-                new SubmissionInformationDto("Marco Polo", null, null, null, "RSP"),
+                new SubmissionInformationDto("Marco Polo", LocalDate.of(2023, 9, 12), null, null,
+                    "RSP"),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000")),
                 Flux.just(new ForestClientEntity().withClientNumber("00000000"))
             ),
             Arguments.of(
-                new SubmissionInformationDto("Lucca DeBiaggio", null, null, null, "USP"),
+                new SubmissionInformationDto("Lucca DeBiaggio", LocalDate.of(2023, 10, 11), null,
+                    null, "USP"),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000", "00000001")),
                 Flux.just(new ForestClientEntity().withClientNumber("00000000"),

@@ -37,9 +37,10 @@ public class SoleProprietorProcessorMatcher implements ProcessorMatcher {
 
     return
         forestClientRepository
-            .findByIndividualNames(
+            .findByIndividual(
                 ProcessorUtil.splitName(submission.corporationName())[1],
-                ProcessorUtil.splitName(submission.corporationName())[0]
+                ProcessorUtil.splitName(submission.corporationName())[0],
+                submission.dateOfBirth()!= null ? submission.dateOfBirth().atStartOfDay() : null
             )
             .doOnNext(entity -> log.info("Found a match {}", entity))
             .map(ForestClientEntity::getClientNumber)

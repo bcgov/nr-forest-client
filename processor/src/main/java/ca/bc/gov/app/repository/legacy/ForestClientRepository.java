@@ -38,17 +38,6 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       WHERE
       UPPER(LEGAL_FIRST_NAME) = UPPER(:firstName)
       AND UPPER(CLIENT_NAME) = UPPER(:lastName)
-      AND CLIENT_STATUS_CODE = 'ACT'
-      AND CLIENT_TYPE_CODE = 'I'
-      ORDER BY CLIENT_NUMBER""")
-  Flux<ForestClientEntity> findByIndividualNames(String firstName, String lastName);
-
-  @Query("""
-      SELECT *
-      FROM THE.FOREST_CLIENT
-      WHERE
-      UPPER(LEGAL_FIRST_NAME) = UPPER(:firstName)
-      AND UPPER(CLIENT_NAME) = UPPER(:lastName)
       AND BIRTHDATE = :dob
       AND CLIENT_STATUS_CODE = 'ACT'
       AND CLIENT_TYPE_CODE = 'I'
