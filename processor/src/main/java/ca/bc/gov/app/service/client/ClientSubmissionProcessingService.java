@@ -41,7 +41,8 @@ public class ClientSubmissionProcessingService {
       async = "true"
   )
   public Mono<Message<SubmissionMatchDetailEntity>> processSubmission(
-      Message<Integer> submissionMessage) {
+      Message<Integer> submissionMessage
+  ) {
     Integer submissionId = submissionMessage.getPayload();
 
     return

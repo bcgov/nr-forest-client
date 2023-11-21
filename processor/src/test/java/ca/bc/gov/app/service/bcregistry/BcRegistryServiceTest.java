@@ -51,17 +51,19 @@ class BcRegistryServiceTest {
   @DisplayName("should read document data")
   void shouldReadDocumentData(
       String clientNumber,
-      int status,
-      String responseBody
+      int requestStatus,
+      String requestBody,
+      int detailsStatus,
+      String detailsBody
   ) {
 
     bcRegistryStub
         .stubFor(post(urlPathEqualTo(
             "/registry-search/api/v1/businesses/" + clientNumber + "/documents/requests"))
             .willReturn(
-                status(200)
+                status(requestStatus)
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                    .withBody(BCREG_DOC_REQ_RES)
+                    .withBody(requestBody)
             )
         );
 
@@ -71,9 +73,9 @@ class BcRegistryServiceTest {
                 )
             )
                 .willReturn(
-                    status(status)
+                    status(detailsStatus)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(responseBody)
+                        .withBody(detailsBody)
                 )
         );
 
@@ -82,7 +84,7 @@ class BcRegistryServiceTest {
             .requestDocumentData(clientNumber)
             .as(StepVerifier::create);
 
-    if (status == 200) {
+    if (detailsStatus == 200 && requestStatus == 200) {
       test
           .assertNext(document -> assertTrue(document.getProprietor().isProprietor()))
           .verifyComplete();
@@ -97,8 +99,15 @@ class BcRegistryServiceTest {
 
   private static Stream<Arguments> documentData() {
     return Stream.of(
-        Arguments.of("CP0000001", 200, BCREG__RES1),
-        Arguments.of("CP0000002", 404, BCREG_RES2)
+        Arguments.of("CP0000001",200,BCREG_DOC_REQ_RES, 200, BCREG__RES1),
+        Arguments.of("CP0000002",200,BCREG_DOC_REQ_RES, 404, BCREG_RES2),
+
+        Arguments.of("CP0000002",404,BCREG_RES2, 404, BCREG_RES2),
+        Arguments.of("CP0000002",401,BCREG_RES2, 404, BCREG_RES2),
+        Arguments.of("CP0000002",400,BCREG_RES2, 404, BCREG_RES2),
+
+        Arguments.of("CP0000002",200,BCREG_DOC_REQ_RES, 401, BCREG_RES2),
+        Arguments.of("CP0000002",200,BCREG_DOC_REQ_RES, 400, BCREG_RES2)
     );
   }
 
