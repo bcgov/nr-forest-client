@@ -7,9 +7,8 @@ import static org.mockito.Mockito.when;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.entity.legacy.ClientDoingBusinessAsEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
-import ca.bc.gov.app.repository.legacy.ForestClientRepository;
+import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,8 @@ import reactor.test.StepVerifier;
 @DisplayName("Unit Test | Doing Business As Matcher")
 class DoingBusinessAsProcessorMatcherTest {
 
-  private final ClientDoingBusinessAsRepository repository = mock(ClientDoingBusinessAsRepository.class);
+  private final ClientDoingBusinessAsRepository repository = mock(
+      ClientDoingBusinessAsRepository.class);
   ProcessorMatcher matcher = new DoingBusinessAsProcessorMatcher(repository);
 
   @Test
@@ -62,19 +62,21 @@ class DoingBusinessAsProcessorMatcherTest {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto("James", null,null, null,"C"),
+                new SubmissionInformationDto("James", LocalDate.of(1970, 3, 4), "FM001122334", "Y",
+                    "RSP"),
                 true,
                 null,
                 Flux.empty()
             ),
             Arguments.of(
-                new SubmissionInformationDto("Marco", null, null, null,"C"),
+                new SubmissionInformationDto("Marco Polo Navigation Inc", LocalDate.of(1970, 3, 4),
+                    "FM001122334", "Y", "RSP"),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000")),
-                Flux.just(new ForestClientEntity().withClientNumber("00000000"))
+                Flux.just(new ClientDoingBusinessAsEntity().withClientNumber("00000000"))
             ),
             Arguments.of(
-                new SubmissionInformationDto("Lucca", null, null, null,"C"),
+                new SubmissionInformationDto("Lucca", null, null, null, "RSP"),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000", "00000001")),
                 Flux.just(new ClientDoingBusinessAsEntity().withClientNumber("00000000"),
