@@ -64,7 +64,8 @@ public class ClientSubmitRequestValidator implements Validator {
     String clientType = businessInformation.clientType();
     if (!StringUtils.isAllBlank(clientType) && 
         (ClientTypeCodeEntity.REGISTERED_SOLE_PROPRIETORSHIP.equals(clientType) ||
-         ClientTypeCodeEntity.UNREGISTERED_SOLE_PROPRIETORSHIP.equals(clientType))) {
+         ClientTypeCodeEntity.UNREGISTERED_SOLE_PROPRIETORSHIP.equals(clientType) ||
+         ClientTypeCodeEntity.INDIVIDUAL.equals(clientType))) {
       validateBirthdate(businessInformation.birthdate(), errors);
     }
     

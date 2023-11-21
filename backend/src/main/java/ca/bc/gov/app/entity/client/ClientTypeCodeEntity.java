@@ -23,8 +23,9 @@ import org.springframework.data.relational.core.mapping.Table;
 @With
 public class ClientTypeCodeEntity extends ExpirableBaseEntity {
 
-  public static final String UNREGISTERED_SOLE_PROPRIETORSHIP = "USP";
+  public static final String INDIVIDUAL = "I";
   public static final String REGISTERED_SOLE_PROPRIETORSHIP = "RSP";
+  public static final String UNREGISTERED_SOLE_PROPRIETORSHIP = "USP";
   
   @Id
   @Column("client_type_code")
