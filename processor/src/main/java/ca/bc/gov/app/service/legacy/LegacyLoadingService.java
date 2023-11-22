@@ -56,6 +56,7 @@ public class LegacyLoadingService {
   public Mono<List<MatcherResult>> validateSubmission(SubmissionInformationDto message) {
     return Flux
         .fromIterable(matchers)
+        .filter(matcher -> matcher.enabled(message))
         .doOnNext(matcher -> log.info("Running {}", matcher.name()))
         //If matcher returns empty, all good, if not, it is a problem
         .flatMap(matcher -> matcher.matches(message))

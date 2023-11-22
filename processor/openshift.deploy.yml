@@ -40,6 +40,9 @@ parameters:
   - name: URL_ZONE
     description: Zone to use for URL
     required: true
+  - name: BCREGISTRY_URI
+    description: Bc Registry API address
+    required: true
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -195,6 +198,18 @@ objects:
                   value: 30S
                 - name: TZ
                   value: America/Vancouver
+                - name: BCREGISTRY_URI
+                  value: ${BCREGISTRY_URI}
+                - name: BCREGISTRY_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: bcregistry-key
+                - name: BCREGISTRY_ACCOUNT
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: bcregistry-account
               ports:
                 - containerPort: 3000
                   protocol: TCP

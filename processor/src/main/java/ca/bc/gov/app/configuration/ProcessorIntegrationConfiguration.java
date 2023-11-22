@@ -92,6 +92,32 @@ public class ProcessorIntegrationConfiguration {
     return new FluxMessageChannel();
   }
 
+  @Bean
+  public FluxMessageChannel submissionLegacyClientPersistChannel() {
+    return new FluxMessageChannel();
+  }
+
+  @Bean
+  public FluxMessageChannel submissionLegacyIndividualChannel() {
+    return new FluxMessageChannel();
+  }
+
+  @Bean
+  public FluxMessageChannel submissionLegacyUSPChannel() {
+    return new FluxMessageChannel();
+  }
+
+  @Bean
+  public FluxMessageChannel submissionLegacyRSPChannel() {
+    return new FluxMessageChannel();
+  }
+
+  @Bean
+  public FluxMessageChannel submissionLegacyOtherChannel() {
+    return new FluxMessageChannel();
+  }
+
+
 
   @Bean
   public R2dbcMessageSource submissionMessages(

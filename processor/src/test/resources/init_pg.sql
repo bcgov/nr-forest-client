@@ -32,7 +32,7 @@ drop sequence if exists nrfc.submission_submitter_seq;
 create schema if not exists nrfc;
 
 create table if not exists nrfc.client_type_code (
-    client_type_code            varchar(1)      not null,
+    client_type_code            varchar(5)      not null,
     description                 varchar(100)    not null,
     effective_date              date            not null,
     expiry_date                 date            default to_date('99991231','YYYYMMDD') not null,
@@ -54,7 +54,7 @@ comment on column nrfc.client_type_code.create_user is 'The user or proxy accoun
 comment on column nrfc.client_type_code.update_user is 'The user or proxy account that created or last updated the record.';
 
 create table if not exists nrfc.submission_status_code (
-    submission_status_code  	  varchar(5)      not null,
+    submission_status_code  	varchar(5)      not null,
     description                 varchar(100)    not null,
     effective_date              date            not null,
     expiry_date                 date            default to_date('99991231','YYYYMMDD') not null,
@@ -192,13 +192,13 @@ comment on column nrfc.business_type_code.create_user is 'The user or proxy acco
 comment on column nrfc.business_type_code.update_user is 'The user or proxy account that created or last updated the record.';
 
 create table if not exists nrfc.submission(
-    submission_id             	integer 		    not null,
-    submission_status_code		  varchar(5)      null,
-    submission_type_code		    varchar(5)      null,
+    submission_id             	integer 		not null,
+    submission_status_code		varchar(5)      null,
+    submission_type_code		varchar(5)      null,
     submission_date             timestamp       null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		  null,
+    update_user                 varchar(60)		null,
     constraint submission_pk primary key (submission_id),
     constraint submission_submission_status_code_fk foreign key (submission_status_code) references nrfc.submission_status_code(submission_status_code),
     constraint submission_submission_type_code_fk foreign key (submission_type_code) references nrfc.submission_type_code(submission_type_code)
@@ -220,8 +220,9 @@ create table if not exists nrfc.submission_detail (
 	business_type_code		varchar(1)    	not null,
 	incorporation_number	varchar(50)    	null,
     organization_name       varchar(100)    null,
-	client_type_code        varchar(1)    	not null,
+	client_type_code        varchar(5)    	not null,
     good_standing_ind       varchar(1)      null,
+    birthdate               date            null,
 	constraint submission_detail_id_pk primary key (submission_detail_id),
 	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
     constraint submission_detail_business_type_code_fk foreign key (business_type_code) references nrfc.business_type_code(business_type_code),
@@ -236,6 +237,7 @@ comment on column nrfc.submission_detail.incorporation_number is 'A number provi
 comment on column nrfc.submission_detail.organization_name is 'The name of the client.';
 comment on column nrfc.submission_detail.client_type_code is 'A code representing the type of a client.';
 comment on column nrfc.submission_detail.good_standing_ind is 'An indicator that determines whether a client is in good standing with respect to their financial obligations.';
+comment on column nrfc.submission_detail.birthdate is 'The date that the BC Services Card logged in person was born.';
 
 create table if not exists nrfc.submission_matching_detail (
     submission_matching_detail_id   integer		  not null,
@@ -368,6 +370,8 @@ insert into nrfc.client_type_code (client_type_code, description, effective_date
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('S', 'Society', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('T', 'First Nation Tribal Council', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('U', 'Unregistered Company', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('USP', 'Unregistered sole proprietorship', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
+insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('RSP', 'Registered sole proprietorship', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
 
 insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('AP', 'Accounts Payable', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
 insert into nrfc.contact_type_code (contact_type_code, description, effective_date, create_user) values ('AR', 'Accounts Receivable', current_timestamp, 'mariamar')  on conflict (contact_type_code) do nothing;
