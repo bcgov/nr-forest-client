@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, getCurrentInstance } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/ui-shell/index";
@@ -7,8 +7,11 @@ import type { CDSHeaderPanel } from "@carbon/web-components";
 import type CDSHeaderGlobalAction from "@carbon/web-components/es/components/ui-shell/header-global-action";
 // Composables
 import { isSmallScreen, isMediumScreen } from "@/composables/useScreenSize";
+import { useRoute } from "vue-router";
 // Types
 import { nodeEnv, appVersion } from "@/CoreConstants";
+// Routes
+import { CONFIRMATION_ROUTE_NAME } from "@/routes";
 // @ts-ignore
 import Logout16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
@@ -70,6 +73,23 @@ watchEffect((onCleanup) => {
     });
   }
 });
+
+const instance = getCurrentInstance();
+const session = instance?.appContext.config.globalProperties.$session;
+
+const logout = () => {
+  session?.logOut();
+}
+
+const route = useRoute();
+
+const onClickLogout = () => {
+  if (route.name === CONFIRMATION_ROUTE_NAME) {
+    logout();
+  } else {
+    logoutModalActive.value = true;
+  }
+}
 </script>
 
 <template>
@@ -122,7 +142,7 @@ watchEffect((onCleanup) => {
       data-id="logout-btn"
       kind="tertiary"
       size="sm"
-      @click.prevent="logoutModalActive = true"
+      @click.prevent="onClickLogout"
     >
       <span v-if="!isSmallScreen && !isMediumScreen">Logout</span>
       <Logout16 slot="icon" />
@@ -245,7 +265,7 @@ watchEffect((onCleanup) => {
       <cds-modal-footer-button 
         kind="danger" 
         class="cds--modal-submit-btn" 
-        v-on:click="$session?.logOut">
+        v-on:click="logout">
         Logout
         <Logout16 slot="icon" />
       </cds-modal-footer-button>
