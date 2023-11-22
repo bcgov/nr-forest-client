@@ -18,5 +18,7 @@ userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,1986-11-11,FALSE,FALSE,FALSE,35
 userIdTest,FALSE,1234,Auric Enterprises,A,R,GP,Y,1986-11-11,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,
 userIdTest,FALSE,1234,Auric Enterprises,ABC,DEF,GHI,Y,1986-11-11,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,
 userIdTest,FALSE,1234,Auric Enterprises,A,U,GP,Y,1986-11-11,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vega,89109,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,FALSE
+userIdTest,FALSE,1234,Auric Enterprises,A,USP,SP,Y,1986-11-11,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vega,89109,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,FALSE
+userIdTest,FALSE,1234,Auric Enterprises,A,RSP,SP,Y,1986-11-11,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vega,89109,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,FALSE
 userIdTest,FALSE,1234,,A,U,GP,Y,1986-11-11,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vega,89109,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,
 ,FALSE,,,,,,,1986-11-11,FALSE,FALSE,FALSE,,,,,,FALSE,FALSE,,,,,,FALSE
