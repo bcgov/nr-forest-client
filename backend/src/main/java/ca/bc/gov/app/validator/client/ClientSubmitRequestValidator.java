@@ -63,10 +63,17 @@ public class ClientSubmitRequestValidator implements Validator {
     }
 
     String clientType = businessInformation.clientType();
-    if (!StringUtils.isAllBlank(clientType) 
-        && (ApplicationConstant.REG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientType) 
+
+    if(StringUtils.isBlank(clientType)) {
+      errors.rejectValue("clientType", "Client does not have a type");
+      errors.popNestedPath();
+      return;
+    }
+
+    if (ApplicationConstant.REG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientType)
             || ApplicationConstant.UNREG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientType) 
-            || ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientType))) {
+            || ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientType)
+    ) {
       validateBirthdate(businessInformation.birthdate(), errors);
     }
     

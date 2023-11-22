@@ -22,3 +22,9 @@ userIdTest,FALSE,1234,Auric Enterprises,A,USP,SP,Y,1986-11-11,FALSE,FALSE,FALSE,
 userIdTest,FALSE,1234,Auric Enterprises,A,RSP,SP,Y,1986-11-11,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vega,89109,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,FALSE
 userIdTest,FALSE,1234,,A,U,GP,Y,1986-11-11,FALSE,FALSE,FALSE,3570 S Las Vegas Blvd,US,NV,Las Vega,89109,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,
 ,FALSE,,,,,,,1986-11-11,FALSE,FALSE,FALSE,,,,,,FALSE,FALSE,,,,,,FALSE
+pipin,FALSE,XX0000104,The Samples Enterprise,RSP,R,SP,Y,1986-11-11,FALSE,FALSE,FALSE,2975 Jutland Rd,CA,BC,Victoria,V8W3Z8,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,
+pipin,FALSE,,James Bond,USP,U,,Y,1986-11-11,FALSE,FALSE,FALSE,2975 Jutland Rd,CA,BC,Victoria,V8W3Z8,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,
+pipin,FALSE,,James Bond,I,U,,Y,1986-11-11,FALSE,FALSE,FALSE,2975 Jutland Rd,CA,BC,Victoria,V8W3Z8,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,
+pipin,FALSE,,James Bond,,U,,Y,1986-11-11,FALSE,FALSE,FALSE,2975 Jutland Rd,CA,BC,Victoria,V8W3Z8,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,
+pipin,FALSE,,James Bond,I,U,,Y,,FALSE,FALSE,FALSE,2975 Jutland Rd,CA,BC,Victoria,V8W3Z8,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,
+pipin,FALSE,,James Bond,I,U,,Y,2010-11-11,FALSE,FALSE,FALSE,2975 Jutland Rd,CA,BC,Victoria,V8W3Z8,FALSE,FALSE,LP,James,Bond,98765432101,bond_james_bond@.com,
