@@ -62,6 +62,11 @@ public class LegacyClientPersistenceService extends LegacyAbstractPersistenceSer
     return !List.of("RSP", "USP", "I").contains(clientTypeCode);
   }
 
+  @Override
+  String getNextChannel() {
+    return ApplicationConstant.SUBMISSION_LEGACY_OTHER_CHANNEL;
+  }
+
   @ServiceActivator(
       inputChannel = ApplicationConstant.SUBMISSION_LEGACY_OTHER_CHANNEL,
       outputChannel = ApplicationConstant.SUBMISSION_LEGACY_CLIENT_PERSIST_CHANNEL,

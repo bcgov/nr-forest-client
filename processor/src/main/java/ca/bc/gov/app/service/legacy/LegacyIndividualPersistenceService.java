@@ -60,6 +60,10 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
     return StringUtils.equalsIgnoreCase(clientTypeCode,"I");
   }
 
+  @Override
+  String getNextChannel() {
+    return ApplicationConstant.SUBMISSION_LEGACY_INDIVIDUAL_CHANNEL;
+  }
 
   /**
    * Generate the individual to be persisted into forest client database.

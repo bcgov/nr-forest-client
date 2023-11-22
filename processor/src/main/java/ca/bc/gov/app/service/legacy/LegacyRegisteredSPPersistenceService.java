@@ -70,6 +70,11 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
     return StringUtils.equalsIgnoreCase(clientTypeCode, "RSP");
   }
 
+  @Override
+  String getNextChannel() {
+    return ApplicationConstant.SUBMISSION_LEGACY_RSP_CHANNEL;
+  }
+
   @ServiceActivator(
       inputChannel = ApplicationConstant.SUBMISSION_LEGACY_RSP_CHANNEL,
       outputChannel = ApplicationConstant.SUBMISSION_LEGACY_CLIENT_PERSIST_CHANNEL,

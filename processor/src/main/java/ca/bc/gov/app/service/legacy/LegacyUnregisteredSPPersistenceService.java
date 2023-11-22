@@ -63,6 +63,11 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
     return StringUtils.equalsIgnoreCase(clientTypeCode,"USP");
   }
 
+  @Override
+  String getNextChannel() {
+    return ApplicationConstant.SUBMISSION_LEGACY_USP_CHANNEL;
+  }
+
   /**
    * This method is responsible for generating the forest client for unregistered sole proprietorship.
    * @param message - the message containing the submission id.
