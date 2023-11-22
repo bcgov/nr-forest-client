@@ -414,7 +414,7 @@ public class TestConstants {
               "P",
               "Y",
               "GP",
-              null
+              LocalDate.now()
           ),
           new ClientLocationDto(
               List.of(
@@ -455,7 +455,7 @@ public class TestConstants {
               "I",
               "",
               "SP",
-              LocalDate.now()
+              LocalDate.of(1975, 1, 31)
           ),
           new ClientLocationDto(
               List.of(
