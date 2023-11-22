@@ -87,6 +87,11 @@ class LegacyLoadingServiceTest {
   private static class TestProcessorMatcher implements ProcessorMatcher{
 
     @Override
+    public boolean enabled(SubmissionInformationDto submission) {
+      return true;
+    }
+
+    @Override
     public String name() {
       return "Test matcher";
     }

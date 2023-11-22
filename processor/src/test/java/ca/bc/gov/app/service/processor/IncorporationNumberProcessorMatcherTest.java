@@ -33,6 +33,18 @@ class IncorporationNumberProcessorMatcherTest {
   @ParameterizedTest
   @MethodSource("incorporation")
   @DisplayName("Match or not")
+  void shouldBeEnabled(
+      SubmissionInformationDto dto,
+      boolean success,
+      MatcherResult result,
+      Flux<ForestClientEntity> mockData
+  ) {
+    assertTrue(matcher.enabled(dto));
+  }
+
+  @ParameterizedTest
+  @MethodSource("incorporation")
+  @DisplayName("Match or not")
   void shouldMatchOrNot(
       SubmissionInformationDto dto,
       boolean success,
@@ -61,13 +73,13 @@ class IncorporationNumberProcessorMatcherTest {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto(null, "00000007", null),
+                new SubmissionInformationDto(null,null, "00000007", null,"C"),
                 true,
                 null,
                 Flux.empty()
             ),
             Arguments.of(
-                new SubmissionInformationDto(null, "00000006", null),
+                new SubmissionInformationDto(null,null, "00000006", null,"C"),
                 false,
                 new MatcherResult("incorporationNumber", "00000006"),
                 Flux.just(new ForestClientEntity().withClientNumber("00000006"))

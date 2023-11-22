@@ -1,11 +1,14 @@
 package ca.bc.gov.app.dto;
 
+import java.time.LocalDate;
 import lombok.With;
 
 @With
 public record SubmissionInformationDto(
-    String legalName,
+    String corporationName,
+    LocalDate dateOfBirth,
     String incorporationNumber,
-    String goodStanding
+    String goodStanding,
+    String clientType
 ) {
 }

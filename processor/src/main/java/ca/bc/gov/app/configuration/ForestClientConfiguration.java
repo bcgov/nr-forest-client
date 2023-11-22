@@ -27,6 +27,9 @@ public class ForestClientConfiguration {
   @NestedConfigurationProperty
   private BackendConfiguration backend;
 
+  @NestedConfigurationProperty
+  private BcRegistryConfiguration bcregistry;
+
   @Data
   @Builder
   @NoArgsConstructor
@@ -41,6 +44,20 @@ public class ForestClientConfiguration {
   @AllArgsConstructor
   public static class BackendConfiguration {
     private String uri;
+  }
+
+  /**
+   * The BC Registry configuration.
+   */
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class BcRegistryConfiguration {
+
+    private String uri;
+    private String apiKey;
+    private String accountId;
   }
 
 }

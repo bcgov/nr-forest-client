@@ -297,6 +297,7 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ env.ZONE }}
             -p URL_ZONE=${{ env.ZONE }}
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
   image-promotions:
     name: Promote images to PROD
@@ -449,3 +450,4 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ env.PREV }}
             -p URL_ZONE=${{ env.ZONE }}
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
