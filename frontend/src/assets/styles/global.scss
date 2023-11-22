@@ -43,6 +43,7 @@
   --light-theme-miscellaneous-interactive: #0073e6;
   --light-theme-background-background-selected: #93939533;
   --light-theme-text-text-disabled: rgba(19, 19, 21, 0.25);
+  --light-theme-text-text-on-color: #FFFFFF;
 
   //Buttons
   --cds-button-disabled: #c6c6c8;
@@ -1004,6 +1005,15 @@ cds-header-global-action {
 // Needs an id to beat Carbon shipped style on specificity.
 #my-profile-action[active]::part(button) {
   background: var(--light-theme-layer-layer-02, #FFF) !important;
+}
+
+cds-header-menu-button::part(svg) {
+  width: 1rem;
+  height: 1rem;
+}
+
+cds-header-menu-button:not([active])::part(svg) {
+  fill: var(--light-theme-text-text-on-color, #FFF);
 }
 
 cds-header-global-action svg {
