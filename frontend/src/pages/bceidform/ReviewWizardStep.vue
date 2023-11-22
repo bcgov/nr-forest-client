@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, ref, onMounted } from "vue";
+import { watch, ref, onMounted, computed } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
 // Composables
@@ -8,6 +8,9 @@ import { useEventBus } from "@vueuse/core";
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
 // @ts-ignore
 import Edit16 from "@carbon/icons-vue/es/edit/16";
+import { useFetchTo } from "@/composables/useFetch";
+import { CodeNameType } from "@/dto/CommonTypesDto";
+import { codeConversionFn } from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
@@ -27,11 +30,16 @@ const revalidateBus = useEventBus<void>("revalidate-bus");
 const formData = ref<FormDataDto>(props.data);
 watch([formData], () => emit("update:data", formData.value));
 
-//TODO: So far, hardcoded the value but should be coming from the database
-const companyBusinessTypes: Record<string, string> = {
-  R: "B.C. Registered Business - Corporation",
-  U: "Sole Proprietorship",
-};
+const receviedClientType = ref({} as CodeNameType);
+
+useFetchTo(
+  `/api/clients/getClientTypeByCode/${formData.value.businessInformation.clientType}`,
+  receviedClientType
+);
+
+const clientType = computed(() => {
+  return codeConversionFn(receviedClientType.value);
+});
 
 //We emit valid here because there is nothing else to be done here apart from showing information
 emit("valid", true);
@@ -49,7 +57,7 @@ onMounted(() => {
         {{ formData.businessInformation.businessName }}
       </p>
       <p class="body-compact-01" id="businessTypeId">
-        {{ companyBusinessTypes[`${formData.businessInformation.businessType}`] }}
+        {{ clientType.text }}
       </p>
     </div>
     <div class="grouping-06">
