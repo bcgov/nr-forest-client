@@ -9,6 +9,7 @@ import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.repository.legacy.ForestClientRepository;
+import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ class LegalNameProcessorMatcherTest {
   @Test
   @DisplayName("Name matching")
   void shouldMatchName() {
-    assertEquals("Legal Name Matcher", matcher.name());
+    assertEquals("Legal Name Fuzzy Matcher", matcher.name());
   }
 
   @ParameterizedTest
@@ -40,7 +41,7 @@ class LegalNameProcessorMatcherTest {
       Flux<ForestClientEntity> mockData
   ) {
 
-    when(repository.matchBy(dto.legalName()))
+    when(repository.matchBy(dto.corporationName()))
         .thenReturn(mockData);
 
     StepVerifier.FirstStep<MatcherResult> verifier =
@@ -61,21 +62,21 @@ class LegalNameProcessorMatcherTest {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto("James", null, null),
+                new SubmissionInformationDto("James", null,null, null,"C"),
                 true,
                 null,
                 Flux.empty()
             ),
             Arguments.of(
-                new SubmissionInformationDto("Marco", null, null),
+                new SubmissionInformationDto("Marco", null, null, null,"C"),
                 false,
-                new MatcherResult("legalName", String.join(",", "00000000")),
+                new MatcherResult("corporationName", String.join(",", "00000000")),
                 Flux.just(new ForestClientEntity().withClientNumber("00000000"))
             ),
             Arguments.of(
-                new SubmissionInformationDto("Lucca", null, null),
+                new SubmissionInformationDto("Lucca", null, null, null,"C"),
                 false,
-                new MatcherResult("legalName", String.join(",", "00000000", "00000001")),
+                new MatcherResult("corporationName", String.join(",", "00000000", "00000001")),
                 Flux.just(new ForestClientEntity().withClientNumber("00000000"),
                     new ForestClientEntity().withClientNumber("00000001"))
             )

@@ -25,4 +25,20 @@ public class GlobalServiceConfiguration {
         .build();
   }
 
+  /**
+   * Returns a configured instance of WebClient for accessing the BC Registry API.
+   *
+   * @param configuration The configuration for the ForestClient.
+   * @return A configured instance of WebClient for accessing the BC Registry API.
+   */
+  @Bean
+  public WebClient bcRegistryApi(ForestClientConfiguration configuration) {
+    return WebClient
+        .builder()
+        .baseUrl(configuration.getBcregistry().getUri())
+        .defaultHeader("x-apikey", configuration.getBcregistry().getApiKey())
+        .defaultHeader("Account-Id", configuration.getBcregistry().getAccountId())
+        .build();
+  }
+
 }

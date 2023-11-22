@@ -56,3 +56,7 @@ ca:
           username: ${POSTGRESQL_USER:user}
           password: ${POSTGRESQL_PASSWORD:passwd}
           url: r2dbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
+        bcregistry:
+          uri: ${BCREGISTRY_URI:https://bcregistry-sandbox.apigee.net}
+          apiKey: ${BCREGISTRY_KEY:123456}
+          accountId: ${BCREGISTRY_ACCOUNT:123456}

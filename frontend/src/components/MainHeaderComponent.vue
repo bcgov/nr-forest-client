@@ -99,7 +99,9 @@ const onClickLogout = () => {
     <cds-header-menu-button
       v-if="$session?.user?.provider === 'idir'"
       button-label-active="Close menu"
-      button-label-inactive="Open menu">
+      button-label-inactive="Open menu"
+      v-shadow="2"
+    >
     </cds-header-menu-button>
 
     <a href="https://gov.bc.ca" v-if="$session.user?.provider !== 'idir'" class="bclogotop">

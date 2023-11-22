@@ -9,6 +9,7 @@ import ca.bc.gov.app.repository.legacy.ForestClientRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -17,6 +18,11 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class IncorporationNumberProcessorMatcher implements ProcessorMatcher {
   private final ForestClientRepository forestClientRepository;
+
+  @Override
+  public boolean enabled(SubmissionInformationDto submission) {
+    return StringUtils.isNotBlank(submission.incorporationNumber());
+  }
 
   @Override
   public String name() {
