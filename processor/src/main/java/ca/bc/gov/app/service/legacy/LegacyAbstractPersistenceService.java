@@ -4,6 +4,7 @@ import static java.util.function.Predicate.not;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.entity.client.SubmissionContactEntity;
+import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
@@ -71,7 +72,10 @@ public abstract class LegacyAbstractPersistenceService {
 
 
   abstract Mono<Message<ForestClientEntity>> generateForestClient(Message<String> message);
+
   abstract boolean filterByType(String clientTypeCode);
+
+  abstract String getNextChannel();
 
   /**
    * Loads the country list from the database.
@@ -126,8 +130,7 @@ public abstract class LegacyAbstractPersistenceService {
   public Mono<Message<?>> checkClientData(Message<Integer> message) {
 
     AtomicBoolean existingClient = new AtomicBoolean(false);
-    AtomicReference<String> sequenceChannel = new AtomicReference<>(
-        ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL);
+    AtomicReference<String> clientTypeCode = new AtomicReference<>(StringUtils.EMPTY);
 
     return submissionDetailRepository
         .findBySubmissionId(message.getPayload())
@@ -140,31 +143,23 @@ public abstract class LegacyAbstractPersistenceService {
                     submissionDetail.getIncorporationNumber()
                 )
         )
-        .doOnNext(submissionDetail -> {
-          // Future Improvement: Use the enum when we have more client types being processed
-          if (submissionDetail.getClientTypeCode().equalsIgnoreCase("I")) {
-            sequenceChannel.set(ApplicationConstant.SUBMISSION_LEGACY_INDIVIDUAL_CHANNEL);
-          } else if (submissionDetail.getClientTypeCode().equalsIgnoreCase("RSP")) {
-            sequenceChannel.set(ApplicationConstant.SUBMISSION_LEGACY_RSP_CHANNEL);
-          } else if (submissionDetail.getClientTypeCode().equalsIgnoreCase("USP")) {
-            sequenceChannel.set(ApplicationConstant.SUBMISSION_LEGACY_USP_CHANNEL);
-          } else {
-            sequenceChannel.set(ApplicationConstant.SUBMISSION_LEGACY_OTHER_CHANNEL);
-          }
-        })
+        .doOnNext(submissionDetail ->
+            clientTypeCode.set(submissionDetail.getClientTypeCode()))
         .flatMap(submissionDetail ->
             Mono.justOrEmpty(
                     Optional
                         .ofNullable(submissionDetail.getClientNumber())
                         .filter(StringUtils::isNotBlank)
                 )
-                .doOnNext(clientNumber -> {
-                  existingClient.set(true);
-                  sequenceChannel.set(ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL);
-                })
+                .doOnNext(clientNumber -> log.info(
+                    "Client number {} exists for submission {}",
+                    clientNumber,
+                    message.getPayload()
+                ))
+                .doOnNext(clientNumber -> existingClient.set(true))
                 .switchIfEmpty(getNextClientNumber())
         )
-        .filter(data -> filterByType(sequenceChannel.get()))
+        .filter(data -> filterByType(clientTypeCode.get()))
         .doOnNext(clientNumber ->
             log.info(
                 "Client number {}{} for submission {}",
@@ -179,14 +174,17 @@ public abstract class LegacyAbstractPersistenceService {
                 .copyHeaders(message.getHeaders())
                 .setHeader(ApplicationConstant.SUBMISSION_ID, message.getPayload())
                 .setHeader(ApplicationConstant.CLIENT_EXISTS, existingClient.get())
-
-                .setReplyChannelName(sequenceChannel.get())
-                .setHeader("output-channel", sequenceChannel.get())
-                .setHeader(MessageHeaders.REPLY_CHANNEL, sequenceChannel.get())
-                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, sequenceChannel.get())
-
+                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, clientTypeCode.get())
                 .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, clientNumber)
-
+                .setReplyChannelName(
+                    existingClient.get() ? ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL
+                        : getNextChannel())
+                .setHeader("output-channel",
+                    existingClient.get() ? ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL
+                        : getNextChannel())
+                .setHeader(MessageHeaders.REPLY_CHANNEL,
+                    existingClient.get() ? ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL
+                        : getNextChannel())
                 .build()
         );
   }
@@ -201,9 +199,10 @@ public abstract class LegacyAbstractPersistenceService {
   )
   public Mono<Message<Integer>> createForestClient(Message<ForestClientEntity> message) {
 
-    if(!filterByType(message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE, String.class)))
+    if (!filterByType(
+        message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE, String.class))) {
       return Mono.empty();
-
+    }
 
     log.info("Creating Forest Client {} {}",
         message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME),
@@ -227,7 +226,7 @@ public abstract class LegacyAbstractPersistenceService {
                     )
                     .map(submissionDetail -> submissionDetail.withClientNumber(clientNumber))
                     .flatMap(submissionDetailRepository::save)
-                    .map(submissionDetail -> clientNumber)
+                    .map(SubmissionDetailEntity::getClientNumber)
             )
             .doOnNext(forestClientNumber ->
                 log.info(
@@ -257,8 +256,10 @@ public abstract class LegacyAbstractPersistenceService {
   )
   public Flux<Message<Integer>> createLocations(Message<Integer> message) {
 
-    if(!filterByType(message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE, String.class)))
+    if (!filterByType(
+        message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE, String.class))) {
       return Flux.empty();
+    }
 
     Flux<SubmissionLocationEntity> data = locationRepository.findBySubmissionId(
         message.getPayload()
@@ -339,8 +340,8 @@ public abstract class LegacyAbstractPersistenceService {
   }
 
   /**
-   * Creates a contact if does not exist on oracle.
-   * It first checks for an existing entry and if it does not have, create it.
+   * Creates a contact if does not exist on oracle. It first checks for an existing entry and if it
+   * does not have, create it.
    */
   @ServiceActivator(
       inputChannel = ApplicationConstant.SUBMISSION_LEGACY_CONTACT_CHANNEL,
@@ -349,8 +350,10 @@ public abstract class LegacyAbstractPersistenceService {
   )
   public Mono<Message<Integer>> createContact(Message<Integer> message) {
 
-    if(!filterByType(message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE, String.class)))
+    if (!filterByType(
+        message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE, String.class))) {
       return Mono.empty();
+    }
 
     // Load the contact in case it exists
     IntFunction<Mono<ForestClientContactEntity>> forestContact =
@@ -425,29 +428,29 @@ public abstract class LegacyAbstractPersistenceService {
             );
 
     // Convert the contact into a forest client contact entity and save it
-    BiFunction<SubmissionLocationContactEntity,Integer, Mono<ForestClientContactEntity>> createContact =
-        (locationContact,increment) ->
-        toContact
-            .apply(locationContact.getSubmissionContactId())
-            .flatMap(forestClientContact ->
-                nextContactId
-                    .apply(increment)
-                    .doOnNext(forestClientContact::setClientContactId)
-                    .thenReturn(forestClientContact)
-            )
-            .flatMap(contact ->
-                legacyR2dbcEntityTemplate
-                    .insert(ForestClientContactEntity.class)
-                    .using(contact)
-            )
-            .doOnNext(forestClientContact ->
-                log.info(
-                    "Saved forest client contact {} {} {}",
-                    message.getPayload(),
-                    getClientNumber(message),
-                    forestClientContact.getContactName()
+    BiFunction<SubmissionLocationContactEntity, Integer, Mono<ForestClientContactEntity>> createContact =
+        (locationContact, increment) ->
+            toContact
+                .apply(locationContact.getSubmissionContactId())
+                .flatMap(forestClientContact ->
+                    nextContactId
+                        .apply(increment)
+                        .doOnNext(forestClientContact::setClientContactId)
+                        .thenReturn(forestClientContact)
                 )
-            );
+                .flatMap(contact ->
+                    legacyR2dbcEntityTemplate
+                        .insert(ForestClientContactEntity.class)
+                        .using(contact)
+                )
+                .doOnNext(forestClientContact ->
+                    log.info(
+                        "Saved forest client contact {} {} {}",
+                        message.getPayload(),
+                        getClientNumber(message),
+                        forestClientContact.getContactName()
+                    )
+                );
 
     return locationContactRepository
         .findBySubmissionLocationId(
@@ -461,7 +464,7 @@ public abstract class LegacyAbstractPersistenceService {
                     createContact
                         .apply(
                             locationContactTuple.getT2(),
-                            locationContactTuple.getT1().intValue()+1
+                            locationContactTuple.getT1().intValue() + 1
                         )
                 )
         )
@@ -478,8 +481,10 @@ public abstract class LegacyAbstractPersistenceService {
       async = "true"
   )
   public Mono<Message<Integer>> sendNotification(Message<Integer> message) {
-    if(!filterByType(message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE, String.class)))
+    if (!filterByType(
+        message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE, String.class))) {
       return Mono.empty();
+    }
     return Mono.just(
         MessageBuilder
             .fromMessage(message)
@@ -650,7 +655,7 @@ public abstract class LegacyAbstractPersistenceService {
             submissionContact.getLastName()).toUpperCase())
         .businessPhone(
             RegExUtils.replaceAll(submissionContact.getBusinessPhoneNumber(), "\\D",
-            StringUtils.EMPTY)
+                StringUtils.EMPTY)
         )
         .emailAddress(submissionContact.getEmailAddress())
         .createdAt(LocalDateTime.now())
@@ -662,8 +667,5 @@ public abstract class LegacyAbstractPersistenceService {
         .updateOrgUnit(ApplicationConstant.ORG_UNIT)
         .build();
   }
-
-
-
 
 }
