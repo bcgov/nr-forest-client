@@ -2,10 +2,12 @@ package ca.bc.gov.app.validator.client;
 
 import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +61,21 @@ public class ClientSubmitRequestValidator implements Validator {
       errors.popNestedPath();
       return;
     }
+
+    String clientType = businessInformation.clientType();
+
+    if(StringUtils.isBlank(clientType)) {
+      errors.rejectValue("clientType", "Client does not have a type");
+      errors.popNestedPath();
+      return;
+    }
+
+    if (ApplicationConstant.REG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientType)
+            || ApplicationConstant.UNREG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientType) 
+            || ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientType)
+    ) {
+      validateBirthdate(businessInformation.birthdate(), errors);
+    }
     
     errors.popNestedPath();
 
@@ -69,6 +86,19 @@ public class ClientSubmitRequestValidator implements Validator {
       //Only option left is Business Type == R (Registered)
       ValidationUtils
           .invokeValidator(registeredBusinessInformationValidator, businessInformation, errors);
+    }
+  }
+
+  private void validateBirthdate(LocalDate birthdate, Errors errors) {
+    String dobFieldName = "birthdate";
+    if (birthdate == null) {
+      errors.rejectValue(dobFieldName, fieldIsMissingErrorMessage("Birthdate"));
+    }
+    else {
+      LocalDate minAgeDate = LocalDate.now().minusYears(18);
+      if (birthdate.isAfter(minAgeDate)) {
+        errors.rejectValue(dobFieldName, "Sole proprietorship must be at least 18 years old");
+      }
     }
   }
 
