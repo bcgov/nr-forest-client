@@ -16,6 +16,8 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
 import { nodeEnv } from "@/CoreConstants";
 
+const CONFIRMATION_ROUTE_NAME = "confirmation";
+
 const routes = [
   {
     path: "/landing",
@@ -85,7 +87,7 @@ const routes = [
   },
   {
     path: "/form-submitted",
-    name: "confirmation",
+    name: CONFIRMATION_ROUTE_NAME,
     component: FormSubmittedPage,
     props: true,
     meta: {
@@ -245,7 +247,7 @@ router.beforeEach(async (to, from, next) => {
   }
 });
 
-export { routes, router };
+export { routes, router, CONFIRMATION_ROUTE_NAME };
 
 declare module 'vue-router' {
   // eslint-disable-next-line no-unused-vars
