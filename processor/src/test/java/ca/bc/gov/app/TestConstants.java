@@ -8,6 +8,7 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryRoleDto;
 import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
+import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -150,5 +151,10 @@ public class TestConstants {
       "errorMessage": "API backend third party service error.",
       "rootCause": "message:ResourceErrorCodes.NOT_FOUND_ERR: no Document found for 7QbI0M6uBxx. "
   }""";
+
+  public static final ForestClientEntity CLIENT_ENTITY = ForestClientEntity.builder()
+      .clientNumber("00001000")
+      .clientTypeCode("C")
+      .build();
 
 }

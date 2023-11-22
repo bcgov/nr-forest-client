@@ -66,6 +66,13 @@ class LegacyIndividualPersistenceServiceTest {
 
 
   @Test
+  @DisplayName("get next channel")
+  void shouldGetNextChannel(){
+    assertEquals(ApplicationConstant.SUBMISSION_LEGACY_INDIVIDUAL_CHANNEL, service.getNextChannel());
+  }
+
+
+  @Test
   @DisplayName("create forest client")
   void shouldCreateForestClient() {
     ReactiveInsert<ForestClientEntity> reactiveInsert = mock(ReactiveInsert.class);

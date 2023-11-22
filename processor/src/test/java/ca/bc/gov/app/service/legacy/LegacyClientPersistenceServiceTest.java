@@ -63,6 +63,12 @@ class LegacyClientPersistenceServiceTest {
     assertEquals(expected, service.filterByType(type));
   }
 
+  @Test
+  @DisplayName("get next channel")
+  void shouldGetNextChannel(){
+    assertEquals(ApplicationConstant.SUBMISSION_LEGACY_OTHER_CHANNEL, service.getNextChannel());
+  }
+
 
   @Test
   @DisplayName("create forest client")

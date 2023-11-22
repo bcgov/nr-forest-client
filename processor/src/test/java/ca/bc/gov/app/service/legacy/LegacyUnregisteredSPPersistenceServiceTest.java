@@ -66,6 +66,12 @@ class LegacyUnregisteredSPPersistenceServiceTest {
   }
 
   @Test
+  @DisplayName("get next channel")
+  void shouldGetNextChannel(){
+    assertEquals(ApplicationConstant.SUBMISSION_LEGACY_USP_CHANNEL, service.getNextChannel());
+  }
+
+  @Test
   @DisplayName("create forest client")
   void shouldCreateForestClient() {
 

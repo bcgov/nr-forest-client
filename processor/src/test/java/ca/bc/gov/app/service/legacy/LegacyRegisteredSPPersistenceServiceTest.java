@@ -16,6 +16,9 @@ import static org.mockito.Mockito.when;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
+import ca.bc.gov.app.entity.legacy.ClientDoingBusinessAsEntity;
+import ca.bc.gov.app.entity.legacy.ForestClientEntity;
+import ca.bc.gov.app.entity.legacy.ForestClientLocationEntity;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
@@ -27,6 +30,7 @@ import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.stream.Stream;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -34,6 +38,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.data.r2dbc.core.ReactiveInsertOperation.ReactiveInsert;
 import org.springframework.http.MediaType;
 import org.springframework.integration.support.MessageBuilder;
 import reactor.core.publisher.Flux;
@@ -75,6 +80,12 @@ class LegacyRegisteredSPPersistenceServiceTest {
   @DisplayName("filter by type")
   void shouldFilterByType(String type, boolean expected){
     assertEquals(expected, service.filterByType(type));
+  }
+
+  @Test
+  @DisplayName("get next channel")
+  void shouldGetNextChannel(){
+    assertEquals(ApplicationConstant.SUBMISSION_LEGACY_RSP_CHANNEL, service.getNextChannel());
   }
 
   @Test
@@ -255,6 +266,75 @@ class LegacyRegisteredSPPersistenceServiceTest {
 
         })
         .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("create client with doing business")
+  void shouldCreateClient() {
+    ReactiveInsert<ClientDoingBusinessAsEntity> doingBusinessInsert = mock(ReactiveInsert.class);
+    ReactiveInsert<ForestClientEntity> clientInsert = mock(ReactiveInsert.class);
+
+    SubmissionDetailEntity detailEntity = SubmissionDetailEntity
+        .builder()
+        .submissionId(2)
+        .incorporationNumber("XX0000000")
+        .organizationName("Sample test")
+        .clientTypeCode("RSP")
+        .clientNumber("00000000")
+        .build();
+
+    when(submissionDetailRepository.findBySubmissionId(any()))
+        .thenReturn(Mono.just(detailEntity));
+    when(submissionDetailRepository.save(any()))
+        .thenReturn(Mono.just(detailEntity));
+    when(doingBusinessAsRepository.existsByClientNumber(any()))
+        .thenReturn(Mono.just(false));
+    when(legacyR2dbcEntityTemplate.selectOne(any(),any()))
+        .thenReturn(Mono.just(ClientDoingBusinessAsEntity.builder().id(1).build()));
+    when(legacyR2dbcEntityTemplate.insert(ForestClientEntity.class))
+        .thenReturn(clientInsert);
+    when(legacyR2dbcEntityTemplate.insert(ClientDoingBusinessAsEntity.class))
+        .thenReturn(doingBusinessInsert);
+    when(doingBusinessInsert.using(any()))
+        .thenReturn(Mono.just(ClientDoingBusinessAsEntity.builder().clientNumber("00000000")
+                .build()
+            )
+        );
+    when(clientInsert.using(any())).thenReturn(Mono.just(TestConstants.CLIENT_ENTITY));
+
+    service
+        .createForestClient(
+            MessageBuilder
+                .withPayload(
+                    TestConstants
+                        .CLIENT_ENTITY
+                        .withClientTypeCode("I")
+                        .withClientIdTypeCode("OTHR")
+                )
+                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
+                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, "RSP")
+                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000")
+                .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA")
+                .build()
+        )
+        .as(StepVerifier::create)
+        .assertNext(message -> {
+          Assertions.assertThat(message)
+              .as("message")
+              .isNotNull()
+              .hasFieldOrPropertyWithValue("payload",2);
+
+
+          Assertions.assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
+              .as("forest client number")
+              .isNotNull()
+              .isInstanceOf(String.class)
+              .isEqualTo("00000000");
+        })
+        .verifyComplete();
+
   }
 
   private static Stream<Arguments> byType(){
