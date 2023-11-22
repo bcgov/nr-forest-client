@@ -33,15 +33,15 @@ public class ClientSubmissionAutoProcessingService {
   private final SubmissionRepository submissionRepository;
   private final SubmissionMatchDetailRepository submissionMatchDetailRepository;
 
+  /**
+   * This method is responsible for marking the submission as approved
+   * and sending to the nexty step.
+   */
   @ServiceActivator(
       inputChannel = ApplicationConstant.AUTO_APPROVE_CHANNEL,
       outputChannel = ApplicationConstant.SUBMISSION_POSTPROCESSOR_CHANNEL,
       async = "true"
   )
-  /**
-   * This method is responsible for marking the submission as approved
-   * and sending to the nexty step.
-   */
   public Mono<Message<Integer>> approved(Message<List<MatcherResult>> message) {
     int submissionId =
         Objects.requireNonNull(
@@ -69,14 +69,14 @@ public class ClientSubmissionAutoProcessingService {
   }
 
 
+  /**
+   * This method is responsible for marking the submission as processed
+   */
   @ServiceActivator(
       inputChannel = ApplicationConstant.SUBMISSION_COMPLETION_CHANNEL,
       outputChannel = ApplicationConstant.SUBMISSION_MAIL_CHANNEL,
       async = "true"
   )
-  /**
-   * This method is responsible for marking the submission as processed
-   */
   public Mono<Message<EmailRequestDto>> completeProcessing(Message<EmailRequestDto> message) {
     return
         submissionMatchDetailRepository
@@ -88,14 +88,14 @@ public class ClientSubmissionAutoProcessingService {
             .thenReturn(message);
   }
 
+  /**
+   * This method is responsible for marking the submission as reviewed
+   */
   @ServiceActivator(
       inputChannel = ApplicationConstant.REVIEW_CHANNEL,
       outputChannel = ApplicationConstant.SUBMISSION_MAIL_BUILD_CHANNEL,
       async = "true"
   )
-  /**
-   * This method is responsible for marking the submission as reviewed
-   */
   public Mono<Message<Integer>> reviewed(Message<List<MatcherResult>> message) {
     return
         persistData(

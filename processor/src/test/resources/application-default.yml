@@ -14,6 +14,15 @@ spring:
     url: jdbc:oracle:thin:@${ca.bc.gov.nrs.oracle.host}:${ca.bc.gov.nrs.oracle.port}/${ca.bc.gov.nrs.oracle.service}
 
 
+ca:
+  bc:
+    gov:
+      nrs:
+        bcregistry:
+          uri: 'http://127.0.0.1:10040'
+          apiKey: abc1234
+          accountId: 'account 0000'
+
 logging:
   level:
     org:

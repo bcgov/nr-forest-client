@@ -9,7 +9,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.awaitility.Awaitility.await;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.Duration;
 import org.junit.jupiter.api.BeforeAll;
@@ -55,6 +57,31 @@ class ClientSubmissionMailServiceTest {
         .untilAsserted(() -> {
           wireMockExtension
               .verify(
+                  postRequestedFor(urlEqualTo("/ches/email"))
+                      .withHeader("Content-Type", containing(MediaType.APPLICATION_JSON_VALUE))
+                      .withRequestBody(equalToJson(TestConstants.EMAIL_REQUEST_JSON)
+                      )
+              );
+        });
+  }
+
+  @Test
+  @DisplayName("preview email on review")
+  void shouldPreventReviewMails() {
+    service.sendMail(
+        MessageBuilder
+            .withPayload(TestConstants.EMAIL_REQUEST)
+            .setHeader(ApplicationConstant.SUBMISSION_TYPE, SubmissionTypeCodeEnum.RNC)
+            .build()
+    );
+
+    await()
+        .alias("Email sent")
+        .atMost(Duration.ofSeconds(2))
+        .untilAsserted(() -> {
+          wireMockExtension
+              .verify(
+                  0,
                   postRequestedFor(urlEqualTo("/ches/email"))
                       .withHeader("Content-Type", containing(MediaType.APPLICATION_JSON_VALUE))
                       .withRequestBody(equalToJson(TestConstants.EMAIL_REQUEST_JSON)
