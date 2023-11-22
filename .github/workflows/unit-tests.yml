@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   tests-java:
-    name: Integrated Tests
+    name: Backend Tests
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
@@ -70,7 +70,7 @@ jobs:
             -Dsonar.projectKey=nr-forest-client_processor
             -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
-            -Dsonar.coverage.exclusions=**/configuration/**,**/dto/**,**/entity/**,**/repository/**,**/*$*Builder*,**/ProcessApplication***/ApplicationConstant*
+            -Dsonar.coverage.exclusions=**/configuration/**,**/dto/**,**/exception/**,**/entity/**,**/repository/**,**/*$*Builder*,**/ProcessApplication***/ApplicationConstant*
           sonar_project_token: ${{ secrets.SONAR_TOKEN_PROCESSOR }}
 
       - name: Archive CycloneDX

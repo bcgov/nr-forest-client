@@ -10,6 +10,12 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 public class GoodStandingProcessorMatcher implements ProcessorMatcher {
+
+  @Override
+  public boolean enabled(SubmissionInformationDto submission) {
+    return true;
+  }
+
   @Override
   public String name() {
     return "Good Standing Matcher";

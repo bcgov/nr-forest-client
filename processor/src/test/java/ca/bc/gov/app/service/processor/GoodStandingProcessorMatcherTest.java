@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.processor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
@@ -22,6 +23,17 @@ class GoodStandingProcessorMatcherTest {
   @DisplayName("Name matching")
   void shouldMatchName() {
     assertEquals("Good Standing Matcher", matcher.name());
+  }
+
+  @ParameterizedTest
+  @MethodSource("goodStanding")
+  @DisplayName("Is enabled?")
+  void shouldBeEnableForAll(
+      SubmissionInformationDto dto,
+      boolean success,
+      MatcherResult result
+  ) {
+    assertTrue(matcher.enabled(dto));
   }
 
   @ParameterizedTest
@@ -51,22 +63,22 @@ class GoodStandingProcessorMatcherTest {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto(null, null, StringUtils.EMPTY),
+                new SubmissionInformationDto(null, null,null, StringUtils.EMPTY,null),
                 false,
                 new MatcherResult("goodStanding", "Value not found")
             ),
             Arguments.of(
-                new SubmissionInformationDto(null, null, null),
+                new SubmissionInformationDto(null, null,null, null,null),
                 false,
                 new MatcherResult("goodStanding", "Value not found")
             ),
             Arguments.of(
-                new SubmissionInformationDto(null, null, "N"),
+                new SubmissionInformationDto(null, null,null, "N",null),
                 false,
                 new MatcherResult("goodStanding", "Client not in good standing")
             ),
             Arguments.of(
-                new SubmissionInformationDto(null, null, "Y"),
+                new SubmissionInformationDto(null, null,null, "Y",null),
                 true,
                 null
             )
