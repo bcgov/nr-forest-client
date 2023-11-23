@@ -56,7 +56,7 @@ onMounted(() => {
       <p class="heading-02">
         {{ formData.businessInformation.businessName }}
       </p>
-      <p class="body-compact-01" id="businessTypeId">
+      <p class="body-compact-01" id="clientTypeId">
         {{ clientType.text }}
       </p>
     </div>
