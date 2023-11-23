@@ -80,7 +80,7 @@ describe("ReviewWizardStep.vue", () => {
 
     await wrapper.vm.$nextTick();
     const displayedBusinessType = wrapper.find("#businessTypeId").text();
-    expect(displayedBusinessType).toBe("B.C. Registered Business - Corporation");
+    expect(displayedBusinessType).toBe("Corporation");
 
     wrapper.unmount();
   });

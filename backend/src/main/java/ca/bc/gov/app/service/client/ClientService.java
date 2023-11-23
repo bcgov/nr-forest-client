@@ -101,9 +101,9 @@ public class ClientService {
    */
   public Mono<CodeNameDto> getCountryByCode(String countryCode) {
     return countryCodeRepository
-            .findByCountryCode(countryCode)
-            .map(entity -> new CodeNameDto(entity.getCountryCode(),
-                                           entity.getDescription()));
+        .findByCountryCode(countryCode)
+        .map(entity -> new CodeNameDto(entity.getCountryCode(),
+                                       entity.getDescription()));
   }
 
   /**
@@ -116,15 +116,15 @@ public class ClientService {
    * any items.
    *
    * @param code The unique code of the client type to retrieve.
-   * @return A Mono emitting a {@code CodeNameDto} if a matching client type is found,
-   * or an empty Mono if no matching client type is found.
+   * @return A Mono emitting a {@code CodeNameDto} if a matching client type is found, or an
+   * empty result if no match is found.
    * @see CodeNameDto
    */
   public Mono<CodeNameDto> getClientTypeByCode(String code) {
     return clientTypeCodeRepository
-            .findByCode(code)
-            .map(entity -> new CodeNameDto(entity.getCode(),
-                                           entity.getDescription()));
+        .findByCode(code)
+        .map(entity -> new CodeNameDto(entity.getCode(),
+                                       entity.getDescription()));
   }
   
   /**
