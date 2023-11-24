@@ -108,7 +108,6 @@ public class ClientService {
 
   /**
    * Retrieves a client type by its unique code.
-   *
    * This method queries the clientTypeCodeRepository to find a client type entity
    * with the specified code. If a matching entity is found, it is converted to a
    * {@code CodeNameDto} object containing the code and description, and wrapped
