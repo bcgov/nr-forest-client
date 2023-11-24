@@ -116,7 +116,7 @@ public class ClientService {
    *
    * @param code The unique code of the client type to retrieve.
    * @return A Mono emitting a {@code CodeNameDto} if a matching client type is found, or an
-   * empty result if no match is found.
+   *         empty result if no match is found.
    * @see CodeNameDto
    */
   public Mono<CodeNameDto> getClientTypeByCode(String code) {
