@@ -13,8 +13,8 @@ insert into nrfc.submission_status_code (submission_status_code, description, ef
 insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('D', 'Deleted', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
 insert into nrfc.submission_status_code (submission_status_code, description, effective_date, create_user) values ('N', 'New', current_timestamp, 'mariamar') on conflict (submission_status_code) do nothing;
 
-insert into nrfc.business_type_code (business_type_code, description, effective_date, create_user) values ('R', 'Registered Business', current_timestamp, 'mariamar') on conflict (business_type_code) do nothing;
-insert into nrfc.business_type_code (business_type_code, description, effective_date, create_user) values ('U', 'Unegistered Business', current_timestamp, 'mariamar') on conflict (business_type_code) do nothing;
+insert into nrfc.business_type_code (business_type_code, description, effective_date, create_user) values ('R', 'B.C. Registered business', current_timestamp, 'mariamar') on conflict (business_type_code) do nothing;
+insert into nrfc.business_type_code (business_type_code, description, effective_date, create_user) values ('U', 'Unregistered sole proprietorship', current_timestamp, 'mariamar') on conflict (business_type_code) do nothing;
 
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('A', 'Association', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('B', 'First Nation Band', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;

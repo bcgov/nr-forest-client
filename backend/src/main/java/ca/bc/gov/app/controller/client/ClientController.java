@@ -61,6 +61,12 @@ public class ClientController {
         .listProvinces(countryCode, page, size);
   }
 
+  @GetMapping("/getClientTypeByCode/{code}")
+  public Mono<CodeNameDto> getClientTypeByCode(
+      @PathVariable String code) {
+    return clientService.getClientTypeByCode(code);
+  }
+  
   @GetMapping("/activeClientTypeCodes")
   public Flux<CodeNameDto> findActiveClientTypeCodes() {
     return clientService

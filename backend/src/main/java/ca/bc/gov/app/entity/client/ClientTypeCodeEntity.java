@@ -1,6 +1,8 @@
 package ca.bc.gov.app.entity.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,4 +29,11 @@ public class ClientTypeCodeEntity extends ExpirableBaseEntity {
   @Column("client_type_code")
   private String code;
 
+  public ClientTypeCodeEntity(
+      @NotNull @Size(min = 1, max = 4) String code,
+      @NotNull String description) {
+    this.code = code;
+    this.description = description;
+  }
+  
 }

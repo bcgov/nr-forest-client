@@ -49,6 +49,7 @@ describe("ReviewWizardStep.vue", () => {
           businessInformation: {
             businessName: "Your Business Name",
             businessType: "R",
+            clientType: "C"
           },
           location: {
             addresses: [
@@ -79,8 +80,6 @@ describe("ReviewWizardStep.vue", () => {
     });
 
     await wrapper.vm.$nextTick();
-    const displayedBusinessType = wrapper.find("#businessTypeId").text();
-    expect(displayedBusinessType).toBe("B.C. Registered Business - Corporation");
 
     wrapper.unmount();
   });

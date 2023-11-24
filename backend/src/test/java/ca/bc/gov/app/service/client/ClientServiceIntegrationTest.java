@@ -5,7 +5,9 @@ import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.dto.client.CodeNameDto;
+import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
 import ca.bc.gov.app.entity.client.CountryCodeEntity;
+import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import java.time.LocalDate;
 import java.util.stream.Stream;
@@ -28,6 +30,9 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
   
   @Mock
   private CountryCodeRepository countryCodeRepository;
+  
+  @Mock
+  private ClientTypeCodeRepository clientTypeCodeRepository;
 
   @ParameterizedTest
   @MethodSource("date")
@@ -50,6 +55,23 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     service
         .getCountryByCode("CA")
+            .as(StepVerifier::create)
+        .expectNext(expectedDto)
+        .verifyComplete();
+  }
+  
+  @Test
+  void testGetClientTypeByCode() {
+
+    ClientTypeCodeEntity clientTypeCodeEntity = new ClientTypeCodeEntity("CA", "Canada");
+    CodeNameDto expectedDto = new CodeNameDto("RSP", "Registered sole proprietorship");
+
+    when(clientTypeCodeRepository
+        .findByCode("RSP"))
+        .thenReturn(Mono.just(clientTypeCodeEntity));
+
+    service
+        .getClientTypeByCode("RSP")
             .as(StepVerifier::create)
         .expectNext(expectedDto)
         .verifyComplete();
