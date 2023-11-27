@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, reactive, type Ref } from 'vue'
+import { ref, watch, computed, reactive } from 'vue'
 // Carbon
 import '@carbon/web-components/es/components/text-input/index'
 // Composables
@@ -218,14 +218,14 @@ const basicValidators = computed(() => {
 });
 
 const onBlurPart = (datePart: DatePart) => (partNewValue: string) => {
-  const datePartRef = datePartRefs[datePart]
-  datePartRef.value = partNewValue
+  const datePartRef = datePartRefs[datePart];
+  datePartRef.value = partNewValue;
 
   validation[datePart] = validatePart(datePart);
 
   selectedValue.value = buildFullDate();
   if (areAllPartsValid()) {
-    validateBusiness(selectedValue.value)
+    validateBusiness(selectedValue.value);
   }
   isUserEvent.value = true;
 };
@@ -290,16 +290,16 @@ const selectDay = selectValue(DatePart.day);
   color: var(--cds-text-error,#da1e28);
 }
 
-[id$="Year"] {
+:deep([id$="Year"]) {
   width: 7.5rem;
 }
-[id$="Month"], [id$="Day"] {
+:deep([id$="Month"]), :deep([id$="Day"]) {
   width: 5.625rem;
 }
-cds-text-input {
+:deep(cds-text-input) {
   display: block;
 }
-cds-text-input::part(svg) {
+:deep(cds-text-input::part(svg)) {
   right: 1rem;
 }
 </style>
@@ -307,76 +307,33 @@ cds-text-input::part(svg) {
 <template>
   <div>
     <div class="grouping-02" v-if="enabled" :id="id">
-      <div class="input-group">
-        <div class="cds--text-input__label-wrapper">
-          <label :id="id + 'YearLabel'" :for="id + 'Year'" class="cds-text-input-label">
-            {{ enabled ? 'Year' : null }}
-            <span v-if="requiredLabel" class="cds-text-input-required-label"> (required) </span>
-          </label>
-        </div>
-        <cds-text-input
-          v-if="enabled"
-          :id="id + 'Year'"
-          type="tel"
-          placeholder="YYYY"
-          :value="selectedYear"
-          :helper-text="tip"
-          :disabled="!enabled"
-          :invalid="!!partError[DatePart.year]"
-          @blur="(event: any) => onBlurYear(event.target.value)"
-          @input="selectYear"
-          :data-focus="id + 'Year'"
-          :data-scroll="id + 'Year'"
-          :data-id="'input-' + id + '-year'"
-          v-shadow="4"
-        />
-      </div>
-      <div class="input-group">
-        <div class="cds--text-input__label-wrapper">
-          <label :id="id + 'MonthLabel'" :for="id + 'Month'" class="cds-text-input-label">
-            {{ enabled ? 'Month' : null }}
-            <span v-if="requiredLabel" class="cds-text-input-required-label"> (required) </span>
-          </label>
-        </div>
-        <cds-text-input
-          v-if="enabled"
-          :id="id + 'Month'"
-          type="tel"
-          placeholder="MM"
-          :value="selectedMonth"
-          :disabled="!enabled"
-          :invalid="!!partError[DatePart.month]"
-          @blur="(event: any) => onBlurMonth(event.target.value)"
-          @input="selectMonth"
-          :data-focus="id + 'Month'"
-          :data-scroll="id + 'Month'"
-          :data-id="'input-' + id + '-month'"
-          v-shadow="4"
-        />
-      </div>
-      <div class="input-group">
-        <div class="cds--text-input__label-wrapper">
-          <label :id="id + 'DayLabel'" :for="id + 'Day'" class="cds-text-input-label">
-            {{ enabled ? 'Day' : null }}
-            <span v-if="requiredLabel" class="cds-text-input-required-label"> (required) </span>
-          </label>
-        </div>
-        <cds-text-input
-          v-if="enabled"
-          :id="id + 'Day'"
-          type="tel"
-          placeholder="DD"
-          :value="selectedDay"
-          :disabled="!enabled"
-          :invalid="!!partError[DatePart.day]"
-          @blur="(event: any) => onBlurDay(event.target.value)"
-          @input="selectDay"
-          :data-focus="id + 'Day'"
-          :data-scroll="id + 'Day'"
-          :data-id="'input-' + id + '-day'"
-          v-shadow="4"
-        />
-      </div>
+      <date-input-part
+        :parent-id="id"
+        datePart="year"
+        :selectedValue="selectedYear"
+        :enabled="enabled"
+        :invalid="!!partError[DatePart.year]"
+        @blur="(event: any) => onBlurYear(event.target.value)"
+        @input="selectYear"
+      />
+      <date-input-part
+        :parent-id="id"
+        datePart="month"
+        :selectedValue="selectedMonth"
+        :enabled="enabled"
+        :invalid="!!partError[DatePart.month]"
+        @blur="(event: any) => onBlurMonth(event.target.value)"
+        @input="selectMonth"
+      />
+      <date-input-part
+        :parent-id="id"
+        datePart="day"
+        :selectedValue="selectedDay"
+        :enabled="enabled"
+        :invalid="!!partError[DatePart.day]"
+        @blur="(event: any) => onBlurDay(event.target.value)"
+        @input="selectDay"
+      />
     </div>
     <div class="cds--form-requirement field-error">{{ error }}</div>
   </div>
@@ -400,5 +357,3 @@ cds-text-input::part(svg) {
     <span class="text-01">{{ selectedDay }}</span>
   </div>
 </template>
-
-<style scoped></style>
