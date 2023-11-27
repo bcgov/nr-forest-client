@@ -86,7 +86,7 @@ jobs:
       pull-requests: write
     steps:
       - name: PR Greeting
-        uses: bcgov-nr/action-pr-description-add@v1.0.0
+        uses: bcgov-nr/action-pr-description-add@v1.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           add_markdown: |
@@ -128,7 +128,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: bcgov-nr/action-builder-ghcr@v1.2.0
+      - uses: bcgov-nr/action-builder-ghcr@v1.3.0
         name: Build (${{ matrix.package }})
         with:
           package: ${{ matrix.package }}
@@ -152,7 +152,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Initializing Deployment
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -184,7 +184,7 @@ jobs:
             -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
 
       - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v1.0.3
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -196,7 +196,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
 
       - name: Deploy Backend
-        uses: bcgov-nr/action-deployer-openshift@v1.0.3
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -215,7 +215,7 @@ jobs:
             -p URL_ZONE=$((${{ github.event.number }} % 50))
 
       - name: Deploy Legacy
-        uses: bcgov-nr/action-deployer-openshift@v1.0.3
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -229,7 +229,7 @@ jobs:
             -p URL_ZONE=$((${{ github.event.number }} % 50))
 
       - name: Deploy Frontend
-        uses: bcgov-nr/action-deployer-openshift@v1.0.3
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -244,7 +244,7 @@ jobs:
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
 
       - name: Deploy Processor
-        uses: bcgov-nr/action-deployer-openshift@v1.0.3
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: processor/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
