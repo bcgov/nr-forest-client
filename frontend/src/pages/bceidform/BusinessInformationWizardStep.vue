@@ -330,18 +330,23 @@ watch([selectedOption], () => {
 
   <template
     v-if="
-      selectedOption === BusinessTypeEnum.U ||
-      (formData.businessInformation.clientType === ClientTypeEnum[ClientTypeEnum.RSP] &&
-        validation.business)
+      validation.business &&
+      (selectedOption === BusinessTypeEnum.U ||
+        formData.businessInformation.clientType === ClientTypeEnum[ClientTypeEnum.RSP])
     "
   >
-    <date-input-component
-      id="birthdate"
-      v-model="formData.businessInformation.birthdate"
-      :enabled="true"
-      :validations="[]"
-      @empty="validation.birthdate = !$event"
-      @error="validation.birthdate = !$event"
-    />
+    <div>
+      <p class="body-01 date-label">
+        We need the proprietor's birth date to confirm their identity:
+      </p>
+      <date-input-component
+        id="birthdate"
+        v-model="formData.businessInformation.birthdate"
+        :enabled="true"
+        :validations="[]"
+        @empty="validation.birthdate = !$event"
+        @error="validation.birthdate = !$event"
+      />
+    </div>
   </template>
 </template>
