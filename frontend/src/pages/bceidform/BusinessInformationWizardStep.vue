@@ -328,12 +328,20 @@ watch([selectedOption], () => {
     :enabled="false"
   />
 
-  <date-input-component
-    id="birthdate"
-    v-model="formData.businessInformation.birthdate"
-    :enabled="true"
-    :validations="[]"
-    @empty="validation.birthdate = !$event"
-    @error="validation.birthdate = !$event"
-  />
+  <template
+    v-if="
+      selectedOption === BusinessTypeEnum.U ||
+      (formData.businessInformation.clientType === ClientTypeEnum[ClientTypeEnum.RSP] &&
+        validation.business)
+    "
+  >
+    <date-input-component
+      id="birthdate"
+      v-model="formData.businessInformation.birthdate"
+      :enabled="true"
+      :validations="[]"
+      @empty="validation.birthdate = !$event"
+      @error="validation.birthdate = !$event"
+    />
+  </template>
 </template>
