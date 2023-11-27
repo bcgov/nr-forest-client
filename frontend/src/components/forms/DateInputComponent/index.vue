@@ -223,6 +223,10 @@ const onBlurPart = (datePart: DatePart) => (partNewValue: string) => {
 
   validation[datePart] = validatePart(datePart);
 
+  if (datePart !== DatePart.day && Number(selectedDay.value) > 28) {
+    validation[DatePart.day] = validatePart(DatePart.day);
+  }
+
   selectedValue.value = buildFullDate();
   if (areAllPartsValid()) {
     validateBusiness(selectedValue.value);
