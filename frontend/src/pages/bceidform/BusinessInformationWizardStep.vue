@@ -341,11 +341,12 @@ watch([selectedOption], () => {
       </p>
       <date-input-component
         id="birthdate"
+        title="Date of birth"
         v-model="formData.businessInformation.birthdate"
         :enabled="true"
         :validations="[]"
-        @empty="validation.birthdate = !$event"
-        @error="validation.birthdate = !$event"
+        @any-error="validation.birthdate = !$event"
+        @possibly-valid="validation.birthdate = $event"
       />
     </div>
   </template>

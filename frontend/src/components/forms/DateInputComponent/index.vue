@@ -20,7 +20,10 @@ import {
 // Define the input properties for this component
 const props = defineProps<{
   id: string;
-  tip?: string;
+
+  /** Used in validation messages */
+  title: string;
+
   enabled?: boolean;
   modelValue: string;
   validations: Array<Function>;
@@ -31,9 +34,24 @@ const props = defineProps<{
 
 // Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: "error", value: string | undefined): void
-  (e: "empty", value: boolean): void
-  (e: "update:model-value", value: string): void
+  /**
+   * true means one or more parts contain error.
+   * false means no parts contain error.
+   */
+  (e: "any-error", value: string | undefined): void;
+
+  /**
+   * true means one or more parts are empty.
+   * false means no parts are empty.
+   */
+  (e: "some-empty", value: boolean): void;
+
+  /**
+   * Means the currently focused part is not empty and the 2 other parts are valid.
+   */
+  (e: "possibly-valid", value: boolean): void;
+
+  (e: "update:model-value", value: string): void;
 }>();
 
 // We initialize the error message handling for validation
@@ -55,9 +73,9 @@ const setError = (errorMessage: string | undefined, datePart?: DatePart) => {
   /*
   The error should be emitted whenever it is found, instead of watching and emitting only when it
   changes.
-  Because the empty event is always emitted, even when it remains the same payload, and then we
-  rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
-  an empty one to allow subscribers to know in case the field still has the same error.
+  Because the some-empty event is always emitted, even when it remains the same payload, and then we
+  rely on some-empty(false) to consider a value "valid". In turn we need to emit a new error event after
+  an some-empty one to allow subscribers to know in case the field still has the same error.
   */
 
   if (datePart === undefined) {
@@ -79,7 +97,13 @@ const setError = (errorMessage: string | undefined, datePart?: DatePart) => {
     }
   }
 
-  emit("error", error.value);
+  // Do not emit error (falsy) if there are invalid parts.
+  // The error is currently falsy just because some date parts were not interected with yet.
+  if (!error.value && !areAllPartsValid()) {
+    return;
+  }
+
+  emit("any-error", error.value);
 };
 
 watch(
@@ -93,15 +117,14 @@ const datePartPositions = {
   [DatePart.day]: 3,
 };
 
-// const getDatePart = (datePart: DatePart) =>
-//   props.modelValue ? props.modelValue.substring(...datePartPositions[datePart]) : "";
-
 const regex = /(.*)-(.*)-(.*)/;
 
 const getDatePart = (datePart: DatePart) =>
   props.modelValue ? regex.exec(props.modelValue)[datePartPositions[datePart]] : "";
 
 // We set it as a separated ref due to props not being updatable
+const selectedValue = ref<string | null>(props.modelValue);
+
 const selectedYear = ref<string>(getDatePart(DatePart.year));
 const selectedMonth = ref<string>(getDatePart(DatePart.month));
 const selectedDay = ref<string>(getDatePart(DatePart.day));
@@ -111,15 +134,33 @@ const buildFullDate = () => `${selectedYear.value}-${selectedMonth.value}-${sele
 const areAllPartsValid = () =>
   validation[DatePart.year] && validation[DatePart.month] && validation[DatePart.day];
 
-const selectedValue = ref<string | null>(props.modelValue);
+const isAnyPartEmpty = () =>
+  isEmpty(selectedYear.value) || isEmpty(selectedMonth.value) || isEmpty(selectedDay.value);
 
 // We set the value prop as a reference for update reason
-emit("empty", isEmpty(props.modelValue));
+emit("some-empty", isAnyPartEmpty());
+
+const focusedPart = ref<DatePart | null>(null);
+
+const getPartsExcept = (datePart: DatePart) =>
+  Object.values(DatePart)
+    .filter((current) => typeof current === typeof DatePart.year) // get the type from any enum value
+    .filter((current) => current !== datePart);
 
 // This function emits the events on update
 const emitValueChange = (newValue: string): void => {
-  emit("update:model-value", newValue)
-  emit("empty", isEmpty(newValue))
+  emit("update:model-value", newValue);
+  const someEmpty = isAnyPartEmpty();
+  emit("some-empty", someEmpty);
+  let possiblyValid = false;
+  if (!someEmpty && focusedPart.value !== null) {
+    const otherParts = getPartsExcept(focusedPart.value);
+    const allOtherAreValid = otherParts.every((part) => validatePart(part as DatePart));
+    if (allOtherAreValid) {
+      possiblyValid = true;
+    }
+  }
+  emit("possibly-valid", possiblyValid);
 };
 
 // Watch for changes on the input
@@ -162,19 +203,6 @@ const datePartRefs = {
   [DatePart.day]: selectedDay,
 }
 
-const title = "Date of birth";
-
-// const validation = computed(() => {
-//   const value = {
-//     [DatePart.year]: validatePart(DatePart.year),
-//     [DatePart.month]: validatePart(DatePart.month),
-//     [DatePart.day]: false,
-//   };
-//   // The validation for day has to occur after the ones for year and month.
-//   value[DatePart.day] = validatePart(DatePart.day);
-//   return value;
-// });
-
 const validation = reactive({
   [DatePart.year]: false,
   [DatePart.month]: false,
@@ -185,45 +213,53 @@ const basicValidators = computed(() => {
   const additionalDayValidations = [];
   if (validation[DatePart.year] && validation[DatePart.month]) {
     additionalDayValidations.push(
-      isValidDayOfMonth(selectedYear.value, selectedMonth.value, `${title} must be a real date`),
+      isValidDayOfMonth(
+        selectedYear.value,
+        selectedMonth.value,
+        `${props.title} must be a real date`,
+      ),
     );
   }
   return {
     [DatePart.year]: [
-      isNotEmpty(`${title} must include a year`),
+      isNotEmpty(`${props.title} must include a year`),
       isOnlyNumbers("Year must include 4 numbers"),
       isMinSize("Year must include 4 numbers")(4),
       isMaxSize("Year must include 4 numbers")(4),
     ],
     [DatePart.month]: [
-      isNotEmpty(`${title} must include a month`),
+      isNotEmpty(`${props.title} must include a month`),
       isOnlyNumbers("Month must include 2 numbers"),
       isMinSize("Month must include 2 numbers")(2),
       isMaxSize("Month must include 2 numbers")(2),
-      isWithinRange(1, 12, `${title} must be a real date`),
+      isWithinRange(1, 12, `${props.title} must be a real date`),
     ],
     [DatePart.day]: [
-      isNotEmpty(`${title} must include a day`),
+      isNotEmpty(`${props.title} must include a day`),
       isOnlyNumbers("Day must include 2 numbers"),
       isMinSize("Day must include 2 numbers")(2),
       isMaxSize("Day must include 2 numbers")(2),
-      isWithinRange(1, 31, `${title} must be a real date`),
+      isWithinRange(1, 31, `${props.title} must be a real date`),
       ...additionalDayValidations,
     ],
   };
 });
 
 const onBlurPart = (datePart: DatePart) => (partNewValue: string) => {
+  focusedPart.value = null;
   const datePartRef = datePartRefs[datePart];
   datePartRef.value = partNewValue;
 
   validation[datePart] = validatePart(datePart);
 
-  if (datePart !== DatePart.day && Number(selectedDay.value) > 28) {
+  if (
+    datePart !== DatePart.day &&
+    Number(selectedDay.value) >= 29 &&
+    Number(selectedDay.value) <= 31
+  ) {
     validation[DatePart.day] = validatePart(DatePart.day);
   }
 
-  selectedValue.value = buildFullDate();
   if (areAllPartsValid()) {
     validateBusiness(selectedValue.value);
   }
@@ -266,9 +302,11 @@ watch(
 const isUserEvent = ref(false);
 
 const selectValue = (datePart: DatePart) => (event: any) => {
+  focusedPart.value = datePart;
   const datePartRef = datePartRefs[datePart];
   datePartRef.value = event.target.value;
   isUserEvent.value = true;
+  selectedValue.value = buildFullDate();
 };
 
 const selectYear = selectValue(DatePart.year);
