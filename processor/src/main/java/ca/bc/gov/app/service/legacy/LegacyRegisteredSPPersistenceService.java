@@ -95,6 +95,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     getUser(message, ApplicationConstant.CREATED_BY),
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
+                    .withBirthDate(submissionDetail.getBirthdate())
                     .withClientIdentification(submissionDetail.getIncorporationNumber())
                     .withClientComment(
                         String.join(" ",

@@ -14,7 +14,6 @@ import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
-import ca.bc.gov.app.entity.legacy.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientLocationEntity;
@@ -25,7 +24,10 @@ import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
+import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,6 +38,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.r2dbc.core.ReactiveInsertOperation.ReactiveInsert;
 import org.springframework.integration.support.MessageBuilder;
+import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.r2dbc.core.DatabaseClient.GenericExecuteSpec;
+import org.springframework.r2dbc.core.FetchSpec;
+import org.springframework.r2dbc.core.RowsFetchSpec;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -181,8 +187,11 @@ class LegacyAbstractPersistenceServiceTest {
   @DisplayName("create contacts")
   void shouldCreateContacts() {
     ReactiveInsert<ForestClientContactEntity> insert = mock(ReactiveInsert.class);
+    DatabaseClient dbCLient = mock(DatabaseClient.class);
+    GenericExecuteSpec execSpec = mock(GenericExecuteSpec.class);
+    FetchSpec<Map<String, Object>> fetchSpec = mock(FetchSpec.class);
 
-    when(locationContactRepository.findBySubmissionLocationId(eq(1)))
+    when(locationContactRepository.findBySubmissionLocationId(any()))
         .thenReturn(Flux.just(
                 SubmissionLocationContactEntity
                     .builder()
@@ -191,7 +200,7 @@ class LegacyAbstractPersistenceServiceTest {
                     .build()
             )
         );
-    when(contactRepository.findById(eq(1)))
+    when(contactRepository.findById(any(Integer.class)))
         .thenReturn(Mono.just(
                 SubmissionContactEntity
                     .builder()
@@ -211,6 +220,12 @@ class LegacyAbstractPersistenceServiceTest {
         .thenReturn(Mono.just(ForestClientContactEntity.builder().contactName("Text").build()));
     when(legacyR2dbcEntityTemplate.selectOne(any(), any()))
         .thenReturn(Mono.empty());
+    when(legacyR2dbcEntityTemplate.getDatabaseClient())
+        .thenReturn(dbCLient);
+    when(dbCLient.sql(any(String.class)))
+        .thenReturn(execSpec);
+    when(execSpec.fetch()).thenReturn(fetchSpec);
+    when(fetchSpec.first()).thenReturn(Mono.just(Map.of("NEXTVAL", 1)));
 
     service.createContact(
             MessageBuilder
@@ -322,7 +337,31 @@ class LegacyAbstractPersistenceServiceTest {
   @DisplayName("check client data")
   void shouldCheckClientData(
       String clientTypeCode,
-      String clientNumber) {
+      String clientNumber
+  ) {
+
+    ReactiveInsert<ForestClientContactEntity> insert = mock(ReactiveInsert.class);
+    DatabaseClient dbCLient = mock(DatabaseClient.class);
+    GenericExecuteSpec execSpec = mock(GenericExecuteSpec.class);
+    FetchSpec<Map<String, Object>> fetchSpec = mock(FetchSpec.class);
+    RowsFetchSpec<String> fetchString = mock(RowsFetchSpec.class);
+
+    when(legacyR2dbcEntityTemplate.getDatabaseClient())
+        .thenReturn(dbCLient);
+    when(dbCLient.sql(any(String.class)))
+        .thenReturn(execSpec);
+    when(execSpec.fetch()).thenReturn(fetchSpec);
+    when(fetchSpec.rowsUpdated()).thenReturn(Mono.just(1L));
+    when(execSpec.map(any(BiFunction.class)))
+        .thenReturn(fetchString);
+    when(fetchString.first()).thenReturn(Mono.just(
+
+        BooleanUtils.toString(
+            StringUtils.isNotBlank(clientNumber),
+            "00000000",
+            "00000001"
+        )
+    ));
 
     when(submissionDetailRepository.findBySubmissionId(any()))
         .thenReturn(Mono.just(
@@ -438,8 +477,7 @@ class LegacyAbstractPersistenceServiceTest {
           assertThat(message)
               .as("message")
               .isNotNull()
-              .hasFieldOrPropertyWithValue("payload",2);
-
+              .hasFieldOrPropertyWithValue("payload", 2);
 
           assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
               .as("forest client number")

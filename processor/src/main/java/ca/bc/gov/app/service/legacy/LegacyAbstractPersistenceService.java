@@ -390,19 +390,6 @@ public abstract class LegacyAbstractPersistenceService {
                     )
                 );
 
-    // Load the next contact id
-    IntFunction<Mono<String>> nextContactId = increment -> legacyR2dbcEntityTemplate
-        .selectOne(
-            Query
-                .empty()
-                .sort(Sort.by(Direction.DESC, "CLIENT_CONTACT_ID"))
-                .limit(1),
-            ForestClientContactEntity.class
-        )
-        .map(ForestClientContactEntity::getClientContactId)
-        .map(lastForestClientContactId -> String.valueOf(
-            Integer.parseInt(lastForestClientContactId) + increment));
-
     // Load the contact and converts it into a forest client contact entity
     IntFunction<Mono<ForestClientContactEntity>> toContact = contactId ->
         contactRepository
@@ -428,13 +415,12 @@ public abstract class LegacyAbstractPersistenceService {
             );
 
     // Convert the contact into a forest client contact entity and save it
-    BiFunction<SubmissionLocationContactEntity, Integer, Mono<ForestClientContactEntity>> createContact =
-        (locationContact, increment) ->
+    Function<SubmissionLocationContactEntity, Mono<ForestClientContactEntity>> createContact =
+        locationContact ->
             toContact
                 .apply(locationContact.getSubmissionContactId())
                 .flatMap(forestClientContact ->
-                    nextContactId
-                        .apply(increment)
+                        getNextContactId()
                         .doOnNext(forestClientContact::setClientContactId)
                         .thenReturn(forestClientContact)
                 )
@@ -456,21 +442,15 @@ public abstract class LegacyAbstractPersistenceService {
         .findBySubmissionLocationId(
             message.getHeaders().get(ApplicationConstant.LOCATION_ID, Integer.class)
         )
-        .index()
-        .flatMap(locationContactTuple ->
+        .flatMap(locationContactEntity ->
             forestContact
-                .apply(locationContactTuple.getT2().getSubmissionContactId())
-                .switchIfEmpty(
-                    createContact
-                        .apply(
-                            locationContactTuple.getT2(),
-                            locationContactTuple.getT1().intValue() + 1
-                        )
-                )
+                .apply(locationContactEntity.getSubmissionContactId())
+                .switchIfEmpty(createContact.apply(locationContactEntity))
         )
         .collectList()
         .thenReturn(message);
   }
+
 
   /**
    * Sends a notification to the user that the submission has been processed
@@ -525,31 +505,46 @@ public abstract class LegacyAbstractPersistenceService {
   }
 
   private Mono<String> getNextClientNumber() {
-    return legacyR2dbcEntityTemplate
-        .selectOne(
-            Query
-                .empty()
-                .sort(Sort.by(Direction.DESC, ApplicationConstant.CLIENT_NUMBER))
-                .limit(1),
-            ForestClientEntity.class
+    return
+    legacyR2dbcEntityTemplate
+        .getDatabaseClient()
+        .sql("""
+            UPDATE
+            max_client_nmbr
+            SET
+            client_number =  (SELECT LPAD(TO_NUMBER(NVL(max(CLIENT_NUMBER),'0'))+1,8,'0') FROM FOREST_CLIENT)"""
         )
-        .map(ForestClientEntity::getClientNumber)
-        .map(lastForestClientNumber -> String.format("%08d",
-            Integer.parseInt(lastForestClientNumber) + 1)
+        .fetch()
+        .rowsUpdated()
+        .then(
+            legacyR2dbcEntityTemplate
+                .getDatabaseClient()
+                .sql("SELECT client_number FROM max_client_nmbr")
+                .map((row, rowMetadata) -> row.get("client_number", String.class))
+                .first()
         );
   }
 
   private Mono<Integer> getNextDoingBusinessAs() {
+    return
+    legacyR2dbcEntityTemplate
+        .getDatabaseClient()
+        .sql("select THE.client_dba_seq.NEXTVAL from dual")
+        .fetch()
+        .first()
+        .map(row -> row.get("NEXTVAL"))
+        .map(String::valueOf)
+        .map(Integer::parseInt);
+  }
+
+  private Mono<String> getNextContactId() {
     return legacyR2dbcEntityTemplate
-        .selectOne(
-            Query
-                .empty()
-                .sort(Sort.by(Direction.DESC, "CLIENT_DBA_ID"))
-                .limit(1),
-            ClientDoingBusinessAsEntity.class
-        )
-        .map(ClientDoingBusinessAsEntity::getId)
-        .map(lastId -> lastId + 1);
+        .getDatabaseClient()
+        .sql("SELECT THE.client_contact_seq.NEXTVAL FROM dual")
+        .fetch()
+        .first()
+        .map(row -> row.get("NEXTVAL"))
+        .map(String::valueOf);
   }
 
   private Mono<ClientDoingBusinessAsEntity> createClientDoingBusinessAs(
@@ -607,6 +602,9 @@ public abstract class LegacyAbstractPersistenceService {
         .addressOne(submissionLocation.getStreetAddress())
         .city(submissionLocation.getCityName())
         .province(submissionLocation.getProvinceCode())
+        //So as not to impact HBS, set HDBS Company Code to a space if not provided
+        //as it would have been in CLI
+        .hdbsCompanyCode(" ")
         .country(
             countryList
                 .getOrDefault(
