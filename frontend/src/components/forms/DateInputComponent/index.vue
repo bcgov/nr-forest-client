@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, watch, computed, reactive } from 'vue'
+import { ref, watch, computed, reactive } from 'vue';
 // Carbon
-import '@carbon/web-components/es/components/text-input/index'
+import '@carbon/web-components/es/components/text-input/index';
 // Composables
-import { useEventBus } from '@vueuse/core'
+import { useEventBus } from '@vueuse/core';
 // Types
-import { isEmpty } from '@/dto/CommonTypesDto'
+import { isEmpty } from '@/dto/CommonTypesDto';
+import { DatePart } from "./common";
+// Validators
 import {
   isNotEmpty,
   isOnlyNumbers,
@@ -17,14 +19,14 @@ import {
 
 // Define the input properties for this component
 const props = defineProps<{
-  id: string
-  tip?: string
-  enabled?: boolean
-  modelValue: string
-  validations: Array<Function>
-  errorMessage?: string
-  mask?: string
-  requiredLabel?: boolean
+  id: string;
+  tip?: string;
+  enabled?: boolean;
+  modelValue: string;
+  validations: Array<Function>;
+  errorMessage?: string;
+  mask?: string;
+  requiredLabel?: boolean;
 }>();
 
 // Events we emit during component lifecycle
@@ -38,12 +40,6 @@ const emit = defineEmits<{
 const error = ref<string | undefined>(props.errorMessage ?? '');
 
 const revalidateBus = useEventBus<void>('revalidate-bus');
-
-enum DatePart {
-  year,
-  month,
-  day,
-};
 
 const partError = reactive({
   [DatePart.year]: "",
@@ -313,7 +309,7 @@ const selectDay = selectValue(DatePart.day);
     <div class="grouping-02" v-if="enabled" :id="id">
       <date-input-part
         :parent-id="id"
-        datePart="year"
+        :datePart="DatePart.year"
         :selectedValue="selectedYear"
         :enabled="enabled"
         :invalid="!!partError[DatePart.year]"
@@ -322,7 +318,7 @@ const selectDay = selectValue(DatePart.day);
       />
       <date-input-part
         :parent-id="id"
-        datePart="month"
+        :datePart="DatePart.month"
         :selectedValue="selectedMonth"
         :enabled="enabled"
         :invalid="!!partError[DatePart.month]"
@@ -331,7 +327,7 @@ const selectDay = selectValue(DatePart.day);
       />
       <date-input-part
         :parent-id="id"
-        datePart="day"
+        :datePart="DatePart.day"
         :selectedValue="selectedDay"
         :enabled="enabled"
         :invalid="!!partError[DatePart.day]"

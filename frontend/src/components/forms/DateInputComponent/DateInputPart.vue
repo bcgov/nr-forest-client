@@ -1,14 +1,16 @@
 <script setup lang="ts">
 // Carbon
 import '@carbon/web-components/es/components/text-input/index';
+// Types
+import { DatePart } from "./common";
 
 // Define the input properties for this component
 const props = defineProps<{
-  parentId: string
-  datePart: "year" | "month" | "day"
-  selectedValue: string
-  enabled?: boolean
-  invalid: boolean
+  parentId: string;
+  datePart: DatePart;
+  selectedValue: string;
+  enabled?: boolean;
+  invalid: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -16,14 +18,16 @@ const emit = defineEmits<{
   input: [event: Event]
 }>();
 
-const capitalizedDatePart = props.datePart[0].toUpperCase() + props.datePart.substring(1);
+const datePartName = DatePart[props.datePart];
+
+const capitalizedDatePart = datePartName[0].toUpperCase() + datePartName.substring(1);
 
 const id = props.parentId + capitalizedDatePart;
 
 const placeholders = {
-  year: "YYYY",
-  month: "MM",
-  day: "DD"
+  [DatePart.year]: "YYYY",
+  [DatePart.month]: "MM",
+  [DatePart.day]: "DD"
 };
 </script>
 
@@ -46,7 +50,7 @@ const placeholders = {
       @input="(e) => emit('input', e)"
       :data-focus="id"
       :data-scroll="id"
-      :data-id="'input-' + parentId + '-' + datePart"
+      :data-id="'input-' + parentId + '-' + datePartName"
       v-shadow="4"
     />
   </div>
