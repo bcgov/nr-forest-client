@@ -53,6 +53,7 @@ watch(
 const validation = reactive<Record<string, boolean>>({
   businessType: !!formData.value.businessInformation.businessType,
   business: !!formData.value.businessInformation.businessName,
+  birthdate: !!formData.value.businessInformation.birthdate,
 });
 
 const checkValid = () =>
@@ -325,5 +326,14 @@ watch([selectedOption], () => {
     v-model="formData.businessInformation.businessName"
     :validations="[]"
     :enabled="false"
+  />
+
+  <date-input-component
+    id="birthdate"
+    v-model="formData.businessInformation.birthdate"
+    :enabled="true"
+    :validations="[]"
+    @empty="validation.birthdate = !$event"
+    @error="validation.birthdate = !$event"
   />
 </template>
