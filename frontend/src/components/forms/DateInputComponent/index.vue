@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, computed, reactive } from 'vue';
+import { ref, watch, computed, reactive } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/text-input/index';
+import "@carbon/web-components/es/components/text-input/index";
 // Composables
-import { useEventBus } from '@vueuse/core';
+import { useEventBus } from "@vueuse/core";
 // Types
-import { isEmpty } from '@/dto/CommonTypesDto';
+import { isEmpty } from "@/dto/CommonTypesDto";
 import { DatePart } from "./common";
 // Validators
 import {
@@ -31,15 +31,15 @@ const props = defineProps<{
 
 // Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: 'error', value: string | undefined): void
-  (e: 'empty', value: boolean): void
-  (e: 'update:model-value', value: string): void
+  (e: "error", value: string | undefined): void
+  (e: "empty", value: boolean): void
+  (e: "update:model-value", value: string): void
 }>();
 
 // We initialize the error message handling for validation
-const error = ref<string | undefined>(props.errorMessage ?? '');
+const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<void>('revalidate-bus');
+const revalidateBus = useEventBus<void>("revalidate-bus");
 
 const partError = reactive({
   [DatePart.year]: "",
@@ -79,7 +79,7 @@ const setError = (errorMessage: string | undefined, datePart?: DatePart) => {
     }
   }
 
-  emit('error', error.value);
+  emit("error", error.value);
 };
 
 watch(
@@ -114,12 +114,12 @@ const areAllPartsValid = () =>
 const selectedValue = ref<string | null>(props.modelValue);
 
 // We set the value prop as a reference for update reason
-emit('empty', isEmpty(props.modelValue));
+emit("empty", isEmpty(props.modelValue));
 
 // This function emits the events on update
 const emitValueChange = (newValue: string): void => {
-  emit('update:model-value', newValue)
-  emit('empty', isEmpty(newValue))
+  emit("update:model-value", newValue)
+  emit("empty", isEmpty(newValue))
 };
 
 // Watch for changes on the input
@@ -162,7 +162,7 @@ const datePartRefs = {
   [DatePart.day]: selectedDay,
 }
 
-const title = 'Date of birth';
+const title = "Date of birth";
 
 // const validation = computed(() => {
 //   const value = {
