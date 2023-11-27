@@ -274,6 +274,32 @@ export const isNot =
     return message;
   };
 
+export const isWithinRange =
+  (minValue: number, maxValue: number, message = "Value is out of range") =>
+  (value: number | string): string => {
+    if (value >= minValue && value <= maxValue) return "";
+    return message;
+  };
+
+/**
+ * Checks if the value is a valid day for the specified year and month.
+ * i.e. it tells if the date formed by the provided year, month and day exists.
+ * 
+ * @param validYear a valid year
+ * @param validMonth a valid month
+ * @param message the error message to be returned if the validation fails.
+ */
+export const isValidDayOfMonth =
+  (validYear: string, validMonth: string, message = "Value is not a valid day in the selected month and year") =>
+  (value: string): string => {
+    const dateString = `${validYear}-${validMonth}-${value}`;
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return message;
+    const isoStringDate = date.toISOString().substring(0, 10);
+    if (isoStringDate !== dateString) return message;
+    return "";
+  };
+
 // This function will extract the field value from a DTO object
 export const getFieldValue = (path: string, value: any): string | string[] => {
   // First we set is in a temporary variable
