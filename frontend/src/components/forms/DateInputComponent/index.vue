@@ -249,6 +249,11 @@ const basicValidators = {
   ],
 };
 
+// Update validation status on setup
+validation[DatePart.year] = selectedYear.value && validatePart(DatePart.year);
+validation[DatePart.month] = selectedYear.value && validatePart(DatePart.month);
+validation[DatePart.day] = selectedYear.value && validatePart(DatePart.day);
+
 const onBlurPart = (datePart: DatePart) => (partNewValue: string) => {
   focusedPart.value = null;
   const datePartRef = datePartRefs[datePart];
