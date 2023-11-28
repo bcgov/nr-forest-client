@@ -72,38 +72,51 @@ public abstract class AbstractTestContainer {
 
   static {
 
-    Path finalFile = Paths.get("./src", "test", "resources","db","migration", "V1__init_oracle.sql").normalize();
+    Path finalFile = Paths.get("./src", "test", "resources", "db", "migration",
+        "V1__init_oracle.sql").normalize();
 
-    if (!finalFile.toFile().exists()) {
+    if (!finalFile.toFile().getParentFile().exists()) {
+      finalFile.toFile().getParentFile().mkdirs();
+    } else {
       try {
-        finalFile.toFile().getParentFile().mkdirs();
-        finalFile.toFile().createNewFile();
+        Files.list(finalFile.toFile().getParentFile().toPath())
+            .forEach(path -> {
+              try {
+                Files.delete(path);
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+            });
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        e.printStackTrace();
       }
     }
 
     Path legacyFolder =
         Paths.get("../legacy", "src", "test", "resources", "db", "migration").normalize();
 
-    try{
-      Stream<Path> legacyStream = Files.list(legacyFolder).map(Path::normalize);
-      Files
-          .write(
-              finalFile,
-              legacyStream
-                  .filter(path -> path.toFile().exists())
-                  .map(AbstractTestContainer::readAll)
-                  .flatMap(List::stream)
-                  .toList(),
-              StandardOpenOption.TRUNCATE_EXISTING
-          );
+    try {
+      Stream<Path> legacyStream = Files
+          .list(legacyFolder)
+          .map(Path::normalize);
+
+      // copy the files from legacyStream into the same folder as the finalFile
+      legacyStream
+          .forEach(path -> {
+            try {
+              Files.copy(path, finalFile.resolveSibling(path.getFileName()));
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          });
+
 
     } catch (Exception e) {
       e.printStackTrace();
     }
 
   }
+
   static final OracleContainer oracle;
   static final PostgreSQLContainer postgres;
 
@@ -116,7 +129,6 @@ public abstract class AbstractTestContainer {
 
     postgres.start();
   }
-
 
 
   static {
@@ -211,44 +223,6 @@ public abstract class AbstractTestContainer {
         .toString()
         .replace("-", "")
         .substring(24);
-  }
-
-  @SneakyThrows
-  private static void generateInitPostgres() {
-    Path finalFile = Paths.get("./src", "test", "resources", "init_pg.sql").normalize();
-
-    //File used to initialize things on postgres container
-    Path init = Paths.get("./src", "test", "resources", "postgres", "init.sql").normalize();
-    //Test specific content
-    Path tests = Paths.get("./src", "test", "resources", "postgres", "test.sql").normalize();
-    //Backend related scripts folder
-    Path backendFolder =
-        Paths.get("../backend", "src", "main", "resources", "db", "migration").normalize();
-
-    if (!finalFile.toFile().exists()) {
-      finalFile.toFile().createNewFile();
-    }
-
-    Stream<Path> initStream = Stream.of(init);
-    Stream<Path> testStream = Stream.of(tests);
-    Stream<Path> backEndStream = Files.list(backendFolder).map(Path::normalize);
-
-    Stream<Path> finalStream = Stream
-        .concat(Stream.concat(initStream, backEndStream), testStream)
-        .peek(path -> System.out.println("Processing " + path));
-
-
-    Files
-        .write(
-            finalFile,
-            finalStream
-                .map(AbstractTestContainer::readAll)
-                .flatMap(List::stream)
-                .toList(),
-            StandardOpenOption.TRUNCATE_EXISTING
-        );
-
-
   }
 
   @SneakyThrows
