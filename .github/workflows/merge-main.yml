@@ -19,7 +19,7 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
         name: Backend Coverage
         with:
           commands: |
@@ -35,7 +35,7 @@ jobs:
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/models/**,**/repository/**,**/*$*Builder*,**/BootApplication*
           sonar_project_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
         name: Legacy Coverage
         with:
           commands: |
@@ -51,7 +51,7 @@ jobs:
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/repository/**,**/*$*Builder*,**/LegacyApplication***/ApplicationConstants*
           sonar_project_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
         name: Processor Coverage
         with:
           commands: |
@@ -72,7 +72,7 @@ jobs:
     name: Frontend Unit Tests
     runs-on: ubuntu-22.04
     steps:
-      - uses: bcgov-nr/action-test-and-analyse@v1.0.0
+      - uses: bcgov-nr/action-test-and-analyse@v1.1.0
         env:
           VITE_BACKEND_URL: http://localhost:8080
           VITE_FRONTEND_URL: http://localhost:3000
@@ -153,7 +153,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -220,7 +220,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -233,7 +233,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
 
       - name: Deploy Backend
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -253,7 +253,7 @@ jobs:
             -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Legacy
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -268,7 +268,7 @@ jobs:
             -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Frontend
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -284,7 +284,7 @@ jobs:
             -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Processor
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: processor/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -328,7 +328,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -373,7 +373,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -386,7 +386,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
 
       - name: Deploy Backend
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -406,7 +406,7 @@ jobs:
             -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Legacy
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -421,7 +421,7 @@ jobs:
             -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Frontend
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -437,7 +437,7 @@ jobs:
             -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Processor
-        uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        uses: bcgov-nr/action-deployer-openshift@v1.4.0
         with:
           file: processor/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
