@@ -227,7 +227,7 @@ public class TestConstants {
         "goodStanding": true,
         "addresses": [
           {
-            "locationName": "Mailing address",
+            "locationName": "MAILING ADDRESS",
             "streetAddress": "501 Belleville Street",
             "country": {"value":"CA","text":"Canada"},
             "province": {"value":"BC","text":"British Columbia"},
@@ -245,7 +245,7 @@ public class TestConstants {
             "email": "",
             "index": 1,
             "locationNames": [{
-            "text": "Mailing address",
+            "text": "MAILING ADDRESS",
             "value": "0"
             }]
           }

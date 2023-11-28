@@ -95,7 +95,7 @@ public class ClientSubmitRequestValidator implements Validator {
       errors.rejectValue(dobFieldName, fieldIsMissingErrorMessage("Birthdate"));
     }
     else {
-      LocalDate minAgeDate = LocalDate.now().minusYears(18);
+      LocalDate minAgeDate = LocalDate.now().minusYears(19);
       if (birthdate.isAfter(minAgeDate)) {
         errors.rejectValue(dobFieldName, "Sole proprietorship must be at least 18 years old");
       }

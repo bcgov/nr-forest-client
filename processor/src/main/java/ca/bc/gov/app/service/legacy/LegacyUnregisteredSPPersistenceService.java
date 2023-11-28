@@ -92,6 +92,7 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                     getUser(message, ApplicationConstant.CREATED_BY),
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
+                    .withBirthdate(detail.getBirthdate())
                     .withLegalFirstName(ProcessorUtil.splitName(detail.getOrganizationName())[1].toUpperCase())
                     .withClientName(ProcessorUtil.splitName(detail.getOrganizationName())[0].toUpperCase())
                     .withLegalMiddleName(ProcessorUtil.splitName(detail.getOrganizationName())[2].toUpperCase())

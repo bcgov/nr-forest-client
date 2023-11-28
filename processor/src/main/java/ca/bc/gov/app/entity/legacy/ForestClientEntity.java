@@ -1,6 +1,7 @@
 package ca.bc.gov.app.entity.legacy;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +33,8 @@ public class ForestClientEntity {
   private String clientStatusCode;
   @Column("CLIENT_TYPE_CODE")
   private String clientTypeCode;
+  @Column("BIRTHDATE")
+  private LocalDate birthdate;
   @Column("CLIENT_ID_TYPE_CODE")
   private String clientIdTypeCode;
   @Column("CLIENT_IDENTIFICATION ")
