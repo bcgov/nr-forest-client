@@ -95,7 +95,7 @@ public class ClientController {
   ) {
     return clientService
         .findByClientNameOrIncorporation(name)
-        .map(client -> client.withName(client.name().toUpperCase()));
+        .map(client -> client.withName(client.name() != null ? client.name().toUpperCase() : ""));
   }
 
   @GetMapping(value = "/incorporation/{incorporationId}")

@@ -29,7 +29,6 @@ import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.WordUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -292,7 +291,7 @@ public class ClientService {
                     addressDto.addressCity(),
                     addressDto.postalCode().trim().replaceAll("\\s+", ""),
                     index.getAndIncrement(),
-                    WordUtils.capitalize(addressDto.addressType()).concat(" address")
+                    (addressDto.addressType() != null ? addressDto.addressType().toUpperCase() : "").concat(" address")
                 )
             )
             .flatMap(address -> loadCountry(address.country().text()).map(address::withCountry))
