@@ -8,7 +8,6 @@ import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientService;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.text.WordUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -96,7 +95,7 @@ public class ClientController {
   ) {
     return clientService
         .findByClientNameOrIncorporation(name)
-        .map(client -> client.withName(WordUtils.capitalize(client.name())));
+        .map(client -> client.withName(client.name().toUpperCase()));
   }
 
   @GetMapping(value = "/incorporation/{incorporationId}")
