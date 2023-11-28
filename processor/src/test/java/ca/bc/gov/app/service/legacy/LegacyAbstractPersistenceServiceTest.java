@@ -80,9 +80,10 @@ class LegacyAbstractPersistenceServiceTest {
         .thenReturn(Flux.just(new CountryCodeEntity("CA", "Canada")));
   }
 
-  @Test
+  @ParameterizedTest
+  @MethodSource("contactExisted")
   @DisplayName("create locations")
-  void shouldCreateLocations() {
+  void shouldCreateLocations(boolean locationExisted) {
     ReactiveInsert<ForestClientLocationEntity> reactiveInsert = mock(ReactiveInsert.class);
 
     when(locationRepository.findBySubmissionId(eq(2)))
@@ -102,14 +103,15 @@ class LegacyAbstractPersistenceServiceTest {
         );
     when(legacyR2dbcEntityTemplate.insert(eq(ForestClientLocationEntity.class)))
         .thenReturn(reactiveInsert);
+    ForestClientLocationEntity location = ForestClientLocationEntity.builder()
+        .clientLocnCode("00")
+        .build();
+
     when(reactiveInsert.using(any()))
-        .thenReturn(Mono.just(ForestClientLocationEntity.builder()
-                .clientLocnCode("00")
-                .build()
-            )
-        );
+        .thenReturn(Mono.just(location));
+
     when(legacyR2dbcEntityTemplate.selectOne(any(), any()))
-        .thenReturn(Mono.empty());
+        .thenReturn(locationExisted ? Mono.just(location) : Mono.empty());
 
     service
         .createLocations(
@@ -183,13 +185,31 @@ class LegacyAbstractPersistenceServiceTest {
 
   }
 
-  @Test
+  @ParameterizedTest
+  @MethodSource("contactExisted")
   @DisplayName("create contacts")
-  void shouldCreateContacts() {
+  void shouldCreateContacts(boolean contactExisted) {
     ReactiveInsert<ForestClientContactEntity> insert = mock(ReactiveInsert.class);
     DatabaseClient dbCLient = mock(DatabaseClient.class);
     GenericExecuteSpec execSpec = mock(GenericExecuteSpec.class);
     FetchSpec<Map<String, Object>> fetchSpec = mock(FetchSpec.class);
+
+    SubmissionContactEntity contact = SubmissionContactEntity
+        .builder()
+        .submissionContactId(1)
+        .submissionId(2)
+        .contactTypeCode("BL")
+        .firstName("JOHN")
+        .lastName("DOE")
+        .businessPhoneNumber("2505555555")
+        .emailAddress("mail@mail.ca")
+        .build();
+    ForestClientContactEntity contactEntity = ForestClientContactEntity
+        .builder()
+        .clientLocnCode("00")
+        .contactName("Text")
+        .build();
+
 
     when(locationContactRepository.findBySubmissionLocationId(any()))
         .thenReturn(Flux.just(
@@ -201,25 +221,14 @@ class LegacyAbstractPersistenceServiceTest {
             )
         );
     when(contactRepository.findById(any(Integer.class)))
-        .thenReturn(Mono.just(
-                SubmissionContactEntity
-                    .builder()
-                    .submissionContactId(1)
-                    .submissionId(2)
-                    .contactTypeCode("BL")
-                    .firstName("JOHN")
-                    .lastName("DOE")
-                    .businessPhoneNumber("2505555555")
-                    .emailAddress("mail@mail.ca")
-                    .build()
-            )
-        );
+        .thenReturn(Mono.just(contact));
     when(legacyR2dbcEntityTemplate.insert(ForestClientContactEntity.class))
         .thenReturn(insert);
+
     when(insert.using(any()))
-        .thenReturn(Mono.just(ForestClientContactEntity.builder().contactName("Text").build()));
+        .thenReturn(Mono.just(contactEntity));
     when(legacyR2dbcEntityTemplate.selectOne(any(), any()))
-        .thenReturn(Mono.empty());
+        .thenReturn(contactExisted ? Mono.just(contactEntity) :Mono.empty());
     when(legacyR2dbcEntityTemplate.getDatabaseClient())
         .thenReturn(dbCLient);
     when(dbCLient.sql(any(String.class)))
@@ -340,7 +349,6 @@ class LegacyAbstractPersistenceServiceTest {
       String clientNumber
   ) {
 
-    ReactiveInsert<ForestClientContactEntity> insert = mock(ReactiveInsert.class);
     DatabaseClient dbCLient = mock(DatabaseClient.class);
     GenericExecuteSpec execSpec = mock(GenericExecuteSpec.class);
     FetchSpec<Map<String, Object>> fetchSpec = mock(FetchSpec.class);
@@ -489,11 +497,80 @@ class LegacyAbstractPersistenceServiceTest {
 
   }
 
+  @ParameterizedTest
+  @MethodSource("data")
+  @DisplayName("create client that is individual")
+  void shouldTryToCreateClient(String type){
+
+    service
+        .createForestClient(
+            MessageBuilder
+                .withPayload(TestConstants.CLIENT_ENTITY)
+                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
+                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, type)
+                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000")
+                .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA")
+                .build()
+        )
+        .as(StepVerifier::create)
+        .verifyComplete();
+  }
+
+  @ParameterizedTest
+  @MethodSource("data")
+  @DisplayName("create contact that is individual")
+  void shouldTryToCreateContact(String type){
+    service
+        .createContact(
+            MessageBuilder
+                .withPayload(1)
+                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
+                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, type)
+                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000")
+                .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA")
+                .build()
+        )
+        .as(StepVerifier::create)
+        .verifyComplete();
+  }
+
+  @ParameterizedTest
+  @MethodSource("data")
+  @DisplayName("create location that is individual")
+  void shouldTryToCreateLocation(String type){
+    service
+        .createLocations(
+            MessageBuilder
+                .withPayload(1)
+                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
+                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, type)
+                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000")
+                .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA")
+                .build()
+        )
+        .as(StepVerifier::create)
+        .verifyComplete();
+  }
+
   private static Stream<Arguments> clientData() {
     return Stream.of(
         Arguments.of("C", "00000000"),
         Arguments.of("C", null)
     );
+  }
+
+  private static Stream<String> data(){
+    return Stream.of("I","RSP","USP");
+  }
+
+  private static Stream<Boolean> contactExisted() {
+    return Stream.of(true, false);
   }
 
 }
