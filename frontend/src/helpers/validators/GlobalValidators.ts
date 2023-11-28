@@ -282,6 +282,28 @@ export const isWithinRange =
   };
 
 /**
+ * Checks if the value is a possibly valid day for the specified month.
+ * Note: February 29 will always be considered valid, since this validation does not consider the year.
+ * 
+ * @param validMonth a valid month
+ * @param message the error message to be returned if the validation fails.
+ */
+export const isValidDayOfMonth =
+  (
+    validMonth: string,
+    message = "Value is not a valid day in the selected month",
+  ) =>
+  (value: string): string => {
+    const arbitraryLeapYear = 2000;
+    const dateString = `${arbitraryLeapYear}-${validMonth}-${value}`;
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return message;
+    const isoStringDate = date.toISOString().substring(0, 10);
+    if (isoStringDate !== dateString) return message;
+    return "";
+  };
+
+/**
  * Checks if the value is a valid day for the specified year and month.
  * i.e. it tells if the date formed by the provided year, month and day exists.
  * 
@@ -289,8 +311,12 @@ export const isWithinRange =
  * @param validMonth a valid month
  * @param message the error message to be returned if the validation fails.
  */
-export const isValidDayOfMonth =
-  (validYear: string, validMonth: string, message = "Value is not a valid day in the selected month and year") =>
+export const isValidDayOfMonthYear =
+  (
+    validYear: string,
+    validMonth: string,
+    message = "Value is not a valid day in the selected month and year",
+  ) =>
   (value: string): string => {
     const dateString = `${validYear}-${validMonth}-${value}`;
     const date = new Date(dateString);

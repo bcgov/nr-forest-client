@@ -345,7 +345,7 @@ watch([selectedOption], () => {
         v-model="formData.businessInformation.birthdate"
         :enabled="true"
         :validations="[]"
-        @any-error="validation.birthdate = !$event"
+        @error="validation.birthdate = !$event"
         @possibly-valid="validation.birthdate = $event"
       />
     </div>
