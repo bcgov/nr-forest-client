@@ -133,7 +133,7 @@ public abstract class AbstractTestContainer {
 
   static {
 
-    oracle = new OracleContainer("gvenzl/oracle-xe:21-slim-faststart")
+    oracle = new OracleContainer("gvenzl/oracle-xe:18.4.0-slim-faststart")
         .withDatabaseName("legacyfsa")
         .withUsername("THE")
         .withPassword(genPassword());
