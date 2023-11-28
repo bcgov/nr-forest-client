@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.apache.commons.text.WordUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -291,7 +292,7 @@ public class ClientService {
                     addressDto.addressCity(),
                     addressDto.postalCode().trim().replaceAll("\\s+", ""),
                     index.getAndIncrement(),
-                    (addressDto.addressType() != null ? addressDto.addressType().toUpperCase() : "").concat(" address")
+                    WordUtils.capitalize(addressDto.addressType()).concat(" address")
                 )
             )
             .flatMap(address -> loadCountry(address.country().text()).map(address::withCountry))
