@@ -1,15 +1,9 @@
 package ca.bc.gov.app.service.legacy;
 
 import static ca.bc.gov.app.TestConstants.SUBMISSION_CONTACT;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.status;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -17,9 +11,8 @@ import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.legacy.ClientDoingBusinessAsEntity;
+import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientLocationEntity;
-import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
@@ -28,19 +21,20 @@ import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import java.util.Map;
 import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.r2dbc.core.ReactiveInsertOperation.ReactiveInsert;
-import org.springframework.http.MediaType;
 import org.springframework.integration.support.MessageBuilder;
+import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.r2dbc.core.DatabaseClient.GenericExecuteSpec;
+import org.springframework.r2dbc.core.FetchSpec;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -274,6 +268,12 @@ class LegacyRegisteredSPPersistenceServiceTest {
     ReactiveInsert<ClientDoingBusinessAsEntity> doingBusinessInsert = mock(ReactiveInsert.class);
     ReactiveInsert<ForestClientEntity> clientInsert = mock(ReactiveInsert.class);
 
+
+    ReactiveInsert<ForestClientContactEntity> insert = mock(ReactiveInsert.class);
+    DatabaseClient dbCLient = mock(DatabaseClient.class);
+    GenericExecuteSpec execSpec = mock(GenericExecuteSpec.class);
+    FetchSpec<Map<String, Object>> fetchSpec = mock(FetchSpec.class);
+
     SubmissionDetailEntity detailEntity = SubmissionDetailEntity
         .builder()
         .submissionId(2)
@@ -300,7 +300,19 @@ class LegacyRegisteredSPPersistenceServiceTest {
                 .build()
             )
         );
-    when(clientInsert.using(any())).thenReturn(Mono.just(TestConstants.CLIENT_ENTITY));
+    when(clientInsert.using(any()))
+        .thenReturn(Mono.just(
+            TestConstants
+                .CLIENT_ENTITY
+                .withClientTypeCode("I")
+                .withClientIdTypeCode("OTHR")
+        ));
+    when(legacyR2dbcEntityTemplate.getDatabaseClient())
+        .thenReturn(dbCLient);
+    when(dbCLient.sql(any(String.class)))
+        .thenReturn(execSpec);
+    when(execSpec.fetch()).thenReturn(fetchSpec);
+    when(fetchSpec.first()).thenReturn(Mono.just(Map.of("NEXTVAL", 1)));
 
     service
         .createForestClient(

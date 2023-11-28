@@ -87,6 +87,7 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                     getUser(message, ApplicationConstant.CREATED_BY),
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
+                    .withBirthdate(detailEntity.getBirthdate())
                     .withLegalFirstName(ProcessorUtil.splitName(detailEntity.getOrganizationName())[1].toUpperCase())
                     .withClientName(ProcessorUtil.splitName(detailEntity.getOrganizationName())[0].toUpperCase())
                     .withClientComment("Individual with data acquired from BC Services Card")

@@ -1,7 +1,6 @@
 package ca.bc.gov.app.service.processor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -9,7 +8,6 @@ import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.repository.legacy.ForestClientRepository;
-import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
