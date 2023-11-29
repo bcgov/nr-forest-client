@@ -136,6 +136,30 @@ jobs:
             -Dsonar.projectKey=forest-client-frontend
           sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
           triggers: ('frontend/')
+
+      - name: Frontend Unit Coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          title: Frontend unit Test Coverage
+          delete-old-comments: true
+          github-token: ${{ github.token }}
+          lcov-file: ./frontend/reports/unit/lcov.info
+
+      - name: Frontend Component Coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          title: Frontend component Test Coverage
+          delete-old-comments: true
+          github-token: ${{ github.token }}
+          lcov-file: ./frontend/reports/component/lcov.info
+      
+      - name: Frontend E2E Coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          title: Frontend e2e Test Coverage
+          delete-old-comments: true
+          github-token: ${{ github.token }}
+          lcov-file: ./frontend/reports/e2e/lcov.info
   
   trivy:
     name: Repository Report
