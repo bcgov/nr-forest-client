@@ -6,7 +6,7 @@ import "@carbon/web-components/es/components/text-input/index";
 import { useEventBus } from "@vueuse/core";
 // Types
 import { isEmpty } from "@/dto/CommonTypesDto";
-import { DatePart } from "./common";
+import { DatePart, type DateValidator } from "./common";
 // Validators
 import {
   isNotEmpty,
@@ -27,7 +27,7 @@ const props = defineProps<{
 
   enabled?: boolean;
   modelValue: string;
-  validations: Array<Function>;
+  validations: Array<DateValidator>;
   errorMessage?: string;
   mask?: string;
   requiredLabel?: boolean;
@@ -66,6 +66,8 @@ const partError = reactive({
   [DatePart.day]: "",
 });
 
+const fullDateError = ref("");
+
 /**
  * Sets the error and emits an error event.
  * @param errorMessage - the error message
@@ -81,6 +83,7 @@ const setError = (errorMessage: string | undefined, datePart?: DatePart) => {
 
   if (datePart === undefined) {
     error.value = errorMessage;
+    fullDateError.value = errorMessage;
   }
 
   if (datePart !== undefined) {
@@ -172,7 +175,7 @@ watch([selectedValue], () => {
 // We call all the part validations
 const validatePart = (datePart: DatePart) => {
   const newValue = datePartRefs[datePart].value;
-  const error = basicValidators[datePart]
+  const error = partValidators.value[datePart]
     .map((validation) => validation(newValue))
     .filter((errorMessage) => {
       if (errorMessage) return true
@@ -183,19 +186,21 @@ const validatePart = (datePart: DatePart) => {
   return !error;
 }
 
-// We call all the business validations
-const validateBusiness = (newValue: string) => {
+// We call all the full date validations
+const validateFullDate = (newValue: string) => {
   if (props.validations) {
-    setError(
-      props.validations
+    const error = props.validations
+        .filter(({ datePart }) => datePart === undefined)
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
           if (errorMessage) return true
           return false
         })
-        .shift() ?? props.errorMessage,
-    )
+        .shift() ?? props.errorMessage;
+    setError(error);
+    return !error
   }
+  return true;
 }
 
 const datePartRefs = {
@@ -210,12 +215,15 @@ const validation = reactive({
   [DatePart.day]: false,
 });
 
-const basicValidators = {
+const validationFullDate = ref(false);
+
+const partValidators = computed(() => ({
   [DatePart.year]: [
     isNotEmpty(`${props.title} must include a year`),
     isOnlyNumbers("Year must include 4 numbers"),
     isMinSize("Year must include 4 numbers")(4),
     isMaxSize("Year must include 4 numbers")(4),
+    ...props.validations.filter(({ datePart }) => datePart === DatePart.year),
   ],
   [DatePart.month]: [
     isNotEmpty(`${props.title} must include a month`),
@@ -223,6 +231,7 @@ const basicValidators = {
     isMinSize("Month must include 2 numbers")(2),
     isMaxSize("Month must include 2 numbers")(2),
     isWithinRange(1, 12, `${props.title} must be a real date`),
+    ...props.validations.filter(({ datePart }) => datePart === DatePart.month),
   ],
   [DatePart.day]: [
     isNotEmpty(`${props.title} must include a day`),
@@ -246,13 +255,18 @@ const basicValidators = {
         `${props.title} must be a real date`,
       )(value);
     },
+    ...props.validations.filter(({ datePart }) => datePart === DatePart.day),
   ],
-};
+}));
 
 // Update validation status on setup
 validation[DatePart.year] = selectedYear.value && validatePart(DatePart.year);
 validation[DatePart.month] = selectedYear.value && validatePart(DatePart.month);
 validation[DatePart.day] = selectedYear.value && validatePart(DatePart.day);
+
+if (areAllPartsValid()) {
+  validationFullDate.value = validateFullDate(selectedValue.value);
+}
 
 const onBlurPart = (datePart: DatePart) => (partNewValue: string) => {
   focusedPart.value = null;
@@ -270,7 +284,7 @@ const onBlurPart = (datePart: DatePart) => (partNewValue: string) => {
   }
 
   if (areAllPartsValid()) {
-    validateBusiness(selectedValue.value);
+    validateFullDate(selectedValue.value);
   }
   isUserEvent.value = true;
 };
@@ -280,7 +294,7 @@ const onBlurMonth = onBlurPart(DatePart.month);
 const onBlurDay = onBlurPart(DatePart.day);
 
 revalidateBus.on(() => {
-  validateBusiness(selectedValue.value);
+  validateFullDate(selectedValue.value);
 });
 
 watch(
@@ -298,7 +312,7 @@ watch(
       validation[DatePart.day] = validatePart(DatePart.day);
 
       if (areAllPartsValid()) {
-        validateBusiness(selectedValue.value)
+        validateFullDate(selectedValue.value)
       }
     }
 
@@ -359,7 +373,7 @@ const selectDay = selectValue(DatePart.day);
         :datePart="DatePart.year"
         :selectedValue="selectedYear"
         :enabled="enabled"
-        :invalid="!!partError[DatePart.year]"
+        :invalid="!!partError[DatePart.year] || !!fullDateError"
         @blur="(event: any) => onBlurYear(event.target.value)"
         @input="selectYear"
       />
@@ -368,7 +382,7 @@ const selectDay = selectValue(DatePart.day);
         :datePart="DatePart.month"
         :selectedValue="selectedMonth"
         :enabled="enabled"
-        :invalid="!!partError[DatePart.month]"
+        :invalid="!!partError[DatePart.month] || !!fullDateError"
         @blur="(event: any) => onBlurMonth(event.target.value)"
         @input="selectMonth"
       />
@@ -377,7 +391,7 @@ const selectDay = selectValue(DatePart.day);
         :datePart="DatePart.day"
         :selectedValue="selectedDay"
         :enabled="enabled"
-        :invalid="!!partError[DatePart.day]"
+        :invalid="!!partError[DatePart.day] || !!fullDateError"
         @blur="(event: any) => onBlurDay(event.target.value)"
         @input="selectDay"
       />

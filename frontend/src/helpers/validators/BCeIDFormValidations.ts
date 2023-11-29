@@ -10,12 +10,24 @@ import {
   isNoSpecialCharacters,
   formFieldValidations,
   isNotEmptyArray,
+  isMinimumYearsAgo,
+  isDateInThePast,
+  isGreaterThan,
 } from "@/helpers/validators/GlobalValidators";
+import { DatePart } from "@/components/forms/DateInputComponent/common";
 
 
 // Step 1: Business Information
 formFieldValidations["businessInformation.businessName"] = [
   isNotEmpty("Business Name cannot be empty"),
+];
+
+const yearGreaterThan1899 = isGreaterThan(1899, "Please check the birth year");
+yearGreaterThan1899.datePart = DatePart.year;
+formFieldValidations["businessInformation.birthdate"] = [
+  yearGreaterThan1899,
+  isDateInThePast("Date of birth must be in the past"),
+  isMinimumYearsAgo(19, "You must be at least 19 years old to apply"),
 ];
 
 // Step 2: Addresses

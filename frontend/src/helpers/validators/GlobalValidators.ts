@@ -1,6 +1,11 @@
 import type { Ref } from "vue";
 import { useEventBus } from "@vueuse/core";
+import subYears from "date-fns/subYears";
+import startOfToday from "date-fns/startOfToday";
+import isBefore from "date-fns/isBefore";
+import parseISO from "date-fns/parseISO";
 import type { ValidationMessageType } from "@/dto/CommonTypesDto";
+import { DatePart } from "@/common/enums";
 
 // Defines the used regular expressions
 // @sonar-ignore-next-line
@@ -296,7 +301,7 @@ export const isValidDayOfMonth =
   (value: string): string => {
     const arbitraryLeapYear = 2000;
     const dateString = `${arbitraryLeapYear}-${validMonth}-${value}`;
-    const date = new Date(dateString);
+    const date = parseISO(dateString);
     if (isNaN(date.getTime())) return message;
     const isoStringDate = date.toISOString().substring(0, 10);
     if (isoStringDate !== dateString) return message;
@@ -319,12 +324,54 @@ export const isValidDayOfMonthYear =
   ) =>
   (value: string): string => {
     const dateString = `${validYear}-${validMonth}-${value}`;
-    const date = new Date(dateString);
+    const date = parseISO(dateString);
     if (isNaN(date.getTime())) return message;
     const isoStringDate = date.toISOString().substring(0, 10);
     if (isoStringDate !== dateString) return message;
     return "";
   };
+
+export const isMinimumYearsAgo =
+  (
+    years: number,
+    message: string | ((years: number) => string) = (years) =>
+      `Value must be at least ${years} years ago`,
+  ) =>
+  (value: string): string => {
+    const maximumDate = subYears(startOfToday(), years);
+    const valueDate = parseISO(value);
+    if (valueDate > maximumDate) {
+      if (typeof message === "function") {
+        return message(years);
+      }
+      return message;
+    }
+    return "";
+  };
+
+export const isGreaterThan =
+  (
+    compareTo: number,
+    message: string | ((year: number) => string) = (compareTo) =>
+      `Value must be greater than ${compareTo}`,
+  ) =>
+  (value: string): string => {
+    if (Number(value) > compareTo) {
+      return "";
+    }
+    if (typeof message === "function") {
+      return message(compareTo);
+    }
+    return message;
+  };
+
+export const isDateInThePast = (message: "Value must be in the past") => (value: string) => {
+  const dateValue = parseISO(value);
+  if (!isBefore(dateValue, startOfToday())) {
+    return message;
+  }
+  return "";
+};
 
 // This function will extract the field value from a DTO object
 export const getFieldValue = (path: string, value: any): string | string[] => {
