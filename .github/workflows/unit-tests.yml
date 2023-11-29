@@ -136,6 +136,14 @@ jobs:
             -Dsonar.projectKey=forest-client-frontend
           sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
           triggers: ('frontend/')
+
+      - name: Collect Cypress screenshots
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-screenshots
+          path: frontend/cypress/screenshots
+          retention-days: 2
   
   trivy:
     name: Repository Report
