@@ -5,7 +5,6 @@ import startOfToday from "date-fns/startOfToday";
 import isBefore from "date-fns/isBefore";
 import parseISO from "date-fns/parseISO";
 import type { ValidationMessageType } from "@/dto/CommonTypesDto";
-import { DatePart } from "@/common/enums";
 
 // Defines the used regular expressions
 // @sonar-ignore-next-line

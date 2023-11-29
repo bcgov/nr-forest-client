@@ -29,6 +29,10 @@ const placeholders = {
   [DatePart.month]: "MM",
   [DatePart.day]: "DD"
 };
+
+const placeholder = placeholders[props.datePart];
+
+const mask = "#".repeat(placeholder.length);
 </script>
 
 <template>
@@ -52,6 +56,7 @@ const placeholders = {
       :data-scroll="id"
       :data-id="'input-' + parentId + '-' + datePartName"
       v-shadow="4"
+      v-masked="mask"
     />
   </div>
 </template>
