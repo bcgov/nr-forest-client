@@ -297,6 +297,9 @@ const onBlurMonth = onBlurPart(DatePart.month);
 const onBlurDay = onBlurPart(DatePart.day);
 
 revalidateBus.on(() => {
+  validation[DatePart.year] = validatePart(DatePart.year);
+  validation[DatePart.month] = validatePart(DatePart.month);
+  validation[DatePart.day] = validatePart(DatePart.day);
   validateFullDate(selectedValue.value);
 });
 
