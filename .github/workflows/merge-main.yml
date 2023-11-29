@@ -19,7 +19,7 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
         name: Backend Coverage
         with:
           commands: |
@@ -34,8 +34,9 @@ jobs:
             -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/models/**,**/repository/**,**/*$*Builder*,**/BootApplication*
-          sonar_project_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
+          sonar_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
+          triggers: ('backend/')
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
         name: Legacy Coverage
         with:
           commands: |
@@ -50,8 +51,9 @@ jobs:
             -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/repository/**,**/*$*Builder*,**/LegacyApplication***/ApplicationConstants*
-          sonar_project_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
+          sonar_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
+          triggers: ('legacy/')
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
         name: Processor Coverage
         with:
           commands: |
@@ -66,7 +68,8 @@ jobs:
             -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions=**/configuration/**,**/dto/**,**/entity/**,**/repository/**,**/*$*Builder*,**/ProcessApplication***/ApplicationConstant*
-          sonar_project_token: ${{ secrets.SONAR_TOKEN_PROCESSOR }}
+          sonar_token: ${{ secrets.SONAR_TOKEN_PROCESSOR }}
+          triggers: ('processor/')
 
   tests-frontend:
     name: Frontend Unit Tests
@@ -91,6 +94,7 @@ jobs:
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-frontend
           sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+          triggers: ('frontend/')
 
   codeql:
     name: Semantic Code Analysis
