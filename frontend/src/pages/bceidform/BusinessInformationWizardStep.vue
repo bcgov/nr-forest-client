@@ -201,6 +201,25 @@ watch([selectedOption], () => {
     showAutoCompleteInfo.value = true;
   }
 });
+
+const showBirthDate = computed(
+  () =>
+    validation.business &&
+    (selectedOption.value === BusinessTypeEnum.U ||
+      formData.value.businessInformation.clientType === ClientTypeEnum[ClientTypeEnum.RSP]),
+);
+
+watch(showBirthDate, (value) => {
+  if (value) {
+    validation.birthdate = !!formData.value.businessInformation.birthdate;
+  } else {
+    // Reset birth date.
+    formData.value.businessInformation.birthdate = "";
+
+    // Consider birth date valid so it doesn't interfere with the overall validation status.
+    validation.birthdate = true;
+  }
+});
 </script>
 
 <template>
