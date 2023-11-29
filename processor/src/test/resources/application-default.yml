@@ -12,6 +12,7 @@ spring:
     user: ${ca.bc.gov.nrs.oracle.username}
     password: ${ca.bc.gov.nrs.oracle.password}
     url: jdbc:oracle:thin:@${ca.bc.gov.nrs.oracle.host}:${ca.bc.gov.nrs.oracle.port}/${ca.bc.gov.nrs.oracle.service}
+    locations: classpath:db/migration
 
 
 ca:

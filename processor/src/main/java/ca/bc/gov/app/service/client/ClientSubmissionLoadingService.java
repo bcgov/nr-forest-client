@@ -5,7 +5,6 @@ import ca.bc.gov.app.dto.EmailRequestDto;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
-import java.time.LocalDate;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

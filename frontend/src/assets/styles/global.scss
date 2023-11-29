@@ -45,6 +45,8 @@
   --light-theme-text-text-disabled: rgba(19, 19, 21, 0.25);
   --light-theme-text-text-on-color: #FFFFFF;
 
+  --cds-body-02-font-size: 0.875rem;
+
   //Buttons
   --cds-button-disabled: #c6c6c8;
 
@@ -950,7 +952,7 @@ cds-modal-close-button::part(button) {
 }
 
 cds-modal-footer {
-  padding: 3rem 1rem 1rem 1rem;
+  padding: 1rem 1rem 1rem 1rem;
 }
 
 cds-modal-footer-button::part(button) {

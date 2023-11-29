@@ -5,7 +5,6 @@ import static java.util.function.Predicate.not;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.entity.legacy.ClientDoingBusinessAsEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

@@ -24,7 +24,7 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
         name: Backend Coverage
         with:
           commands: |
@@ -39,8 +39,10 @@ jobs:
             -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/models/**,**/repository/**,**/*$*Builder*,**/BootApplication*
-          sonar_project_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
+          sonar_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
+          triggers: ('backend/')
+          
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
         name: Legacy Coverage
         with:
           commands: |
@@ -55,8 +57,10 @@ jobs:
             -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/repository/**,**/*$*Builder*,**/LegacyApplication***/ApplicationConstants*
-          sonar_project_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
+          sonar_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
+          triggers: ('legacy/')
+
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
         name: Processor Coverage
         with:
           commands: |
@@ -71,7 +75,8 @@ jobs:
             -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions=**/configuration/**,**/dto/**,**/exception/**,**/entity/**,**/repository/**,**/*$*Builder*,**/ProcessApplication***/ApplicationConstant*
-          sonar_project_token: ${{ secrets.SONAR_TOKEN_PROCESSOR }}
+          sonar_token: ${{ secrets.SONAR_TOKEN_PROCESSOR }}
+          triggers: ('processor/')
 
       - name: Archive CycloneDX
         continue-on-error: true
@@ -91,7 +96,7 @@ jobs:
           path: (backend|legacy|processor)/**/checkstyle-result.xml
       
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v4
         continue-on-error: true
         if: success() || failure() # always run even if the previous step fails
         with:
@@ -104,7 +109,7 @@ jobs:
       - name: Add coverage to PR
         id: jacoco
         continue-on-error: true
-        uses: madrapps/jacoco-report@v1.3
+        uses: madrapps/jacoco-report@v1.6
         with:
           paths: (backend|legacy|processor)/target/coverage-reports/merged-test-report/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -116,7 +121,7 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
-      - uses: bcgov-nr/action-test-and-analyse@v1.0.0
+      - uses: bcgov-nr/action-test-and-analyse@v1.1.0
         env:
           VITE_BACKEND_URL: http://localhost:8080
           VITE_FRONTEND_URL: http://localhost:3000
@@ -136,6 +141,30 @@ jobs:
             -Dsonar.projectKey=forest-client-frontend
           sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
           triggers: ('frontend/')
+
+      - name: Frontend Unit Coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          title: Frontend unit Test Coverage
+          delete-old-comments: true
+          github-token: ${{ github.token }}
+          lcov-file: ./frontend/reports/unit/lcov.info
+
+      - name: Frontend Component Coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          title: Frontend component Test Coverage
+          delete-old-comments: true
+          github-token: ${{ github.token }}
+          lcov-file: ./frontend/reports/component/lcov.info
+      
+      - name: Frontend E2E Coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          title: Frontend e2e Test Coverage
+          delete-old-comments: true
+          github-token: ${{ github.token }}
+          lcov-file: ./frontend/reports/e2e/lcov.info
   
   trivy:
     name: Repository Report
@@ -143,10 +172,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.12.0
+        uses: aquasecurity/trivy-action@0.14.0
         with:
           scan-type: "fs"
           format: "sarif"
