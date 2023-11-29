@@ -157,7 +157,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                             .withLegalFirstName(contact[0])
                             .withClientName(contact[1])
                             .withClientTypeCode("I")
-                            .withClientIdTypeCode("OTHR")
+                            .withClientIdTypeCode("BCRE")
                             .withClientNumber(message.getHeaders()
                                 .get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
                     )

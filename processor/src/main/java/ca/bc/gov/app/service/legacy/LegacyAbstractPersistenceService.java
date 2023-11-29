@@ -585,7 +585,7 @@ public abstract class LegacyAbstractPersistenceService {
            StringUtils.equalsIgnoreCase(
                forestClient
                    .getClientIdTypeCode(),
-               "OTHR"
+               "BCRE"
            );
   }
 

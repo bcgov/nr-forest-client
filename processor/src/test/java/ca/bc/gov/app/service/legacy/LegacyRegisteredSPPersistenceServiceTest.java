@@ -125,7 +125,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .isNotNull()
               .hasFieldOrPropertyWithValue("clientName", "BAXTER")
               .hasFieldOrPropertyWithValue("legalFirstName", "JAMES")
-              .hasFieldOrPropertyWithValue("clientIdTypeCode", "OTHR")
+              .hasFieldOrPropertyWithValue("clientIdTypeCode", "BCRE")
               .hasFieldOrPropertyWithValue("clientIdentification", "FM00184546")
               .hasFieldOrPropertyWithValue("registryCompanyTypeCode", "FM")
               .hasFieldOrPropertyWithValue("corpRegnNmbr", "00184546")
@@ -215,7 +215,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .isNotNull()
               .hasFieldOrPropertyWithValue("clientName", "BAXTER")
               .hasFieldOrPropertyWithValue("legalFirstName", "JAMES")
-              .hasFieldOrPropertyWithValue("clientIdTypeCode", "OTHR")
+              .hasFieldOrPropertyWithValue("clientIdTypeCode", "BCRE")
               .hasFieldOrPropertyWithValue("clientIdentification", "FM00184546")
               .hasFieldOrPropertyWithValue("registryCompanyTypeCode", "FM")
               .hasFieldOrPropertyWithValue("corpRegnNmbr", "00184546")
@@ -305,7 +305,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
             TestConstants
                 .CLIENT_ENTITY
                 .withClientTypeCode("I")
-                .withClientIdTypeCode("OTHR")
+                .withClientIdTypeCode("BCRE")
         ));
     when(legacyR2dbcEntityTemplate.getDatabaseClient())
         .thenReturn(dbCLient);
@@ -321,7 +321,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
                     TestConstants
                         .CLIENT_ENTITY
                         .withClientTypeCode("I")
-                        .withClientIdTypeCode("OTHR")
+                        .withClientIdTypeCode("BCRE")
                 )
                 .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
                 .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
