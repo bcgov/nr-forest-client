@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, watch, computed, reactive } from "vue";
+// Imported components
+import DateInputPart from "./DateInputPart.vue";
 // Carbon
 import "@carbon/web-components/es/components/text-input/index";
 // Composables
 import { useEventBus } from "@vueuse/core";
+import { useFocus } from "@/composables/useFocus";
 // Types
 import { isEmpty } from "@/dto/CommonTypesDto";
 import { DatePart, type DateValidator } from "./common";
@@ -324,17 +327,43 @@ watch(
 // Tells whether the current change was done manually by the user.
 const isUserEvent = ref(false);
 
+const partLength = {
+  [DatePart.year]: 4,
+  [DatePart.month]: 2,
+  [DatePart.day]: 2,
+};
+
+const { setFocusedComponent } = useFocus();
+
 const selectValue = (datePart: DatePart) => (event: any) => {
   focusedPart.value = datePart;
   const datePartRef = datePartRefs[datePart];
   datePartRef.value = event.target.value;
   isUserEvent.value = true;
   selectedValue.value = buildFullDate();
+  if (datePartRef.value.length >= partLength[datePart]) {
+    const nextDatePartIndex = datePart + 1;
+    if (DatePart[nextDatePartIndex] !== undefined) {
+      const nextDatePart = nextDatePartIndex as DatePart;
+      const nextComponent = datePartComponentRefs[nextDatePart].value;
+      if (nextComponent) {
+        setFocusedComponent(nextComponent.id)
+      }
+    }
+  }
 };
 
 const selectYear = selectValue(DatePart.year);
 const selectMonth = selectValue(DatePart.month);
 const selectDay = selectValue(DatePart.day);
+
+const datePartComponentRefs = {
+  [DatePart.year]: ref<InstanceType<typeof DateInputPart> | null>(null),
+  [DatePart.month]: ref<InstanceType<typeof DateInputPart> | null>(null),
+  [DatePart.day]: ref<InstanceType<typeof DateInputPart> | null>(null),
+};
+
+const datePartOrder = [DatePart.year, DatePart.month, DatePart.day];
 </script>
 
 <style scoped>
@@ -369,6 +398,7 @@ const selectDay = selectValue(DatePart.day);
   <div>
     <div class="grouping-02" v-if="enabled" :id="id">
       <date-input-part
+        :ref="datePartComponentRefs[DatePart.year]"
         :parent-id="id"
         :datePart="DatePart.year"
         :selectedValue="selectedYear"
@@ -378,6 +408,7 @@ const selectDay = selectValue(DatePart.day);
         @input="selectYear"
       />
       <date-input-part
+        :ref="datePartComponentRefs[DatePart.month]"
         :parent-id="id"
         :datePart="DatePart.month"
         :selectedValue="selectedMonth"
@@ -387,6 +418,7 @@ const selectDay = selectValue(DatePart.day);
         @input="selectMonth"
       />
       <date-input-part
+        :ref="datePartComponentRefs[DatePart.day]"
         :parent-id="id"
         :datePart="DatePart.day"
         :selectedValue="selectedDay"

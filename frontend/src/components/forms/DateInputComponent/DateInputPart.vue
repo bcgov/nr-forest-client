@@ -24,6 +24,10 @@ const capitalizedDatePart = datePartName[0].toUpperCase() + datePartName.substri
 
 const id = props.parentId + capitalizedDatePart;
 
+defineExpose({
+  id,
+});
+
 const placeholders = {
   [DatePart.year]: "YYYY",
   [DatePart.month]: "MM",
