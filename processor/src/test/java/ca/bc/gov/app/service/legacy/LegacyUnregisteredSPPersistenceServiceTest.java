@@ -1,7 +1,7 @@
 package ca.bc.gov.app.service.legacy;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -59,13 +59,13 @@ class LegacyUnregisteredSPPersistenceServiceTest {
   @ParameterizedTest(name = "type: {0} expected: {1}")
   @MethodSource("byType")
   @DisplayName("filter by type")
-  void shouldFilterByType(String type, boolean expected){
+  void shouldFilterByType(String type, boolean expected) {
     assertEquals(expected, service.filterByType(type));
   }
 
   @Test
   @DisplayName("get next channel")
-  void shouldGetNextChannel(){
+  void shouldGetNextChannel() {
     assertEquals(ApplicationConstant.SUBMISSION_LEGACY_USP_CHANNEL, service.getNextChannel());
   }
 
@@ -93,6 +93,7 @@ class LegacyUnregisteredSPPersistenceServiceTest {
                 .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000001")
                 .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
                 .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow")
                 .build()
         )
         .as(StepVerifier::create)
@@ -106,7 +107,8 @@ class LegacyUnregisteredSPPersistenceServiceTest {
               .hasFieldOrPropertyWithValue("clientName", "BAXTER")
               .hasFieldOrPropertyWithValue("legalFirstName", "JAMES")
               .hasFieldOrPropertyWithValue("legalMiddleName", StringUtils.EMPTY)
-              .hasFieldOrPropertyWithValue("clientComment","Sole proprietorship with data acquired from BC Business eID")
+              .hasFieldOrPropertyWithValue("clientComment",
+                  "Jhon Snow submitted the sole proprietor with data acquired from BC Business eID")
               .hasFieldOrPropertyWithValue("clientTypeCode", "I")
               .hasFieldOrPropertyWithValue("clientNumber", "00000001");
 
@@ -142,7 +144,7 @@ class LegacyUnregisteredSPPersistenceServiceTest {
         .verifyComplete();
   }
 
-  private static Stream<Arguments> byType(){
+  private static Stream<Arguments> byType() {
     return Stream.of(
         Arguments.of("I", false),
         Arguments.of("C", false),

@@ -93,7 +93,10 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                         detailEntity.getOrganizationName())[1].toUpperCase())
                     .withClientName(ProcessorUtil.splitName(
                         detailEntity.getOrganizationName())[0].toUpperCase())
-                    .withClientComment("Individual with data acquired from BC Services Card")
+                    .withClientComment(
+                        getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
+                        " submitted the individual with data acquired from BC Services Card"
+                    )
                     .withClientTypeCode("I")
                     .withClientIdTypeCode("BCSC")
                     //Assuming that individuals can only be created by BCSC users

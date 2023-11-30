@@ -387,6 +387,15 @@ class LegacyAbstractPersistenceServiceTest {
     when(legacyR2dbcEntityTemplate.selectOne(any(), any()))
         .thenReturn(
             Mono.just(ForestClientEntity.builder().clientNumber("00000000").build()));
+    when(contactRepository.findFirstBySubmissionId(any()))
+        .thenReturn(Mono.just(
+            SubmissionContactEntity
+                .builder()
+                .firstName("Jhon")
+                .lastName("Snow")
+                .build()
+            )
+        );
 
     service
         .checkClientData(
@@ -437,6 +446,12 @@ class LegacyAbstractPersistenceServiceTest {
               .isNotNull()
               .isInstanceOf(Boolean.class)
               .isEqualTo(StringUtils.isNotBlank(clientNumber));
+
+          assertThat(message.getHeaders().get(ApplicationConstant.CLIENT_SUBMITTER_NAME))
+              .as("client submitter name")
+              .isNotNull()
+              .isInstanceOf(String.class)
+              .isEqualTo("Jhon Snow");
         })
         .verifyComplete();
   }

@@ -59,13 +59,13 @@ class LegacyClientPersistenceServiceTest {
   @ParameterizedTest(name = "type: {0} expected: {1}")
   @MethodSource("byType")
   @DisplayName("filter by type")
-  void shouldFilterByType(String type, boolean expected){
+  void shouldFilterByType(String type, boolean expected) {
     assertEquals(expected, service.filterByType(type));
   }
 
   @Test
   @DisplayName("get next channel")
-  void shouldGetNextChannel(){
+  void shouldGetNextChannel() {
     assertEquals(ApplicationConstant.SUBMISSION_LEGACY_OTHER_CHANNEL, service.getNextChannel());
   }
 
@@ -96,6 +96,7 @@ class LegacyClientPersistenceServiceTest {
                 .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000001")
                 .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
                 .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow")
                 .build()
         )
         .as(StepVerifier::create)
@@ -111,7 +112,8 @@ class LegacyClientPersistenceServiceTest {
               .hasFieldOrPropertyWithValue("registryCompanyTypeCode", "FM")
               .hasFieldOrPropertyWithValue("corpRegnNmbr", "0159297")
               .hasFieldOrPropertyWithValue("clientNumber", "00000001")
-              .hasFieldOrPropertyWithValue("clientComment", "Client details acquired from BC Registry FM0159297");
+              .hasFieldOrPropertyWithValue("clientComment",
+                  "Jhon Snow submitted the client details acquired from BC Registry FM0159297");
 
           assertThat(message.getHeaders().get(ApplicationConstant.SUBMISSION_ID))
               .isNotNull()
@@ -145,7 +147,7 @@ class LegacyClientPersistenceServiceTest {
         .verifyComplete();
   }
 
-  private static Stream<Arguments> byType(){
+  private static Stream<Arguments> byType() {
     return Stream.of(
         Arguments.of("I", false),
         Arguments.of("C", true),

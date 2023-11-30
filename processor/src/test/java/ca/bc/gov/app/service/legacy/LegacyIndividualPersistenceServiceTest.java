@@ -95,6 +95,7 @@ class LegacyIndividualPersistenceServiceTest {
                 .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000001")
                 .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
                 .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow")
                 .build()
         )
         .as(StepVerifier::create)
@@ -108,7 +109,7 @@ class LegacyIndividualPersistenceServiceTest {
               .hasFieldOrPropertyWithValue("clientName", "BAXTER")
               .hasFieldOrPropertyWithValue("legalFirstName", "JAMES")
               .hasFieldOrPropertyWithValue("clientComment",
-                  "Individual with data acquired from BC Services Card")
+                  "Jhon Snow submitted the individual with data acquired from BC Services Card")
               .hasFieldOrPropertyWithValue("clientTypeCode", "I")
               .hasFieldOrPropertyWithValue("clientNumber", "00000001")
               .hasFieldOrPropertyWithValue("clientIdTypeCode", "BCSC")

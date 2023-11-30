@@ -99,7 +99,9 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     .withClientIdentification(submissionDetail.getIncorporationNumber())
                     .withClientComment(
                         String.join(" ",
-                            "Sole proprietorship registered on BC Registry with number",
+                            getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME),
+                            "submitted the",
+                            "sole proprietor registered on BC Registry with number",
                             submissionDetail.getIncorporationNumber(),
                             "and company name",
                             submissionDetail.getOrganizationName().toUpperCase()
