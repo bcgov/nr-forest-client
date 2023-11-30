@@ -220,27 +220,31 @@ const validation = reactive({
 
 const validationFullDate = ref(false);
 
+const year4DigitsMessage = "Year must have 4 digits";
+const month2DigitsMessage = "Month must have 2 digits. For example, 01 for January";
+const day2DigitsMessage = "Day must have 2 digits";
+
 const partValidators = computed(() => ({
   [DatePart.year]: [
     isNotEmpty(`${props.title} must include a year`),
-    isOnlyNumbers("Year must include 4 numbers"),
-    isMinSize("Year must include 4 numbers")(4),
-    isMaxSize("Year must include 4 numbers")(4),
+    isOnlyNumbers(year4DigitsMessage),
+    isMinSize(year4DigitsMessage)(4),
+    isMaxSize(year4DigitsMessage)(4),
     ...props.validations.filter(({ datePart }) => datePart === DatePart.year),
   ],
   [DatePart.month]: [
     isNotEmpty(`${props.title} must include a month`),
-    isOnlyNumbers("Month must include 2 numbers"),
-    isMinSize("Month must include 2 numbers")(2),
-    isMaxSize("Month must include 2 numbers")(2),
+    isOnlyNumbers(month2DigitsMessage),
+    isMinSize(month2DigitsMessage)(2),
+    isMaxSize(month2DigitsMessage)(2),
     isWithinRange(1, 12, `${props.title} must be a real date`),
     ...props.validations.filter(({ datePart }) => datePart === DatePart.month),
   ],
   [DatePart.day]: [
     isNotEmpty(`${props.title} must include a day`),
-    isOnlyNumbers("Day must include 2 numbers"),
-    isMinSize("Day must include 2 numbers")(2),
-    isMaxSize("Day must include 2 numbers")(2),
+    isOnlyNumbers(day2DigitsMessage),
+    isMinSize(day2DigitsMessage)(2),
+    isMaxSize(day2DigitsMessage)(2),
     isWithinRange(1, 31, `${props.title} must be a real date`),
     (value: string) => {
       if (!validation[DatePart.month]) {
