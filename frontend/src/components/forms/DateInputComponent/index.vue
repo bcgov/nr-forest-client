@@ -104,7 +104,7 @@ const setError = (errorMessage: string | undefined, datePart?: DatePart) => {
     }
 
     if (error.value) {
-      // Stop highlighting all parts because the current error is part-specific.
+      // Stop highlighting all parts because now we have a part-specific error, thus we can't validate the full date.
       fullDateError.value = "";
     }
   }
