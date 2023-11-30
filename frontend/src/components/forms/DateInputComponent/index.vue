@@ -102,6 +102,11 @@ const setError = (errorMessage: string | undefined, datePart?: DatePart) => {
     } else {
       error.value = errorMessage;
     }
+
+    if (error.value) {
+      // Stop highlighting all parts because the current error is part-specific.
+      fullDateError.value = "";
+    }
   }
 
   // Do not emit error (falsy) if there are invalid parts.
