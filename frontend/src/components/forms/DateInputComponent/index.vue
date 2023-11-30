@@ -129,7 +129,7 @@ const datePartPositions = {
   [DatePart.day]: 3,
 };
 
-const regex = /(.*)-(.*)-(.*)/;
+const regex = /(.{0-4})-(.{0-2})-(.{0-2})/;
 
 const getDatePart = (datePart: DatePart) =>
   props.modelValue ? regex.exec(props.modelValue)[datePartPositions[datePart]] : "";
