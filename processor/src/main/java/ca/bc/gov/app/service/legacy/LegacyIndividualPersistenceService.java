@@ -52,12 +52,13 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
 
   /**
    * This method is responsible for filtering the submission based on the type.
+   *
    * @param clientTypeCode - the client type code.
    * @return - true if the type is I, otherwise false.
    */
   @Override
   boolean filterByType(String clientTypeCode) {
-    return StringUtils.equalsIgnoreCase(clientTypeCode,"I");
+    return StringUtils.equalsIgnoreCase(clientTypeCode, "I");
   }
 
   @Override
@@ -88,11 +89,19 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
                     .withBirthdate(detailEntity.getBirthdate())
-                    .withLegalFirstName(ProcessorUtil.splitName(detailEntity.getOrganizationName())[1].toUpperCase())
-                    .withClientName(ProcessorUtil.splitName(detailEntity.getOrganizationName())[0].toUpperCase())
+                    .withLegalFirstName(ProcessorUtil.splitName(
+                        detailEntity.getOrganizationName())[1].toUpperCase())
+                    .withClientName(ProcessorUtil.splitName(
+                        detailEntity.getOrganizationName())[0].toUpperCase())
                     .withClientComment("Individual with data acquired from BC Services Card")
                     .withClientTypeCode("I")
-                    .withClientNumber(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
+                    .withClientIdTypeCode("BCSC")
+                    //Assuming that individuals can only be created by BCSC users
+                    .withClientIdentification(
+                        getUser(message, ApplicationConstant.CREATED_BY).replace("bcsc\\",
+                            StringUtils.EMPTY))
+                    .withClientNumber(message.getHeaders()
+                        .get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
             )
             .map(forestClient ->
                 MessageBuilder

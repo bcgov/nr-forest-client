@@ -1,14 +1,13 @@
 package ca.bc.gov.app.service.legacy;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
@@ -23,7 +22,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
-import org.springframework.data.r2dbc.core.ReactiveInsertOperation.ReactiveInsert;
 import org.springframework.integration.support.MessageBuilder;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -60,22 +58,22 @@ class LegacyIndividualPersistenceServiceTest {
   @ParameterizedTest(name = "type: {0} expected: {1}")
   @MethodSource("byType")
   @DisplayName("filter by type")
-  void shouldFilterByType(String type, boolean expected){
+  void shouldFilterByType(String type, boolean expected) {
     assertEquals(expected, service.filterByType(type));
   }
 
 
   @Test
   @DisplayName("get next channel")
-  void shouldGetNextChannel(){
-    assertEquals(ApplicationConstant.SUBMISSION_LEGACY_INDIVIDUAL_CHANNEL, service.getNextChannel());
+  void shouldGetNextChannel() {
+    assertEquals(ApplicationConstant.SUBMISSION_LEGACY_INDIVIDUAL_CHANNEL,
+        service.getNextChannel());
   }
 
 
   @Test
   @DisplayName("create forest client")
   void shouldCreateForestClient() {
-    ReactiveInsert<ForestClientEntity> reactiveInsert = mock(ReactiveInsert.class);
 
     SubmissionDetailEntity entity = SubmissionDetailEntity.builder()
         .submissionId(2)
@@ -109,9 +107,13 @@ class LegacyIndividualPersistenceServiceTest {
               .isNotNull()
               .hasFieldOrPropertyWithValue("clientName", "BAXTER")
               .hasFieldOrPropertyWithValue("legalFirstName", "JAMES")
-              .hasFieldOrPropertyWithValue("clientComment", "Individual with data acquired from BC Services Card")
+              .hasFieldOrPropertyWithValue("clientComment",
+                  "Individual with data acquired from BC Services Card")
               .hasFieldOrPropertyWithValue("clientTypeCode", "I")
-              .hasFieldOrPropertyWithValue("clientNumber", "00000001");
+              .hasFieldOrPropertyWithValue("clientNumber", "00000001")
+              .hasFieldOrPropertyWithValue("clientIdTypeCode", "BCSC")
+              .hasFieldOrPropertyWithValue("clientIdentification",
+                  ApplicationConstant.PROCESSOR_USER_NAME);
 
           assertThat(message.getHeaders().get(ApplicationConstant.SUBMISSION_ID))
               .isNotNull()
@@ -145,7 +147,7 @@ class LegacyIndividualPersistenceServiceTest {
         .verifyComplete();
   }
 
-  private static Stream<Arguments> byType(){
+  private static Stream<Arguments> byType() {
     return Stream.of(
         Arguments.of("I", true),
         Arguments.of("C", false),
