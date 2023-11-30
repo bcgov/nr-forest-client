@@ -53,6 +53,7 @@ watch(
 const validation = reactive<Record<string, boolean>>({
   businessType: !!formData.value.businessInformation.businessType,
   business: !!formData.value.businessInformation.businessName,
+  birthdate: !!formData.value.businessInformation.birthdate,
 });
 
 const checkValid = () =>
@@ -200,6 +201,25 @@ watch([selectedOption], () => {
     showAutoCompleteInfo.value = true;
   }
 });
+
+const showBirthDate = computed(
+  () =>
+    validation.business &&
+    (selectedOption.value === BusinessTypeEnum.U ||
+      formData.value.businessInformation.clientType === ClientTypeEnum[ClientTypeEnum.RSP]),
+);
+
+watch(showBirthDate, (value) => {
+  if (value) {
+    validation.birthdate = !!formData.value.businessInformation.birthdate;
+  } else {
+    // Reset birth date.
+    formData.value.businessInformation.birthdate = "";
+
+    // Consider birth date valid so it doesn't interfere with the overall validation status.
+    validation.birthdate = true;
+  }
+});
 </script>
 
 <template>
@@ -326,4 +346,28 @@ watch([selectedOption], () => {
     :validations="[]"
     :enabled="false"
   />
+
+  <template
+    v-if="
+      validation.business &&
+      (selectedOption === BusinessTypeEnum.U ||
+        formData.businessInformation.clientType === ClientTypeEnum[ClientTypeEnum.RSP])
+    "
+  >
+    <div>
+      <p class="body-01 date-label">
+        We need the proprietor's birth date to confirm their identity:
+      </p>
+      <date-input-component
+        id="birthdate"
+        title="Date of birth"
+        v-model="formData.businessInformation.birthdate"
+        :enabled="true"
+        :validations="[...getValidations('businessInformation.birthdate')]"
+        :year-validations="[...getValidations('businessInformation.birthdate.year')]"
+        @error="validation.birthdate = !$event"
+        @possibly-valid="validation.birthdate = $event"
+      />
+    </div>
+  </template>
 </template>
