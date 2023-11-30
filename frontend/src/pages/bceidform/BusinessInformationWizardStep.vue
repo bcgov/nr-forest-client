@@ -363,9 +363,8 @@ watch(showBirthDate, (value) => {
         title="Date of birth"
         v-model="formData.businessInformation.birthdate"
         :enabled="true"
-        :validations="[
-          ...getValidations('businessInformation.birthdate'),
-        ]"
+        :validations="[...getValidations('businessInformation.birthdate')]"
+        :year-validations="[...getValidations('businessInformation.birthdate.year')]"
         @error="validation.birthdate = !$event"
         @possibly-valid="validation.birthdate = $event"
       />

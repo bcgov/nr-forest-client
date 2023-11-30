@@ -9,7 +9,7 @@ import { useEventBus } from "@vueuse/core";
 import { useFocus } from "@/composables/useFocus";
 // Types
 import { isEmpty } from "@/dto/CommonTypesDto";
-import { DatePart, type DateValidator } from "./common";
+import { DatePart } from "./common";
 // Validators
 import {
   isNotEmpty,
@@ -22,19 +22,29 @@ import {
 } from "@/helpers/validators/GlobalValidators";
 
 // Define the input properties for this component
-const props = defineProps<{
-  id: string;
+const props = withDefaults(
+  defineProps<{
+    id: string;
 
-  /** Used in validation messages */
-  title: string;
+    /** Used in validation messages */
+    title: string;
 
-  enabled?: boolean;
-  modelValue: string;
-  validations: Array<DateValidator>;
-  errorMessage?: string;
-  mask?: string;
-  requiredLabel?: boolean;
-}>();
+    enabled?: boolean;
+    modelValue: string;
+    validations: Array<Function>;
+    yearValidations: Array<Function>;
+    monthValidations: Array<Function>;
+    dayValidations: Array<Function>;
+    errorMessage?: string;
+    mask?: string;
+    requiredLabel?: boolean;
+  }>(),
+  {
+    yearValidations: [],
+    monthValidations: [],
+    dayValidations: [],
+  },
+);
 
 // Events we emit during component lifecycle
 const emit = defineEmits<{
@@ -192,13 +202,13 @@ const validatePart = (datePart: DatePart) => {
     .shift();
   setError(error, datePart);
   return !error;
-}
+};
 
 // We call all the full date validations
 const validateFullDate = (newValue: string) => {
   if (props.validations) {
-    const error = props.validations
-        .filter(({ datePart }) => datePart === undefined)
+    const error =
+      props.validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
           if (errorMessage) return true
@@ -206,16 +216,16 @@ const validateFullDate = (newValue: string) => {
         })
         .shift() ?? props.errorMessage;
     setError(error);
-    return !error
+    return !error;
   }
   return true;
-}
+};
 
 const datePartRefs = {
   [DatePart.year]: selectedYear,
   [DatePart.month]: selectedMonth,
   [DatePart.day]: selectedDay,
-}
+};
 
 const validation = reactive({
   [DatePart.year]: false,
@@ -235,7 +245,7 @@ const partValidators = computed(() => ({
     isOnlyNumbers(year4DigitsMessage),
     isMinSize(year4DigitsMessage)(4),
     isMaxSize(year4DigitsMessage)(4),
-    ...props.validations.filter(({ datePart }) => datePart === DatePart.year),
+    ...props.yearValidations,
   ],
   [DatePart.month]: [
     isNotEmpty(`${props.title} must include a month`),
@@ -243,7 +253,7 @@ const partValidators = computed(() => ({
     isMinSize(month2DigitsMessage)(2),
     isMaxSize(month2DigitsMessage)(2),
     isWithinRange(1, 12, `${props.title} must be a real date`),
-    ...props.validations.filter(({ datePart }) => datePart === DatePart.month),
+    ...props.monthValidations,
   ],
   [DatePart.day]: [
     isNotEmpty(`${props.title} must include a day`),
@@ -267,7 +277,7 @@ const partValidators = computed(() => ({
         `${props.title} must be a real date`,
       )(value);
     },
-    ...props.validations.filter(({ datePart }) => datePart === DatePart.day),
+    ...props.dayValidations,
   ],
 }));
 
