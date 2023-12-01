@@ -19,7 +19,11 @@ import {
   isWithinRange,
   isValidDayOfMonth,
   isValidDayOfMonthYear,
+  isNot,
 } from "@/helpers/validators/GlobalValidators";
+// Date utility
+import getDaysInMonth from "date-fns/getDaysInMonth";
+import parseISO from "date-fns/parseISO";
 
 // Define the input properties for this component
 const props = withDefaults(
@@ -252,7 +256,7 @@ const partValidators = computed(() => ({
     isOnlyNumbers(month2DigitsMessage),
     isMinSize(month2DigitsMessage)(2),
     isMaxSize(month2DigitsMessage)(2),
-    isWithinRange(1, 12, `${props.title} must be a real date`),
+    isWithinRange(1, 12, `Month must be between 01 and 12`),
     ...props.monthValidations,
   ],
   [DatePart.day]: [
@@ -260,22 +264,28 @@ const partValidators = computed(() => ({
     isOnlyNumbers(day2DigitsMessage),
     isMinSize(day2DigitsMessage)(2),
     isMaxSize(day2DigitsMessage)(2),
-    isWithinRange(1, 31, `${props.title} must be a real date`),
-    (value: string) => {
-      if (!validation[DatePart.month]) {
-        return "";
-      }
-      return isValidDayOfMonth(selectedMonth.value, `${props.title} must be a real date`)(value);
-    },
+    isNot("00", "Day can't be 00"),
     (value: string) => {
       if (!validation[DatePart.year] || !validation[DatePart.month]) {
         return "";
       }
+      const yearMonthDate = parseISO(`${selectedYear.value}-${selectedMonth.value}`);
       return isValidDayOfMonthYear(
         selectedYear.value,
         selectedMonth.value,
-        `${props.title} must be a real date`,
+        `Day can't be greater than ${getDaysInMonth(yearMonthDate)}`,
       )(value);
+    },
+    (value: string) => {
+      if (!validation[DatePart.month]) {
+        return "";
+      }
+      const arbitraryLeapYear = 2000;
+      const yearMonthDate = parseISO(`${arbitraryLeapYear}-${selectedMonth.value}`);
+      return isValidDayOfMonth(
+        selectedMonth.value,
+        `Day can't be greater than ${getDaysInMonth(yearMonthDate)}`,
+      )(value)
     },
     ...props.dayValidations,
   ],
@@ -299,8 +309,8 @@ const onBlurPart = (datePart: DatePart) => (partNewValue: string) => {
 
   if (
     datePart !== DatePart.day &&
-    Number(selectedDay.value) >= 29 &&
-    Number(selectedDay.value) <= 31
+    ((Number(selectedDay.value) >= 29 && Number(selectedDay.value) <= 31) || // Might have become valid/invalid.
+      partError[DatePart.day]) // Or might need to just update the error message.
   ) {
     validation[DatePart.day] = validatePart(DatePart.day);
   }
