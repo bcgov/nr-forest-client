@@ -32,17 +32,17 @@ const props = withDefaults(
     enabled?: boolean;
     modelValue: string;
     validations: Array<Function>;
-    yearValidations: Array<Function>;
-    monthValidations: Array<Function>;
-    dayValidations: Array<Function>;
+    yearValidations?: Array<Function>;
+    monthValidations?: Array<Function>;
+    dayValidations?: Array<Function>;
     errorMessage?: string;
     mask?: string;
     requiredLabel?: boolean;
   }>(),
   {
-    yearValidations: [],
-    monthValidations: [],
-    dayValidations: [],
+    yearValidations: () => [],
+    monthValidations: () => [],
+    dayValidations: () => [],
   },
 );
 
@@ -139,7 +139,7 @@ const datePartPositions = {
   [DatePart.day]: 3,
 };
 
-const regex = /(.{0-4})-(.{0-2})-(.{0-2})/;
+const regex = /(.{0,4})-(.{0,2})-(.{0,2})/;
 
 const getDatePart = (datePart: DatePart) =>
   props.modelValue ? regex.exec(props.modelValue)[datePartPositions[datePart]] : "";

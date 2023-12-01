@@ -59,6 +59,9 @@ onMounted(() => {
       <p class="body-compact-01" id="clientTypeId">
         {{ clientType.text }}
       </p>
+      <p class="body-compact-01" id="birthdate" v-if="formData.businessInformation.birthdate">
+        Proprietor’s birthdate: {{ formData.businessInformation.birthdate }}
+      </p>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(0)">
