@@ -40,7 +40,6 @@ const props = withDefaults(
     monthValidations?: Array<Function>;
     dayValidations?: Array<Function>;
     errorMessage?: string;
-    mask?: string;
     requiredLabel?: boolean;
   }>(),
   {
@@ -346,6 +345,8 @@ watch(
       selectedDay.value = getDatePart(DatePart.day);
       validation[DatePart.day] = validatePart(DatePart.day);
 
+      selectedValue.value = props.modelValue;
+
       if (areAllPartsValid()) {
         validateFullDate(selectedValue.value)
       }
@@ -394,8 +395,6 @@ const datePartComponentRefs = {
   [DatePart.month]: ref<InstanceType<typeof DateInputPart> | null>(null),
   [DatePart.day]: ref<InstanceType<typeof DateInputPart> | null>(null),
 };
-
-const datePartOrder = [DatePart.year, DatePart.month, DatePart.day];
 </script>
 
 <style scoped>
