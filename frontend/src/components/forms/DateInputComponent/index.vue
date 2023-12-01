@@ -32,17 +32,17 @@ const props = withDefaults(
     enabled?: boolean;
     modelValue: string;
     validations: Array<Function>;
-    yearValidations: Array<Function>;
-    monthValidations: Array<Function>;
-    dayValidations: Array<Function>;
+    yearValidations?: Array<Function>;
+    monthValidations?: Array<Function>;
+    dayValidations?: Array<Function>;
     errorMessage?: string;
     mask?: string;
     requiredLabel?: boolean;
   }>(),
   {
-    yearValidations: [],
-    monthValidations: [],
-    dayValidations: [],
+    yearValidations: () => [],
+    monthValidations: () => [],
+    dayValidations: () => [],
   },
 );
 
