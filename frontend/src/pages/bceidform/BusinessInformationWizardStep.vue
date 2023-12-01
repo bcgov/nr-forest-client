@@ -213,10 +213,10 @@ watch(showBirthDate, (value) => {
   if (value) {
     validation.birthdate = !!formData.value.businessInformation.birthdate;
   } else {
-    // Reset birth date.
+    // Reset birthdate.
     formData.value.businessInformation.birthdate = "";
 
-    // Consider birth date valid so it doesn't interfere with the overall validation status.
+    // Consider birthdate valid so it doesn't interfere with the overall validation status.
     validation.birthdate = true;
   }
 });
@@ -356,7 +356,7 @@ watch(showBirthDate, (value) => {
   >
     <div>
       <p class="body-01 date-label">
-        We need the proprietor's birth date to confirm their identity:
+        We need the proprietor's birthdate to confirm their identity:
       </p>
       <date-input-component
         id="birthdate"
