@@ -97,7 +97,7 @@ public class ClientSubmitRequestValidator implements Validator {
     else {
       LocalDate minAgeDate = LocalDate.now().minusYears(19);
       if (birthdate.isAfter(minAgeDate)) {
-        errors.rejectValue(dobFieldName, "Sole proprietorship must be at least 18 years old");
+        errors.rejectValue(dobFieldName, "Sole proprietorship must be at least 19 years old");
       }
     }
   }
