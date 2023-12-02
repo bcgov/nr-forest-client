@@ -50,6 +50,12 @@ describe("General Form", () => {
 
     cy.wait("@selectCompany");
 
+    cy.get("#birthdate").should("be.visible");
+
+    cy.get("#birthdateYear").shadow().find("input").should("have.value", "").type("2001");
+    cy.get("#birthdateMonth").shadow().find("input").should("have.value", "").type("05");
+    cy.get("#birthdateDay").shadow().find("input").should("have.value", "").type("30");
+
     cy.get('[data-test="wizard-next-button"]').should("be.visible").click();
 
     cy.logout();

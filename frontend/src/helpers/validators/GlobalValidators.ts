@@ -1,5 +1,9 @@
 import type { Ref } from "vue";
 import { useEventBus } from "@vueuse/core";
+import subYears from "date-fns/subYears";
+import startOfToday from "date-fns/startOfToday";
+import isBefore from "date-fns/isBefore";
+import parseISO from "date-fns/parseISO";
 import type { ValidationMessageType } from "@/dto/CommonTypesDto";
 
 // Defines the used regular expressions
@@ -273,6 +277,100 @@ export const isNot =
     if (value !== referenceValue) return "";
     return message;
   };
+
+export const isWithinRange =
+  (minValue: number, maxValue: number, message = "Value is out of range") =>
+  (value: number | string): string => {
+    if (value >= minValue && value <= maxValue) return "";
+    return message;
+  };
+
+/**
+ * Checks if the value is a possibly valid day for the specified month.
+ * Note: February 29 will always be considered valid, since this validation does not consider the year.
+ * 
+ * @param validMonth a valid month
+ * @param message the error message to be returned if the validation fails.
+ */
+export const isValidDayOfMonth =
+  (
+    validMonth: string,
+    message = "Value is not a valid day in the selected month",
+  ) =>
+  (value: string): string => {
+    const arbitraryLeapYear = 2000;
+    const dateString = `${arbitraryLeapYear}-${validMonth}-${value}`;
+    const date = parseISO(dateString);
+    if (isNaN(date.getTime())) return message;
+    const isoStringDate = date.toISOString().substring(0, 10);
+    if (isoStringDate !== dateString) return message;
+    return "";
+  };
+
+/**
+ * Checks if the value is a valid day for the specified year and month.
+ * i.e. it tells if the date formed by the provided year, month and day exists.
+ * 
+ * @param validYear a valid year
+ * @param validMonth a valid month
+ * @param message the error message to be returned if the validation fails.
+ */
+export const isValidDayOfMonthYear =
+  (
+    validYear: string,
+    validMonth: string,
+    message = "Value is not a valid day in the selected month and year",
+  ) =>
+  (value: string): string => {
+    const dateString = `${validYear}-${validMonth}-${value}`;
+    const date = parseISO(dateString);
+    if (isNaN(date.getTime())) return message;
+    const isoStringDate = date.toISOString().substring(0, 10);
+    if (isoStringDate !== dateString) return message;
+    return "";
+  };
+
+export const isMinimumYearsAgo =
+  (
+    years: number,
+    message: string | ((years: number) => string) = (years) =>
+      `Value must be at least ${years} years ago`,
+  ) =>
+  (value: string): string => {
+    const maximumDate = subYears(startOfToday(), years);
+    const valueDate = parseISO(value);
+    if (valueDate > maximumDate) {
+      if (typeof message === "function") {
+        return message(years);
+      }
+      return message;
+    }
+    return "";
+  };
+
+export const isGreaterThan =
+  (
+    compareTo: number,
+    message: string | ((year: number) => string) = (compareTo) =>
+      `Value must be greater than ${compareTo}`,
+  ) =>
+  (value: string): string => {
+    if (Number(value) > compareTo) {
+      return "";
+    }
+    if (typeof message === "function") {
+      return message(compareTo);
+    }
+    return message;
+  };
+
+export const isDateInThePast = (message: "Value must be in the past") => (value: string) => {
+  const dateValue = parseISO(value);
+  if (!isBefore(dateValue, startOfToday())) {
+    return message;
+  }
+  return "";
+};
 
 // This function will extract the field value from a DTO object
 export const getFieldValue = (path: string, value: any): string | string[] => {

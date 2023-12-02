@@ -24,7 +24,7 @@ jobs:
         run: |
           echo "url_zone=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Pull request size and stability labels
         uses: actions/labeler@v4
@@ -41,14 +41,14 @@ jobs:
           type_labels: '{"feat": "feature", "fix": "fix", "bug": "fix", "doc": "documentation", "ci": "ci", "chore": "chore", "breaking": "breaking", "BREAKING CHANGE": "breaking"}'
 
       - name: Checkout branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: refs/heads/${{ github.head_ref }}
 
       - name: Conventional Changelog Update
         id: changelog
         continue-on-error: true
-        uses: TriPSs/conventional-changelog-action@v3
+        uses: TriPSs/conventional-changelog-action@v4
         with:
           github-token: ${{ github.token }}
           output-file: "CHANGELOG.md"
@@ -58,7 +58,7 @@ jobs:
           git-branch: refs/heads/${{ github.head_ref }}
 
       - name: Checkout pr
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
       
@@ -126,9 +126,9 @@ jobs:
             triggers: ('backend/')
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: bcgov-nr/action-builder-ghcr@v1.3.0
+      - uses: bcgov-nr/action-builder-ghcr@v2.0.0
         name: Build (${{ matrix.package }})
         with:
           package: ${{ matrix.package }}
@@ -150,9 +150,9 @@ jobs:
       ZONE: dev
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Initializing Deployment
-        uses: bcgov-nr/action-deployer-openshift@v1.4.0
+        uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -184,7 +184,7 @@ jobs:
             -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
 
       - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v1.4.0
+        uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -196,7 +196,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
 
       - name: Deploy Backend
-        uses: bcgov-nr/action-deployer-openshift@v1.4.0
+        uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -215,7 +215,7 @@ jobs:
             -p URL_ZONE=$((${{ github.event.number }} % 50))
 
       - name: Deploy Legacy
-        uses: bcgov-nr/action-deployer-openshift@v1.4.0
+        uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -229,7 +229,7 @@ jobs:
             -p URL_ZONE=$((${{ github.event.number }} % 50))
 
       - name: Deploy Frontend
-        uses: bcgov-nr/action-deployer-openshift@v1.4.0
+        uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -244,7 +244,7 @@ jobs:
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
 
       - name: Deploy Processor
-        uses: bcgov-nr/action-deployer-openshift@v1.4.0
+        uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
           file: processor/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -270,9 +270,9 @@ jobs:
       PREFIX: ${{ github.event.repository.name }}-${{ needs.pr-validation.outputs.url_zone }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         name: Start node
         with:
           node-version: 18
@@ -286,7 +286,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish Cypress Results
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v4
         continue-on-error: true
         if: always()
         with:
