@@ -44,7 +44,7 @@ public class ChesEmailResendJob {
                               emailLogEntity.getEmailLogId()
                               ).subscribe();
       }).subscribe();
-    }, 0, 10, TimeUnit.SECONDS);
+    }, 0, 1, TimeUnit.HOURS);
 
   }
 
