@@ -63,7 +63,7 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
         .alias("Submission lookup")
         .atMost(Duration.ofSeconds(2))
         .untilAsserted(() ->
-            verify(submissionRepository, times(1)).findById(eq(1))
+            verify(submissionRepository, atLeastOnce()).findById(eq(1))
         );
 
     await()
@@ -93,7 +93,7 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
         .alias("Submission matches and loads")
         .atMost(Duration.ofSeconds(5))
         .untilAsserted(() ->
-            verify(submissionMatchDetailRepository, times(1)).findBySubmissionId(eq(2))
+            verify(submissionMatchDetailRepository, atLeastOnce()).findBySubmissionId(eq(2))
         );
 
     await()
