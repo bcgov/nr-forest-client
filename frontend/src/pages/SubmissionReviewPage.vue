@@ -379,7 +379,7 @@ const tagColor = (status: string) =>{
             :key="location.name">
             
               <hr class="grouping-divider" v-if="location.index > 0"/>
-              <p class="body-02">{{location.name}}</p>
+              <p class="body-01">{{location.name}}</p>
               <div class="grouping-07">
                 <read-only-component label="Country">
                     <span class="body-compact-01">{{ location.country }}</span>
@@ -413,7 +413,7 @@ const tagColor = (status: string) =>{
             :key="contact.index">
 
               <hr class="grouping-divider" v-if="contact.index > 0"/>
-              <p class="body-02">{{contact.firstName}} {{ contact.lastName }}</p>
+              <p class="body-01">{{contact.firstName}} {{ contact.lastName }}</p>
               <div class="grouping-07">
                 <read-only-component label="Associated location">
                     <span class="body-compact-01">{{ contact.locations.join(", ") }}</span>
