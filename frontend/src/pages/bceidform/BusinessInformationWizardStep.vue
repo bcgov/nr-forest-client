@@ -355,7 +355,7 @@ watch(showBirthDate, (value) => {
     "
   >
     <div>
-      <p class="body-01 date-label">
+      <p class="body-02 date-label">
         We need the proprietor's birthdate to confirm their identity:
       </p>
       <date-input-component
