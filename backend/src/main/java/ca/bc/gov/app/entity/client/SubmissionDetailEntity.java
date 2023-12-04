@@ -43,4 +43,5 @@ public class SubmissionDetailEntity {
   
   @Column("birthdate")
   private LocalDate birthdate;
+  
 }

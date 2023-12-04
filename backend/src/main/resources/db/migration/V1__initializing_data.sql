@@ -16,6 +16,7 @@ drop table if exists nrfc.province_code;
 drop table if exists nrfc.country_code;
 drop table if exists nrfc.contact_type_code;
 drop table if exists nrfc.business_type_code;
+drop table if exists nrfc.email_log;
 
 drop sequence if exists nrfc.submission_id_seq;
 drop sequence if exists nrfc.submission_detail_id_seq;
@@ -24,6 +25,7 @@ drop sequence if exists nrfc.submission_location_seq;
 drop sequence if exists nrfc.submission_location_contact_seq;--Legacy sequence
 drop sequence if exists nrfc.submission_contact_seq;
 drop sequence if exists nrfc.submission_submitter_seq;
+drop sequence if exists nrfc.email_log_id_seq;
 ---
 
 create schema if not exists nrfc;
@@ -319,6 +321,24 @@ comment on table nrfc.submission_location_contact_xref is 'Identifies the multip
 comment on column nrfc.submission_location_contact_xref.submission_location_id is 'Incremental id generated for a location of a client.';
 comment on column nrfc.submission_location_contact_xref.submission_contact_id is 'Incremental id generated for the contact details of a client.';
 
+create table if not exists nrfc.email_log (
+    email_log_id            integer		    not null,
+    email_id                varchar(40)     null,
+    email_sent_ind          varchar(1)      null,
+	exception_message       text            null,
+    template_name           varchar(40)     not null,
+    email_address           varchar(100)    not null,
+    email_subject           varchar(40)     not null,
+    email_variables         JSONB           null,
+    create_timestamp        timestamp       default current_timestamp not null,
+    update_timestamp        timestamp       default current_timestamp,
+	constraint email_log_id_pk primary key (email_log_id)
+);
+
+comment on table nrfc.email_log is 'TODO';
+comment on column nrfc.email_log.email_log_id is 'Incremental id generated for a submission email log.';
+-- TODO: Complete comments
+
 -- 
 -- SEQUENCES
 --
@@ -337,3 +357,6 @@ alter table nrfc.submission_location alter column submission_location_id set def
 
 create sequence if not exists nrfc.submission_contact_seq start 1;
 alter table nrfc.submission_contact alter column submission_contact_id set default nextval('nrfc.submission_contact_seq');
+
+create sequence if not exists nrfc.email_log_id_seq start 1;
+alter table nrfc.email_log alter column email_log_id set default nextval('nrfc.email_log_id_seq');

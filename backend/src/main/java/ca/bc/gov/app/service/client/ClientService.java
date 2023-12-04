@@ -380,18 +380,22 @@ public class ClientService {
   private Function<ForestClientDto, Mono<ForestClientDto>> triggerEmailDuplicatedClient(
       String email, String userName) {
 
-    return legacy -> chesService.sendEmail("matched",
-            email,
-            "Client number application can’t go ahead",
-            legacy.description(userName))
+    return legacy -> chesService.sendEmail(
+                                   "matched",
+                                    email,
+                                    "Client number application can’t go ahead",
+                                    legacy.description(userName), 
+                                    null)
         .thenReturn(legacy);
   }
 
   private Mono<String> triggerEmail(EmailRequestDto emailRequestDto) {
-    return chesService.sendEmail(emailRequestDto.templateName(),
-        emailRequestDto.email(),
-        emailRequestDto.subject(),
-        emailRequestDto.variables());
+    return chesService.sendEmail(
+                        emailRequestDto.templateName(),
+                        emailRequestDto.email(),
+                        emailRequestDto.subject(),
+                        emailRequestDto.variables(),
+                        null);
   }
 
 }
