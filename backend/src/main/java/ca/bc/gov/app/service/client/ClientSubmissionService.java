@@ -349,10 +349,12 @@ public class ClientSubmissionService {
       String email,
       String userName
   ) {
-    return chesService.sendEmail("registration",
-            email,
-            "Client number application received",
-            clientSubmissionDto.description(userName))
+    return chesService.sendEmail(
+                        "registration",
+                        email,
+                        "Client number application received",
+                        clientSubmissionDto.description(userName),
+                        null)
         .thenReturn(submissionId);
   }
 
