@@ -122,7 +122,7 @@ const handleRemove = (index: number) => {
     : "Contact #" + index;
   bus.emit({
     message: selectedContact,
-    kind: "Contact deleted",
+    kind: "contact",
     toastTitle: "The additional contact was deleted",
     handler: removeContact(index),
     active: true,
