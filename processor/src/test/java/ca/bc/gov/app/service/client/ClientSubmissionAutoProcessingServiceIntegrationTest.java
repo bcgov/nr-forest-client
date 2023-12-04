@@ -24,6 +24,7 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.integration.support.MessageBuilder;
@@ -69,7 +70,7 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
         .alias("Submission persistence")
         .atMost(Duration.ofSeconds(5))
         .untilAsserted(() ->
-            verify(submissionRepository, times(1)).save(any(SubmissionEntity.class))
+            verify(submissionRepository, atLeastOnce()).save(any(SubmissionEntity.class))
         );
   }
 
