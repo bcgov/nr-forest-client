@@ -75,6 +75,18 @@
     },
 
     {
+      "name":"GHet Country by CountryCode",
+      "request": {
+        "urlPattern": "/api/clients/getCountryByCode/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "bodyFileName": "response-getCountryByCode-{{request.path.[3]}}.json"      }
+    },
+
+    {
       "name":"Submission Success for XX",
       "request": {
         "url": "/api/clients/submissions",
