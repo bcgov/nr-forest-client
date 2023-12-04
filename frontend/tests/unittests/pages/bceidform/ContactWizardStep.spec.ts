@@ -44,7 +44,7 @@ describe("ContactWizardStep.vue", () => {
 
       expect(payload!).toMatchObject({
         message: "Contact #1",
-        kind: "Contact deleted",
+        kind: "contact",
       });
     });
   });

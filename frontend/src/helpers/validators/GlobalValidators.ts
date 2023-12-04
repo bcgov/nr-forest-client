@@ -349,17 +349,19 @@ export const isMinimumYearsAgo =
   };
 
 export const isGreaterThan =
-  (
-    compareTo: number,
-    message: string | ((year: number) => string) = (compareTo) =>
-      `Value must be greater than ${compareTo}`,
-  ) =>
+  (compareTo: number, message: string = `Value must be greater than ${compareTo}`) =>
   (value: string): string => {
     if (Number(value) > compareTo) {
       return "";
     }
-    if (typeof message === "function") {
-      return message(compareTo);
+    return message;
+  };
+
+export const isLessThan =
+  (compareTo: number, message: string = `Value must be less than ${compareTo}`) =>
+  (value: string): string => {
+    if (Number(value) < compareTo) {
+      return "";
     }
     return message;
   };
