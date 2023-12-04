@@ -23,9 +23,6 @@ describe("BCSC Form", () => {
 
     cy.visit("/");
     cy.wait(500);
-  });
-
-  it("should submit the form with a phone number", () => {
 
     cy.get("#landing-title").should("contain", "Client Management System");
 
@@ -45,6 +42,9 @@ describe("BCSC Form", () => {
       birthdate: "1986-11-12"
     }
     );
+  });
+
+  it("should submit the form with a phone number", () => {
 
     cy
     .get('#phoneNumberId')
@@ -63,4 +63,137 @@ describe("BCSC Form", () => {
 
     cy.get('.fluid-heading-05').should('contain', 'Application submitted!');
   });
+
+  it("should add a new contact", () => {
+
+    cy
+    .get('#phoneNumberId')
+    .should("be.visible")
+      .shadow()
+      .find("input")
+      .should("have.value", "")
+      .type('2503008326');
+
+    cy
+    .get('.form-steps-section > [kind="tertiary"]')
+    .should("be.visible")
+    .click();
+
+    cy
+    .get('#role_1')
+    .should("be.visible")
+    .shadow()
+    .find("input")
+    .click();
+
+    cy
+    .get('cds-combo-box-item')
+    .should("be.visible")
+    .click();
+
+    cy
+    .get('#firstName_1')
+    .should("be.visible")
+      .shadow()
+      .find("input")
+      .should("have.value", "")
+      .type('James');
+
+    cy.get('#lastName_1')
+    .should("be.visible")
+      .shadow()
+      .find("input")
+      .should("have.value", "")
+      .type('McCloud');
+
+    cy.get('#email_1')
+    .should("be.visible")
+      .shadow()
+      .find("input")
+      .should("have.value", "")
+      .type('jmccloud@starfox.aa');
+
+    cy.get('#phoneNumber_1')
+    .should("be.visible")
+      .shadow()
+      .find("input")
+      .should("have.value", "")
+      .type('2773008326');
+
+    cy.get('[data-test="wizard-submit-button"]')
+    .click();
+
+    cy.get('.fluid-heading-05').should('contain', 'Application submitted!');
+
+  });
+
+  it("should add a new contact, then remove it", () => {
+
+    cy
+    .get('#phoneNumberId')
+    .should("be.visible")
+      .shadow()
+      .find("input")
+      .should("have.value", "")
+      .type('2503008326');
+
+    cy
+    .get('.form-steps-section > [kind="tertiary"]')
+    .should("be.visible")
+    .click();
+
+    cy
+    .get('#role_1')
+    .should("be.visible")
+    .shadow()
+    .find("input")
+    .click();
+
+    cy
+    .get('cds-combo-box-item')
+    .should("be.visible")
+    .click();
+
+    cy
+    .get('#firstName_1')
+    .should("be.visible")
+      .shadow()
+      .find("input")
+      .should("have.value", "")
+      .type('James');
+
+    cy.get('#lastName_1')
+    .should("be.visible")
+      .shadow()
+      .find("input")
+      .should("have.value", "")
+      .type('McCloud');
+
+    cy.get('#email_1')
+    .should("be.visible")
+      .shadow()
+      .find("input")
+      .should("have.value", "")
+      .type('jmccloud@starfox.aa');
+
+    cy.get('#phoneNumber_1')
+    .should("be.visible")
+      .shadow()
+      .find("input")
+      .should("have.value", "")
+      .type('2773008326');
+
+    cy.get('#deleteContact_1').click();
+
+    cy.wait(150);
+
+    cy.get('#modal-global > cds-modal-footer > .cds--modal-submit-btn').click();
+
+    cy.get('[data-test="wizard-submit-button"]')
+    .click();
+
+    cy.get('.fluid-heading-05').should('contain', 'Application submitted!');
+  });
+
+
 });
