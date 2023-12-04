@@ -20,6 +20,7 @@ import {
   isValidDayOfMonth,
   isValidDayOfMonthYear,
   isNot,
+  isLessThan,
 } from "@/helpers/validators/GlobalValidators";
 // Date utility
 import getDaysInMonth from "date-fns/getDaysInMonth";
@@ -286,6 +287,7 @@ const partValidators = computed(() => ({
         `Day can't be greater than ${getDaysInMonth(yearMonthDate)}`,
       )(value)
     },
+    isLessThan(32, "Day can't be greater than 31"),
     ...props.dayValidations,
   ],
 }));
