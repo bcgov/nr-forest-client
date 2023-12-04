@@ -181,8 +181,16 @@ cds-actionable-notification,
   box-shadow: none;
 }
 
+cds-radio-button-group {
+  --cds-text-secondary: var(--light-theme-text-text-primary);
+}
+
 cds-radio-button:not(:last-child) {
   margin-bottom: 0.5rem;
+}
+
+cds-combo-box::part(title-text) {
+  color: var(--light-theme-text-text-primary, #131315);
 }
 
 cds-combo-box::part(trigger-button) {
@@ -561,6 +569,18 @@ div#app {
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
+}
+
+.form-steps .body-02 {
+  color: var(--light-theme-text-text-primary, #131315);
+
+  /* Body styles/body-02 */
+  font-family: BC Sans;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.25rem; /* 142.857% */
+  letter-spacing: 0.01rem;
 }
 
 .form-steps-01 {
