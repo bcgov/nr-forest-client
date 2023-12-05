@@ -1,201 +1,3 @@
-<template>
-  <div class="form-header">
-    <div class="form-header-title">
-      <span class="heading-05" data-scroll="top">
-        New client application
-      </span>
-    </div>
-    <error-notification-grouping-component
-      :form-data="formData"
-      :scroll-to-element-fn="scrollToNewContact"
-    />
-  </div>
-    
-  <div class="form-steps-section">
-    <span class="heading-04" data-scroll="scroll-0">
-      Personal information
-    </span>
-    <p class="body-compact-01">
-      Review the personal information below. It’s from your BC Services card. We use it to know who we're giving a number to and for communicating with clients. 
-    </p>
-
-    <div class="card">
-      <div>
-        <cds-inline-notification
-          v-shadow="2"
-          low-contrast="true"
-          open="true"
-          kind="info"
-          hide-close-button="true"
-          title="">
-          <p class="cds--inline-notification-content">
-            <strong>Read-only: </strong>
-            If something is incorrect visit 
-            <a
-              href=""
-              target="_blank"
-              rel="noopener noreferrer"
-              @click.prevent="changePersonalInfoModalActive = true"
-              >Change your personal information
-            </a> 
-            and then restart your application.
-          </p>
-        </cds-inline-notification>
-        <br /><br />
-
-        <p class="label-01">Full name</p>
-        <p class="body-compact-01">{{ formData.businessInformation.businessName }}</p>
-      </div>
-      <hr class="divider" />
-      <div>
-        <p class="label-01">Date of birth</p>
-        <p class="body-compact-01">{{ figmaFormattedDate }}</p>
-      </div>
-      <hr class="divider" />
-      <div>
-        <p class="label-01">Email address</p>
-        <p class="body-compact-01">{{ formData.location.contacts[0].email }}</p>
-      </div>
-      <hr class="divider" />
-      <div>
-        <p class="label-01">Address</p>
-        <p class="body-compact-01">
-          {{ formData.businessInformation.address.streetAddress }} <br />
-          {{ formData.businessInformation.address.city }}, {{ formData.businessInformation.address.province.value }} <br />
-          {{ formData.businessInformation.address.country.text }} <br />
-          {{ formData.businessInformation.address.postalCode }}
-        </p>
-      </div>
-    </div>
-
-    <span class="heading-04" data-scroll="scroll-0">
-      Contact information
-    </span>
-    <p class="body-compact-01">
-      We need your phone number to communicate with you.
-    </p>
-
-    <div class="grouping-01">
-      <text-input-component
-        id="phoneNumberId"
-        label="Phone number"
-        placeholder="( ) ___-____"
-        :enabled="true" 
-        v-model="formData.location.contacts[0].phoneNumber"
-        mask="(###) ###-####"
-        :required-label="true"
-        :validations="[
-          ...getValidations('location.contacts.*.phoneNumber'),
-          submissionValidation(`location.contacts[0].phoneNumber`)
-        ]"
-        :error-message="errorMessage"
-        @empty="validation.phoneNumber = !$event"
-        @error="validation.phoneNumber = !$event"
-      />
-    </div>
-    
-    <div class="frame-01" v-if="otherContacts.length > 0">
-      <div v-for="(contact, index) in otherContacts">
-        <hr />
-
-        <div class="grouping-09" :data-scroll="`additional-contact-${index + 1}`">
-          <span class="heading-03">Additional contact</span>
-        </div>
-
-        <contact-group-component
-          :key="index + 1"
-          :id="index + 1"
-          v-bind:modelValue="contact"
-          :roleList="roleList"
-          :validations="[uniqueValues.add]"
-          :enabled="true"
-          :revalidate="revalidate"
-          :hide-address-name-field="true"
-          :required-label="true"
-          @update:model-value="updateContact($event, index + 1)"
-          @valid="updateValidState(index + 1, $event)"
-          @remove="handleRemove(index + 1)"
-        />
-      </div>
-    </div>
-
-    <p class="body-compact-01">
-      You can add contacts to the account. For example, a person you want to give or receive information on your behalf.
-    </p>
-
-    <cds-button
-      kind="tertiary"
-      @click.prevent="addContact"
-      v-if="formData.location.contacts.length < 5">
-      <span>Add another contact</span>
-      <Add16 slot="icon" />
-    </cds-button>
-
-    <hr class="divider" />
-
-    <cds-button
-        data-test="wizard-submit-button"
-        kind="primary"
-        size="lg"
-        @click.prevent="submit"
-        :disabled="submitBtnDisabled"
-      >
-      <span>Submit application</span>
-      <Check16 slot="icon" />
-    </cds-button>
-
-    <cds-modal
-      id="help-modal"
-      size="md"
-      :open="changePersonalInfoModalActive"
-      @cds-modal-closed="changePersonalInfoModalActive = false"
-    >
-      <cds-modal-header>
-        <cds-modal-close-button></cds-modal-close-button>
-        <cds-modal-heading>
-          Change your personal information and logout
-        </cds-modal-heading>
-      </cds-modal-header>
-      <cds-modal-body>
-        <p>
-          Visit 
-          <a 
-            href='https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card/your-card/change-personal-information' 
-            target="_blank">Change your personal information
-          </a> 
-          to update your name, address or date of birth.<br /><br />
-          Go to your 
-          <a 
-            href='https://id.gov.bc.ca/account/'
-            target="_blank">BC Services account
-          </a> 
-          to update your email address.<br /><br />
-          You can then log back into this application using your BC Services Card.
-        </p>
-      </cds-modal-body>
-      <cds-modal-footer>
-        <cds-modal-footer-button 
-          kind="secondary"
-          data-modal-close
-          class="cds--modal-close-btn">
-          Cancel
-        </cds-modal-footer-button>
-        
-        <cds-modal-footer-button 
-          kind="danger" 
-          class="cds--modal-submit-btn"
-          v-on:click="$session?.logOut"
-        >
-          Logout
-          <Logout16 slot="icon" />
-        </cds-modal-footer-button>
-
-      </cds-modal-footer>
-    </cds-modal>
-
-  </div>
-
-</template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch, getCurrentInstance, toRef } from "vue";
@@ -521,3 +323,202 @@ watch([error], () => {
   setScrollPoint("top");
 });
 </script>
+
+<template>
+  <div class="form-header">
+    <div class="form-header-title">
+      <span class="heading-05" data-scroll="top">
+        New client application
+      </span>
+    </div>
+    <error-notification-grouping-component
+      :form-data="formData"
+      :scroll-to-element-fn="scrollToNewContact"
+    />
+  </div>
+    
+  <div class="form-steps-section">
+    <span class="heading-04" data-scroll="scroll-0">
+      Personal information
+    </span>
+    <p class="body-compact-01">
+      Review the personal information below. It’s from your BC Services card. We use it to know who we're giving a number to and for communicating with clients. 
+    </p>
+
+    <div class="card">
+      <div>
+        <cds-inline-notification
+          v-shadow="2"
+          low-contrast="true"
+          open="true"
+          kind="info"
+          hide-close-button="true"
+          title="">
+          <p class="cds--inline-notification-content">
+            <strong>Read-only: </strong>
+            If something is incorrect visit 
+            <a
+              href=""
+              target="_blank"
+              rel="noopener noreferrer"
+              @click.prevent="changePersonalInfoModalActive = true"
+              >Change your personal information
+            </a> 
+            and then restart your application.
+          </p>
+        </cds-inline-notification>
+        <br /><br />
+
+        <p class="label-01">Full name</p>
+        <p class="body-compact-01">{{ formData.businessInformation.businessName }}</p>
+      </div>
+      <hr class="divider" />
+      <div>
+        <p class="label-01">Date of birth</p>
+        <p class="body-compact-01">{{ figmaFormattedDate }}</p>
+      </div>
+      <hr class="divider" />
+      <div>
+        <p class="label-01">Email address</p>
+        <p class="body-compact-01">{{ formData.location.contacts[0].email }}</p>
+      </div>
+      <hr class="divider" />
+      <div>
+        <p class="label-01">Address</p>
+        <p class="body-compact-01">
+          {{ formData.businessInformation.address.streetAddress }} <br />
+          {{ formData.businessInformation.address.city }}, {{ formData.businessInformation.address.province.value }} <br />
+          {{ formData.businessInformation.address.country.text }} <br />
+          {{ formData.businessInformation.address.postalCode }}
+        </p>
+      </div>
+    </div>
+
+    <span class="heading-04" data-scroll="scroll-0">
+      Contact information
+    </span>
+    <p class="body-compact-01">
+      We need your phone number to communicate with you.
+    </p>
+
+    <div class="grouping-01">
+      <text-input-component
+        id="phoneNumberId"
+        label="Phone number"
+        placeholder="( ) ___-____"
+        :enabled="true" 
+        v-model="formData.location.contacts[0].phoneNumber"
+        mask="(###) ###-####"
+        :required-label="true"
+        :validations="[
+          ...getValidations('location.contacts.*.phoneNumber'),
+          submissionValidation(`location.contacts[0].phoneNumber`)
+        ]"
+        :error-message="errorMessage"
+        @empty="validation.phoneNumber = !$event"
+        @error="validation.phoneNumber = !$event"
+      />
+    </div>
+    
+    <div class="frame-01" v-if="otherContacts.length > 0">
+      <div v-for="(contact, index) in otherContacts">
+        <hr />
+
+        <div class="grouping-09" :data-scroll="`additional-contact-${index + 1}`">
+          <span class="heading-03">Additional contact</span>
+        </div>
+
+        <contact-group-component
+          :key="index + 1"
+          :id="index + 1"
+          v-bind:modelValue="contact"
+          :roleList="roleList"
+          :validations="[uniqueValues.add]"
+          :enabled="true"
+          :revalidate="revalidate"
+          :hide-address-name-field="true"
+          :required-label="true"
+          @update:model-value="updateContact($event, index + 1)"
+          @valid="updateValidState(index + 1, $event)"
+          @remove="handleRemove(index + 1)"
+        />
+      </div>
+    </div>
+
+    <p class="body-compact-01">
+      You can add contacts to the account. For example, a person you want to give or receive information on your behalf.
+    </p>
+
+    <cds-button
+      kind="tertiary"
+      @click.prevent="addContact"
+      v-if="formData.location.contacts.length < 5">
+      <span>Add another contact</span>
+      <Add16 slot="icon" />
+    </cds-button>
+
+    <hr class="divider" />
+
+    <cds-button
+        data-test="wizard-submit-button"
+        kind="primary"
+        size="lg"
+        @click.prevent="submit"
+        :disabled="submitBtnDisabled"
+      >
+      <span>Submit application</span>
+      <Check16 slot="icon" />
+    </cds-button>
+
+    <cds-modal
+      id="help-modal"
+      size="md"
+      :open="changePersonalInfoModalActive"
+      @cds-modal-closed="changePersonalInfoModalActive = false"
+    >
+      <cds-modal-header>
+        <cds-modal-close-button></cds-modal-close-button>
+        <cds-modal-heading>
+          Change your personal information and logout
+        </cds-modal-heading>
+      </cds-modal-header>
+      <cds-modal-body>
+        <p>
+          Visit 
+          <a 
+            href='https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card/your-card/change-personal-information' 
+            target="_blank">Change your personal information
+          </a> 
+          to update your name, address or date of birth.<br /><br />
+          Go to your 
+          <a 
+            href='https://id.gov.bc.ca/account/'
+            target="_blank">BC Services account
+          </a> 
+          to update your email address.<br /><br />
+          You can then log back into this application using your BC Services Card.
+        </p>
+      </cds-modal-body>
+      <cds-modal-footer>
+        <cds-modal-footer-button 
+          kind="secondary"
+          data-modal-close
+          class="cds--modal-close-btn">
+          Cancel
+        </cds-modal-footer-button>
+        
+        <cds-modal-footer-button 
+          kind="danger" 
+          class="cds--modal-submit-btn"
+          v-on:click="$session?.logOut"
+        >
+          Logout
+          <Logout16 slot="icon" />
+        </cds-modal-footer-button>
+
+      </cds-modal-footer>
+    </cds-modal>
+
+  </div>
+
+</template>

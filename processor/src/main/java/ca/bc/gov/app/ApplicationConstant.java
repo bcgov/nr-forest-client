@@ -53,6 +53,7 @@ public final class ApplicationConstant {
   public static final String SUBMISSION_LEGACY_RSP_CHANNEL = "submissionLegacyRSPChannel";
   public static final String SUBMISSION_LEGACY_OTHER_CHANNEL = "submissionLegacyOtherChannel";
   public static final String CLIENT_EXISTS = "client-exists";
+  public static final String CLIENT_SUBMITTER_NAME = "client-submitter-name";
 
   public static final BcRegistryDocumentRequestBodyDto
       BUSINESS_SUMMARY_FILING_HISTORY =

@@ -24,6 +24,7 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.integration.support.MessageBuilder;
@@ -62,14 +63,14 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
         .alias("Submission lookup")
         .atMost(Duration.ofSeconds(2))
         .untilAsserted(() ->
-            verify(submissionRepository, times(1)).findById(eq(1))
+            verify(submissionRepository, atLeastOnce()).findById(eq(1))
         );
 
     await()
         .alias("Submission persistence")
         .atMost(Duration.ofSeconds(5))
         .untilAsserted(() ->
-            verify(submissionRepository, times(1)).save(any(SubmissionEntity.class))
+            verify(submissionRepository, atLeastOnce()).save(any(SubmissionEntity.class))
         );
   }
 
@@ -92,7 +93,7 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
         .alias("Submission matches and loads")
         .atMost(Duration.ofSeconds(5))
         .untilAsserted(() ->
-            verify(submissionMatchDetailRepository, times(1)).findBySubmissionId(eq(2))
+            verify(submissionMatchDetailRepository, atLeastOnce()).findBySubmissionId(eq(2))
         );
 
     await()

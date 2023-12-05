@@ -113,6 +113,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
                 .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000001")
                 .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
                 .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow")
                 .build()
         )
         .as(StepVerifier::create)
@@ -125,13 +126,14 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .isNotNull()
               .hasFieldOrPropertyWithValue("clientName", "BAXTER")
               .hasFieldOrPropertyWithValue("legalFirstName", "JAMES")
-              .hasFieldOrPropertyWithValue("clientIdTypeCode", "OTHR")
+              .hasFieldOrPropertyWithValue("clientIdTypeCode", "BCRE")
               .hasFieldOrPropertyWithValue("clientIdentification", "FM00184546")
               .hasFieldOrPropertyWithValue("registryCompanyTypeCode", "FM")
               .hasFieldOrPropertyWithValue("corpRegnNmbr", "00184546")
               .hasFieldOrPropertyWithValue("clientComment",
                   String.join(" ",
-                      "Sole proprietorship registered on BC Registry with number",
+                      "Jhon Snow submitted the",
+                      "sole proprietor registered on BC Registry with number",
                       "FM00184546",
                       "and company name",
                       "BAXTER CORP"
@@ -203,6 +205,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
                 .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000001")
                 .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
                 .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
+                .setHeader(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow")
                 .build()
         )
         .as(StepVerifier::create)
@@ -215,13 +218,14 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .isNotNull()
               .hasFieldOrPropertyWithValue("clientName", "BAXTER")
               .hasFieldOrPropertyWithValue("legalFirstName", "JAMES")
-              .hasFieldOrPropertyWithValue("clientIdTypeCode", "OTHR")
+              .hasFieldOrPropertyWithValue("clientIdTypeCode", "BCRE")
               .hasFieldOrPropertyWithValue("clientIdentification", "FM00184546")
               .hasFieldOrPropertyWithValue("registryCompanyTypeCode", "FM")
               .hasFieldOrPropertyWithValue("corpRegnNmbr", "00184546")
               .hasFieldOrPropertyWithValue("clientComment",
                   String.join(" ",
-                      "Sole proprietorship registered on BC Registry with number",
+                      "Jhon Snow submitted the",
+                      "sole proprietor registered on BC Registry with number",
                       "FM00184546",
                       "and company name",
                       "BAXTER CORP"
@@ -305,7 +309,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
             TestConstants
                 .CLIENT_ENTITY
                 .withClientTypeCode("I")
-                .withClientIdTypeCode("OTHR")
+                .withClientIdTypeCode("BCRE")
         ));
     when(legacyR2dbcEntityTemplate.getDatabaseClient())
         .thenReturn(dbCLient);
@@ -321,7 +325,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
                     TestConstants
                         .CLIENT_ENTITY
                         .withClientTypeCode("I")
-                        .withClientIdTypeCode("OTHR")
+                        .withClientIdTypeCode("BCRE")
                 )
                 .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
                 .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
@@ -329,6 +333,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
                 .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, "RSP")
                 .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000")
                 .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA")
+                .setHeader(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow")
                 .build()
         )
         .as(StepVerifier::create)
