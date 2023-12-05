@@ -87,7 +87,8 @@ public class LegacyClientPersistenceService extends LegacyAbstractPersistenceSer
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
                     .withClientComment(
-                        "Client details acquired from BC Registry " +
+                        getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
+                        " submitted the client details acquired from BC Registry " +
                         submissionDetail.getIncorporationNumber()
                     )
                     .withClientName(submissionDetail.getOrganizationName().toUpperCase())

@@ -166,24 +166,34 @@ public abstract class LegacyAbstractPersistenceService {
                 message.getPayload()
             )
         )
-        .map(clientNumber ->
-            MessageBuilder
-                .withPayload(existingClient.get() ? message.getPayload() : clientNumber)
-                .copyHeaders(message.getHeaders())
-                .setHeader(ApplicationConstant.SUBMISSION_ID, message.getPayload())
-                .setHeader(ApplicationConstant.CLIENT_EXISTS, existingClient.get())
-                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, clientTypeCode.get())
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, clientNumber)
-                .setReplyChannelName(
-                    existingClient.get() ? ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL
-                        : getNextChannel())
-                .setHeader("output-channel",
-                    existingClient.get() ? ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL
-                        : getNextChannel())
-                .setHeader(MessageHeaders.REPLY_CHANNEL,
-                    existingClient.get() ? ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL
-                        : getNextChannel())
-                .build()
+        .flatMap(clientNumber ->
+
+            contactRepository
+                .findFirstBySubmissionId(message.getPayload())
+                .map(contact ->
+                    MessageBuilder
+                        .withPayload(existingClient.get() ? message.getPayload() : clientNumber)
+                        .copyHeaders(message.getHeaders())
+                        .setHeader(ApplicationConstant.SUBMISSION_ID, message.getPayload())
+                        .setHeader(ApplicationConstant.CLIENT_EXISTS, existingClient.get())
+                        .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, clientTypeCode.get())
+                        .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, clientNumber)
+                        .setHeader(ApplicationConstant.CLIENT_SUBMITTER_NAME,
+                            contact.getFirstName() + " " + contact.getLastName())
+                        .setReplyChannelName(
+                            existingClient.get()
+                                ? ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL
+                                : getNextChannel())
+                        .setHeader("output-channel",
+                            existingClient.get()
+                                ? ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL
+                                : getNextChannel())
+                        .setHeader(MessageHeaders.REPLY_CHANNEL,
+                            existingClient.get()
+                                ? ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL
+                                : getNextChannel())
+                        .build()
+                )
         );
   }
 
@@ -418,7 +428,7 @@ public abstract class LegacyAbstractPersistenceService {
             toContact
                 .apply(locationContact.getSubmissionContactId())
                 .flatMap(forestClientContact ->
-                        getNextContactId()
+                    getNextContactId()
                         .doOnNext(forestClientContact::setClientContactId)
                         .thenReturn(forestClientContact)
                 )
@@ -504,35 +514,35 @@ public abstract class LegacyAbstractPersistenceService {
 
   private Mono<String> getNextClientNumber() {
     return
-    legacyR2dbcEntityTemplate
-        .getDatabaseClient()
-        .sql("""
-            UPDATE
-            max_client_nmbr
-            SET
-            client_number =  (SELECT LPAD(TO_NUMBER(NVL(max(CLIENT_NUMBER),'0'))+1,8,'0') FROM FOREST_CLIENT)"""
-        )
-        .fetch()
-        .rowsUpdated()
-        .then(
-            legacyR2dbcEntityTemplate
-                .getDatabaseClient()
-                .sql("SELECT client_number FROM max_client_nmbr")
-                .map((row, rowMetadata) -> row.get("client_number", String.class))
-                .first()
-        );
+        legacyR2dbcEntityTemplate
+            .getDatabaseClient()
+            .sql("""
+                UPDATE
+                max_client_nmbr
+                SET
+                client_number =  (SELECT LPAD(TO_NUMBER(NVL(max(CLIENT_NUMBER),'0'))+1,8,'0') FROM FOREST_CLIENT)"""
+            )
+            .fetch()
+            .rowsUpdated()
+            .then(
+                legacyR2dbcEntityTemplate
+                    .getDatabaseClient()
+                    .sql("SELECT client_number FROM max_client_nmbr")
+                    .map((row, rowMetadata) -> row.get("client_number", String.class))
+                    .first()
+            );
   }
 
   private Mono<Integer> getNextDoingBusinessAs() {
     return
-    legacyR2dbcEntityTemplate
-        .getDatabaseClient()
-        .sql("select THE.client_dba_seq.NEXTVAL from dual")
-        .fetch()
-        .first()
-        .map(row -> row.get("NEXTVAL"))
-        .map(String::valueOf)
-        .map(Integer::parseInt);
+        legacyR2dbcEntityTemplate
+            .getDatabaseClient()
+            .sql("select THE.client_dba_seq.NEXTVAL from dual")
+            .fetch()
+            .first()
+            .map(row -> row.get("NEXTVAL"))
+            .map(String::valueOf)
+            .map(Integer::parseInt);
   }
 
   private Mono<String> getNextContactId() {
@@ -585,7 +595,7 @@ public abstract class LegacyAbstractPersistenceService {
            StringUtils.equalsIgnoreCase(
                forestClient
                    .getClientIdTypeCode(),
-               "OTHR"
+               "BCRE"
            );
   }
 

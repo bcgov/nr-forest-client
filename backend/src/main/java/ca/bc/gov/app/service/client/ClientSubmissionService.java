@@ -136,8 +136,8 @@ public class ClientSubmissionService {
                     .submissionStatus(SubmissionStatusEnum.N)
                     .submissionType(SubmissionTypeCodeEnum.SPP)
                     .submissionDate(LocalDateTime.now())
-                    .createdBy(userName)
-                    .updatedBy(userName)
+                    .createdBy(userId)
+                    .updatedBy(userId)
                     .build()
             )
             //Save submission to begin with
