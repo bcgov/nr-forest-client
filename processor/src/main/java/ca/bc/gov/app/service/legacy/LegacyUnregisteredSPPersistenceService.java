@@ -98,7 +98,7 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                     .withLegalMiddleName(ProcessorUtil.splitName(detail.getOrganizationName())[2].toUpperCase())
                     .withClientComment(
                         getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
-                        " submitted the sole proprietor with data acquired from BC Business eID")
+                        " submitted the sole proprietor with data acquired from Business BCeID")
                     .withClientTypeCode("I")
                     .withClientNumber(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
             )

@@ -75,7 +75,7 @@
     },
 
     {
-      "name":"GHet Country by CountryCode",
+      "name":"Get Country by CountryCode",
       "request": {
         "urlPattern": "/api/clients/getCountryByCode/(.*)",
         "method": "GET"

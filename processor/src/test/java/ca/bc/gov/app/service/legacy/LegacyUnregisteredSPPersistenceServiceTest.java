@@ -108,7 +108,7 @@ class LegacyUnregisteredSPPersistenceServiceTest {
               .hasFieldOrPropertyWithValue("legalFirstName", "JAMES")
               .hasFieldOrPropertyWithValue("legalMiddleName", StringUtils.EMPTY)
               .hasFieldOrPropertyWithValue("clientComment",
-                  "Jhon Snow submitted the sole proprietor with data acquired from BC Business eID")
+                  "Jhon Snow submitted the sole proprietor with data acquired from Business BCeID")
               .hasFieldOrPropertyWithValue("clientTypeCode", "I")
               .hasFieldOrPropertyWithValue("clientNumber", "00000001");
 
