@@ -102,29 +102,27 @@ public class ClientService {
     return countryCodeRepository
         .findByCountryCode(countryCode)
         .map(entity -> new CodeNameDto(entity.getCountryCode(),
-                                       entity.getDescription()));
+            entity.getDescription()));
   }
 
   /**
-   * Retrieves a client type by its unique code.
-   * This method queries the clientTypeCodeRepository to find a client type entity
-   * with the specified code. If a matching entity is found, it is converted to a
-   * {@code CodeNameDto} object containing the code and description, and wrapped
-   * in a Mono. If no matching entity is found, the Mono will complete without emitting
-   * any items.
+   * Retrieves a client type by its unique code. This method queries the clientTypeCodeRepository to
+   * find a client type entity with the specified code. If a matching entity is found, it is
+   * converted to a {@code CodeNameDto} object containing the code and description, and wrapped in a
+   * Mono. If no matching entity is found, the Mono will complete without emitting any items.
    *
    * @param code The unique code of the client type to retrieve.
-   * @return A Mono emitting a {@code CodeNameDto} if a matching client type is found, or an
-   *         empty result if no match is found.
+   * @return A Mono emitting a {@code CodeNameDto} if a matching client type is found, or an empty
+   * result if no match is found.
    * @see CodeNameDto
    */
   public Mono<CodeNameDto> getClientTypeByCode(String code) {
     return clientTypeCodeRepository
         .findByCode(code)
         .map(entity -> new CodeNameDto(entity.getCode(),
-                                       entity.getDescription()));
+            entity.getDescription()));
   }
-  
+
   /**
    * <p><b>List Provinces</b></p>
    * <p>List provinces by country (which include states) by page with a defined size.
@@ -291,7 +289,8 @@ public class ClientService {
                     addressDto.addressCity(),
                     addressDto.postalCode().trim().replaceAll("\\s+", ""),
                     index.getAndIncrement(),
-                    (addressDto.addressType() != null ? addressDto.addressType() : "").concat(" address").toUpperCase()
+                    (addressDto.addressType() != null ? addressDto.addressType() : "").concat(
+                        " address").toUpperCase()
                 )
             )
             .flatMap(address -> loadCountry(address.country().text()).map(address::withCountry))
@@ -303,6 +302,8 @@ public class ClientService {
             .defaultIfEmpty(new ArrayList<>())
             .flatMap(addresses ->
                 Flux.fromIterable(document.parties())
+                    .filter(party ->
+                        !"SP".equalsIgnoreCase(document.business().legalType()) || party.isPerson())
                     .map(party ->
                         new ClientContactDto(
                             null,
@@ -381,21 +382,21 @@ public class ClientService {
       String email, String userName) {
 
     return legacy -> chesService.sendEmail(
-                                   "matched",
-                                    email,
-                                    "Client number application can’t go ahead",
-                                    legacy.description(userName), 
-                                    null)
+            "matched",
+            email,
+            "Client number application can’t go ahead",
+            legacy.description(userName),
+            null)
         .thenReturn(legacy);
   }
 
   private Mono<String> triggerEmail(EmailRequestDto emailRequestDto) {
     return chesService.sendEmail(
-                        emailRequestDto.templateName(),
-                        emailRequestDto.email(),
-                        emailRequestDto.subject(),
-                        emailRequestDto.variables(),
-                        null);
+        emailRequestDto.templateName(),
+        emailRequestDto.email(),
+        emailRequestDto.subject(),
+        emailRequestDto.variables(),
+        null);
   }
 
 }

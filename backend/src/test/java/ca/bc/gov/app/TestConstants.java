@@ -349,7 +349,7 @@ public class TestConstants {
                       "firstName": "JAMES",
                       "lastName": "BAXTER",
                       "middleInitial": "JAMES",
-                      "partyType": "Director"
+                      "partyType": "person"
                   },
                   "roles": [
                       {
