@@ -53,7 +53,7 @@ watch(
 const validation = reactive<Record<string, boolean>>({
   businessType: !!formData.value.businessInformation.businessType,
   business: !!formData.value.businessInformation.businessName,
-  birthdate: !!formData.value.businessInformation.birthdate,
+  birthdate: true, // temporary value
 });
 
 const checkValid = () =>
@@ -77,6 +77,16 @@ const selectedOption = computed(() => {
       return BusinessTypeEnum.Unknow;
   }
 });
+
+const showBirthDate = computed(
+  () =>
+    validation.business &&
+    (selectedOption.value === BusinessTypeEnum.U ||
+      formData.value.businessInformation.clientType === ClientTypeEnum[ClientTypeEnum.RSP]),
+);
+
+// validation.birthdate initialization
+validation.birthdate = !showBirthDate.value || !!formData.value.businessInformation.businessName;
 
 const autoCompleteUrl = computed(
   () => `/api/clients/name/${formData.value.businessInformation.businessName || ""}`
@@ -201,13 +211,6 @@ watch([selectedOption], () => {
     showAutoCompleteInfo.value = true;
   }
 });
-
-const showBirthDate = computed(
-  () =>
-    validation.business &&
-    (selectedOption.value === BusinessTypeEnum.U ||
-      formData.value.businessInformation.clientType === ClientTypeEnum[ClientTypeEnum.RSP]),
-);
 
 watch(showBirthDate, (value) => {
   if (value) {
