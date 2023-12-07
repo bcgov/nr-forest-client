@@ -50,7 +50,7 @@ const data = ref<SubmissionDetails>({
       clientNumber: '',
       organizationName: '',
       clientType: '',
-      goodStanding: '',
+      goodStandingInd: '',
     },
     contact: [{index:0, firstName:'', lastName:'', contactType:'', phoneNumber:'', emailAddress:'', locations:[],userId:''}],
     address: [],
@@ -72,7 +72,6 @@ const rejectReasonMessage = ref('')
 
 // Data loading
 useFetchTo(`/api/clients/submissions/${id.value}`, data)
-
 
 const showClientNumberField = computed(() => {
   if(selectedRejectReasons.value && selectedRejectReasons.value.length > 0){
@@ -243,7 +242,11 @@ const tagColor = (status: string) =>{
       </cds-inline-notification>
 
       <cds-actionable-notification
-        v-if="data.submissionType === 'Review new client' && !data.matchers.goodStanding && data.submissionStatus !== 'Approved'"
+        v-if="
+          data.submissionType === 'Review new client' &&
+          data.matchers.goodStanding === 'Value not found' &&
+          data.submissionStatus !== 'Approved'
+        "
         v-shadow="true"
         low-contrast="true"
         hide-close-button="true"
@@ -311,7 +314,7 @@ const tagColor = (status: string) =>{
               </read-only-component>
 
               <read-only-component label="B.C. Registries standing">
-                <span class="body-compact-01">{{ goodStanding(data.business.goodStanding) }}</span>
+                <span class="body-compact-01">{{ goodStanding(data.business.goodStandingInd) }}</span>
               </read-only-component>
 
               <read-only-component label="Last updated">
