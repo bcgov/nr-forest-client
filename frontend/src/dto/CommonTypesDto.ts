@@ -139,7 +139,7 @@ export interface SubmissionDetailsBusiness {
   clientNumber: string
   organizationName: string
   clientType: string
-  goodStanding: string
+  goodStandingInd: string
 }
 
 export interface SubmissionDetailsContact {
