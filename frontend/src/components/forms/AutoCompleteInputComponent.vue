@@ -22,6 +22,7 @@ const props = withDefaults(defineProps<{
     errorMessage?: string;
     loading?: boolean;
     showLoadingAfterTime?: number;
+    requiredLabel?: boolean;
   }>(),
   {
     showLoadingAfterTime: 2000,
@@ -171,40 +172,47 @@ const getComboBoxItemValue = (item: CodeNameType) => item.name + (item.code ? na
 
 <template>
   <div class="grouping-02">
-    <cds-combo-box
-      ref="cdsComboBoxRef"
-      :id="id"
-      :name="id"
-      :helper-text="tip"
-      :title-text="label"
-      :value="inputValue"
-      filterable
-      :invalid="error ? true : false"
-      :invalid-text="error"
-      @cds-combo-box-selected="selectAutocompleteItem"
-      v-on:input="onTyping"
-      v-on:blur="(event: any) => validateInput(event.srcElement._filterInputValue)"
-      :data-focus="id"
-      :data-scroll="id"
-      :data-id="'input-' + id"
-      v-shadow="3"
-    >
-      <cds-combo-box-item
-        v-for="item in inputList"
-        :key="item.code"
-        :data-id="item.code"
-        :data-value="item.name"
-        :value="getComboBoxItemValue(item)"
-        v-shadow
-        :data-loading="item.name === LOADING_NAME"
+    <div class="input-group">
+      <div class="cds--text-input__label-wrapper">
+        <label :id="id + 'Label'" :for="id" class="cds-text-input-label">
+          {{ label }}
+          <span v-if="requiredLabel" class="cds-text-input-required-label"> (required) </span>
+        </label>
+      </div>
+      <cds-combo-box
+        ref="cdsComboBoxRef"
+        :id="id"
+        :name="id"
+        :helper-text="tip"
+        :value="inputValue"
+        filterable
+        :invalid="error ? true : false"
+        :invalid-text="error"
+        @cds-combo-box-selected="selectAutocompleteItem"
+        v-on:input="onTyping"
+        v-on:blur="(event: any) => validateInput(event.srcElement._filterInputValue)"
+        :data-focus="id"
+        :data-scroll="id"
+        :data-id="'input-' + id"
+        v-shadow="3"
       >
-        <template v-if="item.name === LOADING_NAME">
-          <cds-inline-loading />
-        </template>
-        <template v-else>
-          {{ item.name }}
-        </template>
-      </cds-combo-box-item>
-    </cds-combo-box>
+        <cds-combo-box-item
+          v-for="item in inputList"
+          :key="item.code"
+          :data-id="item.code"
+          :data-value="item.name"
+          :value="getComboBoxItemValue(item)"
+          v-shadow
+          :data-loading="item.name === LOADING_NAME"
+        >
+          <template v-if="item.name === LOADING_NAME">
+            <cds-inline-loading />
+          </template>
+          <template v-else>
+            {{ item.name }}
+          </template>
+        </cds-combo-box-item>
+      </cds-combo-box>
+    </div>
   </div>
 </template>
