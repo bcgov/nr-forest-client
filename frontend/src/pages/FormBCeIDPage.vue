@@ -355,7 +355,7 @@ const scrollToNewContact = () => {
     // Skip auto-focus so to do it only when scroll is done.
     const index = contactWizardRef.value.addContact(false) - 1;
     setScrollPoint(`additional-contact-${index}`, undefined, () => {
-      setFocusedComponent(`addressname_${index}`);
+      setFocusedComponent(`firstName_${index}`);
     });
   }
 };

@@ -92,7 +92,11 @@ const nameTypesToCodeDescr = (
 };
 
 onMounted(() => {
-  setFocusedComponent(`address_${props.id}`, 800);
+  if (props.id === 0) {
+    setFocusedComponent(`phoneNumber_${props.id}`, 800);
+  } else {
+    setFocusedComponent(`firstName_${props.id}`, 800);
+  }
 });
 
 const updateContactType = (value: CodeNameType | undefined) => {

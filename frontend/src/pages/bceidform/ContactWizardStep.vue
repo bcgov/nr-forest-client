@@ -75,7 +75,7 @@ const addContact = (autoFocus = true) => {
   );
   if (autoFocus) {
     const focusIndex = newLength - 1;
-    setFocusedComponent(`addressname_${focusIndex}`);
+    setFocusedComponent(`firstName_${focusIndex}`);
   }
   return newLength;
 };
@@ -129,7 +129,7 @@ const handleRemove = (index: number) => {
   });
 };
 
-onMounted(() => setFocusedComponent("addressname_0", 800));
+onMounted(() => setFocusedComponent("phoneNumber_0", 800));
 
 defineExpose({
   addContact,
