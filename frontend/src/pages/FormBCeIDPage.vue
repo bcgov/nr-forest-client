@@ -396,7 +396,7 @@ const scrollToNewContact = () => {
           </li>
           <li>
             You must be able to receive email at
-            {{ submitterContact.email }}
+            <b>{{ submitterContact.email }}</b>
           </li>
         </ol>
       </div>
