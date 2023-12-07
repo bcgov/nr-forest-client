@@ -121,7 +121,7 @@ const handleRemove = (index: number) => {
   bus.emit({
     message: selectedAddress,
     kind: "address",
-    toastTitle: "The additional address was deleted",
+    toastTitle: `“${selectedAddress}” additional address was deleted`,
     handler: removeAddress(index),
     active: true,
   });
