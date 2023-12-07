@@ -242,7 +242,11 @@ const tagColor = (status: string) =>{
       </cds-inline-notification>
 
       <cds-actionable-notification
-        v-if="data.submissionType === 'Review new client' && !data.matchers.goodStanding && data.submissionStatus !== 'Approved'"
+        v-if="
+          data.submissionType === 'Review new client' &&
+          data.matchers.goodStanding === 'Value not found' &&
+          data.submissionStatus !== 'Approved'
+        "
         v-shadow="true"
         low-contrast="true"
         hide-close-button="true"
