@@ -239,124 +239,130 @@ onMounted(() => {
 
 <template>
   <div class="frame-01">
-  <text-input-component
-    :id="'name_' + id"
-    label="Location or address name"
-    placeholder=""
-    tip="For example, 'Campbell River Region' or 'Castlegar Woods Division'"
-    v-model="selectedValue.locationName"
-    :enabled="true"
-    :validations="[
-      ...getValidations('location.addresses.*.locationName'),
-      submissionValidation(`location.addresses[${id}].locationName`)
-    ]"
-    :error-message="nameError"
-    @empty="validation.locationName = !$event"
-    @error="validation.locationName = !$event"
-    v-if="id !== 0"
-  />
-
-  <dropdown-input-component
-    :id="'country_' + id"
-    label="Country"
-    :initial-value="selectedValue.country.text"
-    tip=""
-    :enabled="true"
-    :model-value="countryList"
-    :validations="[...getValidations('location.addresses.*.country.text'),submissionValidation(`location.addresses[${id}].country`)]"
-    :error-message="addressError"
-    @update:selected-value="updateStateProvince($event, 'country')"
-    @update:model-value="resetProvinceOnChange"
-    @empty="validation.country = !$event"
-  />
-
-  <data-fetcher
-    v-model:url="autoCompleteUrl"
-    :min-length="3"
-    :init-value="[]"
-    :init-fetch="false"
-    #="{ content, loading, error }"
-  >
-    <AutoCompleteInputComponent
-      :id="'addr_' + id"
-      label="Street address or PO box"
+    <text-input-component
+      :id="'name_' + id"
+      label="Location or address name"
+      required-label
       placeholder=""
-      tip="Start typing to search for your street address or PO box"
-      v-model="selectedValue.streetAddress"
-      :contents="addressControl ? [] : content"
-      :validations="[
-        ...getValidations('location.addresses.*.streetAddress'),
-        submissionValidation(`location.addresses[${id}].streetAddress`)
-      ]"
-      :loading="loading"
-      @update:selected-value="autoCompleteResult = $event"
-      :error-message="addressError"
-      @empty="validation.streetAddress = !$event"
-      @error="validation.streetAddress = !$event"
-    />
-    <cds-inline-loading status="active" v-if="showDetailsLoading">Loading address details...</cds-inline-loading>
-  </data-fetcher>
-
-  <text-input-component
-    :id="'city_' + id"
-    label="City"
-    placeholder=""
-    v-model="selectedValue.city"
-    tip=""
-    :enabled="true"
-    :error-message="addressError"
-    :validations="[
-      ...getValidations('location.addresses.*.city'),
-      submissionValidation(`location.addresses[${id}].city`)
-    ]"
-    @empty="validation.city = !$event"
-    @error="validation.city = !$event"
-  />
-
-  <data-fetcher
-    v-model:url="provinceUrl"
-    :min-length="0"
-    :init-value="[]"
-    :init-fetch="true"
-    :params="{ method: 'GET' }"
-    #="{ content }"
-  >
-    <dropdown-input-component
-      :id="'province_' + id"
-      :label="provinceNaming"
-      :initial-value="selectedValue.province.text"
-      :model-value="content"
+      tip="For example, 'Campbell River Region' or 'Castlegar Woods Division'"
+      v-model="selectedValue.locationName"
       :enabled="true"
-      tip=""
-      :validations="[...getValidations('location.addresses.*.province.text'),submissionValidation(`location.addresses[${id}].province`)]"
-      :error-message="addressError"
-      @update:selected-value="updateStateProvince($event, 'province')"
-      @empty="validation.province = !$event"
+      :validations="[
+        ...getValidations('location.addresses.*.locationName'),
+        submissionValidation(`location.addresses[${id}].locationName`)
+      ]"
+      :error-message="nameError"
+      @empty="validation.locationName = !$event"
+      @error="validation.locationName = !$event"
+      v-if="id !== 0"
     />
-  </data-fetcher>
 
-  <text-input-component
-    :id="'postalCode_' + id"
-    :label="postalCodeNaming"
-    placeholder=""
-    :tip="postalCodePlaceholder"
-    :enabled="true"
-    :error-message="addressError"
-    v-model="modelValue.postalCode"
-    :mask="postalCodeMask"
-    :validations="postalCodeValidators"
-    @error="validation.postalCode = !$event"
-    @empty="validation.postalCode = !$event"
-  />
-<div class="grouping-06">
-  <cds-button
-    v-if="id > 0"
-    kind="danger--tertiary"
-    @click.prevent="emit('remove', id)"
-  >
-    <span>Delete address</span>
-    <Delete16 slot="icon" />
-  </cds-button>
-</div>
+    <data-fetcher
+      v-model:url="autoCompleteUrl"
+      :min-length="3"
+      :init-value="[]"
+      :init-fetch="false"
+      #="{ content, loading, error }"
+    >
+      <AutoCompleteInputComponent
+        :id="'addr_' + id"
+        label="Street address or PO box"
+        required-label
+        placeholder=""
+        tip="Start typing to search for your street address or PO box"
+        v-model="selectedValue.streetAddress"
+        :contents="addressControl ? [] : content"
+        :validations="[
+          ...getValidations('location.addresses.*.streetAddress'),
+          submissionValidation(`location.addresses[${id}].streetAddress`)
+        ]"
+        :loading="loading"
+        @update:selected-value="autoCompleteResult = $event"
+        :error-message="addressError"
+        @empty="validation.streetAddress = !$event"
+        @error="validation.streetAddress = !$event"
+      />
+      <cds-inline-loading status="active" v-if="showDetailsLoading">Loading address details...</cds-inline-loading>
+    </data-fetcher>
+
+    <text-input-component
+      :id="'city_' + id"
+      label="City"
+      required-label
+      placeholder=""
+      v-model="selectedValue.city"
+      tip=""
+      :enabled="true"
+      :error-message="addressError"
+      :validations="[
+        ...getValidations('location.addresses.*.city'),
+        submissionValidation(`location.addresses[${id}].city`)
+      ]"
+      @empty="validation.city = !$event"
+      @error="validation.city = !$event"
+    />
+
+    <data-fetcher
+      v-model:url="provinceUrl"
+      :min-length="0"
+      :init-value="[]"
+      :init-fetch="true"
+      :params="{ method: 'GET' }"
+      #="{ content }"
+    >
+      <dropdown-input-component
+        :id="'province_' + id"
+        :label="provinceNaming"
+        required-label
+        :initial-value="selectedValue.province.text"
+        :model-value="content"
+        :enabled="true"
+        tip=""
+        :validations="[...getValidations('location.addresses.*.province.text'),submissionValidation(`location.addresses[${id}].province`)]"
+        :error-message="addressError"
+        @update:selected-value="updateStateProvince($event, 'province')"
+        @empty="validation.province = !$event"
+      />
+    </data-fetcher>
+
+    <dropdown-input-component
+      :id="'country_' + id"
+      label="Country"
+      required-label
+      :initial-value="selectedValue.country.text"
+      tip=""
+      :enabled="true"
+      :model-value="countryList"
+      :validations="[...getValidations('location.addresses.*.country.text'),submissionValidation(`location.addresses[${id}].country`)]"
+      :error-message="addressError"
+      @update:selected-value="updateStateProvince($event, 'country')"
+      @update:model-value="resetProvinceOnChange"
+      @empty="validation.country = !$event"
+    />
+
+    <text-input-component
+      :id="'postalCode_' + id"
+      :label="postalCodeNaming"
+      required-label
+      placeholder=""
+      :tip="postalCodePlaceholder"
+      :enabled="true"
+      :error-message="addressError"
+      v-model="modelValue.postalCode"
+      :mask="postalCodeMask"
+      :validations="postalCodeValidators"
+      @error="validation.postalCode = !$event"
+      @empty="validation.postalCode = !$event"
+    />
+    <div class="grouping-06">
+      <cds-button
+        v-if="id > 0"
+        kind="danger--tertiary"
+        @click.prevent="emit('remove', id)"
+      >
+        <span>Delete address</span>
+        <Delete16 slot="icon" />
+      </cds-button>
+    </div>
   </div>
 </template>

@@ -164,7 +164,7 @@ onMounted(() => setFocusedComponent("addr_0", 800));
 </div>
 <div class="grouping-02">
   <p class="body-01 heading-compact-01-dark">
-  If you’d like to include another address, for example a seed orchard or if your street address is different from your mailing address, select the “Add another address” button below.
+    If the business operates in more than one location you can include additional addresses.
   </p>
 </div>
 <cds-button

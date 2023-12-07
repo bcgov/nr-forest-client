@@ -368,9 +368,9 @@ public abstract class LegacyAbstractPersistenceService {
         contactId ->
             contactRepository
                 .findById(contactId)
-                .flatMap(submissionContact ->
+                .flatMapMany(submissionContact ->
                     legacyR2dbcEntityTemplate
-                        .selectOne(
+                        .select(
                             Query
                                 .query(
                                     Criteria
@@ -382,13 +382,14 @@ public abstract class LegacyAbstractPersistenceService {
                                             )
                                         )
                                         .and("CONTACT_NAME").is(
-                                            String.format("%s %s", submissionContact.getFirstName(),
-                                                submissionContact.getLastName())
+                                            String.format("%s %s", submissionContact.getFirstName().toUpperCase(),
+                                                submissionContact.getLastName().toUpperCase())
                                         )
                                 ),
                             ForestClientContactEntity.class
                         )
                 )
+                .next()
                 .doOnNext(forestClientContact ->
                     log.info(
                         "Forest client contact {} {} already exists for submission {}",

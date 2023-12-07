@@ -365,7 +365,6 @@ const scrollToNewContact = () => {
   <div class="form-header">
     <div class="form-header-title">
       <span class="heading-05" data-scroll="top">New client application</span>
-      <p class="body-01">All fields are mandatory</p>
     </div>
     <cds-progress-indicator space-equally :vertical="isSmallScreen">
       <cds-progress-step 
