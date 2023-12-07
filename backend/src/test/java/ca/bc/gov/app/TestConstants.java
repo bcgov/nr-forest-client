@@ -348,7 +348,7 @@ public class TestConstants {
                       "email": "",
                       "firstName": "JAMES",
                       "lastName": "BAXTER",
-                      "middleInitial": "JAMES",
+                      "middleInitial": "middleInitial",
                       "partyType": "person"
                   },
                   "roles": [

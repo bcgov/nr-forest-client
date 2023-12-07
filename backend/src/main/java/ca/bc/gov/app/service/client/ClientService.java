@@ -14,6 +14,7 @@ import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
+import ca.bc.gov.app.exception.UnableToProcessRequestException;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
@@ -203,7 +204,17 @@ public class ClientService {
                     )
             )
             .map(BcRegistryDocumentDto.class::cast)
-            .flatMap(buildDetails());
+
+            //if document type is SP and party contains only one entry that is not a person, fail
+            .filter(document ->
+                !("SP".equalsIgnoreCase(document.business().legalType())
+                && document.parties().size() == 1
+                && !document.parties().get(0).isPerson())
+            )
+            .flatMap(buildDetails())
+            .switchIfEmpty(Mono.error(new UnableToProcessRequestException(
+                "Unable to process request. This sole proprietor is not owner by a person"
+            )));
   }
 
   /**

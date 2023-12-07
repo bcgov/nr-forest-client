@@ -165,7 +165,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
   @MethodSource("provinceCode")
   @DisplayName("List provinces by")
   void shouldListProvinceData(String countryCode, Integer page, Integer size, String code,
-                              String name) {
+      String name) {
 
     //This is to allow parameter to be ommitted during test
     Function<UriBuilder, URI> uri = uriBuilder -> {
@@ -274,18 +274,18 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     legacyStub
         .stubFor(
             get(urlPathEqualTo("/search/incorporationOrName"))
-            .withQueryParam("incorporationNumber", equalTo("AA0000001"))
-            .withQueryParam("companyName", equalTo("SAMPLE COMPANY"))
-            .willReturn(okJson(legacyResponse))
+                .withQueryParam("incorporationNumber", equalTo("AA0000001"))
+                .withQueryParam("companyName", equalTo("SAMPLE COMPANY"))
+                .willReturn(okJson(legacyResponse))
         );
 
     WebTestClient.BodyContentSpec response =
         client
             .get()
             .uri("/api/clients/{clientNumber}", Map.of("clientNumber", clientNumber))
-            .header(ApplicationConstant.USERID_HEADER,"testUserId")
-            .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
-            .header(ApplicationConstant.USERNAME_HEADER,"Test User")
+            .header(ApplicationConstant.USERID_HEADER, "testUserId")
+            .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
+            .header(ApplicationConstant.USERNAME_HEADER, "Test User")
             .exchange()
             .expectStatus().isEqualTo(HttpStatus.valueOf(responseStatus))
             .expectBody()
@@ -364,9 +364,9 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     client
         .get()
         .uri("/api/clients/name/Power")
-        .header(ApplicationConstant.USERID_HEADER,"testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
-        .header(ApplicationConstant.USERNAME_HEADER,"Test User")
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
+        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
@@ -390,9 +390,9 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     client
         .get()
         .uri("/api/clients/name/Jhon")
-        .header(ApplicationConstant.USERID_HEADER,"testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER,"test@test.ca")
-        .header(ApplicationConstant.USERNAME_HEADER,"Test User")
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
+        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
@@ -401,7 +401,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
   @Test
   @DisplayName("Send an email for already existing client")
-  void shouldSendEmail(){
+  void shouldSendEmail() {
     chesStub
         .stubFor(
             post("/chess/uri")
@@ -424,7 +424,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     legacyStub
         .stubFor(
             get(urlPathEqualTo("/search/incorporationOrName"))
-                .withQueryParam("incorporationNumber", equalTo(TestConstants.EMAIL_REQUEST.incorporation()))
+                .withQueryParam("incorporationNumber",
+                    equalTo(TestConstants.EMAIL_REQUEST.incorporation()))
                 .withQueryParam("companyName", equalTo(TestConstants.EMAIL_REQUEST.name()))
                 .willReturn(okJson(TestConstants.LEGACY_OK))
         );
@@ -441,7 +442,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
   @Test
   @DisplayName("get country by code")
-  void shoulGgetCountryByCode(){
+  void shoulGgetCountryByCode() {
 
     client
         .get()
@@ -475,7 +476,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 200, TestConstants.BCREG_DOC_DATA,
                 200, TestConstants.BCREG_RESPONSE_OK,
-                TestConstants.LEGACY_OK.replace("0000001","0000002")
+                TestConstants.LEGACY_OK.replace("0000001", "0000002")
             ),
             Arguments.of(
                 "AA0000001",
@@ -518,6 +519,18 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 400, TestConstants.BCREG_400,
                 401, TestConstants.BCREG_RESPONSE_401,
+                TestConstants.LEGACY_EMPTY
+            ),
+            Arguments.of(
+                "AA0000001",
+                200, TestConstants.BCREG_DOC_REQ_RES,
+                200, TestConstants.BCREG_DOC_DATA
+                    .replace("\"partyType\": \"person\"", "\"partyType\": \"organization\"")
+                    .replace("\"firstName\": \"JAMES\",", "\"organizationName\": \"OWNER ORG\",")
+                    .replace("\"lastName\": \"BAXTER\",", "\"identifier\": \"BB0000001\",")
+                    .replace("\"middleInitial\": \"middleInitial\",", "\"id\": \"1234467\",")
+                ,
+                422, "Unable to process request. This sole proprietor is not owner by a person",
                 TestConstants.LEGACY_EMPTY
             )
         );
