@@ -227,8 +227,8 @@ class LegacyAbstractPersistenceServiceTest {
 
     when(insert.using(any()))
         .thenReturn(Mono.just(contactEntity));
-    when(legacyR2dbcEntityTemplate.selectOne(any(), any()))
-        .thenReturn(contactExisted ? Mono.just(contactEntity) :Mono.empty());
+    when(legacyR2dbcEntityTemplate.select(any(), any()))
+        .thenReturn(contactExisted ? Flux.just(contactEntity) : Flux.empty());
     when(legacyR2dbcEntityTemplate.getDatabaseClient())
         .thenReturn(dbCLient);
     when(dbCLient.sql(any(String.class)))
