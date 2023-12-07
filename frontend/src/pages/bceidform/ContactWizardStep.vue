@@ -175,7 +175,8 @@ defineExpose({
   </div>
 
   <span class="body-01">
-    To add another contact to the account, select "Add another contact" button below.
+    You can add contacts to the account. For example, a person you want to give or receive
+    information on your behalf.
   </span>
 
   <cds-button

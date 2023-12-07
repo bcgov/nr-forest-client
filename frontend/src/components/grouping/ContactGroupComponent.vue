@@ -104,113 +104,145 @@ const updateContactType = (value: CodeNameType | undefined) => {
 
 <template>
   <div class="frame-01">
-  <multiselect-input-component
-    :id="'addressname_' + id"
-    v-if="!hideAddressNameField"
-    label="Address name"
-    tip="Select an address name for the contact. A contact can have more than one address"
-    :initial-value="''"
-    :model-value="addressList"
-    :selectedValues="selectedValue.locationNames?.map((location:CodeDescrType) => location?.text)"
-    :validations="[
-      ...getValidations('location.contacts.*.locationNames'),
-      submissionValidation(`location.contacts[${id}].locationNames`)
-    ]"
-    :requiredLabel="requiredLabel"
-    @update:selected-value="
-      selectedValue.locationNames = nameTypesToCodeDescr($event)
-    "
-    @empty="validation.locationNames = !$event"
-  />
+    <div v-if="id === 0" class="card">
+      <div>
+        <cds-inline-notification
+          v-shadow="2"
+          low-contrast="true"
+          open="true"
+          kind="info"
+          hide-close-button="true"
+          title="">
+          <p class="cds--inline-notification-content">
+            <strong>Read-only: </strong>
+            If something is incorrect
+            <a href="https://www.bceid.ca/" target="_blank" rel="noopener noreferrer"
+              >go to BCeID</a
+            >
+            to correct it and then restart your application.
+          </p>
+        </cds-inline-notification>
+        <br /><br />
 
-  <dropdown-input-component
-    :id="'role_' + id"
-    label="Primary role"
-    tip="Choose the primary role for this contact"
-    :initial-value="selectedValue.contactType?.text"
-    :model-value="roleList"
-    :validations="[
-      ...getValidations('location.contacts.*.contactType.text'),
-      submissionValidation(`location.contacts[${id}].contactType`)
-    ]"
-    :requiredLabel="requiredLabel"
-    @update:selected-value="updateContactType($event)"
-    @empty="validation.contactType = !$event"
-  />
+        <p class="label-01">Full name</p>
+        <p class="body-compact-01">{{ selectedValue.firstName }} {{ selectedValue.lastName }}</p>
+      </div>
+      <hr class="divider" />
+      <div>
+        <p class="label-01">Email address</p>
+        <p class="body-compact-01">{{ selectedValue.email }}</p>
+      </div>
+    </div>
 
-  <text-input-component
-    :id="'firstName_' + id"
-    label="First name"
-    placeholder=""
-    v-model="selectedValue.firstName"
-    :validations="[
-      ...getValidations('location.contacts.*.firstName'),
-      submissionValidation(`location.contacts[${id}].firstName`)
-    ]"
-    :enabled="enabled"
-    :requiredLabel="requiredLabel"
-    :error-message="error"
-    @empty="validation.firstName = !$event"
-    @error="validation.firstName = !$event"
-  />
+    <template v-else>
+      <text-input-component
+        :id="'firstName_' + id"
+        label="First name"
+        placeholder=""
+        v-model="selectedValue.firstName"
+        :validations="[
+          ...getValidations('location.contacts.*.firstName'),
+          submissionValidation(`location.contacts[${id}].firstName`)
+        ]"
+        :enabled="enabled"
+        :requiredLabel="requiredLabel"
+        :error-message="error"
+        @empty="validation.firstName = !$event"
+        @error="validation.firstName = !$event"
+      />
 
-  <text-input-component
-    :id="'lastName_' + id"
-    label="Last name"
-    placeholder=""
-    v-model="selectedValue.lastName"
-    :validations="[
-      ...getValidations('location.contacts.*.lastName'),
-      submissionValidation(`location.contacts[${id}].lastName`)
-    ]"
-    :enabled="enabled"
-    :requiredLabel="requiredLabel"
-    :error-message="error"
-    @empty="validation.lastName = !$event"
-    @error="validation.lastName = !$event"
-  />
+      <text-input-component
+        :id="'lastName_' + id"
+        label="Last name"
+        placeholder=""
+        v-model="selectedValue.lastName"
+        :validations="[
+          ...getValidations('location.contacts.*.lastName'),
+          submissionValidation(`location.contacts[${id}].lastName`)
+        ]"
+        :enabled="enabled"
+        :requiredLabel="requiredLabel"
+        :error-message="error"
+        @empty="validation.lastName = !$event"
+        @error="validation.lastName = !$event"
+      />
 
-  <text-input-component
-    :id="'email_' + id"
-    label="Email address"
-    placeholder=""
-    v-model="selectedValue.email"
-    :validations="[
-      ...getValidations('location.contacts.*.email'),
-      submissionValidation(`location.contacts[${id}].email`)
-    ]"
-    :enabled="enabled"
-    :requiredLabel="requiredLabel"
-    @empty="validation.email = !$event"
-    @error="validation.email = !$event"
-  />
+      <text-input-component
+        :id="'email_' + id"
+        label="Email address"
+        placeholder=""
+        v-model="selectedValue.email"
+        :validations="[
+          ...getValidations('location.contacts.*.email'),
+          submissionValidation(`location.contacts[${id}].email`)
+        ]"
+        :enabled="enabled"
+        :requiredLabel="requiredLabel"
+        @empty="validation.email = !$event"
+        @error="validation.email = !$event"
+      />
+    </template>
 
-  <text-input-component
-    :id="'phoneNumber_' + id"
-    label="Phone number"
-    placeholder="( ) ___-____"
-    mask="(###) ###-####"
-    v-model="selectedValue.phoneNumber"
-    :enabled="true"
-    :validations="[
-      ...getValidations('location.contacts.*.phoneNumber'),
-      submissionValidation(`location.contacts[${id}].phoneNumber`)
-    ]"
-    :requiredLabel="requiredLabel"
-    @empty="validation.phoneNumber = !$event"
-    @error="validation.phoneNumber = !$event"
-  />
+    <text-input-component
+      :id="'phoneNumber_' + id"
+      label="Phone number"
+      placeholder="( ) ___-____"
+      mask="(###) ###-####"
+      v-model="selectedValue.phoneNumber"
+      :enabled="true"
+      :validations="[
+        ...getValidations('location.contacts.*.phoneNumber'),
+        submissionValidation(`location.contacts[${id}].phoneNumber`)
+      ]"
+      :requiredLabel="requiredLabel"
+      @empty="validation.phoneNumber = !$event"
+      @error="validation.phoneNumber = !$event"
+    />
 
-  <div class="grouping-06">
-  <cds-button
-    v-if="id > 0"
-    :id="'deleteContact_' + id"
-    kind="danger--tertiary"
-    @click.prevent="emit('remove', id)"
-  >
-    <span>Delete contact</span>
-    <Delete16 slot="icon" />
-  </cds-button>
-</div>
-</div>
+    <dropdown-input-component
+      :id="'role_' + id"
+      label="Primary role"
+      tip="Choose the primary role for this contact"
+      :initial-value="selectedValue.contactType?.text"
+      :model-value="roleList"
+      :validations="[
+        ...getValidations('location.contacts.*.contactType.text'),
+        submissionValidation(`location.contacts[${id}].contactType`)
+      ]"
+      :requiredLabel="requiredLabel"
+      @update:selected-value="updateContactType($event)"
+      @empty="validation.contactType = !$event"
+    />
+
+    <multiselect-input-component
+      :id="'addressname_' + id"
+      v-if="!hideAddressNameField"
+      label="Location or address name"
+      tip="A contact can have more than one address"
+      :initial-value="''"
+      :model-value="addressList"
+      :selectedValues="selectedValue.locationNames?.map((location:CodeDescrType) => location?.text)"
+      :validations="[
+        ...getValidations('location.contacts.*.locationNames'),
+        submissionValidation(`location.contacts[${id}].locationNames`)
+      ]"
+      :requiredLabel="requiredLabel"
+      @update:selected-value="
+        selectedValue.locationNames = nameTypesToCodeDescr($event)
+      "
+      @empty="validation.locationNames = !$event"
+    />
+
+    <div class="grouping-06">
+      <cds-button
+        v-if="id > 0"
+        :id="'deleteContact_' + id"
+        kind="danger--tertiary"
+        @click.prevent="emit('remove', id)"
+      >
+        <span>Delete contact</span>
+        <Delete16 slot="icon" />
+      </cds-button>
+    </div>
+  </div>
 </template>
