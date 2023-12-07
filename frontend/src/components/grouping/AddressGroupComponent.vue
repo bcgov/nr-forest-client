@@ -257,21 +257,6 @@ onMounted(() => {
       v-if="id !== 0"
     />
 
-    <dropdown-input-component
-      :id="'country_' + id"
-      label="Country"
-      required-label
-      :initial-value="selectedValue.country.text"
-      tip=""
-      :enabled="true"
-      :model-value="countryList"
-      :validations="[...getValidations('location.addresses.*.country.text'),submissionValidation(`location.addresses[${id}].country`)]"
-      :error-message="addressError"
-      @update:selected-value="updateStateProvince($event, 'country')"
-      @update:model-value="resetProvinceOnChange"
-      @empty="validation.country = !$event"
-    />
-
     <data-fetcher
       v-model:url="autoCompleteUrl"
       :min-length="3"
@@ -339,6 +324,21 @@ onMounted(() => {
         @empty="validation.province = !$event"
       />
     </data-fetcher>
+
+    <dropdown-input-component
+      :id="'country_' + id"
+      label="Country"
+      required-label
+      :initial-value="selectedValue.country.text"
+      tip=""
+      :enabled="true"
+      :model-value="countryList"
+      :validations="[...getValidations('location.addresses.*.country.text'),submissionValidation(`location.addresses[${id}].country`)]"
+      :error-message="addressError"
+      @update:selected-value="updateStateProvince($event, 'country')"
+      @update:model-value="resetProvinceOnChange"
+      @empty="validation.country = !$event"
+    />
 
     <text-input-component
       :id="'postalCode_' + id"
