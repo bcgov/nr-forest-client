@@ -75,7 +75,7 @@ const addContact = (autoFocus = true) => {
   );
   if (autoFocus) {
     const focusIndex = newLength - 1;
-    setFocusedComponent(`addressname_${focusIndex}`);
+    setFocusedComponent(`firstName_${focusIndex}`);
   }
   return newLength;
 };
@@ -130,7 +130,7 @@ const handleRemove = (index: number) => {
   });
 };
 
-onMounted(() => setFocusedComponent("addressname_0", 800));
+onMounted(() => setFocusedComponent("phoneNumber_0", 800));
 
 defineExpose({
   addContact,
@@ -176,7 +176,8 @@ defineExpose({
   </div>
 
   <span class="body-01">
-    To add another contact to the account, select "Add another contact" button below.
+    You can add contacts to the account. For example, a person you want to give or receive
+    information on your behalf.
   </span>
 
   <cds-button
