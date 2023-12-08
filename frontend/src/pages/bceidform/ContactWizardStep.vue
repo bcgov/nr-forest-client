@@ -121,9 +121,10 @@ const handleRemove = (index: number) => {
     ? `${formData.location.contacts[index].firstName} ${formData.location.contacts[index].lastName}`
     : "Contact #" + index;
   bus.emit({
-    message: selectedContact,
+    name: selectedContact,
+    toastTitle: "Success",
     kind: "contact",
-    toastTitle: "The additional contact was deleted",
+    message: `“${selectedContact}” additional contact was deleted`,
     handler: removeContact(index),
     active: true,
   });

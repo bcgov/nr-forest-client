@@ -119,9 +119,10 @@ const handleRemove = (index: number) => {
       ? formData.location.addresses[index].locationName
       : "Address #" + index;
   bus.emit({
-    message: selectedAddress,
+    name: selectedAddress,
+    toastTitle: "Success",
     kind: "address",
-    toastTitle: "The additional address was deleted",
+    message: `“${selectedAddress}” additional address was deleted`,
     handler: removeAddress(index),
     active: true,
   });
