@@ -129,12 +129,14 @@ const updateContactType = (value: CodeNameType | undefined) => {
         <br /><br />
 
         <p class="label-01">Full name</p>
-        <p class="body-compact-01">{{ selectedValue.firstName }} {{ selectedValue.lastName }}</p>
+        <p id="fullName_0" class="body-compact-01">
+          {{ selectedValue.firstName }} {{ selectedValue.lastName }}
+        </p>
       </div>
       <hr class="divider" />
       <div>
         <p class="label-01">Email address</p>
-        <p class="body-compact-01">{{ selectedValue.email }}</p>
+        <p id="email_0" class="body-compact-01">{{ selectedValue.email }}</p>
       </div>
     </div>
 
