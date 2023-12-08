@@ -40,65 +40,14 @@ describe("<ContactGroupComponent />", () => {
     });
 
     cy.get("@contactFixture").then((contact: Contact) => {
-      cy.get("#firstName_0")
-        .should("be.visible")
-        .and("have.value", contact.firstName);
 
-      cy.get("#lastName_0")
-        .should("be.visible")
-        .and("have.value", contact.lastName);
+      cy.contains("Full name").should("be.visible");
+      cy.get("#fullName_0")
+        .contains(`${contact.firstName} ${contact.lastName}`)
+        .should("be.visible");
 
-      cy.get("#email_0").should("be.visible").and("have.value", "");
-
-      cy.get("#phoneNumber_0").should("be.visible").and("have.value", "");
-    });
-  });
-
-  it("should render the component with validation", () => {
-    cy.get("@contactFixture").then((contact: Contact) => {
-      cy.get("@rolesFixture").then((roles) => {
-        cy.get("@addressesFixture").then((addresses) => {
-          cy.mount(ContactGroupComponent, {
-            props: {
-              id: 0,
-              modelValue: {
-                ...contact,
-                firstName: contact.firstName + " fault",
-              },
-              enabled: true,
-              roleList: roles,
-              addressList: addresses,
-              validations: [dummyValidation()],
-            },
-          });
-        });
-      });
-    });
-
-    cy.get("@contactFixture").then((contact: Contact) => {
-      cy.get("#firstName_0")
-        .should("be.visible")
-        .and("have.value", contact.firstName + " fault");
-
-      cy.get("#firstName_0")
-        .shadow()
-        .find(".cds--form-requirement")
-        .should("be.visible")
-        .find("slot")
-        .and("include.text", "Error");
-
-      cy.get("#lastName_0")
-        .should("be.visible")
-        .and("have.value", contact.lastName);
-
-      cy.get("#lastName_0")
-        .shadow()
-        .find(".cds--form-requirement")
-        .should("be.visible")
-        .find("slot")
-        .and("include.text", "Error");
-
-      cy.get("#email_0").should("be.visible").and("have.value", "");
+      cy.contains("Email address").should("be.visible");
+      cy.get("#email_0").contains(contact.email).should("be.visible");
 
       cy.get("#phoneNumber_0").should("be.visible").and("have.value", "");
     });
@@ -124,6 +73,8 @@ describe("<ContactGroupComponent />", () => {
         });
       });
     });
+
+    cy.focused().should('have.id', 'phoneNumber_0');
 
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
 
@@ -159,6 +110,8 @@ describe("<ContactGroupComponent />", () => {
         });
       });
     });
+
+    cy.focused().should('have.id', 'phoneNumber_0');
 
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
 
@@ -201,6 +154,8 @@ describe("<ContactGroupComponent />", () => {
         });
       });
     });
+
+    cy.focused().should('have.id', 'phoneNumber_0');
 
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
 
@@ -263,6 +218,7 @@ describe("<ContactGroupComponent />", () => {
         });
       });
 
+      cy.focused().should('have.id', 'firstName_1');
       cy.get(fieldSelector).shadow().find("input").clear(); // emits false
       cy.get(fieldSelector).blur(); // (doesn't emit)
       cy.get(fieldSelector).shadow().find("input").type(firstContent); // emits true before blurring
