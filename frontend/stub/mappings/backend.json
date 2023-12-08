@@ -37,6 +37,18 @@
         "transformers": ["response-template"]
       }
     },
+    {
+      "name":"BC Registry Details Non Person",
+      "request": {
+        "url": "/api/clients/FM7654321",
+        "method": "GET"
+      },
+      "response": {
+        "status": 422,
+        "body": "Unable to process request. This sole proprietor is not owner by a person",
+        "transformers": ["response-template"]
+      }
+    },
 
     {
       "name":"Country Codes",
