@@ -1,9 +1,13 @@
 package ca.bc.gov.app.endpoints;
 
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -103,6 +107,54 @@ class ClientSearchIncorporationHandlerIntegrationTest extends
         .consumeWith(System.out::println);
   }
 
+  @Test
+  @DisplayName("Search someone by individual data")
+  void shouldSearchByIndividual() {
+    client
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/search/individual")
+                .queryParam("firstName", "JAMES")
+                .queryParam("lastName", "BAXTER")
+                .queryParam("dob", "1959-05-18")
+                .build(new HashMap<>())
+        )
+        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$[0].clientNumber").isNotEmpty()
+        .jsonPath("$[0].clientName").isNotEmpty()
+        .jsonPath("$[0].clientName").isEqualTo("BAXTER")
+        .consumeWith(System.out::println);
+  }
+
+  @ParameterizedTest
+  @MethodSource("individuals")
+  @DisplayName("Search someone by individual data and fail")
+  void shouldSearchByIndividualFailures(
+      String firstName,
+      String lastName,
+      LocalDate dob
+  ) {
+    client
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/search/individual")
+                .queryParamIfPresent("firstName", Optional.ofNullable(firstName))
+                .queryParamIfPresent("lastName", Optional.ofNullable(lastName))
+                .queryParamIfPresent("dob", Optional.ofNullable(dob).map(value -> value.format(
+                    DateTimeFormatter.ISO_DATE)))
+                .build(new HashMap<>())
+        )
+        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus()
+        .is4xxClientError();
+  }
+
   private static Stream<String> byLastNameCompanyName() {
     return Stream.of("BAXTER", "BORIS AND BORIS INC.");
   }
@@ -112,6 +164,17 @@ class ClientSearchIncorporationHandlerIntegrationTest extends
         Stream.of(
             Arguments.of("00000007", null),
             Arguments.of(null, "Jones Bar-B-Q")
+        );
+  }
+
+  private static Stream<Arguments> individuals() {
+    return Stream
+        .of(
+            Arguments.of("JAMES", "BAXTER", null),
+            Arguments.of("JAMES", null, LocalDate.of(1959, 5, 18)),
+            Arguments.of(null, "BAXTER", LocalDate.of(1959, 5, 18)),
+            Arguments.of("JAMES", StringUtils.EMPTY, LocalDate.of(1959, 5, 18)),
+            Arguments.of(StringUtils.EMPTY, "BAXTER", LocalDate.of(1959, 5, 18))
         );
   }
 
