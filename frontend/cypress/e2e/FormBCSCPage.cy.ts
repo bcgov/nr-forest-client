@@ -79,6 +79,8 @@ describe("BCSC Form", () => {
     .should("be.visible")
     .click();
 
+    cy.focused().should('have.id', 'firstName_1');
+
     cy
     .get('#role_1')
     .should("be.visible")
@@ -141,6 +143,8 @@ describe("BCSC Form", () => {
     .get('.form-steps-section > [kind="tertiary"]')
     .should("be.visible")
     .click();
+
+    cy.focused().should('have.id', 'firstName_1');
 
     cy
     .get('#role_1')

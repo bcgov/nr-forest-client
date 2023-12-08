@@ -355,7 +355,7 @@ const scrollToNewContact = () => {
     // Skip auto-focus so to do it only when scroll is done.
     const index = contactWizardRef.value.addContact(false) - 1;
     setScrollPoint(`additional-contact-${index}`, undefined, () => {
-      setFocusedComponent(`addressname_${index}`);
+      setFocusedComponent(`firstName_${index}`);
     });
   }
 };
@@ -442,16 +442,7 @@ const scrollToNewContact = () => {
               >Add authorized people to the account</span
             >
             <p class="body-01 heading-compact-01-dark">
-              Your first name, last name and email address are from your BCeID.
-              If they're incorrect,
-              <a
-                href="https://www.bceid.ca/"
-                target="_blank"
-                rel="noopener noreferrer"
-                >go to BCeID</a
-              >
-              to update them before submitting your form. 
-              <br /><br />Be sure to add your phone number, location and role.
+              Review your name and email address. They’re from your BCeID.
             </p>
         </div>
       
