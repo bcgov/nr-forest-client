@@ -16,6 +16,7 @@ const props = defineProps<{
   initialValue: string;
   validations: Array<Function>;
   errorMessage?: string;
+  requiredLabel?: boolean;
 }>();
 
 //Events we emit during component lifecycle
@@ -72,29 +73,36 @@ revalidateBus.on(() => validateInput());
 
 <template>
   <div class="grouping-01">
-    <cds-radio-button-group
-      :id="id + 'rb'"
-      :name="id + 'rb'"
-      label-position="right"
-      orientation="vertical"
-      :legend-text="label"
-      :helper-text="tip"
-      v-model="selectedValue"
-      
-      :invalid="error ? true : false"
-      :invalid-text="error"
-      @cds-radio-button-group-changed="updateSelectedValue"      
-      :data-focus="id"
-      :data-scroll="id"
-    >
-      <cds-radio-button
-        v-shadow="1"
-        v-for="option in modelValue"
-        :key="id + 'rb' + option.value"
-        :label-text="option.text"
-        :value="option.value"
-      />
-    </cds-radio-button-group>
+    <div class="input-group">
+      <div class="cds--text-input__label-wrapper">
+        <label :id="id + 'Label'" :for="id" class="cds-text-input-label">
+          {{ label }}
+          <span v-if="requiredLabel" class="cds-text-input-required-label"> (required) </span>
+        </label>
+      </div>
+      <cds-radio-button-group
+        :id="id + 'rb'"
+        :name="id + 'rb'"
+        label-position="right"
+        orientation="vertical"
+        :helper-text="tip"
+        v-model="selectedValue"
+        
+        :invalid="error ? true : false"
+        :invalid-text="error"
+        @cds-radio-button-group-changed="updateSelectedValue"
+        :data-focus="id"
+        :data-scroll="id"
+      >
+        <cds-radio-button
+          v-shadow="1"
+          v-for="option in modelValue"
+          :key="id + 'rb' + option.value"
+          :label-text="option.text"
+          :value="option.value"
+        />
+      </cds-radio-button-group>
+    </div>
   </div>
 </template>
 

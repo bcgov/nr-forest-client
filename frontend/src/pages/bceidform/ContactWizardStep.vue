@@ -140,6 +140,7 @@ defineExpose({
   <contact-group-component
     :id="0"
     v-model="formData.location.contacts[0]"
+    required-label
     :roleList="roleList"
     :addressList="addresses"
     :validations="[uniqueValues.add]"
@@ -160,6 +161,7 @@ defineExpose({
       :key="index + 1"
       :id="index + 1"
       v-bind:modelValue="contact"
+      required-label
       :roleList="roleList"
       :addressList="addresses"
       :validations="[uniqueValues.add]"

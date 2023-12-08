@@ -229,6 +229,7 @@ watch(showBirthDate, (value) => {
   <radio-input-component
     id="businessType"
     label="Type of business (choose one of these options)"
+    required-label
     :initialValue="formData?.businessInformation?.businessType"
     :modelValue="[
       {
@@ -255,6 +256,7 @@ watch(showBirthDate, (value) => {
       v-if="selectedOption === BusinessTypeEnum.R"
       id="business"
       label="BC registered business name"
+      required-label
       tip="Start typing to search for your BC registered business name"
       v-model="formData.businessInformation.businessName"
       :contents="content"
@@ -350,27 +352,26 @@ watch(showBirthDate, (value) => {
     :enabled="false"
   />
 
-  <template
+  <div
     v-if="
       validation.business &&
       (selectedOption === BusinessTypeEnum.U ||
         formData.businessInformation.clientType === ClientTypeEnum[ClientTypeEnum.RSP])
     "
   >
-    <div>
-      <p class="body-02 date-label">
-        We need the proprietor's birthdate to confirm their identity:
-      </p>
-      <date-input-component
-        id="birthdate"
-        title="Date of birth"
-        v-model="formData.businessInformation.birthdate"
-        :enabled="true"
-        :validations="[...getValidations('businessInformation.birthdate')]"
-        :year-validations="[...getValidations('businessInformation.birthdate.year')]"
-        @error="validation.birthdate = !$event"
-        @possibly-valid="validation.birthdate = $event"
-      />
-    </div>
-  </template>
+    <p class="body-02 date-label">
+      We need the proprietor's birthdate to confirm their identity
+      <span class="cds-text-input-required-label">(required)</span>
+    </p>
+    <date-input-component
+      id="birthdate"
+      title="Date of birth"
+      v-model="formData.businessInformation.birthdate"
+      :enabled="true"
+      :validations="[...getValidations('businessInformation.birthdate')]"
+      :year-validations="[...getValidations('businessInformation.birthdate.year')]"
+      @error="validation.birthdate = !$event"
+      @possibly-valid="validation.birthdate = $event"
+    />
+  </div>
 </template>
