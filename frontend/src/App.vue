@@ -43,9 +43,9 @@ const openToast = (event: ModalNotification) => {
 const deleteContentModal = () => {
   openToast({
     // message: `“${modalContent.value.message}” additional ${modalContent.value.kind} was deleted successfully`,
-    message: "",
-    kind: 'Success',
-    toastTitle: modalContent.value.toastTitle,
+    message: modalContent.value.message,
+    kind: "Success",
+    toastTitle: "Success",
     active: true,
     handler: () => {}
   })
@@ -78,7 +78,7 @@ toastBus.on(openToast)
       <cds-modal-header>
         <cds-modal-close-button></cds-modal-close-button>
         <cds-modal-heading
-          >Are you sure you want to delete "{{ modalContent.message }}" additional
+          >Are you sure you want to delete "{{ modalContent.name }}" additional
           {{ modalContent.kind }}?
         </cds-modal-heading>
       </cds-modal-header>

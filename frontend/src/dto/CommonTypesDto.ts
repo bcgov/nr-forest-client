@@ -86,6 +86,7 @@ export interface Submitter {
 }
 
 export interface ModalNotification {
+  name?: string;
   message: string;
   kind: string;
   toastTitle: string;
