@@ -43,7 +43,8 @@ describe("ContactWizardStep.vue", () => {
       await wrapper.find("#deleteContact_1").trigger("click");
 
       expect(payload!).toMatchObject({
-        message: "Contact #1",
+        name: "Contact #1",
+        message: "“Contact #1” additional contact was deleted",
         kind: "contact",
       });
     });
