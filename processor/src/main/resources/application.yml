@@ -41,6 +41,8 @@ ca:
           poolTime: ${TIMING:5M}
         backend:
           uri: ${CLIENT_URI:http://localhost:8080/api}
+        legacy:
+          uri: ${LEGACY_URI:http://localhost:9999/api}
         oracle:
           service: ${ORACLEDB_SERVICENAME:fsa-forest}
           database: ${ORACLEDB_DATABASE:fsa-forest}
