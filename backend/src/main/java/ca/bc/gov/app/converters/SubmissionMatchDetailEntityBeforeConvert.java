@@ -1,6 +1,5 @@
 package ca.bc.gov.app.converters;
 
-
 import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +9,6 @@ import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Publisher;
 import org.springframework.data.r2dbc.mapping.event.AfterConvertCallback;
 import org.springframework.data.r2dbc.mapping.event.BeforeConvertCallback;
@@ -60,21 +58,22 @@ public class SubmissionMatchDetailEntityBeforeConvert
 
   }
 
+  @SuppressWarnings("unchecked")
   private Map<String, Object> convertFrom(SubmissionMatchDetailEntity entity) {
-    return
-        Optional
+    return Optional
             .ofNullable(entity.getMatchingField())
             .map(Json::asString)
-            .map(value -> StringUtils.defaultString(value, "{}"))
+            .map(value -> (value != null) ? value : "{}")
             .map(value -> {
-              try {
-                return mapper.readValue(value, Map.class);
-              } catch (JsonProcessingException e) {
-                log.error("Error while converting matchers to json", e);
-                return Map.of();
-              }
+                try {
+                    return mapper.readValue(value, Map.class);
+                } catch (JsonProcessingException e) {
+                    log.error("Error while converting matchers to json", e);
+                    return Map.of();
+                }
             })
             .map(value -> (Map<String, Object>) value)
             .orElse(Map.of());
   }
+  
 }
