@@ -1,5 +1,5 @@
 -- 
--- DROPPING TABLES AND SEQUENCES IF EXIST AS THIS IS THE INIT FILE TO CREATE THE DB
+-- DROPPING TABLES AND SEQUENCES IF EXIST AS THIS is THE INIT FILE TO CREATE THE DB
 --
 drop table if exists nrfc.submission_detail;
 drop table if exists nrfc.submission_matching_detail;
@@ -335,9 +335,17 @@ create table if not exists nrfc.email_log (
 	constraint email_log_id_pk primary key (email_log_id)
 );
 
-comment on table nrfc.email_log is 'TODO';
+comment on table nrfc.email_log is 'Stores email log information';
 comment on column nrfc.email_log.email_log_id is 'Incremental id generated for a submission email log.';
--- TODO: Complete comments
+comment on column nrfc.email_log.email_id is 'Identifier for the associated email assigned by CHES (if applicable).';
+comment on column nrfc.email_log.email_sent_ind is 'Indicator for whether the email has been sent (''Y'' for Yes, ''N'' for No).';
+comment on column nrfc.email_log.exception_message is 'Textual message describing any exceptions that occurred during email processing.';
+comment on column nrfc.email_log.template_name is 'Name of the email template used for sending the email.';
+comment on column nrfc.email_log.email_address is 'Email address to which the email is sent.';
+comment on column nrfc.email_log.email_subject is 'Subject of the email.';
+comment on column nrfc.email_log.email_variables is 'JSONB field to store variables related to the email content.';
+comment on column nrfc.email_log.create_timestamp is 'Timestamp indicating when the email log entry was created.';
+comment on column nrfc.email_log.update_timestamp is 'Timestamp indicating when the email log entry was last updated.';
 
 -- 
 -- SEQUENCES
