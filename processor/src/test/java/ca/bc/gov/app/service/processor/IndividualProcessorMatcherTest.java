@@ -1,31 +1,36 @@
 package ca.bc.gov.app.service.processor;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
-import ca.bc.gov.app.repository.legacy.ForestClientRepository;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import reactor.core.publisher.Flux;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
 
 @DisplayName("Unit Test | Individual Matcher")
 class IndividualProcessorMatcherTest {
 
-
-  private final ForestClientRepository repository = mock(ForestClientRepository.class);
-  private final ProcessorMatcher matcher = new IndividualProcessorMatcher(repository);
+  @RegisterExtension
+  static WireMockExtension wireMockExtension = WireMockExtension
+      .newInstance()
+      .options(wireMockConfig().port(10012))
+      .configureStaticDsl(true)
+      .build();
+  private final ProcessorMatcher matcher = new IndividualProcessorMatcher(
+      WebClient.builder().baseUrl("http://localhost:10011").build()
+  );
 
 
   @Test
@@ -41,11 +46,14 @@ class IndividualProcessorMatcherTest {
       SubmissionInformationDto dto,
       boolean success,
       MatcherResult result,
-      Flux<ForestClientEntity> mockData
+      String mockData
   ) {
-
-    when(repository.findByIndividual(anyString(),anyString(),any()))
-        .thenReturn(mockData);
+    wireMockExtension.resetAll();
+    wireMockExtension
+        .stubFor(
+            get("/api/search/individual")
+                .willReturn(okJson(mockData))
+        );
 
     StepVerifier.FirstStep<MatcherResult> verifier =
         matcher
@@ -65,23 +73,25 @@ class IndividualProcessorMatcherTest {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto("James Frank", LocalDate.of(1985,10,4), null, "Y", "I"),
+                new SubmissionInformationDto("James Frank", LocalDate.of(1985, 10, 4), null, "Y",
+                    "I"),
                 true,
                 null,
-                Flux.empty()
+                "[]"
             ),
             Arguments.of(
-                new SubmissionInformationDto("Marco Polo", LocalDate.of(1977,3,22), null, "Y", "I"),
+                new SubmissionInformationDto("Marco Polo", LocalDate.of(1977, 3, 22), null, "Y",
+                    "I"),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000")),
-                Flux.just(new ForestClientEntity().withClientNumber("00000000"))
+                "[{\"clientNumber\":\"00000000\"}]"
             ),
             Arguments.of(
-                new SubmissionInformationDto("Lucca DeBiaggio", LocalDate.of(1951,12,25), null, "Y", "I"),
+                new SubmissionInformationDto("Lucca DeBiaggio", LocalDate.of(1951, 12, 25), null,
+                    "Y", "I"),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000", "00000001")),
-                Flux.just(new ForestClientEntity().withClientNumber("00000000"),
-                    new ForestClientEntity().withClientNumber("00000001"))
+                "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"
             )
         );
   }
