@@ -4,21 +4,27 @@ import static java.util.function.Predicate.not;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
-import ca.bc.gov.app.repository.legacy.ForestClientRepository;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.util.ProcessorUtil;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class SoleProprietorProcessorMatcher implements ProcessorMatcher {
 
-  private final ForestClientRepository forestClientRepository;
+  private final WebClient legacyClientApi;
+
+  public SoleProprietorProcessorMatcher(
+      @Qualifier("legacyClientApi") WebClient legacyClientApi
+  ) {
+    this.legacyClientApi = legacyClientApi;
+  }
 
   @Override
   public boolean enabled(SubmissionInformationDto submission) {
@@ -36,14 +42,22 @@ public class SoleProprietorProcessorMatcher implements ProcessorMatcher {
     log.info("{} :: Validating {}", name(), submission.corporationName());
 
     return
-        forestClientRepository
-            .findByIndividual(
-                ProcessorUtil.splitName(submission.corporationName())[1],
-                ProcessorUtil.splitName(submission.corporationName())[0],
-                submission.dateOfBirth()!= null ? submission.dateOfBirth().atStartOfDay() : null
+        legacyClientApi
+            .get()
+            .uri(
+                uriBuilder ->
+                    uriBuilder
+                        .path("/api/search/individual")
+                        .queryParam("firstName",
+                            ProcessorUtil.splitName(submission.corporationName())[1])
+                        .queryParam("lastName",
+                            ProcessorUtil.splitName(submission.corporationName())[0])
+                        .queryParam("dob", submission.dateOfBirth())
+                        .build(Map.of())
             )
+            .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
             .doOnNext(entity -> log.info("Found a match {}", entity))
-            .map(ForestClientEntity::getClientNumber)
+            .map(ForestClientDto::clientNumber)
             .collectList()
             .filter(not(List::isEmpty))
             .map(values ->
