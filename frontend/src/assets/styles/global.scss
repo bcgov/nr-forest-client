@@ -937,6 +937,12 @@ div#app {
   align-self: stretch;
 }
 
+.review-icon-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .cds-text-input-label {
   color: var(--light-theme-text-text-primary, #131315);
   font-family: BC Sans;

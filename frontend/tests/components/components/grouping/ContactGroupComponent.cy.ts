@@ -78,6 +78,9 @@ describe("<ContactGroupComponent />", () => {
 
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
 
+    // This seems to be useful in the PC, but harmful in the pipeline.
+    // cy.wait(100);
+
     cy.get("#addressname_0")
       .click()
       .find('cds-multi-select-item[data-value="Mailing address"]')

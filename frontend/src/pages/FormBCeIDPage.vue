@@ -474,7 +474,7 @@ const scrollToNewContact = () => {
       </div>
     </div>
 
-    <hr class="divider"/>
+    <hr v-if="currentTab < 3" class="divider"/>
   </div>
 
   <div class="form-footer">

@@ -8,6 +8,10 @@ import { useEventBus } from "@vueuse/core";
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
 // @ts-ignore
 import Edit16 from "@carbon/icons-vue/es/edit/16";
+import Enterprise20 from "@carbon/icons-vue/es/enterprise/20"
+import LocationStar20 from "@carbon/icons-vue/es/location--star/20"
+import Location20 from "@carbon/icons-vue/es/location/20"
+import User20 from "@carbon/icons-vue/es/user/20"
 import { useFetchTo } from "@/composables/useFetch";
 import { CodeNameType } from "@/dto/CommonTypesDto";
 import { codeConversionFn } from "@/services/ForestClientService";
@@ -53,7 +57,8 @@ onMounted(() => {
   <div class="grouping-05">
     <label class="heading-03">Business information</label>
     <div class="grouping-01">
-      <p class="heading-02">
+      <p class="heading-02 review-icon-title">
+        <Enterprise20 />
         {{ formData.businessInformation.businessName }}
       </p>
       <p class="body-compact-01" id="clientTypeId">
@@ -76,7 +81,10 @@ onMounted(() => {
         :key="address.locationName" 
         class="grouping-07">
       <hr class="divider" v-if="index > 0" />
-      <span class="heading-02">{{ address.locationName }}</span>
+      <span class="heading-02 review-icon-title">
+        <LocationStar20 v-if="index === 0" />
+        <Location20 v-else />{{ address.locationName }}
+      </span>
       <span class="body-compact-01">{{ address.streetAddress }}</span>
       <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
       <span class="body-compact-01">{{ address.country.text }}</span>
@@ -96,7 +104,9 @@ onMounted(() => {
         class="grouping-07">
       <hr class="divider" 
           v-if="index > 0" />
-      <span class="heading-02">{{ contact.firstName }} {{ contact.lastName }}</span>
+      <span class="heading-02 review-icon-title">
+        <User20 />{{ contact.firstName }} {{ contact.lastName }}
+      </span>
       <span class="body-compact-01">
         {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
       </span>

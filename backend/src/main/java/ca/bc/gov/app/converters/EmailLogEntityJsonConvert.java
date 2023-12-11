@@ -1,8 +1,6 @@
 package ca.bc.gov.app.converters;
 
-
 import ca.bc.gov.app.entity.client.EmailLogEntity;
-import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.r2dbc.postgresql.codec.Json;
@@ -12,7 +10,6 @@ import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Publisher;
 import org.springframework.data.r2dbc.mapping.event.AfterConvertCallback;
 import org.springframework.data.r2dbc.mapping.event.BeforeConvertCallback;
@@ -62,6 +59,7 @@ public class EmailLogEntityJsonConvert
 
   }
 
+  @SuppressWarnings("unchecked")
   private Map<String, Object> convertFrom(EmailLogEntity entity) {
     return
         Optional
