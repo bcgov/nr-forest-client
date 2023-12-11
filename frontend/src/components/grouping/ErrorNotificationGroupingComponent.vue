@@ -156,8 +156,7 @@ const goToStep = (step: number) => {
       title="Something went wrong:"      
     >    
       <div>
-        We're working to fix a problem with our network. Please try re-submitting your application later.<br />
-        We're sorry for inconveniencing you.
+        We're working to fix a problem with our network. Please try re-submitting your application later.
       </div>    
     </cds-actionable-notification>
 
@@ -171,8 +170,10 @@ const goToStep = (step: number) => {
       kind="error"
     >
       <p class="body-compact-01">
-        <span class="heading-compact-01 heading-compact-01-dark">Assigned contact required:</span>
-        You must associate <span class="heading-compact-01 heading-compact-01-dark">“{{ item }}”</span> address with an existing contact or <a href="#" @click.prevent="scrollToElementFn">add a new contact</a> before submitting the application again.
+        <span class="heading-compact-01 heading-compact-01-dark"
+          >Contact required: “{{ item }}”</span
+        >
+        must have a contact.
       </p>
     </cds-inline-notification>
   </div>
