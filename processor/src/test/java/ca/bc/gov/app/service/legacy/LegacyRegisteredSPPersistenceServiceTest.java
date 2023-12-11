@@ -9,10 +9,10 @@ import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.legacy.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
@@ -270,7 +270,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
   @DisplayName("create client with doing business")
   void shouldCreateClient() {
     ReactiveInsert<ClientDoingBusinessAsEntity> doingBusinessInsert = mock(ReactiveInsert.class);
-    ReactiveInsert<ForestClientEntity> clientInsert = mock(ReactiveInsert.class);
+    ReactiveInsert<ForestClientDto> clientInsert = mock(ReactiveInsert.class);
 
 
     ReactiveInsert<ForestClientContactEntity> insert = mock(ReactiveInsert.class);
@@ -295,7 +295,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
         .thenReturn(Mono.just(false));
     when(legacyR2dbcEntityTemplate.selectOne(any(),any()))
         .thenReturn(Mono.just(ClientDoingBusinessAsEntity.builder().id(1).build()));
-    when(legacyR2dbcEntityTemplate.insert(ForestClientEntity.class))
+    when(legacyR2dbcEntityTemplate.insert(ForestClientDto.class))
         .thenReturn(clientInsert);
     when(legacyR2dbcEntityTemplate.insert(ClientDoingBusinessAsEntity.class))
         .thenReturn(doingBusinessInsert);

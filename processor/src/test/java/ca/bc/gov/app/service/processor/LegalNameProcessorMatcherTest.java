@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.processor;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -50,7 +51,7 @@ class LegalNameProcessorMatcherTest {
     wireMockExtension.resetAll();
     wireMockExtension
         .stubFor(
-            get("/api/search/match")
+            get(urlPathEqualTo("/api/search/match"))
                 .willReturn(okJson(mockData))
         );
 

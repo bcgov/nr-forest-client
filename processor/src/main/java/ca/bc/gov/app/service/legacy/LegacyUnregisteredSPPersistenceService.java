@@ -2,7 +2,7 @@
 package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
@@ -24,8 +24,8 @@ import reactor.core.publisher.Mono;
 
 
 /**
- * This class is responsible for persisting the submission of unregistered sole proprietorship
- * into the legacy database.
+ * This class is responsible for persisting the submission of unregistered sole proprietorship into
+ * the legacy database.
  */
 @Service
 @Slf4j
@@ -55,12 +55,13 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
 
   /**
    * This method is responsible for filtering the submission based on the type.
+   *
    * @param clientTypeCode - the client type code.
    * @return - true if the type is USP, otherwise false.
    */
   @Override
   boolean filterByType(String clientTypeCode) {
-    return StringUtils.equalsIgnoreCase(clientTypeCode,"USP");
+    return StringUtils.equalsIgnoreCase(clientTypeCode, "USP");
   }
 
   @Override
@@ -69,7 +70,9 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
   }
 
   /**
-   * This method is responsible for generating the forest client for unregistered sole proprietorship.
+   * This method is responsible for generating the forest client for unregistered sole
+   * proprietorship.
+   *
    * @param message - the message containing the submission id.
    * @return - the forest client.
    */
@@ -79,7 +82,7 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
       async = "true"
   )
   @Override
-  public Mono<Message<ForestClientEntity>> generateForestClient(Message<String> message) {
+  public Mono<Message<ForestClientDto>> generateForestClient(Message<String> message) {
     return
         getSubmissionDetailRepository()
             .findBySubmissionId(
@@ -93,18 +96,22 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
                     .withBirthdate(detail.getBirthdate())
-                    .withLegalFirstName(ProcessorUtil.splitName(detail.getOrganizationName())[1].toUpperCase())
-                    .withClientName(ProcessorUtil.splitName(detail.getOrganizationName())[0].toUpperCase())
-                    .withLegalMiddleName(ProcessorUtil.splitName(detail.getOrganizationName())[2].toUpperCase())
+                    .withLegalFirstName(
+                        ProcessorUtil.splitName(detail.getOrganizationName())[1].toUpperCase())
+                    .withClientName(
+                        ProcessorUtil.splitName(detail.getOrganizationName())[0].toUpperCase())
+                    .withLegalMiddleName(
+                        ProcessorUtil.splitName(detail.getOrganizationName())[2].toUpperCase())
                     .withClientComment(
                         getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
                         " submitted the sole proprietor with data acquired from Business BCeID")
                     .withClientTypeCode("I")
-                    .withClientNumber(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
+                    .withClientNumber(message.getHeaders()
+                        .get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
             )
             .doOnNext(forestClient ->
                 log.info("generated forest client for USP {} {}",
-                forestClient.getClientNumber(),
+                    forestClient.clientName(),
                     message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class)
                 )
             )
@@ -114,12 +121,12 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                     .copyHeaders(message.getHeaders())
                     .setHeader(ApplicationConstant.FOREST_CLIENT_NAME,
                         Stream.of(
-                            forestClient.getLegalFirstName(),
-                            forestClient.getLegalMiddleName(),
-                            forestClient.getClientName()
-                        )
-                                .filter(StringUtils::isNotBlank)
-                                    .collect(Collectors.joining(" "))
+                                forestClient.legalFirstName(),
+                                forestClient.legalMiddleName(),
+                                forestClient.clientName()
+                            )
+                            .filter(StringUtils::isNotBlank)
+                            .collect(Collectors.joining(" "))
                     )
                     .setHeader(ApplicationConstant.INCORPORATION_NUMBER,
                         "not applicable")

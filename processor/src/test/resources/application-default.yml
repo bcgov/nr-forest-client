@@ -19,6 +19,10 @@ ca:
   bc:
     gov:
       nrs:
+        backend:
+          uri: 'http://localhost:10000'
+        legacy:
+          uri: 'http://localhost:10014'
         bcregistry:
           uri: 'http://127.0.0.1:10040'
           apiKey: abc1234

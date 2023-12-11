@@ -2,7 +2,7 @@
 package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
@@ -75,7 +75,7 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
       async = "true"
   )
   @Override
-  public Mono<Message<ForestClientEntity>> generateForestClient(Message<String> message) {
+  public Mono<Message<ForestClientDto>> generateForestClient(Message<String> message) {
     return
         getSubmissionDetailRepository()
             .findBySubmissionId(
@@ -112,8 +112,8 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                     .copyHeaders(message.getHeaders())
                     .setHeader(ApplicationConstant.FOREST_CLIENT_NAME,
                         String.join(" ",
-                            forestClient.getLegalFirstName(),
-                            forestClient.getClientName()
+                            forestClient.legalFirstName(),
+                            forestClient.clientName()
                         )
                     )
                     .setHeader(ApplicationConstant.INCORPORATION_NUMBER,

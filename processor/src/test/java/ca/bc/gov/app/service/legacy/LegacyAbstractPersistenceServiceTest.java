@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.legacy;
 
 
+import static ca.bc.gov.app.TestConstants.CLIENT_ENTITY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -8,14 +9,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.entity.client.CountryCodeEntity;
 import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientLocationEntity;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
@@ -210,7 +210,6 @@ class LegacyAbstractPersistenceServiceTest {
         .contactName("Text")
         .build();
 
-
     when(locationContactRepository.findBySubmissionLocationId(any()))
         .thenReturn(Flux.just(
                 SubmissionLocationContactEntity
@@ -386,14 +385,14 @@ class LegacyAbstractPersistenceServiceTest {
 
     when(legacyR2dbcEntityTemplate.selectOne(any(), any()))
         .thenReturn(
-            Mono.just(ForestClientEntity.builder().clientNumber("00000000").build()));
+            Mono.just(CLIENT_ENTITY.withClientNumber("00000001")));
     when(contactRepository.findFirstBySubmissionId(any()))
         .thenReturn(Mono.just(
-            SubmissionContactEntity
-                .builder()
-                .firstName("Jhon")
-                .lastName("Snow")
-                .build()
+                SubmissionContactEntity
+                    .builder()
+                    .firstName("Jhon")
+                    .lastName("Snow")
+                    .build()
             )
         );
 
@@ -461,7 +460,7 @@ class LegacyAbstractPersistenceServiceTest {
   @DisplayName("create client that is not individual")
   void shouldCreateClient() {
 
-    ReactiveInsert<ForestClientEntity> reactiveInsert = mock(ReactiveInsert.class);
+    ReactiveInsert<ForestClientDto> reactiveInsert = mock(ReactiveInsert.class);
 
     SubmissionDetailEntity detailEntity = SubmissionDetailEntity
         .builder()
@@ -476,17 +475,17 @@ class LegacyAbstractPersistenceServiceTest {
         .thenReturn(Mono.just(detailEntity));
     when(submissionDetailRepository.save(any()))
         .thenReturn(Mono.just(detailEntity));
-    when(legacyR2dbcEntityTemplate.insert(eq(ForestClientEntity.class)))
+    when(legacyR2dbcEntityTemplate.insert(eq(ForestClientDto.class)))
         .thenReturn(reactiveInsert);
     when(reactiveInsert.using(any()))
-        .thenReturn(Mono.just(TestConstants.CLIENT_ENTITY));
+        .thenReturn(Mono.just(CLIENT_ENTITY));
     when(legacyR2dbcEntityTemplate.selectOne(any(), any()))
         .thenReturn(Mono.empty());
 
     service
         .createForestClient(
             MessageBuilder
-                .withPayload(TestConstants.CLIENT_ENTITY)
+                .withPayload(CLIENT_ENTITY)
                 .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
                 .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
                 .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
@@ -515,12 +514,12 @@ class LegacyAbstractPersistenceServiceTest {
   @ParameterizedTest
   @MethodSource("data")
   @DisplayName("create client that is individual")
-  void shouldTryToCreateClient(String type){
+  void shouldTryToCreateClient(String type) {
 
     service
         .createForestClient(
             MessageBuilder
-                .withPayload(TestConstants.CLIENT_ENTITY)
+                .withPayload(CLIENT_ENTITY)
                 .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
                 .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
                 .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
@@ -536,7 +535,7 @@ class LegacyAbstractPersistenceServiceTest {
   @ParameterizedTest
   @MethodSource("data")
   @DisplayName("create contact that is individual")
-  void shouldTryToCreateContact(String type){
+  void shouldTryToCreateContact(String type) {
     service
         .createContact(
             MessageBuilder
@@ -556,7 +555,7 @@ class LegacyAbstractPersistenceServiceTest {
   @ParameterizedTest
   @MethodSource("data")
   @DisplayName("create location that is individual")
-  void shouldTryToCreateLocation(String type){
+  void shouldTryToCreateLocation(String type) {
     service
         .createLocations(
             MessageBuilder
@@ -580,8 +579,8 @@ class LegacyAbstractPersistenceServiceTest {
     );
   }
 
-  private static Stream<String> data(){
-    return Stream.of("I","RSP","USP");
+  private static Stream<String> data() {
+    return Stream.of("I", "RSP", "USP");
   }
 
   private static Stream<Boolean> contactExisted() {

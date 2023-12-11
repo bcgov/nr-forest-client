@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.processor;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -65,7 +66,7 @@ class IncorporationNumberProcessorMatcherTest {
     wireMockExtension.resetAll();
     wireMockExtension
         .stubFor(
-            get("/api/search/incorporationOrName")
+            get(urlPathEqualTo("/api/search/incorporationOrName"))
                 .willReturn(okJson(mockData))
         );
 

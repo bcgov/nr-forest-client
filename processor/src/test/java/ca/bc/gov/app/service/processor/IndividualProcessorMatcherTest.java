@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.processor;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -29,7 +30,7 @@ class IndividualProcessorMatcherTest {
       .configureStaticDsl(true)
       .build();
   private final ProcessorMatcher matcher = new IndividualProcessorMatcher(
-      WebClient.builder().baseUrl("http://localhost:10011").build()
+      WebClient.builder().baseUrl("http://localhost:10012").build()
   );
 
 
@@ -51,7 +52,7 @@ class IndividualProcessorMatcherTest {
     wireMockExtension.resetAll();
     wireMockExtension
         .stubFor(
-            get("/api/search/individual")
+            get(urlPathEqualTo("/api/search/individual"))
                 .willReturn(okJson(mockData))
         );
 

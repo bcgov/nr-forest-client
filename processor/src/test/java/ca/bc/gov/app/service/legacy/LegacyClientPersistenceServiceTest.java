@@ -7,8 +7,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
@@ -73,7 +73,7 @@ class LegacyClientPersistenceServiceTest {
   @Test
   @DisplayName("create forest client")
   void shouldCreateForestClient() {
-    ReactiveInsert<ForestClientEntity> reactiveInsert = mock(ReactiveInsert.class);
+    ReactiveInsert<ForestClientDto> reactiveInsert = mock(ReactiveInsert.class);
 
     SubmissionDetailEntity entity = SubmissionDetailEntity.builder()
         .submissionId(2)

@@ -3,7 +3,7 @@ package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
@@ -81,7 +81,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
       async = "true"
   )
   @Override
-  public Mono<Message<ForestClientEntity>> generateForestClient(Message<String> message) {
+  public Mono<Message<ForestClientDto>> generateForestClient(Message<String> message) {
 
     return
         getSubmissionDetailRepository()
@@ -115,7 +115,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
             //Load the details to set the remaining fields
             .flatMap(forestClient ->
                 bcRegistryService
-                    .requestDocumentData(forestClient.getClientIdentification())
+                    .requestDocumentData(forestClient.clientIdentification())
                     // Should only be one
                     .next()
                     // Get the proprietor or empty if none
@@ -170,13 +170,13 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     .copyHeaders(message.getHeaders())
                     .setHeader(ApplicationConstant.FOREST_CLIENT_NAME,
                         forestClient
-                            .getClientComment()
+                            .clientComment()
                             .split("and company name ")[1]
                     )
                     .setHeader(ApplicationConstant.INCORPORATION_NUMBER,
                         String.join(StringUtils.EMPTY,
-                            forestClient.getRegistryCompanyTypeCode(),
-                            forestClient.getCorpRegnNmbr()
+                            forestClient.registryCompanyTypeCode(),
+                            forestClient.corpRegnNmbr()
                         )
                     )
                     .build()
