@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.r2dbc.postgresql.codec.Json;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +64,7 @@ public class SubmissionMatchDetailEntityBeforeConvert
     return Optional
             .ofNullable(entity.getMatchingField())
             .map(Json::asString)
-            .map(value -> (value != null) ? value : "{}")
+            .map(value -> Objects.toString(value, "{}"))
             .map(value -> {
                 try {
                     return mapper.readValue(value, Map.class);
