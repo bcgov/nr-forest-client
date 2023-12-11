@@ -333,7 +333,7 @@ watch(showBirthDate, (value) => {
         kind="error"
         title="Client already exists"
       >
-        <p  class="cds--inline-notification-content">
+        <p class="cds--inline-notification-content">
           Looks like “{{ formData.businessInformation.businessName }}” has a
           client number. Select the 'Receive email and logout' button below to
           have it sent to you at {{ formData.location.contacts[0].email }}
@@ -352,13 +352,7 @@ watch(showBirthDate, (value) => {
     :enabled="false"
   />
 
-  <div
-    v-if="
-      validation.business &&
-      (selectedOption === BusinessTypeEnum.U ||
-        formData.businessInformation.clientType === ClientTypeEnum[ClientTypeEnum.RSP])
-    "
-  >
+  <div v-if="showBirthDate">
     <p class="body-02 date-label">
       We need the proprietor's birthdate to confirm their identity
       <span class="cds-text-input-required-label">(required)</span>
