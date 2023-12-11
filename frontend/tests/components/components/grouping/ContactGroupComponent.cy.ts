@@ -78,6 +78,8 @@ describe("<ContactGroupComponent />", () => {
 
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
 
+    cy.wait(100);
+
     cy.get("#addressname_0")
       .click()
       .find('cds-multi-select-item[data-value="Mailing address"]')
