@@ -66,12 +66,12 @@ public class SubmissionMatchDetailEntityBeforeConvert
             .map(Json::asString)
             .map(value -> Objects.toString(value, "{}"))
             .map(value -> {
-                try {
-                    return mapper.readValue(value, Map.class);
-                } catch (JsonProcessingException e) {
-                    log.error("Error while converting matchers to json", e);
-                    return Map.of();
-                }
+              try {
+                return mapper.readValue(value, Map.class);
+              } catch (JsonProcessingException e) {
+                log.error("Error while converting matchers to json", e);
+                return Map.of();
+              }
             })
             .map(value -> (Map<String, Object>) value)
             .orElse(Map.of());
