@@ -1,28 +1,38 @@
 package ca.bc.gov.app.service.processor;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
-import ca.bc.gov.app.repository.legacy.ForestClientRepository;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import reactor.core.publisher.Flux;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
 
 
 @DisplayName("Unit Test | Incorporation Number Matcher")
 class IncorporationNumberProcessorMatcherTest {
 
-  private final ForestClientRepository repository = mock(ForestClientRepository.class);
-  ProcessorMatcher matcher = new IncorporationNumberProcessorMatcher(repository);
+  @RegisterExtension
+  static WireMockExtension wireMockExtension = WireMockExtension
+      .newInstance()
+      .options(wireMockConfig().port(10011))
+      .configureStaticDsl(true)
+      .build();
+
+  ProcessorMatcher matcher = new IncorporationNumberProcessorMatcher(
+      WebClient.builder().baseUrl("http://localhost:10011").build()
+  );
 
   @Test
   @DisplayName("Name matching")
@@ -37,7 +47,7 @@ class IncorporationNumberProcessorMatcherTest {
       SubmissionInformationDto dto,
       boolean success,
       MatcherResult result,
-      Flux<ForestClientEntity> mockData
+      String mockData
   ) {
     assertTrue(matcher.enabled(dto));
   }
@@ -49,11 +59,15 @@ class IncorporationNumberProcessorMatcherTest {
       SubmissionInformationDto dto,
       boolean success,
       MatcherResult result,
-      Flux<ForestClientEntity> mockData
+      String mockData
   ) {
 
-    when(repository.findByIncorporationNumber(dto.incorporationNumber()))
-        .thenReturn(mockData);
+    wireMockExtension.resetAll();
+    wireMockExtension
+        .stubFor(
+            get("/api/search/incorporationOrName")
+                .willReturn(okJson(mockData))
+        );
 
     StepVerifier.FirstStep<MatcherResult> verifier =
         matcher
@@ -73,16 +87,16 @@ class IncorporationNumberProcessorMatcherTest {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto(null,null, "00000007", null,"C"),
+                new SubmissionInformationDto(null, null, "00000007", null, "C"),
                 true,
                 null,
-                Flux.empty()
+                "[]"
             ),
             Arguments.of(
-                new SubmissionInformationDto(null,null, "00000006", null,"C"),
+                new SubmissionInformationDto(null, null, "00000006", null, "C"),
                 false,
                 new MatcherResult("incorporationNumber", "00000006"),
-                Flux.just(new ForestClientEntity().withClientNumber("00000006"))
+                "[{\"clientNumber\":\"00000006\"}]"
             )
         );
   }
