@@ -288,14 +288,14 @@ export const isWithinRange =
 /**
  * Checks if the value is a possibly valid day for the specified month.
  * Note: February 29 will always be considered valid, since this validation does not consider the year.
- * 
+ *
  * @param validMonth a valid month
  * @param message the error message to be returned if the validation fails.
  */
 export const isValidDayOfMonth =
   (
     validMonth: string,
-    message = "Value is not a valid day in the selected month",
+    message = "Value is not a valid day in the selected month"
   ) =>
   (value: string): string => {
     const arbitraryLeapYear = 2000;
@@ -310,7 +310,7 @@ export const isValidDayOfMonth =
 /**
  * Checks if the value is a valid day for the specified year and month.
  * i.e. it tells if the date formed by the provided year, month and day exists.
- * 
+ *
  * @param validYear a valid year
  * @param validMonth a valid month
  * @param message the error message to be returned if the validation fails.
@@ -319,7 +319,7 @@ export const isValidDayOfMonthYear =
   (
     validYear: string,
     validMonth: string,
-    message = "Value is not a valid day in the selected month and year",
+    message = "Value is not a valid day in the selected month and year"
   ) =>
   (value: string): string => {
     const dateString = `${validYear}-${validMonth}-${value}`;
@@ -334,7 +334,7 @@ export const isMinimumYearsAgo =
   (
     years: number,
     message: string | ((years: number) => string) = (years) =>
-      `Value must be at least ${years} years ago`,
+      `Value must be at least ${years} years ago`
   ) =>
   (value: string): string => {
     const maximumDate = subYears(startOfToday(), years);
@@ -349,7 +349,10 @@ export const isMinimumYearsAgo =
   };
 
 export const isGreaterThan =
-  (compareTo: number, message: string = `Value must be greater than ${compareTo}`) =>
+  (
+    compareTo: number,
+    message: string = `Value must be greater than ${compareTo}`
+  ) =>
   (value: string): string => {
     if (Number(value) > compareTo) {
       return "";
@@ -358,7 +361,10 @@ export const isGreaterThan =
   };
 
 export const isLessThan =
-  (compareTo: number, message: string = `Value must be less than ${compareTo}`) =>
+  (
+    compareTo: number,
+    message: string = `Value must be less than ${compareTo}`
+  ) =>
   (value: string): string => {
     if (Number(value) < compareTo) {
       return "";
@@ -366,7 +372,7 @@ export const isLessThan =
     return message;
   };
 
-export const isDateInThePast = (message: "Value must be in the past") => (value: string) => {
+export const isDateInThePast = (message: string) => (value: string) => {
   const dateValue = parseISO(value);
   if (!isBefore(dateValue, startOfToday())) {
     return message;
@@ -447,7 +453,8 @@ export const validate = (
         condition: string,
         fieldId: string = fieldKey
       ): string => {
-        if (eval(condition)) { // NOSONAR
+        if (eval(condition)) {
+          // NOSONAR
           const validationResponse = validation(item);
           if (notify && validationResponse) {
             errorBus.emit([{ fieldId, errorMsg: validationResponse }]);
@@ -519,7 +526,8 @@ export const runValidation = (
     condition: string,
     fieldId: string = fieldKey
   ): string => {
-    if (eval(condition)) { // NOSONAR
+    if (eval(condition)) {
+      // NOSONAR
       const validationResponse = validation(item);
       if (notify) {
         // Note: also notifies when valid - errorMsg will be empty.
