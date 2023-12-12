@@ -687,6 +687,7 @@ div#app {
   border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
   background: #fff;
   max-width: 50.4375rem;
+  box-sizing: border-box;
 }
 
 .divider {
