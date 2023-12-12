@@ -356,14 +356,14 @@ watch([error], () => {
           title="">
           <p class="cds--inline-notification-content">
             <strong>Read-only: </strong>
-            If something is incorrect visit 
+            If something is incorrect
             <a
               href=""
               target="_blank"
               rel="noopener noreferrer"
               @click.prevent="changePersonalInfoModalActive = true"
-              >Change your personal information
-            </a> 
+              >change your personal information</a
+            >
             and then restart your application.
           </p>
         </cds-inline-notification>
@@ -485,16 +485,14 @@ watch([error], () => {
       <cds-modal-body>
         <p>
           Visit 
-          <a 
+          <a
             href='https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card/your-card/change-personal-information' 
-            target="_blank">Change your personal information
-          </a> 
+            target="_blank"
+            >Change your personal information</a
+          >
           to update your name, address or date of birth.<br /><br />
-          Go to your 
-          <a 
-            href='https://id.gov.bc.ca/account/'
-            target="_blank">BC Services account
-          </a> 
+          Go to your
+          <a href="https://id.gov.bc.ca/account/" target="_blank">BC Services account</a>
           to update your email address.<br /><br />
           You can then log back into this application using your BC Services Card.
         </p>
