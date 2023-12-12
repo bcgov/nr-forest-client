@@ -453,8 +453,7 @@ export const validate = (
         condition: string,
         fieldId: string = fieldKey
       ): string => {
-        if (eval(condition)) {
-          // NOSONAR
+        if (eval(condition)) { // NOSONAR
           const validationResponse = validation(item);
           if (notify && validationResponse) {
             errorBus.emit([{ fieldId, errorMsg: validationResponse }]);
@@ -526,8 +525,7 @@ export const runValidation = (
     condition: string,
     fieldId: string = fieldKey
   ): string => {
-    if (eval(condition)) {
-      // NOSONAR
+    if (eval(condition)) { // NOSONAR
       const validationResponse = validation(item);
       if (notify) {
         // Note: also notifies when valid - errorMsg will be empty.
