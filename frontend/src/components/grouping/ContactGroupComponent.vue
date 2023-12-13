@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch, ref, onMounted } from "vue";
+import { reactive, watch, ref, onMounted, getCurrentInstance } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
 // Importing composables
@@ -104,6 +104,16 @@ const updateContactType = (value: CodeNameType | undefined) => {
     selectedValue.contactType = { value: value.code, text: value.name };
   }
 };
+
+const changePersonalInfoModalActive = ref(false);
+
+const instance = getCurrentInstance();
+const session = instance?.appContext.config.globalProperties.$session;
+
+const logoutAndRedirect = () => {
+  window.open("https://www.bceid.ca/", "_blank");
+  session?.logOut();
+}
 </script>
 
 <template>
@@ -120,7 +130,11 @@ const updateContactType = (value: CodeNameType | undefined) => {
           <p class="cds--inline-notification-content">
             <strong>Read-only: </strong>
             If something is incorrect
-            <a href="https://www.bceid.ca/" target="_blank" rel="noopener noreferrer"
+            <a
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              @click.prevent="changePersonalInfoModalActive = true"
               >go to BCeID</a
             >
             to correct it and then restart your application.
@@ -251,4 +265,41 @@ const updateContactType = (value: CodeNameType | undefined) => {
       </cds-button>
     </div>
   </div>
+
+  <cds-modal
+    id="logout-and-redirect-modal"
+    size="md"
+    :open="changePersonalInfoModalActive"
+    @cds-modal-closed="changePersonalInfoModalActive = false"
+  >
+    <cds-modal-header>
+      <cds-modal-close-button></cds-modal-close-button>
+      <cds-modal-heading>
+        You will be automatically logged out and redirected to BCeID
+      </cds-modal-heading>
+    </cds-modal-header>
+    <cds-modal-body>
+      <p>
+        Update your personal information at
+        <a href="https://www.bceid.ca/" target="_blank" rel="noopener noreferrer">BCeID</a> and then
+        log back into this application.
+      </p>
+      <p>Your data will not be saved.</p>
+    </cds-modal-body>
+    <cds-modal-footer>
+      <cds-modal-footer-button kind="secondary" data-modal-close class="cds--modal-close-btn">
+        Cancel
+      </cds-modal-footer-button>
+
+      <cds-modal-footer-button
+        kind="danger"
+        class="cds--modal-submit-btn"
+        v-on:click="logoutAndRedirect"
+      >
+        Logout and redirect
+        <Logout16 slot="icon" />
+      </cds-modal-footer-button>
+
+    </cds-modal-footer>
+  </cds-modal>
 </template>
