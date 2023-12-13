@@ -471,7 +471,7 @@ watch([error], () => {
     </cds-button>
 
     <cds-modal
-      id="help-modal"
+      id="address-change-bc-modal"
       size="md"
       :open="changePersonalInfoModalActive"
       @cds-modal-closed="changePersonalInfoModalActive = false"
@@ -484,7 +484,7 @@ watch([error], () => {
       </cds-modal-header>
       <cds-modal-body>
         <p>
-          Visit 
+          Visit
           <a
             href='https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card/your-card/change-personal-information' 
             target="_blank"

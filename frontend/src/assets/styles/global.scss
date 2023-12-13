@@ -968,6 +968,7 @@ div#app {
 }
 
 cds-modal::part(dialog) {
+  width: 40rem;
   border-radius: 0.5rem;
 }
 
@@ -1251,6 +1252,7 @@ cds-header-panel[expanded] {
   }
 
   cds-modal::part(dialog) {
+    width: 100%;
     height: auto;
     margin-bottom: 0;
     margin-top: auto;
@@ -1275,10 +1277,6 @@ cds-header-panel[expanded] {
 
   cds-modal-footer-button::part(button) {
     padding-bottom: 1rem;
-  }
-
-  cds-modal#reject-modal::part(dialog) {
-    max-height: 37rem;
   }
 
   cds-modal#reject-modal cds-modal-body.grouping-12,
@@ -1478,11 +1476,6 @@ cds-header-panel[expanded] {
 
   .grouping-10 .grouping-11:first-child{
     width: 40%;
-  }
-  
-  cds-modal#reject-modal::part(dialog),
-  cds-modal#approve-modal::part(dialog) {
-    width: 95%;
   }
 
   cds-modal#reject-modal cds-modal-body.grouping-12,
