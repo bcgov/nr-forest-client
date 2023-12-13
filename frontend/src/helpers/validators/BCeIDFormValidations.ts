@@ -15,7 +15,6 @@ import {
   isGreaterThan,
 } from "@/helpers/validators/GlobalValidators";
 
-
 // Step 1: Business Information
 formFieldValidations["businessInformation.businessName"] = [
   isNotEmpty("Business Name cannot be empty"),
