@@ -240,7 +240,7 @@ export const isUniqueDescriptive = (): {
       if (
         values.some(
           (entry: string) => entry.toLowerCase() === value.toLowerCase()
-        )
+        ) && value.trim() !== ""
       ) {
         return message;
       }
