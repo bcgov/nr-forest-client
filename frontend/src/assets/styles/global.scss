@@ -166,11 +166,19 @@ cds-progress-step.step-inactive::part(cds--progress-optional) {
   color: #939395;
 }
 
+cds-inline-notification {
+  min-width: 7.6875rem;
+}
+
 cds-inline-notification::part(div),
 cds-inline-notification,
 .cds--inline-notification {
   max-width: 100%;
   border-radius: 0.25rem;
+}
+
+cds-inline-notification::part(cds--inline-notification__details) {
+  margin-right: 1rem;
 }
 
 cds-actionable-notification::part(div),
@@ -691,6 +699,7 @@ cds-actionable-notification * {
   border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
   background: #fff;
   max-width: 50.4375rem;
+  box-sizing: border-box;
 }
 
 .divider {
@@ -961,6 +970,7 @@ cds-actionable-notification * {
 }
 
 cds-modal::part(dialog) {
+  width: 40rem;
   border-radius: 0.5rem;
 }
 
@@ -1254,7 +1264,8 @@ cds-header-panel[expanded] {
   }
 
   cds-modal::part(dialog) {
-    max-height: 20.5rem;
+    width: 100%;
+    height: auto;
     margin-bottom: 0;
     margin-top: auto;
     position: relative;
@@ -1267,6 +1278,7 @@ cds-header-panel[expanded] {
   }
 
   cds-modal-footer {
+    height: auto;
     display: flex;
     padding: 0rem 1rem 1rem 1rem;
     flex-direction: column;
@@ -1275,8 +1287,8 @@ cds-header-panel[expanded] {
     align-self: stretch;
   }
 
-  cds-modal#reject-modal::part(dialog) {
-    max-height: 37rem;
+  cds-modal-footer-button::part(button) {
+    padding-bottom: 1rem;
   }
 
   cds-modal#reject-modal cds-modal-body.grouping-12,
@@ -1341,6 +1353,10 @@ cds-header-panel[expanded] {
 
   .form-header-application-submitted cds-button {
     margin-top: 2rem;
+  }
+
+  .screen cds-button {
+    width: 100%;
   }
 
   .frame-03 {
@@ -1411,6 +1427,10 @@ cds-header-panel[expanded] {
   }
   cds-table {
     width: 82rem;
+  }
+
+  .card {
+    padding: 1.5rem;
   }
 }
 
