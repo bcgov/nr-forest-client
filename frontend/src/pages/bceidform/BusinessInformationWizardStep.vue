@@ -10,7 +10,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import {
   BusinessSearchResult,
   ClientTypeEnum,
-  ProgressNotification
+  ProgressNotification,
 } from "@/dto/CommonTypesDto";
 import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
 import type {
