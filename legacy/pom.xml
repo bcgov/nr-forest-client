@@ -90,7 +90,16 @@
       <artifactId>lombok</artifactId>
       <optional>true</optional>
     </dependency>
-
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>1.5.5.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct-processor</artifactId>
+      <version>1.5.5.Final</version>
+    </dependency>
     <dependency>
       <groupId>org.dhatim</groupId>
       <artifactId>fastexcel</artifactId>
