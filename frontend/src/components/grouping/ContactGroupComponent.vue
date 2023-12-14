@@ -131,6 +131,7 @@ const logoutAndRedirect = () => {
             <strong>Read-only: </strong>
             If something is incorrect
             <a
+              id="change-personal-info-link"
               href="#"
               target="_blank"
               rel="noopener noreferrer"

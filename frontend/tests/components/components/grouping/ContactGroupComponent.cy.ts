@@ -183,6 +183,54 @@ describe("<ContactGroupComponent />", () => {
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
   });
 
+  it("should logout and redirect to BCeID", () => {
+    const $session = {
+      logOut() {
+        console.log("coisa");
+      },
+    };
+    cy.get("@contactFixture").then((contact: Contact) => {
+      cy.get("@rolesFixture").then((roles) => {
+        cy.get("@addressesFixture").then((addresses) => {
+          cy.mount(ContactGroupComponent, {
+            props: {
+              id: 0,
+              modelValue: {
+                ...contact,
+                addresses: [addresses[0], addresses[1]],
+              },
+              enabled: true,
+              roleList: roles,
+              addressList: addresses,
+              validations: [],
+            },
+            global: {
+              config: {
+                globalProperties: {
+                  $session,
+                },
+              },
+            },
+          });
+        });
+      });
+    });
+
+    cy.focused().should('have.id', 'phoneNumber_0');
+
+    cy.get("#change-personal-info-link").click();
+
+    cy.get("#logout-and-redirect-modal").should("be.visible");
+
+    cy.spy(window, "open").as("windowOpen");
+    cy.spy($session, "logOut").as("sessionLogOut");
+
+    cy.get('#logout-and-redirect-modal > cds-modal-footer > .cds--modal-submit-btn').click();
+
+    cy.get("@windowOpen").should("be.calledWith", "https://www.bceid.ca/", "_blank");
+    cy.get("@sessionLogOut").should("be.called");
+  });
+
   describe('when it has last emitted "valid" with false due to a single, not empty, invalid field', () => {
     const genericTest = (
       fieldSelector: string,
