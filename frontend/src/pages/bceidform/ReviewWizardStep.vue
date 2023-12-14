@@ -81,16 +81,18 @@ onMounted(() => {
     <label class="heading-03">Address</label>
     <div v-for="(address, index) in formData.location.addresses" 
         :key="address.locationName" 
-        class="grouping-23">
+        class="grouping-07">
       <hr class="divider" v-if="index > 0" />
       <span class="heading-02 review-icon-title">
         <LocationStar20 v-if="index === 0" />
         <Location20 v-else />{{ address.locationName }}
       </span>
-      <span class="body-compact-01">{{ address.streetAddress }}</span>
-      <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
-      <span class="body-compact-01">{{ address.country.text }}</span>
-      <span class="body-compact-01">{{ address.postalCode }}</span>
+      <div class="grouping-23">
+        <span class="body-compact-01">{{ address.streetAddress }}</span>
+        <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
+        <span class="body-compact-01">{{ address.country.text }}</span>
+        <span class="body-compact-01">{{ address.postalCode }}</span>
+      </div>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(1)">
@@ -103,18 +105,20 @@ onMounted(() => {
     <label class="heading-03">Contacts</label>
     <div v-for="(contact, index) in formData.location.contacts" 
         :key="contact.email" 
-        class="grouping-23">
+        class="grouping-07">
       <hr class="divider" 
           v-if="index > 0" />
       <span class="heading-02 review-icon-title">
         <User20 />{{ contact.firstName }} {{ contact.lastName }}
       </span>
-      <span class="body-compact-01">
-        {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
-      </span>
-      <span class="body-compact-01">{{ contact.contactType.text }}</span>
-      <span class="body-compact-01">{{ contact.email }}</span>
-      <span class="body-compact-01">{{ contact.phoneNumber }}</span>
+      <div class="grouping-23">
+        <span class="body-compact-01">
+          {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
+        </span>
+        <span class="body-compact-01">{{ contact.contactType.text }}</span>
+        <span class="body-compact-01">{{ contact.email }}</span>
+        <span class="body-compact-01">{{ contact.phoneNumber }}</span>
+      </div>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(2)">
