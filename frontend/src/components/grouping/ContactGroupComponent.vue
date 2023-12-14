@@ -267,6 +267,7 @@ const logoutAndRedirect = () => {
   </div>
 
   <cds-modal
+    v-if="id === 0"
     id="logout-and-redirect-modal"
     size="md"
     :open="changePersonalInfoModalActive"
