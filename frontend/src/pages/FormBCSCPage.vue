@@ -207,7 +207,8 @@ const handleRemove = (index: number) => {
     ? `${formData.location.contacts[index].firstName} ${formData.location.contacts[index].lastName}`
     : "Contact #" + index;
   bus.emit({
-    message: selectedContact,
+    name: selectedContact,
+    message: `“${selectedContact}” additional contact was deleted`,
     kind: "Contact deleted",
     toastTitle: "The additional contact was deleted",
     handler: removeContact(index),

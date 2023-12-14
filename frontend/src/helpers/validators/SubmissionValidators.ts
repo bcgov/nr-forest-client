@@ -18,28 +18,32 @@
  *
  * @see {@link SubmissionValidators.spec.ts}
  */
-import { useEventBus } from '@vueuse/core'
-import type { ValidationMessageType } from '@/dto/CommonTypesDto'
+import { useEventBus } from "@vueuse/core";
+import type { ValidationMessageType } from "@/dto/CommonTypesDto";
 
 /**
  * Event bus for submission error notifications.
  */
-const errorBus = useEventBus<ValidationMessageType[]>('submission-error-notification')
+const errorBus = useEventBus<ValidationMessageType[]>(
+  "submission-error-notification"
+);
 
 /**
  * Event bus for revalidating the submission.
  */
-const revalidateBus = useEventBus<void>('revalidate-bus')
+const revalidateBus = useEventBus<void>("revalidate-bus");
 
 /**
  * Event bus for error notifications bar.
  */
-const notificationBus = useEventBus<ValidationMessageType|undefined>("error-notification");
+const notificationBus = useEventBus<ValidationMessageType | undefined>(
+  "error-notification"
+);
 
 /**
  * Array of submission validators.
  */
-let submissionValidators : ValidationMessageType[] = []
+let submissionValidators: ValidationMessageType[] = [];
 
 /**
  * Register a listener for submission errors on the error bus.
@@ -47,11 +51,11 @@ let submissionValidators : ValidationMessageType[] = []
  */
 errorBus.on((errors) => {
   submissionValidators = errors.map((error: ValidationMessageType) => {
-    notificationBus.emit(error)
-    return { ...error, originalValue: '' }
-  })
-  revalidateBus.emit()
-})
+    notificationBus.emit(error);
+    return { ...error, originalValue: "" };
+  });
+  revalidateBus.emit();
+});
 
 /**
  * Update the submission validators array with the provided fieldId and value.
@@ -60,13 +64,15 @@ errorBus.on((errors) => {
  * @param value - The new value for the validator's originalValue property.
  */
 const updateValidators = (fieldId: string, value: string): void => {
-  submissionValidators = submissionValidators.map((validator : ValidationMessageType) => {
-    if (validator.fieldId === fieldId) {
-      return { ...validator, originalValue: value }
+  submissionValidators = submissionValidators.map(
+    (validator: ValidationMessageType) => {
+      if (validator.fieldId === fieldId) {
+        return { ...validator, originalValue: value };
+      }
+      return validator;
     }
-    return validator
-  })
-}
+  );
+};
 
 /**
  * Create a submission validation function for the specified fieldName.
@@ -78,14 +84,16 @@ export const submissionValidation = (
   fieldName: string
 ): ((value: string) => string) => {
   return (value: string) => {
-    const foundError = submissionValidators.find((validator: ValidationMessageType) => validator.fieldId === fieldName)
+    const foundError = submissionValidators.find(
+      (validator: ValidationMessageType) => validator.fieldId === fieldName
+    );
     if (
       foundError &&
-      (foundError.originalValue === value || foundError.originalValue === '')
+      (foundError.originalValue === value || foundError.originalValue === "")
     ) {
-      updateValidators(fieldName, value)
-      return foundError.errorMsg
+      updateValidators(fieldName, value);
+      return foundError.errorMsg;
     }
-    return ''
-  }
-}
+    return "";
+  };
+};
