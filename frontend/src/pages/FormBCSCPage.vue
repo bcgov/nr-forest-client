@@ -446,7 +446,9 @@ watch([error], () => {
       </div>
     </div>
 
-    <p class="body-compact-01">
+    <p 
+      class="body-compact-01"
+      v-if="formData.location.contacts.length < 5">
       You can add contacts to the account. For example, a person you want to give or receive information on your behalf.
     </p>
 
@@ -457,6 +459,12 @@ watch([error], () => {
       <span>Add another contact</span>
       <Add16 slot="icon" />
     </cds-button>
+
+    <p 
+      class="body-compact-01"
+      v-if="formData.location.contacts.length >= 5">
+      You can only add a maximum of 5 additional contacts.
+    </p>
 
     <hr class="divider" />
 

@@ -49,4 +49,31 @@ describe("ContactWizardStep.vue", () => {
       });
     });
   });
+
+  describe("when the number of contacts is less than 5", () => {
+    it("renders the 'Add another contact' button", () => {
+      const wrapper = mount(ContactWizardStep, {
+        props: {
+          data: {
+            location: {
+              addresses: [],
+              contacts: [
+                {
+                  ...emptyContact,
+                  firstName: "John",
+                  lastName: "Doe",
+                } as Contact,
+              ],
+            },
+          } as unknown as FormDataDto,
+          active: false,
+        },
+      });
+      
+      const addButton = wrapper.find('cds-button');
+      
+      expect(addButton.text()).toContain("Add another contact");
+      expect(addButton.exists()).toBe(true);
+    });
+  });
 });
