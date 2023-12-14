@@ -56,14 +56,16 @@ onMounted(() => {
 <template>
   <div class="grouping-05">
     <label class="heading-03">Business information</label>
-    <div class="grouping-01">
-      <p class="heading-02 review-icon-title">
-        <Enterprise20 />
-        {{ formData.businessInformation.businessName }}
-      </p>
-      <p class="body-compact-01" id="clientTypeId">
-        {{ clientType.text }}
-      </p>
+    <div class="grouping-22">
+      <div class="grouping-01">
+        <p class="heading-02 review-icon-title">
+          <Enterprise20 />
+          {{ formData.businessInformation.businessName }}
+        </p>
+        <p class="body-compact-01" id="clientTypeId">
+          {{ clientType.text }}
+        </p>
+      </div>
       <p class="body-compact-01" id="birthdate" v-if="formData.businessInformation.birthdate">
         Proprietor’s birthdate: {{ formData.businessInformation.birthdate }}
       </p>
@@ -79,7 +81,7 @@ onMounted(() => {
     <label class="heading-03">Address</label>
     <div v-for="(address, index) in formData.location.addresses" 
         :key="address.locationName" 
-        class="grouping-07">
+        class="grouping-23">
       <hr class="divider" v-if="index > 0" />
       <span class="heading-02 review-icon-title">
         <LocationStar20 v-if="index === 0" />
@@ -101,7 +103,7 @@ onMounted(() => {
     <label class="heading-03">Contacts</label>
     <div v-for="(contact, index) in formData.location.contacts" 
         :key="contact.email" 
-        class="grouping-07">
+        class="grouping-23">
       <hr class="divider" 
           v-if="index > 0" />
       <span class="heading-02 review-icon-title">
