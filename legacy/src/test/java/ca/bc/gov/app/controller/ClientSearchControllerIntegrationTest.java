@@ -1,4 +1,4 @@
-package ca.bc.gov.app.endpoints;
+package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.time.LocalDate;
@@ -20,8 +20,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @Slf4j
-@DisplayName("Integrated Test | Client Search Incorporation Controller")
-class ClientSearchIncorporationHandlerIntegrationTest extends
+@DisplayName("Integrated Test | Client Search Controller")
+class ClientSearchControllerIntegrationTest extends
     AbstractTestContainerIntegrationTest {
 
   @Autowired
@@ -155,6 +155,29 @@ class ClientSearchIncorporationHandlerIntegrationTest extends
         .is4xxClientError();
   }
 
+  @ParameterizedTest
+  @MethodSource("legalName")
+  @DisplayName("Search someone by legal name")
+  void shouldMatch(
+      String searchParam,
+      String expected
+  ){
+    client
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/search/match")
+                .queryParam("companyName", searchParam)
+                .build(new HashMap<>())
+        )
+        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .json(expected)
+        .consumeWith(System.out::println);
+  }
+
   private static Stream<String> byLastNameCompanyName() {
     return Stream.of("BAXTER", "BORIS AND BORIS INC.");
   }
@@ -175,6 +198,30 @@ class ClientSearchIncorporationHandlerIntegrationTest extends
             Arguments.of(null, "BAXTER", LocalDate.of(1959, 5, 18)),
             Arguments.of("JAMES", StringUtils.EMPTY, LocalDate.of(1959, 5, 18)),
             Arguments.of(StringUtils.EMPTY, "BAXTER", LocalDate.of(1959, 5, 18))
+        );
+  }
+
+  private static Stream<Arguments> legalName() {
+    return
+        Stream.of(
+            Arguments.of("James", """
+                [
+                  {
+                    "clientNumber":"00000009",
+                    "clientName":"james",
+                    "legalFirstName":null,
+                    "legalMiddleName":"hunt",
+                    "clientStatusCode":"ACT",
+                    "clientTypeCode":"I",
+                    "birthdate":null,
+                    "clientIdTypeCode":null,
+                    "clientIdentification":null,
+                    "registryCompanyTypeCode":null,
+                    "corpRegnNmbr":null
+                  }
+                ]"""),
+            Arguments.of("Marco","[]"),
+            Arguments.of("Lucca", "[]")
         );
   }
 
