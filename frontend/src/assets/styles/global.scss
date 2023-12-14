@@ -151,6 +151,10 @@ cds-progress-step[vertical] {
   width: fit-content;
 }
 
+cds-progress-step::part(cds--progress-step-button) {
+  cursor: auto;
+}
+
 cds-progress-step::part(cds--progress-label) {
   max-width: initial;
   padding-right: 0.5rem;
