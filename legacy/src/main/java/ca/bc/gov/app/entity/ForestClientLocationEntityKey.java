@@ -1,4 +1,4 @@
-package ca.bc.gov.app.entity.legacy;
+package ca.bc.gov.app.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
