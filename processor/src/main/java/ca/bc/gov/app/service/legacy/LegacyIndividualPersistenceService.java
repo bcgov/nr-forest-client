@@ -28,26 +28,16 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenceService {
 
-  public LegacyIndividualPersistenceService(
-      SubmissionDetailRepository submissionDetailRepository,
-      SubmissionRepository submissionRepository,
-      SubmissionLocationRepository locationRepository,
+
+  public LegacyIndividualPersistenceService(SubmissionDetailRepository submissionDetailRepository,
+      SubmissionRepository submissionRepository, SubmissionLocationRepository locationRepository,
       SubmissionContactRepository contactRepository,
       SubmissionLocationContactRepository locationContactRepository,
       R2dbcEntityOperations legacyR2dbcEntityTemplate,
-      CountryCodeRepository countryCodeRepository,
-      ClientDoingBusinessAsRepository doingBusinessAsRepository
-  ) {
-    super(
-        submissionDetailRepository,
-        submissionRepository,
-        locationRepository,
-        contactRepository,
-        locationContactRepository,
-        legacyR2dbcEntityTemplate,
-        countryCodeRepository,
-        doingBusinessAsRepository
-    );
+      ClientDoingBusinessAsRepository doingBusinessAsRepository, LegacyService legacyService) {
+    super(submissionDetailRepository, submissionRepository, locationRepository, contactRepository,
+        locationContactRepository, legacyR2dbcEntityTemplate, doingBusinessAsRepository,
+        legacyService);
   }
 
   /**

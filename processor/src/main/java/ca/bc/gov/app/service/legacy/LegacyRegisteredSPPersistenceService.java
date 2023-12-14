@@ -4,7 +4,6 @@ package ca.bc.gov.app.service.legacy;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
-import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
@@ -42,22 +41,15 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
       SubmissionContactRepository contactRepository,
       SubmissionLocationContactRepository locationContactRepository,
       R2dbcEntityOperations legacyR2dbcEntityTemplate,
-      CountryCodeRepository countryCodeRepository,
       ClientDoingBusinessAsRepository doingBusinessAsRepository,
-      BcRegistryService bcRegistryService
-  ) {
-    super(
-        submissionDetailRepository,
-        submissionRepository,
-        locationRepository,
-        contactRepository,
-        locationContactRepository,
-        legacyR2dbcEntityTemplate,
-        countryCodeRepository,
-        doingBusinessAsRepository
-    );
+      LegacyService legacyService,
+      BcRegistryService bcRegistryService) {
+    super(submissionDetailRepository, submissionRepository, locationRepository, contactRepository,
+        locationContactRepository, legacyR2dbcEntityTemplate, doingBusinessAsRepository,
+        legacyService);
     this.bcRegistryService = bcRegistryService;
   }
+
 
   /**
    * This method is responsible for filtering the submission based on the type.

@@ -41,9 +41,9 @@ class LegacyClientPersistenceServiceTest {
   private final SubmissionLocationContactRepository locationContactRepository = mock(
       SubmissionLocationContactRepository.class);
   private final R2dbcEntityTemplate legacyR2dbcEntityTemplate = mock(R2dbcEntityTemplate.class);
-  private final CountryCodeRepository countryCodeRepository = mock(CountryCodeRepository.class);
   private final ClientDoingBusinessAsRepository doingBusinessAsRepository = mock(
       ClientDoingBusinessAsRepository.class);
+  private final LegacyService legacyService = mock(LegacyService.class);
 
   private final LegacyClientPersistenceService service = new LegacyClientPersistenceService(
       submissionDetailRepository,
@@ -52,8 +52,8 @@ class LegacyClientPersistenceServiceTest {
       contactRepository,
       locationContactRepository,
       legacyR2dbcEntityTemplate,
-      countryCodeRepository,
-      doingBusinessAsRepository
+      doingBusinessAsRepository,
+      legacyService
   );
 
   @ParameterizedTest(name = "type: {0} expected: {1}")

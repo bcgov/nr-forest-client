@@ -49,12 +49,12 @@ class LegacyRegisteredSPPersistenceServiceTest {
       SubmissionLocationRepository.class);
   private final SubmissionContactRepository contactRepository = mock(
       SubmissionContactRepository.class);
-  private final SubmissionLocationContactRepository locationContactRepository = mock(
-      SubmissionLocationContactRepository.class);
   private final R2dbcEntityTemplate legacyR2dbcEntityTemplate = mock(R2dbcEntityTemplate.class);
-  private final CountryCodeRepository countryCodeRepository = mock(CountryCodeRepository.class);
+
   private final ClientDoingBusinessAsRepository doingBusinessAsRepository = mock(
       ClientDoingBusinessAsRepository.class);
+
+  private final LegacyService legacyService = mock(LegacyService.class);
   private final BcRegistryService bcRegistryService = mock(BcRegistryService.class);
 
   private final LegacyRegisteredSPPersistenceService service = new LegacyRegisteredSPPersistenceService(
@@ -62,10 +62,10 @@ class LegacyRegisteredSPPersistenceServiceTest {
       submissionRepository,
       locationRepository,
       contactRepository,
-      locationContactRepository,
+      mock(SubmissionLocationContactRepository.class),
       legacyR2dbcEntityTemplate,
-      countryCodeRepository,
       doingBusinessAsRepository,
+      legacyService,
       bcRegistryService
   );
 

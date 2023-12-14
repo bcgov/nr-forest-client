@@ -11,7 +11,6 @@ import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.entity.legacy.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientLocationEntity;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
@@ -28,7 +27,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import lombok.Getter;
@@ -63,11 +61,8 @@ public abstract class LegacyAbstractPersistenceService {
   private final SubmissionContactRepository contactRepository;
   private final SubmissionLocationContactRepository locationContactRepository;
   private final R2dbcEntityOperations legacyR2dbcEntityTemplate;
-  private final CountryCodeRepository countryCodeRepository;
   private final ClientDoingBusinessAsRepository doingBusinessAsRepository;
-
-  private final Map<String, String> countryList = new HashMap<>();
-
+  private final LegacyService legacyService;
 
   abstract Mono<Message<ForestClientDto>> generateForestClient(Message<String> message);
 
@@ -75,15 +70,6 @@ public abstract class LegacyAbstractPersistenceService {
 
   abstract String getNextChannel();
 
-  /**
-   * Loads the country list from the database.
-   */
-  @PostConstruct
-  public void setUp() {
-    countryCodeRepository.findAll().doOnNext(
-            countryCode -> countryList.put(countryCode.getCountryCode(), countryCode.getDescription()))
-        .collectList().subscribe();
-  }
 
   /**
    * Loads the submission from the database and prepares the message for next step.
@@ -187,9 +173,17 @@ public abstract class LegacyAbstractPersistenceService {
 
 
   /**
-   * Creates a location if does not exist on oracle.
+   * Creates a location if it does not exist on oracle.
+   * The creation happens by sending a request to the legacy service.
+   *
+   * @param message A message containing the submission id
+   * @return A flux of messages containing the submission id and the location id
    */
-  @ServiceActivator(inputChannel = ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL, outputChannel = ApplicationConstant.SUBMISSION_LEGACY_CONTACT_CHANNEL, async = "true")
+  @ServiceActivator(
+      inputChannel = ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL,
+      outputChannel = ApplicationConstant.SUBMISSION_LEGACY_CONTACT_CHANNEL,
+      async = "true"
+  )
   public Flux<Message<Integer>> createLocations(Message<Integer> message) {
 
     if (!filterByType(
@@ -200,35 +194,32 @@ public abstract class LegacyAbstractPersistenceService {
     Flux<SubmissionLocationEntity> data = locationRepository.findBySubmissionId(
         message.getPayload());
 
-    BiFunction<String, String, Mono<ForestClientLocationEntity>> locateClientLocation = (clientNumber, locationCode) -> legacyR2dbcEntityTemplate.selectOne(
-        Query.query(Criteria.where("CLIENT_LOCN_CODE").is(locationCode)
-            .and(ApplicationConstant.CLIENT_NUMBER).is(clientNumber)),
-        ForestClientLocationEntity.class).doOnNext(forestClientLocation -> log.info(
-        "Forest client location {} {} already exists for submission {}",
-        forestClientLocation.getClientLocnCode(), forestClientLocation.getClientLocnName(),
-        message.getPayload()));
-
-    BiFunction<Long, SubmissionLocationEntity, Mono<ForestClientLocationEntity>> createClientLocation = (index, detail) -> toForestClientLocationEntity(
-        index, detail).doOnNext(submissionLocation -> log.info(
-            "Loaded submission location for persistence on oracle {} {} {}", message.getPayload(),
-            submissionLocation.getClientLocnCode(), submissionLocation.getClientLocnName())).doOnNext(
-            forestClient -> forestClient.setCreatedBy(getUser(message, ApplicationConstant.CREATED_BY)))
-        .doOnNext(forestClient -> forestClient.setUpdatedBy(
-            getUser(message, ApplicationConstant.UPDATED_BY)))
-        .doOnNext(forestClient -> forestClient.setClientNumber(getClientNumber(message))).doOnNext(
-            forestClient -> log.info("Saving forest client location {} {} {}", message.getPayload(),
-                forestClient.getClientLocnName(), forestClient)).flatMap(
-            forestClientLocation -> legacyR2dbcEntityTemplate.insert(
-                ForestClientLocationEntity.class).using(forestClientLocation));
-
-    return data.index((index, detail) -> locateClientLocation.apply(getClientNumber(message),
-                String.format("%02d", index)).switchIfEmpty(createClientLocation.apply(index, detail))
-            .flatMap(forestClient -> data.count().map(
-                count -> MessageBuilder.fromMessage(message).copyHeaders(message.getHeaders())
-                    .setHeader(ApplicationConstant.LOCATION_CODE, forestClient.getClientLocnCode())
-                    .setHeader(ApplicationConstant.LOCATION_ID, detail.getSubmissionLocationId())
-                    .setHeader(ApplicationConstant.TOTAL, count)
-                    .setHeader(ApplicationConstant.INDEX, index).build())))
+    return data
+        .index((index, detail) ->
+            legacyService
+                .createLocation(
+                    detail,
+                    getClientNumber(message),
+                    index,
+                    getUser(message, ApplicationConstant.CREATED_BY)
+                )
+                .flatMap(forestClient ->
+                    data
+                        .count()
+                        .map(count ->
+                            MessageBuilder
+                                .fromMessage(message)
+                                .copyHeaders(message.getHeaders())
+                                .setHeader(ApplicationConstant.LOCATION_CODE,
+                                    String.format("%02d", index))
+                                .setHeader(ApplicationConstant.LOCATION_ID,
+                                    detail.getSubmissionLocationId())
+                                .setHeader(ApplicationConstant.TOTAL, count)
+                                .setHeader(ApplicationConstant.INDEX, index)
+                                .build()
+                        )
+                )
+        )
         .flatMap(Function.identity());
 
   }
@@ -372,26 +363,6 @@ public abstract class LegacyAbstractPersistenceService {
         forestClient.clientIdTypeCode(), "BCRE");
   }
 
-  private Mono<ForestClientLocationEntity> toForestClientLocationEntity(long index,
-      SubmissionLocationEntity submissionLocation) {
-    return Mono.just(
-        ForestClientLocationEntity.builder().clientLocnCode(String.format("%02d", index))
-            .clientLocnName(submissionLocation.getName().toUpperCase())
-            .addressOne(submissionLocation.getStreetAddress())
-            .city(submissionLocation.getCityName()).province(submissionLocation.getProvinceCode())
-            //So as not to impact HBS, set HDBS Company Code to a space if not provided
-            //as it would have been in CLI
-            .hdbsCompanyCode(" ").country(
-                countryList.getOrDefault(submissionLocation.getCountryCode(),
-                    submissionLocation.getCountryCode())).postalCode(submissionLocation.getPostalCode())
-            .businessPhone(null).homePhone(null).cellPhone(null).faxNumber(null).emailAddress(null)
-            .locnExpiredInd("N").returnedMailDate(null).trustLocationInd("Y").cliLocnComment(null)
-            .createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).revision(1L)
-            .createdBy(ApplicationConstant.PROCESSOR_USER_NAME)
-            .updatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
-            .addOrgUnit(ApplicationConstant.ORG_UNIT).updateOrgUnit(ApplicationConstant.ORG_UNIT)
-            .build());
-  }
 
   private String getClientNumber(Message<?> message) {
     return ProcessorUtil.readHeader(message, ApplicationConstant.FOREST_CLIENT_NUMBER, String.class)
