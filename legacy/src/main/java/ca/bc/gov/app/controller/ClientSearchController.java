@@ -38,4 +38,11 @@ public class ClientSearchController {
     return service.findByIndividual(firstName, lastName, dob);
   }
 
+  @GetMapping("/match")
+  public Flux<ForestClientDto> matchBy(
+      @RequestParam String companyName
+  ) {
+    return service.matchBy(companyName);
+  }
+
 }

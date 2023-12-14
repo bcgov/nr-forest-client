@@ -1,9 +1,10 @@
 package ca.bc.gov.app.service;
 
 import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
+import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ForestClientRepository;
-import ca.bc.gov.app.util.MonoUtil;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Flux;
 public class ClientSearchService {
 
   private final ForestClientRepository forestClientRepository;
+  private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> mapper;
 
   public Flux<ForestClientDto> findByIncorporationOrName(
       String incorporationNumber,
@@ -30,26 +32,8 @@ public class ClientSearchService {
     return
         forestClientRepository
             .findClientByIncorporationOrName(incorporationNumber, companyName)
-            .doOnNext(MonoUtil.logContent(log))
-            .map(entity ->
-                new ForestClientDto(
-                    entity.getClientNumber(),
-                    entity.getClientName(),
-                    entity.getLegalFirstName(),
-                    entity.getLegalMiddleName(),
-                    entity.getClientStatusCode(),
-                    entity.getClientTypeCode(),
-                    entity.getClientIdTypeCode(),
-                    entity.getClientIdentification(),
-                    entity.getRegistryCompanyTypeCode(),
-                    entity.getCorpRegnNmbr(),
-                    entity.getClientAcronym(),
-                    entity.getWcbFirmNumber(),
-                    entity.getOcgSupplierNmbr(),
-                    entity.getClientComment()
-                )
-            )
-            .doOnNext(MonoUtil.logContent(log));
+            .map(mapper::toDto)
+            .doOnNext(dto -> log.info("Found client: {} {}", dto.clientNumber(), dto.clientName()));
   }
 
   public Flux<ForestClientDto> findByIndividual(
@@ -65,26 +49,17 @@ public class ClientSearchService {
     return
         forestClientRepository
             .findByIndividual(firstName, lastName, dob.atStartOfDay())
-            .doOnNext(MonoUtil.logContent(log))
-            .map(entity ->
-                new ForestClientDto(
-                    entity.getClientNumber(),
-                    entity.getClientName(),
-                    entity.getLegalFirstName(),
-                    entity.getLegalMiddleName(),
-                    entity.getClientStatusCode(),
-                    entity.getClientTypeCode(),
-                    entity.getClientIdTypeCode(),
-                    entity.getClientIdentification(),
-                    entity.getRegistryCompanyTypeCode(),
-                    entity.getCorpRegnNmbr(),
-                    entity.getClientAcronym(),
-                    entity.getWcbFirmNumber(),
-                    entity.getOcgSupplierNmbr(),
-                    entity.getClientComment()
-                )
-            )
-            .doOnNext(MonoUtil.logContent(log));
+            .map(mapper::toDto)
+            .doOnNext(
+                dto -> log.info("Found individual: {} {}", dto.clientNumber(), dto.clientName()));
   }
 
+
+  public Flux<ForestClientDto> matchBy(String companyName) {
+    return
+        forestClientRepository
+            .matchBy(companyName)
+            .map(mapper::toDto)
+            .doOnNext(dto -> log.info("Found match: {} {}", dto.clientNumber(), dto.clientName()));
+  }
 }
