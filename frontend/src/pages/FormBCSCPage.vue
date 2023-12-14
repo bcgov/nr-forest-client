@@ -488,11 +488,12 @@ watch([error], () => {
           <a
             href='https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card/your-card/change-personal-information' 
             target="_blank"
+            rel="noopener noreferrer"
             >Change your personal information</a
           >
           to update your name, address or date of birth.<br /><br />
           Go to your
-          <a href="https://id.gov.bc.ca/account/" target="_blank">BC Services account</a>
+          <a href="https://id.gov.bc.ca/account/" target="_blank" rel="noopener noreferrer">BC Services account</a>
           to update your email address.<br /><br />
           You can then log back into this application using your BC Services Card.
         </p>
