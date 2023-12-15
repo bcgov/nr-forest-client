@@ -236,9 +236,7 @@ describe("<ContactGroupComponent />", () => {
 
   it("should logout and redirect to BCeID", () => {
     const $session = {
-      logOut() {
-        console.log("coisa");
-      },
+      logOut() {},
     };
     cy.get("@contactFixture").then((contact: Contact) => {
       cy.get("@rolesFixture").then((roles) => {
