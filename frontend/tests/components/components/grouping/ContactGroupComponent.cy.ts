@@ -276,7 +276,7 @@ describe("<ContactGroupComponent />", () => {
 
     cy.get('#logout-and-redirect-modal > cds-modal-footer > .cds--modal-submit-btn').click();
 
-    cy.get("@windowOpen").should("be.calledWith", "https://www.bceid.ca/", "_blank");
+    cy.get("@windowOpen").should("be.calledWith", "https://www.bceid.ca/", "_blank", "noopener");
     cy.get("@sessionLogOut").should("be.called");
   });
 

@@ -111,7 +111,7 @@ const instance = getCurrentInstance();
 const session = instance?.appContext.config.globalProperties.$session;
 
 const logoutAndRedirect = () => {
-  window.open("https://www.bceid.ca/", "_blank");
+  window.open("https://www.bceid.ca/", "_blank", "noopener");
   session?.logOut();
 }
 </script>
