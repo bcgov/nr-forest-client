@@ -50,6 +50,60 @@ describe("<ContactGroupComponent />", () => {
       cy.get("#email_0").contains(contact.email).should("be.visible");
 
       cy.get("#phoneNumber_0").should("be.visible").and("have.value", "");
+
+      cy.focused().should('have.id', 'phoneNumber_0');
+    });
+  });
+
+  it("should render the component with validation", () => {
+    cy.get("@contactFixture").then((contact: Contact) => {
+      cy.get("@rolesFixture").then((roles) => {
+        cy.get("@addressesFixture").then((addresses) => {
+          cy.mount(ContactGroupComponent, {
+            props: {
+              id: 1,
+              modelValue: {
+                ...contact,
+                firstName: contact.firstName + " fault",
+              },
+              enabled: true,
+              roleList: roles,
+              addressList: addresses,
+              validations: [dummyValidation()],
+            },
+          });
+        });
+      });
+    });
+
+    cy.get("@contactFixture").then((contact: Contact) => {
+      cy.get("#firstName_1")
+        .should("be.visible")
+        .and("have.value", contact.firstName + " fault");
+
+      cy.get("#firstName_1")
+        .shadow()
+        .find(".cds--form-requirement")
+        .should("be.visible")
+        .find("slot")
+        .and("include.text", "Error");
+
+      cy.get("#lastName_1")
+        .should("be.visible")
+        .and("have.value", contact.lastName);
+
+      cy.get("#lastName_1")
+        .shadow()
+        .find(".cds--form-requirement")
+        .should("be.visible")
+        .find("slot")
+        .and("include.text", "Error");
+
+      cy.get("#email_1").should("be.visible").and("have.value", contact.email);
+
+      cy.get("#phoneNumber_1").should("be.visible").and("have.value", "");
+
+      cy.focused().should('have.id', 'firstName_1');
     });
   });
 
@@ -77,9 +131,6 @@ describe("<ContactGroupComponent />", () => {
     cy.focused().should('have.id', 'phoneNumber_0');
 
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
-
-    // This seems to be useful in the PC, but harmful in the pipeline.
-    // cy.wait(100);
 
     cy.get("#addressname_0")
       .click()
