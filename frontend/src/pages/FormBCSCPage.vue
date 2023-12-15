@@ -474,21 +474,26 @@ watch([error], () => {
 
     <hr class="divider" />
 
-    <cds-tooltip>
-      <cds-button
-        data-test="wizard-submit-button"
-        kind="primary"
-        size="lg"
-        v-on:click="submit"
-        :disabled="submitBtnDisabled"
-      >
-        <span>Submit application</span>
-        <Check16 slot="icon" />
-      </cds-button>
-      <cds-tooltip-content v-show="submitBtnDisabled">
-        All fields must be filled in correctly.
-      </cds-tooltip-content>
-    </cds-tooltip>
+    <div class="form-footer-group-next">
+      <span class="body-compact-01" v-if="submitBtnDisabled">
+        All fields must be filled in correctly to enable the “Submit application” button below.
+      </span>
+      <cds-tooltip>
+        <cds-button
+          data-test="wizard-submit-button"
+          kind="primary"
+          size="lg"
+          v-on:click="submit"
+          :disabled="submitBtnDisabled"
+        >
+          <span>Submit application</span>
+          <Check16 slot="icon" />
+        </cds-button>
+        <cds-tooltip-content v-show="submitBtnDisabled">
+          All fields must be filled in correctly.
+        </cds-tooltip-content>
+      </cds-tooltip>
+    </div>
 
     <cds-modal
       id="address-change-bc-modal"
