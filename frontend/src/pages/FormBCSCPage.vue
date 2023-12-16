@@ -138,7 +138,7 @@ const addContact = (autoFocus = true) => {
   );
   if (autoFocus) {
     const focusIndex = newLength - 1;
-    setFocusedComponent(`role_${focusIndex}`);
+    setFocusedComponent(`firstName_${focusIndex}`);
   }
   return newLength;
 };
@@ -172,7 +172,7 @@ const updateContact = (value: Contact | undefined, index: number) => {
   revalidate.value = !revalidate.value;
 };
 
-//Validation
+// Validation
 const validation = reactive<Record<string, boolean>>({
   0: false,
 });
@@ -195,7 +195,11 @@ const emit = defineEmits<{
   (e: "valid", value: boolean): void;
 }>();
 
-watch([validation], () => emit("valid", checkValid()));
+watch([validation], () => {
+  const valid = checkValid();
+  emit("valid", valid);
+  submitBtnDisabled.value = !valid;
+});
 emit("valid", false);
 
 const bus = useEventBus<ModalNotification>("modal-notification");
@@ -243,7 +247,7 @@ const progressData = reactive([
   },
 ]);
 
-let submitBtnDisabled = ref(false);
+const submitBtnDisabled = ref(true);
 
 const errorBus = useEventBus<ValidationMessageType[]>(
   "submission-error-notification"
@@ -299,9 +303,11 @@ const submit = () => {
   notificationBus.emit(undefined);
 
   if (checkStepValidity(currentTab.value)) {
-    submitBtnDisabled.value = true;
+    submitBtnDisabled.value = false;
     console.log(toRef(formData).value);
     fecthSubmit();
+  } else {
+    submitBtnDisabled.value = true;
   }
 };
 
@@ -416,8 +422,8 @@ watch([error], () => {
           submissionValidation(`location.contacts[0].phoneNumber`)
         ]"
         :error-message="errorMessage"
-        @empty="validation.phoneNumber = !$event"
-        @error="validation.phoneNumber = !$event"
+        @empty="validation[0] = !$event"
+        @error="validation[0] = !$event"
       />
     </div>
     
@@ -468,16 +474,26 @@ watch([error], () => {
 
     <hr class="divider" />
 
-    <cds-button
-        data-test="wizard-submit-button"
-        kind="primary"
-        size="lg"
-        @click.prevent="submit"
-        :disabled="submitBtnDisabled"
-      >
-      <span>Submit application</span>
-      <Check16 slot="icon" />
-    </cds-button>
+    <div class="form-footer-group-next">
+      <span class="body-compact-01" v-if="submitBtnDisabled">
+        All fields must be filled in correctly to enable the “Submit application” button below.
+      </span>
+      <cds-tooltip>
+        <cds-button
+          data-test="wizard-submit-button"
+          kind="primary"
+          size="lg"
+          v-on:click="submit"
+          :disabled="submitBtnDisabled"
+        >
+          <span>Submit application</span>
+          <Check16 slot="icon" />
+        </cds-button>
+        <cds-tooltip-content v-show="submitBtnDisabled">
+          All fields must be filled in correctly.
+        </cds-tooltip-content>
+      </cds-tooltip>
+    </div>
 
     <cds-modal
       id="address-change-bc-modal"
