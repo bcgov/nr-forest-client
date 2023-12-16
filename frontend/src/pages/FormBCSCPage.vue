@@ -138,7 +138,7 @@ const addContact = (autoFocus = true) => {
   );
   if (autoFocus) {
     const focusIndex = newLength - 1;
-    setFocusedComponent(`role_${focusIndex}`);
+    setFocusedComponent(`firstName_${focusIndex}`);
   }
   return newLength;
 };
@@ -172,7 +172,7 @@ const updateContact = (value: Contact | undefined, index: number) => {
   revalidate.value = !revalidate.value;
 };
 
-//Validation
+// Validation
 const validation = reactive<Record<string, boolean>>({
   0: false,
 });
@@ -195,7 +195,11 @@ const emit = defineEmits<{
   (e: "valid", value: boolean): void;
 }>();
 
-watch([validation], () => emit("valid", checkValid()));
+watch([validation], () => {
+  const valid = checkValid();
+  emit("valid", valid);
+  submitBtnDisabled.value = !valid;
+});
 emit("valid", false);
 
 const bus = useEventBus<ModalNotification>("modal-notification");
@@ -243,7 +247,7 @@ const progressData = reactive([
   },
 ]);
 
-let submitBtnDisabled = ref(false);
+const submitBtnDisabled = ref(true);
 
 const errorBus = useEventBus<ValidationMessageType[]>(
   "submission-error-notification"
@@ -299,9 +303,11 @@ const submit = () => {
   notificationBus.emit(undefined);
 
   if (checkStepValidity(currentTab.value)) {
-    submitBtnDisabled.value = true;
+    submitBtnDisabled.value = false;
     console.log(toRef(formData).value);
     fecthSubmit();
+  } else {
+    submitBtnDisabled.value = true;
   }
 };
 
@@ -357,14 +363,14 @@ watch([error], () => {
           title="">
           <p class="cds--inline-notification-content">
             <strong>Read-only: </strong>
-            If something is incorrect visit 
+            If something is incorrect
             <a
               href=""
               target="_blank"
               rel="noopener noreferrer"
               @click.prevent="changePersonalInfoModalActive = true"
-              >Change your personal information
-            </a> 
+              >change your personal information</a
+            >
             and then restart your application.
           </p>
         </cds-inline-notification>
@@ -416,8 +422,8 @@ watch([error], () => {
           submissionValidation(`location.contacts[0].phoneNumber`)
         ]"
         :error-message="errorMessage"
-        @empty="validation.phoneNumber = !$event"
-        @error="validation.phoneNumber = !$event"
+        @empty="validation[0] = !$event"
+        @error="validation[0] = !$event"
       />
     </div>
     
@@ -446,7 +452,9 @@ watch([error], () => {
       </div>
     </div>
 
-    <p class="body-compact-01">
+    <p 
+      class="body-compact-01"
+      v-if="formData.location.contacts.length < 5">
       You can add contacts to the account. For example, a person you want to give or receive information on your behalf.
     </p>
 
@@ -458,21 +466,37 @@ watch([error], () => {
       <Add16 slot="icon" />
     </cds-button>
 
+    <p 
+      class="body-compact-01"
+      v-if="formData.location.contacts.length >= 5">
+      You can only add a maximum of 5 additional contacts.
+    </p>
+
     <hr class="divider" />
 
-    <cds-button
-        data-test="wizard-submit-button"
-        kind="primary"
-        size="lg"
-        @click.prevent="submit"
-        :disabled="submitBtnDisabled"
-      >
-      <span>Submit application</span>
-      <Check16 slot="icon" />
-    </cds-button>
+    <div class="form-footer-group-next">
+      <span class="body-compact-01" v-if="submitBtnDisabled">
+        All fields must be filled in correctly to enable the “Submit application” button below.
+      </span>
+      <cds-tooltip>
+        <cds-button
+          data-test="wizard-submit-button"
+          kind="primary"
+          size="lg"
+          v-on:click="submit"
+          :disabled="submitBtnDisabled"
+        >
+          <span>Submit application</span>
+          <Check16 slot="icon" />
+        </cds-button>
+        <cds-tooltip-content v-show="submitBtnDisabled">
+          All fields must be filled in correctly.
+        </cds-tooltip-content>
+      </cds-tooltip>
+    </div>
 
     <cds-modal
-      id="help-modal"
+      id="address-change-bc-modal"
       size="md"
       :open="changePersonalInfoModalActive"
       @cds-modal-closed="changePersonalInfoModalActive = false"
@@ -485,17 +509,16 @@ watch([error], () => {
       </cds-modal-header>
       <cds-modal-body>
         <p>
-          Visit 
-          <a 
+          Visit
+          <a
             href='https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card/your-card/change-personal-information' 
-            target="_blank">Change your personal information
-          </a> 
+            target="_blank"
+            rel="noopener noreferrer"
+            >Change your personal information</a
+          >
           to update your name, address or date of birth.<br /><br />
-          Go to your 
-          <a 
-            href='https://id.gov.bc.ca/account/'
-            target="_blank">BC Services account
-          </a> 
+          Go to your
+          <a href="https://id.gov.bc.ca/account/" target="_blank" rel="noopener noreferrer">BC Services account</a>
           to update your email address.<br /><br />
           You can then log back into this application using your BC Services Card.
         </p>

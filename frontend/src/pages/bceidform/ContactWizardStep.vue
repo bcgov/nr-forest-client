@@ -175,10 +175,11 @@ defineExpose({
     </div>
   </div>
 
-  <span class="body-01">
-    You can add contacts to the account. For example, a person you want to give or receive
-    information on your behalf.
-  </span>
+  <p 
+    class="body-compact-01"
+    v-if="formData.location.contacts.length < 5">
+    You can add contacts to the account. For example, a person you want to give or receive information on your behalf.
+  </p>
 
   <cds-button
     kind="tertiary"
@@ -188,6 +189,12 @@ defineExpose({
     <span>Add another contact</span>
     <Add16 slot="icon" />
   </cds-button>
+
+  <p 
+    class="body-compact-01"
+    v-if="formData.location.contacts.length >= 5"
+    id="maxAdditionalContsReachedLblId">
+    You can only add a maximum of 5 additional contacts.
+  </p>
+  
 </template>
-
-
