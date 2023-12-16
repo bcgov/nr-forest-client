@@ -469,7 +469,7 @@ watch([error], () => {
     <p 
       class="body-compact-01"
       v-if="formData.location.contacts.length >= 5">
-      You can only add a maximum of 5 additional contacts.
+      You can only add a maximum of 5 contacts.
     </p>
 
     <hr class="divider" />
