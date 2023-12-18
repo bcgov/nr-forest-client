@@ -151,6 +151,10 @@ cds-progress-step[vertical] {
   width: fit-content;
 }
 
+cds-progress-step::part(cds--progress-step-button) {
+  cursor: auto;
+}
+
 cds-progress-step::part(cds--progress-label) {
   max-width: initial;
   padding-right: 0.5rem;
@@ -906,12 +910,27 @@ cds-actionable-notification * {
   align-self: stretch;
 }
 
+.grouping-22 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.grouping-23 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
 .grouping-divider {
   margin: 0.5rem 0;
 }
 
 .label-01 {
   align-self: stretch;
+  padding-bottom: 0.25rem;
   color: var(--light-theme-text-text-secondary, #606062);
 
   /* Utility styles/label-01 */
