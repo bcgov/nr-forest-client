@@ -194,7 +194,7 @@ defineExpose({
     class="body-compact-01"
     v-if="formData.location.contacts.length >= 5"
     id="maxAdditionalContsReachedLblId">
-    You can only add a maximum of 5 additional contacts.
+    You can only add a maximum of 5 contacts.
   </p>
   
 </template>

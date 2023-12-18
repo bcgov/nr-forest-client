@@ -235,7 +235,7 @@ watch(showBirthDate, (value) => {
 <template>
   <radio-input-component
     id="businessType"
-    label="Type of business (choose one of these options)"
+    label="Type of business"
     required-label
     :initialValue="formData?.businessInformation?.businessType"
     :modelValue="[

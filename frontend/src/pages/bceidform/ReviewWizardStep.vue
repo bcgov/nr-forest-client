@@ -56,17 +56,20 @@ onMounted(() => {
 <template>
   <div class="grouping-05">
     <label class="heading-03">Business information</label>
-    <div class="grouping-01">
-      <p class="heading-02 review-icon-title">
-        <Enterprise20 />
-        {{ formData.businessInformation.businessName }}
-      </p>
-      <p class="body-compact-01" id="clientTypeId">
-        {{ clientType.text }}
-      </p>
-      <p class="body-compact-01" id="birthdate" v-if="formData.businessInformation.birthdate">
-        Proprietor’s birthdate: {{ formData.businessInformation.birthdate }}
-      </p>
+    <div class="grouping-22">
+      <div class="grouping-01">
+        <p class="heading-02 review-icon-title">
+          <Enterprise20 />
+          {{ formData.businessInformation.businessName }}
+        </p>
+        <p class="body-compact-01" id="clientTypeId">
+          {{ clientType.text }}
+        </p>
+      </div>
+      <div v-if="formData.businessInformation.birthdate">
+        <p class="label-01">Proprietor’s birthdate</p>
+        <p class="body-compact-01">{{ formData.businessInformation.birthdate }}</p>
+      </div>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(0)">
@@ -85,10 +88,12 @@ onMounted(() => {
         <LocationStar20 v-if="index === 0" />
         <Location20 v-else />{{ address.locationName }}
       </span>
-      <span class="body-compact-01">{{ address.streetAddress }}</span>
-      <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
-      <span class="body-compact-01">{{ address.country.text }}</span>
-      <span class="body-compact-01">{{ address.postalCode }}</span>
+      <div class="grouping-23">
+        <span class="body-compact-01">{{ address.streetAddress }}</span>
+        <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
+        <span class="body-compact-01">{{ address.country.text }}</span>
+        <span class="body-compact-01">{{ address.postalCode }}</span>
+      </div>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(1)">
@@ -107,12 +112,14 @@ onMounted(() => {
       <span class="heading-02 review-icon-title">
         <User20 />{{ contact.firstName }} {{ contact.lastName }}
       </span>
-      <span class="body-compact-01">
-        {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
-      </span>
-      <span class="body-compact-01">{{ contact.contactType.text }}</span>
-      <span class="body-compact-01">{{ contact.email }}</span>
-      <span class="body-compact-01">{{ contact.phoneNumber }}</span>
+      <div class="grouping-23">
+        <span class="body-compact-01">
+          {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
+        </span>
+        <span class="body-compact-01">{{ contact.contactType.text }}</span>
+        <span class="body-compact-01">{{ contact.email }}</span>
+        <span class="body-compact-01">{{ contact.phoneNumber }}</span>
+      </div>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(2)">
