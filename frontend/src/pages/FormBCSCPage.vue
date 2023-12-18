@@ -520,7 +520,8 @@ watch([error], () => {
           Go to your
           <a href="https://id.gov.bc.ca/account/" target="_blank" rel="noopener noreferrer">BC Services account</a>
           to update your email address.<br /><br />
-          You can then log back into this application using your BC Services Card.
+          You can then log back into this application using your BC Services Card.<br /><br />
+          Your data will not be saved.
         </p>
       </cds-modal-body>
       <cds-modal-footer>
