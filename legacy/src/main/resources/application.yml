@@ -33,16 +33,6 @@ management:
       exposure:
         include: health,metrics
 
-springdoc:
-  enable-native-support: true
-  webjars:
-    prefix: /v3
-  api-docs:
-    groups:
-      enabled: true
-  show-actuator: false
-  swagger-ui:
-    path: /
 
 ca:
   bc:
