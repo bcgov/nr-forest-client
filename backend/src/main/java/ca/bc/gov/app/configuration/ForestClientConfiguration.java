@@ -36,6 +36,8 @@ public class ForestClientConfiguration {
   @NestedConfigurationProperty
   private CognitoConfiguration cognito;
 
+  private Duration submissionLimit;
+
   /**
    * The Common hosted email service configuration.
    */
