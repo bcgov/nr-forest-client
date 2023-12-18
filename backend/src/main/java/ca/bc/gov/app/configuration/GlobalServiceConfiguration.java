@@ -132,8 +132,13 @@ public class GlobalServiceConfiguration {
     return WebClient
         .builder()
         .baseUrl(configuration.getChes().getTokenUrl())
-        .filter(ExchangeFilterFunctions.basicAuthentication(configuration.getChes().getClientId(),
-            configuration.getChes().getClientSecret()))
+        .filter(
+            ExchangeFilterFunctions
+                .basicAuthentication(
+                    configuration.getChes().getClientId(),
+                    configuration.getChes().getClientSecret()
+                )
+        )
         .build();
   }
 
@@ -183,23 +188,24 @@ public class GlobalServiceConfiguration {
 
   /**
    * Returns a configured instance of WebClient for accessing the Cognito API.
+   *
    * @param objectMapper the object mapper
    * @return A configured instance of WebClient for accessing the Cognito API.
    */
   @Bean
- public WebClient cognitoApi(ObjectMapper objectMapper) {
-   return WebClient
-       .builder()
-       .codecs(clientCodecConfigurer -> {
-             clientCodecConfigurer
-                 .customCodecs()
-                 .register(new AwsJsonMessageEncoder(objectMapper));
-             clientCodecConfigurer
-                 .customCodecs()
-                     .register(new AwsJsonMessageDecoder(objectMapper));
-       })
-       .build();
- }
+  public WebClient cognitoApi(ObjectMapper objectMapper) {
+    return WebClient
+        .builder()
+        .codecs(clientCodecConfigurer -> {
+          clientCodecConfigurer
+              .customCodecs()
+              .register(new AwsJsonMessageEncoder(objectMapper));
+          clientCodecConfigurer
+              .customCodecs()
+              .register(new AwsJsonMessageDecoder(objectMapper));
+        })
+        .build();
+  }
 
   @Bean
   public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
