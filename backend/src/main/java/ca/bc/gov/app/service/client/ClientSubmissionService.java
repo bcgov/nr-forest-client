@@ -7,6 +7,7 @@ import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
 import static org.springframework.data.relational.core.query.Query.query;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
@@ -66,6 +67,7 @@ public class ClientSubmissionService {
   private final SubmissionMatchDetailRepository submissionMatchDetailRepository;
   private final ChesService chesService;
   private final R2dbcEntityTemplate template;
+  private final ForestClientConfiguration configuration;
 
   public Flux<ClientListSubmissionDto> listSubmissions(
       int page,
@@ -415,7 +417,15 @@ public class ClientSubmissionService {
           .orEqualTo(new String[]{"SPP"}, ApplicationConstant.SUBMISSION_TYPE)
           .or(
               QueryPredicates
-                  .isAfter(LocalDateTime.now().minusDays(1L), "submissionDate")
+                  .isAfter(
+                      LocalDateTime
+                          .now()
+                          .minus(configuration.getSubmissionLimit())
+                          .withHour(0)
+                          .withMinute(0)
+                          .withSecond(0),
+                      "submissionDate"
+                  )
                   .and(
                       QueryPredicates
                           //When I said AAC and RNC, I meant AAC or RNC for query purpose

@@ -250,7 +250,7 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/backend:${{ env.ZONE }}
             -p CHES_TOKEN_URL='https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
-            -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1'
+            -p CHES_API_URL='https://ches-test.api.gov.bc.ca/api/v1/email'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
@@ -403,7 +403,7 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/backend:${{ env.PREV }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
-            -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
+            -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1/email'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
