@@ -286,6 +286,7 @@ const logoutAndRedirect = () => {
         <a href="https://www.bceid.ca/" target="_blank" rel="noopener noreferrer">BCeID</a> and then
         log back into this application.
       </p>
+      <br />
       <p>Your data will not be saved.</p>
     </cds-modal-body>
     <cds-modal-footer>
