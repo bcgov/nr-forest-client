@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import lombok.Getter;
@@ -270,8 +271,16 @@ public abstract class LegacyAbstractPersistenceService {
     }
 
     Flux<SubmissionLocationEntity> data = locationRepository.findBySubmissionId(
-        message.getPayload()
-    );
+            message.getPayload()
+        )
+        .doOnNext(submissionLocation ->
+            log.info(
+                "Loaded submission location for persistence on oracle {} {} {}",
+                message.getPayload(),
+                submissionLocation.getName(),
+                submissionLocation.getSubmissionLocationId()
+            )
+        );
 
     BiFunction<String, String, Mono<ForestClientLocationEntity>> locateClientLocation = (clientNumber, locationCode) ->
         legacyR2dbcEntityTemplate
@@ -329,6 +338,14 @@ public abstract class LegacyAbstractPersistenceService {
                 .flatMap(forestClient ->
                     data
                         .count()
+                        .doOnNext(count ->
+                            log.info(
+                                "Proceeding with location {}/{} of submission id {}",
+                                index,
+                                count,
+                                message.getPayload()
+                            )
+                        )
                         .map(count ->
                             MessageBuilder
                                 .fromMessage(message)
@@ -353,7 +370,7 @@ public abstract class LegacyAbstractPersistenceService {
    */
   @ServiceActivator(
       inputChannel = ApplicationConstant.SUBMISSION_LEGACY_CONTACT_CHANNEL,
-      outputChannel = ApplicationConstant.SUBMISSION_LEGACY_AGGREGATE_CHANNEL,
+      outputChannel = ApplicationConstant.SUBMISSION_LEGACY_NOTIFY_CHANNEL,
       async = "true"
   )
   public Mono<Message<Integer>> createContact(Message<Integer> message) {
@@ -382,7 +399,8 @@ public abstract class LegacyAbstractPersistenceService {
                                             )
                                         )
                                         .and("CONTACT_NAME").is(
-                                            String.format("%s %s", submissionContact.getFirstName().toUpperCase(),
+                                            String.format("%s %s",
+                                                submissionContact.getFirstName().toUpperCase(),
                                                 submissionContact.getLastName().toUpperCase())
                                         )
                                 ),
@@ -470,10 +488,25 @@ public abstract class LegacyAbstractPersistenceService {
       async = "true"
   )
   public Mono<Message<Integer>> sendNotification(Message<Integer> message) {
+
     if (!filterByType(
         message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE, String.class))) {
       return Mono.empty();
     }
+
+    Long total = message.getHeaders().get(ApplicationConstant.TOTAL, Long.class);
+    Long index = message.getHeaders().get(ApplicationConstant.INDEX, Long.class);
+
+    if ((total == null || index == null) || ((total - 1) > index)) {
+      log.info("Skipping notification for submission {} until last location is processed",
+          message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class)
+      );
+      return Mono.empty();
+    }
+
+    log.info("Sending notification for submission {}",
+        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class)
+    );
     return Mono.just(
         MessageBuilder
             .fromMessage(message)
@@ -673,6 +706,10 @@ public abstract class LegacyAbstractPersistenceService {
         .addOrgUnit(ApplicationConstant.ORG_UNIT)
         .updateOrgUnit(ApplicationConstant.ORG_UNIT)
         .build();
+  }
+
+  private <T> Consumer<T> debug(String message) {
+    return data -> log.info("[{}] :: {}", message, data);
   }
 
 }

@@ -11,6 +11,7 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.integration.channel.FluxMessageChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.Pollers;
+import org.springframework.integration.handler.LoggingHandler.Level;
 import org.springframework.integration.r2dbc.inbound.R2dbcMessageSource;
 
 @Configuration
@@ -117,6 +118,10 @@ public class ProcessorIntegrationConfiguration {
     return new FluxMessageChannel();
   }
 
+  @Bean
+  public FluxMessageChannel submissionMailChannel() {
+    return new FluxMessageChannel();
+  }
 
 
   @Bean
@@ -183,24 +188,6 @@ public class ProcessorIntegrationConfiguration {
         .from(messageSource, adapter -> adapter.poller(Pollers.fixedDelay(poolingTime)))
         .split()
         .channel(inputChannel)
-        .get();
-  }
-
-  @Bean
-  public IntegrationFlow aggregateLegacyData(
-      @Value("${ca.bc.gov.nrs.processor.poolTime:1M}") Duration poolingTime
-  ){
-    return
-      IntegrationFlow
-        .from("submissionLegacyAggregateChannel")
-        .aggregate(spec ->
-            spec
-                .expireTimeout(poolingTime.toMillis())
-                .releaseStrategy(new LastItemReleaseStrategy())
-                .correlationStrategy(message -> message.getHeaders().get(ApplicationConstant.SUBMISSION_ID))
-                .sendPartialResultOnExpiry(true)
-        )
-        .channel(submissionLegacyNotifyChannel())
         .get();
   }
 
