@@ -27,6 +27,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import lombok.Getter;
@@ -253,8 +255,8 @@ public abstract class LegacyAbstractPersistenceService {
     }
 
     Flux<SubmissionLocationEntity> data = locationRepository.findBySubmissionId(
-        message.getPayload()
-    )
+            message.getPayload()
+        )
         .doOnNext(submissionLocation ->
             log.info(
                 "Loaded submission location for persistence on oracle {} {} {}",
@@ -574,6 +576,10 @@ public abstract class LegacyAbstractPersistenceService {
         .addOrgUnit(ApplicationConstant.ORG_UNIT)
         .updateOrgUnit(ApplicationConstant.ORG_UNIT)
         .build();
+  }
+
+  private <T> Consumer<T> debug(String message) {
+    return data -> log.info("[{}] :: {}", message, data);
   }
 
 }
