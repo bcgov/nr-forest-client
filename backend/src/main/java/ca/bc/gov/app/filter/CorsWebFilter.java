@@ -47,18 +47,22 @@ public class CorsWebFilter implements WebFilter {
 
 
     headers.add("Access-Control-Allow-Origin",
-        configuration.getFrontend().getUrl());
+                configuration.getFrontend().getUrl());
 
     headers.add("Access-Control-Max-Age",
-        String.valueOf(corsSettings.getAge().getSeconds()));
+                String.valueOf(corsSettings.getAge().getSeconds()));
 
     headers.add("Access-Control-Allow-Methods",
-        String.join(",", corsSettings.getMethods()));
+                String.join(",", corsSettings.getMethods()));
 
     headers.add("Access-Control-Allow-Headers",
-        String.join(",", corsSettings.getHeaders()));
+                String.join(",", corsSettings.getHeaders()));
+    
     headers.add("Access-Control-Expose-Headers",
-        String.join(",", corsSettings.getHeaders()));
+                String.join(",", corsSettings.getHeaders()));
+    
+    headers.add("Content-Security-Policy", 
+                "default-src 'self'; frame-src 'none';");
 
     if (CorsUtils.isPreFlightRequest(request)) {
       response.setStatusCode(HttpStatus.NO_CONTENT);
