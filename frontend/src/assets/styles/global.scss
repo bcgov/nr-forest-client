@@ -289,10 +289,10 @@ div#app {
 
 .wizard-head-toast {
   position: fixed;
-  right: 1.5625rem;
+  right: 1.5rem;
   top: 5rem;
   border-radius: 0.25rem;
-  z-index: 999;
+  z-index: 8100;
   box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.3);
 }
 
@@ -1273,8 +1273,8 @@ cds-header-panel[expanded] {
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
   .wizard-head-toast {
-    right: 0.5rem;
-    top: 0.5rem;
+    right: 0.4375rem;
+    top: 4rem;
   }
 
   cds-modal {
