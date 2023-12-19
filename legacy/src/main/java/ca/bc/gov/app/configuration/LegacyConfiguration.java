@@ -14,14 +14,15 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties("ca.bc.gov.nrs")
 public class LegacyConfiguration {
+
   private ForestClientConfiguration forest;
-  private String orgbook;
 
   @Data
   @Builder
   @NoArgsConstructor
   @AllArgsConstructor
   public static class ForestClientConfiguration {
+
     private String uri;
   }
 }

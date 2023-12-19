@@ -44,21 +44,11 @@ management:
     recording:
       include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
 
-springdoc:
-  enable-native-support: true
-  webjars:
-    prefix: /v3
-  api-docs:
-    groups:
-      enabled: true
-  show-actuator: false
-  swagger-ui:
-    path: /
-
 ca:
   bc:
     gov:
       nrs:
+        submissionLimit: ${SUBMISSION_LIMIT:7D}
         ches:
           uri: ${CHES_API_URL:http://127.0.0.1:10010/chess/uri}
           tokenUrl: ${CHES_TOKEN_URL:http://127.0.0.1:10010/token/uri}

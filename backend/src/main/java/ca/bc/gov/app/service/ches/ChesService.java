@@ -75,7 +75,9 @@ public class ChesService {
                                 String subject, 
                                 Map<String, Object> variables,
                                 Integer emailLogId) {
-    return this.buildTemplate(templateName, variables).flatMap(body -> {
+    return this
+        .buildTemplate(templateName, variables)
+        .flatMap(body -> {
       ChesRequestDto chesRequestDto = new ChesRequestDto(List.of(emailAddress, 
                                                                  "paulo.cruz@gov.bc.ca",
                                                                  "ziad.bhunnoo@gov.bc.ca",
@@ -203,10 +205,11 @@ public class ChesService {
                     "FSA_donotreply@gov.bc.ca",
                     ChesMailPriority.NORMAL,
                     subject,
-                    null,
+                    "email_fds_client",
                     request.emailTo()
                 )
             )
+            .doOnNext(request -> log.info("Sending email using CHES {}", request))
             .flatMap(request ->
                 getToken()
                     .flatMap(token ->
@@ -221,7 +224,6 @@ public class ChesService {
                                 response -> Mono.error(new InvalidAccessTokenException()))
                             .onStatus(httpStatusCode -> httpStatusCode.value() == 403,
                                 response -> Mono.error(new InvalidRoleException()))
-
                             .onStatus(httpStatusCode -> httpStatusCode.value() == 400,
                                 get400ErrorMessage())
                             .onStatus(httpStatusCode -> httpStatusCode.value() == 422,

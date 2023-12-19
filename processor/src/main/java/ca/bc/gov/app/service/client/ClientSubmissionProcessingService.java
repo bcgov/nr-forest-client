@@ -162,7 +162,7 @@ public class ClientSubmissionProcessingService {
             );
   }
 
-  @ServiceActivator(inputChannel = ApplicationConstant.SUBMISSION_MAIL_BUILD_CHANNEL)
+  @ServiceActivator(inputChannel = ApplicationConstant.SUBMISSION_MAIL_BUILD_CHANNEL,async = "true")
   public void updateMatch(Message<Integer> message) {
     submissionMatchDetailRepository
         .findBySubmissionId(message.getPayload())
