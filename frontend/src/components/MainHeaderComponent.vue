@@ -237,7 +237,8 @@ const onClickLogout = () => {
     </cds-modal-header>
     <cds-modal-body>
       <p>
-        Can’t proceed with your application? Let us know by emailing your issue to <a href='mailto:forhvap.cliadmin@gov.bc.ca'>forhvap.cliadmin@gov.bc.ca</a> and we’ll get back to you.
+        Can’t proceed with your application? Let us know by emailing your issue to <a href='mailto:forhvap.cliadmin&#64;gov.bc.ca'>forhvap.cliadmin&#64;gov.bc.ca</a> 
+        and we’ll get back to you.
       </p>
     </cds-modal-body>
   </cds-modal>
