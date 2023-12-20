@@ -4,6 +4,7 @@ import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
+import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Mono;
 public class ClientDoingBusinessAsService {
 
   private final R2dbcEntityOperations entityTemplate;
+  private final ClientDoingBusinessAsRepository repository;
   private final AbstractForestClientMapper<ClientDoingBusinessAsDto, ClientDoingBusinessAsEntity> mapper;
 
   public Mono<String> saveAndGetIndex(ClientDoingBusinessAsDto dto) {
@@ -85,4 +87,8 @@ public class ClientDoingBusinessAsService {
             .map(Integer::parseInt);
   }
 
+  public Flux<ClientDoingBusinessAsDto> search(String dbaName) {
+    return repository.matchBy(dbaName)
+        .map(mapper::toDto);
+  }
 }
