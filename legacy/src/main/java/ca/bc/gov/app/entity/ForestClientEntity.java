@@ -5,12 +5,16 @@ import static ca.bc.gov.app.ApplicationConstants.ORACLE_ATTRIBUTE_SCHEMA;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -67,5 +71,17 @@ public class ForestClientEntity {
   private Long createdByUnit;
   @Column("REVISION_COUNT")
   private Long revision;
+
+
+  @Transient
+  public String getName(){
+    if(Objects.equals(this.clientTypeCode, "I")){
+      return Stream.of(this.legalFirstName, this.legalMiddleName, this.clientName)
+          .filter(Objects::nonNull)
+          .collect(Collectors.joining(" "));
+    }else{
+      return this.clientName;
+    }
+  }
 
 }
