@@ -2,10 +2,11 @@ package ca.bc.gov.app.service.processor;
 
 import static java.util.function.Predicate.not;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.entity.legacy.ClientDoingBusinessAsEntity;
-import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
+import ca.bc.gov.app.dto.legacy.ClientDoingBusinessAsDto;
+import ca.bc.gov.app.service.legacy.LegacyService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class DoingBusinessAsProcessorMatcher implements ProcessorMatcher {
 
-  private final ClientDoingBusinessAsRepository doingBusinessAsRepository;
+  private final LegacyService legacyService;
 
   @Override
   public boolean enabled(SubmissionInformationDto submission) {
@@ -37,18 +38,18 @@ public class DoingBusinessAsProcessorMatcher implements ProcessorMatcher {
 
     return
         matchBy(submission.corporationName())
-            .map(ClientDoingBusinessAsEntity::getClientNumber)
+            .map(ClientDoingBusinessAsDto::clientNumber)
             .collectList()
             .filter(not(List::isEmpty))
             .map(values ->
-                new MatcherResult("corporationName", String.join(",", values))
+                new MatcherResult(ApplicationConstant.MATCH_PARAM_NAME, String.join(",", values))
             );
   }
 
-  private Flux<ClientDoingBusinessAsEntity> matchBy(String companyName) {
+  private Flux<ClientDoingBusinessAsDto> matchBy(String companyName) {
     return
-        doingBusinessAsRepository
-            .matchBy(companyName)
+        legacyService
+            .matchDba(companyName)
             .doOnNext(entity -> log.info("Found a match {}", entity));
 
   }

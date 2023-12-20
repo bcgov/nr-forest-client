@@ -6,10 +6,11 @@ import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.entity.legacy.ClientDoingBusinessAsEntity;
-import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
+import ca.bc.gov.app.dto.legacy.ClientDoingBusinessAsDto;
+import ca.bc.gov.app.service.legacy.LegacyService;
 import java.time.LocalDate;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,9 +22,8 @@ import reactor.test.StepVerifier;
 @DisplayName("Unit Test | Doing Business As Matcher")
 class DoingBusinessAsProcessorMatcherTest {
 
-  private final ClientDoingBusinessAsRepository repository = mock(
-      ClientDoingBusinessAsRepository.class);
-  ProcessorMatcher matcher = new DoingBusinessAsProcessorMatcher(repository);
+  private final LegacyService legacyService = mock(LegacyService.class);
+  ProcessorMatcher matcher = new DoingBusinessAsProcessorMatcher(legacyService);
 
   @Test
   @DisplayName("Name matching")
@@ -38,10 +38,10 @@ class DoingBusinessAsProcessorMatcherTest {
       SubmissionInformationDto dto,
       boolean success,
       MatcherResult result,
-      Flux<ClientDoingBusinessAsEntity> mockData
+      Flux<ClientDoingBusinessAsDto> mockData
   ) {
 
-    when(repository.matchBy(dto.corporationName()))
+    when(legacyService.matchDba(dto.corporationName()))
         .thenReturn(mockData);
 
     StepVerifier.FirstStep<MatcherResult> verifier =
@@ -73,14 +73,19 @@ class DoingBusinessAsProcessorMatcherTest {
                     "FM001122334", "Y", "RSP"),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000")),
-                Flux.just(new ClientDoingBusinessAsEntity().withClientNumber("00000000"))
+                Flux.just(
+                    new ClientDoingBusinessAsDto("00000000", StringUtils.EMPTY, StringUtils.EMPTY,
+                        StringUtils.EMPTY, 1L))
             ),
             Arguments.of(
                 new SubmissionInformationDto("Lucca", null, null, null, "RSP"),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000", "00000001")),
-                Flux.just(new ClientDoingBusinessAsEntity().withClientNumber("00000000"),
-                    new ClientDoingBusinessAsEntity().withClientNumber("00000001"))
+                Flux.just(
+                    new ClientDoingBusinessAsDto("00000000", StringUtils.EMPTY, StringUtils.EMPTY,
+                        StringUtils.EMPTY, 1L),
+                    new ClientDoingBusinessAsDto("00000001", StringUtils.EMPTY, StringUtils.EMPTY,
+                        StringUtils.EMPTY, 1L))
             )
         );
   }
