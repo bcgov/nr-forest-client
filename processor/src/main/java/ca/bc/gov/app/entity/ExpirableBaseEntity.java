@@ -1,4 +1,4 @@
-package ca.bc.gov.app.entity.client;
+package ca.bc.gov.app.entity;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;

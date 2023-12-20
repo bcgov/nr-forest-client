@@ -1,4 +1,4 @@
-package ca.bc.gov.app.entity.client;
+package ca.bc.gov.app.entity;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;

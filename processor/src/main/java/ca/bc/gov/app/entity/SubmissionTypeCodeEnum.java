@@ -1,4 +1,4 @@
-package ca.bc.gov.app.entity.client;
+package ca.bc.gov.app.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

@@ -1,6 +1,6 @@
-package ca.bc.gov.app.entity.converters;
+package ca.bc.gov.app.converters;
 
-import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
+import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.r2dbc.postgresql.codec.Json;
 import java.util.Map;

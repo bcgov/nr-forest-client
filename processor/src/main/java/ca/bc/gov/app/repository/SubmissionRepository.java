@@ -1,7 +1,7 @@
-package ca.bc.gov.app.repository.client;
+package ca.bc.gov.app.repository;
 
-import ca.bc.gov.app.entity.client.SubmissionEntity;
-import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
+import ca.bc.gov.app.entity.SubmissionEntity;
+import ca.bc.gov.app.entity.SubmissionTypeCodeEnum;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;

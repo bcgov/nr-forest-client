@@ -1,6 +1,6 @@
-package ca.bc.gov.app.repository.client;
+package ca.bc.gov.app.repository;
 
-import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
+import ca.bc.gov.app.entity.SubmissionDetailEntity;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
