@@ -19,11 +19,6 @@ public interface AbstractForestClientMapper<D, E> {
     return " ";
   }
 
-  @Named("CurrentDateQualifier")
-  default LocalDate currentDate(Object origin){
-    return LocalDate.now();
-  }
-
   @Named("CurrentDateTimeQualifier")
   default LocalDateTime currentDateTime(Object origin){
     return LocalDateTime.now();

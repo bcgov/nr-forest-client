@@ -64,7 +64,7 @@ public class ClientContactService {
                             .where(ApplicationConstants.CLIENT_NUMBER)
                             .is(clientNumber)
                             .and("CLIENT_LOCN_CODE").is(locationCode)
-                            .and("CONTACT_NAME").is(contactName)
+                            .and("CONTACT_NAME").is(contactName.toUpperCase())
                     ),
                 ForestClientContactEntity.class
             )

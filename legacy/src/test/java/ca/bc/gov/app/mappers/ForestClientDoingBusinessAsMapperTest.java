@@ -1,45 +1,36 @@
 package ca.bc.gov.app.mappers;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import ca.bc.gov.app.dto.ForestClientContactDto;
-import ca.bc.gov.app.dto.ForestClientLocationDto;
-import ca.bc.gov.app.entity.ForestClientContactEntity;
-import ca.bc.gov.app.entity.ForestClientLocationEntity;
+import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
+import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-@DisplayName("Unit Test | Forest Client Contact Mapper")
-class ForestClientContactMapperTest {
+@DisplayName("Unit Test | Forest Client Doing Business As Mapper")
+class ForestClientDoingBusinessAsMapperTest {
 
 
-  private final ForestClientContactMapper mapper = Mappers.getMapper(
-      ForestClientContactMapper.class);
+  private final ForestClientDoingBusinessAsMapper mapper = Mappers.getMapper(
+      ForestClientDoingBusinessAsMapper.class);
 
-  ForestClientContactDto dto =  new ForestClientContactDto(
+  ClientDoingBusinessAsDto dto = new ClientDoingBusinessAsDto(
       "00000001",
-      "00",
-      "BL",
-      "James Baxter",
-      "2502502550",
-      "mail@mail.ca",
+      "Spaldingnad",
       "Test",
       "Test",
       1L
   );
 
-  ForestClientContactEntity entity =
-      ForestClientContactEntity
+  ClientDoingBusinessAsEntity entity =
+      ClientDoingBusinessAsEntity
           .builder()
           .clientNumber("00000001")
-          .clientLocnCode("00")
-          .contactCode("BL")
-          .contactName("James Baxter")
-          .businessPhone("2502502550")
-          .emailAddress("mail@mail.ca")
+          .doingBusinessAsName("Spaldingnad")
           .createdAt(LocalDateTime.now())
           .updatedAt(LocalDateTime.now())
           .createdBy("Test")
