@@ -16,7 +16,6 @@ public record ForestClientDto(
     String clientIdentification,
     String registryCompanyTypeCode,
     String corpRegnNmbr,
-
     String clientComment,
     String createdBy,
     String updatedBy,

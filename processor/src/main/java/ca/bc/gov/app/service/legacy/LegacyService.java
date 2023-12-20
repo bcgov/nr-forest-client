@@ -1,12 +1,13 @@
 package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.legacy.ClientDoingBusinessAsDto;
+import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import jakarta.annotation.PostConstruct;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -79,20 +81,68 @@ public class LegacyService {
             ApplicationConstant.ORG_UNIT
         );
 
+    return postRequestToLegacy("/api/locations", dto)
+        .thenReturn(clientNumber);
+  }
+
+  public Mono<String> createContact(ForestClientContactDto dto) {
+    return postRequestToLegacy("/api/contacts", dto)
+        .thenReturn(dto.clientNumber());
+  }
+
+  public Mono<String> createClient(ForestClientDto dto) {
+    return postRequestToLegacy("/api/clients", dto);
+  }
+
+  public Mono<String> createDoingBusinessAs(
+      String clientNumber,
+      String doingBusinessAsName,
+      String createdBy,
+      String updatedBy
+  ) {
+    return postRequestToLegacy(
+        "/api/dba",
+        new ClientDoingBusinessAsDto(
+            clientNumber,
+            doingBusinessAsName,
+            createdBy,
+            updatedBy,
+            ApplicationConstant.ORG_UNIT
+        )
+    )
+        .thenReturn(clientNumber);
+  }
+
+  public Flux<ClientDoingBusinessAsDto> matchDba(String dbaName) {
+    return legacyApi
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/dba/search")
+                .queryParam("dbaName", dbaName)
+                .build()
+        )
+        .retrieve()
+        .bodyToFlux(ClientDoingBusinessAsDto.class);
+  }
+
+  private Mono<String> postRequestToLegacy(
+      String url,
+      Object dto
+  ) {
     return
         legacyApi
             .post()
-            .uri("/api/locations")
+            .uri(url)
             .body(BodyInserters.fromValue(dto))
             .exchangeToMono(response -> {
               //if 201 is good, else already exist, so move forward
               if (response.statusCode().is2xxSuccessful()) {
-                return Mono.just("success");
+                return response.bodyToMono(String.class);
               } else {
                 return Mono.error(new RuntimeException("Failed to create location"));
               }
-            })
-            .thenReturn(clientNumber);
+            });
   }
 
 }
