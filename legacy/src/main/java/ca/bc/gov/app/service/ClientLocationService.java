@@ -4,7 +4,6 @@ import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ForestClientLocationDto;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
-import ca.bc.gov.app.repository.ForestClientLocationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
@@ -18,7 +17,6 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class ClientLocationService {
 
-  private final ForestClientLocationRepository repository;
   private final R2dbcEntityOperations entityTemplate;
   private final AbstractForestClientMapper<ForestClientLocationDto, ForestClientLocationEntity> mapper;
 

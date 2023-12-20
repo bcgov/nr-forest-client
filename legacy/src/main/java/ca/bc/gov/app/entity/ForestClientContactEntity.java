@@ -1,4 +1,4 @@
-package ca.bc.gov.app.entity.legacy;
+package ca.bc.gov.app.entity;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -46,9 +46,9 @@ public class ForestClientContactEntity {
   @Column("UPDATE_USERID")
   private String updatedBy;
   @Column("UPDATE_ORG_UNIT")
-  private Long updateOrgUnit;
+  private Long updatedByUnit;
   @Column("ADD_ORG_UNIT")
-  private Long addOrgUnit;
+  private Long createdByUnit;
   @Column("REVISION_COUNT")
   private Long revision;
 }

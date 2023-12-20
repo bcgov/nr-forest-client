@@ -1,6 +1,6 @@
-package ca.bc.gov.app.repository.legacy;
+package ca.bc.gov.app.repository;
 
-import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
+import ca.bc.gov.app.entity.ForestClientContactEntity;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
 public interface ForestClientContactRepository
