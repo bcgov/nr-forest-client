@@ -111,7 +111,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Initialize
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: javascript,java
 
@@ -140,7 +140,7 @@ jobs:
           npm run build
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
 
   test-init:
     name: TEST Init

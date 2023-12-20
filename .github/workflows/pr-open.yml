@@ -296,7 +296,7 @@ jobs:
           detailed_summary: true
           job_name: User Journeys
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: Upload Cypress Screenshots with error
         if: failure()
         with:
@@ -304,7 +304,7 @@ jobs:
           path: cypress/cypress/screenshots
           retention-days: 7
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: Upload Cypress Videos with error
         if: failure()
         with:
