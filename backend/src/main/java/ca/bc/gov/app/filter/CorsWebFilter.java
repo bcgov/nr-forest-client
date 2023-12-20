@@ -61,8 +61,11 @@ public class CorsWebFilter implements WebFilter {
     headers.add("Access-Control-Expose-Headers",
                 String.join(",", corsSettings.getHeaders()));
     
-    headers.add("Content-Security-Policy", 
+    headers.add("Content-Security-Policy",
                 "default-src 'self'; frame-src 'none';");
+    
+    headers.add("X-Content-Type-Options",
+                "nosniff");
 
     if (CorsUtils.isPreFlightRequest(request)) {
       response.setStatusCode(HttpStatus.NO_CONTENT);
