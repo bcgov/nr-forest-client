@@ -9,13 +9,11 @@ import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
-import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import ca.bc.gov.app.util.ProcessorUtil;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
@@ -40,13 +38,11 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
       SubmissionLocationRepository locationRepository,
       SubmissionContactRepository contactRepository,
       SubmissionLocationContactRepository locationContactRepository,
-      R2dbcEntityOperations legacyR2dbcEntityTemplate,
-      ClientDoingBusinessAsRepository doingBusinessAsRepository,
       LegacyService legacyService,
-      BcRegistryService bcRegistryService) {
+      BcRegistryService bcRegistryService
+  ) {
     super(submissionDetailRepository, submissionRepository, locationRepository, contactRepository,
-        locationContactRepository, legacyR2dbcEntityTemplate, doingBusinessAsRepository,
-        legacyService);
+        locationContactRepository, legacyService);
     this.bcRegistryService = bcRegistryService;
   }
 
