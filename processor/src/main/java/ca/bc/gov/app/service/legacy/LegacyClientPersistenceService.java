@@ -3,11 +3,11 @@ package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
-import ca.bc.gov.app.repository.client.SubmissionContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
-import ca.bc.gov.app.repository.client.SubmissionRepository;
+import ca.bc.gov.app.repository.SubmissionContactRepository;
+import ca.bc.gov.app.repository.SubmissionDetailRepository;
+import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
+import ca.bc.gov.app.repository.SubmissionLocationRepository;
+import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;

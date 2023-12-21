@@ -11,7 +11,7 @@ import static org.awaitility.Awaitility.await;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
+import ca.bc.gov.app.entity.SubmissionTypeCodeEnum;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.Duration;
 import org.junit.jupiter.api.BeforeAll;

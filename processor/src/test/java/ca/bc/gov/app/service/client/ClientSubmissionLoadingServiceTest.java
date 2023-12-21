@@ -8,9 +8,9 @@ import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
-import ca.bc.gov.app.repository.client.SubmissionContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
+import ca.bc.gov.app.entity.SubmissionTypeCodeEnum;
+import ca.bc.gov.app.repository.SubmissionContactRepository;
+import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
