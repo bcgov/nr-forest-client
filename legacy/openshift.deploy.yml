@@ -142,12 +142,12 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
-                      key: oracle-user
+                      key: oracle-user-write
                 - name: ORACLEDB_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
-                      key: oracle-password
+                      key: oracle-password-write
                 - name: ORACLEDB_DATABASE
                   valueFrom:
                     secretKeyRef:
