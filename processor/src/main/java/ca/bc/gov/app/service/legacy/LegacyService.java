@@ -145,7 +145,7 @@ public class LegacyService {
               if (response.statusCode().is2xxSuccessful()) {
                 return response.bodyToMono(String.class);
               } else {
-                return Mono.error(new RuntimeException("Failed to create location"));
+                return Mono.error(new RuntimeException("Failed to submit " + url));
               }
             });
   }
