@@ -80,7 +80,7 @@ jobs:
 
       - name: Archive CycloneDX
         continue-on-error: true
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cyclone-backend
           path: |
@@ -185,6 +185,6 @@ jobs:
           scanners: "vuln,secret,config"
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: "trivy-results.sarif"
