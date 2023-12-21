@@ -10,11 +10,16 @@ import ca.bc.gov.app.repository.CountryCodeRepository;
 import jakarta.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -122,8 +127,13 @@ public class LegacyService {
                 .queryParam("dbaName", dbaName)
                 .build()
         )
-        .retrieve()
-        .bodyToFlux(ClientDoingBusinessAsDto.class);
+        .exchangeToFlux(response -> {
+          if (response.statusCode().is2xxSuccessful()) {
+            return response.bodyToFlux(ClientDoingBusinessAsDto.class);
+          } else {
+            return Flux.empty();
+          }
+        });
   }
 
   private Mono<String> postRequestToLegacy(
@@ -143,6 +153,14 @@ public class LegacyService {
                 return Mono.error(new RuntimeException("Failed to create location"));
               }
             });
+  }
+
+  private Predicate<HttpStatusCode> notFound() {
+    return HttpStatus.NOT_FOUND::equals;
+  }
+
+  private Function<ClientResponse, Mono<? extends Throwable>> nothing() {
+    return response -> Mono.empty();
   }
 
 }

@@ -98,9 +98,8 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                         .get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
             )
             .doOnNext(forestClient ->
-                log.info("generated forest client for USP {} {}",
-                    forestClient.clientName(),
-                    message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class)
+                log.info("Generated forest client for USP {}",
+                    forestClient.clientName()
                 )
             )
             .map(forestClient ->
