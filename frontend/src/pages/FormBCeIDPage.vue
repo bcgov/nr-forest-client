@@ -272,7 +272,7 @@ const onNext = () => {
       progressData[currentTab.value - 1].kind = "complete";
       progressData[currentTab.value].kind = "current";
     }
-    setScrollPoint("top");
+    setScrollPoint("step-title");
   }
 };
 const onBack = () => {
@@ -280,7 +280,7 @@ const onBack = () => {
     currentTab.value--;
     progressData[currentTab.value + 1].kind = "incomplete";
     progressData[currentTab.value].kind = "current";
-    setScrollPoint("top");
+    setScrollPoint("step-title");
     setTimeout(revalidateBus.emit, 1000);
   }
 };
@@ -364,7 +364,10 @@ const scrollToNewContact = () => {
 <template>
   <div class="form-header">
     <div class="form-header-title">
-      <span class="heading-05" data-scroll="top">New client application</span>
+      <span class="heading-05">
+        <div data-scroll="top" class="header-offset"></div>
+        New client application
+      </span>
     </div>
     <cds-progress-indicator space-equally :vertical="isSmallScreen">
       <cds-progress-step 
@@ -404,7 +407,10 @@ const scrollToNewContact = () => {
       <hr class="divider" />
 
       <div class="form-steps-section">
-        <label class="heading-04" data-scroll="focus-0">{{ progressData[0].title}}</label>
+        <label class="heading-04" data-scroll="focus-0">
+          <div data-scroll="step-title" class="header-offset"></div>
+          {{ progressData[0].title}}
+        </label>
         <div class="frame-01">
           <business-information-wizard-step
               v-model:data="formData"
@@ -417,7 +423,10 @@ const scrollToNewContact = () => {
 
     <div v-if="currentTab == 1" class="form-steps-02">
       <div class="form-steps-section">
-        <span class="heading-04" data-scroll="scroll-1">{{ progressData[1].title}}</span>
+        <span class="heading-04" data-scroll="scroll-1">
+          <div data-scroll="step-title" class="header-offset"></div>
+          {{ progressData[1].title}}
+        </span>
         
         <div class="form-steps-section-01">
             <p class="body-01 heading-compact-01-dark">
@@ -435,7 +444,10 @@ const scrollToNewContact = () => {
 
     <div v-if="currentTab == 2" class="form-steps-03">
       <div class="form-steps-section">
-        <span class="heading-04" data-scroll="scroll-2">{{ progressData[2].title}}</span>
+        <span class="heading-04" data-scroll="scroll-2">
+          <div data-scroll="step-title" class="header-offset"></div>
+          {{ progressData[2].title}}
+        </span>
         
         <div class="form-steps-section-01">
           <span class="heading-03"
@@ -458,7 +470,10 @@ const scrollToNewContact = () => {
     <div v-if="currentTab == 3" class="form-steps-04">
 
       <div class="form-steps-section form-steps-section-04">
-        <span class="heading-04" data-scroll="scroll-3">{{ progressData[3].title}}</span>
+        <span class="heading-04" data-scroll="scroll-3">
+          <div data-scroll="step-title" class="header-offset"></div>
+          {{ progressData[3].title}}
+        </span>
         <span class="body-02">
           Review the content and make any changes by using the "Edit" buttons in each section below.
         </span>

@@ -85,6 +85,9 @@
   --cds-support-error: #e72000;
 
   --light-theme-background-background-selected: #93939533;
+
+  //Layout
+  --header-height: 3.5rem;
 }
 
 *,
@@ -321,7 +324,7 @@ div#app {
   align-items: center;
   background: var(--light-theme-layer-layer-02, #fff);
   flex-grow: 1;
-  margin-top: 3.5rem;
+  margin-top: var(--header-height);
 }
 
 .full {
@@ -338,7 +341,7 @@ div#app {
   align-items: stretch;
   background: var(--light-theme-background-background, #fff);
   flex-grow: 1;
-  margin-top: 3.5rem;
+  margin-top: var(--header-height);
 }
 
 .headers {
@@ -356,7 +359,7 @@ div#app {
 }
 
 .headers cds-header {
-  height: 3.5rem;
+  height: var(--header-height);
 }
 
 .headers a img {
@@ -1267,6 +1270,14 @@ cds-header-panel[expanded] {
 
 .date-label {
   margin-bottom: 1rem;
+}
+
+/* 
+Useful for scrolling to the *start* of an HTML element without having it covered under the page's header.
+*/
+.header-offset {
+  position: relative;
+  top: calc(-1 * var(--header-height));
 }
 
 /* Small (up to 671px) */
