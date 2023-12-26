@@ -56,7 +56,7 @@ const progressIndicatorBus = useEventBus<ProgressNotification>(
 );
 
 const router = useRouter();
-const { setScrollPoint, setFocusedComponent } = useFocus();
+const { setScrollPoint, safeSetFocusedComponent } = useFocus();
 const submitterInformation = ForestClientUserSession.user;
 const instance = getCurrentInstance();
 const session = instance?.appContext.config.globalProperties.$session;
@@ -355,7 +355,7 @@ const scrollToNewContact = () => {
     // Skip auto-focus so to do it only when scroll is done.
     const index = contactWizardRef.value.addContact(false) - 1;
     setScrollPoint(`additional-contact-${index}`, undefined, () => {
-      setFocusedComponent(`firstName_${index}`);
+      safeSetFocusedComponent(`firstName_${index}`);
     });
   }
 };

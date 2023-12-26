@@ -38,7 +38,7 @@ import Check16 from "@carbon/icons-vue/es/checkmark/16";
 import Logout16 from "@carbon/icons-vue/es/logout/16";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-const { setFocusedComponent } = useFocus();
+const { safeSetFocusedComponent } = useFocus();
 const errorMessage = ref<string | undefined>("");
 const submitterInformation = ForestClientUserSession.user;
 
@@ -118,7 +118,7 @@ const { setScrollPoint } = useFocus();
 
 const scrollToNewContact = () => {
   setScrollPoint("", undefined, () => {
-    setFocusedComponent("");
+    safeSetFocusedComponent("");
   });
 };
 
@@ -138,7 +138,7 @@ const addContact = (autoFocus = true) => {
   );
   if (autoFocus) {
     const focusIndex = newLength - 1;
-    setFocusedComponent(`firstName_${focusIndex}`);
+    safeSetFocusedComponent(`firstName_${focusIndex}`);
   }
   return newLength;
 };

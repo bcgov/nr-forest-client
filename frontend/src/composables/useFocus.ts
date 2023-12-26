@@ -22,6 +22,7 @@ export const useFocus = (): {
   setScrollPoint: (
     componentName: string,
     time?: number,
+    callback?: (refComponent: Ref<OptionalElement>) => void,
   ) => Ref<OptionalElement>;
 } => {
   // setActionOn is a function that execute the action on an a component
