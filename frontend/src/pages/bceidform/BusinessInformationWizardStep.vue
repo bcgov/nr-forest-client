@@ -24,7 +24,7 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
 // Importing session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
-import { getEnumKeyByEnumValue, obfuscatedEmail } from "@/services/ForestClientService";
+import { getEnumKeyByEnumValue, getMailtoLink, getObfuscatedEmail } from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>();
@@ -299,8 +299,7 @@ const bcRegistryEmail = "BCRegistries@gov.bc.ca";
             <li class="body-compact-01">
               If your name isn’t there, call BC Registry toll free at
               <a href="tel:18775261526">1-877-526-1526</a> or email them at
-              <!-- SonarCloud: The use of v-html is safe here because the content is generated securely -->
-              <a :href="'mailto:' + bcRegistryEmail" v-html="obfuscatedEmail(bcRegistryEmail)"></a>.
+              <a :href="getMailtoLink(bcRegistryEmail)" v-bind:innerHTML="getObfuscatedEmail(bcRegistryEmail)"></a>.
             </li>
           </ol>
         </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watchEffect, getCurrentInstance } from "vue";
-import { obfuscatedEmail } from "@/services/ForestClientService";
+import { getMailtoLink, getObfuscatedEmail } from "@/services/ForestClientService";
 
 // Carbon
 import "@carbon/web-components/es/components/button/index";
@@ -242,8 +242,8 @@ const adminEmail = "forhvap.cliadmin@gov.bc.ca";
     </cds-modal-header>
     <cds-modal-body>
       <p>
-        <!-- SonarCloud: The use of v-html is safe here because the content is generated securely -->
-        Can’t proceed with your application? Let us know by emailing your issue to <a :href="'mailto:' + adminEmail" v-html="obfuscatedEmail(adminEmail)"></a> 
+        Can’t proceed with your application? Let us know by emailing your issue to 
+        <a :href="getMailtoLink(adminEmail)" v-bind:innerHTML="getObfuscatedEmail(adminEmail)"></a> 
       </p>
     </cds-modal-body>
   </cds-modal>

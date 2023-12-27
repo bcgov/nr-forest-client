@@ -50,7 +50,12 @@ export const getEnumKeyByEnumValue = <T extends Record<string, any>>(enumObject:
   return key ? String(key) : "Unknown";
 };
 
-export const obfuscatedEmail = email => {
+export const getObfuscatedEmail = email => {
   const obfuscatedEmail = email.replace('@', '&#64;');
   return obfuscatedEmail;
+};
+
+export const getMailtoLink = email => {
+  const encodedEmail = encodeURIComponent(email);
+  return 'mailto:' + encodedEmail;
 };
