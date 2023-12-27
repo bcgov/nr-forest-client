@@ -242,6 +242,7 @@ const adminEmail = "forhvap.cliadmin@gov.bc.ca";
     </cds-modal-header>
     <cds-modal-body>
       <p>
+        <!-- SonarCloud: The use of v-html is safe here because the content is generated securely -->
         Can’t proceed with your application? Let us know by emailing your issue to <a :href="'mailto:' + adminEmail" v-html="obfuscatedEmail(adminEmail)"></a> 
       </p>
     </cds-modal-body>
