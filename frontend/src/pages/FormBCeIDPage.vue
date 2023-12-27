@@ -130,7 +130,7 @@ watch([error], () => {
       errorMsg: errorItem.errorMsg,
     })
   );
-  setScrollPoint("top");
+  setScrollPoint("top-notification");
 });
 
 addValidation(
@@ -271,8 +271,10 @@ const onNext = () => {
       currentTab.value++;
       progressData[currentTab.value - 1].kind = "complete";
       progressData[currentTab.value].kind = "current";
+      setScrollPoint("step-title");
+    } else {
+      setScrollPoint("top-notification");
     }
-    setScrollPoint("step-title");
   }
 };
 const onBack = () => {
@@ -381,10 +383,15 @@ const scrollToNewContact = () => {
         v-shadow="3"
       />
     </cds-progress-indicator>
-    <error-notification-grouping-component
-      :form-data="formData"
-      :scroll-to-element-fn="scrollToNewContact"
-    />
+    <div class="hide-when-less-than-two-children"><!--
+      This div is necessary to avoid the div.header-offset below from interfering in the flex flow.
+    -->
+      <div data-scroll="top-notification" class="header-offset"></div>
+      <error-notification-grouping-component
+        :form-data="formData"
+        :scroll-to-element-fn="scrollToNewContact"
+      />
+    </div>
   </div>
 
   <div class="form-steps">

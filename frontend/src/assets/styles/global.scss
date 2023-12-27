@@ -1283,6 +1283,13 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   top: calc(-1 * var(--header-height));
 }
 
+.hide-when-less-than-two-children {
+  display: none;
+}
+.hide-when-less-than-two-children:has(:nth-child(2)) {
+  display: unset;
+}
+
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
   .wizard-head-toast {
