@@ -24,7 +24,7 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
 // Importing session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
-import { getEnumKeyByEnumValue, getMailtoLink, getObfuscatedEmail } from "@/services/ForestClientService";
+import { getEnumKeyByEnumValue, openMailtoLink, getObfuscatedEmail } from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>();
@@ -299,7 +299,9 @@ const bcRegistryEmail = "BCRegistries@gov.bc.ca";
             <li class="body-compact-01">
               If your name isn’t there, call BC Registry toll free at
               <a href="tel:18775261526">1-877-526-1526</a> or email them at
-              <a v-bind:href="getMailtoLink(bcRegistryEmail)" v-bind:innerHTML="getObfuscatedEmail(bcRegistryEmail)"></a>.
+              <button class="link-button" @click="openMailtoLink(bcRegistryEmail)" aria-label="Contact BC Registry via Email">
+                <span v-bind:innerHTML="getObfuscatedEmail(bcRegistryEmail)"></span>
+              </button>.
             </li>
           </ol>
         </div>
