@@ -1,5 +1,5 @@
 import { useIntersectionObserver } from "@vueuse/core";
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import type { Ref } from "vue";
 
 const isClient = typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -18,7 +18,17 @@ export default function useElementVisibility(element, options = {}) {
   });
   const { stop } = useIntersectionObserver(
     element,
-    ([{ isIntersecting }]) => {
+    (intersectionObserverEntries) => {
+      let isIntersecting = elementIsVisible.value
+
+      // Get the latest value of isIntersecting based on the entry time
+      let latestTime = 0;
+      for (const entry of intersectionObserverEntries) {
+        if (entry.time >= latestTime) {
+          latestTime = entry.time;
+          isIntersecting = entry.isIntersecting;
+        }
+      }
       elementIsVisible.value = isIntersecting;
 
       // signalize the value is ready
