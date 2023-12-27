@@ -50,12 +50,19 @@ export const getEnumKeyByEnumValue = <T extends Record<string, any>>(enumObject:
   return key ? String(key) : "Unknown";
 };
 
+const isValidEmail = (email) => {
+  const emailRegex: RegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  return emailRegex.test(email);
+};
+
 export const getObfuscatedEmail = email => {
   const obfuscatedEmail = email.replace('@', '&#64;');
   return obfuscatedEmail;
 };
 
 export const getMailtoLink = email => {
-  const encodedEmail = encodeURIComponent(email);
+  const isValid = isValidEmail(email);
+  const sanitizedEmail = isValid ? email : '';
+  const encodedEmail = encodeURIComponent(sanitizedEmail);
   return 'mailto:' + encodedEmail;
 };
