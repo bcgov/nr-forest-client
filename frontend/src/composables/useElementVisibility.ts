@@ -9,11 +9,11 @@ const defaultWindow = isClient ? window : void 0;
 export default function useElementVisibility(element, options = {}) {
   const { window = defaultWindow, scrollTarget, threshold } = options;
   const elementIsVisible = ref<boolean>(undefined);
-  
+
   let done: () => void;
   const elementIsVisibleRefPromise = new Promise<Ref<boolean>>((resolve) => {
     done = () => {
-      resolve(elementIsVisible)
+      resolve(elementIsVisible);
     };
   });
   const { stop } = useIntersectionObserver(
