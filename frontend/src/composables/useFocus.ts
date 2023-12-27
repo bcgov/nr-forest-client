@@ -1,5 +1,7 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
+import { isTouchScreen } from "./useScreenSize";
+import useElementVisibility from "./useElementVisibility";
 
 type OptionalElement = Element | HTMLElement | undefined
 
@@ -12,12 +14,16 @@ export const useFocus = (): {
     componentName: string,
     time?: number,
     callback?: (refComponent: Ref<OptionalElement>) => void,
-  ) => Ref<OptionalElement>
+  ) => Ref<OptionalElement>;
+  safeSetFocusedComponent: (
+    componentName: string,
+    time?: number,
+  ) => Ref<OptionalElement>;
   setScrollPoint: (
     componentName: string,
     time?: number,
     callback?: (refComponent: Ref<OptionalElement>) => void,
-  ) => Ref<OptionalElement>
+  ) => Ref<OptionalElement>;
 } => {
   // setActionOn is a function that execute the action on an a component
   const setActionOn = (
@@ -86,6 +92,42 @@ export const useFocus = (): {
       time,
       callback,
     )
+  
+  /**
+   * Set the focus on a component with the data-focus attribute as long as:
+   * - the component is already visible (100%);
+   * - and the device is not a touch device (because we want to prevent the touch device's
+   * virtual keyboard from either covering the component or triggering automatic scroll).
+   * 
+   * Otherwise, does nothing.
+   */
+  const safeSetFocusedComponent = (
+    componentName: string,
+    time: number = 100,
+  ): Ref<OptionalElement> => {
+    return execute(
+      componentName,
+      "data-focus",
+      async (element) => {
+        if (!(element instanceof HTMLElement) || isTouchScreen.value) {
+          return;
+        }
+
+        const { elementIsVisibleRefPromise, stop } = useElementVisibility(element, {
+          threshold: 1,
+        });
+
+        const elementIsVisibleRef = await elementIsVisibleRefPromise;
+        stop();
+        if (!elementIsVisibleRef.value) {
+          return;
+        }
+        element.focus();
+      },
+      time,
+    );
+  };
+
   // Scroll into view a component with the data-scroll attribute
   const setScrollPoint = (
     componentName: string,
@@ -100,5 +142,5 @@ export const useFocus = (): {
       callback,
     )
 
-  return { setFocusedComponent, setScrollPoint }
+  return { safeSetFocusedComponent, setFocusedComponent, setScrollPoint };
 }

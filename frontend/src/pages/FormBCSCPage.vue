@@ -13,6 +13,7 @@ import {
 } from "@/dto/CommonTypesDto";
 import { useFetchTo, usePost } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
+import { isTouchScreen } from "@/composables/useScreenSize";
 import { useEventBus } from "@vueuse/core";
 import {
   codeConversionFn,
@@ -38,7 +39,7 @@ import Check16 from "@carbon/icons-vue/es/checkmark/16";
 import Logout16 from "@carbon/icons-vue/es/logout/16";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-const { setFocusedComponent } = useFocus();
+const { safeSetFocusedComponent } = useFocus();
 const errorMessage = ref<string | undefined>("");
 const submitterInformation = ForestClientUserSession.user;
 
@@ -118,7 +119,7 @@ const { setScrollPoint } = useFocus();
 
 const scrollToNewContact = () => {
   setScrollPoint("", undefined, () => {
-    setFocusedComponent("");
+    safeSetFocusedComponent("");
   });
 };
 
@@ -138,7 +139,7 @@ const addContact = (autoFocus = true) => {
   );
   if (autoFocus) {
     const focusIndex = newLength - 1;
-    setFocusedComponent(`firstName_${focusIndex}`);
+    safeSetFocusedComponent(`firstName_${focusIndex}`);
   }
   return newLength;
 };
@@ -327,7 +328,7 @@ watch([error], () => {
       errorMsg: errorItem.errorMsg,
     })
   );
-  setScrollPoint("top");
+  setScrollPoint("top-notification");
 });
 </script>
 
@@ -338,10 +339,15 @@ watch([error], () => {
         New client application
       </span>
     </div>
-    <error-notification-grouping-component
-      :form-data="formData"
-      :scroll-to-element-fn="scrollToNewContact"
-    />
+    <div class="hide-when-less-than-two-children"><!--
+      This div is necessary to avoid the div.header-offset below from interfering in the flex flow.
+    -->
+      <div data-scroll="top-notification" class="header-offset"></div>
+      <error-notification-grouping-component
+        :form-data="formData"
+        :scroll-to-element-fn="scrollToNewContact"
+      />
+    </div>
   </div>
     
   <div class="form-steps-section">
@@ -489,7 +495,7 @@ watch([error], () => {
           <span>Submit application</span>
           <Check16 slot="icon" />
         </cds-button>
-        <cds-tooltip-content v-show="submitBtnDisabled">
+        <cds-tooltip-content v-if="!isTouchScreen" v-show="submitBtnDisabled">
           All fields must be filled in correctly.
         </cds-tooltip-content>
       </cds-tooltip>

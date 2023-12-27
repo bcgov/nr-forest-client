@@ -32,7 +32,7 @@ const emit = defineEmits<{
 }>();
 
 const generalErrorBus = useEventBus<string>("general-error-notification");
-const { setFocusedComponent } = useFocus();
+const { safeSetFocusedComponent } = useFocus();
 
 const noValidation = (value: string) => "";
 
@@ -232,8 +232,8 @@ watch([detailsData], () => {
 });
 
 onMounted(() => {
-  if (props.id == 0) setFocusedComponent(`addr_${props.id}`, 800);
-  else setFocusedComponent(`name_${props.id}`, 200);
+  if (props.id == 0) safeSetFocusedComponent(`addr_${props.id}`, 800);
+  else safeSetFocusedComponent(`name_${props.id}`, 200);
 });
 </script>
 
