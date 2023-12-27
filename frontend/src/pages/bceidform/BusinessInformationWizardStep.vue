@@ -24,7 +24,7 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
 // Importing session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
-import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
+import { getEnumKeyByEnumValue, obfuscatedEmail } from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>();
@@ -223,6 +223,8 @@ watch(showBirthDate, (value) => {
     validation.birthdate = true;
   }
 });
+
+const bcRegistryEmail = "BCRegistries@gov.bc.ca";    
 </script>
 
 <template>
@@ -297,7 +299,7 @@ watch(showBirthDate, (value) => {
             <li class="body-compact-01">
               If your name isn’t there, call BC Registry toll free at
               <a href="tel:18775261526">1-877-526-1526</a> or email them at
-              <a href="mailto:BCRegistries&#64;gov.bc.ca">BCRegistries&#64;gov.bc.ca</a>.
+              <a :href="'mailto:' + bcRegistryEmail" v-html="obfuscatedEmail(bcRegistryEmail)"></a>.
             </li>
           </ol>
         </div>
