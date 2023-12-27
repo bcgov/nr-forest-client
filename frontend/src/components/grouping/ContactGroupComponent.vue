@@ -33,7 +33,7 @@ const emit = defineEmits<{
   (e: "remove", value: number): void;
 }>();
 
-const { setFocusedComponent } = useFocus();
+const { safeSetFocusedComponent } = useFocus();
 const noValidation = (value: string) => "";
 
 //We set it as a separated ref due to props not being updatable
@@ -93,9 +93,9 @@ const nameTypesToCodeDescr = (
 
 onMounted(() => {
   if (props.id === 0) {
-    setFocusedComponent(`phoneNumber_${props.id}`, 800);
+    safeSetFocusedComponent(`phoneNumber_${props.id}`, 800);
   } else {
-    setFocusedComponent(`firstName_${props.id}`, 800);
+    safeSetFocusedComponent(`firstName_${props.id}`, 800);
   }
 });
 

@@ -26,7 +26,7 @@ const emit = defineEmits<{
 //Defining the event bus to send notifications up
 const bus = useEventBus<ModalNotification>("modal-notification");
 
-const { setFocusedComponent } = useFocus();
+const { safeSetFocusedComponent } = useFocus();
 
 //Set the prop as a ref, and then emit when it changes
 const formData = reactive<FormDataDto>(props.data);
@@ -110,7 +110,7 @@ const removeAddress = (index: number) => () => {
     toastTitle: "",
     handler: () => {},
   });
-  setFocusedComponent(`addr_addr_${index - 1}`, 200);
+  safeSetFocusedComponent(`addr_${index - 1}`, 200);
 };
 
 const handleRemove = (index: number) => {
@@ -128,7 +128,7 @@ const handleRemove = (index: number) => {
   });
 };
 
-onMounted(() => setFocusedComponent("addr_0", 800));
+onMounted(() => safeSetFocusedComponent("addr_0", 800));
 </script>
 
 <template>

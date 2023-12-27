@@ -85,6 +85,9 @@
   --cds-support-error: #e72000;
 
   --light-theme-background-background-selected: #93939533;
+
+  //Layout
+  --header-height: 3.5rem;
 }
 
 *,
@@ -321,7 +324,7 @@ div#app {
   align-items: center;
   background: var(--light-theme-layer-layer-02, #fff);
   flex-grow: 1;
-  margin-top: 3.5rem;
+  margin-top: var(--header-height);
 }
 
 .full {
@@ -338,7 +341,7 @@ div#app {
   align-items: stretch;
   background: var(--light-theme-background-background, #fff);
   flex-grow: 1;
-  margin-top: 3.5rem;
+  margin-top: var(--header-height);
 }
 
 .headers {
@@ -356,7 +359,7 @@ div#app {
 }
 
 .headers cds-header {
-  height: 3.5rem;
+  height: var(--header-height);
 }
 
 .headers a img {
@@ -532,7 +535,7 @@ cds-actionable-notification * {
 
 .content {
   flex-grow: 1;
-  align-self: flex-start;
+  align-self: stretch;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -649,21 +652,23 @@ cds-actionable-notification * {
 .form-footer {
   align-self: stretch;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
+  flex-direction: column;
   gap: 1rem;
 }
 
 .form-footer-group {
   display: flex;
-  width: 34.75rem;
-  align-items: flex-start;
+  align-items: stretch;
+  flex-direction: column;
   gap: 1rem;
 }
 
 .form-footer-group-next {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
+  align-self: stretch;
   gap: 1rem;
 }
 
@@ -1270,6 +1275,21 @@ cds-header-panel[expanded] {
   margin-bottom: 1rem;
 }
 
+/* 
+Useful for scrolling to the *start* of an HTML element without having it covered under the page's header.
+*/
+.header-offset {
+  position: relative;
+  top: calc(-1 * var(--header-height));
+}
+
+.hide-when-less-than-two-children {
+  display: none;
+}
+.hide-when-less-than-two-children:has(:nth-child(2)) {
+  display: unset;
+}
+
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
   .wizard-head-toast {
@@ -1344,12 +1364,10 @@ cds-header-panel[expanded] {
 
   .form-steps {
     align-self: stretch;
-    width: 18rem;
   }
 
   .form-steps-01 {
     align-self: stretch;
-    width: 18rem;
   }
 
   .form-steps-01-title {
@@ -1360,6 +1378,7 @@ cds-header-panel[expanded] {
   .form-footer-group-buttons {
     flex-direction: column-reverse;
     justify-content: flex-end;
+    align-items: stretch;
   }
 
   .full-centered {
@@ -1450,6 +1469,12 @@ cds-header-panel[expanded] {
 
   .card {
     padding: 1.5rem;
+  }
+
+  cds-tooltip:has(cds-button) {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
   }
 }
 
