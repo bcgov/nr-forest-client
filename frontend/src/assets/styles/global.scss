@@ -535,7 +535,7 @@ cds-actionable-notification * {
 
 .content {
   flex-grow: 1;
-  align-self: flex-start;
+  align-self: stretch;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -652,20 +652,22 @@ cds-actionable-notification * {
 .form-footer {
   align-self: stretch;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
+  flex-direction: column;
   gap: 1rem;
 }
 
 .form-footer-group {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
+  flex-direction: column;
   gap: 1rem;
 }
 
 .form-footer-group-next {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   align-self: stretch;
   gap: 1rem;
 }
@@ -1355,12 +1357,10 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 
   .form-steps {
     align-self: stretch;
-    width: 18rem;
   }
 
   .form-steps-01 {
     align-self: stretch;
-    width: 18rem;
   }
 
   .form-steps-01-title {
@@ -1371,6 +1371,7 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   .form-footer-group-buttons {
     flex-direction: column-reverse;
     justify-content: flex-end;
+    align-items: stretch;
   }
 
   .full-centered {
