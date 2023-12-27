@@ -243,7 +243,7 @@ const adminEmail = "forhvap.cliadmin@gov.bc.ca";
     <cds-modal-body>
       <p>
         Can’t proceed with your application? Let us know by emailing your issue to 
-        <a :href="getMailtoLink(adminEmail)" v-bind:innerHTML="getObfuscatedEmail(adminEmail)"></a><!-- NOSONAR: The adminEmail variable is properly sanitized elsewhere in the code. -->
+        <a v-bind:href="getMailtoLink(adminEmail)" v-bind:innerHTML="getObfuscatedEmail(adminEmail)"></a>
       </p>
     </cds-modal-body>
   </cds-modal>
