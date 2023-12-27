@@ -328,7 +328,7 @@ watch([error], () => {
       errorMsg: errorItem.errorMsg,
     })
   );
-  setScrollPoint("top");
+  setScrollPoint("top-notification");
 });
 </script>
 
@@ -339,10 +339,15 @@ watch([error], () => {
         New client application
       </span>
     </div>
-    <error-notification-grouping-component
-      :form-data="formData"
-      :scroll-to-element-fn="scrollToNewContact"
-    />
+    <div class="hide-when-less-than-two-children"><!--
+      This div is necessary to avoid the div.header-offset below from interfering in the flex flow.
+    -->
+      <div data-scroll="top-notification" class="header-offset"></div>
+      <error-notification-grouping-component
+        :form-data="formData"
+        :scroll-to-element-fn="scrollToNewContact"
+      />
+    </div>
   </div>
     
   <div class="form-steps-section">
