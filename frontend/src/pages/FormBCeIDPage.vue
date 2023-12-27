@@ -10,7 +10,7 @@ import { useEventBus } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useFocus } from "@/composables/useFocus";
 import { usePost } from "@/composables/useFetch";
-import { isSmallScreen } from "@/composables/useScreenSize";
+import { isSmallScreen, isTouchScreen } from "@/composables/useScreenSize";
 // Imported Pages
 import BusinessInformationWizardStep from "@/pages/bceidform/BusinessInformationWizardStep.vue";
 import AddressWizardStep from "@/pages/bceidform/AddressWizardStep.vue";
@@ -524,7 +524,7 @@ const scrollToNewContact = () => {
               <span>Next</span>
               <ArrowRight16 slot="icon" />
             </cds-button>
-            <cds-tooltip-content v-show="progressData[currentTab].valid === false">
+            <cds-tooltip-content v-if="!isTouchScreen" v-show="progressData[currentTab].valid === false">
               All fields must be filled in correctly.
             </cds-tooltip-content>
           </cds-tooltip>

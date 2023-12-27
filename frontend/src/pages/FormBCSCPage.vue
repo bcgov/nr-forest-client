@@ -13,6 +13,7 @@ import {
 } from "@/dto/CommonTypesDto";
 import { useFetchTo, usePost } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
+import { isTouchScreen } from "@/composables/useScreenSize";
 import { useEventBus } from "@vueuse/core";
 import {
   codeConversionFn,
@@ -489,7 +490,7 @@ watch([error], () => {
           <span>Submit application</span>
           <Check16 slot="icon" />
         </cds-button>
-        <cds-tooltip-content v-show="submitBtnDisabled">
+        <cds-tooltip-content v-if="!isTouchScreen" v-show="submitBtnDisabled">
           All fields must be filled in correctly.
         </cds-tooltip-content>
       </cds-tooltip>
