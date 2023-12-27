@@ -666,6 +666,7 @@ cds-actionable-notification * {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  align-self: stretch;
   gap: 1rem;
 }
 
@@ -1460,6 +1461,12 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 
   .card {
     padding: 1.5rem;
+  }
+
+  cds-tooltip:has(cds-button) {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
   }
 }
 
