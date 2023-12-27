@@ -66,6 +66,13 @@ public class CorsWebFilter implements WebFilter {
     
     headers.add("X-Content-Type-Options",
                 "nosniff");
+    
+    headers.add("Strict-Transport-Security", 
+                "max-age=300; includeSubDomains");
+    
+    headers.remove("Server");
+    
+    headers.remove("X-Powered-By");
 
     if (CorsUtils.isPreFlightRequest(request)) {
       response.setStatusCode(HttpStatus.NO_CONTENT);
