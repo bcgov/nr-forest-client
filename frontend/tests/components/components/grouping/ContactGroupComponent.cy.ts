@@ -336,6 +336,8 @@ describe("<ContactGroupComponent />", () => {
       });
 
       // Debugging issue on CI.
+      cy.window().then((value) => cy.task("log", `window: ${value}`));
+      cy.document().then((value) => cy.task("log", `document: ${value}`));
       cy.get("#firstName_1");
 
       cy.focused().should("have.id", "firstName_1");
