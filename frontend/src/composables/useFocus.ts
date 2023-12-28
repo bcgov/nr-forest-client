@@ -52,6 +52,9 @@ export const useFocus = (): {
   ): Ref<OptionalElement> => {
     const refComponent = ref<OptionalElement>(undefined)
     setTimeout(() => {
+      if (!document) {
+        return;
+      }
       refComponent.value = setActionOn(componentName, key, action)
       if (callback) {
         // We need to detect the end of the scrolling
