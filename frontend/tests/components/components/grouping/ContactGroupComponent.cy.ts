@@ -293,7 +293,7 @@ describe("<ContactGroupComponent />", () => {
       };
 
       // Trying to fix issue on the CI pipeline.
-      /// cy.wait(200);
+      // cy.wait(200);
 
       cy.get("@contactFixture").then((contact: Contact) => {
         cy.get("@rolesFixture").then((roles) => {
@@ -322,7 +322,10 @@ describe("<ContactGroupComponent />", () => {
         });
       });
 
-      cy.focused().should('have.id', 'firstName_1');
+      // Debugging issue on CI.
+      cy.get("#firstName_1");
+
+      cy.focused().should("have.id", "firstName_1");
       cy.get(fieldSelector).shadow().find("input").clear(); // emits false
       cy.get(fieldSelector).blur(); // (doesn't emit)
       cy.get(fieldSelector).shadow().find("input").type(firstContent); // emits true before blurring
