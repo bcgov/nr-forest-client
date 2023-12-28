@@ -293,7 +293,7 @@ describe("<ContactGroupComponent />", () => {
       };
 
       // Trying to fix issue on the CI pipeline.
-      cy.wait(200);
+      // cy.wait(200);
 
       cy.get("@contactFixture").then((contact: Contact) => {
         cy.get("@rolesFixture").then((roles) => {
