@@ -63,9 +63,13 @@ export const useFocus = (): {
         const eventName = 'onscrollend' in window ? 'scrollend' : 'scroll'
 
         const scrollEndListener = () => {
-          callback(refComponent)
-          document.removeEventListener(eventName, polyfilledListener)
-        }
+          callback(refComponent);
+          if (!document) {
+            // Prevent error on CI
+            return;
+          }
+          document.removeEventListener(eventName, polyfilledListener);
+        };
 
         let scrollEndTimer: NodeJS.Timeout
 
