@@ -53,6 +53,7 @@ export const useFocus = (): {
     const refComponent = ref<OptionalElement>(undefined)
     setTimeout(() => {
       if (!document) {
+        // Prevent error on CI
         return;
       }
       refComponent.value = setActionOn(componentName, key, action)
