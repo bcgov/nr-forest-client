@@ -4,6 +4,17 @@ import type { Contact } from "@/dto/ApplyClientNumberDto";
 // load app validations
 import "@/helpers/validators/BCeIDFormValidations";
 
+Cypress.on("fail", (error, runnable) => {
+  // we now have access to the err instance
+  // and the mocha runnable this failed on
+
+  cy.get("@vueWrapper").then(({ wrapperElement }) => {
+    cy.task("log", wrapperElement.parentElement.innerHTML);
+  });
+
+  throw error; // throw error to have test still fail
+});
+
 describe("<ContactGroupComponent />", () => {
   const dummyValidation = (): ((
     key: string,
@@ -317,7 +328,9 @@ describe("<ContactGroupComponent />", () => {
                 validations: [],
                 onValid,
               },
-            });
+            })
+              .its("wrapper")
+              .as("vueWrapper");
           });
         });
       });
