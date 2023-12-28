@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
-import { DOMWrapper, mount } from "@vue/test-utils";
+import { describe, it, expect, afterEach } from "vitest";
+import { DOMWrapper, mount, enableAutoUnmount } from "@vue/test-utils";
 import DateInputComponent from "@/components/forms/DateInputComponent/index.vue";
 import { isMinimumYearsAgo } from "@/helpers/validators/GlobalValidators";
 
 describe("Date Input Component", () => {
+  enableAutoUnmount(afterEach);
   const id = "my-date";
 
   const setInputValue = async (
