@@ -291,6 +291,10 @@ describe("<ContactGroupComponent />", () => {
       const onValid = (valid: boolean) => {
         calls.push(valid);
       };
+
+      // Trying to fix issue on the CI pipeline.
+      cy.wait(200);
+
       cy.get("@contactFixture").then((contact: Contact) => {
         cy.get("@rolesFixture").then((roles) => {
           cy.get("@addressesFixture").then((addresses) => {
