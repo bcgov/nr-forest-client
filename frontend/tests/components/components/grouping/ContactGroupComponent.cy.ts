@@ -335,10 +335,11 @@ describe("<ContactGroupComponent />", () => {
         });
       });
 
-      // Debugging issue on CI.
-      cy.window().then((value) => cy.task("log", `window: ${value}`));
-      cy.document().then((value) => cy.task("log", `document: ${value}`));
-      cy.get("#firstName_1");
+      /*
+      In case the component is scrolled down, make sure to scroll up so the "First name" input is
+      visible, since the "safe focusing" would skip focusing it in that case.
+      */
+      cy.scrollTo("top");
 
       cy.focused().should("have.id", "firstName_1");
       cy.get(fieldSelector).shadow().find("input").clear(); // emits false
