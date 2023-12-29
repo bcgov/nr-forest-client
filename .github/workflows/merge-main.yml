@@ -96,6 +96,14 @@ jobs:
           sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
           triggers: ('frontend/')
 
+      - uses: actions/upload-artifact@v4
+        name: Upload Cypress Screenshots with error
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: frontend/cypress/screenshots
+          retention-days: 7
+
   codeql:
     name: Semantic Code Analysis
     runs-on: ubuntu-22.04
