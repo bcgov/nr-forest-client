@@ -165,6 +165,14 @@ jobs:
           delete-old-comments: true
           github-token: ${{ github.token }}
           lcov-file: ./frontend/reports/e2e/lcov.info
+
+      - uses: actions/upload-artifact@v4
+        name: Upload Cypress Screenshots with error
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: frontend/cypress/screenshots
+          retention-days: 7
   
   trivy:
     name: Repository Report

@@ -4,6 +4,17 @@ import type { Contact } from "@/dto/ApplyClientNumberDto";
 // load app validations
 import "@/helpers/validators/BCeIDFormValidations";
 
+Cypress.on("fail", (error, runnable) => {
+  // we now have access to the err instance
+  // and the mocha runnable this failed on
+
+  cy.get("@vueWrapper").then(({ wrapperElement }) => {
+    cy.task("log", wrapperElement.parentElement.innerHTML);
+  });
+
+  throw error; // throw error to have test still fail
+});
+
 describe("<ContactGroupComponent />", () => {
   const dummyValidation = (): ((
     key: string,
@@ -291,6 +302,10 @@ describe("<ContactGroupComponent />", () => {
       const onValid = (valid: boolean) => {
         calls.push(valid);
       };
+
+      // Trying to fix issue on the CI pipeline.
+      // cy.wait(200);
+
       cy.get("@contactFixture").then((contact: Contact) => {
         cy.get("@rolesFixture").then((roles) => {
           cy.get("@addressesFixture").then((addresses) => {
@@ -313,12 +328,20 @@ describe("<ContactGroupComponent />", () => {
                 validations: [],
                 onValid,
               },
-            });
+            })
+              .its("wrapper")
+              .as("vueWrapper");
           });
         });
       });
 
-      cy.focused().should('have.id', 'firstName_1');
+      /*
+      In case the component is scrolled down, make sure to scroll up so the "First name" input is
+      visible, since the "safe focusing" would skip focusing it in that case.
+      */
+      cy.scrollTo("top");
+
+      cy.focused().should("have.id", "firstName_1");
       cy.get(fieldSelector).shadow().find("input").clear(); // emits false
       cy.get(fieldSelector).blur(); // (doesn't emit)
       cy.get(fieldSelector).shadow().find("input").type(firstContent); // emits true before blurring
