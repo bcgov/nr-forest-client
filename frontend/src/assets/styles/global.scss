@@ -471,11 +471,11 @@ h3 {
   line-height: 2.5rem;
 }
 
-.fluid-heading-05 {
+h4.fluid {
   align-self: stretch;
   color: var(--light-theme-text-text-primary, #131315);
 
-  /* Fluid styles/MAX/fluid-heading-05 */
+  /* Fluid styles/MAX/fluid-heading-04 */
 
   font-size: 3.75rem;
   font-style: normal;
@@ -1404,8 +1404,8 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     align-items: flex-start;
   }
 
-  .fluid-heading-05 {
-    /* Fluid styles/SM/fluid-heading-05 */
+  h4.fluid {
+    /* Fluid styles/SM/fluid-heading-04 */
     font-size: 2rem;
     line-height: 2.5rem;
   }
@@ -1515,8 +1515,8 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     align-items: flex-start;
   }
 
-  .fluid-heading-05 {
-    /* Fluid styles/MED/fluid-heading-05 */
+  h4.fluid {
+    /* Fluid styles/MED/fluid-heading-04 */
     font-size: 2.25rem;
     line-height: 2.75rem;
   }
@@ -1606,8 +1606,8 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     column-gap: 4.0625rem;
   }
 
-  .fluid-heading-05 {
-    /* Fluid styles/MED/fluid-heading-05 */
+  h4.fluid {
+    /* Fluid styles/MED/fluid-heading-04 */
     font-size: 2.25rem;
     line-height: 2.75rem;
   }
@@ -1673,8 +1673,8 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     column-gap: 3.3125rem;
   }
 
-  .fluid-heading-05 {
-    /* Fluid styles/XLG/fluid-heading-05 */
+  h4.fluid {
+    /* Fluid styles/XLG/fluid-heading-04 */
     font-size: 3rem;
     line-height: 56px;
   }

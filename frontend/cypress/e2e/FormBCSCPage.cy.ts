@@ -61,7 +61,7 @@ describe("BCSC Form", () => {
     cy.get('[data-test="wizard-submit-button"]')
     .click();
 
-    cy.get('.fluid-heading-05').should('contain', 'Application submitted!');
+    cy.get('h4.fluid').should('contain', 'Application submitted!');
   });
 
   it("should add a new contact", () => {
@@ -125,7 +125,7 @@ describe("BCSC Form", () => {
     cy.get('[data-test="wizard-submit-button"]')
     .click();
 
-    cy.get('.fluid-heading-05').should('contain', 'Application submitted!');
+    cy.get('h4.fluid').should('contain', 'Application submitted!');
 
   });
 
@@ -196,7 +196,7 @@ describe("BCSC Form", () => {
     cy.get('[data-test="wizard-submit-button"]')
     .click();
 
-    cy.get('.fluid-heading-05').should('contain', 'Application submitted!');
+    cy.get('h4.fluid').should('contain', 'Application submitted!');
   });
 
 
