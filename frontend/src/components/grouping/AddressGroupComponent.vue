@@ -240,11 +240,6 @@ watch([detailsData], () => {
     setTimeout(() => (addressControl.value = false), 200);
   }
 });
-
-onMounted(() => {
-  if (props.id == 0) safeSetFocusedComponent(`addr_${props.id}`, 800);
-  else safeSetFocusedComponent(`name_${props.id}`, 200);
-});
 </script>
 
 <template>
