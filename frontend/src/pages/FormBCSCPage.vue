@@ -355,7 +355,7 @@ watch([error], () => {
       Personal information
     </span>
     <p class="body-compact-01">
-      Review the personal information below. It’s from your BC Services card. We use it to know who we're giving a number to and for communicating with clients. 
+      Review the information below. It’s from your BC Services card. We use it to know who we're giving a number to and for communicating with clients. 
     </p>
 
     <div class="card">
