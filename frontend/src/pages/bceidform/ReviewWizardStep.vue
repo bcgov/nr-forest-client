@@ -58,7 +58,7 @@ onMounted(() => {
     <label class="heading-new-05">Business information</label>
     <div class="grouping-22">
       <div class="grouping-01">
-        <p class="heading-02 review-icon-title">
+        <p class="heading-new-06 review-icon-title">
           <Enterprise20 />
           {{ formData.businessInformation.businessName }}
         </p>
@@ -84,7 +84,7 @@ onMounted(() => {
         :key="address.locationName" 
         class="grouping-07">
       <hr class="divider" v-if="index > 0" />
-      <span class="heading-02 review-icon-title">
+      <span class="heading-new-06 review-icon-title">
         <LocationStar20 v-if="index === 0" />
         <Location20 v-else />{{ address.locationName }}
       </span>
@@ -109,7 +109,7 @@ onMounted(() => {
         class="grouping-07">
       <hr class="divider" 
           v-if="index > 0" />
-      <span class="heading-02 review-icon-title">
+      <span class="heading-new-06 review-icon-title">
         <User20 />{{ contact.firstName }} {{ contact.lastName }}
       </span>
       <div class="grouping-23">

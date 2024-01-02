@@ -295,7 +295,7 @@ const tagColor = (status: string) =>{
       <div class="grouping-14">
         <div class="grouping-05-short">
           <div>
-            <p class="heading-02 mg-tl-2">Client summary</p>
+            <p class="heading-new-06 mg-tl-2">Client summary</p>
             <div class="grouping-10">
               <read-only-component label="Name">
                 <span class="body-compact-01">{{ normalizeString(data.business.organizationName) }}</span>
