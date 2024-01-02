@@ -589,13 +589,14 @@ cds-actionable-notification * {
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
+  max-width: 50.4375rem;
 }
 
 .form-steps-01 {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2.5rem;
+  gap: 1rem;
 }
 
 .form-steps-02 {
@@ -632,6 +633,7 @@ cds-actionable-notification * {
   align-items: flex-start;
   align-self: stretch;
   gap: 1.5rem;
+  max-width: 50.4375rem;
 }
 
 .form-steps-section-01 {

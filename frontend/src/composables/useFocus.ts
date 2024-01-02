@@ -52,6 +52,10 @@ export const useFocus = (): {
   ): Ref<OptionalElement> => {
     const refComponent = ref<OptionalElement>(undefined)
     setTimeout(() => {
+      if (!document) {
+        // Prevent error on CI
+        return;
+      }
       refComponent.value = setActionOn(componentName, key, action)
       if (callback) {
         // We need to detect the end of the scrolling
@@ -59,9 +63,13 @@ export const useFocus = (): {
         const eventName = 'onscrollend' in window ? 'scrollend' : 'scroll'
 
         const scrollEndListener = () => {
-          callback(refComponent)
-          document.removeEventListener(eventName, polyfilledListener)
-        }
+          callback(refComponent);
+          if (!document) {
+            // Prevent error on CI
+            return;
+          }
+          document.removeEventListener(eventName, polyfilledListener);
+        };
 
         let scrollEndTimer: NodeJS.Timeout
 

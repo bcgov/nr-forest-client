@@ -1,9 +1,17 @@
-import { describe, it, expect } from "vitest";
-import { DOMWrapper, mount } from "@vue/test-utils";
+import { describe, it, expect, afterEach } from "vitest";
+import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
 import DateInputComponent from "@/components/forms/DateInputComponent/index.vue";
 import { isMinimumYearsAgo } from "@/helpers/validators/GlobalValidators";
 
 describe("Date Input Component", () => {
+  let globalWrapper: VueWrapper;
+
+  afterEach(() => {
+    if (globalWrapper) {
+      globalWrapper.unmount();
+    }
+  });
+
   const id = "my-date";
 
   const setInputValue = async (
@@ -27,6 +35,7 @@ describe("Date Input Component", () => {
         masked: () => {},
       },
     });
+    globalWrapper = wrapper;
 
     expect(wrapper.find(`#${id}`).exists()).toBe(true);
   });
@@ -43,7 +52,9 @@ describe("Date Input Component", () => {
       directives: {
         masked: () => {},
       },
+      attachTo: document.body,
     });
+    globalWrapper = wrapper;
 
     const yearWrapper = wrapper.find<HTMLInputElement>(`#${id}Year`);
     await setInputValue(yearWrapper, "2001");
@@ -65,7 +76,9 @@ describe("Date Input Component", () => {
       directives: {
         masked: () => {},
       },
+      attachTo: document.body,
     });
+    globalWrapper = wrapper;
 
     await wrapper.find(`#${id}Year`).trigger("input");
     await wrapper.find(`#${id}Year`).trigger("blur");
@@ -88,7 +101,9 @@ describe("Date Input Component", () => {
       directives: {
         masked: () => {},
       },
+      attachTo: document.body,
     });
+    globalWrapper = wrapper;
 
     const currentYear = new Date().getFullYear();
     const currentYearMinus5 = currentYear - 5;
@@ -117,7 +132,9 @@ describe("Date Input Component", () => {
       directives: {
         masked: () => {},
       },
+      attachTo: document.body,
     });
+    globalWrapper = wrapper;
 
     const inputWrapper = wrapper.find<HTMLInputElement>(`#${id}Year`);
     await setInputValue(inputWrapper, "1");
@@ -149,7 +166,9 @@ describe("Date Input Component", () => {
       directives: {
         masked: () => {},
       },
+      attachTo: document.body,
     });
+    globalWrapper = wrapper;
 
     const inputWrapper = wrapper.find<HTMLInputElement>(`#${id}Year`);
     await inputWrapper.trigger("input");
