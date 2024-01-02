@@ -168,4 +168,5 @@ export interface SubmissionDetailsMatchers {
   goodStanding: string
   corporationName: string
   incorporationNumber: string
+  contact: string
 }

@@ -56,7 +56,10 @@ const data = ref<SubmissionDetails>({
     address: [],
     matchers: {
       goodStanding: '',
-      legalName: '',
+      corporationName: '',
+      incorporationNumber: '',
+      contact: '',
+
     }
 })
 
@@ -199,6 +202,9 @@ const matchingData = computed(() => {
   if(data.value.matchers.incorporationNumber){
     results = [...results, ...data.value.matchers.incorporationNumber.split(',')]
   }
+  if(data.value.matchers.contact){
+    results = [...results, ...data.value.matchers.contact.split(',')]
+  }
   return results
 })
 </script>
@@ -303,6 +309,11 @@ const matchingData = computed(() => {
               v-for="duplicatedClient in data.matchers.incorporationNumber.split(',')" 
               :key="duplicatedClient">
                 Incorporation number: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+            </li>
+            <li 
+              v-for="duplicatedClient in data.matchers.contact.split(',')" 
+              :key="duplicatedClient">
+                Contact: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
             </li>
           </ul>
         </div>    
