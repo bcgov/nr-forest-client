@@ -335,7 +335,7 @@ watch([error], () => {
 <template>
   <div class="form-header">
     <div class="form-header-title">
-      <span class="heading-05" data-scroll="top">
+      <span class="heading-new-03" data-scroll="top">
         New client application
       </span>
     </div>

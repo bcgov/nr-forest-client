@@ -203,7 +203,7 @@ const tagColor = (status: string) =>{
           
         </cds-breadcrumb>
 
-        <p class="submission-details--title heading-05">
+        <p class="submission-details--title heading-new-03">
           <component
             data-testid="display-row-icon"
             :is="iconForRow(data.submissionType)"      

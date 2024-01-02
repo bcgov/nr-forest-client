@@ -366,7 +366,7 @@ const scrollToNewContact = () => {
 <template>
   <div class="form-header">
     <div class="form-header-title">
-      <span class="heading-05">
+      <span class="heading-new-03">
         <div data-scroll="top" class="header-offset"></div>
         New client application
       </span>

@@ -114,7 +114,7 @@ onMounted(() => {
     <div id="title">
       <div>
         <div class="form-header-title mg-sd-25">
-          <p class="heading-05">Submissions</p>
+          <p class="heading-new-03">Submissions</p>
           <p class="body-compact-01">Check and manage client submissions</p>
         </div>        
       </div>
