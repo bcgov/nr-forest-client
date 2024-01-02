@@ -61,6 +61,13 @@ public class ClientContactService {
     return
         repository
             .matchBy(String.join(" ", firstName, lastName), email, phone)
+            .doOnNext(forestClientContact ->
+                log.info(
+                    "Found forest client contact {} {}",
+                    forestClientContact.getClientNumber(),
+                    forestClientContact.getContactName()
+                )
+            )
             .map(mapper::toDto);
   }
 

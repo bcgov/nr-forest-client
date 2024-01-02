@@ -94,7 +94,7 @@ class ClientContactControllerIntegrationTest extends
         Arguments.of("Nedad", "Kontic", "konticboss@kelpic.ca", "6046646755", 1),
         Arguments.of("Jack", "Ryan", "ryan.jack@tomclancy.ca", "6046666735", 2),
         Arguments.of("Jack", "Ryan", "ryan.jack@tomclancy.ca", "2502502550", 2),
-        Arguments.of("Domingos", "Chaves", "dingo@tomclancy.ca", "2502502550", 0)
+        Arguments.of("Domingos", "Chaves", "dingo@tomclancy.ca", "2554457789", 0)
     );
   }
 
