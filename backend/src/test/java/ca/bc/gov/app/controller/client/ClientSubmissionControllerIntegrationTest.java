@@ -1,6 +1,7 @@
 package ca.bc.gov.app.controller.client;
 
 import static ca.bc.gov.app.TestConstants.REGISTERED_BUSINESS_SUBMISSION_DTO;
+import static ca.bc.gov.app.TestConstants.UNREGISTERED_BUSINESS_SUBMISSION_BROKEN_DTO;
 import static ca.bc.gov.app.TestConstants.UNREGISTERED_BUSINESS_SUBMISSION_DTO;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -10,6 +11,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.submissions.SubmissionApproveRejectDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
@@ -248,6 +250,25 @@ class ClientSubmissionControllerIntegrationTest
         .expectStatus().isAccepted()
         .expectBody()
         .isEmpty();
+  }
+
+  @Test
+  @DisplayName("Submit broken Unregistered Business client data")
+  @Order(7)
+  void shouldSubmitBrokenUnregisteredBusinessData() {
+    client
+        .post()
+        .uri("/api/clients/submissions")
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
+        .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_BROKEN_DTO), ClientSubmissionDto.class)
+        .exchange()
+        .expectStatus().isBadRequest()
+        .expectBodyList(ValidationError.class)
+        .hasSize(1)
+        .contains(new ValidationError("businessInformation.businessName",
+            "Business name must be composed of first and last name"));
   }
 
   private static Stream<Arguments> listValues() {
