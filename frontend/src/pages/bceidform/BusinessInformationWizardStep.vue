@@ -299,7 +299,10 @@ const bcRegistryEmail = "BCRegistries@gov.bc.ca";
             <li class="body-compact-01">
               If your name isn’t there, call BC Registry toll free at
               <a href="tel:18775261526">1-877-526-1526</a> or email them at
-              <button class="link-button" @click="openMailtoLink(bcRegistryEmail)" aria-label="Contact BC Registry via Email">
+              <button id="bcRegistryEmailId" 
+                      class="link-button" 
+                      @click="openMailtoLink(bcRegistryEmail)" 
+                      aria-label="Contact BC Registry via Email">
                 <span v-bind:innerHTML="getObfuscatedEmail(bcRegistryEmail)"></span>
               </button>.
             </li>
