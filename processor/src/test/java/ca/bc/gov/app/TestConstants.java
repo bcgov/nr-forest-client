@@ -30,7 +30,7 @@ public class TestConstants {
       .build();
 
   public static final SubmissionInformationDto SUBMISSION_INFORMATION =
-      new SubmissionInformationDto("TEST", null, "00000000", "Y", "C");
+      new SubmissionInformationDto(1,"TEST", null, "00000000", "Y", "C");
 
   public static final EmailRequestDto EMAIL_REQUEST = new EmailRequestDto(
       "ABC1234",

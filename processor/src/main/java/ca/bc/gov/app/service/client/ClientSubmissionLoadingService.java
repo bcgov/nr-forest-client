@@ -43,6 +43,7 @@ public class ClientSubmissionLoadingService {
             .doOnNext(submission -> log.info("Loaded submission details {}", submission))
             //Grab what we need for the match part
             .map(details -> new SubmissionInformationDto(
+                    submissionId,
                     details.getOrganizationName(),
                     details.getBirthdate(),
                     details.getIncorporationNumber(),

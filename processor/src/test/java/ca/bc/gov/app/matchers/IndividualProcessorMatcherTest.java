@@ -76,21 +76,21 @@ class IndividualProcessorMatcherTest {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto("James Frank", LocalDate.of(1985, 10, 4), null, "Y",
+                new SubmissionInformationDto(1,"James Frank", LocalDate.of(1985, 10, 4), null, "Y",
                     "I"),
                 true,
                 null,
                 "[]"
             ),
             Arguments.of(
-                new SubmissionInformationDto("Marco Polo", LocalDate.of(1977, 3, 22), null, "Y",
+                new SubmissionInformationDto(1,"Marco Polo", LocalDate.of(1977, 3, 22), null, "Y",
                     "I"),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000")),
                 "[{\"clientNumber\":\"00000000\"}]"
             ),
             Arguments.of(
-                new SubmissionInformationDto("Lucca DeBiaggio", LocalDate.of(1951, 12, 25), null,
+                new SubmissionInformationDto(1,"Lucca DeBiaggio", LocalDate.of(1951, 12, 25), null,
                     "Y", "I"),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000", "00000001")),

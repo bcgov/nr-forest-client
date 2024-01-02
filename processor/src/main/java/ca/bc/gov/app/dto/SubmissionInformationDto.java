@@ -5,6 +5,7 @@ import lombok.With;
 
 @With
 public record SubmissionInformationDto(
+    Integer submissionId,
     String corporationName,
     LocalDate dateOfBirth,
     String incorporationNumber,

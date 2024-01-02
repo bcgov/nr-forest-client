@@ -90,13 +90,13 @@ class IncorporationNumberProcessorMatcherTest {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto(null, null, "00000007", null, "C"),
+                new SubmissionInformationDto(1,null, null, "00000007", null, "C"),
                 true,
                 null,
                 "[]"
             ),
             Arguments.of(
-                new SubmissionInformationDto(null, null, "00000006", null, "C"),
+                new SubmissionInformationDto(1,null, null, "00000006", null, "C"),
                 false,
                 new MatcherResult("incorporationNumber", "00000006"),
                 "[{\"clientNumber\":\"00000006\"}]"
