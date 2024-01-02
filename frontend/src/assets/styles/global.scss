@@ -415,10 +415,10 @@ div#app {
   color: var(--light-theme-text-text-primary, #131315) !important;
 }
 
-.heading-new-07,
+.heading-07,
 cds-accordion-item.grouping-05-internal::part(title) {
   color: var(--light-theme-text-text-primary, #131315);
-  /* Fixed heading styles/heading-new-07 */
+  /* Fixed heading styles/heading-07 */
   font-family: BC Sans;
   font-size: 0.875rem;
   font-style: normal;
@@ -427,10 +427,10 @@ cds-accordion-item.grouping-05-internal::part(title) {
   letter-spacing: 0.01rem;
 }
 
-.heading-new-06 {
+h6 {
   color: var(--light-theme-text-text-primary, #131315) !important;
 
-  /* Fixed heading styles/heading-new-06 */
+  /* Fixed heading styles/heading-06 */
 
   font-size: 1rem;
   font-style: normal;
@@ -438,10 +438,10 @@ cds-accordion-item.grouping-05-internal::part(title) {
   line-height: 1.5rem;
 }
 
-.heading-new-05 {
+h5 {
   color: var(--light-theme-text-text-primary, #131315);
 
-  /* Fixed heading styles/heading-new-05 */
+  /* Fixed heading styles/heading-05 */
 
   font-size: 1.25rem;
   font-style: normal;
@@ -449,7 +449,7 @@ cds-accordion-item.grouping-05-internal::part(title) {
   line-height: 1.75rem;
 }
 
-.heading-04 {
+h4 {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-04 */
@@ -460,10 +460,10 @@ cds-accordion-item.grouping-05-internal::part(title) {
   line-height: 2.25rem;
 }
 
-.heading-new-03 {
+h3 {
   color: var(--light-theme-text-text-primary, #131315);
 
-  /* Fixed heading styles/heading-new-03 */
+  /* Fixed heading styles/heading-03 */
 
   font-size: 2rem;
   font-style: normal;

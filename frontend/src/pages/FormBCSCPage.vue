@@ -335,9 +335,9 @@ watch([error], () => {
 <template>
   <div class="form-header">
     <div class="form-header-title">
-      <span class="heading-new-03" data-scroll="top">
+      <h3 data-scroll="top">
         New client application
-      </span>
+      </h3>
     </div>
     <div class="hide-when-less-than-two-children"><!--
       This div is necessary to avoid the div.header-offset below from interfering in the flex flow.
@@ -351,9 +351,9 @@ watch([error], () => {
   </div>
     
   <div class="form-steps-section">
-    <span class="heading-04" data-scroll="scroll-0">
+    <h4 data-scroll="scroll-0">
       Personal information
-    </span>
+    </h4>
     <p class="body-compact-01">
       Review the information below. It’s from your BC Services card. We use it to know who we're giving a number to and for communicating with clients. 
     </p>
@@ -407,9 +407,9 @@ watch([error], () => {
       </div>
     </div>
 
-    <span class="heading-04" data-scroll="scroll-0">
+    <h4 data-scroll="scroll-0">
       Contact information
-    </span>
+    </h4>
     <p class="body-compact-01">
       We need your phone number to communicate with you.
     </p>
@@ -438,7 +438,7 @@ watch([error], () => {
         <hr />
 
         <div class="grouping-09" :data-scroll="`additional-contact-${index + 1}`">
-          <span class="heading-new-05">Additional contact</span>
+          <h5>Additional contact</h5>
         </div>
 
         <contact-group-component

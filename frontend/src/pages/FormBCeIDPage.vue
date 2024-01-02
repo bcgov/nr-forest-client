@@ -366,10 +366,10 @@ const scrollToNewContact = () => {
 <template>
   <div class="form-header">
     <div class="form-header-title">
-      <span class="heading-new-03">
+      <h3>
         <div data-scroll="top" class="header-offset"></div>
         New client application
-      </span>
+      </h3>
     </div>
     <cds-progress-indicator space-equally :vertical="isSmallScreen">
       <cds-progress-step 
@@ -398,7 +398,7 @@ const scrollToNewContact = () => {
 
     <div v-if="currentTab == 0" class="form-steps-01">
       <div class="form-steps-01-title">
-        <span class="heading-04" data-scroll="scroll-0">Before you begin</span>
+        <h4 data-scroll="scroll-0">Before you begin</h4>
         <ol type="1" class="bulleted-list body-compact-01">
           <li>
             A registered business must be in good standing with BC
@@ -414,10 +414,10 @@ const scrollToNewContact = () => {
       <hr class="divider" />
 
       <div class="form-steps-section">
-        <label class="heading-04" data-scroll="focus-0">
+        <h4 data-scroll="focus-0">
           <div data-scroll="step-title" class="header-offset"></div>
           {{ progressData[0].title}}
-        </label>
+        </h4>
         <div class="frame-01">
           <business-information-wizard-step
               v-model:data="formData"
@@ -430,10 +430,10 @@ const scrollToNewContact = () => {
 
     <div v-if="currentTab == 1" class="form-steps-02">
       <div class="form-steps-section">
-        <span class="heading-04" data-scroll="scroll-1">
+        <h4 data-scroll="scroll-1">
           <div data-scroll="step-title" class="header-offset"></div>
           {{ progressData[1].title}}
-        </span>
+        </h4>
         
         <div class="form-steps-section-01">
             <p class="body-01 heading-compact-01-dark">
@@ -451,15 +451,13 @@ const scrollToNewContact = () => {
 
     <div v-if="currentTab == 2" class="form-steps-03">
       <div class="form-steps-section">
-        <span class="heading-04" data-scroll="scroll-2">
+        <h4 data-scroll="scroll-2">
           <div data-scroll="step-title" class="header-offset"></div>
           {{ progressData[2].title}}
-        </span>
+        </h4>
         
         <div class="form-steps-section-01">
-          <span class="heading-new-05"
-              >Add authorized people to the account</span
-            >
+          <h5>Add authorized people to the account</h5>
             <p class="body-01 heading-compact-01-dark">
               Review your name and email address. They’re from your BCeID.
             </p>
@@ -477,10 +475,10 @@ const scrollToNewContact = () => {
     <div v-if="currentTab == 3" class="form-steps-04">
 
       <div class="form-steps-section form-steps-section-04">
-        <span class="heading-04" data-scroll="scroll-3">
+        <h4 data-scroll="scroll-3">
           <div data-scroll="step-title" class="header-offset"></div>
           {{ progressData[3].title}}
-        </span>
+        </h4>
         <span class="body-02">
           Review the content and make any changes by using the "Edit" buttons in each section below.
         </span>
