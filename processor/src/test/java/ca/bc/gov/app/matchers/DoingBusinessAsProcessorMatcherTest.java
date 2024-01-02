@@ -1,4 +1,4 @@
-package ca.bc.gov.app.service.processor;
+package ca.bc.gov.app.matchers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.dto.legacy.ClientDoingBusinessAsDto;
+import ca.bc.gov.app.matchers.DoingBusinessAsProcessorMatcher;
+import ca.bc.gov.app.matchers.ProcessorMatcher;
 import ca.bc.gov.app.service.legacy.LegacyService;
 import java.time.LocalDate;
 import java.util.stream.Stream;

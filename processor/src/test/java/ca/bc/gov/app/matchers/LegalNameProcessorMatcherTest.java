@@ -1,4 +1,4 @@
-package ca.bc.gov.app.service.processor;
+package ca.bc.gov.app.matchers;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
+import ca.bc.gov.app.matchers.LegalNameProcessorMatcher;
+import ca.bc.gov.app.matchers.ProcessorMatcher;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;

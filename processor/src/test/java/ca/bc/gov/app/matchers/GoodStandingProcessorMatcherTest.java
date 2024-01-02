@@ -1,10 +1,12 @@
-package ca.bc.gov.app.service.processor;
+package ca.bc.gov.app.matchers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
+import ca.bc.gov.app.matchers.GoodStandingProcessorMatcher;
+import ca.bc.gov.app.matchers.ProcessorMatcher;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;

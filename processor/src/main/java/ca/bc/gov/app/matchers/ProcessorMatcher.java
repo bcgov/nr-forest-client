@@ -1,4 +1,4 @@
-package ca.bc.gov.app.service.processor;
+package ca.bc.gov.app.matchers;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;

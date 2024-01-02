@@ -1,15 +1,17 @@
-package ca.bc.gov.app.service.processor;
+package ca.bc.gov.app.matchers;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
+import ca.bc.gov.app.matchers.IndividualProcessorMatcher;
+import ca.bc.gov.app.matchers.ProcessorMatcher;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,41 +22,28 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
 
-
-@DisplayName("Unit Test | Incorporation Number Matcher")
-class IncorporationNumberProcessorMatcherTest {
+@DisplayName("Unit Test | Individual Matcher")
+class IndividualProcessorMatcherTest {
 
   @RegisterExtension
   static WireMockExtension wireMockExtension = WireMockExtension
       .newInstance()
-      .options(wireMockConfig().port(10011))
+      .options(wireMockConfig().port(10012))
       .configureStaticDsl(true)
       .build();
-
-  ProcessorMatcher matcher = new IncorporationNumberProcessorMatcher(
-      WebClient.builder().baseUrl("http://localhost:10011").build()
+  private final ProcessorMatcher matcher = new IndividualProcessorMatcher(
+      WebClient.builder().baseUrl("http://localhost:10012").build()
   );
+
 
   @Test
   @DisplayName("Name matching")
   void shouldMatchName() {
-    assertEquals("Incorporation Number Matcher", matcher.name());
+    assertEquals("Individual Matcher", matcher.name());
   }
 
   @ParameterizedTest
-  @MethodSource("incorporation")
-  @DisplayName("Match or not")
-  void shouldBeEnabled(
-      SubmissionInformationDto dto,
-      boolean success,
-      MatcherResult result,
-      String mockData
-  ) {
-    assertTrue(matcher.enabled(dto));
-  }
-
-  @ParameterizedTest
-  @MethodSource("incorporation")
+  @MethodSource("legalName")
   @DisplayName("Match or not")
   void shouldMatchOrNot(
       SubmissionInformationDto dto,
@@ -62,11 +51,10 @@ class IncorporationNumberProcessorMatcherTest {
       MatcherResult result,
       String mockData
   ) {
-
     wireMockExtension.resetAll();
     wireMockExtension
         .stubFor(
-            get(urlPathEqualTo("/api/search/incorporationOrName"))
+            get(urlPathEqualTo("/api/search/individual"))
                 .willReturn(okJson(mockData))
         );
 
@@ -84,20 +72,29 @@ class IncorporationNumberProcessorMatcherTest {
     }
   }
 
-  private static Stream<Arguments> incorporation() {
+  private static Stream<Arguments> legalName() {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto(null, null, "00000007", null, "C"),
+                new SubmissionInformationDto("James Frank", LocalDate.of(1985, 10, 4), null, "Y",
+                    "I"),
                 true,
                 null,
                 "[]"
             ),
             Arguments.of(
-                new SubmissionInformationDto(null, null, "00000006", null, "C"),
+                new SubmissionInformationDto("Marco Polo", LocalDate.of(1977, 3, 22), null, "Y",
+                    "I"),
                 false,
-                new MatcherResult("incorporationNumber", "00000006"),
-                "[{\"clientNumber\":\"00000006\"}]"
+                new MatcherResult("corporationName", String.join(",", "00000000")),
+                "[{\"clientNumber\":\"00000000\"}]"
+            ),
+            Arguments.of(
+                new SubmissionInformationDto("Lucca DeBiaggio", LocalDate.of(1951, 12, 25), null,
+                    "Y", "I"),
+                false,
+                new MatcherResult("corporationName", String.join(",", "00000000", "00000001")),
+                "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"
             )
         );
   }
