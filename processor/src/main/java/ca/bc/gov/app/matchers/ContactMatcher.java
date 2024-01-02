@@ -52,7 +52,7 @@ public class ContactMatcher implements ProcessorMatcher {
                     .uri(
                         uriBuilder ->
                             uriBuilder
-                                .path("/api/search/contact")
+                                .path("/api/contacts/search")
                                 .queryParam("firstName", contact.getFirstName())
                                 .queryParam("lastName", contact.getLastName())
                                 .queryParam("email", contact.getEmailAddress())

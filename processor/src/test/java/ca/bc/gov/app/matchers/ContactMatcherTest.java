@@ -62,7 +62,7 @@ class ContactMatcherTest {
     wireMockExtension.resetAll();
     wireMockExtension
         .stubFor(
-            get(urlPathEqualTo("/api/search/contact"))
+            get(urlPathEqualTo("/api/contacts/search"))
                 .willReturn(okJson(mockData))
         );
 
