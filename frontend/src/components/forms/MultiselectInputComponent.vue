@@ -77,7 +77,7 @@ const emitChange = () => {
 
 const addFromSelection = (itemCode: string) => {
   const reference = props.modelValue.find((entry) => entry.name === itemCode);
-  if (reference) {
+  if (reference && !items.value.includes(reference.name)) {
     items.value.push(reference.name);
     selectedValue.value = items.value.join(",");
   }
