@@ -1,12 +1,11 @@
 package ca.bc.gov.app.controller;
 
+
 import ca.bc.gov.app.dto.ForestClientContactDto;
-import ca.bc.gov.app.dto.ForestClientLocationDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.Map;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -64,8 +63,8 @@ class ClientContactControllerIntegrationTest extends
       String lastName,
       String email,
       String phone,
-      int expected
-  ){
+      Integer expected
+  ) {
     client
         .get()
         .uri(uriBuilder ->
@@ -88,7 +87,7 @@ class ClientContactControllerIntegrationTest extends
     return Stream.of("00000001", "00000002", "00000003");
   }
 
-  private static Stream<Arguments> search(){
+  private static Stream<Arguments> search() {
     return Stream.of(
         Arguments.of("Jason", "Momoa", "myman@momoa.ca", "6046666735", 2),
         Arguments.of("James", "Baxter", "jbaxter@mail.ca", "6046666755", 3),
