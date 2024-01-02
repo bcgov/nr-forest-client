@@ -6,20 +6,27 @@ import "@carbon/web-components/es/components/text-input/index";
 import { useEventBus } from "@vueuse/core";
 // Types
 import { isEmpty } from "@/dto/CommonTypesDto";
+import type { TextInputType } from "@/components/types";
 
 //Define the input properties for this component
-const props = defineProps<{
-  id: string;
-  label: string;
-  tip?: string;
-  enabled?: boolean;
-  placeholder: string;
-  modelValue: string;
-  validations: Array<Function>;
-  errorMessage?: string;
-  mask?: string;
-  requiredLabel?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    id: string;
+    label: string;
+    tip?: string;
+    enabled?: boolean;
+    placeholder: string;
+    modelValue: string;
+    validations: Array<Function>;
+    errorMessage?: string;
+    mask?: string;
+    requiredLabel?: boolean;
+    type?: TextInputType;
+  }>(),
+  {
+    type: "text",
+  },
+);
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
@@ -129,6 +136,7 @@ const selectValue = (event: any) => {
       <cds-text-input
         v-if="enabled"
         :id="id"
+        :type="type"
         :placeholder="placeholder"
         :value="selectedValue"
         :helper-text="tip"
@@ -140,7 +148,7 @@ const selectValue = (event: any) => {
         @input="selectValue"
         :data-focus="id"
         :data-scroll="id"
-        :data-id="'input-' + id" 
+        :data-id="'input-' + id"
       />
     </div>
   </div>
