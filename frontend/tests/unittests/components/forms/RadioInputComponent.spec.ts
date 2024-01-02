@@ -24,8 +24,9 @@ describe("Radio Input Component", () => {
       },
     });
     for (const value of values) {
+      const expectedId = `${id}rb${value.value}`;
       expect(wrapper.html()).toContain(
-        `<cds-radio-button label-text="${value.text}"></cds-radio-button>`
+        `<cds-radio-button id="${expectedId}" label-text="${value.text}" value="${value.value}"></cds-radio-button>`
       );
     }
   });
