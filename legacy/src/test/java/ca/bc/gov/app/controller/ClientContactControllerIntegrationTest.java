@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -55,8 +56,47 @@ class ClientContactControllerIntegrationTest extends
         .equals(clientNumber);
   }
 
+  @ParameterizedTest
+  @MethodSource("search")
+  @DisplayName("Search a contact")
+  void shouldSearchContact(
+      String firstName,
+      String lastName,
+      String email,
+      String phone,
+      int expected
+  ){
+    client
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/contacts/search")
+                .queryParam("firstName", firstName)
+                .queryParam("lastName", lastName)
+                .queryParam("email", email)
+                .queryParam("phone", phone)
+                .build(Map.of())
+        )
+        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBodyList(ForestClientContactDto.class)
+        .hasSize(expected);
+  }
+
   private static Stream<String> saveContact() {
     return Stream.of("00000001", "00000002", "00000003");
+  }
+
+  private static Stream<Arguments> search(){
+    return Stream.of(
+        Arguments.of("Jason", "Momoa", "myman@momoa.ca", "6046666735", 2),
+        Arguments.of("James", "Baxter", "jbaxter@mail.ca", "6046666755", 3),
+        Arguments.of("Nedad", "Kontic", "konticboss@kelpic.ca", "6046646755", 1),
+        Arguments.of("Jack", "Ryan", "ryan.jack@tomclancy.ca", "6046666735", 2),
+        Arguments.of("Jack", "Ryan", "ryan.jack@tomclancy.ca", "2502502550", 2),
+        Arguments.of("Domingos", "Chaves", "dingo@tomclancy.ca", "2502502550", 0)
+    );
   }
 
 }

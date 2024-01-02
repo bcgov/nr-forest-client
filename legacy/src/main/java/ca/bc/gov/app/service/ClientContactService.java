@@ -4,6 +4,7 @@ import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
+import ca.bc.gov.app.repository.ForestClientContactRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Mono;
 public class ClientContactService {
 
   private final R2dbcEntityOperations entityTemplate;
+  private final ForestClientContactRepository repository;
   private final AbstractForestClientMapper<ForestClientContactDto, ForestClientContactEntity> mapper;
 
   public Mono<String> saveAndGetIndex(ForestClientContactDto dto) {
@@ -48,6 +50,18 @@ public class ClientContactService {
                 )
             )
             .map(ForestClientContactEntity::getClientNumber);
+  }
+
+  public Flux<ForestClientContactDto> search(
+      String firstName,
+      String lastName,
+      String email,
+      String phone
+  ) {
+    return
+        repository
+            .matchBy(String.join(" ", firstName, lastName), email, phone)
+            .map(mapper::toDto);
   }
 
   private Flux<ForestClientContactEntity> locateClientContact(
