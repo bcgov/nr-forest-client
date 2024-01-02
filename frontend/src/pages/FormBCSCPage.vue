@@ -438,7 +438,7 @@ watch([error], () => {
         <hr />
 
         <div class="grouping-09" :data-scroll="`additional-contact-${index + 1}`">
-          <span class="heading-03">Additional contact</span>
+          <span class="heading-new-05">Additional contact</span>
         </div>
 
         <contact-group-component

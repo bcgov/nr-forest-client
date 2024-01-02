@@ -457,7 +457,7 @@ const scrollToNewContact = () => {
         </span>
         
         <div class="form-steps-section-01">
-          <span class="heading-03"
+          <span class="heading-new-05"
               >Add authorized people to the account</span
             >
             <p class="body-01 heading-compact-01-dark">

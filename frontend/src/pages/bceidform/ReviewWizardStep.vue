@@ -55,7 +55,7 @@ onMounted(() => {
 
 <template>
   <div class="grouping-05">
-    <label class="heading-03">Business information</label>
+    <label class="heading-new-05">Business information</label>
     <div class="grouping-22">
       <div class="grouping-01">
         <p class="heading-02 review-icon-title">
@@ -79,7 +79,7 @@ onMounted(() => {
     </div>
   </div>
   <div class="grouping-05">
-    <label class="heading-03">Address</label>
+    <label class="heading-new-05">Address</label>
     <div v-for="(address, index) in formData.location.addresses" 
         :key="address.locationName" 
         class="grouping-07">
@@ -103,7 +103,7 @@ onMounted(() => {
     </div>
   </div>
   <div class="grouping-05">
-    <label class="heading-03">Contacts</label>
+    <label class="heading-new-05">Contacts</label>
     <div v-for="(contact, index) in formData.location.contacts" 
         :key="contact.email" 
         class="grouping-07">
