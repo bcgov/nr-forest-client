@@ -207,6 +207,7 @@ const logoutAndRedirect = () => {
     <text-input-component
       :id="'phoneNumber_' + id"
       label="Phone number"
+      type="tel"
       placeholder="( ) ___-____"
       mask="(###) ###-####"
       v-model="selectedValue.phoneNumber"
