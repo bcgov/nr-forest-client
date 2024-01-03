@@ -274,11 +274,7 @@ const logoutAndRedirect = () => {
       </cds-modal-heading>
     </cds-modal-header>
     <cds-modal-body>
-      <p>
-        Update your personal information at
-        <a href="https://www.bceid.ca/" target="_blank" rel="noopener noreferrer">BCeID</a> and then
-        log back into this application.
-      </p>
+      <p>Update your personal information at BCeID and then log back into this application.</p>
       <br />
       <p>Your data will not be saved.</p>
     </cds-modal-body>
