@@ -6,7 +6,7 @@ import { useRouter } from "vue-router";
 // Constants
 import { backendUrl } from "@/CoreConstants";
 // Assets
-import Seeding from "@/assets/images/seeding.png";
+import landingImagePath from "@/assets/images/pexels-james-wheeler-1544935.jpg";
 import logo from "@/assets/images/bc-gov-logo.png";
 // @ts-ignore
 import login16 from "@carbon/icons-vue/es/login/16";
@@ -69,7 +69,7 @@ if (query.ref && query.ref === "external") {
 
   <div class="login-content">
     <img
-      :src="Seeding"
+      :src="landingImagePath"
       alt="Small green seedling on the dirt and watered"
     />
   </div>
@@ -80,15 +80,19 @@ if (query.ref && query.ref === "external") {
 
 .login-content:first-child{
   padding-top: 3rem;
-  width: 55vw;
+  padding-left: 2.5rem;
+  width: 55%;
+  box-sizing: border-box;
 }
-.login-content:last-child {  
-  width: 45vw;
+.login-content:last-child {
+  overflow-y: hidden;
+  width: 45%;
 }
 .login-content:first-child img {
   width: 10.5rem;
 }
 .login-content:last-child img {
+  height: 100%;
   width: 100%;
   object-fit: cover;
 }
