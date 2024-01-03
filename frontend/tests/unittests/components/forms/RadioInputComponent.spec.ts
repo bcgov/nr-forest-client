@@ -32,7 +32,7 @@ describe("Radio Input Component", () => {
 
       expect(radioButton.exists()).toBe(true);
       expect(radioButton.attributes("label-text")).toBe(value.text);
-      expect(radioButton.element.checked).toBe(value.value === wrapper.props().initialValue);
+      expect((radioButton as any).element.checked).toBe(value.value === wrapper.props().initialValue);
     }
   });
 
