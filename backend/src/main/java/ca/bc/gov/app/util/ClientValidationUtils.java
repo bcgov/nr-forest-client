@@ -54,7 +54,7 @@ public class ClientValidationUtils {
     }
 
     if (!EnumUtils.isValidEnum(enumClass, value)) {
-      errors.rejectValue(field, String.format("%s has an invalid value", field));
+      errors.rejectValue(field, String.format("%s has an invalid value [%s]", field,value));
       return false;
     }
     return true;

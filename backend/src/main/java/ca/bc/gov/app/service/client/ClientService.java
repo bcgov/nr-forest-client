@@ -15,6 +15,7 @@ import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.exception.UnableToProcessRequestException;
+import ca.bc.gov.app.exception.UnsuportedClientTypeException;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
@@ -236,7 +237,14 @@ public class ClientService {
                 entry.status(),
                 entry.legalType()
             )
-        );
+        )
+        .flatMap(client ->{
+          if(List.of("A", "I", "S", "SP","RSP","USP").contains(client.legalType())){
+            return Mono.just(client);
+          }
+          return Mono.error(new UnsuportedClientTypeException(client.legalType()));
+        })
+        .doOnError(System.out::println);
   }
 
   /**

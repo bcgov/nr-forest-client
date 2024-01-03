@@ -8,6 +8,7 @@ import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,10 +20,11 @@ import org.springframework.validation.Validator;
 @Component
 @RequiredArgsConstructor
 public class ClientSubmitRequestValidator implements Validator {
+
   private final RegisteredBusinessInformationValidator registeredBusinessInformationValidator;
   private final UnregisteredBusinessInformationValidator unregisteredBusinessInformationValidator;
   private final ClientLocationDtoValidator locationDtoValidator;
-  
+
   @Override
   public boolean supports(Class<?> clazz) {
     return ClientSubmissionDto.class.equals(clazz);
@@ -49,14 +51,13 @@ public class ClientSubmitRequestValidator implements Validator {
       return;
     }
     errors.pushNestedPath(businessInformationField);
-    
+
     String businessType = businessInformation.businessType();
     if (StringUtils.isAllBlank(businessType)) {
       errors.rejectValue("businessType", "You must choose an option");
       errors.popNestedPath();
       return;
-    }
-    else if (!EnumUtils.isValidEnum(BusinessTypeEnum.class, businessType)) {
+    } else if (!EnumUtils.isValidEnum(BusinessTypeEnum.class, businessType)) {
       errors.rejectValue("businessType", String.format("%s has an invalid value", "Business type"));
       errors.popNestedPath();
       return;
@@ -64,19 +65,24 @@ public class ClientSubmitRequestValidator implements Validator {
 
     String clientType = businessInformation.clientType();
 
-    if(StringUtils.isBlank(clientType)) {
+    if (StringUtils.isBlank(clientType)) {
       errors.rejectValue("clientType", "Client does not have a type");
       errors.popNestedPath();
       return;
     }
 
     if (ApplicationConstant.REG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientType)
-            || ApplicationConstant.UNREG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientType) 
-            || ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientType)
+        || ApplicationConstant.UNREG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientType)
+        || ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientType)
     ) {
       validateBirthdate(businessInformation.birthdate(), errors);
     }
-    
+
+    if (!List.of("A", "I", "S", "USP", "RSP","SP").contains(clientType)) {
+      errors.rejectValue("businessType",
+          String.format("%s %s is not supported at the moment", "Business type",clientType));
+    }
+
     errors.popNestedPath();
 
     if (BusinessTypeEnum.U.toString().equals(businessType)) {
@@ -93,8 +99,7 @@ public class ClientSubmitRequestValidator implements Validator {
     String dobFieldName = "birthdate";
     if (birthdate == null) {
       errors.rejectValue(dobFieldName, fieldIsMissingErrorMessage("Birthdate"));
-    }
-    else {
+    } else {
       LocalDate minAgeDate = LocalDate.now().minusYears(19);
       if (birthdate.isAfter(minAgeDate)) {
         errors.rejectValue(dobFieldName, "Sole proprietorship must be at least 19 years old");

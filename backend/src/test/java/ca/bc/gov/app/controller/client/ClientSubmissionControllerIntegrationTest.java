@@ -212,7 +212,7 @@ class ClientSubmissionControllerIntegrationTest
           .jsonPath("$.[0].name").isEqualTo("Goldfinger")
           .jsonPath("$.[0].requestType").isEqualTo("Submission pending processing")
           .jsonPath("$.[0].status").isEqualTo("New")
-          .jsonPath("$.[0].clientType").isEqualTo("General Partnership")
+          .jsonPath("$.[0].clientType").isEqualTo("Registered sole proprietorship")
           .jsonPath("$.[0].user").isEqualTo("testUserId");
     }
   }
@@ -279,7 +279,7 @@ class ClientSubmissionControllerIntegrationTest
             Arguments.of(null, null, 0, 10, true),
             Arguments.of(null, null, null, 10, true),
             Arguments.of("requestStatus", "N", null, null, true),
-            Arguments.of("clientType", "P", null, null, true),
+            Arguments.of("clientType", "RSP", null, null, true),
             Arguments.of("name", "Goldfinger", null, null, true),
             Arguments.of("name", "Auric", null, null, false),
             Arguments.of(null, null, 1, null, false),
