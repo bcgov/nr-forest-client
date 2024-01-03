@@ -81,11 +81,12 @@ if (query.ref && query.ref === "external") {
 .login-content:first-child{
   padding-top: 3rem;
   padding-left: 2.5rem;
-  max-width: 55%;
+  width: 55%;
   box-sizing: border-box;
 }
 .login-content:last-child {
   overflow-y: hidden;
+  width: 45%;
 }
 .login-content:first-child img {
   width: 10.5rem;
