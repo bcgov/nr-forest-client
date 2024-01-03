@@ -19,7 +19,7 @@ const SVG = useSvg(badgePictogram);
   <div class="frame-03">
     <SVG alt="Badge pictogram" class="submission-badge"></SVG>    
     <div class="form-header form-header-application-submitted">
-      <p class="fluid-heading-05">Application submitted!</p>
+      <h4 class="fluid">Application submitted!</h4>
       <p class="fluid-paragraph-01">Your application for a client number has been submitted.</p>
       <p class="fluid-paragraph-01">&nbsp;</p>
       <p class="fluid-paragraph-01">

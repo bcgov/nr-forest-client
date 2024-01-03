@@ -415,10 +415,10 @@ div#app {
   color: var(--light-theme-text-text-primary, #131315) !important;
 }
 
-.heading-01,
+.heading-07,
 cds-accordion-item.grouping-05-internal::part(title) {
   color: var(--light-theme-text-text-primary, #131315);
-  /* Fixed heading styles/heading-01 */
+  /* Fixed heading styles/heading-07 */
   font-family: BC Sans;
   font-size: 0.875rem;
   font-style: normal;
@@ -427,10 +427,10 @@ cds-accordion-item.grouping-05-internal::part(title) {
   letter-spacing: 0.01rem;
 }
 
-.heading-02 {
+h6 {
   color: var(--light-theme-text-text-primary, #131315) !important;
 
-  /* Fixed heading styles/heading-02 */
+  /* Fixed heading styles/heading-06 */
 
   font-size: 1rem;
   font-style: normal;
@@ -438,10 +438,10 @@ cds-accordion-item.grouping-05-internal::part(title) {
   line-height: 1.5rem;
 }
 
-.heading-03 {
+h5 {
   color: var(--light-theme-text-text-primary, #131315);
 
-  /* Fixed heading styles/heading-03 */
+  /* Fixed heading styles/heading-05 */
 
   font-size: 1.25rem;
   font-style: normal;
@@ -449,7 +449,7 @@ cds-accordion-item.grouping-05-internal::part(title) {
   line-height: 1.75rem;
 }
 
-.heading-04 {
+h4 {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-04 */
@@ -460,10 +460,10 @@ cds-accordion-item.grouping-05-internal::part(title) {
   line-height: 2.25rem;
 }
 
-.heading-05 {
+h3 {
   color: var(--light-theme-text-text-primary, #131315);
 
-  /* Fixed heading styles/heading-05 */
+  /* Fixed heading styles/heading-03 */
 
   font-size: 2rem;
   font-style: normal;
@@ -471,11 +471,11 @@ cds-accordion-item.grouping-05-internal::part(title) {
   line-height: 2.5rem;
 }
 
-.fluid-heading-05 {
+h4.fluid {
   align-self: stretch;
   color: var(--light-theme-text-text-primary, #131315);
 
-  /* Fluid styles/MAX/fluid-heading-05 */
+  /* Fluid styles/MAX/fluid-heading-04 */
 
   font-size: 3.75rem;
   font-style: normal;
@@ -1404,8 +1404,8 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     align-items: flex-start;
   }
 
-  .fluid-heading-05 {
-    /* Fluid styles/SM/fluid-heading-05 */
+  h4.fluid {
+    /* Fluid styles/SM/fluid-heading-04 */
     font-size: 2rem;
     line-height: 2.5rem;
   }
@@ -1515,8 +1515,8 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     align-items: flex-start;
   }
 
-  .fluid-heading-05 {
-    /* Fluid styles/MED/fluid-heading-05 */
+  h4.fluid {
+    /* Fluid styles/MED/fluid-heading-04 */
     font-size: 2.25rem;
     line-height: 2.75rem;
   }
@@ -1606,8 +1606,8 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     column-gap: 4.0625rem;
   }
 
-  .fluid-heading-05 {
-    /* Fluid styles/MED/fluid-heading-05 */
+  h4.fluid {
+    /* Fluid styles/MED/fluid-heading-04 */
     font-size: 2.25rem;
     line-height: 2.75rem;
   }
@@ -1673,8 +1673,8 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     column-gap: 3.3125rem;
   }
 
-  .fluid-heading-05 {
-    /* Fluid styles/XLG/fluid-heading-05 */
+  h4.fluid {
+    /* Fluid styles/XLG/fluid-heading-04 */
     font-size: 3rem;
     line-height: 56px;
   }
