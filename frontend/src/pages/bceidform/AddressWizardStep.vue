@@ -72,7 +72,12 @@ fetch();
 
 //New address being added
 const otherAddresses = computed(() => formData.location.addresses.slice(1));
-const addAddress = () => formData.location.addresses.push(emptyAddress());
+const addAddress = () => {
+  const newLength = formData.location.addresses.push(emptyAddress());
+  const focusIndex = newLength - 1;
+  safeSetFocusedComponent(`name_${focusIndex}`);
+  return newLength;
+};
 
 //Validation
 const validation = reactive<Record<string, boolean>>({
@@ -110,7 +115,6 @@ const removeAddress = (index: number) => () => {
     toastTitle: "",
     handler: () => {},
   });
-  safeSetFocusedComponent(`addr_${index - 1}`, 200);
 };
 
 const handleRemove = (index: number) => {

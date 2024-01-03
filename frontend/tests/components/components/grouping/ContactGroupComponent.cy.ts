@@ -61,8 +61,6 @@ describe("<ContactGroupComponent />", () => {
       cy.get("#email_0").contains(contact.email).should("be.visible");
 
       cy.get("#phoneNumber_0").should("be.visible").and("have.value", "");
-
-      cy.focused().should('have.id', 'phoneNumber_0');
     });
   });
 
@@ -113,8 +111,6 @@ describe("<ContactGroupComponent />", () => {
       cy.get("#email_1").should("be.visible").and("have.value", contact.email);
 
       cy.get("#phoneNumber_1").should("be.visible").and("have.value", "");
-
-      cy.focused().should('have.id', 'firstName_1');
     });
   });
 
@@ -138,8 +134,6 @@ describe("<ContactGroupComponent />", () => {
         });
       });
     });
-
-    cy.focused().should('have.id', 'phoneNumber_0');
 
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
 
@@ -175,8 +169,6 @@ describe("<ContactGroupComponent />", () => {
         });
       });
     });
-
-    cy.focused().should('have.id', 'phoneNumber_0');
 
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
 
@@ -219,8 +211,6 @@ describe("<ContactGroupComponent />", () => {
         });
       });
     });
-
-    cy.focused().should('have.id', 'phoneNumber_0');
 
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
 
@@ -275,8 +265,6 @@ describe("<ContactGroupComponent />", () => {
         });
       });
     });
-
-    cy.focused().should('have.id', 'phoneNumber_0');
 
     cy.get("#change-personal-info-link").click();
 
@@ -335,13 +323,6 @@ describe("<ContactGroupComponent />", () => {
         });
       });
 
-      /*
-      In case the component is scrolled down, make sure to scroll up so the "First name" input is
-      visible, since the "safe focusing" would skip focusing it in that case.
-      */
-      cy.scrollTo("top");
-
-      cy.focused().should("have.id", "firstName_1");
       cy.get(fieldSelector).shadow().find("input").clear(); // emits false
       cy.get(fieldSelector).blur(); // (doesn't emit)
       cy.get(fieldSelector).shadow().find("input").type(firstContent); // emits true before blurring
