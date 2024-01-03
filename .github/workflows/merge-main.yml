@@ -197,7 +197,7 @@ jobs:
             -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
 
       - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@v4
+        uses: TriPSs/conventional-changelog-action@v5
         id: changelog
         continue-on-error: true
         with:
