@@ -156,7 +156,7 @@ defineExpose({
     <div  v-for="(contact, index) in otherContacts">
       <hr />
       <div class="grouping-09" :data-scroll="`additional-contact-${index + 1}`">
-      <span class="heading-03">Additional contact</span>
+      <h5>Additional contact</h5>
     </div>
     <contact-group-component
       :key="index + 1"

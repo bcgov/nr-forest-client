@@ -72,7 +72,12 @@ fetch();
 
 //New address being added
 const otherAddresses = computed(() => formData.location.addresses.slice(1));
-const addAddress = () => formData.location.addresses.push(emptyAddress());
+const addAddress = () => {
+  const newLength = formData.location.addresses.push(emptyAddress());
+  const focusIndex = newLength - 1;
+  safeSetFocusedComponent(`name_${focusIndex}`);
+  return newLength;
+};
 
 //Validation
 const validation = reactive<Record<string, boolean>>({
@@ -110,7 +115,6 @@ const removeAddress = (index: number) => () => {
     toastTitle: "",
     handler: () => {},
   });
-  safeSetFocusedComponent(`addr_${index - 1}`, 200);
 };
 
 const handleRemove = (index: number) => {
@@ -147,7 +151,7 @@ onMounted(() => safeSetFocusedComponent("addr_0", 800));
   <div v-for="(address, index) in otherAddresses">
     <hr />
     <div class="grouping-09">
-      <span class="heading-03">Additional address</span>
+      <h5>Additional address</h5>
     </div>
     <address-group-component
       :key="index + 1"
