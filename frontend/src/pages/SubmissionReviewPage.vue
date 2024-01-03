@@ -203,7 +203,7 @@ const tagColor = (status: string) =>{
           
         </cds-breadcrumb>
 
-        <p class="submission-details--title heading-05">
+        <h3 class="submission-details--title">
           <component
             data-testid="display-row-icon"
             :is="iconForRow(data.submissionType)"      
@@ -212,7 +212,7 @@ const tagColor = (status: string) =>{
           <span>
             {{ data.submissionType }}: {{ normalizeString(data.business.organizationName) }}
           </span>
-        </p>
+        </h3>
         <p class="body-01" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
         <p class="body-01" v-else>Check and manage this submission for a new client number</p>
       </div>
@@ -295,7 +295,7 @@ const tagColor = (status: string) =>{
       <div class="grouping-14">
         <div class="grouping-05-short">
           <div>
-            <p class="heading-02 mg-tl-2">Client summary</p>
+            <h6 class="mg-tl-2">Client summary</h6>
             <div class="grouping-10">
               <read-only-component label="Name">
                 <span class="body-compact-01">{{ normalizeString(data.business.organizationName) }}</span>

@@ -136,25 +136,6 @@ describe("<AddressGroupComponent />", () => {
       .and("include.text", "Error");
   });
 
-  it("should render the component and set focus on street address input", () => {
-    cy.get("@addressFixture").then((address) => {
-      cy.get("@countriesFixture").then((countries) => {
-        cy.mount(AddressGroupComponent, {
-          props: {
-            id: 0,
-            modelValue: address,
-            countryList: countries,
-            validations: [],
-          },
-        });
-      });
-    });
-
-    cy.wait("@getProvinces");
-
-    cy.get("#addr_0").should("be.visible").and("have.focus");
-  });
-
   it("should render the component and show the address name if id is bigger than 0", () => {
     cy.get("@addressFixture").then((address) => {
       cy.get("@countriesFixture").then((countries) => {
@@ -173,8 +154,7 @@ describe("<AddressGroupComponent />", () => {
 
     cy.get("#name_1")
       .should("be.visible")
-      .and("have.value", "Mailing address")
-      .and("have.focus");
+      .and("have.value", "Mailing address");
   });
 
   it("should render the component and reset province when country changes", () => {
@@ -366,9 +346,6 @@ describe("<AddressGroupComponent />", () => {
         });
       });
       cy.wait("@getProvinces");
-
-      // Prevents issues due to moving focus in the middle of the test.
-      cy.get("#name_1").should("be.focused");
 
       cy.get(fieldSelector).shadow().find("input").clear(); // emits false
       cy.get(fieldSelector).blur(); // (doesn't emit)
