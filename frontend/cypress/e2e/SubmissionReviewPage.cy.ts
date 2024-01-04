@@ -153,8 +153,11 @@ describe('Submission Review Page', () => {
           .should('contain', `Contact: ${testCase.contact}`);
         }
 
+        cy.get('.grouping-15 > [kind="primary"]')
+        .should('exist')
 
-        //TODO: check for the existence of the buttons below
+        cy.get('.grouping-15 > [kind="danger"]')
+        .should('exist')
 
         
        
