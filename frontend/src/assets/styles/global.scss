@@ -1811,3 +1811,17 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     max-width: calc(100vw - 21rem);
   }
 }
+
+.link-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: var(--light-theme-link-link-primary, #005cb8);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  color: var(--light-theme-link-link-primary-hover, #00478f);
+}

@@ -96,6 +96,7 @@ revalidateBus.on(() => validateInput());
       >
         <cds-radio-button
           v-shadow="1"
+          :id="id + 'rb' + option.value"
           v-for="option in modelValue"
           :key="id + 'rb' + option.value"
           :label-text="option.text"
