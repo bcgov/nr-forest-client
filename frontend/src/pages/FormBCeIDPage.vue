@@ -328,6 +328,7 @@ const submit = () => {
 exitBus.on((event: Record<string, boolean | null>) => {
   endAndLogOut.value = event.goodStanding ? event.goodStanding : false;
   mailAndLogOut.value = event.duplicated ? event.duplicated : false;
+  endAndLogOut.value = event.nonPersonSP ? event.nonPersonSP : endAndLogOut.value;
 });
 
 progressIndicatorBus.on((event: ProgressNotification) => {

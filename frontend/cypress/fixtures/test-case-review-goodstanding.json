@@ -1,0 +1,55 @@
+{
+    "submissionId": "1",
+    "submissionStatus": "New",
+    "submissionType": "Review new client",
+    "submittedTimestamp": "2024-01-01 00:00:00",
+    "updateTimestamp": "2024-01-02 00:00:00",
+    "approvedTimestamp": "2024-01-03 00:00:00",
+    "updateUser": "Isador Driver",
+    "business": {
+        "businessType": "Registered Business",
+        "incorporationNumber": "GP12345678",
+        "clientNumber":"",
+        "organizationName": "KOVACEK, THOMPSON AND BOYER",
+        "clientType": "General partnership",
+        "goodStanding": null
+    },
+    "contact": [
+        {
+            "index": 0,
+            "contactType": "Accounts Receivable",
+            "firstName": "Test",
+            "lastName": "Uat",
+            "phoneNumber": "2502502550",
+            "emailAddress": "uattest@gov.bc.ca",
+            "locations": [
+                "Mailing address",
+                "Accountant's address"
+            ],
+            "userId": "290fae20-5694-4dfa-84a0-baabae352ad5"
+        }
+    ],
+    "address": [
+        {
+            "index": 0,
+            "streetAddress":"444 Richmond Ave",
+            "country":"Canada",
+            "province":"Saskatchewan",
+            "city":"Hampton",
+            "postalCode": "H0H0H0",
+            "name": "Mailing address"
+        },
+        {
+            "index": 1,
+            "streetAddress":"333 Oak St",
+            "country":"Canada",
+            "province":"British Columbia",
+            "city":"Deer Lake",
+            "postalCode":"V4V4V4",
+            "name": "Accountant's address"
+        }
+    ],
+    "matchers": {
+        "goodStanding": "Value not found"
+    }
+}

@@ -30,6 +30,6 @@ logging:
       testcontainers: OFF
     com.github.dockerjava: OFF
     org.springframework.r2dbc: DEBUG
-    io.r2dbc.postgresql.QUERY: DEBUG
-    io.r2dbc.postgresql.PARAM: DEBUG
+    io.r2dbc.oracle.QUERY: DEBUG
+    io.r2dbc.oracle.PARAM: DEBUG
     ca.bc.gov.app: DEBUG

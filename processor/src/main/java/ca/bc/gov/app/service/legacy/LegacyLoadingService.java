@@ -3,7 +3,7 @@ package ca.bc.gov.app.service.legacy;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.service.processor.ProcessorMatcher;
+import ca.bc.gov.app.matchers.ProcessorMatcher;
 import java.util.List;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;

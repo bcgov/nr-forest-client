@@ -22,4 +22,13 @@ public enum ClientTypeCodeEnum {
   ClientTypeCodeEnum(String description) {
     this.description = description;
   }
+
+  public static String as(String code) {
+    for (ClientTypeCodeEnum clientTypeCodeEnum : ClientTypeCodeEnum.values()) {
+      if (clientTypeCodeEnum.name().equals(code)) {
+        return clientTypeCodeEnum.description;
+      }
+    }
+    return code;
+  }
 }

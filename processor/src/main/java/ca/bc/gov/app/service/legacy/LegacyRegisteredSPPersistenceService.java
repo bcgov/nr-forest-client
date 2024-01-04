@@ -3,20 +3,17 @@ package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
-import ca.bc.gov.app.repository.client.CountryCodeRepository;
-import ca.bc.gov.app.repository.client.SubmissionContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
-import ca.bc.gov.app.repository.client.SubmissionRepository;
-import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.repository.SubmissionContactRepository;
+import ca.bc.gov.app.repository.SubmissionDetailRepository;
+import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
+import ca.bc.gov.app.repository.SubmissionLocationRepository;
+import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import ca.bc.gov.app.util.ProcessorUtil;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
@@ -41,23 +38,14 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
       SubmissionLocationRepository locationRepository,
       SubmissionContactRepository contactRepository,
       SubmissionLocationContactRepository locationContactRepository,
-      R2dbcEntityOperations legacyR2dbcEntityTemplate,
-      CountryCodeRepository countryCodeRepository,
-      ClientDoingBusinessAsRepository doingBusinessAsRepository,
+      LegacyService legacyService,
       BcRegistryService bcRegistryService
   ) {
-    super(
-        submissionDetailRepository,
-        submissionRepository,
-        locationRepository,
-        contactRepository,
-        locationContactRepository,
-        legacyR2dbcEntityTemplate,
-        countryCodeRepository,
-        doingBusinessAsRepository
-    );
+    super(submissionDetailRepository, submissionRepository, locationRepository, contactRepository,
+        locationContactRepository, legacyService);
     this.bcRegistryService = bcRegistryService;
   }
+
 
   /**
    * This method is responsible for filtering the submission based on the type.
@@ -81,7 +69,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
       async = "true"
   )
   @Override
-  public Mono<Message<ForestClientEntity>> generateForestClient(Message<String> message) {
+  public Mono<Message<ForestClientDto>> generateForestClient(Message<String> message) {
 
     return
         getSubmissionDetailRepository()
@@ -115,7 +103,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
             //Load the details to set the remaining fields
             .flatMap(forestClient ->
                 bcRegistryService
-                    .requestDocumentData(forestClient.getClientIdentification())
+                    .requestDocumentData(forestClient.clientIdentification())
                     // Should only be one
                     .next()
                     // Get the proprietor or empty if none
@@ -170,13 +158,13 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     .copyHeaders(message.getHeaders())
                     .setHeader(ApplicationConstant.FOREST_CLIENT_NAME,
                         forestClient
-                            .getClientComment()
+                            .clientComment()
                             .split("and company name ")[1]
                     )
                     .setHeader(ApplicationConstant.INCORPORATION_NUMBER,
                         String.join(StringUtils.EMPTY,
-                            forestClient.getRegistryCompanyTypeCode(),
-                            forestClient.getCorpRegnNmbr()
+                            forestClient.registryCompanyTypeCode(),
+                            forestClient.corpRegnNmbr()
                         )
                     )
                     .build()

@@ -198,7 +198,7 @@ public class CognitoController {
     return ResponseCookie
             .from(cookieName, cookieValue)
             .httpOnly(false)
-            .sameSite("None")
+            .sameSite(isLocal() ? "Lax" : "None")
             .path("/")
             .maxAge(Duration.ofSeconds(expiresInSeconds != null ? expiresInSeconds : 3600))
             .secure(!isLocal())

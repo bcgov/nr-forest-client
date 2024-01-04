@@ -166,5 +166,7 @@ export interface SubmissionDetailsAddress {
 
 export interface SubmissionDetailsMatchers {
   goodStanding: string
-  legalName: string
+  corporationName: string
+  incorporationNumber: string
+  contact: string
 }

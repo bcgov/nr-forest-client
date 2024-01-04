@@ -1,47 +1,31 @@
 package ca.bc.gov.app.service.legacy;
 
 
+import static ca.bc.gov.app.TestConstants.CLIENT_ENTITY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.entity.client.CountryCodeEntity;
-import ca.bc.gov.app.entity.client.SubmissionContactEntity;
-import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
-import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
-import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientLocationEntity;
-import ca.bc.gov.app.repository.client.CountryCodeRepository;
-import ca.bc.gov.app.repository.client.SubmissionContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
-import ca.bc.gov.app.repository.client.SubmissionRepository;
-import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
-import java.util.Map;
-import java.util.function.BiFunction;
+import ca.bc.gov.app.entity.SubmissionContactEntity;
+import ca.bc.gov.app.entity.SubmissionDetailEntity;
+import ca.bc.gov.app.entity.SubmissionLocationContactEntity;
+import ca.bc.gov.app.entity.SubmissionLocationEntity;
+import ca.bc.gov.app.repository.SubmissionContactRepository;
+import ca.bc.gov.app.repository.SubmissionDetailRepository;
+import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
+import ca.bc.gov.app.repository.SubmissionLocationRepository;
+import ca.bc.gov.app.repository.SubmissionRepository;
 import java.util.stream.Stream;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
-import org.springframework.data.r2dbc.core.ReactiveInsertOperation.ReactiveInsert;
 import org.springframework.integration.support.MessageBuilder;
-import org.springframework.r2dbc.core.DatabaseClient;
-import org.springframework.r2dbc.core.DatabaseClient.GenericExecuteSpec;
-import org.springframework.r2dbc.core.FetchSpec;
-import org.springframework.r2dbc.core.RowsFetchSpec;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -58,33 +42,21 @@ class LegacyAbstractPersistenceServiceTest {
       SubmissionContactRepository.class);
   private final SubmissionLocationContactRepository locationContactRepository = mock(
       SubmissionLocationContactRepository.class);
-  private final R2dbcEntityTemplate legacyR2dbcEntityTemplate = mock(R2dbcEntityTemplate.class);
-  private final CountryCodeRepository countryCodeRepository = mock(CountryCodeRepository.class);
-  private final ClientDoingBusinessAsRepository doingBusinessAsRepository = mock(
-      ClientDoingBusinessAsRepository.class);
-
+  private final LegacyService legacyService = mock(LegacyService.class);
   private final LegacyClientPersistenceService service = new LegacyClientPersistenceService(
       submissionDetailRepository,
       submissionRepository,
       locationRepository,
       contactRepository,
       locationContactRepository,
-      legacyR2dbcEntityTemplate,
-      countryCodeRepository,
-      doingBusinessAsRepository
+      legacyService
   );
 
-  @BeforeEach
-  void beforeEach() {
-    when(countryCodeRepository.findAll())
-        .thenReturn(Flux.just(new CountryCodeEntity("CA", "Canada")));
-  }
 
   @ParameterizedTest
-  @MethodSource("contactExisted")
+  @MethodSource("contactExist")
   @DisplayName("create locations")
   void shouldCreateLocations(boolean locationExisted) {
-    ReactiveInsert<ForestClientLocationEntity> reactiveInsert = mock(ReactiveInsert.class);
 
     when(locationRepository.findBySubmissionId(eq(2)))
         .thenReturn(Flux.just(
@@ -101,17 +73,8 @@ class LegacyAbstractPersistenceServiceTest {
                     .build()
             )
         );
-    when(legacyR2dbcEntityTemplate.insert(eq(ForestClientLocationEntity.class)))
-        .thenReturn(reactiveInsert);
-    ForestClientLocationEntity location = ForestClientLocationEntity.builder()
-        .clientLocnCode("00")
-        .build();
-
-    when(reactiveInsert.using(any()))
-        .thenReturn(Mono.just(location));
-
-    when(legacyR2dbcEntityTemplate.selectOne(any(), any()))
-        .thenReturn(locationExisted ? Mono.just(location) : Mono.empty());
+    when(legacyService.createLocation(any(), anyString(), any(), anyString()))
+        .thenReturn(Mono.just("00123456"));
 
     service
         .createLocations(
@@ -186,13 +149,9 @@ class LegacyAbstractPersistenceServiceTest {
   }
 
   @ParameterizedTest
-  @MethodSource("contactExisted")
+  @MethodSource("contactExist")
   @DisplayName("create contacts")
   void shouldCreateContacts(boolean contactExisted) {
-    ReactiveInsert<ForestClientContactEntity> insert = mock(ReactiveInsert.class);
-    DatabaseClient dbCLient = mock(DatabaseClient.class);
-    GenericExecuteSpec execSpec = mock(GenericExecuteSpec.class);
-    FetchSpec<Map<String, Object>> fetchSpec = mock(FetchSpec.class);
 
     SubmissionContactEntity contact = SubmissionContactEntity
         .builder()
@@ -204,13 +163,6 @@ class LegacyAbstractPersistenceServiceTest {
         .businessPhoneNumber("2505555555")
         .emailAddress("mail@mail.ca")
         .build();
-    ForestClientContactEntity contactEntity = ForestClientContactEntity
-        .builder()
-        .clientLocnCode("00")
-        .contactName("Text")
-        .build();
-
-
     when(locationContactRepository.findBySubmissionLocationId(any()))
         .thenReturn(Flux.just(
                 SubmissionLocationContactEntity
@@ -222,19 +174,8 @@ class LegacyAbstractPersistenceServiceTest {
         );
     when(contactRepository.findById(any(Integer.class)))
         .thenReturn(Mono.just(contact));
-    when(legacyR2dbcEntityTemplate.insert(ForestClientContactEntity.class))
-        .thenReturn(insert);
-
-    when(insert.using(any()))
-        .thenReturn(Mono.just(contactEntity));
-    when(legacyR2dbcEntityTemplate.select(any(), any()))
-        .thenReturn(contactExisted ? Flux.just(contactEntity) : Flux.empty());
-    when(legacyR2dbcEntityTemplate.getDatabaseClient())
-        .thenReturn(dbCLient);
-    when(dbCLient.sql(any(String.class)))
-        .thenReturn(execSpec);
-    when(execSpec.fetch()).thenReturn(fetchSpec);
-    when(fetchSpec.first()).thenReturn(Mono.just(Map.of("NEXTVAL", 1)));
+    when(legacyService.createContact(any()))
+        .thenReturn(Mono.just("00000000"));
 
     service.createContact(
             MessageBuilder
@@ -349,28 +290,6 @@ class LegacyAbstractPersistenceServiceTest {
       String clientNumber
   ) {
 
-    DatabaseClient dbCLient = mock(DatabaseClient.class);
-    GenericExecuteSpec execSpec = mock(GenericExecuteSpec.class);
-    FetchSpec<Map<String, Object>> fetchSpec = mock(FetchSpec.class);
-    RowsFetchSpec<String> fetchString = mock(RowsFetchSpec.class);
-
-    when(legacyR2dbcEntityTemplate.getDatabaseClient())
-        .thenReturn(dbCLient);
-    when(dbCLient.sql(any(String.class)))
-        .thenReturn(execSpec);
-    when(execSpec.fetch()).thenReturn(fetchSpec);
-    when(fetchSpec.rowsUpdated()).thenReturn(Mono.just(1L));
-    when(execSpec.map(any(BiFunction.class)))
-        .thenReturn(fetchString);
-    when(fetchString.first()).thenReturn(Mono.just(
-
-        BooleanUtils.toString(
-            StringUtils.isNotBlank(clientNumber),
-            "00000000",
-            "00000001"
-        )
-    ));
-
     when(submissionDetailRepository.findBySubmissionId(any()))
         .thenReturn(Mono.just(
                 SubmissionDetailEntity
@@ -384,16 +303,13 @@ class LegacyAbstractPersistenceServiceTest {
             )
         );
 
-    when(legacyR2dbcEntityTemplate.selectOne(any(), any()))
-        .thenReturn(
-            Mono.just(ForestClientEntity.builder().clientNumber("00000000").build()));
     when(contactRepository.findFirstBySubmissionId(any()))
         .thenReturn(Mono.just(
-            SubmissionContactEntity
-                .builder()
-                .firstName("Jhon")
-                .lastName("Snow")
-                .build()
+                SubmissionContactEntity
+                    .builder()
+                    .firstName("Jhon")
+                    .lastName("Snow")
+                    .build()
             )
         );
 
@@ -410,8 +326,7 @@ class LegacyAbstractPersistenceServiceTest {
         .assertNext(message -> {
           assertThat(message)
               .isNotNull()
-              .hasFieldOrPropertyWithValue("payload",
-                  StringUtils.isNotBlank(clientNumber) ? 2 : "00000001");
+              .hasFieldOrPropertyWithValue("payload", 2);
 
           assertThat(message.getHeaders().get(ApplicationConstant.SUBMISSION_ID))
               .as("submission id")
@@ -429,23 +344,11 @@ class LegacyAbstractPersistenceServiceTest {
               .isNotNull()
               .isInstanceOf(String.class);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
-              .as("forest client number")
-              .isNotNull()
-              .isInstanceOf(String.class)
-              .isEqualTo(StringUtils.defaultString(clientNumber, "00000001"));
-
           assertThat(message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE))
               .as("client type code")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo(clientTypeCode);
-
-          assertThat(message.getHeaders().get(ApplicationConstant.CLIENT_EXISTS))
-              .as("client exists")
-              .isNotNull()
-              .isInstanceOf(Boolean.class)
-              .isEqualTo(StringUtils.isNotBlank(clientNumber));
 
           assertThat(message.getHeaders().get(ApplicationConstant.CLIENT_SUBMITTER_NAME))
               .as("client submitter name")
@@ -461,8 +364,6 @@ class LegacyAbstractPersistenceServiceTest {
   @DisplayName("create client that is not individual")
   void shouldCreateClient() {
 
-    ReactiveInsert<ForestClientEntity> reactiveInsert = mock(ReactiveInsert.class);
-
     SubmissionDetailEntity detailEntity = SubmissionDetailEntity
         .builder()
         .submissionId(2)
@@ -476,17 +377,14 @@ class LegacyAbstractPersistenceServiceTest {
         .thenReturn(Mono.just(detailEntity));
     when(submissionDetailRepository.save(any()))
         .thenReturn(Mono.just(detailEntity));
-    when(legacyR2dbcEntityTemplate.insert(eq(ForestClientEntity.class)))
-        .thenReturn(reactiveInsert);
-    when(reactiveInsert.using(any()))
-        .thenReturn(Mono.just(TestConstants.CLIENT_ENTITY));
-    when(legacyR2dbcEntityTemplate.selectOne(any(), any()))
-        .thenReturn(Mono.empty());
+    when(legacyService.createClient(any()))
+        .thenReturn(Mono.just("00000000"));
+
 
     service
         .createForestClient(
             MessageBuilder
-                .withPayload(TestConstants.CLIENT_ENTITY)
+                .withPayload(CLIENT_ENTITY)
                 .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
                 .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
                 .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
@@ -515,12 +413,12 @@ class LegacyAbstractPersistenceServiceTest {
   @ParameterizedTest
   @MethodSource("data")
   @DisplayName("create client that is individual")
-  void shouldTryToCreateClient(String type){
+  void shouldTryToCreateClient(String type) {
 
     service
         .createForestClient(
             MessageBuilder
-                .withPayload(TestConstants.CLIENT_ENTITY)
+                .withPayload(CLIENT_ENTITY)
                 .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
                 .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
                 .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
@@ -536,7 +434,7 @@ class LegacyAbstractPersistenceServiceTest {
   @ParameterizedTest
   @MethodSource("data")
   @DisplayName("create contact that is individual")
-  void shouldTryToCreateContact(String type){
+  void shouldTryToCreateContact(String type) {
     service
         .createContact(
             MessageBuilder
@@ -556,7 +454,7 @@ class LegacyAbstractPersistenceServiceTest {
   @ParameterizedTest
   @MethodSource("data")
   @DisplayName("create location that is individual")
-  void shouldTryToCreateLocation(String type){
+  void shouldTryToCreateLocation(String type) {
     service
         .createLocations(
             MessageBuilder
@@ -580,11 +478,11 @@ class LegacyAbstractPersistenceServiceTest {
     );
   }
 
-  private static Stream<String> data(){
-    return Stream.of("I","RSP","USP");
+  private static Stream<String> data() {
+    return Stream.of("I", "RSP", "USP");
   }
 
-  private static Stream<Boolean> contactExisted() {
+  private static Stream<Boolean> contactExist() {
     return Stream.of(true, false);
   }
 

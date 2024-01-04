@@ -24,8 +24,6 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-old-growth:prod-backend
-  - name: ORACLEDB_KEYSTORE
-    description: Oracle database keystore file
   - name: CPU_REQUEST
     value: 75m
   - name: CPU_LIMIT
@@ -34,9 +32,6 @@ parameters:
     value: 300Mi
   - name: MEMORY_LIMIT
     value: 400Mi
-  - name: CERT_PVC_SIZE
-    description: The amount of storage the cert PVC should have
-    value: 25Mi
   - name: URL_ZONE
     description: Zone to use for URL
     required: true
@@ -60,19 +55,6 @@ objects:
             name: ${REGISTRY}/${PROMOTE}
           referencePolicy:
             type: Local
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    spec:
-      accessModes:
-        - ReadWriteMany
-      resources:
-        requests:
-          storage: ${CERT_PVC_SIZE}
-      storageClassName: netapp-file-standard
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -101,41 +83,6 @@ objects:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
-          volumes:
-            - name: ${NAME}-${ZONE}-${COMPONENT}-certs
-              persistentVolumeClaim:
-                claimName: ${NAME}-${ZONE}-${COMPONENT}
-          initContainers:
-            - name: ${NAME}-init
-              image: ${REGISTRY}/bcgov/${NAME}/common:${ZONE}
-              imagePullPolicy: Always
-              env:
-                - name: ORACLEDB_HOST
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: oracle-host
-                - name: ORACLEDB_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: oracle-secret
-                - name: ORACLEDB_PORT
-                  value: "1543"
-                - name: CLIENT_URI
-                  value:  https://${NAME}-${ZONE}-backend.${DOMAIN}/api
-                - name: TIMING
-                  value: 30S
-              volumeMounts:
-                - name: ${NAME}-${ZONE}-${COMPONENT}-certs
-                  mountPath: /cert
-              resources:
-                limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
-                requests:
-                  cpu: ${CPU_REQUEST}
-                  memory: ${MEMORY_REQUEST}
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
@@ -158,42 +105,10 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
                       key: database-user
-                - name: ORACLEDB_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: oracle-user-write
-                - name: ORACLEDB_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: oracle-password-write
-                - name: ORACLEDB_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: oracle-database
-                - name: ORACLEDB_HOST
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: oracle-host
-                - name: ORACLEDB_SERVICENAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: oracle-service
-                - name: ORACLEDB_PORT
-                  value: "1543"
-                - name: ORACLEDB_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: oracle-secret
-                - name: ORACLEDB_KEYSTORE
-                  value: /cert/jssecacerts
                 - name: CLIENT_URI
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}/api
+                - name: LEGACY_URI
+                  value: https://${NAME}-${URL_ZONE}-legacy.${DOMAIN}
                 - name: TIMING
                   value: 30S
                 - name: TZ
@@ -213,9 +128,6 @@ objects:
               ports:
                 - containerPort: 3000
                   protocol: TCP
-              volumeMounts:
-                - name: ${NAME}-${ZONE}-${COMPONENT}-certs
-                  mountPath: /cert
               resources:
                 limits:
                   cpu: ${CPU_LIMIT}
