@@ -11,7 +11,7 @@
     "editor.formatOnPaste": false,
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true
+      "source.fixAll.eslint": "explicit"
     },
     "editor.tabSize": 2,
     "vs-code-prettier-eslint.prettierLast": true,

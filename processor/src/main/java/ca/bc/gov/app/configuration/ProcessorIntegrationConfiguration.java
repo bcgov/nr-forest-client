@@ -1,7 +1,6 @@
 package ca.bc.gov.app.configuration;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.util.LastItemReleaseStrategy;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +10,6 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.integration.channel.FluxMessageChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.Pollers;
-import org.springframework.integration.handler.LoggingHandler.Level;
 import org.springframework.integration.r2dbc.inbound.R2dbcMessageSource;
 
 @Configuration
@@ -125,9 +123,7 @@ public class ProcessorIntegrationConfiguration {
 
 
   @Bean
-  public R2dbcMessageSource submissionMessages(
-      @Qualifier("clientR2dbcEntityOperations") R2dbcEntityTemplate r2dbcEntityTemplate
-  ) {
+  public R2dbcMessageSource submissionMessages(R2dbcEntityTemplate r2dbcEntityTemplate) {
     final String submissionIdQuery = """
         SELECT nrfc.submission.submission_id
         FROM nrfc.submission
@@ -143,9 +139,7 @@ public class ProcessorIntegrationConfiguration {
   }
 
   @Bean
-  public R2dbcMessageSource processedMessage(
-      @Qualifier("clientR2dbcEntityOperations") R2dbcEntityTemplate r2dbcEntityTemplate
-  ) {
+  public R2dbcMessageSource processedMessage(R2dbcEntityTemplate r2dbcEntityTemplate) {
     final String submissionIdQuery = """
         SELECT nrfc.submission.submission_id
         FROM nrfc.submission

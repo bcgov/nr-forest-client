@@ -2,7 +2,7 @@ package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.EmailRequestDto;
-import ca.bc.gov.app.entity.client.SubmissionTypeCodeEnum;
+import ca.bc.gov.app.entity.SubmissionTypeCodeEnum;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

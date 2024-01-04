@@ -56,7 +56,10 @@ const data = ref<SubmissionDetails>({
     address: [],
     matchers: {
       goodStanding: '',
-      legalName: '',
+      corporationName: '',
+      incorporationNumber: '',
+      contact: '',
+
     }
 })
 
@@ -190,6 +193,20 @@ const tagColor = (status: string) =>{
       return 'purple'
   }
 }
+
+const matchingData = computed(() => {
+  let results = []
+  if(data.value.matchers.corporationName){
+    results = [...results, ...data.value.matchers.corporationName.split(',')]
+  }
+  if(data.value.matchers.incorporationNumber){
+    results = [...results, ...data.value.matchers.incorporationNumber.split(',')]
+  }
+  if(data.value.matchers.contact){
+    results = [...results, ...data.value.matchers.contact.split(',')]
+  }
+  return results
+})
 </script>
 
 <template>
@@ -213,8 +230,8 @@ const tagColor = (status: string) =>{
             {{ data.submissionType }}: {{ normalizeString(data.business.organizationName) }}
           </span>
         </h3>
-        <p class="body-01" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
-        <p class="body-01" v-else>Check and manage this submission for a new client number</p>
+        <p class="body-01" data-testid="subtitle" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
+        <p class="body-01" data-testid="subtitle" v-else>Check and manage this submission for a new client number</p>
       </div>
 
       <cds-actionable-notification
@@ -265,7 +282,7 @@ const tagColor = (status: string) =>{
       </cds-actionable-notification>
 
       <cds-actionable-notification
-          v-if="data.submissionType === 'Review new client' && data.matchers.legalName && data.submissionStatus !== 'Approved'"
+          v-if="data.submissionType === 'Review new client' && matchingData.length > 0 && data.submissionStatus !== 'Approved'"
           v-shadow="true"
           low-contrast="true"
           hide-close-button="true"
@@ -274,19 +291,29 @@ const tagColor = (status: string) =>{
           title="Possible matching record found"      
         >    
         <div>
-          <p v-if="data.matchers.legalName.split(',').length === 1" class="body-compact-01">
-            {{ data.matchers.legalName.split(',').length }} similar client record was found. 
+          <p v-if="matchingData.length === 1" class="body-compact-01">
+            {{ matchingData.length }} similar client record was found. 
             Review their information in the Client Management System to determine if this submission should be approved or rejected:
           </p>
           <p v-else class="body-compact-01">
-            {{ data.matchers.legalName.split(',').length }} similar client records were found. 
+            {{ matchingData.length }} similar client records were found. 
             Review their information in the Client Management System to determine if this submission should be approved or rejected:
           </p>
           <ul class="bulleted-list-disc body-compact-01">
             <li 
-              v-for="duplicatedClient in data.matchers.legalName.split(',')" 
+              v-for="duplicatedClient in data.matchers.corporationName?.split(',')" 
               :key="duplicatedClient">
                 Legal name: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+            </li>
+            <li 
+              v-for="duplicatedClient in data.matchers.incorporationNumber?.split(',')" 
+              :key="duplicatedClient">
+                Incorporation number: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+            </li>
+            <li 
+              v-for="duplicatedClient in data.matchers.contact?.split(',')" 
+              :key="duplicatedClient">
+                Contact: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
             </li>
           </ul>
         </div>    

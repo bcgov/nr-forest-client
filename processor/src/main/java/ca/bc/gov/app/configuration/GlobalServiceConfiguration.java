@@ -25,6 +25,14 @@ public class GlobalServiceConfiguration {
         .build();
   }
 
+  @Bean
+  public WebClient legacyClientApi(ForestClientConfiguration configuration) {
+    return WebClient
+        .builder()
+        .baseUrl(configuration.getLegacy().getUri())
+        .build();
+  }
+
   /**
    * Returns a configured instance of WebClient for accessing the BC Registry API.
    *

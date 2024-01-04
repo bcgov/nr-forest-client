@@ -2,12 +2,12 @@ package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.EmailRequestDto;
-import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
-import ca.bc.gov.app.entity.client.SubmissionStatusEnum;
-import ca.bc.gov.app.repository.client.SubmissionContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
-import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
-import ca.bc.gov.app.repository.client.SubmissionRepository;
+import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
+import ca.bc.gov.app.entity.SubmissionStatusEnum;
+import ca.bc.gov.app.repository.SubmissionContactRepository;
+import ca.bc.gov.app.repository.SubmissionDetailRepository;
+import ca.bc.gov.app.repository.SubmissionMatchDetailRepository;
+import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
 import java.util.Map;
 import java.util.Optional;

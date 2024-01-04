@@ -24,6 +24,12 @@ public class UnregisteredBusinessInformationValidator implements Validator {
     String businessNameField = "businessName";
     ValidationUtils.rejectIfEmpty(errors, businessNameField,
         fieldIsMissingErrorMessage(businessNameField));
+
+    // fails if businessName does not contain whitespace, Ex: forest1 should fail, but forest 1 should pass
+    String businessName = (String) errors.getFieldValue(businessNameField);
+    if (businessName != null && !businessName.matches(".*\\s+.*")) {
+      errors.rejectValue(businessNameField, "Business name must be composed of first and last name");
+    }
     errors.popNestedPath();
   }
 }

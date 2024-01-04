@@ -7,22 +7,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
-import ca.bc.gov.app.repository.client.CountryCodeRepository;
-import ca.bc.gov.app.repository.client.SubmissionContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
-import ca.bc.gov.app.repository.client.SubmissionRepository;
-import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.entity.SubmissionDetailEntity;
+import ca.bc.gov.app.repository.SubmissionContactRepository;
+import ca.bc.gov.app.repository.SubmissionDetailRepository;
+import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
+import ca.bc.gov.app.repository.SubmissionLocationRepository;
+import ca.bc.gov.app.repository.SubmissionRepository;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.r2dbc.core.ReactiveInsertOperation.ReactiveInsert;
 import org.springframework.integration.support.MessageBuilder;
 import reactor.core.publisher.Mono;
@@ -40,10 +37,7 @@ class LegacyClientPersistenceServiceTest {
       SubmissionContactRepository.class);
   private final SubmissionLocationContactRepository locationContactRepository = mock(
       SubmissionLocationContactRepository.class);
-  private final R2dbcEntityTemplate legacyR2dbcEntityTemplate = mock(R2dbcEntityTemplate.class);
-  private final CountryCodeRepository countryCodeRepository = mock(CountryCodeRepository.class);
-  private final ClientDoingBusinessAsRepository doingBusinessAsRepository = mock(
-      ClientDoingBusinessAsRepository.class);
+  private final LegacyService legacyService = mock(LegacyService.class);
 
   private final LegacyClientPersistenceService service = new LegacyClientPersistenceService(
       submissionDetailRepository,
@@ -51,9 +45,7 @@ class LegacyClientPersistenceServiceTest {
       locationRepository,
       contactRepository,
       locationContactRepository,
-      legacyR2dbcEntityTemplate,
-      countryCodeRepository,
-      doingBusinessAsRepository
+      legacyService
   );
 
   @ParameterizedTest(name = "type: {0} expected: {1}")
@@ -73,7 +65,7 @@ class LegacyClientPersistenceServiceTest {
   @Test
   @DisplayName("create forest client")
   void shouldCreateForestClient() {
-    ReactiveInsert<ForestClientEntity> reactiveInsert = mock(ReactiveInsert.class);
+    ReactiveInsert<ForestClientDto> reactiveInsert = mock(ReactiveInsert.class);
 
     SubmissionDetailEntity entity = SubmissionDetailEntity.builder()
         .submissionId(2)

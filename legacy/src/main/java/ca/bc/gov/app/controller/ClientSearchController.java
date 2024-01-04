@@ -2,6 +2,7 @@ package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.service.ClientSearchService;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -28,5 +29,20 @@ public class ClientSearchController {
         .findByIncorporationOrName(incorporationNumber, companyName);
   }
 
+  @GetMapping("/individual")
+  public Flux<ForestClientDto> findIndividuals(
+      @RequestParam String firstName,
+      @RequestParam String lastName,
+      @RequestParam LocalDate dob
+  ) {
+    return service.findByIndividual(firstName, lastName, dob);
+  }
+
+  @GetMapping("/match")
+  public Flux<ForestClientDto> matchBy(
+      @RequestParam String companyName
+  ) {
+    return service.matchBy(companyName);
+  }
 
 }

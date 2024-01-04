@@ -1,6 +1,7 @@
 package ca.bc.gov.app.controller.client;
 
 import static ca.bc.gov.app.TestConstants.REGISTERED_BUSINESS_SUBMISSION_DTO;
+import static ca.bc.gov.app.TestConstants.UNREGISTERED_BUSINESS_SUBMISSION_BROKEN_DTO;
 import static ca.bc.gov.app.TestConstants.UNREGISTERED_BUSINESS_SUBMISSION_DTO;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -10,6 +11,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.submissions.SubmissionApproveRejectDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
@@ -210,7 +212,7 @@ class ClientSubmissionControllerIntegrationTest
           .jsonPath("$.[0].name").isEqualTo("Goldfinger")
           .jsonPath("$.[0].requestType").isEqualTo("Submission pending processing")
           .jsonPath("$.[0].status").isEqualTo("New")
-          .jsonPath("$.[0].clientType").isEqualTo("General Partnership")
+          .jsonPath("$.[0].clientType").isEqualTo("Registered sole proprietorship")
           .jsonPath("$.[0].user").isEqualTo("testUserId");
     }
   }
@@ -250,6 +252,25 @@ class ClientSubmissionControllerIntegrationTest
         .isEmpty();
   }
 
+  @Test
+  @DisplayName("Submit broken Unregistered Business client data")
+  @Order(7)
+  void shouldSubmitBrokenUnregisteredBusinessData() {
+    client
+        .post()
+        .uri("/api/clients/submissions")
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
+        .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_BROKEN_DTO), ClientSubmissionDto.class)
+        .exchange()
+        .expectStatus().isBadRequest()
+        .expectBodyList(ValidationError.class)
+        .hasSize(1)
+        .contains(new ValidationError("businessInformation.businessName",
+            "Business name must be composed of first and last name"));
+  }
+
   private static Stream<Arguments> listValues() {
     return
         Stream.of(
@@ -258,7 +279,7 @@ class ClientSubmissionControllerIntegrationTest
             Arguments.of(null, null, 0, 10, true),
             Arguments.of(null, null, null, 10, true),
             Arguments.of("requestStatus", "N", null, null, true),
-            Arguments.of("clientType", "P", null, null, true),
+            Arguments.of("clientType", "RSP", null, null, true),
             Arguments.of("name", "Goldfinger", null, null, true),
             Arguments.of("name", "Auric", null, null, false),
             Arguments.of(null, null, 1, null, false),

@@ -9,19 +9,13 @@ import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
-import ca.bc.gov.app.entity.legacy.ClientDoingBusinessAsEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
-import ca.bc.gov.app.repository.client.CountryCodeRepository;
-import ca.bc.gov.app.repository.client.SubmissionContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
-import ca.bc.gov.app.repository.client.SubmissionRepository;
-import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
+import ca.bc.gov.app.entity.SubmissionDetailEntity;
+import ca.bc.gov.app.repository.SubmissionContactRepository;
+import ca.bc.gov.app.repository.SubmissionDetailRepository;
+import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
+import ca.bc.gov.app.repository.SubmissionLocationRepository;
+import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
-import java.util.Map;
 import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -29,12 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
-import org.springframework.data.r2dbc.core.ReactiveInsertOperation.ReactiveInsert;
 import org.springframework.integration.support.MessageBuilder;
-import org.springframework.r2dbc.core.DatabaseClient;
-import org.springframework.r2dbc.core.DatabaseClient.GenericExecuteSpec;
-import org.springframework.r2dbc.core.FetchSpec;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -49,12 +38,8 @@ class LegacyRegisteredSPPersistenceServiceTest {
       SubmissionLocationRepository.class);
   private final SubmissionContactRepository contactRepository = mock(
       SubmissionContactRepository.class);
-  private final SubmissionLocationContactRepository locationContactRepository = mock(
-      SubmissionLocationContactRepository.class);
-  private final R2dbcEntityTemplate legacyR2dbcEntityTemplate = mock(R2dbcEntityTemplate.class);
-  private final CountryCodeRepository countryCodeRepository = mock(CountryCodeRepository.class);
-  private final ClientDoingBusinessAsRepository doingBusinessAsRepository = mock(
-      ClientDoingBusinessAsRepository.class);
+
+  private final LegacyService legacyService = mock(LegacyService.class);
   private final BcRegistryService bcRegistryService = mock(BcRegistryService.class);
 
   private final LegacyRegisteredSPPersistenceService service = new LegacyRegisteredSPPersistenceService(
@@ -62,23 +47,21 @@ class LegacyRegisteredSPPersistenceServiceTest {
       submissionRepository,
       locationRepository,
       contactRepository,
-      locationContactRepository,
-      legacyR2dbcEntityTemplate,
-      countryCodeRepository,
-      doingBusinessAsRepository,
+      mock(SubmissionLocationContactRepository.class),
+      legacyService,
       bcRegistryService
   );
 
   @ParameterizedTest(name = "type: {0} expected: {1}")
   @MethodSource("byType")
   @DisplayName("filter by type")
-  void shouldFilterByType(String type, boolean expected){
+  void shouldFilterByType(String type, boolean expected) {
     assertEquals(expected, service.filterByType(type));
   }
 
   @Test
   @DisplayName("get next channel")
-  void shouldGetNextChannel(){
+  void shouldGetNextChannel() {
     assertEquals(ApplicationConstant.SUBMISSION_LEGACY_RSP_CHANNEL, service.getNextChannel());
   }
 
@@ -269,14 +252,6 @@ class LegacyRegisteredSPPersistenceServiceTest {
   @Test
   @DisplayName("create client with doing business")
   void shouldCreateClient() {
-    ReactiveInsert<ClientDoingBusinessAsEntity> doingBusinessInsert = mock(ReactiveInsert.class);
-    ReactiveInsert<ForestClientEntity> clientInsert = mock(ReactiveInsert.class);
-
-
-    ReactiveInsert<ForestClientContactEntity> insert = mock(ReactiveInsert.class);
-    DatabaseClient dbCLient = mock(DatabaseClient.class);
-    GenericExecuteSpec execSpec = mock(GenericExecuteSpec.class);
-    FetchSpec<Map<String, Object>> fetchSpec = mock(FetchSpec.class);
 
     SubmissionDetailEntity detailEntity = SubmissionDetailEntity
         .builder()
@@ -291,32 +266,10 @@ class LegacyRegisteredSPPersistenceServiceTest {
         .thenReturn(Mono.just(detailEntity));
     when(submissionDetailRepository.save(any()))
         .thenReturn(Mono.just(detailEntity));
-    when(doingBusinessAsRepository.existsByClientNumber(any()))
-        .thenReturn(Mono.just(false));
-    when(legacyR2dbcEntityTemplate.selectOne(any(),any()))
-        .thenReturn(Mono.just(ClientDoingBusinessAsEntity.builder().id(1).build()));
-    when(legacyR2dbcEntityTemplate.insert(ForestClientEntity.class))
-        .thenReturn(clientInsert);
-    when(legacyR2dbcEntityTemplate.insert(ClientDoingBusinessAsEntity.class))
-        .thenReturn(doingBusinessInsert);
-    when(doingBusinessInsert.using(any()))
-        .thenReturn(Mono.just(ClientDoingBusinessAsEntity.builder().clientNumber("00000000")
-                .build()
-            )
-        );
-    when(clientInsert.using(any()))
-        .thenReturn(Mono.just(
-            TestConstants
-                .CLIENT_ENTITY
-                .withClientTypeCode("I")
-                .withClientIdTypeCode("BCRE")
-        ));
-    when(legacyR2dbcEntityTemplate.getDatabaseClient())
-        .thenReturn(dbCLient);
-    when(dbCLient.sql(any(String.class)))
-        .thenReturn(execSpec);
-    when(execSpec.fetch()).thenReturn(fetchSpec);
-    when(fetchSpec.first()).thenReturn(Mono.just(Map.of("NEXTVAL", 1)));
+    when(legacyService.createDoingBusinessAs(any(), any(), any(), any()))
+        .thenReturn(Mono.just("00000000"));
+    when(legacyService.createClient(any()))
+        .thenReturn(Mono.just("00000000"));
 
     service
         .createForestClient(
@@ -341,8 +294,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
           Assertions.assertThat(message)
               .as("message")
               .isNotNull()
-              .hasFieldOrPropertyWithValue("payload",2);
-
+              .hasFieldOrPropertyWithValue("payload", 2);
 
           Assertions.assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
               .as("forest client number")
@@ -354,7 +306,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
 
   }
 
-  private static Stream<Arguments> byType(){
+  private static Stream<Arguments> byType() {
     return Stream.of(
         Arguments.of("I", false),
         Arguments.of("C", false),

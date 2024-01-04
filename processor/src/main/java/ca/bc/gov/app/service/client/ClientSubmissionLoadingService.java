@@ -3,8 +3,8 @@ package ca.bc.gov.app.service.client;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.EmailRequestDto;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.repository.client.SubmissionContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
+import ca.bc.gov.app.repository.SubmissionContactRepository;
+import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +43,7 @@ public class ClientSubmissionLoadingService {
             .doOnNext(submission -> log.info("Loaded submission details {}", submission))
             //Grab what we need for the match part
             .map(details -> new SubmissionInformationDto(
+                    submissionId,
                     details.getOrganizationName(),
                     details.getBirthdate(),
                     details.getIncorporationNumber(),

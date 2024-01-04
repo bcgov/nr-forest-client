@@ -95,22 +95,25 @@ const autoCompleteUrl = computed(
 const showAutoCompleteInfo = ref<boolean>(false);
 const showGoodStandingError = ref<boolean>(false);
 const showDuplicatedError = ref<boolean>(false);
+const showNonPersonSPError = ref<boolean>(false);
 const showDetailsLoading = ref<boolean>(false);
 const detailsData = ref(null);
 
 const toggleErrorMessages = (
-  goodStanding: boolean | null,
-  duplicated: boolean | null
+  goodStanding: boolean | null = null,
+  duplicated: boolean | null = null,
+  nonPersonSP: boolean | null = null
 ) => {
   showGoodStandingError.value = goodStanding ?? false;
   showDuplicatedError.value = duplicated ?? false;
+  showNonPersonSPError.value = nonPersonSP ?? false;
 
-  if (goodStanding || duplicated) {
+  if (goodStanding || duplicated || nonPersonSP) {
     progressIndicatorBus.emit({ kind: "disabled", value: true });
-    exitBus.emit({ goodStanding, duplicated });
+    exitBus.emit({ goodStanding, duplicated, nonPersonSP });
   } else {
     progressIndicatorBus.emit({ kind: "disabled", value: false });
-    exitBus.emit({ goodStanding: false, duplicated: false });
+    exitBus.emit({ goodStanding: false, duplicated: false, nonPersonSP: false });
   }
 };
 
@@ -122,7 +125,7 @@ watch([autoCompleteResult], () => {
   validation.business = false;
 
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
-    toggleErrorMessages(false, false);
+    toggleErrorMessages(false, false, false);
 
     formData.value.businessInformation.incorporationNumber =
       autoCompleteResult.value.code;
@@ -152,11 +155,15 @@ watch([autoCompleteResult], () => {
     showDetailsLoading.value = true;
     watch(error, () => {
       if (error.value.response?.status === 409) {
-        toggleErrorMessages(null, true);
+        toggleErrorMessages(null, true, null);
+        return;
+      }
+      if (error.value.response?.status === 422) {
+        toggleErrorMessages(null, null, true);
         return;
       }
       if (error.value.response?.status === 404) {
-        toggleErrorMessages(null, null);
+        toggleErrorMessages();
         validation.business = true;
         emit("update:data", formData.value);
         return;
@@ -273,7 +280,7 @@ watch(showBirthDate, (value) => {
     <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
     <div
       class="grouping-02"
-      v-if="(showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R) || showGoodStandingError || showDuplicatedError">
+      v-if="(showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R) || showGoodStandingError || showDuplicatedError || showNonPersonSPError">
       <cds-inline-notification
         v-shadow="2"
         v-if="showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R"
@@ -339,6 +346,22 @@ watch(showBirthDate, (value) => {
           have it sent to you at {{ formData.location.contacts[0].email }}
         </p>
       </cds-inline-notification>
+
+      <cds-inline-notification
+        v-if="showNonPersonSPError"
+        hide-close-button="true"
+        low-contrast="true"
+        open="true"
+        kind="error"
+        title="Sole proprietor not owned by a person"
+      >
+        <p  class="cds--inline-notification-content">
+          Looks like “{{ formData.businessInformation.businessName }}” is not
+          owned by a person. Please select another entry or logout.
+        </p>
+      </cds-inline-notification>
+
+      
     </div>
   </data-fetcher>
 
