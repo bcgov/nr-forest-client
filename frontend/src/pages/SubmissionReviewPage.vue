@@ -230,8 +230,8 @@ const matchingData = computed(() => {
             {{ data.submissionType }}: {{ normalizeString(data.business.organizationName) }}
           </span>
         </h3>
-        <p class="body-01" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
-        <p class="body-01" v-else>Check and manage this submission for a new client number</p>
+        <p class="body-01" data-testid="subtitle" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
+        <p class="body-01" data-testid="subtitle" v-else>Check and manage this submission for a new client number</p>
       </div>
 
       <cds-actionable-notification
@@ -282,7 +282,7 @@ const matchingData = computed(() => {
       </cds-actionable-notification>
 
       <cds-actionable-notification
-          v-if="data.submissionType === 'Review new client' && matchingData && data.submissionStatus !== 'Approved'"
+          v-if="data.submissionType === 'Review new client' && matchingData.length > 0 && data.submissionStatus !== 'Approved'"
           v-shadow="true"
           low-contrast="true"
           hide-close-button="true"
@@ -301,17 +301,17 @@ const matchingData = computed(() => {
           </p>
           <ul class="bulleted-list-disc body-compact-01">
             <li 
-              v-for="duplicatedClient in data.matchers.corporationName.split(',')" 
+              v-for="duplicatedClient in data.matchers.corporationName?.split(',')" 
               :key="duplicatedClient">
                 Legal name: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
             </li>
             <li 
-              v-for="duplicatedClient in data.matchers.incorporationNumber.split(',')" 
+              v-for="duplicatedClient in data.matchers.incorporationNumber?.split(',')" 
               :key="duplicatedClient">
                 Incorporation number: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
             </li>
             <li 
-              v-for="duplicatedClient in data.matchers.contact.split(',')" 
+              v-for="duplicatedClient in data.matchers.contact?.split(',')" 
               :key="duplicatedClient">
                 Contact: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
             </li>

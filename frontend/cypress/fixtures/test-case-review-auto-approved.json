@@ -1,0 +1,53 @@
+{
+  "submissionId": "1",
+  "submissionStatus": "Approved",
+  "submissionType": "Auto approved client",
+  "submittedTimestamp": "2024-01-01 00:00:00",
+  "updateTimestamp": "2024-01-02 00:00:00",
+  "approvedTimestamp": "2024-01-02 01:00:00",
+  "updateUser": "CLIADMIN",
+  "business": {
+      "businessType": "Registered Business",
+      "incorporationNumber": "XX12321254",
+      "clientNumber":"12345678",
+      "organizationName": "THE TIMBER SOCIETY OF NORTH SASKATCHEWAN AND REGION LLC",
+      "clientType": "Corporation",
+      "goodStanding": "Y"
+  },
+  "contact": [
+      {
+          "index": 0,
+          "contactType": "Accounts Receivable",
+          "firstName": "Test",
+          "lastName": "Uat",
+          "phoneNumber": "2502502550",
+          "emailAddress": "uattest@gov.bc.ca",
+          "locations": [
+              "Mailing address",
+              "Accountant's address"
+          ],
+          "userId": "db3cd337-38b2-4aa7-b18c-dc6ca2383f8a"
+      }
+  ],
+  "address": [
+      {
+          "index": 0,
+          "streetAddress":"1414 Richmond Ave",
+          "country":"Canada",
+          "province":"Saskatchewan",
+          "city":"Hampton",
+          "postalCode": "H0H0H0",
+          "name": "Mailing address"
+      },
+      {
+          "index": 1,
+          "streetAddress":"333 Oak St",
+          "country":"Canada",
+          "province":"British Columbia",
+          "city":"Deer Lake",
+          "postalCode":"V4V4V4",
+          "name": "Accountant's address"
+      }
+  ],
+  "matchers": {}
+}
