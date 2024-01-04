@@ -49,3 +49,19 @@ export const getEnumKeyByEnumValue = <T extends Record<string, any>>(enumObject:
   const key = Object.keys(enumObject).find((x) => enumObject[x] === enumValue);
   return key ? String(key) : "Unknown";
 };
+
+export const getObfuscatedEmail = email => {
+  const obfuscatedEmail = email.replace('@', '&#64;');
+  return obfuscatedEmail;
+};
+
+export const getMailtoLink = email => {
+  const encodedEmail = encodeURIComponent(email);
+  return 'mailto:' + encodedEmail;
+};
+
+export const openMailtoLink = (email) => {
+  const encodedEmail = encodeURIComponent(email);
+  const mailtoLink = 'mailto:' +  encodedEmail;
+  location.assign(mailtoLink);
+}
