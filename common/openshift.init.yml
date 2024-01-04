@@ -159,15 +159,13 @@ objects:
           storage: ${IDX_PVC_SIZE}
       storageClassName: netapp-file-standard
   - kind: PersistentVolumeClaim
+  - kind: Namespace
     apiVersion: v1
     metadata:
-      name: ${NAME}-${ZONE}-index-backup
+      name: ${NAME}-${ZONE}
+      annotations:
+        openshift.io/node-selector: ""
       labels:
+        openshift.io/cluster-monitoring: "true"
         app: ${NAME}-${ZONE}
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: ${IDX_BKP_PVC_SIZE}
-      storageClassName: netapp-file-standard
+    
