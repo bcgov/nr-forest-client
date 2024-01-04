@@ -62,11 +62,11 @@ onMounted(() => {
           <Enterprise20 />
           {{ formData.businessInformation.businessName }}
         </h6>
-        <p class="body-compact-01" id="clientTypeId">
+        <p class="body-compact-01 grouping-22-item" id="clientTypeId">
           {{ clientType.text }}
         </p>
       </div>
-      <div v-if="formData.businessInformation.birthdate">
+      <div v-if="formData.businessInformation.birthdate" class="grouping-22-item">
         <p class="label-01">Proprietor’s birthdate</p>
         <p class="body-compact-01">{{ formData.businessInformation.birthdate }}</p>
       </div>
