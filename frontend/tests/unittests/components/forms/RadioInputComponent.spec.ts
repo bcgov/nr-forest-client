@@ -13,7 +13,7 @@ describe("Radio Input Component", () => {
     (value: any) => (value && value === "A" ? "Can't select A" : ""),
   ];
 
-  it("renders the input field with the provided id", () => {
+  it("renders the input field with the provided id", async () => {
     const wrapper = mount(RadioInputComponent, {
       props: {
         id,
@@ -23,10 +23,16 @@ describe("Radio Input Component", () => {
         initialValue: "",
       },
     });
+
     for (const value of values) {
-      expect(wrapper.html()).toContain(
-        `<cds-radio-button label-text="${value.text}"></cds-radio-button>`
-      );
+      const expectedId = `${id}rb${value.value}`;
+      await wrapper.vm.$nextTick();
+
+      const radioButton = wrapper.find(`[id="${expectedId}"]`);
+
+      expect(radioButton.exists()).toBe(true);
+      expect(radioButton.attributes("label-text")).toBe(value.text);
+      expect((radioButton as any).element.checked).toBe(value.value === wrapper.props().initialValue);
     }
   });
 
