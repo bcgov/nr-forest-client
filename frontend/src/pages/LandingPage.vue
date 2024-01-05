@@ -117,6 +117,7 @@ if (query.ref && query.ref === "external") {
     flex-direction: column;
   }
 }
+
 /* Medium (from 672px to 1055px) */
 @media screen and (min-width: 672px) and (max-width: 1055px) {
   .login-content:first-child {
