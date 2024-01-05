@@ -107,10 +107,14 @@ if (query.ref && query.ref === "external") {
     padding: 1rem;
   }
   .login-content:first-child {
-    flex: auto;
+    flex: 0;
   }
   .login-content:last-child {
     flex: auto;
+  }
+
+  .login-content .form-footer-group-buttons {
+    flex-direction: column;
   }
 }
 /* Medium (from 672px to 1055px) */
