@@ -32,6 +32,7 @@ spring:
       force: true
 
 management:
+  enable-native-support: true
   endpoint:
     health:
       show-details: always
