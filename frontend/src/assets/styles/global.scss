@@ -1298,6 +1298,10 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
+  .content-landing {
+    flex-direction: column;
+  }
+
   .wizard-head-toast {
     right: 0.4375rem;
     top: 4rem;
@@ -1487,6 +1491,10 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 /* Medium (from 672px to 1055px) */
 @media screen and (min-width: 672px) and (max-width: 1055px) {
   /* Lower range width is still a mess */
+
+  .content-landing {
+    flex-direction: column;
+  }
 
   .screen {
     padding: 2.5rem 2rem;
