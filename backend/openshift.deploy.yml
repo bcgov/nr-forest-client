@@ -74,6 +74,10 @@ objects:
       labels:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
+      annotations:
+        prometheus.io/scrape: true
+        prometheus.io/port: 8080
+        prometheus.io/path: /metrics
     spec:
       replicas: 1
       triggers:
@@ -189,6 +193,10 @@ objects:
                   value: ${COGNITO_COOKIE_DOMAIN}
                 - name: TZ
                   value: America/Vancouver
+                - name: APP_ZONE
+                  value: ${ZONE}
+                - name: APP_COMPONENT
+                  value: ${COMPONENT}
               ports:
                 - containerPort: 8080
                   protocol: TCP

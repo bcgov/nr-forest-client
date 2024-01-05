@@ -37,12 +37,19 @@ management:
       show-details: always
   endpoints:
     web:
+      path-mapping:
+        prometheus: metrics
       base-path: /
       exposure:
-        include: "*"
+        include: health,info,prometheus,httptrace
   httpexchanges:
     recording:
       include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
+
+info:
+  app:
+    name: nr-forest-client-${APP_COMPONENT:backend}
+    zone: ${APP_ZONE:local}
 
 ca:
   bc:
