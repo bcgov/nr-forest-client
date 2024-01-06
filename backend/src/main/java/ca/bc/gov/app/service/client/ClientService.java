@@ -149,9 +149,9 @@ public class ClientService {
    * @param size The amount of entries per page.
    * @return A list of {@link CodeNameDto} entries.
    */
-  public Flux<CodeNameDto> listClientContactTypeCodes(int page, int size) {
+  public Flux<CodeNameDto> listClientContactTypeCodes(LocalDate activeDate,int page, int size) {
     return contactTypeCodeRepository
-        .findBy(PageRequest.of(page, size))
+        .findActiveAt(activeDate, PageRequest.of(page, size))
         .map(entity -> new CodeNameDto(
             entity.getContactTypeCode(),
             entity.getDescription()));

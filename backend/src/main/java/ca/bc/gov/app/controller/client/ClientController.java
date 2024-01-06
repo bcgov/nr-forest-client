@@ -81,7 +81,7 @@ public class ClientController {
       Integer size
   ) {
     return clientService
-        .listClientContactTypeCodes(page, size);
+        .listClientContactTypeCodes(LocalDate.now(),page, size);
   }
 
   /**
