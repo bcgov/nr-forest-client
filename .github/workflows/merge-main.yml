@@ -195,6 +195,7 @@ jobs:
             -p COGNITO_ENVIRONMENT=TEST
             -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
             -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+            -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
       - name: Conventional Changelog Update
         uses: TriPSs/conventional-changelog-action@v5
@@ -370,6 +371,7 @@ jobs:
             -p COGNITO_ENVIRONMENT=PROD
             -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
             -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+            -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
   prod-deploy:
     name: PROD Deployment
