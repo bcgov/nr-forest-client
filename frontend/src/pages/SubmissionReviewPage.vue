@@ -551,7 +551,7 @@ const matchingData = computed(() => {
             @update:selected-value="event => selectedRejectReasons = event"        
           />
           <text-input-component
-            v-if="showClientNumberField"
+            :class="{invisible: !showClientNumberField}"
             id="reject_reason_message"
             label="Matching client number"
             placeholder=""

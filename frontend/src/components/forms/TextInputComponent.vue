@@ -120,7 +120,7 @@ const selectValue = (event: any) => {
 </script>
 
 <template>
-  <div class="grouping-02" v-if="enabled">
+  <div v-if="enabled" class="grouping-02" :class="$attrs.class">
     <div class="input-group">
       <div class="cds--text-input__label-wrapper">
         <label :id="id + 'Label'" 
