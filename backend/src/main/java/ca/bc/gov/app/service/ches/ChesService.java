@@ -11,13 +11,27 @@ import ca.bc.gov.app.dto.ches.ChesRequestDto;
 import ca.bc.gov.app.dto.ches.CommonExposureJwtDto;
 import ca.bc.gov.app.dto.client.EmailLogDto;
 import ca.bc.gov.app.entity.client.EmailLogEntity;
-import ca.bc.gov.app.exception.*;
+import ca.bc.gov.app.exception.BadRequestException;
+import ca.bc.gov.app.exception.InvalidAccessTokenException;
+import ca.bc.gov.app.exception.InvalidRequestObjectException;
+import ca.bc.gov.app.exception.InvalidRoleException;
+import ca.bc.gov.app.exception.UnableToProcessRequestException;
+import ca.bc.gov.app.exception.UnexpectedErrorException;
 import ca.bc.gov.app.repository.client.EmailLogRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.r2dbc.postgresql.codec.Json;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import io.r2dbc.postgresql.codec.Json;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
@@ -29,14 +43,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -48,9 +54,9 @@ public class ChesService {
 
   private final WebClient authApi;
   private final Configuration freeMarkerConfiguration;
-  
+
   private final EmailLogRepository emailLogRepository;
-  
+
   private final Jackson2ObjectMapperBuilder builder;
 
   public ChesService(
@@ -71,93 +77,103 @@ public class ChesService {
   }
 
   public Mono<String> sendEmail(String templateName,
-                                String emailAddress, 
-                                String subject, 
-                                Map<String, Object> variables,
-                                Integer emailLogId) {
+      String emailAddress,
+      String subject,
+      Map<String, Object> variables,
+      Integer emailLogId) {
+
+    List<String> emails = new ArrayList<>();
+    emails.add(emailAddress);
+    emails.addAll(configuration.getChes().getCopyEmail());
+
+    String processedSubject =
+        configuration.getCognito().getEnvironment().equalsIgnoreCase("prod")
+            ? subject
+            : String.format("[%s] %s", configuration.getCognito().getEnvironment(), subject);
+
     return this
         .buildTemplate(templateName, variables)
-        .flatMap(body -> {
-      ChesRequestDto chesRequestDto = new ChesRequestDto(List.of(emailAddress, 
-                                                                 "paulo.cruz@gov.bc.ca",
-                                                                 "ziad.bhunnoo@gov.bc.ca",
-                                                                 "maria.martinez@gov.bc.ca"),
-                                                         body);
-
-      return this.sendEmail(chesRequestDto, subject).flatMap(emailId -> {
-        log.info("Mail sent, transaction ID is {}", emailId);
-        
-        EmailLogDto emailLogDto = new EmailLogDto(
-            emailLogId,
-            templateName, 
-            emailAddress, 
-            subject, 
-            "Y", 
-            emailId,
-            "", 
-            variables);
-        return saveEmailLog(emailLogDto, "Email sent successfully. Transaction ID: " + emailId);
-      })
-      .onErrorResume(throwable -> {
-        log.error("Error occurred while building/sending the email: {}", throwable.getMessage());
-
-        EmailLogDto emailLogDto = new EmailLogDto(
-            emailLogId,
-            templateName,
-            emailAddress,
-            subject,
-            "N",
-            "",
-            throwable.getMessage(),
-            variables);
-        return saveEmailLog(emailLogDto,  "Error sending email");
-      });
-    });
+        .map(body -> new ChesRequestDto(emails, body))
+        .flatMap(chesRequestDto ->
+            this
+                .sendEmail(chesRequestDto, processedSubject)
+                .doOnNext(emailId -> log.info("Mail sent, transaction ID is {}", emailId))
+                .flatMap(emailId ->
+                    saveEmailLog(
+                        new EmailLogDto(
+                            emailLogId,
+                            templateName,
+                            emailAddress,
+                            processedSubject,
+                            "Y",
+                            emailId,
+                            "",
+                            variables),
+                        "Email sent successfully. Transaction ID: " + emailId
+                    )
+                )
+        )
+        .doOnError(throwable -> log.error("Error occurred while building/sending the email: {}",
+            throwable.getMessage()))
+        .onErrorResume(throwable ->
+            saveEmailLog(
+                new EmailLogDto(
+                    emailLogId,
+                    templateName,
+                    emailAddress,
+                    processedSubject,
+                    "N",
+                    "",
+                    throwable.getMessage(),
+                    variables),
+                "Error sending email"
+            )
+        );
   }
-  
+
   private Mono<String> saveEmailLog(EmailLogDto emailLogDto, String transactionMsg) {
     if (emailLogDto.emailLogId() != null) {
-        return emailLogRepository.findById(emailLogDto.emailLogId())
-                .flatMap(existingLogEntity -> updateExistingLogEntity(
-                                                existingLogEntity, 
-                                                emailLogDto, 
-                                                transactionMsg));
+      return emailLogRepository.findById(emailLogDto.emailLogId())
+          .flatMap(existingLogEntity -> updateExistingLogEntity(
+              existingLogEntity,
+              emailLogDto,
+              transactionMsg));
     } else {
-        EmailLogEntity logEntity = createNewLogEntity(emailLogDto);
-        return emailLogRepository.save(logEntity)
-                .thenReturn(transactionMsg);
+      EmailLogEntity logEntity = createNewLogEntity(emailLogDto);
+      return emailLogRepository.save(logEntity)
+          .thenReturn(transactionMsg);
     }
   }
 
   private Mono<String> updateExistingLogEntity(
-                        EmailLogEntity existingLogEntity, 
-                        EmailLogDto emailLogDto, 
-                        String transactionMsg) {
-    
-      String exceptionMessage = "Y".equals(existingLogEntity.getEmailSentInd()) 
-                                      ? "" 
-                                      : emailLogDto.exceptionMessage();
-      existingLogEntity.setEmailSentInd(emailLogDto.emailSentInd());
-      existingLogEntity.setExceptionMessage(exceptionMessage);
-      existingLogEntity.setUpdateDate(LocalDateTime.now());
-  
-      return emailLogRepository
-              .save(existingLogEntity)
-              .thenReturn(transactionMsg);
+      EmailLogEntity existingLogEntity,
+      EmailLogDto emailLogDto,
+      String transactionMsg) {
+
+    String exceptionMessage = "Y".equals(existingLogEntity.getEmailSentInd())
+        ? ""
+        : emailLogDto.exceptionMessage();
+    existingLogEntity.setEmailSentInd(emailLogDto.emailSentInd());
+    existingLogEntity.setExceptionMessage(exceptionMessage);
+    existingLogEntity.setUpdateDate(LocalDateTime.now());
+
+    return emailLogRepository
+        .save(existingLogEntity)
+        .thenReturn(transactionMsg);
   }
-  
+
   private EmailLogEntity createNewLogEntity(EmailLogDto emailLogDto) {
-      EmailLogEntity logEntity = new EmailLogEntity();
-      logEntity.setCreateDate(LocalDateTime.now());
-      logEntity.setTemplateName(emailLogDto.templateName());
-      logEntity.setEmailAddress(emailLogDto.emailAddress());
-      logEntity.setEmailSubject(emailLogDto.subject());
-      logEntity.setEmailSentInd(emailLogDto.emailSentInd());
-      logEntity.setEmailId(emailLogDto.emailId());
-      logEntity.setExceptionMessage(emailLogDto.exceptionMessage());
-      logEntity.setEmailVariables(convertTo(emailLogDto.variables()));
-  
-      return logEntity;
+    EmailLogEntity logEntity = new EmailLogEntity();
+    logEntity.setCreateDate(LocalDateTime.now());
+    logEntity.setTemplateName(emailLogDto.templateName());
+    logEntity.setEmailAddress(emailLogDto.emailAddress());
+    logEntity.setEmailSubject(emailLogDto.subject());
+    logEntity.setEmailSentInd(emailLogDto.emailSentInd());
+    logEntity.setEmailId(emailLogDto.emailId());
+    logEntity.setExceptionMessage(emailLogDto.exceptionMessage());
+    logEntity.setEmailVariables(convertTo(emailLogDto.variables()));
+
+    return logEntity;
   }
 
   private Json convertTo(Map<String, Object> variables) {
@@ -165,8 +181,8 @@ public class ChesService {
 
     try {
       json = builder
-              .build()
-              .writeValueAsString(variables);
+          .build()
+          .writeValueAsString(variables);
     } catch (JsonProcessingException e) {
       log.error("Error while converting matchers to json", e);
     }
@@ -247,7 +263,7 @@ public class ChesService {
    * @param variables    a map of variable names and their corresponding values to be used when
    *                     processing the template
    * @return a Mono that emits the String representation of the processed template, or an error if
-   *         an exception occurs during template processing
+   * an exception occurs during template processing
    */
   public Mono<String> buildTemplate(String templateName, Map<String, Object> variables) {
     StringWriter writer = new StringWriter();

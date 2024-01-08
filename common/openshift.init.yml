@@ -86,6 +86,9 @@ parameters:
   - name: COGNITO_LOGOUT_URI
     description: Cognito redirect url once logged out
     required: true
+  - name: CHES_MAIL_COPY
+    description: Email address to copy all CHES emails to
+    required: true
 objects:
   - apiVersion: v1
     kind: Secret

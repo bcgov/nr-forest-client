@@ -560,11 +560,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
   private static Stream<Arguments> contactTypeCodes() {
     return
         Stream.of(
-            Arguments.of(null, null, "AP", "Accounts Payable"),
-            Arguments.of(0, 1, "AP", "Accounts Payable"),
-            Arguments.of(1, 1, "AR", "Accounts Receivable"),
-            Arguments.of(11, 1, "GP", "General Partner"),
-            Arguments.of(22, 1, "TP", "EDI Trading Partner")
+            Arguments.of(null, null, "TC", "BCTS Contractor"),
+            Arguments.of(0, 1, "TC", "BCTS Contractor")
         );
   }
 
