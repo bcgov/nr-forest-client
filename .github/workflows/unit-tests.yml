@@ -144,6 +144,7 @@ jobs:
 
       - name: Frontend Unit Coverage
         uses: romeovs/lcov-reporter-action@v0.3.1
+        continue-on-error: true
         with:
           title: Frontend unit Test Coverage
           delete-old-comments: true
@@ -152,6 +153,7 @@ jobs:
 
       - name: Frontend Component Coverage
         uses: romeovs/lcov-reporter-action@v0.3.1
+        continue-on-error: true
         with:
           title: Frontend component Test Coverage
           delete-old-comments: true
@@ -160,6 +162,7 @@ jobs:
       
       - name: Frontend E2E Coverage
         uses: romeovs/lcov-reporter-action@v0.3.1
+        continue-on-error: true
         with:
           title: Frontend e2e Test Coverage
           delete-old-comments: true
@@ -168,6 +171,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         name: Upload Cypress Screenshots with error
+        continue-on-error: true
         if: failure()
         with:
           name: cypress-screenshots

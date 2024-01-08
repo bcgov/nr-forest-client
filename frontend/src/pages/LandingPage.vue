@@ -78,15 +78,14 @@ if (query.ref && query.ref === "external") {
 <style lang="scss">
 @import '@bcgov-nr/nr-fsa-theme/style-sheets/landing-page-components-overrides.scss';
 
-.login-content:first-child{
-  padding-top: 3rem;
-  padding-left: 2.5rem;
-  width: 55%;
+.login-content:first-child {
+  padding: 2.5rem;
+  flex-basis: 60%;
   box-sizing: border-box;
 }
 .login-content:last-child {
   overflow-y: hidden;
-  width: 45%;
+  flex-basis: 40%;
 }
 .login-content:first-child img {
   width: 10.5rem;
@@ -95,5 +94,44 @@ if (query.ref && query.ref === "external") {
   height: 100%;
   width: 100%;
   object-fit: cover;
+  object-position: 50% 0;
+}
+
+.form-footer-group-buttons {
+  flex-wrap: wrap;
+}
+
+/* Small (up to 671px) */
+@media screen and (max-width: 671px) {
+  .login-content:first-child {
+    padding: 1rem;
+  }
+  .login-content:first-child {
+    flex: 0;
+  }
+  .login-content:last-child {
+    flex: auto;
+  }
+
+  .login-content .form-footer-group-buttons {
+    flex-direction: column;
+  }
+}
+
+/* Medium (from 672px to 1055px) */
+@media screen and (min-width: 672px) and (max-width: 1055px) {
+  .login-content:first-child {
+    padding: 2rem;
+  }
+  .login-content:first-child {
+    flex: 0;
+  }
+  .login-content:last-child {
+    flex: auto;
+  }
+
+  .login-content .form-footer-group-buttons {
+    flex-direction: column;
+  }
 }
 </style>

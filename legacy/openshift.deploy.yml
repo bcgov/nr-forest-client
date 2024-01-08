@@ -94,6 +94,10 @@ objects:
         type: Rolling
       template:
         metadata:
+          annotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "9000"
+            prometheus.io/path: "/metrics"
           labels:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
