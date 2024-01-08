@@ -92,6 +92,10 @@ objects:
         type: Rolling
       template:
         metadata:
+          annotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "8080"
+            prometheus.io/path: "/metrics"
           labels:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
@@ -189,6 +193,10 @@ objects:
                   value: ${COGNITO_COOKIE_DOMAIN}
                 - name: TZ
                   value: America/Vancouver
+                - name: APP_ZONE
+                  value: ${ZONE}
+                - name: APP_COMPONENT
+                  value: ${COMPONENT}
               ports:
                 - containerPort: 8080
                   protocol: TCP
