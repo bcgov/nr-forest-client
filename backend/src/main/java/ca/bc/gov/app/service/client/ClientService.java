@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.client;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
@@ -206,6 +207,13 @@ public class ClientService {
             )
             .map(BcRegistryDocumentDto.class::cast)
 
+            .flatMap(client ->{
+              if(ApplicationConstant.AVAILABLE_CLIENT_TYPES.contains(client.business().legalType())){
+                return Mono.just(client);
+              }
+              return Mono.error(new UnsuportedClientTypeException(client.business().legalType()));
+            })
+
             //if document type is SP and party contains only one entry that is not a person, fail
             .filter(document ->
                 !("SP".equalsIgnoreCase(document.business().legalType())
@@ -237,14 +245,7 @@ public class ClientService {
                 entry.status(),
                 entry.legalType()
             )
-        )
-        .flatMap(client ->{
-          if(List.of("A", "I", "S", "SP","RSP","USP").contains(client.legalType())){
-            return Mono.just(client);
-          }
-          return Mono.error(new UnsuportedClientTypeException(client.legalType()));
-        })
-        .doOnError(System.out::println);
+        );
   }
 
   /**
