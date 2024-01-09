@@ -1012,6 +1012,15 @@ cds-modal-footer {
   padding: 1rem 1rem 1rem 1rem;
 }
 
+cds-modal:is(#reject-modal, #approve-modal) cds-modal-footer {
+  padding-top: 0;
+  height: auto;
+}
+
+cds-modal:is(#reject-modal, #approve-modal) cds-modal-footer-button {
+  height: min-content;
+}
+
 cds-modal-footer-button::part(button) {
   border-radius: 0.25rem;
   height: 75%;
@@ -1020,6 +1029,10 @@ cds-modal-footer-button::part(button) {
   white-space: nowrap;
 
   --cds-button-danger-hover: var(--light-theme-button-danger-hover, #b32001);
+}
+
+cds-modal:is(#reject-modal, #approve-modal) cds-modal-footer-button::part(button) {
+  padding-bottom: 1rem;
 }
 
 .cds--modal-close-btn {
