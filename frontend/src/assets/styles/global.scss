@@ -1018,7 +1018,7 @@ cds-modal:is(#reject-modal, #approve-modal) cds-modal-footer {
 }
 
 cds-modal:is(#reject-modal, #approve-modal) cds-modal-footer-button {
-  height: auto;
+  height: min-content;
 }
 
 cds-modal-footer-button::part(button) {
