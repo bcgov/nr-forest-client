@@ -22,18 +22,6 @@ public class ClientSubmissionMailService {
   @ServiceActivator(inputChannel = ApplicationConstant.SUBMISSION_MAIL_CHANNEL)
   public void sendMail(Message<EmailRequestDto> mailMessage) {
 
-    if (
-        Objects.equals(mailMessage.getHeaders().get(
-            ApplicationConstant.SUBMISSION_TYPE, SubmissionTypeCodeEnum.class
-        ), SubmissionTypeCodeEnum.RNC)
-    ) {
-      log.info("Receiving a review notification, mail not sent {} {} -> {}",
-          mailMessage.getPayload().email(),
-          mailMessage.getPayload().subject(),
-          mailMessage.getPayload().variables()
-      );
-      return;
-    }
     log.info("Sending email to {} {} -> {}",
         mailMessage.getPayload().email(),
         mailMessage.getPayload().subject(),

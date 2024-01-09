@@ -182,6 +182,7 @@ jobs:
             -p COGNITO_ENVIRONMENT=DEV
             -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
             -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+            -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
       - name: Deploy Database
         uses: bcgov-nr/action-deployer-openshift@v2.0.0

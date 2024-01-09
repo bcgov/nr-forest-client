@@ -81,7 +81,7 @@ class ClientSubmissionMailServiceTest {
         .untilAsserted(() -> {
           wireMockExtension
               .verify(
-                  0,
+                  1,
                   postRequestedFor(urlEqualTo("/ches/email"))
                       .withHeader("Content-Type", containing(MediaType.APPLICATION_JSON_VALUE))
                       .withRequestBody(equalToJson(TestConstants.EMAIL_REQUEST_JSON)
