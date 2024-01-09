@@ -52,6 +52,7 @@ public class ForestClientConfiguration {
     private String clientId;
     private String clientSecret;
     private String scope;
+    private List<String> copyEmail;
   }
 
   /**

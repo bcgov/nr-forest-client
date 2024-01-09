@@ -63,6 +63,7 @@ ca:
           clientId: ${CHES_CLIENT_ID:clientId}
           clientSecret: ${CHES_CLIENT_SECRET:secret}
           scope: scope
+          copyEmail: ${CHES_COPY_EMAIL:email@email.ca}
         bcregistry:
           uri: ${BCREGISTRY_URI:https://bcregistry-sandbox.apigee.net}
           apiKey: ${BCREGISTRY_KEY:123456}
