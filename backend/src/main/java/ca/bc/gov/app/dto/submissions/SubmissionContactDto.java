@@ -1,6 +1,6 @@
 package ca.bc.gov.app.dto.submissions;
 
-import java.util.List;
+import java.util.Set;
 
 public record SubmissionContactDto(
     Integer index,
@@ -9,7 +9,7 @@ public record SubmissionContactDto(
     String lastName,
     String phoneNumber,
     String emailAddress,
-    List<String> locations,
+    Set<String> locations,
     String userId
 ) {
 
