@@ -505,7 +505,7 @@ const matchingData = computed(() => {
         </cds-modal-header>
         
         <cds-modal-body>
-          <p>A new client number will be created and an email will be sent to the submitter.</p>
+          <p class="body-compact-01">A new client number will be created and an email will be sent to the submitter.</p>
         </cds-modal-body>
 
         <cds-modal-footer>
@@ -539,7 +539,7 @@ const matchingData = computed(() => {
         </cds-modal-header>
 
         <cds-modal-body class="grouping-12">
-          <p>This submission will be rejected and the submitter will receive an email notification. Please choose the reason below:</p>
+          <p class="body-compact-01">This submission will be rejected and the submitter will receive an email notification. Please choose the reason below:</p>
           <multiselect-input-component
             id="reject_reason_id"
             label="Reason for rejection"
