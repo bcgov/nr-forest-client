@@ -76,9 +76,13 @@ public class ClientSubmissionLoadingService {
     return
         submissionDetailRepository
             .findBySubmissionId(message.getPayload())
+            .doOnNext(
+                submission -> log.info("Loaded submission details for mail purpose {}", submission))
             .flatMap(details ->
                 contactRepository
                     .findFirstBySubmissionId(message.getPayload())
+                    .doOnNext(submissionContact -> log.info(
+                        "Loaded submission contact details for mail purpose {}", submissionContact))
                     .map(submissionContact ->
                         new EmailRequestDto(
                             details.getIncorporationNumber(),
