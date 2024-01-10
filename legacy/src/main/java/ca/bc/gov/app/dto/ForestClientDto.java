@@ -1,6 +1,6 @@
 package ca.bc.gov.app.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record ForestClientDto(
     String clientNumber,
@@ -9,7 +9,7 @@ public record ForestClientDto(
     String legalMiddleName,
     String clientStatusCode,
     String clientTypeCode,
-    LocalDate birthdate,
+    LocalDateTime birthdate,
     String clientIdTypeCode,
     String clientIdentification,
     String registryCompanyTypeCode,
