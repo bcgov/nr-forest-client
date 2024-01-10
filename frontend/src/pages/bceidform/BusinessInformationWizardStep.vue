@@ -386,11 +386,10 @@ const bcRegistryEmail = "BCRegistries@gov.bc.ca";
         low-contrast="true"
         open="true"
         kind="error"
-        title="Sole proprietor not owned by a person"
+        title="Unknown sole proprietor"
       >
         <p  class="cds--inline-notification-content">
-          Looks like “{{ formData.businessInformation.businessName }}” is not
-          owned by a person. Please select another entry or logout.
+          We're unable to complete this application because we cannot identify the person who is the sole proprietor. Please email FORHVAP.CLIADMIN@gov.bc.ca for help.
         </p>
       </cds-inline-notification>
 
