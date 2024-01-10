@@ -36,11 +36,11 @@ import ca.bc.gov.app.service.ches.ChesService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -229,7 +229,9 @@ public class ClientSubmissionService {
                 row.get("last_name", String.class),
                 row.get("business_phone_number", String.class),
                 row.get("email_address", String.class),
-                Set.of(StringUtils.defaultString(row.get("locations", String.class)).split(", ")),
+                Arrays.stream(StringUtils.defaultString(row.get("locations", String.class))
+                    .split(", "))
+                    .collect(Collectors.toSet()),
                 row.get("idp_user_id", String.class)
             ))
             .all();
