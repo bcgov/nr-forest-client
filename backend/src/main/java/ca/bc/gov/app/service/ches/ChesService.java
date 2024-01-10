@@ -82,10 +82,6 @@ public class ChesService {
       Map<String, Object> variables,
       Integer emailLogId) {
 
-    List<String> emails = new ArrayList<>();
-    emails.add(emailAddress);
-    emails.addAll(configuration.getChes().getCopyEmail());
-
     String processedSubject =
         configuration.getCognito().getEnvironment().equalsIgnoreCase("prod")
             ? subject
@@ -93,7 +89,7 @@ public class ChesService {
 
     return this
         .buildTemplate(templateName, variables)
-        .map(body -> new ChesRequestDto(emails, body))
+        .map(body -> new ChesRequestDto(List.of(emailAddress), body))
         .flatMap(chesRequestDto ->
             this
                 .sendEmail(chesRequestDto, processedSubject)
@@ -212,7 +208,7 @@ public class ChesService {
             .map(request ->
                 new ChesMailRequest(
                     null,
-                    null,
+                    configuration.getChes().getCopyEmail(),
                     ChesMailBodyType.HTML,
                     request.emailBody(),
                     null,
