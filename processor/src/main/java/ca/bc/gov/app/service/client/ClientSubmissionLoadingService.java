@@ -6,6 +6,7 @@ import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -91,7 +92,7 @@ public class ClientSubmissionLoadingService {
                                 "userName", submissionContact.getFirstName(),
                                 "business", Map.of(
                                     "name", details.getOrganizationName(),
-                                    "clientNumber", details.getClientNumber()
+                                    "clientNumber", Objects.toString(details.getClientNumber(), "")
                                 )
                             )
                         )
