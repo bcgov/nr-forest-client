@@ -4,6 +4,7 @@ import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ForestClientRepository;
+import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Observed
 public class ClientService {
 
   private final R2dbcEntityOperations entityTemplate;
@@ -59,7 +61,7 @@ public class ClientService {
               )
               .map(client -> false) // means you can't create it
               .defaultIfEmpty(true)
-              .doOnNext(tag -> log.info("No individual client found {}", tag))
+              .doOnNext(tag -> log.info("No individual client found? {}", tag))
               .last();
     }
 
@@ -75,7 +77,7 @@ public class ClientService {
             )
             .map(client -> false) // means you can't create it
             .defaultIfEmpty(true)
-            .doOnNext(tag -> log.info("No client with type {} found {}", entity
+            .doOnNext(tag -> log.info("No client with type {} found? {}", entity
                 .getClientTypeCode(), tag))
             .last();
   }

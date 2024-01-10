@@ -3,6 +3,7 @@ package ca.bc.gov.app.controller.client;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.service.client.ClientAddressService;
+import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RequestMapping(value = "/api/clients", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@Observed
 public class ClientAddressController {
 
   private final ClientAddressService clientAddressService;
@@ -30,6 +32,8 @@ public class ClientAddressController {
       Integer maxSuggestions,
       @RequestParam(value = "searchTerm", required = true)
       String searchTerm) {
+    log.info("Requesting possible addresses for country: {}, maxSuggestions: {}, searchTerm: {}",
+        country, maxSuggestions, searchTerm);
     return clientAddressService
         .findPossibleAddresses(country, maxSuggestions, searchTerm);
   }
@@ -37,6 +41,7 @@ public class ClientAddressController {
   @GetMapping("/addresses/{addressId}")
   public Mono<ClientAddressDto> getAddress(
       @PathVariable String addressId) {
+    log.info("Requesting address for addressId: {}", addressId);
     return clientAddressService
         .getAddress(addressId);
   }

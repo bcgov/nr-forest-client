@@ -78,7 +78,7 @@ public class ClientSubmitRequestValidator implements Validator {
       validateBirthdate(businessInformation.birthdate(), errors);
     }
 
-    if (!List.of("A", "I", "S", "USP", "RSP","SP").contains(clientType)) {
+    if (!List.of("A", "I", "S", "USP", "RSP","SP","BC","GP").contains(clientType)) {
       errors.rejectValue("businessType",
           String.format("%s %s is not supported at the moment", "Business type",clientType));
     }

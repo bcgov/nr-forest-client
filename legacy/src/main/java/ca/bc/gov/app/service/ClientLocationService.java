@@ -4,6 +4,7 @@ import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ForestClientLocationDto;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
+import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Service
 @Slf4j
+@Observed
 public class ClientLocationService {
 
   private final R2dbcEntityOperations entityTemplate;
@@ -28,11 +30,26 @@ public class ClientLocationService {
                 locateClientLocation(locationDto.clientNumber(), locationDto.clientLocnCode())
                     .map(forestClientLocation -> false) // means you can't create it
                     .defaultIfEmpty(true) // means you can create it
+                    .doOnNext(canCreate ->
+                        log.info(
+                            "Can create client location {} {}? {}",
+                            locationDto.clientNumber(),
+                            locationDto.clientLocnName(),
+                            canCreate
+                        )
+                    )
             )
             .map(mapper::toEntity)
             .flatMap(entity -> entityTemplate
                 .insert(ForestClientLocationEntity.class)
                 .using(entity)
+            )
+            .doOnNext(forestClientContact ->
+                log.info(
+                    "Saved forest client location {} {}",
+                    forestClientContact.getClientNumber(),
+                    forestClientContact.getClientLocnName()
+                )
             )
             .map(ForestClientLocationEntity::getClientNumber);
   }

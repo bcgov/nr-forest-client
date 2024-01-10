@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import io.micrometer.observation.annotation.Observed;
 import io.r2dbc.postgresql.codec.Json;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -46,6 +47,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
+@Observed
 public class ChesService {
 
   public static final String FAILED_TO_SEND_EMAIL = "Failed to send email: {}";
@@ -91,6 +93,8 @@ public class ChesService {
             ? subject
             : String.format("[%s] %s", configuration.getCognito().getEnvironment(), subject);
 
+    log.info("Sending email to {} with subject {}", emailAddress, processedSubject);
+
     return this
         .buildTemplate(templateName, variables)
         .map(body -> new ChesRequestDto(emails, body))
@@ -132,6 +136,7 @@ public class ChesService {
   }
 
   private Mono<String> saveEmailLog(EmailLogDto emailLogDto, String transactionMsg) {
+    log.info("Saving email log {}", emailLogDto.emailId());
     if (emailLogDto.emailLogId() != null) {
       return emailLogRepository.findById(emailLogDto.emailLogId())
           .flatMap(existingLogEntity -> updateExistingLogEntity(

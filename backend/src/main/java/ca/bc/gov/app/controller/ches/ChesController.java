@@ -2,6 +2,7 @@ package ca.bc.gov.app.controller.ches;
 
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.service.client.ClientService;
+import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RequestMapping(value = "/api/ches", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@Observed
 public class ChesController {
 
   private final ClientService clientService;

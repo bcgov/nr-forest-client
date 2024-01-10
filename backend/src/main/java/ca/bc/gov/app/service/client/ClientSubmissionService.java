@@ -33,6 +33,7 @@ import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.service.ches.ChesService;
+import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -57,6 +58,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Observed
 public class ClientSubmissionService {
 
   private final SubmissionRepository submissionRepository;
@@ -94,7 +96,7 @@ public class ClientSubmissionService {
             .flatMapMany(clientTypes ->
                 loadSubmissions(page, size, requestType, requestStatus, updatedAt)
                     .flatMap(submission ->
-                        loadSubmissionDetail(clientType, name, submission)
+                        loadSubmissionDetail(clientType, name, submission.getSubmissionId())
                             .map(submissionDetail ->
                                 new ClientListSubmissionDto(
                                     submission.getSubmissionId(),
@@ -142,17 +144,23 @@ public class ClientSubmissionService {
                     .updatedBy(userId)
                     .build()
             )
+            .doOnNext(submission -> log.info("Submission ready to be saved: {}", submission))
             //Save submission to begin with
             .flatMap(submissionRepository::save)
+            .doOnNext(submission -> log.info("Submission saved: {}", submission))
             //Save the submission detail
             .map(submission -> mapToSubmissionDetailEntity(submission.getSubmissionId(),
                 clientSubmissionDto.businessInformation())
             )
+            .doOnNext(submissionDetail -> log.info("Submission detail ready to be saved: {}",
+                submissionDetail))
             .flatMap(submissionDetailRepository::save)
+            .doOnNext(submissionDetail -> log.info("Submission detail saved: {}", submissionDetail))
             //Save the locationNames and contacts and do the association
             .flatMap(submission ->
                 //Save all locationNames
                 saveAddresses(clientSubmissionDto, submission)
+                    .doOnNext(locations -> log.info("Locations saved: {}", locations))
                     //For each contact, save it,
                     // then find the associated location and save the association
                     .flatMapMany(locations ->
@@ -174,6 +182,8 @@ public class ClientSubmissionService {
                     )
                     //Then grab all back as a list, to make all reactive flows complete
                     .collectList()
+                    .doOnNext(submissionLocationContacts ->
+                        log.info("Location contacts saved: {}", submissionLocationContacts))
                     //Return what we need only
                     .thenReturn(submission.getSubmissionId())
             )
@@ -250,16 +260,19 @@ public class ClientSubmissionService {
             .all();
 
     return detailsBusiness
+        .doOnNext(submissionDetailsDto -> log.info("Loaded submission details for id {}", id))
         .flatMap(submissionDetailsDto ->
             contacts
                 .collectList()
                 .map(submissionDetailsDto::withContact)
         )
+        .doOnNext(submissionDetailsDto -> log.info("Loaded submission contacts for id {}", id))
         .flatMap(submissionDetailsDto ->
             addresses
                 .collectList()
                 .map(submissionDetailsDto::withAddress)
         )
+        .doOnNext(submissionDetailsDto -> log.info("Loaded submission addresses for id {}", id))
         .flatMap(submissionDetailsDto ->
             submissionMatchDetailRepository
                 .findBySubmissionId(id.intValue())
@@ -268,6 +281,7 @@ public class ClientSubmissionService {
                         .withApprovedTimestamp(matched.getUpdatedAt())
                         .withMatchers(matched.getMatchers())
                 )
+                .doOnNext(match -> log.info("Loaded submission match for id {}", id))
                 .defaultIfEmpty(
                     submissionDetailsDto
                         .withMatchers(Map.of())
@@ -284,6 +298,7 @@ public class ClientSubmissionService {
       String userName,
       SubmissionApproveRejectDto request
   ) {
+    log.info("Request {} is being {}", id, request.approved() ? "approved" : "rejected");
     return
         submissionRepository
             .findById(id.intValue())
@@ -296,6 +311,8 @@ public class ClientSubmissionService {
               return submission;
             })
             .flatMap(submissionRepository::save)
+            .doOnNext(submission -> log.info("Submission {} is now {}", id,
+                submission.getSubmissionStatus()))
             .flatMap(submission ->
                 submissionMatchDetailRepository
                     .findBySubmissionId(id.intValue())
@@ -305,6 +322,7 @@ public class ClientSubmissionService {
                             .withUpdatedAt(LocalDateTime.now())
                             .withMatchingMessage(processRejectionReason(request))
                     )
+                    .doOnNext(matched -> log.info("Match for submission {} is now being saved {}", id, matched.getStatus()))
                     .flatMap(submissionMatchDetailRepository::save)
             )
             .then();
@@ -316,6 +334,8 @@ public class ClientSubmissionService {
       Integer submissionId,
       String userId
   ) {
+
+    log.info("Saving contact {} for submission {}", contact.lastName(), submissionId);
 
     return
         Mono
@@ -330,19 +350,26 @@ public class ClientSubmissionService {
                     .submissionContactId(contactEntity.getSubmissionContactId())
                     .build()
             )
-            .flatMap(submissionLocationContactRepository::save);
+            .flatMap(submissionLocationContactRepository::save)
+            .doOnNext(submissionLocationContactEntity ->
+                log.info("Contact {} saved for submission {}", contact.lastName(), submissionId)
+            );
   }
 
   private Mono<List<SubmissionLocationEntity>> saveAddresses(
       ClientSubmissionDto clientSubmissionDto,
       SubmissionDetailEntity submission) {
+    log.info("Saving location for submission {}", submission.getSubmissionId());
     return submissionLocationRepository
         .saveAll(
             mapAllToSubmissionLocationEntity(
                 submission.getSubmissionId(),
                 clientSubmissionDto.location().addresses())
         )
-        .collectList();
+        .collectList()
+        .doOnNext(submissionLocationEntities ->
+            log.info("Location saved for submission {}", submission.getSubmissionId())
+        );
   }
 
   private Mono<Integer> sendEmail(
@@ -351,6 +378,7 @@ public class ClientSubmissionService {
       String email,
       String userName
   ) {
+    log.info("Sending email to {} for submission {}", email, submissionId);
     return chesService.sendEmail(
                         "registration",
                         email,
@@ -362,6 +390,7 @@ public class ClientSubmissionService {
 
 
   private Mono<Map<String, String>> getClientTypes() {
+    log.info("Loading client types");
     return template
         .select(
             query(
@@ -380,18 +409,20 @@ public class ClientSubmissionService {
                 .stream()
                 .collect(Collectors.toMap(ClientTypeCodeEntity::getCode,
                     ClientTypeCodeEntity::getDescription))
-        );
+        )
+        .doOnNext(clientTypes -> log.info("Loaded client types from the database"));
   }
 
 
-  private Mono<SubmissionDetailEntity> loadSubmissionDetail(String[] clientType,
-      String[] name, SubmissionEntity submission) {
+  private Mono<SubmissionDetailEntity> loadSubmissionDetail(
+      String[] clientType, String[] name, Integer submissionId
+  ) {
     return template
         .selectOne(
             query(
                 Criteria
                     .where(ApplicationConstant.SUBMISSION_ID)
-                    .is(submission.getSubmissionId())
+                    .is(submissionId)
                     .and(
                         QueryPredicates
                             .orEqualTo(clientType, "clientTypeCode")
@@ -404,6 +435,9 @@ public class ClientSubmissionService {
 
   private Flux<SubmissionEntity> loadSubmissions(int page, int size, String[] requestType,
       SubmissionStatusEnum[] requestStatus, String[] updatedAt) {
+
+    log.info("Loading submissions from the database with page {} size {} type {} status {} updated {}",
+        page, size, requestType, requestStatus, updatedAt);
 
     Criteria userQuery = SubmissionPredicates
         .orUpdatedAt(updatedAt)

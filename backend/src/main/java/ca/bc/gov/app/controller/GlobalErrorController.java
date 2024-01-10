@@ -1,6 +1,7 @@
 package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.exception.ValidationException;
+import io.micrometer.observation.annotation.Observed;
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -31,6 +32,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Component
 @Order(-2)
+@Observed
 public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
 
   public GlobalErrorController(

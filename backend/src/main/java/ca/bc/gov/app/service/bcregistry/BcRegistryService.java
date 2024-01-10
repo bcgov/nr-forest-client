@@ -11,6 +11,7 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
+import io.micrometer.observation.annotation.Observed;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,6 +25,7 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
+@Observed
 public class BcRegistryService {
 
   private final WebClient bcRegistryApi;
@@ -31,7 +33,6 @@ public class BcRegistryService {
   public BcRegistryService(@Qualifier("bcRegistryApi") WebClient bcRegistryApi) {
     this.bcRegistryApi = bcRegistryApi;
   }
-
 
   /**
    * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto}

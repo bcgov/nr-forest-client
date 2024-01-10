@@ -22,6 +22,8 @@ import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import ca.bc.gov.app.service.ches.ChesService;
+import io.micrometer.observation.annotation.Observed;
+import io.micrometer.tracing.annotation.SpanTag;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +42,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Observed
 public class ClientService {
 
   private final ClientTypeCodeRepository clientTypeCodeRepository;
@@ -61,7 +64,7 @@ public class ClientService {
    * @return A list of {@link CodeNameDto}
    */
   public Flux<CodeNameDto> findActiveClientTypeCodes(LocalDate targetDate) {
-
+    log.info("Loading active client type codes from the client service.");
     return
         clientTypeCodeRepository
             .findActiveAt(targetDate)
@@ -83,6 +86,7 @@ public class ClientService {
    * @return A list of {@link CodeNameDto} entries.
    */
   public Flux<CodeNameDto> listCountries(int page, int size) {
+    log.info("Requesting a list of countries from the client service.");
     return countryCodeRepository
         .findBy(PageRequest.of(page, size, Sort.by("order", "description")))
         .map(entity -> new CodeNameDto(entity.getCountryCode(), entity.getDescription()));
@@ -101,6 +105,8 @@ public class ClientService {
    * @see CodeNameDto
    */
   public Mono<CodeNameDto> getCountryByCode(String countryCode) {
+    log.info("Loading country information for country code {} from the client service.",
+        countryCode);
     return countryCodeRepository
         .findByCountryCode(countryCode)
         .map(entity -> new CodeNameDto(entity.getCountryCode(),
@@ -119,6 +125,8 @@ public class ClientService {
    * @see CodeNameDto
    */
   public Mono<CodeNameDto> getClientTypeByCode(String code) {
+    log.info("Loading client type information for client type code {} from the client service.",
+        code);
     return clientTypeCodeRepository
         .findByCode(code)
         .map(entity -> new CodeNameDto(entity.getCode(),
@@ -136,6 +144,7 @@ public class ClientService {
    * @return A list of {@link CodeNameDto} entries.
    */
   public Flux<CodeNameDto> listProvinces(String countryCode, int page, int size) {
+    log.info("Loading a list of provinces/states for country {} from the client service.",countryCode);
     return provinceCodeRepository
         .findByCountryCode(countryCode, PageRequest.of(page, size, Sort.by("description")))
         .map(entity -> new CodeNameDto(entity.getProvinceCode(), entity.getDescription()));
@@ -150,6 +159,7 @@ public class ClientService {
    * @return A list of {@link CodeNameDto} entries.
    */
   public Flux<CodeNameDto> listClientContactTypeCodes(LocalDate activeDate,int page, int size) {
+    log.info("Loading a list of contact types from the client service.");
     return contactTypeCodeRepository
         .findActiveAt(activeDate, PageRequest.of(page, size))
         .map(entity -> new CodeNameDto(
@@ -167,7 +177,7 @@ public class ClientService {
   public Mono<ClientDetailsDto> getClientDetails(
       String clientNumber
   ) {
-    log.info("Loading details for {}", clientNumber);
+    log.info("Loading details for client {}", clientNumber);
     return
         bcRegistryService
             .requestDocumentData(clientNumber)
@@ -229,6 +239,7 @@ public class ClientService {
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
   public Flux<ClientLookUpDto> findByClientNameOrIncorporation(String value) {
+    log.info("Searching for client by name or incorporation on bc registry {}", value);
     return bcRegistryService
         .searchByFacets(value)
         .map(entry -> new ClientLookUpDto(
@@ -239,12 +250,11 @@ public class ClientService {
             )
         )
         .flatMap(client ->{
-          if(List.of("A", "I", "S", "SP","RSP","USP").contains(client.legalType())){
+          if(List.of("A", "I", "S", "SP","RSP","USP","BC","GP").contains(client.legalType())){
             return Mono.just(client);
           }
           return Mono.error(new UnsuportedClientTypeException(client.legalType()));
-        })
-        .doOnError(System.out::println);
+        });
   }
 
   /**
@@ -266,10 +276,16 @@ public class ClientService {
    * @return A {@link Mono} of {@link Void}.
    */
   public Mono<Void> triggerEmailDuplicatedClient(EmailRequestDto emailRequestDto) {
+    log.info("Searching on Oracle legacy db for {} {}", emailRequestDto.incorporation(),
+        emailRequestDto.name());
     return
         legacyService
             .searchLegacy(emailRequestDto.incorporation(), emailRequestDto.name())
             .next()
+            .doOnNext(legacy ->
+                log.info("Found legacy entry for {} {}", emailRequestDto.incorporation(),
+                    emailRequestDto.name())
+            )
             .flatMap(
                 triggerEmailDuplicatedClient(emailRequestDto.email(), emailRequestDto.userName()))
             .then();
@@ -399,7 +415,7 @@ public class ClientService {
 
   private Function<ForestClientDto, Mono<ForestClientDto>> triggerEmailDuplicatedClient(
       String email, String userName) {
-
+    log.info("Sending matched email using CHES Client number application can’t go ahead");
     return legacy -> chesService.sendEmail(
             "matched",
             email,
@@ -410,6 +426,7 @@ public class ClientService {
   }
 
   private Mono<String> triggerEmail(EmailRequestDto emailRequestDto) {
+    log.info("Sending {} email using CHES {}", emailRequestDto.templateName(),emailRequestDto.subject());
     return chesService.sendEmail(
         emailRequestDto.templateName(),
         emailRequestDto.email(),

@@ -5,6 +5,7 @@ import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ForestClientRepository;
+import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Flux;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Observed
 public class ClientSearchService {
 
   private final ForestClientRepository forestClientRepository;
@@ -26,6 +28,7 @@ public class ClientSearchService {
   ) {
 
     if (StringUtils.isAllBlank(incorporationNumber, companyName)) {
+      log.error("Missing required parameter to search for incorporation or company name");
       throw new MissingRequiredParameterException("incorporationNumber or companyName");
     }
 
@@ -43,6 +46,7 @@ public class ClientSearchService {
   ) {
 
     if (StringUtils.isAnyBlank(firstName, lastName) || dob == null) {
+      log.error("Missing required parameter to search for individual");
       throw new MissingRequiredParameterException("firstName, lastName, or dob");
     }
 

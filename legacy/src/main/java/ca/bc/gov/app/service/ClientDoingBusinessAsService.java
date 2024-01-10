@@ -5,6 +5,7 @@ import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
+import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Service
 @Slf4j
+@Observed
 public class ClientDoingBusinessAsService {
 
   private final R2dbcEntityOperations entityTemplate;
@@ -34,6 +36,14 @@ public class ClientDoingBusinessAsService {
                 )
                     .map(forestClientLocation -> false) // means you can't create it
                     .defaultIfEmpty(true) // means you can create it
+                    .doOnNext(canCreate ->
+                        log.info(
+                            "Can create client doing business as {} {}? {}",
+                            dto.clientNumber(),
+                            dto.doingBusinessAsName(),
+                            canCreate
+                        )
+                    )
             )
             .map(mapper::toEntity)
             .flatMap(entity -> getNextDoingBusinessAs().map(entity::withId))
@@ -88,7 +98,13 @@ public class ClientDoingBusinessAsService {
   }
 
   public Flux<ClientDoingBusinessAsDto> search(String dbaName) {
-    return repository.matchBy(dbaName)
+    return repository
+        .matchBy(dbaName)
+        .doOnNext(dba -> log.info(
+            "Found forest client doing business as {} {}",
+            dba.getClientNumber(),
+            dba.getDoingBusinessAsName()
+        ))
         .map(mapper::toDto);
   }
 }

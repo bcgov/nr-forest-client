@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import io.micrometer.observation.annotation.Observed;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import reactor.core.publisher.Flux;
 
 @Slf4j
 @Service
+@Observed
 public class ClientLegacyService {
 
   private final WebClient legacyApi;

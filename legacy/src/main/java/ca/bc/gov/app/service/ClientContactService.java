@@ -5,6 +5,7 @@ import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ForestClientContactRepository;
+import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Service
 @Slf4j
+@Observed
 public class ClientContactService {
 
   private final R2dbcEntityOperations entityTemplate;
@@ -35,6 +37,21 @@ public class ClientContactService {
                 )
                     .map(forestClientLocation -> false) // means you can't create it
                     .defaultIfEmpty(true) // means you can create it
+                    .doOnNext(canCreate ->
+                        log.info(
+                            "Can create forest client contact {} {}? {}",
+                            locationDto.clientNumber(),
+                            locationDto.contactName(),
+                            canCreate
+                        )
+                    )
+            )
+            .doOnNext(forestClientContact ->
+                log.info(
+                    "Creating forest client contact {} {}",
+                    forestClientContact.clientNumber(),
+                    forestClientContact.contactName()
+                )
             )
             .map(mapper::toEntity)
             .flatMap(entity -> getNextContactId().map(entity::withClientContactId))

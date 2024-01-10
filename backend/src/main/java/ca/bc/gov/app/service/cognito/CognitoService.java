@@ -6,6 +6,7 @@ import ca.bc.gov.app.dto.cognito.RefreshRequestDto;
 import ca.bc.gov.app.dto.cognito.RefreshResponseDto;
 import ca.bc.gov.app.dto.cognito.RefreshResponseResultDto;
 import ca.bc.gov.app.util.PkceUtil;
+import io.micrometer.observation.annotation.Observed;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +26,7 @@ import reactor.core.publisher.Mono;
  */
 @Service
 @Slf4j
+@Observed
 public class CognitoService {
 
   private final ForestClientConfiguration configuration;
