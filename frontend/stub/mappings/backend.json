@@ -49,6 +49,18 @@
         "transformers": ["response-template"]
       }
     },
+    {
+      "name":"BC Registry Details Unsupported Client Type",
+      "request": {
+        "url": "/api/clients/BC1234567",
+        "method": "GET"
+      },
+      "response": {
+        "status": 406,
+        "body": "Client type BC is not supported at the moment",
+        "transformers": ["response-template"]
+      }
+    },
 
     {
       "name":"Country Codes",
@@ -96,6 +108,38 @@
         "status": 200,
         "transformers": ["response-template"],
         "bodyFileName": "response-getCountryByCode-{{request.path.[3]}}.json"      }
+    },
+
+    {
+      "name":"Get ClientType by Code",
+      "request": {
+        "urlPattern": "/api/clients/getClientTypeByCode/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "transformerParameters": {
+          "clientTypeMapping": {
+            "A": "Association",
+            "B": "First Nation Band",
+            "C": "Corporation",
+            "F": "Ministry of Forests and Range",
+            "G": "Government",
+            "I": "Individual",
+            "L": "Limited Partnership",
+            "P": "General Partnership",
+            "R": "First Nation Group",
+            "S": "Society",
+            "T": "First Nation Tribal Council",
+            "U": "Unregistered Company"
+          }
+        },
+        "jsonBody": {
+          "code": "{{#assign 'code'}}{{request.pathSegments.[3]}}{{/assign}}{{code}}",
+          "name": "{{lookup parameters.clientTypeMapping code}}"
+        }
+      }
     },
 
     {
