@@ -12,7 +12,7 @@ import {
   ClientTypeEnum,
   ProgressNotification,
 } from "@/dto/CommonTypesDto";
-import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
+import { BusinessTypeEnum, CodeNameType } from "@/dto/CommonTypesDto";
 import type {
   FormDataDto,
   ForestClientDetailsDto,
@@ -96,26 +96,36 @@ const showAutoCompleteInfo = ref<boolean>(false);
 const showGoodStandingError = ref<boolean>(false);
 const showDuplicatedError = ref<boolean>(false);
 const showNonPersonSPError = ref<boolean>(false);
+const showUnsupportedClientTypeError = ref<boolean>(false);
 const showDetailsLoading = ref<boolean>(false);
 const detailsData = ref(null);
 
 const toggleErrorMessages = (
   goodStanding: boolean | null = null,
   duplicated: boolean | null = null,
-  nonPersonSP: boolean | null = null
+  nonPersonSP: boolean | null = null,
+  unsupportedClientType: boolean | null = null,
 ) => {
   showGoodStandingError.value = goodStanding ?? false;
   showDuplicatedError.value = duplicated ?? false;
   showNonPersonSPError.value = nonPersonSP ?? false;
+  showUnsupportedClientTypeError.value = unsupportedClientType ?? false;
 
-  if (goodStanding || duplicated || nonPersonSP) {
+  if (goodStanding || duplicated || nonPersonSP || unsupportedClientType) {
     progressIndicatorBus.emit({ kind: "disabled", value: true });
-    exitBus.emit({ goodStanding, duplicated, nonPersonSP });
+    exitBus.emit({ goodStanding, duplicated, nonPersonSP, unsupportedClientType });
   } else {
     progressIndicatorBus.emit({ kind: "disabled", value: false });
-    exitBus.emit({ goodStanding: false, duplicated: false, nonPersonSP: false });
+    exitBus.emit({
+      goodStanding: false,
+      duplicated: false,
+      nonPersonSP: false,
+      unsupportedClientType: false,
+    });
   }
 };
+
+const receivedClientType = ref<CodeNameType>();
 
 //Using this as we have to handle the selected result to get
 //incorporation number and client type
@@ -160,6 +170,15 @@ watch([autoCompleteResult], () => {
       }
       if (error.value.response?.status === 422) {
         toggleErrorMessages(null, null, true);
+        return;
+      }
+      if (error.value.response?.status === 406) {
+        toggleErrorMessages(null, null, null, true);
+        receivedClientType.value = null;
+        useFetchTo(
+          `/api/clients/getClientTypeByCode/${formData.value.businessInformation.clientType}`,
+          receivedClientType,
+        );
         return;
       }
       if (error.value.response?.status === 404) {
@@ -282,7 +301,14 @@ const bcRegistryEmail = "BCRegistries@gov.bc.ca";
     <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
     <div
       class="grouping-02"
-      v-if="(showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R) || showGoodStandingError || showDuplicatedError || showNonPersonSPError">
+      v-if="
+        (showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R) ||
+        showGoodStandingError ||
+        showDuplicatedError ||
+        showNonPersonSPError ||
+        showUnsupportedClientTypeError
+      "
+    >
       <cds-inline-notification
         v-shadow="2"
         v-if="showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R"
@@ -360,14 +386,26 @@ const bcRegistryEmail = "BCRegistries@gov.bc.ca";
         low-contrast="true"
         open="true"
         kind="error"
-        title="Sole proprietor not owned by a person"
+        title="Unknown sole proprietor"
       >
         <p  class="cds--inline-notification-content">
-          Looks like “{{ formData.businessInformation.businessName }}” is not
-          owned by a person. Please select another entry or logout.
+          We're unable to complete this application because we cannot identify the person who is the sole proprietor. Please email FORHVAP.CLIADMIN@gov.bc.ca for help.
         </p>
       </cds-inline-notification>
 
+      <cds-inline-notification
+        v-if="showUnsupportedClientTypeError && receivedClientType"
+        hide-close-button="true"
+        low-contrast="true"
+        open="true"
+        kind="error"
+        title="Client type not supported"
+      >
+        <p class="cds--inline-notification-content">
+          {{ receivedClientType.name }} client type is not supported. Please email
+          FORHVAP.CLIADMIN@gov.bc.ca for help.
+        </p>
+      </cds-inline-notification>
       
     </div>
   </data-fetcher>
