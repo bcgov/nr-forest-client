@@ -329,6 +329,7 @@ exitBus.on((event: Record<string, boolean | null>) => {
   endAndLogOut.value = event.goodStanding ? event.goodStanding : false;
   mailAndLogOut.value = event.duplicated ? event.duplicated : false;
   endAndLogOut.value = event.nonPersonSP ? event.nonPersonSP : endAndLogOut.value;
+  endAndLogOut.value = event.unsupportedClientType || endAndLogOut.value;
 });
 
 progressIndicatorBus.on((event: ProgressNotification) => {
