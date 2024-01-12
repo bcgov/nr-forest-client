@@ -52,5 +52,11 @@
     "name":"British Columbia Forest Products",
     "status":"ACTIVE",
     "legalType": "SP"
+  },
+  {
+    "code":"BC1234567",
+    "name":"Unsupported Client Type Inc.",
+    "status":"ACTIVE",
+    "legalType": "BC"
   }
 ]

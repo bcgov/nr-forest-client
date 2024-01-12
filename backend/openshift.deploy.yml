@@ -125,6 +125,11 @@ objects:
                   value: ${CHES_API_URL}
                 - name: POSTGRESQL_HOST
                   value: ${NAME}-${ZONE}-database
+                - name: CHES_COPY_EMAIL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: ches-mail-copy
                 - name: POSTGRESQL_DATABASE
                   valueFrom:
                     secretKeyRef:

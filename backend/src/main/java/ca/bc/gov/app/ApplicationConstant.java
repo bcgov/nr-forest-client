@@ -93,6 +93,6 @@ public final class ApplicationConstant {
   public static final String ID_TOKEN = "idToken";
   public static final String ACCESS_TOKEN = "accessToken";
   public static final List<String> AVAILABLE_CLIENT_TYPES = List.of("A", "I", "S", "SP", "RSP",
-      "USP", "BC", "GP");
+      "USP", "BC", "GP","C");
 }
 

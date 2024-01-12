@@ -57,7 +57,7 @@ public class ClientService {
               .findByIndividual(
                   entity.getLegalFirstName(),
                   entity.getClientName(),
-                  entity.getBirthdate().atStartOfDay()
+                  entity.getBirthdate()
               )
               .map(client -> false) // means you can't create it
               .defaultIfEmpty(true)

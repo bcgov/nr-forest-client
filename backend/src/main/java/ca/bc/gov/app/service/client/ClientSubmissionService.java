@@ -485,22 +485,39 @@ public class ClientSubmissionService {
   private String processRejectionReason(SubmissionApproveRejectDto request) {
 
     StringBuilder stringBuilder = new StringBuilder();
-
-    request
-        .reasons()
-        .forEach(reason -> {
-          if (reason.equalsIgnoreCase("duplicated")) {
-            stringBuilder.append(
-                    "A client that matches your submission already exists with number: ")
-                .append(request.message())
-                .append("< /br>");
-          }
-          if (reason.equalsIgnoreCase("goodstanding")) {
-            stringBuilder.append("Client is not in good standing with BC Registries")
-                .append("< /br>");
-          }
-
-        });
+    String duplicatedReason = "duplicated";
+    String goodStandingReason = "goodstanding";
+    String htmlBlankDiv = "<div>&nbsp;</div>";
+    List<String> reasons = request.reasons();  
+    
+    if (reasons.contains(duplicatedReason) && !reasons.contains(goodStandingReason)) {
+      stringBuilder
+      .append(" already has one. The number is: ")
+      .append(request.message())
+      .append(". Be sure to keep it for your records.");
+    }
+    
+    if (!reasons.contains(duplicatedReason) && reasons.contains(goodStandingReason)) {
+      stringBuilder
+      .append(" is not in good standing with BC Registries.")
+      .append(htmlBlankDiv)
+      .append("<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a></p>")
+      .append(htmlBlankDiv)
+      .append("<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a> ")
+      .append("account to find out why.</p>");
+    }
+    
+    if (reasons.contains(duplicatedReason) && reasons.contains(goodStandingReason)) {
+      stringBuilder
+      .append(" already has one. The number is: ")
+      .append(request.message())
+      .append(". Be sure to keep it for your records.")
+      .append(htmlBlankDiv)
+      .append("<p>Also, this business is not in good standing with BC Registries.</p>")
+      .append(htmlBlankDiv)
+      .append("<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a> ")
+      .append("account to find out why.</p>");
+    }
 
     return stringBuilder.toString();
   }

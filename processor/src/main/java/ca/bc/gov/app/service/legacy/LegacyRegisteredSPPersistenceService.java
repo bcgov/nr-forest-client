@@ -2,6 +2,7 @@
 package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
@@ -14,9 +15,6 @@ import ca.bc.gov.app.util.ProcessorUtil;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.integration.support.MessageBuilder;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
@@ -59,24 +57,16 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
   }
 
   @Override
-  String getNextChannel() {
-    return ApplicationConstant.SUBMISSION_LEGACY_RSP_CHANNEL;
-  }
-
-  @ServiceActivator(
-      inputChannel = ApplicationConstant.SUBMISSION_LEGACY_RSP_CHANNEL,
-      outputChannel = ApplicationConstant.SUBMISSION_LEGACY_CLIENT_PERSIST_CHANNEL,
-      async = "true"
-  )
-  @Override
-  public Mono<Message<ForestClientDto>> generateForestClient(Message<String> message) {
+  public Mono<MessagingWrapper<ForestClientDto>> generateForestClient(
+      MessagingWrapper<String> message) {
 
     return
         getSubmissionDetailRepository()
             .findBySubmissionId(
-                message
-                    .getHeaders()
-                    .get(ApplicationConstant.SUBMISSION_ID, Integer.class)
+                (Integer)
+                    message
+                        .parameters()
+                        .get(ApplicationConstant.SUBMISSION_ID)
             )
             .map(submissionDetail ->
                 getBaseForestClient(
@@ -126,9 +116,10 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                         getContactRepository()
                             //Get all contacts for the submission
                             .findBySubmissionId(
-                                message
-                                    .getHeaders()
-                                    .get(ApplicationConstant.SUBMISSION_ID, Integer.class)
+                                (Integer)
+                                    message
+                                        .parameters()
+                                        .get(ApplicationConstant.SUBMISSION_ID)
                             )
                             //Handle as a flux with the index
                             .index()
@@ -148,26 +139,26 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                             .withClientName(contact[1])
                             .withClientTypeCode("I")
                             .withClientIdTypeCode("BCRE")
-                            .withClientNumber(message.getHeaders()
-                                .get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
+                            .withClientNumber(message.parameters()
+                                .get(ApplicationConstant.FOREST_CLIENT_NUMBER).toString())
                     )
             )
             .map(forestClient ->
-                MessageBuilder
-                    .withPayload(forestClient)
-                    .copyHeaders(message.getHeaders())
-                    .setHeader(ApplicationConstant.FOREST_CLIENT_NAME,
+                new MessagingWrapper<>(
+                    forestClient,
+                    message.parameters()
+                )
+                    .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
                         forestClient
                             .clientComment()
                             .split("and company name ")[1]
                     )
-                    .setHeader(ApplicationConstant.INCORPORATION_NUMBER,
+                    .withParameter(ApplicationConstant.INCORPORATION_NUMBER,
                         String.join(StringUtils.EMPTY,
                             forestClient.registryCompanyTypeCode(),
                             forestClient.corpRegnNmbr()
                         )
                     )
-                    .build()
             );
 
   }
