@@ -167,23 +167,10 @@ public class ChesService {
     logEntity.setEmailSentInd(emailLogDto.emailSentInd());
     logEntity.setEmailId(emailLogDto.emailId());
     logEntity.setExceptionMessage(emailLogDto.exceptionMessage());
-    logEntity.setEmailVariables(convertTo(emailLogDto.variables()));
+    //Always set the variables map instead of the json so the converter can kick in
+    logEntity.setVariables(emailLogDto.variables());
 
     return logEntity;
-  }
-
-  private Json convertTo(Map<String, Object> variables) {
-    String json = "{}";
-
-    try {
-      json = builder
-          .build()
-          .writeValueAsString(variables);
-    } catch (JsonProcessingException e) {
-      log.error("Error while converting matchers to json", e);
-    }
-
-    return Json.of(json);
   }
 
   /**
