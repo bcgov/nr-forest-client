@@ -79,6 +79,9 @@ public class ChesService {
     if (emailVariables == null) {
       emailVariables = new HashMap<>();
     }
+    else {
+      emailVariables = new HashMap<>(emailVariables);
+    }
     emailVariables.put("frontend", configuration.getFrontend().getUrl());
 
     final Map<String,Object> variables = new HashMap<>(emailVariables);
