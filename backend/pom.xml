@@ -234,10 +234,10 @@
                     <buildArgs>
                         <buildArg>-H:+ReportExceptionStackTraces</buildArg>
                         <buildArg>
-                            --trace-class-initialization=org.apache.commons.logging.LogFactoryService,io.micrometer.common.util.internal.logging.LocationAwareSlf4JLogger</buildArg>
-                        <buildArg>--trace-class-initialization=org.apache.commons.logging.LogFactory,io.micrometer.common.util.internal.logging.LocationAwareSlf4JLogger</buildArg>
+                            --trace-class-initialization=org.apache.commons.logging.LogFactoryService,io.micrometer.common.util.internal.logging.LocationAwareSlf4JLogger,ch.qos.logback.classic.Logger</buildArg>
+                        <buildArg>--trace-class-initialization=org.apache.commons.logging.LogFactory,io.micrometer.common.util.internal.logging.LocationAwareSlf4JLogger,ch.qos.logback.classic.Logger</buildArg>
                         <buildArg>
-                            --initialize-at-build-time=org.apache.commons.logging.LogFactoryService,io.micrometer.common.util.internal.logging.LocationAwareSlf4JLogger</buildArg>
+                            --initialize-at-build-time=org.apache.commons.logging.LogFactoryService,io.micrometer.common.util.internal.logging.LocationAwareSlf4JLogger,ch.qos.logback.classic.Logger</buildArg>
                     </buildArgs>
                 </configuration>
             </plugin>
