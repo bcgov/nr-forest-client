@@ -23,7 +23,7 @@ public class LegacyPersistenceService {
         Flux
             .fromStream(persistenceServices.stream())
             .filter(service -> service.filterByType(
-                    message.parameters().get(ApplicationConstant.SUBMISSION_TYPE).toString()
+                    message.parameters().get(ApplicationConstant.CLIENT_TYPE_CODE).toString()
                 )
             )
             .next()
