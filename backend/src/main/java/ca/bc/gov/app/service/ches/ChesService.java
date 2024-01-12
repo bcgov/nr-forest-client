@@ -18,15 +18,13 @@ import ca.bc.gov.app.exception.InvalidRoleException;
 import ca.bc.gov.app.exception.UnableToProcessRequestException;
 import ca.bc.gov.app.exception.UnexpectedErrorException;
 import ca.bc.gov.app.repository.client.EmailLogRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import io.r2dbc.postgresql.codec.Json;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +35,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -57,21 +54,17 @@ public class ChesService {
 
   private final EmailLogRepository emailLogRepository;
 
-  private final Jackson2ObjectMapperBuilder builder;
-
   public ChesService(
       ForestClientConfiguration configuration,
       @Qualifier("chesApi") WebClient chesApi,
       @Qualifier("authApi") WebClient authApi,
-      EmailLogRepository emailLogRepository,
-      Jackson2ObjectMapperBuilder builder
+      EmailLogRepository emailLogRepository
   ) {
     this.configuration = configuration;
     this.chesApi = chesApi;
     this.authApi = authApi;
     this.freeMarkerConfiguration = new Configuration(Configuration.VERSION_2_3_31);
     this.emailLogRepository = emailLogRepository;
-    this.builder = builder;
     freeMarkerConfiguration.setClassForTemplateLoading(this.getClass(), "/templates");
     freeMarkerConfiguration.setDefaultEncoding("UTF-8");
   }
@@ -79,8 +72,16 @@ public class ChesService {
   public Mono<String> sendEmail(String templateName,
       String emailAddress,
       String subject,
-      Map<String, Object> variables,
-      Integer emailLogId) {
+      Map<String, Object> emailVariables,
+      Integer emailLogId
+  ) {
+
+    if (emailVariables == null) {
+      emailVariables = new HashMap<>();
+    }
+    emailVariables.put("frontend", configuration.getFrontend().getUrl());
+
+    final Map<String,Object> variables = new HashMap<>(emailVariables);
 
     String processedSubject =
         configuration.getCognito().getEnvironment().equalsIgnoreCase("prod")
