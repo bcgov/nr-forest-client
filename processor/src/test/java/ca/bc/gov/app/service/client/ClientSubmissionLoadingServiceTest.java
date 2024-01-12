@@ -2,20 +2,17 @@ package ca.bc.gov.app.service.client;
 
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.entity.SubmissionTypeCodeEnum;
+import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.integration.support.MessageBuilder;
-import org.springframework.messaging.Message;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -26,7 +23,8 @@ class ClientSubmissionLoadingServiceTest {
       mock(SubmissionDetailRepository.class);
   private final SubmissionContactRepository contactRepository =
       mock(SubmissionContactRepository.class);
-  private final ClientSubmissionLoadingService service = new ClientSubmissionLoadingService(submissionDetailRepository,contactRepository);
+  private final ClientSubmissionLoadingService service = new ClientSubmissionLoadingService(
+      submissionDetailRepository, contactRepository);
 
 
   @Test
@@ -42,10 +40,10 @@ class ClientSubmissionLoadingServiceTest {
         .assertNext(message ->
             assertThat(message)
                 .isNotNull()
-                .isInstanceOf(Message.class)
+                .isInstanceOf(MessagingWrapper.class)
                 .hasFieldOrPropertyWithValue("payload", TestConstants.SUBMISSION_INFORMATION)
-                .hasFieldOrProperty("headers")
-                .extracting(Message::getHeaders, as(InstanceOfAssertFactories.MAP))
+                .hasFieldOrProperty("parameters")
+                .extracting(MessagingWrapper::parameters, as(InstanceOfAssertFactories.MAP))
                 .isNotNull()
                 .isNotEmpty()
                 .containsKey("id")
@@ -54,47 +52,6 @@ class ClientSubmissionLoadingServiceTest {
         )
         .verifyComplete();
 
-  }
-
-  @Test
-  @DisplayName("should send notification")
-  void shouldSendNotification(){
-
-    when(submissionDetailRepository.findBySubmissionId(any()))
-        .thenReturn(Mono.just(TestConstants.SUBMISSION_DETAIL.withClientNumber("00001000")));
-    when(contactRepository.findFirstBySubmissionId(any()))
-        .thenReturn(Mono.just(TestConstants.SUBMISSION_CONTACT));
-
-
-
-    service
-        .sendNotification(
-            MessageBuilder
-                .withPayload(1)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 1)
-                .setHeader(ApplicationConstant.SUBMISSION_TYPE, SubmissionTypeCodeEnum.AAC)
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "Test")
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00001000")
-                .build()
-        )
-        .as(StepVerifier::create)
-        .assertNext(message ->
-            assertThat(message)
-                .isNotNull()
-                .isInstanceOf(Message.class)
-                .hasFieldOrPropertyWithValue("payload", TestConstants.EMAIL_REQUEST_DTO)
-                .hasFieldOrProperty("headers")
-                .extracting(Message::getHeaders, as(InstanceOfAssertFactories.MAP))
-                .isNotNull()
-                .isNotEmpty()
-                .containsKey("id")
-                .containsKey("timestamp")
-                .containsEntry(ApplicationConstant.SUBMISSION_ID, 1)
-                .containsEntry(ApplicationConstant.SUBMISSION_TYPE, SubmissionTypeCodeEnum.AAC)
-                .containsEntry(ApplicationConstant.FOREST_CLIENT_NAME, "Test")
-                .containsEntry(ApplicationConstant.FOREST_CLIENT_NUMBER, "00001000")
-        )
-        .verifyComplete();
   }
 
 

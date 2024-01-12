@@ -1,6 +1,5 @@
 package ca.bc.gov.app.service.client;
 
-import static ca.bc.gov.app.TestConstants.EMAIL_REQUEST;
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -11,6 +10,7 @@ import static org.mockito.Mockito.verify;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MatcherResult;
+import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.entity.SubmissionEntity;
 import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
 import ca.bc.gov.app.extensions.AbstractTestContainer;
@@ -19,14 +19,13 @@ import ca.bc.gov.app.repository.SubmissionRepository;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.integration.support.MessageBuilder;
-import org.springframework.messaging.Message;
 import reactor.test.StepVerifier;
 
 @DisplayName("Integrated Test | Client Service")
@@ -48,13 +47,13 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
 
     service
         .approved(
-            MessageBuilder
-                .withPayload(matchers)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 1)
-                .build()
+            new MessagingWrapper<>(
+                matchers,
+                Map.of(ApplicationConstant.SUBMISSION_ID, 1)
+            )
         )
         .as(StepVerifier::create)
-        .assertNext(message -> Assertions.assertEquals(Integer.valueOf(1), message.getPayload()))
+        .assertNext(message -> Assertions.assertEquals(Integer.valueOf(1), message.payload()))
         .verifyComplete();
 
     await()
@@ -77,12 +76,7 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
   void shouldCompleteProcessing() {
 
     service
-        .completeProcessing(
-            MessageBuilder
-                .withPayload(EMAIL_REQUEST)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
-                .build()
-        )
+        .completeProcessing(2)
         .as(StepVerifier::create)
         .expectNextCount(1)
         .verifyComplete();
@@ -110,29 +104,27 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
 
     List<MatcherResult> matchers = new ArrayList<>();
 
-    Message<List<MatcherResult>> message = MessageBuilder
-        .withPayload(matchers)
-        .setHeader(ApplicationConstant.SUBMISSION_ID, 1)
-        .build();
-
+    MessagingWrapper<List<MatcherResult>> message = new MessagingWrapper<>(
+        matchers, Map.of(ApplicationConstant.SUBMISSION_ID, 1)
+    );
 
     service
         .reviewed(message)
         .as(StepVerifier::create)
-            .assertNext( received ->
-                assertThat(received)
-                    .isNotNull()
-                    .isInstanceOf(Message.class)
-                    .hasFieldOrPropertyWithValue("payload", 1)
-                    .hasFieldOrProperty("headers")
-                    .extracting(Message::getHeaders, as(InstanceOfAssertFactories.MAP))
-                    .isNotNull()
-                    .isNotEmpty()
-                    .containsKey("id")
-                    .containsKey("timestamp")
-                    .containsEntry(ApplicationConstant.SUBMISSION_ID, 1)
-            )
-                .verifyComplete();
+        .assertNext(received ->
+            assertThat(received)
+                .isNotNull()
+                .isInstanceOf(MessagingWrapper.class)
+                .hasFieldOrPropertyWithValue("payload", 1)
+                .hasFieldOrProperty("parameters")
+                .extracting(MessagingWrapper::parameters, as(InstanceOfAssertFactories.MAP))
+                .isNotNull()
+                .isNotEmpty()
+                .containsKey("id")
+                .containsKey("timestamp")
+                .containsEntry(ApplicationConstant.SUBMISSION_ID, 1)
+        )
+        .verifyComplete();
 
     await()
         .alias("Submission lookup")

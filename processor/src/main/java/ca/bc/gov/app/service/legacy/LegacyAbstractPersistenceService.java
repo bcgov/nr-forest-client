@@ -1,27 +1,22 @@
 package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.entity.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
-import ca.bc.gov.app.entity.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
-import ca.bc.gov.app.util.ProcessorUtil;
 import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.integration.support.MessageBuilder;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -43,75 +38,62 @@ public abstract class LegacyAbstractPersistenceService {
   private final SubmissionLocationContactRepository locationContactRepository;
   private final LegacyService legacyService;
 
-  abstract Mono<Message<ForestClientDto>> generateForestClient(Message<String> message);
+  abstract Mono<MessagingWrapper<ForestClientDto>> generateForestClient(
+      MessagingWrapper<String> message);
 
   abstract boolean filterByType(String clientTypeCode);
-
-  abstract String getNextChannel();
-
 
   /**
    * Loads the submission from the database and prepares the message for next step.
    */
-  @ServiceActivator(
-      inputChannel = ApplicationConstant.SUBMISSION_LEGACY_CHANNEL,
-      outputChannel = ApplicationConstant.SUBMISSION_LEGACY_CLIENT_CHANNEL,
-      async = "true"
-  )
-  public Mono<Message<Integer>> loadSubmission(Message<Integer> message) {
+  public Mono<MessagingWrapper<Integer>> loadSubmission(MessagingWrapper<Integer> message) {
     return submissionRepository
-        .findById(message.getPayload())
+        .findById(message.payload())
         .doOnNext(submission -> log.info("Loaded submission for persistence on oracle {}",
             submission.getSubmissionId())
         )
-        .map(submission -> MessageBuilder
-            .fromMessage(message)
-            .setHeader(ApplicationConstant.SUBMISSION_ID, message.getPayload())
-            .setHeader(ApplicationConstant.CREATED_BY, submission.getCreatedBy())
-            .setHeader(ApplicationConstant.UPDATED_BY, submission.getUpdatedBy())
-            .build()
+        .map(submission ->
+            new MessagingWrapper<Integer>(
+                message.payload(),
+                message.parameters()
+            )
+                .withParameter(ApplicationConstant.SUBMISSION_ID, message.payload())
+                .withParameter(ApplicationConstant.CREATED_BY, submission.getCreatedBy())
+                .withParameter(ApplicationConstant.UPDATED_BY, submission.getUpdatedBy())
         );
   }
-
 
   /**
    * Checks if the client number exists for that submission and prepares the message for next step.
    * The next step will be identified and handled by individual channels
    */
-  @ServiceActivator(
-      inputChannel = ApplicationConstant.SUBMISSION_LEGACY_CLIENT_CHANNEL,
-      outputChannel = ApplicationConstant.FORWARD_CHANNEL, //Dummy channel name
-      async = "true"
-  )
-  public Mono<Message<?>> checkClientData(Message<Integer> message) {
+  public Mono<MessagingWrapper<String>> checkClientData(MessagingWrapper<Integer> message) {
     return submissionDetailRepository
-        .findBySubmissionId(message.getPayload())
+        .findBySubmissionId(message.payload())
         .doOnNext(
             submissionDetail ->
                 log.info(
                     "Loaded submission detail for persistence on oracle {} {} {}",
-                    message.getPayload(),
+                    message.payload(),
                     submissionDetail.getOrganizationName(),
                     submissionDetail.getIncorporationNumber()
                 )
         )
-        .filter(submissionDetail -> filterByType(submissionDetail.getClientTypeCode()))
         .flatMap(submissionDetail ->
             contactRepository
-                .findFirstBySubmissionId(message.getPayload())
+                .findFirstBySubmissionId(message.payload())
+                .map(contact -> contact.getFirstName() + " " + contact.getLastName())
                 .map(contact ->
-                    MessageBuilder
-                        .withPayload(message.getPayload())
-                        .copyHeaders(message.getHeaders())
-                        .setHeader(ApplicationConstant.SUBMISSION_ID, message.getPayload())
-                        .setHeader(ApplicationConstant.CLIENT_TYPE_CODE,
+                    new MessagingWrapper<>(
+                        message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER)
+                            .toString(),
+                        message.parameters()
+                    )
+                        .withParameter(ApplicationConstant.CLIENT_TYPE_CODE,
                             submissionDetail.getClientTypeCode())
-                        .setHeader(ApplicationConstant.CLIENT_SUBMITTER_NAME,
-                            contact.getFirstName() + " " + contact.getLastName())
-                        .setReplyChannelName(getNextChannel())
-                        .setHeader("output-channel", getNextChannel())
-                        .setHeader(MessageHeaders.REPLY_CHANNEL, getNextChannel())
-                        .build()
+                        .withParameter(ApplicationConstant.CLIENT_SUBMITTER_NAME,
+                            contact
+                        )
                 )
         );
   }
@@ -119,34 +101,25 @@ public abstract class LegacyAbstractPersistenceService {
   /**
    * Creates a client if does not exist on oracle and get back the client number.
    */
-  @ServiceActivator(
-      inputChannel = ApplicationConstant.SUBMISSION_LEGACY_CLIENT_PERSIST_CHANNEL,
-      outputChannel = ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL,
-      async = "true"
-  )
-  public Mono<Message<Integer>> createForestClient(Message<ForestClientDto> message) {
-
-    if (!filterByType(
-        message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE, String.class))) {
-      return Mono.empty();
-    }
+  public Mono<MessagingWrapper<Integer>> createForestClient(
+      MessagingWrapper<ForestClientDto> message) {
 
     log.info("Creating Forest Client {} {}",
-        message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME),
-        message.getPayload().clientNumber()
+        message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME),
+        message.payload().clientNumber()
     );
 
     return
         // Create the client
         legacyService
-            .createClient(message.getPayload())
+            .createClient(message.payload())
             // Create the doing business as IF exists
             .flatMap(clientNumber -> createClientDoingBusinessAs(message, clientNumber))
             // Updates the submission detail with the client number
             .flatMap(clientNumber ->
                 submissionDetailRepository
                     .findBySubmissionId(
-                        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class)
+                        (Integer) message.parameters().get(ApplicationConstant.SUBMISSION_ID)
                     )
                     .map(submissionDetail -> submissionDetail.withClientNumber(clientNumber))
                     .flatMap(submissionDetailRepository::save)
@@ -155,17 +128,16 @@ public abstract class LegacyAbstractPersistenceService {
             .doOnNext(forestClientNumber ->
                 log.info(
                     "Saved forest client {} {}",
-                    message.getPayload(),
+                    message.payload(),
                     forestClientNumber
                 )
             )
             .map(forestClientNumber ->
-                MessageBuilder
-                    .withPayload(
-                        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class))
-                    .copyHeaders(message.getHeaders())
-                    .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, forestClientNumber)
-                    .build()
+                new MessagingWrapper<>(
+                    (Integer) message.parameters().get(ApplicationConstant.SUBMISSION_ID),
+                    message.parameters()
+                )
+                    .withParameter(ApplicationConstant.FOREST_CLIENT_NUMBER, forestClientNumber)
             );
   }
 
@@ -176,25 +148,15 @@ public abstract class LegacyAbstractPersistenceService {
    * @param message A message containing the submission id
    * @return A flux of messages containing the submission id and the location id
    */
-  @ServiceActivator(
-      inputChannel = ApplicationConstant.SUBMISSION_LEGACY_LOCATION_CHANNEL,
-      outputChannel = ApplicationConstant.SUBMISSION_LEGACY_CONTACT_CHANNEL,
-      async = "true"
-  )
-  public Flux<Message<Integer>> createLocations(Message<Integer> message) {
-
-    if (!filterByType(
-        message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE, String.class))) {
-      return Flux.empty();
-    }
+  public Flux<MessagingWrapper<Integer>> createLocations(MessagingWrapper<Integer> message) {
 
     Flux<SubmissionLocationEntity> data = locationRepository.findBySubmissionId(
-            message.getPayload()
+            message.payload()
         )
         .doOnNext(submissionLocation ->
             log.info(
                 "Loaded submission location for persistence on oracle {} {} {}",
-                message.getPayload(),
+                message.payload(),
                 submissionLocation.getName(),
                 submissionLocation.getSubmissionLocationId()
             )
@@ -217,20 +179,20 @@ public abstract class LegacyAbstractPersistenceService {
                                 "Proceeding with location {}/{} of submission id {}",
                                 index,
                                 count,
-                                message.getPayload()
+                                message.payload()
                             )
                         )
                         .map(count ->
-                            MessageBuilder
-                                .fromMessage(message)
-                                .copyHeaders(message.getHeaders())
-                                .setHeader(ApplicationConstant.LOCATION_CODE,
-                                    String.format("%02d", index))
-                                .setHeader(ApplicationConstant.LOCATION_ID,
+                            new MessagingWrapper<>(
+                                message.payload(),
+                                message.parameters()
+                            )
+                                .withParameter(ApplicationConstant.LOCATION_ID,
                                     detail.getSubmissionLocationId())
-                                .setHeader(ApplicationConstant.TOTAL, count)
-                                .setHeader(ApplicationConstant.INDEX, index)
-                                .build()
+                                .withParameter(ApplicationConstant.LOCATION_CODE,
+                                    String.format("%02d", index))
+                                .withParameter(ApplicationConstant.TOTAL, count)
+                                .withParameter(ApplicationConstant.INDEX, index)
                         )
                 )
         )
@@ -242,21 +204,12 @@ public abstract class LegacyAbstractPersistenceService {
    * Creates a contact if does not exist on oracle. It first checks for an existing entry and if it
    * does not have, create it.
    */
-  @ServiceActivator(
-      inputChannel = ApplicationConstant.SUBMISSION_LEGACY_CONTACT_CHANNEL,
-      outputChannel = ApplicationConstant.SUBMISSION_LEGACY_NOTIFY_CHANNEL,
-      async = "true"
-  )
-  public Mono<Message<Integer>> createContact(Message<Integer> message) {
+  public Mono<MessagingWrapper<Integer>> createContact(MessagingWrapper<Integer> message) {
 
-    if (!filterByType(
-        message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE, String.class))) {
-      return Mono.empty();
-    }
     // Load all contacts for this location
     return locationContactRepository
         .findBySubmissionLocationId(
-            message.getHeaders().get(ApplicationConstant.LOCATION_ID, Integer.class)
+            (Integer) message.parameters().get(ApplicationConstant.LOCATION_ID)
         )
         // Load the contact detail
         .flatMap(locationContact ->
@@ -267,17 +220,17 @@ public abstract class LegacyAbstractPersistenceService {
         .doOnNext(submissionContact ->
             log.info(
                 "Loaded submission contact for persistence on oracle {} {} {} {}",
-                message.getPayload(),
+                message.payload(),
                 submissionContact.getFirstName(),
                 submissionContact.getLastName(),
-                message.getHeaders().get(ApplicationConstant.LOCATION_CODE, String.class)
+                message.parameters().get(ApplicationConstant.LOCATION_CODE)
             )
         )
         // Convert it to a DTO
         .map(submissionContact ->
             new ForestClientContactDto(
                 getClientNumber(message),
-                message.getHeaders().get(ApplicationConstant.LOCATION_CODE, String.class),
+                message.parameters().get(ApplicationConstant.LOCATION_CODE).toString(),
                 submissionContact.getContactTypeCode(),
                 String.format("%s %s", submissionContact.getFirstName(),
                     submissionContact.getLastName()).toUpperCase(),
@@ -295,43 +248,6 @@ public abstract class LegacyAbstractPersistenceService {
         .collectList()
         // Move on to the next step
         .thenReturn(message);
-  }
-
-
-  /**
-   * Sends a notification to the user that the submission has been processed
-   */
-  @ServiceActivator(
-      inputChannel = ApplicationConstant.SUBMISSION_LEGACY_NOTIFY_CHANNEL,
-      outputChannel = ApplicationConstant.SUBMISSION_MAIL_BUILD_CHANNEL,
-      async = "true"
-  )
-  public Mono<Message<Integer>> sendNotification(Message<Integer> message) {
-
-    if (!filterByType(
-        message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE, String.class))) {
-      return Mono.empty();
-    }
-
-    Long total = message.getHeaders().get(ApplicationConstant.TOTAL, Long.class);
-    Long index = message.getHeaders().get(ApplicationConstant.INDEX, Long.class);
-
-    if ((total == null || index == null) || ((total - 1) > index)) {
-      log.info("Skipping notification for submission {} until last location is processed",
-          message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class)
-      );
-      return Mono.empty();
-    }
-
-    log.info("Sending notification for submission {}",
-        message.getHeaders().get(ApplicationConstant.SUBMISSION_ID, Integer.class)
-    );
-    return Mono.just(
-        MessageBuilder
-            .fromMessage(message)
-            .setHeader(ApplicationConstant.SUBMISSION_TYPE, SubmissionTypeCodeEnum.RAC)
-            .build()
-    );
   }
 
   protected ForestClientDto getBaseForestClient(String createdBy, String updatedBy) {
@@ -355,19 +271,12 @@ public abstract class LegacyAbstractPersistenceService {
         );
   }
 
-  protected String getUser(Message<?> message, String headerName) {
-    return ProcessorUtil
-        .readHeader(
-            message,
-            headerName,
-            String.class
-        )
-        .orElse(ApplicationConstant.PROCESSOR_USER_NAME);
+  protected String getUser(MessagingWrapper<?> message, String headerName) {
+    return message.parameters().get(headerName).toString();
   }
 
-  private String getClientNumber(Message<?> message) {
-    return ProcessorUtil.readHeader(message, ApplicationConstant.FOREST_CLIENT_NUMBER, String.class)
-        .orElse(StringUtils.EMPTY);
+  private String getClientNumber(MessagingWrapper<?> message) {
+    return message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER).toString();
   }
 
   private boolean isRegisteredSoleProprietorship(ForestClientDto forestClient) {
@@ -375,19 +284,18 @@ public abstract class LegacyAbstractPersistenceService {
         forestClient.clientIdTypeCode(), "BCRE");
   }
 
-  private Mono<String> createClientDoingBusinessAs(Message<ForestClientDto> message,
+  private Mono<String> createClientDoingBusinessAs(MessagingWrapper<ForestClientDto> message,
       String clientNumber) {
     return Mono
         .just(clientNumber)
         .filter(
-            forestClientNumber -> isRegisteredSoleProprietorship(message.getPayload())
+            forestClientNumber -> isRegisteredSoleProprietorship(message.payload())
         )
         .flatMap(forestClientNumber ->
             legacyService
                 .createDoingBusinessAs(
                     forestClientNumber,
-                    message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME,
-                        String.class),
+                    message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME).toString(),
                     getUser(message, ApplicationConstant.CREATED_BY),
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
