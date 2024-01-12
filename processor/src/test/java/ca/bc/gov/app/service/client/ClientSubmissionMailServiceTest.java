@@ -9,9 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.awaitility.Awaitility.await;
 
-import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.entity.SubmissionTypeCodeEnum;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.Duration;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,8 +17,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.http.MediaType;
-import org.springframework.integration.support.MessageBuilder;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.test.StepVerifier;
 
 @DisplayName("Unit Test | Client Submission Mail Service")
 class ClientSubmissionMailServiceTest {
@@ -45,35 +43,32 @@ class ClientSubmissionMailServiceTest {
   @Test
   @DisplayName("send an email")
   void shouldSendEmail() {
-    service.sendMail(
-        MessageBuilder
-            .withPayload(TestConstants.EMAIL_REQUEST)
-            .build()
-    );
+    service
+        .sendMail(TestConstants.EMAIL_REQUEST)
+        .as(StepVerifier::create)
+        .verifyComplete();
 
     await()
         .alias("Email sent")
         .atMost(Duration.ofSeconds(2))
-        .untilAsserted(() -> {
-          wireMockExtension
-              .verify(
-                  postRequestedFor(urlEqualTo("/ches/email"))
-                      .withHeader("Content-Type", containing(MediaType.APPLICATION_JSON_VALUE))
-                      .withRequestBody(equalToJson(TestConstants.EMAIL_REQUEST_JSON)
-                      )
-              );
-        });
+        .untilAsserted(() ->
+            wireMockExtension
+                .verify(
+                    postRequestedFor(urlEqualTo("/ches/email"))
+                        .withHeader("Content-Type", containing(MediaType.APPLICATION_JSON_VALUE))
+                        .withRequestBody(equalToJson(TestConstants.EMAIL_REQUEST_JSON)
+                        )
+                )
+        );
   }
 
   @Test
   @DisplayName("preview email on review")
   void shouldPreventReviewMails() {
-    service.sendMail(
-        MessageBuilder
-            .withPayload(TestConstants.EMAIL_REQUEST)
-            .setHeader(ApplicationConstant.SUBMISSION_TYPE, SubmissionTypeCodeEnum.RNC)
-            .build()
-    );
+    service
+        .sendMail(TestConstants.EMAIL_REQUEST)
+        .as(StepVerifier::create)
+        .verifyComplete();
 
     await()
         .alias("Email sent")

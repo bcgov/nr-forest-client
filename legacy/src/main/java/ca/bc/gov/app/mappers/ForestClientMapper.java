@@ -44,6 +44,11 @@ public interface ForestClientMapper extends
       source = "clientNumber",
       qualifiedByName = "InitialRevisionQualifier"
   )
+  @Mapping(
+      target = "birthdate",
+      source = "birthdate",
+      qualifiedByName = "LocalDateDateTimeQualifier"
+  )
   ForestClientEntity toEntity(ForestClientDto dto);
 
   @Override
@@ -51,6 +56,11 @@ public interface ForestClientMapper extends
       source = "updatedByUnit",
       target= "orgUnit",
       qualifiedByName = "InitialRevisionQualifier"
+  )
+  @Mapping(
+      target = "birthdate",
+      source = "birthdate",
+      qualifiedByName = "LocalDateTimeDateQualifier"
   )
   ForestClientDto toDto(ForestClientEntity entity);
 }
