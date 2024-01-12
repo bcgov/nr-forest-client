@@ -40,5 +40,17 @@
     "name": "Totally Shady Company",
     "status": "ACTIVE",
     "legalType": "SP"
+  },
+  {
+    "code":"BC1234567",
+    "name":"Unsupported Client Type Inc.",
+    "status":"ACTIVE",
+    "legalType": "BC"
+  },
+  {
+    "code":"SP1234567",
+    "name":"Unknown Sole Proprietor Ltd.",
+    "status":"ACTIVE",
+    "legalType": "SP"
   }
 ]
