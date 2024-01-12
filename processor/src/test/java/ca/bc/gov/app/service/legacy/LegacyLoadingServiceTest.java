@@ -48,8 +48,8 @@ class LegacyLoadingServiceTest {
                 .extracting(MessagingWrapper::parameters, as(InstanceOfAssertFactories.MAP))
                 .isNotNull()
                 .isNotEmpty()
-                .containsKey("id")
-                .containsKey("timestamp")
+                .containsKey("submission-id")
+                .containsKey("submission-status")
                 .containsEntry(ApplicationConstant.SUBMISSION_ID, 1)
         )
         .verifyComplete();

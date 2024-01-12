@@ -46,8 +46,7 @@ class ClientSubmissionLoadingServiceTest {
                 .extracting(MessagingWrapper::parameters, as(InstanceOfAssertFactories.MAP))
                 .isNotNull()
                 .isNotEmpty()
-                .containsKey("id")
-                .containsKey("timestamp")
+                .containsKey("submission-id")
                 .containsEntry(ApplicationConstant.SUBMISSION_ID, 1)
         )
         .verifyComplete();

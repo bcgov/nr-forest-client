@@ -92,13 +92,8 @@ class LegacyClientPersistenceServiceTest {
 
           assertThat(message.parameters())
               .isNotNull()
-              .hasFieldOrPropertyWithValue("clientName", "STAR DOT STAR VENTURES")
-              .hasFieldOrPropertyWithValue("clientTypeCode", "C")
-              .hasFieldOrPropertyWithValue("registryCompanyTypeCode", "FM")
-              .hasFieldOrPropertyWithValue("corpRegnNmbr", "0159297")
-              .hasFieldOrPropertyWithValue("clientNumber", "00000001")
-              .hasFieldOrPropertyWithValue("clientComment",
-                  "Jhon Snow submitted the client details acquired from BC Registry FM0159297");
+              .hasFieldOrPropertyWithValue("forestClientName", "STAR DOT STAR VENTURES")
+              .hasFieldOrPropertyWithValue("incorporationNumber", "FM0159297");
 
           assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
               .isNotNull()

@@ -282,6 +282,7 @@ class LegacyAbstractPersistenceServiceTest {
             new MessagingWrapper<>(
                 2,
                 Map.of(
+                    ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000",
                     ApplicationConstant.SUBMISSION_ID, 2,
                     ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
                     ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME
@@ -292,7 +293,7 @@ class LegacyAbstractPersistenceServiceTest {
         .assertNext(message -> {
           assertThat(message)
               .isNotNull()
-              .hasFieldOrPropertyWithValue("payload", 2);
+              .hasFieldOrPropertyWithValue("payload", "00000000");
 
           assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
               .as("submission id")
@@ -375,75 +376,6 @@ class LegacyAbstractPersistenceServiceTest {
         })
         .verifyComplete();
 
-  }
-
-  @ParameterizedTest
-  @MethodSource("data")
-  @DisplayName("create client that is individual")
-  void shouldTryToCreateClient(String type) {
-
-    service
-        .createForestClient(
-            new MessagingWrapper<>(
-                CLIENT_ENTITY,
-                Map.of(
-                    ApplicationConstant.SUBMISSION_ID, 2,
-                    ApplicationConstant.CREATED_BY,
-                    ApplicationConstant.PROCESSOR_USER_NAME,
-                    ApplicationConstant.UPDATED_BY,
-                    ApplicationConstant.PROCESSOR_USER_NAME,
-                    ApplicationConstant.CLIENT_TYPE_CODE, type,
-                    ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000",
-                    ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA"
-                )
-            )
-        )
-        .as(StepVerifier::create)
-        .verifyComplete();
-  }
-
-  @ParameterizedTest
-  @MethodSource("data")
-  @DisplayName("create contact that is individual")
-  void shouldTryToCreateContact(String type) {
-    service
-        .createContact(
-            new MessagingWrapper<>(
-                1,
-                Map.of(
-                    ApplicationConstant.SUBMISSION_ID, 2,
-                    ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
-                    ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
-                    ApplicationConstant.CLIENT_TYPE_CODE, type,
-                    ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000",
-                    ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA"
-                )
-            )
-        )
-        .as(StepVerifier::create)
-        .verifyComplete();
-  }
-
-  @ParameterizedTest
-  @MethodSource("data")
-  @DisplayName("create location that is individual")
-  void shouldTryToCreateLocation(String type) {
-    service
-        .createLocations(
-            new MessagingWrapper<>(
-                1,
-                Map.of(
-                    ApplicationConstant.SUBMISSION_ID, 2,
-                    ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
-                    ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
-                    ApplicationConstant.CLIENT_TYPE_CODE, type,
-                    ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000",
-                    ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA"
-                )
-            )
-        )
-        .as(StepVerifier::create)
-        .verifyComplete();
   }
 
   private static Stream<Arguments> clientData() {

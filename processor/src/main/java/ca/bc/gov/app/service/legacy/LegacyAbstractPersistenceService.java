@@ -83,6 +83,14 @@ public abstract class LegacyAbstractPersistenceService {
             contactRepository
                 .findFirstBySubmissionId(message.payload())
                 .map(contact -> contact.getFirstName() + " " + contact.getLastName())
+                .doOnNext(contact ->
+                    log.info(
+                        "Loaded submission contact for persistence on oracle {} {} {}",
+                        message.payload(),
+                        contact,
+                        submissionDetail.getClientNumber()
+                    )
+                )
                 .map(contact ->
                     new MessagingWrapper<>(
                         message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER)
@@ -113,6 +121,13 @@ public abstract class LegacyAbstractPersistenceService {
         // Create the client
         legacyService
             .createClient(message.payload())
+            .doOnNext(forestClientNumber ->
+                log.info(
+                    "Created forest client {} {}",
+                    message.payload().clientNumber(),
+                    forestClientNumber
+                )
+            )
             // Create the doing business as IF exists
             .flatMap(clientNumber -> createClientDoingBusinessAs(message, clientNumber))
             // Updates the submission detail with the client number
@@ -122,6 +137,14 @@ public abstract class LegacyAbstractPersistenceService {
                         (Integer) message.parameters().get(ApplicationConstant.SUBMISSION_ID)
                     )
                     .map(submissionDetail -> submissionDetail.withClientNumber(clientNumber))
+                    .doOnNext(submissionDetail ->
+                        log.info(
+                            "Updating submission detail for persistence on oracle {} {} {}",
+                            message.payload().clientNumber(),
+                            submissionDetail.getOrganizationName(),
+                            submissionDetail.getIncorporationNumber()
+                        )
+                    )
                     .flatMap(submissionDetailRepository::save)
                     .map(SubmissionDetailEntity::getClientNumber)
             )
@@ -290,6 +313,13 @@ public abstract class LegacyAbstractPersistenceService {
         .just(clientNumber)
         .filter(
             forestClientNumber -> isRegisteredSoleProprietorship(message.payload())
+        )
+        .doOnNext(forestClientNumber ->
+            log.info(
+                "Creating doing business as for {} {}",
+                forestClientNumber,
+                message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME)
+            )
         )
         .flatMap(forestClientNumber ->
             legacyService
