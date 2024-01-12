@@ -43,7 +43,8 @@ public class LegacyService {
   public void setUp() {
     countryCodeRepository.findAll().doOnNext(
             countryCode -> countryList.put(countryCode.getCountryCode(), countryCode.getDescription()))
-        .collectList().subscribe();
+        .collectList()
+        .subscribe(list -> log.info("Loaded {} country codes", list.size()));
   }
 
 
