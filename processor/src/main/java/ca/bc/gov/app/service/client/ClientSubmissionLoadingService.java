@@ -128,9 +128,9 @@ public class ClientSubmissionLoadingService {
   ) {
     return switch ((SubmissionStatusEnum) message.parameters()
         .get(ApplicationConstant.SUBMISSION_STATUS)) {
-      case A -> "Client number submission for " + businessName + " was approved";
-      case R -> "Client number submission for " + businessName + " was rejected";
-      default -> businessName + " submission requires review";
+      case A -> "Client number application approved";
+      case R -> "Client number application can’t go ahead";
+      default -> businessName + " requires review";
     };
   }
 
