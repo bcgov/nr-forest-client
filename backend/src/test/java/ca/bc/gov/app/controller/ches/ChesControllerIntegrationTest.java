@@ -74,7 +74,8 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
         .body(Mono.just(EMAIL_REQUEST), EmailRequestDto.class)
         .exchange()
         .expectStatus().isAccepted()
-        .expectBody().isEmpty();
+        .expectBody(String.class)
+        .isEqualTo("Email sent successfully. Transaction ID: 00000000-0000-0000-0000-000000000000");
   }
 
 }

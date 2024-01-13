@@ -28,7 +28,7 @@ public class ClientSubmissionMailService {
             .uri("/ches/email")
             .body(Mono.just(mailMessage), EmailRequestDto.class)
             .exchangeToMono(clientResponse -> clientResponse.bodyToMono(String.class))
-            .doOnNext(source -> log.info("Email sent to {}", mailMessage.email()))
+            .doOnNext(source -> log.info("Email sent to {} {}", mailMessage.email(),source))
             .doOnError(throwable -> log.error("Error sending email to {}", mailMessage.email(),
                 throwable));
 
