@@ -46,5 +46,15 @@ public interface ForestClientLocationMapper extends
       source = "clientNumber",
       qualifiedByName = "InitialRevisionQualifier"
   )
+  @Mapping(
+      source = "createdBy",
+      target = "createdBy",
+      qualifiedByName = "UserIdSizeQualifier"
+  )
+  @Mapping(
+      source = "updatedBy",
+      target = "updatedBy",
+      qualifiedByName = "UserIdSizeQualifier"
+  )
   ForestClientLocationEntity toEntity(ForestClientLocationDto dto);
 }
