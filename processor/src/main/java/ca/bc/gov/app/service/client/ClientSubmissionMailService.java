@@ -14,8 +14,7 @@ public class ClientSubmissionMailService {
 
   private final WebClient forestClientApi;
 
-  /*@ServiceActivator(inputChannel = ApplicationConstant.SUBMISSION_MAIL_CHANNEL)*/
-  public Mono<Void> sendMail(EmailRequestDto mailMessage) {
+  public Mono<String> sendMail(EmailRequestDto mailMessage) {
 
     log.info("Sending email to {} {} -> {}",
         mailMessage.email(),
@@ -28,8 +27,10 @@ public class ClientSubmissionMailService {
             .post()
             .uri("/ches/email")
             .body(Mono.just(mailMessage), EmailRequestDto.class)
-            .exchangeToMono(clientResponse -> clientResponse.bodyToMono(Void.class))
-            .doOnNext(source -> log.info("Email sent to {}", mailMessage.email()));
+            .exchangeToMono(clientResponse -> clientResponse.bodyToMono(String.class))
+            .doOnNext(source -> log.info("Email sent to {}", mailMessage.email()))
+            .doOnError(throwable -> log.error("Error sending email to {}", mailMessage.email(),
+                throwable));
 
   }
 

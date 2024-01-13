@@ -33,7 +33,7 @@ public class ChesController {
    */
   @PostMapping("/email")
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public Mono<Void> sendEmail(@RequestBody EmailRequestDto emailRequestDto) {
+  public Mono<String> sendEmail(@RequestBody EmailRequestDto emailRequestDto) {
     log.info("Sending email using CHES {}", emailRequestDto);
     return clientService.sendEmail(emailRequestDto);
   }
