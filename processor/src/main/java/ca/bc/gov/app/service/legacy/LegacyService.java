@@ -76,8 +76,8 @@ public class LegacyService {
             null,
             "Y",
             StringUtils.EMPTY,
-            user,
-            user,
+            ApplicationConstant.PROCESSOR_USER_NAME,
+            ApplicationConstant.PROCESSOR_USER_NAME,
             ApplicationConstant.ORG_UNIT,
             ApplicationConstant.ORG_UNIT
         );
@@ -87,12 +87,22 @@ public class LegacyService {
   }
 
   public Mono<String> createContact(ForestClientContactDto dto) {
-    return postRequestToLegacy("/api/contacts", dto)
+    return postRequestToLegacy(
+        "/api/contacts",
+        dto
+            .withCreatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
+            .withUpdatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
+    )
         .thenReturn(dto.clientNumber());
   }
 
   public Mono<String> createClient(ForestClientDto dto) {
-    return postRequestToLegacy("/api/clients", dto);
+    return postRequestToLegacy(
+        "/api/clients",
+        dto
+            .withCreatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
+            .withUpdatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
+    );
   }
 
   public Mono<String> createDoingBusinessAs(
@@ -106,8 +116,8 @@ public class LegacyService {
         new ClientDoingBusinessAsDto(
             clientNumber,
             doingBusinessAsName,
-            createdBy,
-            updatedBy,
+            ApplicationConstant.PROCESSOR_USER_NAME,
+            ApplicationConstant.PROCESSOR_USER_NAME,
             ApplicationConstant.ORG_UNIT
         )
     )

@@ -258,8 +258,8 @@ public abstract class LegacyAbstractPersistenceService {
                 RegExUtils.replaceAll(submissionContact.getBusinessPhoneNumber(), "\\D",
                     StringUtils.EMPTY),
                 submissionContact.getEmailAddress(),
-                getUser(message, ApplicationConstant.CREATED_BY),
-                getUser(message, ApplicationConstant.UPDATED_BY),
+                ApplicationConstant.PROCESSOR_USER_NAME,
+                ApplicationConstant.PROCESSOR_USER_NAME,
                 ApplicationConstant.ORG_UNIT
             )
         )
