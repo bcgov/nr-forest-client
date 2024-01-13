@@ -53,7 +53,7 @@ public abstract class LegacyAbstractPersistenceService {
             submission.getSubmissionId())
         )
         .map(submission ->
-            new MessagingWrapper<Integer>(
+            new MessagingWrapper<>(
                 message.payload(),
                 message.parameters()
             )
@@ -85,16 +85,14 @@ public abstract class LegacyAbstractPersistenceService {
                 .map(contact -> contact.getFirstName() + " " + contact.getLastName())
                 .doOnNext(contact ->
                     log.info(
-                        "Loaded submission contact for persistence on oracle {} {} {}",
+                        "Loaded submission contact for persistence on oracle {} {}",
                         message.payload(),
-                        contact,
-                        submissionDetail.getClientNumber()
+                        contact
                     )
                 )
                 .map(contact ->
                     new MessagingWrapper<>(
-                        message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER)
-                            .toString(),
+                        message.getParameter(ApplicationConstant.FOREST_CLIENT_NUMBER,String.class),
                         message.parameters()
                     )
                         .withParameter(ApplicationConstant.CLIENT_TYPE_CODE,

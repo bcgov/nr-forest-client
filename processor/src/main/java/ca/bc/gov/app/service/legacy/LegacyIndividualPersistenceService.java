@@ -56,10 +56,7 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
     return
         getSubmissionDetailRepository()
             .findBySubmissionId(
-                (Integer)
-                    message
-                        .parameters()
-                        .get(ApplicationConstant.SUBMISSION_ID)
+                message.getParameter(ApplicationConstant.SUBMISSION_ID, Integer.class)
             )
             .map(detailEntity ->
                 getBaseForestClient(
@@ -81,8 +78,9 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                     .withClientIdentification(
                         getUser(message, ApplicationConstant.CREATED_BY).replace("bcsc\\",
                             StringUtils.EMPTY))
-                    .withClientNumber(message.parameters()
-                        .get(ApplicationConstant.FOREST_CLIENT_NUMBER).toString())
+                    .withClientNumber(
+                        message.getParameter(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class)
+                    )
             )
             .map(forestClient ->
                 new MessagingWrapper<>(forestClient, message.parameters())
