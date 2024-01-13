@@ -70,6 +70,9 @@ public class CorsWebFilter implements WebFilter {
     headers.add("Strict-Transport-Security", 
                 "max-age=300; includeSubDomains");
     
+    headers.add("Referrer-Policy", 
+                "no-referrer");
+    
     headers.remove("Server");
     
     headers.remove("X-Powered-By");
