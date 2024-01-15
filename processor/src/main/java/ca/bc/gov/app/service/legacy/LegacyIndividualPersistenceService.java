@@ -78,9 +78,6 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                     .withClientIdentification(
                         getUser(message, ApplicationConstant.CREATED_BY).replace("bcsc\\",
                             StringUtils.EMPTY))
-                    .withClientNumber(
-                        message.getParameter(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class)
-                    )
             )
             .map(forestClient ->
                 new MessagingWrapper<>(forestClient, message.parameters())

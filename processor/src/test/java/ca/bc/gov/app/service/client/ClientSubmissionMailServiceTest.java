@@ -40,7 +40,12 @@ class ClientSubmissionMailServiceTest {
   public static void setUp() {
     wireMockExtension
         .stubFor(post("/ches/email")
-            .willReturn(jsonResponse(UUID.randomUUID().toString(), 200)));
+            .willReturn(jsonResponse(
+                    "Transaction ID: " + UUID.randomUUID(),
+                    200
+                )
+            )
+        );
   }
 
   @Test
