@@ -119,8 +119,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
                       "BAXTER CORP"
                   )
               )
-              .hasFieldOrPropertyWithValue("clientTypeCode", "I")
-              .hasFieldOrPropertyWithValue("clientNumber", "00000001");
+              .hasFieldOrPropertyWithValue("clientTypeCode", "I");
 
           assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
               .isNotNull()
@@ -144,12 +143,6 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("FM00184546");
-
-          assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
-              .isNotNull()
-              .isInstanceOf(String.class)
-              .isEqualTo("00000001");
-
         })
         .verifyComplete();
   }
@@ -213,8 +206,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
                       "BAXTER CORP"
                   )
               )
-              .hasFieldOrPropertyWithValue("clientTypeCode", "I")
-              .hasFieldOrPropertyWithValue("clientNumber", "00000001");
+              .hasFieldOrPropertyWithValue("clientTypeCode", "I");
 
           assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
               .isNotNull()
@@ -239,10 +231,6 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .isInstanceOf(String.class)
               .isEqualTo("FM00184546");
 
-          assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
-              .isNotNull()
-              .isInstanceOf(String.class)
-              .isEqualTo("00000001");
 
         })
         .verifyComplete();

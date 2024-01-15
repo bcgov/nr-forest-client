@@ -73,11 +73,16 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                         " submitted the individual with data acquired from BC Services Card"
                     )
                     .withClientTypeCode("I")
-                    .withClientIdTypeCode("BCSC")
-                    //Assuming that individuals can only be created by BCSC users
+                    .withClientIdTypeCode(
+                        ProcessorUtil.getClientIdTypeCode(
+                            ProcessorUtil.splitName(
+                                getUser(message, ApplicationConstant.CREATED_BY))[1]
+                        )
+                    )
                     .withClientIdentification(
-                        getUser(message, ApplicationConstant.CREATED_BY).replace("bcsc\\",
-                            StringUtils.EMPTY))
+                        ProcessorUtil.splitName(
+                            getUser(message, ApplicationConstant.CREATED_BY))[0]
+                    )
             )
             .map(forestClient ->
                 new MessagingWrapper<>(forestClient, message.parameters())
