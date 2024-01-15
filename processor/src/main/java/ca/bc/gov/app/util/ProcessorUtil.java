@@ -38,6 +38,8 @@ public class ProcessorUtil {
         ).trim() :
         input;
 
+    cleanedInput = cleanedInput.replace("\\", " ");
+
     //Split by space
     String[] words = cleanedInput.replace(",", StringUtils.EMPTY).split("\\s+");
 
@@ -59,6 +61,22 @@ public class ProcessorUtil {
     }
   }
 
+  public static String getClientIdTypeCode(String code){
+    if (StringUtils.isBlank(code)) {
+      return StringUtils.EMPTY;
+    }
+    switch (code.toLowerCase()) {
+      case "bcsc":
+        return "BCSC";
+      case "bceidbusiness":
+        return "BCEI";
+      case "idir":
+        return "OTHR";
+      default:
+        return StringUtils.EMPTY;
+    }
+  }
+
   private static String getStringFromPattern(String input, Pattern pattern) {
     Matcher matcher = pattern.matcher(input);
     if (matcher.find()) {
@@ -67,6 +85,5 @@ public class ProcessorUtil {
       return StringUtils.EMPTY;
     }
   }
-
 
 }

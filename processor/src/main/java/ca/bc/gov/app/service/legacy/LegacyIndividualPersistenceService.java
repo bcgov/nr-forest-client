@@ -56,10 +56,7 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
     return
         getSubmissionDetailRepository()
             .findBySubmissionId(
-                (Integer)
-                    message
-                        .parameters()
-                        .get(ApplicationConstant.SUBMISSION_ID)
+                message.getParameter(ApplicationConstant.SUBMISSION_ID, Integer.class)
             )
             .map(detailEntity ->
                 getBaseForestClient(
@@ -76,13 +73,16 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                         " submitted the individual with data acquired from BC Services Card"
                     )
                     .withClientTypeCode("I")
-                    .withClientIdTypeCode("BCSC")
-                    //Assuming that individuals can only be created by BCSC users
+                    .withClientIdTypeCode(
+                        ProcessorUtil.getClientIdTypeCode(
+                            ProcessorUtil.splitName(
+                                getUser(message, ApplicationConstant.CREATED_BY))[1]
+                        )
+                    )
                     .withClientIdentification(
-                        getUser(message, ApplicationConstant.CREATED_BY).replace("bcsc\\",
-                            StringUtils.EMPTY))
-                    .withClientNumber(message.parameters()
-                        .get(ApplicationConstant.FOREST_CLIENT_NUMBER).toString())
+                        ProcessorUtil.splitName(
+                            getUser(message, ApplicationConstant.CREATED_BY))[0]
+                    )
             )
             .map(forestClient ->
                 new MessagingWrapper<>(forestClient, message.parameters())

@@ -1,5 +1,8 @@
 package ca.bc.gov.app.dto.legacy;
 
+import lombok.With;
+
+@With
 public record ForestClientContactDto(
     String clientNumber,
     String clientLocnCode,

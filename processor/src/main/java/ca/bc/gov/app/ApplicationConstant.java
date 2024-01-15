@@ -28,7 +28,7 @@ public final class ApplicationConstant {
   public static final String LOCATION_ID = "locationId";
   public static final String TOTAL = "total";
   public static final String INDEX = "index";
-  public static final String PROCESSOR_USER_NAME = "IDIR\\OTTOMATED";
+  public static final String PROCESSOR_USER_NAME = "idir\\ottomated";
   public static final long ORG_UNIT = 70L;
   public static final String LOCATION_CODE = "locationCode";
   public static final String CLIENT_TYPE_CODE = "CLIENT_TYPE_CODE";
