@@ -467,8 +467,6 @@ public class ClientSubmissionService {
       stringBuilder
       .append(" is not in good standing with BC Registries.")
       .append(htmlBlankDiv)
-      .append("<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a></p>")
-      .append(htmlBlankDiv)
       .append("<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a> ")
       .append("account to find out why.</p>");
     }
