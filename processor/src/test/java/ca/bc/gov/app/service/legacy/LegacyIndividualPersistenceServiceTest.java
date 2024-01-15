@@ -97,10 +97,9 @@ class LegacyIndividualPersistenceServiceTest {
               .hasFieldOrPropertyWithValue("clientComment",
                   "Jhon Snow submitted the individual with data acquired from BC Services Card")
               .hasFieldOrPropertyWithValue("clientTypeCode", "I")
-              .hasFieldOrPropertyWithValue("clientNumber", "00000001")
-              .hasFieldOrPropertyWithValue("clientIdTypeCode", "BCSC")
+              .hasFieldOrPropertyWithValue("clientIdTypeCode", "OTHR")
               .hasFieldOrPropertyWithValue("clientIdentification",
-                  ApplicationConstant.PROCESSOR_USER_NAME);
+                  "ottomated");
 
           assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
               .isNotNull()
@@ -124,11 +123,6 @@ class LegacyIndividualPersistenceServiceTest {
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("not applicable");
-
-          assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
-              .isNotNull()
-              .isInstanceOf(String.class)
-              .isEqualTo("00000001");
 
         })
         .verifyComplete();

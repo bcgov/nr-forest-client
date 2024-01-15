@@ -32,6 +32,13 @@ class ProcessorUtilTest {
     Assertions.assertArrayEquals(expected, ProcessorUtil.splitName(input));
   }
 
+  @ParameterizedTest(name = "should get client id type code {0} and get {1}")
+  @MethodSource("clientIdTypeCode")
+  @DisplayName("should get client id type code")
+  void shouldGetClientIdTypeCode(String input, String expected) {
+    Assertions.assertEquals(expected, ProcessorUtil.getClientIdTypeCode(input));
+  }
+
   private static Stream<Arguments> extract() {
     return Stream.of(
         Arguments.of("ABC1234", "ABC", "1234"),
@@ -44,6 +51,10 @@ class ProcessorUtilTest {
   private static Stream<Arguments> splitName() {
     return
         Stream.of(
+            Arguments.of(
+                "bcsc\\123456",
+                new String[]{"123456", "bcsc", ""}
+            ),
             Arguments.of(
                 "John Doe",
                 new String[]{"Doe", "John", ""}
@@ -74,6 +85,20 @@ class ProcessorUtilTest {
             Arguments.of("          ",
                 new String[]{StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY}
             )
+        );
+  }
+
+  private static Stream<Arguments> clientIdTypeCode(){
+    return
+        Stream.of(
+            Arguments.of("bcsc", "BCSC"),
+            Arguments.of("BCSC", "BCSC"),
+            Arguments.of("bceidbusiness", "BCEI"),
+            Arguments.of("idir", "OTHR"),
+            Arguments.of("test", StringUtils.EMPTY),
+            Arguments.of(StringUtils.EMPTY, StringUtils.EMPTY),
+            Arguments.of(null, StringUtils.EMPTY),
+            Arguments.of(" ", StringUtils.EMPTY)
         );
   }
 

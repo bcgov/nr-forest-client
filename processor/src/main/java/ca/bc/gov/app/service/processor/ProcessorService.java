@@ -118,6 +118,7 @@ public class ProcessorService {
 
         )
         .doOnNext(submission -> log.info("Submission post processed {}, building message", submission))
+        .onErrorContinue((throwable, o) -> log.error("Error processing submission {}", o, throwable))
         .flatMap(submissionLoadingService::buildMailMessage)
         .doOnNext(message -> log.info("Email ready to be sent {}", message))
         .flatMap(mailService::sendMail)

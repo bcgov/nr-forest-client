@@ -253,10 +253,10 @@ public class ClientService {
    * <p>Send email to a client.</p>
    *
    * @param emailRequestDto The request data containing client details.
-   * @return A {@link Mono} of {@link Void}.
+   * @return A {@link Mono} of {@link String}.
    */
-  public Mono<Void> sendEmail(EmailRequestDto emailRequestDto) {
-    return triggerEmail(emailRequestDto).then();
+  public Mono<String> sendEmail(EmailRequestDto emailRequestDto) {
+    return triggerEmail(emailRequestDto);
   }
 
   /**

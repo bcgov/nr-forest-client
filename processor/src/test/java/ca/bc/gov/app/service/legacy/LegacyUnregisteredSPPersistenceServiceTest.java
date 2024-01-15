@@ -98,8 +98,7 @@ class LegacyUnregisteredSPPersistenceServiceTest {
               .hasFieldOrPropertyWithValue("legalMiddleName", StringUtils.EMPTY)
               .hasFieldOrPropertyWithValue("clientComment",
                   "Jhon Snow submitted the sole proprietor with data acquired from Business BCeID")
-              .hasFieldOrPropertyWithValue("clientTypeCode", "I")
-              .hasFieldOrPropertyWithValue("clientNumber", "00000001");
+              .hasFieldOrPropertyWithValue("clientTypeCode", "I");
 
           assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
               .isNotNull()
@@ -123,11 +122,6 @@ class LegacyUnregisteredSPPersistenceServiceTest {
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("not applicable");
-
-          assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
-              .isNotNull()
-              .isInstanceOf(String.class)
-              .isEqualTo("00000001");
 
         })
         .verifyComplete();

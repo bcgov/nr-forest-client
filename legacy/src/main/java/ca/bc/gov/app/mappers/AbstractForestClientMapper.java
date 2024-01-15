@@ -13,6 +13,10 @@ public interface AbstractForestClientMapper<D, E> {
   @InheritInverseConfiguration
   E toEntity(D dto);
 
+  @Named("UserIdSizeQualifier")
+  default String limitUserId(String origin) {
+    return origin.length() > 30 ? origin.substring(0, 30) : origin;
+  }
 
   @Named("EmptySpaceQualifier")
   default String defaultEmptySpace(Object origin) {
