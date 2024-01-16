@@ -40,7 +40,7 @@ public final class ApplicationConstant {
         s.submission_date,
         s.update_timestamp,
         s.update_user,
-        btc.description as business_type,
+        btc.business_type_code as business_type,
         sd.incorporation_number,
         sd.client_number,
         sd.organization_name,
