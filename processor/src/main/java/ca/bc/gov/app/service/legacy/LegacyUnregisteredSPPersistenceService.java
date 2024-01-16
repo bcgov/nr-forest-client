@@ -94,6 +94,7 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                         ProcessorUtil.splitName(
                             getUser(message, ApplicationConstant.CREATED_BY))[0]
                     )
+                    .withClientNumber(message.payload())
             )
             .doOnNext(forestClient ->
                 log.info("Generated forest client for USP {}",

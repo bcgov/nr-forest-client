@@ -4,6 +4,7 @@ import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ForestClientRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +25,16 @@ public class ClientService {
     return
         Mono
             .just(dto)
+            .filter(forestClientDto ->
+                StringUtils.isBlank(forestClientDto.clientNumber())
+            )
+            .doOnNext(forestClientDto ->
+                log.info(
+                    "Saving forest client {} {}",
+                    forestClientDto.clientNumber(),
+                    forestClientDto.name()
+                )
+            )
             .map(mapper::toEntity)
             .filterWhen(this::locateClient)
             .flatMap(entity -> getNextClientNumber().map(entity::withClientNumber))
@@ -38,7 +49,15 @@ public class ClientService {
                     forestClientContact.getName()
                 )
             )
-            .map(ForestClientEntity::getClientNumber);
+            .map(ForestClientEntity::getClientNumber)
+            .switchIfEmpty(
+                Mono
+                    .justOrEmpty(
+                        Optional.ofNullable(
+                            dto.clientNumber()
+                        )
+                    )
+            );
   }
 
   private Mono<Boolean> locateClient(

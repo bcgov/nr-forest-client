@@ -7,8 +7,8 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,7 +26,7 @@ class ClientControllerIntegrationTest extends
   @ParameterizedTest
   @MethodSource("saveClient")
   @DisplayName("Save a client")
-  void shouldSaveLocation(String clientName) {
+  void shouldSaveLocation(String clientName, String clientNumber) {
     client
         .post()
         .uri(uriBuilder ->
@@ -37,7 +37,7 @@ class ClientControllerIntegrationTest extends
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
         .body(BodyInserters.fromValue(
                 new ForestClientDto(
-                    null,
+                    clientNumber,
                     clientName,
                     null,
                     null,
@@ -62,8 +62,13 @@ class ClientControllerIntegrationTest extends
 
   }
 
-  private static Stream<String> saveClient() {
-    return Stream.of("TESTADOC", "SAMPLER FOREST PRODUCTS INC.", "BORIS AND BORIS INC.",
-        "CORP. OF THE CITY OF VICTORIA");
+  private static Stream<Arguments> saveClient() {
+    return Stream.of(
+        Arguments.of("TESTADOC", null),
+        Arguments.of("TESTADOC", "12345678"),
+        Arguments.of("SAMPLER FOREST PRODUCTS INC.", null),
+        Arguments.of("BORIS AND BORIS INC.", null),
+        Arguments.of("CORP. OF THE CITY OF VICTORIA", null)
+    );
   }
 }
