@@ -2,6 +2,7 @@
 package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
@@ -11,9 +12,6 @@ import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.integration.support.MessageBuilder;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -49,27 +47,16 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
     return StringUtils.equalsIgnoreCase(clientTypeCode, "I");
   }
 
-  @Override
-  String getNextChannel() {
-    return ApplicationConstant.SUBMISSION_LEGACY_INDIVIDUAL_CHANNEL;
-  }
-
   /**
    * Generate the individual to be persisted into forest client database.
    */
-  @ServiceActivator(
-      inputChannel = ApplicationConstant.SUBMISSION_LEGACY_INDIVIDUAL_CHANNEL,
-      outputChannel = ApplicationConstant.SUBMISSION_LEGACY_CLIENT_PERSIST_CHANNEL,
-      async = "true"
-  )
   @Override
-  public Mono<Message<ForestClientDto>> generateForestClient(Message<String> message) {
+  public Mono<MessagingWrapper<ForestClientDto>> generateForestClient(
+      MessagingWrapper<String> message) {
     return
         getSubmissionDetailRepository()
             .findBySubmissionId(
-                message
-                    .getHeaders()
-                    .get(ApplicationConstant.SUBMISSION_ID, Integer.class)
+                message.getParameter(ApplicationConstant.SUBMISSION_ID, Integer.class)
             )
             .map(detailEntity ->
                 getBaseForestClient(
@@ -86,27 +73,30 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                         " submitted the individual with data acquired from BC Services Card"
                     )
                     .withClientTypeCode("I")
-                    .withClientIdTypeCode("BCSC")
-                    //Assuming that individuals can only be created by BCSC users
+                    .withClientIdTypeCode(
+                        ProcessorUtil.getClientIdTypeCode(
+                            ProcessorUtil.splitName(
+                                getUser(message, ApplicationConstant.CREATED_BY))[1]
+                        )
+                    )
                     .withClientIdentification(
-                        getUser(message, ApplicationConstant.CREATED_BY).replace("bcsc\\",
-                            StringUtils.EMPTY))
-                    .withClientNumber(message.getHeaders()
-                        .get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
+                        ProcessorUtil.splitName(
+                            getUser(message, ApplicationConstant.CREATED_BY))[0]
+                    )
+                    .withClientNumber(message.payload())
             )
+            .doOnNext(forestClient -> log.info("forest client generated for individual {}",
+                forestClient.clientIdTypeCode() + forestClient.clientIdentification()))
             .map(forestClient ->
-                MessageBuilder
-                    .withPayload(forestClient)
-                    .copyHeaders(message.getHeaders())
-                    .setHeader(ApplicationConstant.FOREST_CLIENT_NAME,
+                new MessagingWrapper<>(forestClient, message.parameters())
+                    .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
                         String.join(" ",
                             forestClient.legalFirstName(),
                             forestClient.clientName()
                         )
                     )
-                    .setHeader(ApplicationConstant.INCORPORATION_NUMBER,
+                    .withParameter(ApplicationConstant.INCORPORATION_NUMBER,
                         "not applicable")
-                    .build()
             );
   }
 

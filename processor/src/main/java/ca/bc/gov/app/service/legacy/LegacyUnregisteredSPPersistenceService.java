@@ -2,6 +2,7 @@
 package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
@@ -13,9 +14,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.integration.support.MessageBuilder;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -52,11 +50,6 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
     return StringUtils.equalsIgnoreCase(clientTypeCode, "USP");
   }
 
-  @Override
-  String getNextChannel() {
-    return ApplicationConstant.SUBMISSION_LEGACY_USP_CHANNEL;
-  }
-
   /**
    * This method is responsible for generating the forest client for unregistered sole
    * proprietorship.
@@ -64,19 +57,16 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
    * @param message - the message containing the submission id.
    * @return - the forest client.
    */
-  @ServiceActivator(
-      inputChannel = ApplicationConstant.SUBMISSION_LEGACY_USP_CHANNEL,
-      outputChannel = ApplicationConstant.SUBMISSION_LEGACY_CLIENT_PERSIST_CHANNEL,
-      async = "true"
-  )
   @Override
-  public Mono<Message<ForestClientDto>> generateForestClient(Message<String> message) {
+  public Mono<MessagingWrapper<ForestClientDto>> generateForestClient(
+      MessagingWrapper<String> message) {
     return
         getSubmissionDetailRepository()
             .findBySubmissionId(
-                message
-                    .getHeaders()
-                    .get(ApplicationConstant.SUBMISSION_ID, Integer.class)
+                (Integer)
+                    message
+                        .parameters()
+                        .get(ApplicationConstant.SUBMISSION_ID)
             )
             .map(detail ->
                 getBaseForestClient(
@@ -94,8 +84,17 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                         getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
                         " submitted the sole proprietor with data acquired from Business BCeID")
                     .withClientTypeCode("I")
-                    .withClientNumber(message.getHeaders()
-                        .get(ApplicationConstant.FOREST_CLIENT_NUMBER, String.class))
+                    .withClientIdTypeCode(
+                        ProcessorUtil.getClientIdTypeCode(
+                            ProcessorUtil.splitName(
+                                getUser(message, ApplicationConstant.CREATED_BY))[1]
+                        )
+                    )
+                    .withClientIdentification(
+                        ProcessorUtil.splitName(
+                            getUser(message, ApplicationConstant.CREATED_BY))[0]
+                    )
+                    .withClientNumber(message.payload())
             )
             .doOnNext(forestClient ->
                 log.info("Generated forest client for USP {}",
@@ -103,10 +102,8 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                 )
             )
             .map(forestClient ->
-                MessageBuilder
-                    .withPayload(forestClient)
-                    .copyHeaders(message.getHeaders())
-                    .setHeader(ApplicationConstant.FOREST_CLIENT_NAME,
+                new MessagingWrapper<>(forestClient, message.parameters())
+                    .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
                         Stream.of(
                                 forestClient.legalFirstName(),
                                 forestClient.legalMiddleName(),
@@ -115,9 +112,8 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                             .filter(StringUtils::isNotBlank)
                             .collect(Collectors.joining(" "))
                     )
-                    .setHeader(ApplicationConstant.INCORPORATION_NUMBER,
+                    .withParameter(ApplicationConstant.INCORPORATION_NUMBER,
                         "not applicable")
-                    .build()
             );
   }
 

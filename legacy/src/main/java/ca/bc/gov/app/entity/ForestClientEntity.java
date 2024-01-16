@@ -40,7 +40,7 @@ public class ForestClientEntity {
   @Column("CLIENT_TYPE_CODE")
   private String clientTypeCode;
   @Column("BIRTHDATE")
-  private LocalDate birthdate;
+  private LocalDateTime birthdate;
   @Column("CLIENT_ID_TYPE_CODE")
   private String clientIdTypeCode;
   @Column("CLIENT_IDENTIFICATION ")

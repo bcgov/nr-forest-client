@@ -110,7 +110,7 @@ objects:
                       name: ${NAME}-${ZONE}
                       key: database-user
                 - name: CLIENT_URI
-                  value: https://${NAME}-${ZONE}-backend.${DOMAIN}/api
+                  value: https://${NAME}-${URL_ZONE}-backend.${DOMAIN}/api
                 - name: LEGACY_URI
                   value: https://${NAME}-${URL_ZONE}-legacy.${DOMAIN}
                 - name: TIMING

@@ -120,6 +120,7 @@ objects:
       cognito-environment: ${COGNITO_ENVIRONMENT}
       cognito-redirect-uri: ${COGNITO_REDIRECT_URI}
       cognito-logout-uri: ${COGNITO_LOGOUT_URI}
+      ches-mail-copy: ${CHES_MAIL_COPY}
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:

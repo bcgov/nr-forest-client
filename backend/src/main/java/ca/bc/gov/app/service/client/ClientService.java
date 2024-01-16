@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
@@ -26,6 +27,7 @@ import ca.bc.gov.app.service.ches.ChesService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -253,10 +255,10 @@ public class ClientService {
    * <p>Send email to a client.</p>
    *
    * @param emailRequestDto The request data containing client details.
-   * @return A {@link Mono} of {@link Void}.
+   * @return A {@link Mono} of {@link String}.
    */
-  public Mono<Void> sendEmail(EmailRequestDto emailRequestDto) {
-    return triggerEmail(emailRequestDto).then();
+  public Mono<String> sendEmail(EmailRequestDto emailRequestDto) {
+    return triggerEmail(emailRequestDto);
   }
 
   /**
@@ -301,13 +303,18 @@ public class ClientService {
                     .offices()
                     .addresses()
             )
+            .filter(BcRegistryAddressDto::isValid)
             .map(addressDto ->
                 new ClientAddressDto(
                     addressDto.streetAddress(),
                     new ClientValueTextDto("", addressDto.addressCountry()),
                     new ClientValueTextDto(addressDto.addressRegion(), ""),
                     addressDto.addressCity(),
-                    addressDto.postalCode().trim().replaceAll("\\s+", ""),
+                    Optional
+                        .ofNullable(addressDto.postalCode())
+                        .map(String::trim)
+                        .map(value -> value.replaceAll("\\s+", ""))
+                        .orElse(StringUtils.EMPTY),
                     index.getAndIncrement(),
                     (addressDto.addressType() != null ? addressDto.addressType() : "").concat(
                         " address").toUpperCase()

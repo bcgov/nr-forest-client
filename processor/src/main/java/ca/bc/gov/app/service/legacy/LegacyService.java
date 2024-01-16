@@ -8,6 +8,7 @@ import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
 import ca.bc.gov.app.repository.CountryCodeRepository;
 import jakarta.annotation.PostConstruct;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,8 @@ public class LegacyService {
   public void setUp() {
     countryCodeRepository.findAll().doOnNext(
             countryCode -> countryList.put(countryCode.getCountryCode(), countryCode.getDescription()))
-        .collectList().subscribe();
+        .collectList()
+        .subscribe(list -> log.info("Loaded {} country codes", list.size()));
   }
 
 
@@ -59,13 +61,13 @@ public class LegacyService {
             clientNumber,
             String.format("%02d", index),
             detail.getName(),
-            detail.getStreetAddress(),
+            detail.getStreetAddress().toUpperCase(),
             StringUtils.EMPTY,
             StringUtils.EMPTY,
-            detail.getCityName(),
-            detail.getProvinceCode(),
+            detail.getCityName().toUpperCase(),
+            detail.getProvinceCode().toUpperCase(),
             detail.getPostalCode(),
-            countryList.getOrDefault(detail.getCountryCode(), detail.getCountryCode()),
+            countryList.getOrDefault(detail.getCountryCode(), detail.getCountryCode()).toUpperCase(),
             StringUtils.EMPTY,
             StringUtils.EMPTY,
             StringUtils.EMPTY,
@@ -75,8 +77,8 @@ public class LegacyService {
             null,
             "Y",
             StringUtils.EMPTY,
-            user,
-            user,
+            ApplicationConstant.PROCESSOR_USER_NAME,
+            ApplicationConstant.PROCESSOR_USER_NAME,
             ApplicationConstant.ORG_UNIT,
             ApplicationConstant.ORG_UNIT
         );
@@ -86,12 +88,22 @@ public class LegacyService {
   }
 
   public Mono<String> createContact(ForestClientContactDto dto) {
-    return postRequestToLegacy("/api/contacts", dto)
+    return postRequestToLegacy(
+        "/api/contacts",
+        dto
+            .withCreatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
+            .withUpdatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
+    )
         .thenReturn(dto.clientNumber());
   }
 
   public Mono<String> createClient(ForestClientDto dto) {
-    return postRequestToLegacy("/api/clients", dto);
+    return postRequestToLegacy(
+        "/api/clients",
+        dto
+            .withCreatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
+            .withUpdatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
+    );
   }
 
   public Mono<String> createDoingBusinessAs(
@@ -105,8 +117,8 @@ public class LegacyService {
         new ClientDoingBusinessAsDto(
             clientNumber,
             doingBusinessAsName,
-            createdBy,
-            updatedBy,
+            ApplicationConstant.PROCESSOR_USER_NAME,
+            ApplicationConstant.PROCESSOR_USER_NAME,
             ApplicationConstant.ORG_UNIT
         )
     )
@@ -147,7 +159,8 @@ public class LegacyService {
               } else {
                 return Mono.error(new RuntimeException("Failed to submit " + url));
               }
-            });
+            })
+            .delayElement(Duration.ofSeconds(7));
   }
 
 }

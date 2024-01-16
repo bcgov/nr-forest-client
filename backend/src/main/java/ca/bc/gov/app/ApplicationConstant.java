@@ -40,7 +40,7 @@ public final class ApplicationConstant {
         s.submission_date,
         s.update_timestamp,
         s.update_user,
-        btc.description as business_type,
+        btc.business_type_code as business_type,
         sd.incorporation_number,
         sd.client_number,
         sd.organization_name,
@@ -93,6 +93,6 @@ public final class ApplicationConstant {
   public static final String ID_TOKEN = "idToken";
   public static final String ACCESS_TOKEN = "accessToken";
   public static final List<String> AVAILABLE_CLIENT_TYPES = List.of("A", "I", "S", "SP", "RSP",
-      "USP", "BC", "GP");
+      "USP", "BC", "GP","C");
 }
 

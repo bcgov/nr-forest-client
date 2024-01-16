@@ -18,15 +18,13 @@ import ca.bc.gov.app.exception.InvalidRoleException;
 import ca.bc.gov.app.exception.UnableToProcessRequestException;
 import ca.bc.gov.app.exception.UnexpectedErrorException;
 import ca.bc.gov.app.repository.client.EmailLogRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import io.r2dbc.postgresql.codec.Json;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +35,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -57,21 +54,17 @@ public class ChesService {
 
   private final EmailLogRepository emailLogRepository;
 
-  private final Jackson2ObjectMapperBuilder builder;
-
   public ChesService(
       ForestClientConfiguration configuration,
       @Qualifier("chesApi") WebClient chesApi,
       @Qualifier("authApi") WebClient authApi,
-      EmailLogRepository emailLogRepository,
-      Jackson2ObjectMapperBuilder builder
+      EmailLogRepository emailLogRepository
   ) {
     this.configuration = configuration;
     this.chesApi = chesApi;
     this.authApi = authApi;
     this.freeMarkerConfiguration = new Configuration(Configuration.VERSION_2_3_31);
     this.emailLogRepository = emailLogRepository;
-    this.builder = builder;
     freeMarkerConfiguration.setClassForTemplateLoading(this.getClass(), "/templates");
     freeMarkerConfiguration.setDefaultEncoding("UTF-8");
   }
@@ -79,12 +72,19 @@ public class ChesService {
   public Mono<String> sendEmail(String templateName,
       String emailAddress,
       String subject,
-      Map<String, Object> variables,
-      Integer emailLogId) {
+      Map<String, Object> emailVariables,
+      Integer emailLogId
+  ) {
 
-    List<String> emails = new ArrayList<>();
-    emails.add(emailAddress);
-    emails.addAll(configuration.getChes().getCopyEmail());
+    if (emailVariables == null) {
+      emailVariables = new HashMap<>();
+    }
+    else {
+      emailVariables = new HashMap<>(emailVariables);
+    }
+    emailVariables.put("frontend", configuration.getFrontend().getUrl());
+
+    final Map<String,Object> variables = new HashMap<>(emailVariables);
 
     String processedSubject =
         configuration.getCognito().getEnvironment().equalsIgnoreCase("prod")
@@ -93,7 +93,7 @@ public class ChesService {
 
     return this
         .buildTemplate(templateName, variables)
-        .map(body -> new ChesRequestDto(emails, body))
+        .map(body -> new ChesRequestDto(List.of(emailAddress), body))
         .flatMap(chesRequestDto ->
             this
                 .sendEmail(chesRequestDto, processedSubject)
@@ -126,7 +126,7 @@ public class ChesService {
                     "",
                     throwable.getMessage(),
                     variables),
-                "Error sending email"
+                "Error sending email " + throwable.getMessage()
             )
         );
   }
@@ -171,23 +171,10 @@ public class ChesService {
     logEntity.setEmailSentInd(emailLogDto.emailSentInd());
     logEntity.setEmailId(emailLogDto.emailId());
     logEntity.setExceptionMessage(emailLogDto.exceptionMessage());
-    logEntity.setEmailVariables(convertTo(emailLogDto.variables()));
+    //Always set the variables map instead of the json so the converter can kick in
+    logEntity.setVariables(emailLogDto.variables());
 
     return logEntity;
-  }
-
-  private Json convertTo(Map<String, Object> variables) {
-    String json = "{}";
-
-    try {
-      json = builder
-          .build()
-          .writeValueAsString(variables);
-    } catch (JsonProcessingException e) {
-      log.error("Error while converting matchers to json", e);
-    }
-
-    return Json.of(json);
   }
 
   /**
@@ -212,7 +199,7 @@ public class ChesService {
             .map(request ->
                 new ChesMailRequest(
                     null,
-                    null,
+                    configuration.getChes().getCopyEmail(),
                     ChesMailBodyType.HTML,
                     request.emailBody(),
                     null,

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.entity.SubmissionContactEntity;
 import ca.bc.gov.app.entity.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.SubmissionLocationContactEntity;
@@ -19,13 +20,13 @@ import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
+import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.integration.support.MessageBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -78,16 +79,18 @@ class LegacyAbstractPersistenceServiceTest {
 
     service
         .createLocations(
-            MessageBuilder
-                .withPayload(2)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
-                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000")
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "STAR DOT STAR VENTURES")
-                .setHeader(ApplicationConstant.INCORPORATION_NUMBER, "FM0159297")
-                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, "C")
-                .build()
+            new MessagingWrapper<>(
+                2,
+                Map.of(
+                    ApplicationConstant.SUBMISSION_ID, 2,
+                    ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000",
+                    ApplicationConstant.FOREST_CLIENT_NAME, "STAR DOT STAR VENTURES",
+                    ApplicationConstant.INCORPORATION_NUMBER, "FM0159297",
+                    ApplicationConstant.CLIENT_TYPE_CODE, "C"
+                )
+            )
         )
         .as(StepVerifier::create)
         .assertNext(message -> {
@@ -95,53 +98,52 @@ class LegacyAbstractPersistenceServiceTest {
               .isNotNull()
               .hasFieldOrPropertyWithValue("payload", 2);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.SUBMISSION_ID))
+          assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
+              .as("submission id")
               .isNotNull()
               .isInstanceOf(Integer.class)
               .isEqualTo(2);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.CREATED_BY))
+          assertThat(message.parameters().get(ApplicationConstant.CREATED_BY))
+              .as("created by")
               .isNotNull()
               .isInstanceOf(String.class);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.UPDATED_BY))
+          assertThat(message.parameters().get(ApplicationConstant.UPDATED_BY))
+              .as("updated by")
               .isNotNull()
               .isInstanceOf(String.class);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME))
+          assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME))
+              .as("forest client name")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("STAR DOT STAR VENTURES");
 
-          assertThat(message.getHeaders().get(ApplicationConstant.INCORPORATION_NUMBER))
+          assertThat(message.parameters().get(ApplicationConstant.INCORPORATION_NUMBER))
+              .as("incorporation number")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("FM0159297");
 
-          assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
+          assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
+              .as("forest client number")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("00000000");
 
-          assertThat(message.getHeaders().get(ApplicationConstant.LOCATION_CODE))
+          assertThat(message.parameters().get(ApplicationConstant.LOCATION_CODE))
+              .as("location code")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("00");
 
-          assertThat(message.getHeaders().get(ApplicationConstant.LOCATION_ID))
+          assertThat(message.parameters().get(ApplicationConstant.LOCATION_ID))
+              .as("location id")
               .isNotNull()
               .isInstanceOf(Integer.class)
               .isEqualTo(1);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.TOTAL))
-              .isNotNull()
-              .isInstanceOf(Long.class)
-              .isEqualTo(1L);
-
-          assertThat(message.getHeaders().get(ApplicationConstant.INDEX))
-              .isNotNull()
-              .isInstanceOf(Long.class)
-              .isEqualTo(0L);
 
         })
         .verifyComplete();
@@ -177,21 +179,23 @@ class LegacyAbstractPersistenceServiceTest {
     when(legacyService.createContact(any()))
         .thenReturn(Mono.just("00000000"));
 
+    Map<String, Object> params = Map.of(
+        ApplicationConstant.SUBMISSION_ID, 2,
+        ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+        ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+        ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000",
+        ApplicationConstant.FOREST_CLIENT_NAME, "STAR DOT STAR VENTURES",
+        ApplicationConstant.INCORPORATION_NUMBER, "FM0159297",
+        ApplicationConstant.LOCATION_CODE, "00",
+        ApplicationConstant.LOCATION_ID, 1,
+        ApplicationConstant.CLIENT_TYPE_CODE, "C"
+    );
+
     service.createContact(
-            MessageBuilder
-                .withPayload(2)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
-                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000")
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "STAR DOT STAR VENTURES")
-                .setHeader(ApplicationConstant.INCORPORATION_NUMBER, "FM0159297")
-                .setHeader(ApplicationConstant.LOCATION_CODE, "00")
-                .setHeader(ApplicationConstant.LOCATION_ID, 1)
-                .setHeader(ApplicationConstant.TOTAL, 1L)
-                .setHeader(ApplicationConstant.INDEX, 0L)
-                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, "C")
-                .build()
+            new MessagingWrapper<>(
+                2,
+                params
+            )
         )
         .as(StepVerifier::create)
         .assertNext(message -> {
@@ -199,86 +203,53 @@ class LegacyAbstractPersistenceServiceTest {
               .isNotNull()
               .hasFieldOrPropertyWithValue("payload", 2);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.SUBMISSION_ID))
+          assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
+              .as("submission id")
               .isNotNull()
               .isInstanceOf(Integer.class)
               .isEqualTo(2);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.CREATED_BY))
+          assertThat(message.parameters().get(ApplicationConstant.CREATED_BY))
+              .as("created by")
               .isNotNull()
               .isInstanceOf(String.class);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.UPDATED_BY))
+          assertThat(message.parameters().get(ApplicationConstant.UPDATED_BY))
+              .as("updated by")
               .isNotNull()
               .isInstanceOf(String.class);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME))
+          assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME))
+              .as("forest client name")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("STAR DOT STAR VENTURES");
 
-          assertThat(message.getHeaders().get(ApplicationConstant.INCORPORATION_NUMBER))
+          assertThat(message.parameters().get(ApplicationConstant.INCORPORATION_NUMBER))
+              .as("incorporation number")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("FM0159297");
 
-          assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
+          assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
+              .as("forest client number")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("00000000");
 
-          assertThat(message.getHeaders().get(ApplicationConstant.LOCATION_CODE))
+          assertThat(message.parameters().get(ApplicationConstant.LOCATION_CODE))
+              .as("location code")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("00");
 
-          assertThat(message.getHeaders().get(ApplicationConstant.LOCATION_ID))
+          assertThat(message.parameters().get(ApplicationConstant.LOCATION_ID))
+              .as("location id")
               .isNotNull()
               .isInstanceOf(Integer.class)
               .isEqualTo(1);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.TOTAL))
-              .isNotNull()
-              .isInstanceOf(Long.class)
-              .isEqualTo(1L);
-
-          assertThat(message.getHeaders().get(ApplicationConstant.INDEX))
-              .isNotNull()
-              .isInstanceOf(Long.class)
-              .isEqualTo(0L);
-
         })
-        .verifyComplete();
-  }
-
-  @Test
-  @DisplayName("send email")
-  void shouldSendEmail() {
-
-    service
-        .sendNotification(
-            MessageBuilder
-                .withPayload(2)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
-                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000")
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "STAR DOT STAR VENTURES")
-                .setHeader(ApplicationConstant.INCORPORATION_NUMBER, "FM0159297")
-                .setHeader(ApplicationConstant.LOCATION_CODE, "00")
-                .setHeader(ApplicationConstant.LOCATION_ID, 1)
-                .setHeader(ApplicationConstant.TOTAL, 1L)
-                .setHeader(ApplicationConstant.INDEX, 0L)
-                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, "C")
-                .build()
-        )
-        .as(StepVerifier::create)
-        .assertNext(mailMessage ->
-            assertThat(mailMessage.getPayload())
-                .isNotNull()
-                .isInstanceOf(Integer.class)
-                .isEqualTo(2L)
-        )
         .verifyComplete();
   }
 
@@ -315,42 +286,44 @@ class LegacyAbstractPersistenceServiceTest {
 
     service
         .checkClientData(
-            MessageBuilder
-                .withPayload(2)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
-                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .build()
+            new MessagingWrapper<>(
+                2,
+                Map.of(
+                    ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000",
+                    ApplicationConstant.SUBMISSION_ID, 2,
+                    ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME
+                )
+            )
         )
         .as(StepVerifier::create)
         .assertNext(message -> {
           assertThat(message)
-              .isNotNull()
-              .hasFieldOrPropertyWithValue("payload", 2);
+              .isNotNull();
 
-          assertThat(message.getHeaders().get(ApplicationConstant.SUBMISSION_ID))
+          assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
               .as("submission id")
               .isNotNull()
               .isInstanceOf(Integer.class)
               .isEqualTo(2);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.CREATED_BY))
+          assertThat(message.parameters().get(ApplicationConstant.CREATED_BY))
               .as("created by")
               .isNotNull()
               .isInstanceOf(String.class);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.UPDATED_BY))
+          assertThat(message.parameters().get(ApplicationConstant.UPDATED_BY))
               .as("updated by")
               .isNotNull()
               .isInstanceOf(String.class);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.CLIENT_TYPE_CODE))
+          assertThat(message.parameters().get(ApplicationConstant.CLIENT_TYPE_CODE))
               .as("client type code")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo(clientTypeCode);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.CLIENT_SUBMITTER_NAME))
+          assertThat(message.parameters().get(ApplicationConstant.CLIENT_SUBMITTER_NAME))
               .as("client submitter name")
               .isNotNull()
               .isInstanceOf(String.class)
@@ -380,18 +353,19 @@ class LegacyAbstractPersistenceServiceTest {
     when(legacyService.createClient(any()))
         .thenReturn(Mono.just("00000000"));
 
-
     service
         .createForestClient(
-            MessageBuilder
-                .withPayload(CLIENT_ENTITY)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
-                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, "C")
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000")
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA")
-                .build()
+            new MessagingWrapper<>(
+                CLIENT_ENTITY,
+                Map.of(
+                    ApplicationConstant.SUBMISSION_ID, 2,
+                    ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.CLIENT_TYPE_CODE, "C",
+                    ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000",
+                    ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA"
+                )
+            )
         )
         .as(StepVerifier::create)
         .assertNext(message -> {
@@ -400,7 +374,7 @@ class LegacyAbstractPersistenceServiceTest {
               .isNotNull()
               .hasFieldOrPropertyWithValue("payload", 2);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
+          assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
               .as("forest client number")
               .isNotNull()
               .isInstanceOf(String.class)
@@ -408,67 +382,6 @@ class LegacyAbstractPersistenceServiceTest {
         })
         .verifyComplete();
 
-  }
-
-  @ParameterizedTest
-  @MethodSource("data")
-  @DisplayName("create client that is individual")
-  void shouldTryToCreateClient(String type) {
-
-    service
-        .createForestClient(
-            MessageBuilder
-                .withPayload(CLIENT_ENTITY)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
-                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, type)
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000")
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA")
-                .build()
-        )
-        .as(StepVerifier::create)
-        .verifyComplete();
-  }
-
-  @ParameterizedTest
-  @MethodSource("data")
-  @DisplayName("create contact that is individual")
-  void shouldTryToCreateContact(String type) {
-    service
-        .createContact(
-            MessageBuilder
-                .withPayload(1)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
-                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, type)
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000")
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA")
-                .build()
-        )
-        .as(StepVerifier::create)
-        .verifyComplete();
-  }
-
-  @ParameterizedTest
-  @MethodSource("data")
-  @DisplayName("create location that is individual")
-  void shouldTryToCreateLocation(String type) {
-    service
-        .createLocations(
-            MessageBuilder
-                .withPayload(1)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
-                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, type)
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000")
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA")
-                .build()
-        )
-        .as(StepVerifier::create)
-        .verifyComplete();
   }
 
   private static Stream<Arguments> clientData() {
