@@ -13,6 +13,7 @@ import ca.bc.gov.app.service.client.ClientSubmissionService;
 import ca.bc.gov.app.validator.client.ClientSubmitRequestValidator;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -77,6 +78,7 @@ public class ClientSubmissionController extends
   public Mono<Void> submit(
       @RequestBody ClientSubmissionDto request,
       @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
+      @RequestHeader(name = ApplicationConstant.BUSINESSID_HEADER, defaultValue = StringUtils.EMPTY) String businessId,
       @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail,
       @RequestHeader(ApplicationConstant.USERNAME_HEADER) String userName,
       ServerHttpResponse serverResponse) {
@@ -85,7 +87,7 @@ public class ClientSubmissionController extends
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
         )
         .doOnNext(this::validate)
-        .flatMap(submissionDto -> clientService.submit(submissionDto, userId, userEmail, userName))
+        .flatMap(submissionDto -> clientService.submit(submissionDto, userId, userEmail, userName,businessId))
         .doOnNext(submissionId ->
             serverResponse
                 .getHeaders()
