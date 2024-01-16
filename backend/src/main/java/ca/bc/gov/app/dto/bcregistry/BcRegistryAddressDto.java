@@ -1,6 +1,7 @@
 package ca.bc.gov.app.dto.bcregistry;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.Objects;
 import lombok.With;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -47,5 +48,9 @@ public record BcRegistryAddressDto(
         .append(postalCode)
         .append(streetAddress)
         .toHashCode();
+  }
+
+  public boolean isValid(){
+    return !Objects.isNull(streetAddress) && !Objects.isNull(postalCode);
   }
 }
