@@ -372,7 +372,7 @@ const matchingData = computed(() => {
                 <span class="body-compact-01">{{ data.business.incorporationNumber }}</span>
               </read-only-component>
 
-              <read-only-component label="B.C. Registries standing">
+              <read-only-component label="B.C. Registries standing" v-if="data.business.businessType === 'R'">
                 <span class="body-compact-01">{{ goodStanding(data.business.goodStandingInd) }}</span>
               </read-only-component>
 
