@@ -34,15 +34,15 @@ public record ForestClientDto(
 		}
 	}
 
-  @Transient
-  public String name(){
-    if(Objects.equals(this.clientTypeCode, "I")){
-      return Stream.of(this.legalFirstName, this.legalMiddleName, this.clientName)
-          .filter(Objects::nonNull)
-          .collect(Collectors.joining(" "));
-    }else{
-      return this.clientName;
-    }
-  }
+	@Transient
+	public String name() {
+		if (Objects.equals(this.clientTypeCode, "I")) {
+			return Stream.of(this.legalFirstName, this.legalMiddleName, this.clientName)
+					.filter(Objects::nonNull)
+					.collect(Collectors.joining(" "));
+		} else {
+			return this.clientName;
+		}
+	}
 
 }

@@ -50,7 +50,8 @@ public record BcRegistryAddressDto(
         .toHashCode();
   }
 
-  public boolean isValid(){
+  public boolean isValid() {
     return !Objects.isNull(streetAddress) && !Objects.isNull(postalCode);
   }
+  
 }
