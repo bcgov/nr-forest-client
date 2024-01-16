@@ -94,9 +94,9 @@ describe("ContactWizardStep.vue", () => {
           active: false,
         },
       });
-      
-      const addButton = wrapper.find('cds-button');
-      
+
+      const addButton = wrapper.find("cds-button");
+
       expect(addButton.text()).toContain("Add another contact");
       expect(addButton.exists()).toBe(true);
     });
@@ -106,13 +106,13 @@ describe("ContactWizardStep.vue", () => {
     const firstContactName = "John";
     const otherContactNames = ["Paul", "George", "Ringo"];
 
-    const mountTest = () =>
+    const mountTest = (includeOtherContacts: boolean) =>
       mount(ContactWizardStep, {
         props: {
           data: {
             location: {
               addresses: [{ locationName: "Mailing address" }],
-              contacts: [firstContactName, ...otherContactNames].map(
+              contacts: [firstContactName, ...(includeOtherContacts ? otherContactNames : [])].map(
                 (firstName) =>
                   ({
                     ...emptyContact,
@@ -139,25 +139,35 @@ describe("ContactWizardStep.vue", () => {
 
     let bus: ReturnType<typeof useEventBus<ModalNotification>>;
 
-    beforeEach(async () => {
-      vi.spyOn(fetcher, "useFetchTo").mockImplementation(
-        mockFetchTo([{ code: "P", name: "Person" }]) as any,
-      );
-      wrapper = mountTest();
-
-      bus = useEventBus<ModalNotification>("modal-notification");
-      bus.on((payload) => {
-        payload.handler(); // automatically proceed with the deletion
-      });
-    });
-
-    afterEach(() => {
-      bus.reset();
-    });
-
-    const fillContact = async (contactId: number) => {
+    const fillContactName = async (contactId: number, firstName?: string) => {
+      let domWrapper: DOMWrapper<HTMLInputElement>;
       if (contactId > 0) {
-        await setInputValue(wrapper.find(`cds-text-input#email_${contactId}`), "value@value.com");
+        domWrapper = wrapper.find(`cds-text-input#firstName_${contactId}`);
+        if (!domWrapper.element.value) {
+          await setInputValue(domWrapper, firstName || "First" + contactId);
+        }
+        domWrapper = wrapper.find(`cds-text-input#lastName_${contactId}`);
+        if (!domWrapper.element.value) {
+          await setInputValue(domWrapper, "Doe");
+        }
+      }
+    };
+
+    const fillContactRemaining = async (contactId: number) => {
+      let domWrapper: DOMWrapper<HTMLInputElement>;
+      if (contactId > 0) {
+        domWrapper = wrapper.find(`cds-text-input#firstName_${contactId}`);
+        if (!domWrapper.element.value) {
+          await setInputValue(domWrapper, otherContactNames[contactId] || "First" + contactId);
+        }
+        domWrapper = wrapper.find(`cds-text-input#lastName_${contactId}`);
+        if (!domWrapper.element.value) {
+          await setInputValue(domWrapper, "Last" + contactId);
+        }
+        domWrapper = wrapper.find(`cds-text-input#email_${contactId}`);
+        if (!domWrapper.element.value) {
+          await setInputValue(domWrapper, "value@value.com");
+        }
       }
 
       await setInputValue(
@@ -179,39 +189,76 @@ describe("ContactWizardStep.vue", () => {
       expect(wrapper.get(`#addressname_${contactId}`).element.value).toEqual("Mailing address");
     };
 
-    it("removes the intended contact from the DOM", async () => {
-      expect(findContact("George").exists()).toBe(true);
+    describe.each([
+      { includeOtherContactsInProps: true, otherContactsVerb: "are" },
+      { includeOtherContactsInProps: false, otherContactsVerb: "are not" },
+    ])(
+      "when other contacts $otherContactsVerb provided in the props",
+      ({ includeOtherContactsInProps }) => {
+        beforeEach(async () => {
+          vi.spyOn(fetcher, "useFetchTo").mockImplementation(
+            mockFetchTo([{ code: "P", name: "Person" }]) as any,
+          );
+          wrapper = mountTest(includeOtherContactsInProps);
 
-      await wrapper.get("cds-button#deleteContact_2").trigger("click");
+          bus = useEventBus<ModalNotification>("modal-notification");
+          bus.on((payload) => {
+            payload.handler(); // automatically proceed with the deletion
+          });
 
-      // properly removed from the DOM
-      expect(findContact("George")).toBeFalsy();
+          if (!includeOtherContactsInProps) {
+            const addButton = wrapper.findAll("cds-button").filter((domWrapper) => {
+              return domWrapper.text() === "Add another contact";
+            })[0];
 
-      // others are kept in the DOM
-      expect(wrapper.get("#fullName_0").text()).toMatch("John");
-      expect(findContact("Paul").exists()).toBe(true);
-      expect(findContact("Ringo").exists()).toBe(true);
-    });
+            // add contacts manually
+            for (let i = 0; i < otherContactNames.length; i++) {
+              const firstName = otherContactNames[i];
+              await addButton.trigger("click");
+              await fillContactName(i + 1, firstName);
+            }
+          }
+        });
 
-    it("can proceed to the next step (regardless of the deleted contact being invalid)", async () => {
-      /*
-      This test essentially makes sure the validation data structure is not messed up when a
-      contact gets deleted.
-      */
+        afterEach(() => {
+          bus.reset();
+        });
 
-      // Just making sure the contact to be deleted has some empty, invalid information.
-      expect(wrapper.get("cds-text-input[id^='email_2']").element.value).toBe("");
+        it("removes the intended contact from the DOM", async () => {
+          expect(findContact("George").exists()).toBe(true);
 
-      await wrapper.get("cds-button#deleteContact_2").trigger("click");
+          await wrapper.get("cds-button#deleteContact_2").trigger("click");
 
-      await fillContact(0);
-      await fillContact(1);
-      await fillContact(3);
+          // properly removed from the DOM
+          expect(findContact("George")).toBeFalsy();
 
-      const lastValid = wrapper.emitted("valid")[wrapper.emitted("valid").length - 1];
+          // others are kept in the DOM
+          expect(wrapper.get("#fullName_0").text()).toMatch("John");
+          expect(findContact("Paul").exists()).toBe(true);
+          expect(findContact("Ringo").exists()).toBe(true);
+        });
 
-      // The last valid event was emitted with true.
-      expect(lastValid[0]).toEqual(true);
-    });
+        it("can proceed to the next step (regardless of the deleted contact being invalid)", async () => {
+          /*
+          This test essentially makes sure the validation data structure is not messed up when a
+          contact gets deleted.
+          */
+
+          // Just making sure the contact to be deleted has some empty, invalid information.
+          expect(wrapper.get("cds-text-input[id^='email_2']").element.value).toBe("");
+
+          await wrapper.get("cds-button#deleteContact_2").trigger("click");
+
+          await fillContactRemaining(0);
+          await fillContactRemaining(1);
+          await fillContactRemaining(3);
+
+          const lastValid = wrapper.emitted("valid")[wrapper.emitted("valid").length - 1];
+
+          // The last valid event was emitted with true.
+          expect(lastValid[0]).toEqual(true);
+        });
+      },
+    );
   });
 });
