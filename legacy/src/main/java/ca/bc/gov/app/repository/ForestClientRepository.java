@@ -19,7 +19,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       SELECT * FROM FOREST_CLIENT x
        WHERE (UPPER(x.REGISTRY_COMPANY_TYPE_CODE) || x.CORP_REGN_NMBR) = UPPER(:incorporationNumber)
        OR UPPER(x.CLIENT_NAME) = UPPER(:companyName)
-       OR (x.CLIENT_ID_TYPE_CODE = 'BCRE' and x.CLIENT_IDENTIFICATION = UPPER(:incorporationNumber))""")
+       OR x.CLIENT_IDENTIFICATION = UPPER(:incorporationNumber)""")
   Flux<ForestClientEntity> findClientByIncorporationOrName(
       @Param("incorporationNumber") String incorporationNumber,
       @Param("companyName") String companyName
