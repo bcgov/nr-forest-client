@@ -24,6 +24,16 @@ public class ClientService {
     return
         Mono
             .just(dto)
+            .filter(forestClientDto ->
+                StringUtils.isBlank(forestClientDto.clientNumber())
+            )
+            .doOnNext(forestClientDto ->
+                log.info(
+                    "Saving forest client {} {}",
+                    forestClientDto.clientNumber(),
+                    forestClientDto.name()
+                )
+            )
             .map(mapper::toEntity)
             .filterWhen(this::locateClient)
             .flatMap(entity -> getNextClientNumber().map(entity::withClientNumber))
@@ -38,7 +48,8 @@ public class ClientService {
                     forestClientContact.getName()
                 )
             )
-            .map(ForestClientEntity::getClientNumber);
+            .map(ForestClientEntity::getClientNumber)
+            .defaultIfEmpty(dto.clientNumber());
   }
 
   private Mono<Boolean> locateClient(

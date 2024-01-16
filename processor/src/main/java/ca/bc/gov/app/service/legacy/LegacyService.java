@@ -8,6 +8,7 @@ import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
 import ca.bc.gov.app.repository.CountryCodeRepository;
 import jakarta.annotation.PostConstruct;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -158,7 +159,8 @@ public class LegacyService {
               } else {
                 return Mono.error(new RuntimeException("Failed to submit " + url));
               }
-            });
+            })
+            .delayElement(Duration.ofSeconds(7));
   }
 
 }
