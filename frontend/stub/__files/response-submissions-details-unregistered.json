@@ -7,7 +7,7 @@
     "approvedTimestamp": "{{now offset='-1 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
     "updateUser": "Christie Overill",
     "business": {
-        "businessType": "Individual",
+        "businessType": "U",
         "incorporationNumber": "",
         "clientNumber":"",
         "organizationName": "Orn-O'Hara",
