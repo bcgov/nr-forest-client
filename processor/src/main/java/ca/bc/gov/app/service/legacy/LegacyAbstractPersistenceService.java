@@ -11,6 +11,7 @@ import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
+import java.time.Duration;
 import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 /**
  * This class is responsible for persisting the submission into the legacy database.
@@ -92,7 +94,7 @@ public abstract class LegacyAbstractPersistenceService {
                 )
                 .map(contact ->
                     new MessagingWrapper<>(
-                        message.getParameter(ApplicationConstant.FOREST_CLIENT_NUMBER,String.class),
+                        submissionDetail.getClientNumber(),
                         message.parameters()
                     )
                         .withParameter(ApplicationConstant.CLIENT_TYPE_CODE,
@@ -176,10 +178,10 @@ public abstract class LegacyAbstractPersistenceService {
         )
         .doOnNext(submissionLocation ->
             log.info(
-                "Loaded submission location for persistence on oracle {} {} {}",
-                message.payload(),
+                "Loaded submission location [{}] {} for persistence on oracle for submission {}",
+                submissionLocation.getSubmissionLocationId(),
                 submissionLocation.getName(),
-                submissionLocation.getSubmissionLocationId()
+                message.payload()
             )
         );
 
@@ -192,29 +194,17 @@ public abstract class LegacyAbstractPersistenceService {
                     index,
                     getUser(message, ApplicationConstant.CREATED_BY)
                 )
-                .flatMap(forestClient ->
-                    data
-                        .count()
-                        .doOnNext(count ->
-                            log.info(
-                                "Proceeding with location {}/{} of submission id {}",
-                                index,
-                                count,
-                                message.payload()
-                            )
+                .delayElement(Duration.ofSeconds(1)) //This is to prevent same creation time
+                .map(forestClient ->
+                    new MessagingWrapper<>(
+                        message.payload(),
+                        message.parameters()
+                    )
+                        .withParameter(ApplicationConstant.LOCATION_ID,
+                            detail.getSubmissionLocationId()
                         )
-                        .map(count ->
-                            new MessagingWrapper<>(
-                                message.payload(),
-                                message.parameters()
-                            )
-                                .withParameter(ApplicationConstant.LOCATION_ID,
-                                    detail.getSubmissionLocationId())
-                                .withParameter(ApplicationConstant.LOCATION_CODE,
-                                    String.format("%02d", index))
-                                .withParameter(ApplicationConstant.TOTAL, count)
-                                .withParameter(ApplicationConstant.INDEX, index)
-                        )
+                        .withParameter(ApplicationConstant.LOCATION_CODE,
+                            String.format("%02d", index))
                 )
         )
         .flatMap(Function.identity());
@@ -240,13 +230,15 @@ public abstract class LegacyAbstractPersistenceService {
         // Log the contact detail
         .doOnNext(submissionContact ->
             log.info(
-                "Loaded submission contact for persistence on oracle {} {} {} {}",
+                "Loaded submission contact for persistence on oracle Submission: {} Contact {} {} Location Code {}",
                 message.payload(),
                 submissionContact.getFirstName(),
                 submissionContact.getLastName(),
                 message.parameters().get(ApplicationConstant.LOCATION_CODE)
             )
         )
+        //Delay to avoid conflicts
+        .delayElements(Duration.ofSeconds(1), Schedulers.newSingle("contact-creation"))
         // Convert it to a DTO
         .map(submissionContact ->
             new ForestClientContactDto(
@@ -274,7 +266,7 @@ public abstract class LegacyAbstractPersistenceService {
   protected ForestClientDto getBaseForestClient(String createdBy, String updatedBy) {
     return
         new ForestClientDto(
-            "00",
+            null,
             StringUtils.EMPTY,
             StringUtils.EMPTY,
             StringUtils.EMPTY,
@@ -328,7 +320,14 @@ public abstract class LegacyAbstractPersistenceService {
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
         )
-        .defaultIfEmpty(clientNumber);
+        .defaultIfEmpty(clientNumber)
+        .doOnNext(forestClientNumber ->
+            log.info(
+                "Created doing business as for {} {}",
+                forestClientNumber,
+                message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME)
+            )
+        );
   }
 
 }

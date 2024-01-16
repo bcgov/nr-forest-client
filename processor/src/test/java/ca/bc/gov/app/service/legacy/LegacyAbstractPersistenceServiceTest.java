@@ -99,52 +99,51 @@ class LegacyAbstractPersistenceServiceTest {
               .hasFieldOrPropertyWithValue("payload", 2);
 
           assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
+              .as("submission id")
               .isNotNull()
               .isInstanceOf(Integer.class)
               .isEqualTo(2);
 
           assertThat(message.parameters().get(ApplicationConstant.CREATED_BY))
+              .as("created by")
               .isNotNull()
               .isInstanceOf(String.class);
 
           assertThat(message.parameters().get(ApplicationConstant.UPDATED_BY))
+              .as("updated by")
               .isNotNull()
               .isInstanceOf(String.class);
 
           assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME))
+              .as("forest client name")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("STAR DOT STAR VENTURES");
 
           assertThat(message.parameters().get(ApplicationConstant.INCORPORATION_NUMBER))
+              .as("incorporation number")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("FM0159297");
 
           assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
+              .as("forest client number")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("00000000");
 
           assertThat(message.parameters().get(ApplicationConstant.LOCATION_CODE))
+              .as("location code")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("00");
 
           assertThat(message.parameters().get(ApplicationConstant.LOCATION_ID))
+              .as("location id")
               .isNotNull()
               .isInstanceOf(Integer.class)
               .isEqualTo(1);
 
-          assertThat(message.parameters().get(ApplicationConstant.TOTAL))
-              .isNotNull()
-              .isInstanceOf(Long.class)
-              .isEqualTo(1L);
-
-          assertThat(message.parameters().get(ApplicationConstant.INDEX))
-              .isNotNull()
-              .isInstanceOf(Long.class)
-              .isEqualTo(0L);
 
         })
         .verifyComplete();
@@ -205,39 +204,47 @@ class LegacyAbstractPersistenceServiceTest {
               .hasFieldOrPropertyWithValue("payload", 2);
 
           assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
+              .as("submission id")
               .isNotNull()
               .isInstanceOf(Integer.class)
               .isEqualTo(2);
 
           assertThat(message.parameters().get(ApplicationConstant.CREATED_BY))
+              .as("created by")
               .isNotNull()
               .isInstanceOf(String.class);
 
           assertThat(message.parameters().get(ApplicationConstant.UPDATED_BY))
+              .as("updated by")
               .isNotNull()
               .isInstanceOf(String.class);
 
           assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME))
+              .as("forest client name")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("STAR DOT STAR VENTURES");
 
           assertThat(message.parameters().get(ApplicationConstant.INCORPORATION_NUMBER))
+              .as("incorporation number")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("FM0159297");
 
           assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
+              .as("forest client number")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("00000000");
 
           assertThat(message.parameters().get(ApplicationConstant.LOCATION_CODE))
+              .as("location code")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("00");
 
           assertThat(message.parameters().get(ApplicationConstant.LOCATION_ID))
+              .as("location id")
               .isNotNull()
               .isInstanceOf(Integer.class)
               .isEqualTo(1);
@@ -292,8 +299,7 @@ class LegacyAbstractPersistenceServiceTest {
         .as(StepVerifier::create)
         .assertNext(message -> {
           assertThat(message)
-              .isNotNull()
-              .hasFieldOrPropertyWithValue("payload", "00000000");
+              .isNotNull();
 
           assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
               .as("submission id")

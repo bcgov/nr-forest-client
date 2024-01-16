@@ -83,7 +83,10 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                         ProcessorUtil.splitName(
                             getUser(message, ApplicationConstant.CREATED_BY))[0]
                     )
+                    .withClientNumber(message.payload())
             )
+            .doOnNext(forestClient -> log.info("forest client generated for individual {}",
+                forestClient.clientIdTypeCode() + forestClient.clientIdentification()))
             .map(forestClient ->
                 new MessagingWrapper<>(forestClient, message.parameters())
                     .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
