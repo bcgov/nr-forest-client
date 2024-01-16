@@ -243,7 +243,12 @@ const matchingData = computed(() => {
         kind="info"
         title="This submission was automatically approved by the system"      
       >    
-        <div>No matching client records or BC Registries standing issues were found. Review the details in the read-only version below.</div>    
+        <div v-if="data.business.businessType !== 'U'">
+          No matching client records or BC Registries standing issues were found. Review the details in the read-only version below.
+        </div>    
+        <div v-if="data.business.businessType === 'U'">
+          No matching client records were found. Review the details in the read-only version below.
+        </div> 
       </cds-actionable-notification>
 
       <cds-inline-notification
