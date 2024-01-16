@@ -217,6 +217,7 @@ public class ClientSubmissionService {
                         row.get("client_number", String.class),
                         row.get("organization_name", String.class),
                         row.get("client_type", String.class),
+                        row.get("client_type_desc", String.class),
                         row.get("good_standing", String.class),
                         row.get("birthdate", LocalDate.class)
                     ),

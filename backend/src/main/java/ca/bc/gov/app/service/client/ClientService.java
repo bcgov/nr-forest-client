@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
@@ -28,6 +29,7 @@ import io.micrometer.tracing.annotation.SpanTag;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -318,13 +320,18 @@ public class ClientService {
                     .offices()
                     .addresses()
             )
+            .filter(BcRegistryAddressDto::isValid)
             .map(addressDto ->
                 new ClientAddressDto(
                     addressDto.streetAddress(),
                     new ClientValueTextDto("", addressDto.addressCountry()),
                     new ClientValueTextDto(addressDto.addressRegion(), ""),
                     addressDto.addressCity(),
-                    addressDto.postalCode().trim().replaceAll("\\s+", ""),
+                    Optional
+                        .ofNullable(addressDto.postalCode())
+                        .map(String::trim)
+                        .map(value -> value.replaceAll("\\s+", ""))
+                        .orElse(StringUtils.EMPTY),
                     index.getAndIncrement(),
                     (addressDto.addressType() != null ? addressDto.addressType() : "").concat(
                         " address").toUpperCase()

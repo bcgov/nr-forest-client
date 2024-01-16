@@ -1,129 +1,149 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/ui-shell/index';
-import '@carbon/web-components/es/components/breadcrumb/index';
-import '@carbon/web-components/es/components/tag/index';
-import '@carbon/web-components/es/components/accordion/index';
-import '@carbon/web-components/es/components/notification/index';
-import '@carbon/web-components/es/components/button/index';
-import '@carbon/web-components/es/components/modal/index';
-import '@carbon/web-components/es/components/tooltip/index';
+import "@carbon/web-components/es/components/ui-shell/index";
+import "@carbon/web-components/es/components/breadcrumb/index";
+import "@carbon/web-components/es/components/tag/index";
+import "@carbon/web-components/es/components/accordion/index";
+import "@carbon/web-components/es/components/notification/index";
+import "@carbon/web-components/es/components/button/index";
+import "@carbon/web-components/es/components/modal/index";
+import "@carbon/web-components/es/components/tooltip/index";
 // Composables
-import { useFetchTo, usePost } from '@/composables/useFetch'
-import { useRouter } from 'vue-router'
-import { isSmallScreen, isMediumScreen } from '@/composables/useScreenSize';
-import { useEventBus } from '@vueuse/core';
+import { useFetchTo, usePost } from "@/composables/useFetch";
+import { useRouter } from "vue-router";
+import { isSmallScreen, isMediumScreen } from "@/composables/useScreenSize";
+import { useEventBus } from "@vueuse/core";
 // Types
-import type { SubmissionDetails, CodeNameType, ModalNotification } from '@/dto/CommonTypesDto'
-import { formatDistanceToNow, format } from 'date-fns'
-import { greenDomain } from '@/CoreConstants'
+import type {
+  SubmissionDetails,
+  CodeNameType,
+  ModalNotification,
+} from "@/dto/CommonTypesDto";
+import { formatDistanceToNow, format } from "date-fns";
+import { greenDomain } from "@/CoreConstants";
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // @ts-ignore
-import Approved16 from '@carbon/icons-vue/es/task--complete/32';
+import Approved16 from "@carbon/icons-vue/es/task--complete/32";
 // @ts-ignore
-import Review16 from '@carbon/icons-vue/es/data--view--alt/32';
+import Review16 from "@carbon/icons-vue/es/data--view--alt/32";
 // @ts-ignore
-import Check16 from '@carbon/icons-vue/es/checkmark/16';
+import Check16 from "@carbon/icons-vue/es/checkmark/16";
 // @ts-ignore
-import Error16 from '@carbon/icons-vue/es/error--outline/16';
+import Error16 from "@carbon/icons-vue/es/error--outline/16";
 
-const toastBus = useEventBus<ModalNotification>('toast-notification')
+const toastBus = useEventBus<ModalNotification>("toast-notification");
 
 //Route related
-const router = useRouter()
-const id = ref(router.currentRoute.value.params.id)
+const router = useRouter();
+const id = ref(router.currentRoute.value.params.id);
 
 // Base data
 const data = ref<SubmissionDetails>({
-    submissionId: 0,
-    submissionType: '',
-    submissionStatus: '',
-    submittedTimestamp: new Date(0),
-    updateTimestamp: new Date(0),
-    approvedTimestamp: new Date(0),
-    updateUser: '',
-    business: {
-      businessType: '',
-      incorporationNumber: '',
-      clientNumber: '',
-      organizationName: '',
-      clientType: '',
-      goodStandingInd: '',
+  submissionId: 0,
+  submissionType: "",
+  submissionStatus: "",
+  submittedTimestamp: new Date(0),
+  updateTimestamp: new Date(0),
+  approvedTimestamp: new Date(0),
+  updateUser: "",
+  business: {
+    businessType: "",
+    incorporationNumber: "",
+    clientNumber: "",
+    organizationName: "",
+    clientType: "",
+    goodStandingInd: "",
+  },
+  contact: [
+    {
+      index: 0,
+      firstName: "",
+      lastName: "",
+      contactType: "",
+      phoneNumber: "",
+      emailAddress: "",
+      locations: [],
+      userId: "",
     },
-    contact: [{index:0, firstName:'', lastName:'', contactType:'', phoneNumber:'', emailAddress:'', locations:[],userId:''}],
-    address: [],
-    matchers: {
-      goodStanding: '',
-      corporationName: '',
-      incorporationNumber: '',
-      contact: '',
-
-    }
-})
+  ],
+  address: [],
+  matchers: {
+    goodStanding: "",
+    corporationName: "",
+    incorporationNumber: "",
+    contact: "",
+  },
+});
 
 // Modal related
-const approveModal = ref(false)
-const rejectModal = ref(false)
+const approveModal = ref(false);
+const rejectModal = ref(false);
 const rejectReasons = ref<CodeNameType[]>([
-  { code: 'goodstanding', name: 'Client is not in good standing with BC Registries' },
-  { code: 'duplicated', name: 'Client already exists' }
-])
-const selectedRejectReasons = ref<CodeNameType[]|undefined>([])
-const rejectReasonMessage = ref('')
+  {
+    code: "goodstanding",
+    name: "Client is not in good standing with BC Registries",
+  },
+  { code: "duplicated", name: "Client already exists" },
+]);
+const selectedRejectReasons = ref<CodeNameType[] | undefined>([]);
+const rejectReasonMessage = ref("");
 
 // Data loading
-useFetchTo(`/api/clients/submissions/${id.value}`, data)
+useFetchTo(`/api/clients/submissions/${id.value}`, data);
 
 const showClientNumberField = computed(() => {
-  if(selectedRejectReasons.value && selectedRejectReasons.value.length > 0){
-    return selectedRejectReasons
-            .value
-            .some((reason:CodeNameType) => reason.code === 'duplicated')
+  if (selectedRejectReasons.value && selectedRejectReasons.value.length > 0) {
+    return selectedRejectReasons.value.some(
+      (reason: CodeNameType) => reason.code === "duplicated"
+    );
   }
-  return false
-})
+  return false;
+});
 
-const rejectYesDisabled = computed(() =>{
-  if(selectedRejectReasons.value && selectedRejectReasons.value.length > 0){
-    if(showClientNumberField.value) return !rejectReasonMessage.value
-    return !selectedRejectReasons.value.some((reason:CodeNameType) => reason.code === 'goodstanding')
+const rejectYesDisabled = computed(() => {
+  if (selectedRejectReasons.value && selectedRejectReasons.value.length > 0) {
+    if (showClientNumberField.value) return !rejectReasonMessage.value;
+    return !selectedRejectReasons.value.some(
+      (reason: CodeNameType) => reason.code === "goodstanding"
+    );
   }
-  return true
-})
+  return true;
+});
 
 const rejectionReasonMessage = computed(() => {
-  if(selectedRejectReasons.value && selectedRejectReasons.value.length > 0){    
-    return selectedRejectReasons.value.map((reason:CodeNameType) => reason.code)
+  if (selectedRejectReasons.value && selectedRejectReasons.value.length > 0) {
+    return selectedRejectReasons.value.map(
+      (reason: CodeNameType) => reason.code
+    );
   }
-  return []
-})
+  return [];
+});
 
 // Submit the form changes to the backend
 const submit = (approved: boolean) => {
-  
-  rejectModal.value = false
-  approveModal.value = false
+  rejectModal.value = false;
+  approveModal.value = false;
   const { response } = usePost(
     `/api/clients/submissions/${id.value}`,
-    { 
+    {
       approved,
       reasons: rejectionReasonMessage.value,
-      message: rejectReasonMessage.value
+      message: rejectReasonMessage.value,
     },
     {
       headers: {
-      "x-user-id": ForestClientUserSession.user?.userId ?? "",
-      "x-user-email": ForestClientUserSession.user?.email ?? "",
-      "x-user-name": `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`,
-    },
+        "x-user-id": ForestClientUserSession.user?.userId ?? "",
+        "x-user-email": ForestClientUserSession.user?.email ?? "",
+        "x-user-name": `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`,
+      },
     }
   );
   watch(response, (response) => {
     if (response.status) {
       console.log(response);
-      router.push({ name: "internal" })
+      router.push({ name: "internal" });
       const toastNotification: ModalNotification = {
         kind: "Success",
         active: true,
@@ -131,82 +151,84 @@ const submit = (approved: boolean) => {
         ...(approved
           ? {
               message: `New client number has been created for “${normalizeString(
-                data.value.business.organizationName,
+                data.value.business.organizationName
               )}”`,
               toastTitle: "Submission approved",
             }
           : {
               message: `New client number has been rejected for “${normalizeString(
-                data.value.business.organizationName,
+                data.value.business.organizationName
               )}”`,
               toastTitle: "Submission rejected",
             }),
-      }
+      };
       toastBus.emit(toastNotification);
     }
   });
-}
+};
 
 // Normalize the string to capitalize the first letter of each word
-const normalizeString = (input:string):string => {  
-  const words = input.split(' ');
-  const capitalizedWords = words.map(word => {    
+const normalizeString = (input: string): string => {
+  const words = input.split(" ");
+  const capitalizedWords = words.map((word) => {
     if (word.length > 0) {
       return word[0].toUpperCase() + word.slice(1).toLocaleLowerCase();
     } else {
-      return '';
+      return "";
     }
-  });  
-  return capitalizedWords.join(' ');
-}
+  });
+  return capitalizedWords.join(" ");
+};
 // Get the icon for the row
-const iconForRow = (requestType:string) => {
-  if(requestType ==='Auto approved client')
-    return Approved16        
-  return Review16
-}
+const iconForRow = (requestType: string) => {
+  if (requestType === "Auto approved client") return Approved16;
+  return Review16;
+};
 // Format the date to a friendly format
-const friendlyDate = (date:Date):string => {  
-  if(!date) return ''
-  return `${formatDistanceToNow(new Date(date))} ago`
-}
-const formattedDate = (date:Date):string => {
-  if(!date) return ''
-  return format(new Date(date),'MMM dd, yyyy')
-}
+const friendlyDate = (date: Date): string => {
+  if (!date) return "";
+  return `${formatDistanceToNow(new Date(date))} ago`;
+};
+const formattedDate = (date: Date): string => {
+  if (!date) return "";
+  return format(new Date(date), "MMM dd, yyyy");
+};
 // Format the good standing parameter
-const goodStanding = (goodStanding:string):string => {
-  if(goodStanding)
-    return goodStanding === 'Y' ? 'Good standing' : 'Not in good standing'
-  return 'Unknown'
-}
+const goodStanding = (goodStanding: string): string => {
+  if (goodStanding)
+    return goodStanding === "Y" ? "Good standing" : "Not in good standing";
+  return "Unknown";
+};
 
-const tagColor = (status: string) =>{
-  switch(status){
-    case 'New':
-      return 'blue'
-    case 'Approved':
-      return 'green'
-    case 'Rejected':
-      return 'red'
+const tagColor = (status: string) => {
+  switch (status) {
+    case "New":
+      return "blue";
+    case "Approved":
+      return "green";
+    case "Rejected":
+      return "red";
     default:
-      return 'purple'
+      return "purple";
   }
-}
+};
 
 const matchingData = computed(() => {
-  let results = []
-  if(data.value.matchers.corporationName){
-    results = [...results, ...data.value.matchers.corporationName.split(',')]
+  let results = [];
+  if (data.value.matchers.corporationName) {
+    results = [...results, ...data.value.matchers.corporationName.split(",")];
   }
-  if(data.value.matchers.incorporationNumber){
-    results = [...results, ...data.value.matchers.incorporationNumber.split(',')]
+  if (data.value.matchers.incorporationNumber) {
+    results = [
+      ...results,
+      ...data.value.matchers.incorporationNumber.split(","),
+    ];
   }
-  if(data.value.matchers.contact){
-    results = [...results, ...data.value.matchers.contact.split(',')]
+  if (data.value.matchers.contact) {
+    results = [...results, ...data.value.matchers.contact.split(",")];
   }
-  return results
-})
+  return results;
+});
 </script>
 
 <template>
@@ -243,7 +265,12 @@ const matchingData = computed(() => {
         kind="info"
         title="This submission was automatically approved by the system"      
       >    
-        <div>No matching client records or BC Registries standing issues were found. Review the details in the read-only version below.</div>    
+        <div v-if="data.business.businessType !== 'U'">
+          No matching client records or BC Registries standing issues were found. Review the details in the read-only version below.
+        </div>    
+        <div v-if="data.business.businessType === 'U'">
+          No matching client records were found. Review the details in the read-only version below.
+        </div> 
       </cds-actionable-notification>
 
       <cds-inline-notification
@@ -324,6 +351,7 @@ const matchingData = computed(() => {
           <div>
             <h6 class="mg-tl-2">Client summary</h6>
             <div class="grouping-10">
+              
               <read-only-component label="Name">
                 <span class="body-compact-01">{{ normalizeString(data.business.organizationName) }}</span>
               </read-only-component>
@@ -333,7 +361,11 @@ const matchingData = computed(() => {
               </read-only-component>
 
               <read-only-component label="Client type">
-                <span class="body-compact-01">{{ data.business.clientType }}</span>
+                <span class="body-compact-01">{{ data.business.clientTypeDesc }}</span>
+              </read-only-component>
+
+              <read-only-component label="Birthdate" v-if="data.business.clientType === 'I'">
+                <span class="body-compact-01">{{ data.business.birthdate }}</span>
               </read-only-component>
 
               <read-only-component label="Incorporation number" v-if="data.business.incorporationNumber">

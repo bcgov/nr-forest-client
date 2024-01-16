@@ -2,6 +2,9 @@ package ca.bc.gov.app.service.bcregistry;
 
 import static ca.bc.gov.app.ApplicationConstant.BUSINESS_SUMMARY_FILING_HISTORY;
 
+import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestResponseDto;
@@ -9,9 +12,11 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryExceptionMessageDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryOfficesDto;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import io.micrometer.observation.annotation.Observed;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,8 +40,8 @@ public class BcRegistryService {
   }
 
   /**
-   * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto}
-   * instances matching the given value.
+   * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances matching
+   * the given value.
    *
    * @param value the value to search for
    * @return a {@link Flux} of matching {@link BcRegistryFacetSearchResultEntryDto} instances
@@ -44,7 +49,7 @@ public class BcRegistryService {
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
   public Flux<BcRegistryFacetSearchResultEntryDto> searchByFacets(String value) {
-    log.info("Searching BC Registry for {}",value);
+    log.info("Searching BC Registry for {}", value);
     return
         bcRegistryApi
             .get()
@@ -80,18 +85,18 @@ public class BcRegistryService {
   }
 
   /**
-   * Sends a request to retrieve the document data for a given value using the BC Registry API.
-   * The method returns a Flux of {@link BcRegistryDocumentDto}, which represents the document data.
+   * Sends a request to retrieve the document data for a given value using the BC Registry API. The
+   * method returns a Flux of {@link BcRegistryDocumentDto}, which represents the document data.
    *
    * @param value the value used to identify the document data
    * @return a Flux of {@link BcRegistryDocumentDto} representing the requested document data
-   * @throws NoClientDataFound           if the API responds with a 404 status code indicating
-   *                                     that no data was found for the given value
-   * @throws InvalidAccessTokenException if the API responds with a 401 status code indicating
-   *                                     that the access token used for the request is invalid
+   * @throws NoClientDataFound           if the API responds with a 404 status code indicating that
+   *                                     no data was found for the given value
+   * @throws InvalidAccessTokenException if the API responds with a 401 status code indicating that
+   *                                     the access token used for the request is invalid
    */
   public Flux<BcRegistryDocumentDto> requestDocumentData(String value) {
-    log.info("Requesting document for {}",value);
+    log.info("Requesting document for {}", value);
     return
         bcRegistryApi
             .post()
@@ -119,8 +124,7 @@ public class BcRegistryService {
                         .doOnNext(
                             message -> log.error("Error while requesting data for {} -- {}", value,
                                 message))
-                        .map(message -> message.contains("not found"))
-                        .filter(message -> message)
+                        .filter(message -> message.contains("not found"))
                         .switchIfEmpty(Mono.error(new InvalidAccessTokenException()))
                         .flatMap(message -> Mono.error(new NoClientDataFound(value)))
 
@@ -130,7 +134,52 @@ public class BcRegistryService {
             .map(BcRegistryDocumentRequestDocumentDto::documentKey)
             .doOnNext(documentKey -> log.info("Loading document {} for identifier {}", documentKey,
                 value))
-            .flatMap(documentKey -> getDocumentData(value, documentKey));
+            .flatMap(documentKey -> getDocumentData(value, documentKey))
+            //This will try to load the standing and business data for entries with no documents
+            .onErrorResume(NoClientDataFound.class, exception ->
+                searchByFacets(value)
+                    .next()
+                    .map(facet -> new BcRegistryBusinessDto(
+                            facet.goodStanding(),
+                            false,
+                            false,
+                            false,
+                            facet.identifier(),
+                            facet.name(),
+                            facet.legalType(),
+                            facet.status()
+                        )
+                    )
+                    .map(business -> new BcRegistryDocumentDto(
+                            business,
+                            new BcRegistryOfficesDto(
+                                new BcRegistryBusinessAdressesDto(
+                                    new BcRegistryAddressDto(
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null
+                                    ),
+                                    new BcRegistryAddressDto(
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null
+                                    )
+                                )
+                            ),
+                            List.of()
+                        )
+                    )
+            );
   }
 
   private Mono<BcRegistryDocumentDto> getDocumentData(String identifier, String documentKey) {
@@ -156,6 +205,8 @@ public class BcRegistryService {
                 exception -> Mono.error(new InvalidAccessTokenException())
             )
             .bodyToMono(BcRegistryDocumentDto.class)
-            .doOnNext(document -> log.info("Document loaded for {} {} as {}",identifier, documentKey,document));
+            .doOnNext(
+                document -> log.info("Document loaded for {} {} as {}", identifier, documentKey,
+                    document));
   }
 }

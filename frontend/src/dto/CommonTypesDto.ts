@@ -140,7 +140,9 @@ export interface SubmissionDetailsBusiness {
   clientNumber: string
   organizationName: string
   clientType: string
+  clientTypeDesc: string
   goodStandingInd: string
+  birthdate: string
 }
 
 export interface SubmissionDetailsContact {
