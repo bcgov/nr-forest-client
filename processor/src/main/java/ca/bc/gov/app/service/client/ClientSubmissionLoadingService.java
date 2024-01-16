@@ -146,17 +146,21 @@ public class ClientSubmissionLoadingService {
         .get(ApplicationConstant.SUBMISSION_STATUS)) {
       case A -> approvalParameters(username, businessName, clientNumber);
       case R -> rejectionParameters(username, businessName, clientNumber, reason);
-      default -> revisionParameters(username, submissionId);
+      default -> revisionParameters(username, businessName, submissionId);
     };
   }
 
   private Map<String, Object> revisionParameters(
       String username,
+      String businessName,
       Integer submissionId
   ) {
     return Map.of(
         "userName", username,
-        "submission", submissionId
+        "submission", submissionId,
+        "business", Map.of(
+            "name", businessName
+        )
     );
   }
 

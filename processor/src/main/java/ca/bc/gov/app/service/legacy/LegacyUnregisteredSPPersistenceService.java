@@ -84,8 +84,16 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                         getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
                         " submitted the sole proprietor with data acquired from Business BCeID")
                     .withClientTypeCode("I")
-                    .withClientNumber(message.parameters()
-                        .get(ApplicationConstant.FOREST_CLIENT_NUMBER).toString())
+                    .withClientIdTypeCode(
+                        ProcessorUtil.getClientIdTypeCode(
+                            ProcessorUtil.splitName(
+                                getUser(message, ApplicationConstant.CREATED_BY))[1]
+                        )
+                    )
+                    .withClientIdentification(
+                        ProcessorUtil.splitName(
+                            getUser(message, ApplicationConstant.CREATED_BY))[0]
+                    )
             )
             .doOnNext(forestClient ->
                 log.info("Generated forest client for USP {}",

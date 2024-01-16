@@ -77,8 +77,6 @@ public class LegacyClientPersistenceService extends LegacyAbstractPersistenceSer
                     .withCorpRegnNmbr(
                         ProcessorUtil.extractNumbers(submissionDetail.getIncorporationNumber())
                     )
-                    .withClientNumber(message.parameters()
-                        .get(ApplicationConstant.FOREST_CLIENT_NUMBER).toString())
             )
             .map(forestClient ->
                 new MessagingWrapper<>(

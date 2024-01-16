@@ -2,9 +2,9 @@ package ca.bc.gov.app.service.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.jsonResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.awaitility.Awaitility.await;
@@ -12,6 +12,8 @@ import static org.awaitility.Awaitility.await;
 import ca.bc.gov.app.TestConstants;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.Duration;
+import java.util.UUID;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +39,13 @@ class ClientSubmissionMailServiceTest {
   @BeforeAll
   public static void setUp() {
     wireMockExtension
-        .stubFor(post("/ches/email").willReturn(status(202)));
+        .stubFor(post("/ches/email")
+            .willReturn(jsonResponse(
+                    "Transaction ID: " + UUID.randomUUID(),
+                    200
+                )
+            )
+        );
   }
 
   @Test
@@ -46,6 +54,7 @@ class ClientSubmissionMailServiceTest {
     service
         .sendMail(TestConstants.EMAIL_REQUEST)
         .as(StepVerifier::create)
+        .assertNext(Assertions::assertNotNull)
         .verifyComplete();
 
     await()
@@ -68,6 +77,7 @@ class ClientSubmissionMailServiceTest {
     service
         .sendMail(TestConstants.EMAIL_REQUEST)
         .as(StepVerifier::create)
+        .assertNext(Assertions::assertNotNull)
         .verifyComplete();
 
     await()

@@ -131,7 +131,7 @@ public class ChesService {
                     "",
                     throwable.getMessage(),
                     variables),
-                "Error sending email"
+                "Error sending email " + throwable.getMessage()
             )
         );
   }
