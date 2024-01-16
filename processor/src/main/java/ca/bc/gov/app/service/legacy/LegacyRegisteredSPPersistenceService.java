@@ -89,6 +89,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                         submissionDetail.getIncorporationNumber()))
                     .withCorpRegnNmbr(ProcessorUtil.extractNumbers(
                         submissionDetail.getIncorporationNumber()))
+                    .withClientNumber(message.payload())
             )
             //Load the details to set the remaining fields
             .flatMap(forestClient ->
