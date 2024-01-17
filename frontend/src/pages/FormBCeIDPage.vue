@@ -41,6 +41,7 @@ import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 import LogOut16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
+import { convertFieldNameToSentence } from "@/services/ForestClientService";
 
 const errorBus = useEventBus<ValidationMessageType[]>(
   "submission-error-notification"
@@ -127,6 +128,7 @@ watch([error], () => {
   validationErrors.forEach((errorItem: ValidationMessageType) =>
     notificationBus.emit({
       fieldId: "server.validation.error",
+      fieldName: convertFieldNameToSentence(errorItem.fieldId),
       errorMsg: errorItem.errorMsg,
     })
   );

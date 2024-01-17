@@ -17,6 +17,7 @@ import { isTouchScreen } from "@/composables/useScreenSize";
 import { useEventBus } from "@vueuse/core";
 import {
   codeConversionFn,
+  convertFieldNameToSentence,
   getEnumKeyByEnumValue,
 } from "@/services/ForestClientService";
 import {
@@ -325,6 +326,7 @@ watch([error], () => {
   validationErrors.forEach((errorItem: ValidationMessageType) =>
     notificationBus.emit({
       fieldId: "server.validation.error",
+      fieldName: convertFieldNameToSentence(errorItem.fieldId),
       errorMsg: errorItem.errorMsg,
     })
   );
