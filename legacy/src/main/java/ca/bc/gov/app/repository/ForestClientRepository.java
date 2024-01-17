@@ -9,6 +9,7 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface ForestClientRepository extends ReactiveCrudRepository<ForestClientEntity, String>,
@@ -19,7 +20,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       SELECT * FROM FOREST_CLIENT x
        WHERE (UPPER(x.REGISTRY_COMPANY_TYPE_CODE) || x.CORP_REGN_NMBR) = UPPER(:incorporationNumber)
        OR UPPER(x.CLIENT_NAME) = UPPER(:companyName)
-       OR (x.CLIENT_ID_TYPE_CODE = 'BCRE' and x.CLIENT_IDENTIFICATION = UPPER(:incorporationNumber))""")
+       OR x.CLIENT_IDENTIFICATION = UPPER(:incorporationNumber)""")
   Flux<ForestClientEntity> findClientByIncorporationOrName(
       @Param("incorporationNumber") String incorporationNumber,
       @Param("companyName") String companyName
@@ -43,5 +44,10 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       UTL_MATCH.JARO_WINKLER_SIMILARITY(UPPER(CLIENT_NAME),UPPER(:companyName)) >= 95
       ORDER BY CLIENT_NUMBER""")
   Flux<ForestClientEntity> matchBy(String companyName);
+
+  Mono<ForestClientEntity> findByClientNumber(String clientNumber);
+
+
+  Flux<ForestClientEntity> findByClientIdentificationIgnoreCaseAndClientNameIgnoreCase(String clientIdentification, String clientName);
 
 }

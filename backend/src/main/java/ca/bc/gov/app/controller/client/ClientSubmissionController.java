@@ -15,6 +15,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -83,6 +84,7 @@ public class ClientSubmissionController extends
   public Mono<Void> submit(
       @RequestBody ClientSubmissionDto request,
       @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
+      @RequestHeader(name = ApplicationConstant.BUSINESSID_HEADER, defaultValue = StringUtils.EMPTY) String businessId,
       @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail,
       @RequestHeader(ApplicationConstant.USERNAME_HEADER) String userName,
       ServerHttpResponse serverResponse) {
@@ -96,8 +98,13 @@ public class ClientSubmissionController extends
         .doOnNext(this::validate)
         .doOnNext(sub -> log.info("Request is valid: {}", sub))
         .doOnError(e -> log.error("Request is invalid: {}", e.getMessage()))
-        .flatMap(submissionDto -> clientService.submit(submissionDto, userId, userEmail, userName))
-        .doOnNext(submissionId -> log.info("Submission persisted: {}", submissionId))
+        .flatMap(submissionDto -> clientService.submit(
+                                                  submissionDto, 
+                                                  userId, 
+                                                  userEmail, 
+                                                  userName, 
+                                                  businessId))
+      .doOnNext(submissionId -> log.info("Submission persisted: {}", submissionId))
         .doOnNext(submissionId ->
             serverResponse
                 .getHeaders()

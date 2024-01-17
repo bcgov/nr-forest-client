@@ -32,6 +32,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriBuilder;
@@ -434,6 +435,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .post()
         .uri("/api/clients/mail")
         .body(Mono.just(TestConstants.EMAIL_REQUEST), EmailRequestDto.class)
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
         .exchange()
         .expectStatus().isAccepted()
         .expectBody().isEmpty();
@@ -442,7 +444,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
   @Test
   @DisplayName("get country by code")
-  void shoulGgetCountryByCode() {
+  void shouldGetCountryByCode() {
 
     client
         .get()
@@ -452,6 +454,48 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .expectBody(CodeNameDto.class)
         .isEqualTo(new CodeNameDto("CA", "Canada"));
 
+  }
+
+  @Test
+  @DisplayName("check for individual conflicts")
+  void shouldCheckIndividual() {
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/search/idAndLastName"))
+                .withQueryParam("clientId",equalTo("123456"))
+                .withQueryParam("lastName", equalTo("Doe"))
+                .willReturn(okJson(TestConstants.LEGACY_OK))
+        );
+
+    client
+        .get()
+        .uri("/api/clients/individual/{userId}?lastName=Doe", Map.of("userId", "123456"))
+        .exchange()
+        .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+        .expectBody(String.class)
+        .isEqualTo("Client already exists with the client number 00000002");
+  }
+
+  @Test
+  @DisplayName("check for individual conflicts and get none")
+  void shouldCheckIndividualWithoutConflict() {
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/search/idAndLastName"))
+                .withQueryParam("clientId",equalTo("123456"))
+                .withQueryParam("lastName", equalTo("Doe"))
+                .willReturn(okJson("[]"))
+        );
+
+    client
+        .get()
+        .uri("/api/clients/individual/{userId}?lastName=Doe", Map.of("userId", "123456"))
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .isEmpty();
   }
 
   private static Stream<Arguments> clientDetailing() {
