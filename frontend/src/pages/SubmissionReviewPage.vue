@@ -12,14 +12,12 @@ import "@carbon/web-components/es/components/tooltip/index";
 // Composables
 import { useFetchTo, usePost } from "@/composables/useFetch";
 import { useRouter } from "vue-router";
-import { useFocus } from "@/composables/useFocus";
 import { useEventBus } from "@vueuse/core";
 // Types
 import type {
   SubmissionDetails,
   CodeNameType,
   ModalNotification,
-  ValidationMessageType,
 } from "@/dto/CommonTypesDto";
 import { formatDistanceToNow, format } from "date-fns";
 import { greenDomain } from "@/CoreConstants";
@@ -33,7 +31,6 @@ import Review16 from "@carbon/icons-vue/es/data--view--alt/32";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 // @ts-ignore
 import Error16 from "@carbon/icons-vue/es/error--outline/16";
-import { convertFieldNameToSentence } from "@/services/ForestClientService";
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 
