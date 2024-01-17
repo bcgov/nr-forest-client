@@ -333,7 +333,7 @@ watch([error], () => {
   setScrollPoint("top-notification");
 });
 
-const { error:validationError } = useFetch(`/api/clients/individual/${ForestClientUserSession.user?.userId.replace('bcsc\\','')}?lastName=${ForestClientUserSession.user?.lastName}`);
+const { error:validationError } = useFetch(`/api/clients/individual/${ForestClientUserSession.user?.userId.split('\\').pop()}?lastName=${ForestClientUserSession.user?.lastName}`);
 watch([validationError], () => {
   if (validationError.value.response?.status === 409) {
     updateValidState(3, false);

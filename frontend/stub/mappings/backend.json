@@ -511,25 +511,11 @@
     {
       "name":"No Individual Match for IDIR",
       "request": {
-        "urlPath": "/api/clients/individual/uattest",
-        "method": "GET",
-        "headers": {
-          "x-user-id": {
-            "equalTo": "uattest"
-          },
-          "x-user-email": {
-            "equalTo": "uattest@gov.bc.ca"
-          },
-          "x-user-name": {
-            "equalTo": "Uat Test"
-          },
-          "x-user-businessid": {
-            "equalTo": ""
-          }
-          },
+        "urlPath": "/api/clients/individual/JRYAN",
+        "method": "GET",      
           "queryParameters": {
             "lastName": {
-              "equalTo": "Test"
+              "equalTo": "Ryan"
             }
           }        
       },
@@ -545,7 +531,7 @@
         "method": "GET",
         "headers": {
           "x-user-id": {
-            "equalTo": "uattest"
+            "equalTo": "bceidbusiness\\uattest"
           },
           "x-user-email": {
             "equalTo": "uattest@gov.bc.ca"
