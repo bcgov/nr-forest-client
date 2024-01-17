@@ -9,6 +9,7 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface ForestClientRepository extends ReactiveCrudRepository<ForestClientEntity, String>,
@@ -43,5 +44,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       UTL_MATCH.JARO_WINKLER_SIMILARITY(UPPER(CLIENT_NAME),UPPER(:companyName)) >= 95
       ORDER BY CLIENT_NUMBER""")
   Flux<ForestClientEntity> matchBy(String companyName);
+
+  Mono<ForestClientEntity> findByClientNumber(String clientNumber);
 
 }
