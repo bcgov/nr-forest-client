@@ -91,12 +91,15 @@ const rejectReasons = ref<CodeNameType[]>([
 ]);
 const selectedRejectReasons = ref<CodeNameType[] | undefined>([]);
 const rejectReasonMessage = ref("");
+let networkErrorMsg = ref("");
 
 // Data loading
-const { response: response2, error: error2 } = useFetchTo(`/api/clients/submissions/${id.value}`, data);
-watch([error2], () => {
-    console.log("error2? " + JSON.stringify(error2.value));
-  });
+const { error: fetchError } = useFetchTo(`/api/clients/submissions/${id.value}`, data);
+watch([fetchError], () => {
+  if (fetchError.value.message) {
+    networkErrorMsg.value = fetchError.value.message;
+  }
+});
 
 const showClientNumberField = computed(() => {
   if (selectedRejectReasons.value && selectedRejectReasons.value.length > 0) {
@@ -147,7 +150,9 @@ const submit = (approved: boolean) => {
   );
 
   watch([error], () => {
-    console.log("Error? " + JSON.stringify(error.value));
+    if (error.value.message) {
+      networkErrorMsg.value = error.value.message;
+    }
   });
 
   watch(response, (response) => {
@@ -265,9 +270,9 @@ const matchingData = computed(() => {
         <p class="body-01" data-testid="subtitle" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
         <p class="body-01" data-testid="subtitle" v-else>Check and manage this submission for a new client number</p>
       </div>
-
-      <!-- v-if="globalErrorMessage?.fieldId === 'internal.server.error'" -->
+      
       <cds-actionable-notification
+        v-if="networkErrorMsg !== ''"
         v-shadow="true"
         low-contrast="true"
         hide-close-button="true"
