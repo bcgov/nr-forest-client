@@ -102,6 +102,10 @@ export const usePost = (url: string, body: any, config: any = {}) => {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": frontendUrl,
       ...config.headers,
+      "x-user-id": ForestClientUserSession.user?.userId ?? "",
+      "x-user-businessid": ForestClientUserSession.user?.businessId ?? "",
+      "x-user-email": ForestClientUserSession.user?.email ?? "",
+      "x-user-name": `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`,
     },
   };
 
