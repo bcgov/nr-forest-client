@@ -434,6 +434,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .post()
         .uri("/api/clients/mail")
         .body(Mono.just(TestConstants.EMAIL_REQUEST), EmailRequestDto.class)
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
         .exchange()
         .expectStatus().isAccepted()
         .expectBody().isEmpty();

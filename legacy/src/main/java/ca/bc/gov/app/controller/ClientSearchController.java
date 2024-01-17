@@ -50,6 +50,7 @@ public class ClientSearchController {
       @RequestParam String clientId,
       @RequestParam String lastName
   ) {
+    log.info("Receiving request to search by ID {} and Last Name {}", clientId, lastName);
     return service.findByIdAndLastName(clientId, lastName);
   }
 
