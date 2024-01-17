@@ -81,4 +81,13 @@ public class ClientSearchService {
             .map(mapper::toDto)
             .doOnNext(dto -> log.info("Found match: {} {}", dto.clientNumber(), dto.clientName()));
   }
+
+  public Flux<ForestClientDto> findByIdAndLastName(String clientId, String lastName) {
+    return forestClientRepository
+        .findByClientIdentificationIgnoreCaseAndClientNameIgnoreCase(clientId, lastName)
+        .map(mapper::toDto)
+        .doOnNext(
+            dto -> log.info("Found client: {} {}", dto.clientNumber(), dto.clientName())
+        );
+  }
 }

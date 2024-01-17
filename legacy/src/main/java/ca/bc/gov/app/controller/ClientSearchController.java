@@ -45,4 +45,12 @@ public class ClientSearchController {
     return service.matchBy(companyName);
   }
 
+  @GetMapping("/idAndLastName")
+  public Flux<ForestClientDto> findByIdAndLastName(
+      @RequestParam String clientId,
+      @RequestParam String lastName
+  ) {
+    return service.findByIdAndLastName(clientId, lastName);
+  }
+
 }
