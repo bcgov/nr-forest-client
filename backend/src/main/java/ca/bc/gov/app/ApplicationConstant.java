@@ -45,7 +45,8 @@ public final class ApplicationConstant {
         sd.incorporation_number,
         sd.client_number,
         sd.organization_name,
-        ctc.description as client_type,
+        ctc.client_type_code as client_type,
+        ctc.description as client_type_desc,
         sd.good_standing_ind as good_standing,
         sd.birthdate
       FROM nrfc.submission s

@@ -20,6 +20,7 @@ export interface BusinessSearchResult {
 
 export interface ValidationMessageType {
   fieldId: string;
+  fieldName: string;
   errorMsg: string;
   originalValue?: string;
 }
@@ -141,7 +142,9 @@ export interface SubmissionDetailsBusiness {
   clientNumber: string
   organizationName: string
   clientType: string
+  clientTypeDesc: string
   goodStandingInd: string
+  birthdate: string
 }
 
 export interface SubmissionDetailsContact {

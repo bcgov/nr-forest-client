@@ -351,6 +351,7 @@ const matchingData = computed(() => {
           <div>
             <h6 class="mg-tl-2">Client summary</h6>
             <div class="grouping-10">
+              
               <read-only-component label="Name">
                 <span class="body-compact-01">{{ normalizeString(data.business.organizationName) }}</span>
               </read-only-component>
@@ -360,14 +361,18 @@ const matchingData = computed(() => {
               </read-only-component>
 
               <read-only-component label="Client type">
-                <span class="body-compact-01">{{ data.business.clientType }}</span>
+                <span class="body-compact-01">{{ data.business.clientTypeDesc }}</span>
+              </read-only-component>
+
+              <read-only-component label="Birthdate" v-if="data.business.clientType === 'I'">
+                <span class="body-compact-01">{{ data.business.birthdate }}</span>
               </read-only-component>
 
               <read-only-component label="Incorporation number" v-if="data.business.incorporationNumber">
                 <span class="body-compact-01">{{ data.business.incorporationNumber }}</span>
               </read-only-component>
 
-              <read-only-component label="B.C. Registries standing">
+              <read-only-component label="B.C. Registries standing" v-if="data.business.businessType === 'R'">
                 <span class="body-compact-01">{{ goodStanding(data.business.goodStandingInd) }}</span>
               </read-only-component>
 

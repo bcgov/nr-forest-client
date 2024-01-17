@@ -7,7 +7,7 @@
     "approvedTimestamp": "{{now offset='-1 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
     "updateUser": "Dionis Pulman",
     "business": {
-        "businessType": "Individual",
+        "businessType": "U",
         "incorporationNumber": "",
         "clientNumber":"{{randomValue length=8 type='NUMERIC'}}",
         "organizationName": "Carter, Mante and Rau",

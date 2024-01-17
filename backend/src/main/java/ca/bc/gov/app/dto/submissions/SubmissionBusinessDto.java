@@ -8,6 +8,7 @@ public record SubmissionBusinessDto(
     String clientNumber,
     String organizationName,
     String clientType,
+    String clientTypeDesc,
     String goodStandingInd,
     LocalDate birthdate
 ) {
