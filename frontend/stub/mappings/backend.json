@@ -505,7 +505,8 @@
           }        
       },
       "response": {
-        "status": 200
+        "status": 409,
+        "body":"Client already exists with the client number 00000002"
       }
     },
     {

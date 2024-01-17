@@ -336,7 +336,7 @@ watch([error], () => {
 const { error:validationError } = useFetch(`/api/clients/individual/${ForestClientUserSession.user?.userId.split('\\').pop()}?lastName=${ForestClientUserSession.user?.lastName}`);
 watch([validationError], () => {
   if (validationError.value.response?.status === 409) {
-    updateValidState(3, false);
+    updateValidState(-1, false); //-1 to define the error as global
     notificationBus.emit({
       fieldId: "server.validation.error",
       fieldName: '',

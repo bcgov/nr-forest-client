@@ -247,6 +247,7 @@ watch([selectedOption], () => {
     formData.value.businessInformation.businessName = "";
     validation.business = false;
     showAutoCompleteInfo.value = true;
+    toggleErrorMessages(null, null, null);
   }
 });
 
