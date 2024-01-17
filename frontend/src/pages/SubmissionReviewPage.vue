@@ -12,13 +12,14 @@ import "@carbon/web-components/es/components/tooltip/index";
 // Composables
 import { useFetchTo, usePost } from "@/composables/useFetch";
 import { useRouter } from "vue-router";
-import { isSmallScreen, isMediumScreen } from "@/composables/useScreenSize";
+import { useFocus } from "@/composables/useFocus";
 import { useEventBus } from "@vueuse/core";
 // Types
 import type {
   SubmissionDetails,
   CodeNameType,
   ModalNotification,
+  ValidationMessageType,
 } from "@/dto/CommonTypesDto";
 import { formatDistanceToNow, format } from "date-fns";
 import { greenDomain } from "@/CoreConstants";
@@ -32,6 +33,7 @@ import Review16 from "@carbon/icons-vue/es/data--view--alt/32";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 // @ts-ignore
 import Error16 from "@carbon/icons-vue/es/error--outline/16";
+import { convertFieldNameToSentence } from "@/services/ForestClientService";
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 
@@ -91,7 +93,10 @@ const selectedRejectReasons = ref<CodeNameType[] | undefined>([]);
 const rejectReasonMessage = ref("");
 
 // Data loading
-useFetchTo(`/api/clients/submissions/${id.value}`, data);
+const { response: response2, error: error2 } = useFetchTo(`/api/clients/submissions/${id.value}`, data);
+watch([error2], () => {
+    console.log("error2? " + JSON.stringify(error2.value));
+  });
 
 const showClientNumberField = computed(() => {
   if (selectedRejectReasons.value && selectedRejectReasons.value.length > 0) {
@@ -125,7 +130,7 @@ const rejectionReasonMessage = computed(() => {
 const submit = (approved: boolean) => {
   rejectModal.value = false;
   approveModal.value = false;
-  const { response } = usePost(
+  const { response, error } = usePost(
     `/api/clients/submissions/${id.value}`,
     {
       approved,
@@ -140,6 +145,11 @@ const submit = (approved: boolean) => {
       },
     }
   );
+
+  watch([error], () => {
+    console.log("Error? " + JSON.stringify(error.value));
+  });
+
   watch(response, (response) => {
     if (response.status) {
       console.log(response);
@@ -255,6 +265,20 @@ const matchingData = computed(() => {
         <p class="body-01" data-testid="subtitle" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
         <p class="body-01" data-testid="subtitle" v-else>Check and manage this submission for a new client number</p>
       </div>
+
+      <!-- v-if="globalErrorMessage?.fieldId === 'internal.server.error'" -->
+      <cds-actionable-notification
+        v-shadow="true"
+        low-contrast="true"
+        hide-close-button="true"
+        open="true"
+        kind="error"
+        title="Something went wrong:"      
+      >    
+        <div>
+          We're working to fix a problem with our network. Please try approving or rejecting the submission later.
+        </div>    
+      </cds-actionable-notification>
 
       <cds-actionable-notification
         v-if="data.submissionType === 'Auto approved client'"
