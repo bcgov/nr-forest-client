@@ -87,7 +87,12 @@ public class ClientSubmissionController extends
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
         )
         .doOnNext(this::validate)
-        .flatMap(submissionDto -> clientService.submit(submissionDto, userId, userEmail, userName,businessId))
+        .flatMap(submissionDto -> clientService.submit(
+                                                  submissionDto, 
+                                                  userId, 
+                                                  userEmail, 
+                                                  userName, 
+                                                  businessId))
         .doOnNext(submissionId ->
             serverResponse
                 .getHeaders()
