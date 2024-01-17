@@ -39,7 +39,11 @@ describe('useFetch', () => {
       baseURL: 'http://localhost:8080',
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-user-businessid': '',
+        'x-user-email': '',
+        'x-user-id': '',
+        'x-user-name': 'undefined undefined',
       },
       skip: true,
       url: '/api/data'
@@ -77,7 +81,11 @@ describe('useFetch', () => {
       baseURL: 'http://localhost:8080',
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-user-businessid': '',
+        'x-user-email': '',
+        'x-user-id': '',
+        'x-user-name': 'undefined undefined',
       },
       skip: true,
       url: '/api/data',
@@ -119,7 +127,11 @@ describe('useFetch', () => {
       baseURL: 'http://localhost:8080',
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-user-businessid': '',
+        'x-user-email': '',
+        'x-user-id': '',
+        'x-user-name': 'undefined undefined',
       },
       skip: true,
       url: '/api/data'
@@ -163,7 +175,11 @@ describe('useFetch', () => {
       baseURL: 'http://localhost:8080',
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-user-businessid': '',
+        'x-user-email': '',
+        'x-user-id': '',
+        'x-user-name': 'undefined undefined',
       },
       skip: true,
       url: '/api/data',

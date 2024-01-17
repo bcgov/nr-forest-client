@@ -1,5 +1,6 @@
 package ca.bc.gov.app.controller.client;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
@@ -8,6 +9,8 @@ import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientService;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -25,13 +29,18 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping(value = "/api/clients", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@Slf4j
 public class ClientController {
 
   private final ClientService clientService;
 
   @GetMapping("/{clientNumber}")
-  public Mono<ClientDetailsDto> getClientDetails(@PathVariable String clientNumber) {
-    return clientService.getClientDetails(clientNumber);
+  public Mono<ClientDetailsDto> getClientDetails(
+      @PathVariable String clientNumber,
+      @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
+      @RequestHeader(name = ApplicationConstant.BUSINESSID_HEADER, defaultValue = StringUtils.EMPTY) String businessId
+  ) {
+    return clientService.getClientDetails(clientNumber,userId,businessId);
   }
 
   @GetMapping("/activeCountryCodes")
@@ -108,10 +117,23 @@ public class ClientController {
         .switchIfEmpty(Mono.error(new NoClientDataFound(incorporationId)));
   }
 
+  @GetMapping(value = "/individual/{userId}")
+  public Mono<Void> findByIndividual(
+      @PathVariable String userId,
+      @RequestParam String lastName
+  ) {
+    log.info("Receiving request to search individual with id {} and last name {}", userId, lastName);
+    return clientService.findByIndividual(userId,lastName);
+  }
+
   @PostMapping("/mail")
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public Mono<Void> sendEmail(@RequestBody EmailRequestDto emailRequestDto) {
-    return clientService.triggerEmailDuplicatedClient(emailRequestDto);
+  public Mono<Void> sendEmail(
+      @RequestBody EmailRequestDto emailRequestDto,
+      @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
+      @RequestHeader(name = ApplicationConstant.BUSINESSID_HEADER, defaultValue = StringUtils.EMPTY) String businessId
+      ) {
+    return clientService.triggerEmailDuplicatedClient(emailRequestDto, userId, businessId);
   }
 
 }

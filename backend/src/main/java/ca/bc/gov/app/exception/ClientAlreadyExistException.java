@@ -22,5 +22,13 @@ public class ClientAlreadyExistException extends ResponseStatusException {
         )
     );
   }
-  
+
+  public ClientAlreadyExistException(String clientNumber) {
+    super(HttpStatus.CONFLICT,
+        String.format(
+            "Client already exists with the client number %s",
+            clientNumber
+        )
+    );
+  }
 }

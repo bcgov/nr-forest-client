@@ -477,7 +477,85 @@
       "response": {
         "status": 202
       }
+    },
+
+    {
+      "name":"Individual Match for BCSC",
+      "request": {
+        "urlPath": "/api/clients/individual/NA5TCPGMIGUFVCSS6SAO3TIDBMAHXL3F",
+        "method": "GET",
+        "headers": {
+          "x-user-id": {
+            "equalTo": "bcsc\\NA5TCPGMIGUFVCSS6SAO3TIDBMAHXL3F"
+          },
+          "x-user-email": {
+            "equalTo": "jbaxter@gov.bc.ca"
+          },
+          "x-user-name": {
+            "equalTo": "James Baxter"
+          },
+          "x-user-businessid": {
+            "equalTo": ""
+          }
+          },
+          "queryParameters": {
+            "lastName": {
+              "equalTo": "Baxter"
+            }
+          }        
+      },
+      "response": {
+        "status": 409,
+        "body":"Client already exists with the client number 00000002"
+      }
+    },
+    {
+      "name":"No Individual Match for IDIR",
+      "request": {
+        "urlPath": "/api/clients/individual/JRYAN",
+        "method": "GET",      
+          "queryParameters": {
+            "lastName": {
+              "equalTo": "Ryan"
+            }
+          }        
+      },
+      "response": {
+        "status": 409,
+        "body":"Client already exists with the client number 00000002"
+      }
+    },
+    {
+      "name":"No Individual Match for BCeID",
+      "request": {
+        "urlPath": "/api/clients/individual/uattest",
+        "method": "GET",
+        "headers": {
+          "x-user-id": {
+            "equalTo": "bceidbusiness\\uattest"
+          },
+          "x-user-email": {
+            "equalTo": "uattest@gov.bc.ca"
+          },
+          "x-user-name": {
+            "equalTo": "Uat Test"
+          },
+          "x-user-businessid": {
+            "equalTo": "automationinc"
+          }
+          },
+          "queryParameters": {
+            "lastName": {
+              "equalTo": "Test"
+            }
+          }        
+      },
+      "response": {
+        "status": 200
+      }
     }
+    
+    
   ]
 }
 
