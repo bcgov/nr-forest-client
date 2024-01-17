@@ -65,3 +65,13 @@ export const openMailtoLink = (email) => {
   const mailtoLink = 'mailto:' +  encodedEmail;
   location.assign(mailtoLink);
 }
+
+export const convertFieldNameToSentence = (input: string): string => {
+  const lastPart = input.split('.').pop();
+
+  const words = lastPart
+                  .replace(/([a-z])([A-Z])/g, '$1 $2') // Insert space between camel case
+                  .split(/\s+/);
+  
+  return words.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+};
