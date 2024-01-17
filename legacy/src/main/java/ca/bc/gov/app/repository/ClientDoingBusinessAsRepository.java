@@ -23,4 +23,6 @@ public interface ClientDoingBusinessAsRepository extends
       UTL_MATCH.JARO_WINKLER_SIMILARITY(UPPER(DOING_BUSINESS_AS_NAME),UPPER(:companyName)) >= 95
       ORDER BY CLIENT_NUMBER""")
   Flux<ClientDoingBusinessAsEntity> matchBy(String companyName);
+
+  Flux<ClientDoingBusinessAsEntity> findByDoingBusinessAsName(String doingBusinessAsName);
 }

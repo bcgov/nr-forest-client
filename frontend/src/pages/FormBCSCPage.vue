@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, getCurrentInstance, toRef } from "vue";
+import { ref, reactive, computed, watch, toRef } from "vue";
 import {
   newFormDataDto,
   emptyContact,
@@ -11,7 +11,7 @@ import {
   ClientTypeEnum,
   LegalTypeEnum,
 } from "@/dto/CommonTypesDto";
-import { useFetchTo, usePost } from "@/composables/useFetch";
+import { useFetch, useFetchTo, usePost } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 import { isTouchScreen } from "@/composables/useScreenSize";
 import { useEventBus } from "@vueuse/core";
@@ -331,6 +331,18 @@ watch([error], () => {
     })
   );
   setScrollPoint("top-notification");
+});
+
+const { error:validationError } = useFetch(`/api/clients/individual/${ForestClientUserSession.user?.userId.split('\\').pop()}?lastName=${ForestClientUserSession.user?.lastName}`);
+watch([validationError], () => {
+  if (validationError.value.response?.status === 409) {
+    updateValidState(-1, false); //-1 to define the error as global
+    notificationBus.emit({
+      fieldId: "server.validation.error",
+      fieldName: '',
+      errorMsg: validationError.value.response?.data ?? "",
+    })
+  }  
 });
 </script>
 
