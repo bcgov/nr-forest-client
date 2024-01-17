@@ -20,6 +20,7 @@ export interface BusinessSearchResult {
 
 export interface ValidationMessageType {
   fieldId: string;
+  fieldName: string;
   errorMsg: string;
   originalValue?: string;
 }
