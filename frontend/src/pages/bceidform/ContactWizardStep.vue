@@ -67,12 +67,22 @@ const addresses = computed<CodeNameType[]>(() =>
 
 const uniqueValues = isUniqueDescriptive();
 
+let lastContactId = -1; // The first contactId to be generated minus 1.
+const getNewContactId = () => ++lastContactId;
+
+// Associate each contact to a unique id, permanent for the lifecycle of this component.
+const contactsIdMap = new Map<Contact, number>(
+  formData.location.contacts.map((contact) => [contact, getNewContactId()]),
+);
+
 //New contact being added
 const otherContacts = computed(() => formData.location.contacts.slice(1));
 const addContact = (autoFocus = true) => {
   const newLength = formData.location.contacts.push(
     JSON.parse(JSON.stringify(emptyContact))
   );
+  const contact = formData.location.contacts[newLength - 1];
+  contactsIdMap.set(contact, getNewContactId());
   if (autoFocus) {
     const focusIndex = newLength - 1;
     safeSetFocusedComponent(`firstName_${focusIndex}`);
@@ -81,9 +91,13 @@ const addContact = (autoFocus = true) => {
 };
 
 const removeContact = (index: number) => () => {
+  const contact = formData.location.contacts[index];
+  const contactId = contactsIdMap.get(contact);
+  contactsIdMap.delete(contact);
+
   updateContact(undefined, index);
-  delete validation[index];
-  uniqueValues.remove("Name", index + "");
+  delete validation[contactId];
+  uniqueValues.remove("Name", contactId + "");
   bus.emit({
     active: false,
     message: "",
@@ -99,8 +113,9 @@ const validation = reactive<Record<string, boolean>>({
 });
 
 const updateValidState = (index: number, valid: boolean) => {
-  if (validation[index] !== valid) {
-    validation[index] = valid;
+  const contactId = contactsIdMap.get(formData.location.contacts[index]);
+  if (validation[contactId] !== valid) {
+    validation[contactId] = valid;
   }
 };
 
@@ -159,8 +174,8 @@ defineExpose({
       <h5>Additional contact</h5>
     </div>
     <contact-group-component
-      :key="index + 1"
-      :id="index + 1"
+      :key="contactsIdMap.get(contact)"
+      :id="contactsIdMap.get(contact)"
       v-bind:modelValue="contact"
       required-label
       :roleList="roleList"

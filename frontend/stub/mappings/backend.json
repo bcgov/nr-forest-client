@@ -132,7 +132,9 @@
             "R": "First Nation Group",
             "S": "Society",
             "T": "First Nation Tribal Council",
-            "U": "Unregistered Company"
+            "U": "Unregistered Company",
+            "USP": "Unregistered sole proprietorship",
+            "RSP": "Registered sole proprietorship"
           }
         },
         "jsonBody": {
