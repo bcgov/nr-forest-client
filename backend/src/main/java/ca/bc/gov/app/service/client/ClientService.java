@@ -169,7 +169,9 @@ public class ClientService {
    * @return a Mono that emits a ClientDetailsDto object representing the details of the client
    */
   public Mono<ClientDetailsDto> getClientDetails(
-      String clientNumber
+      String clientNumber,
+      String userId,
+      String businessId
   ) {
     log.info("Loading details for {}", clientNumber);
     return
@@ -184,7 +186,12 @@ public class ClientService {
             )
             .flatMap(document ->
                 legacyService
-                    .searchLegacy(document.business().identifier(), document.business().legalName())
+                    .searchLegacy(
+                        document.business().identifier(),
+                        document.business().legalName(),
+                        userId,
+                        businessId
+                    )
                     .next()
                     .filter(isMatchWith(document))
                     .doOnNext(legacy ->
@@ -270,14 +277,35 @@ public class ClientService {
    * @param emailRequestDto The request data containing user and client details.
    * @return A {@link Mono} of {@link Void}.
    */
-  public Mono<Void> triggerEmailDuplicatedClient(EmailRequestDto emailRequestDto) {
+  public Mono<Void> triggerEmailDuplicatedClient(
+      EmailRequestDto emailRequestDto,
+      String userId,
+      String businessId
+  ) {
     return
         legacyService
-            .searchLegacy(emailRequestDto.incorporation(), emailRequestDto.name())
+            .searchLegacy(
+                emailRequestDto.incorporation(),
+                emailRequestDto.name(),
+                userId,
+                businessId
+            )
             .next()
             .flatMap(
                 triggerEmailDuplicatedClient(emailRequestDto.email(), emailRequestDto.userName()))
             .then();
+  }
+
+
+  public Mono<Void> findByIndividual(String userId, String lastName) {
+    return legacyService
+        .searchIdAndLastName(userId, lastName)
+        .doOnNext(legacy -> log.info("Found legacy entry for {} {}", userId, lastName))
+        //If we have result, we return a Mono.error with the exception, otherwise return a Mono.empty
+        .next()
+        .flatMap(legacy -> Mono
+            .error(new ClientAlreadyExistException(legacy.clientNumber()))
+        );
   }
 
   private Function<BcRegistryDocumentDto, Mono<ClientDetailsDto>> buildDetails() {

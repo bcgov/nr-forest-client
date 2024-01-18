@@ -79,6 +79,7 @@ export interface Submitter {
   email: string;
   provider: string;
   userId: string | undefined;
+  businessId: string | undefined;
   firstName: string;
   lastName: string;
   businessName: string;

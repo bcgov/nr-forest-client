@@ -128,7 +128,8 @@ public class ClientSubmissionService {
       ClientSubmissionDto clientSubmissionDto,
       String userId,
       String userEmail,
-      String userName
+      String userName,
+      String businessId
   ) {
 
     return
@@ -140,7 +141,7 @@ public class ClientSubmissionService {
                     .submissionType(SubmissionTypeCodeEnum.SPP)
                     .submissionDate(LocalDateTime.now())
                     .createdBy(userId)
-                    .updatedBy(userId)
+                    .updatedBy(userName)
                     .build()
             )
             //Save submission to begin with
