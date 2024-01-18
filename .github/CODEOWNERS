@@ -3,3 +3,5 @@
 # review when someone opens a pull request.
 *       @paulushcgcj @mamartinezmejia
 /.github/workflows/       @paulushcgcj @DerekRoberts
+/frontend                 @fterra-encora
+/cypress                  @fterra-encora

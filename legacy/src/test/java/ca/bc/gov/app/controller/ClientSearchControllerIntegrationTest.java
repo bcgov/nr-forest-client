@@ -161,7 +161,7 @@ class ClientSearchControllerIntegrationTest extends
   void shouldMatch(
       String searchParam,
       String expected
-  ){
+  ) {
     client
         .get()
         .uri(uriBuilder ->
@@ -175,6 +175,30 @@ class ClientSearchControllerIntegrationTest extends
         .expectStatus().isOk()
         .expectBody()
         .json(expected)
+        .consumeWith(System.out::println);
+  }
+
+  @ParameterizedTest
+  @MethodSource("idLastName")
+  @DisplayName("Search someone by id and last name")
+  void shouldSearchByIdAndLastName(String clientId, String lastName) {
+    client
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/search/idAndLastName")
+                .queryParam("clientId", Optional.ofNullable(clientId))
+                .queryParam("lastName", Optional.ofNullable(lastName))
+                .build(new HashMap<>())
+        )
+        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$[0].clientNumber").isNotEmpty()
+        .jsonPath("$[0].clientNumber").isEqualTo("00000007")
+        .jsonPath("$[0].clientName").isNotEmpty()
+        .jsonPath("$[0].clientName").isEqualTo("bond")
         .consumeWith(System.out::println);
   }
 
@@ -220,8 +244,17 @@ class ClientSearchControllerIntegrationTest extends
                     "corpRegnNmbr":null
                   }
                 ]"""),
-            Arguments.of("Marco","[]"),
+            Arguments.of("Marco", "[]"),
             Arguments.of("Lucca", "[]")
+        );
+  }
+
+  private static Stream<Arguments> idLastName() {
+    return Stream
+        .of(
+            Arguments.of("Wull", "bond"),
+            Arguments.of("wull", "BOND"),
+            Arguments.of("wull", "BoNd")
         );
   }
 
