@@ -5,7 +5,7 @@ import "@carbon/web-components/es/components/inline-loading/index";
 import "@carbon/web-components/es/components/notification/index";
 // Importing composables
 import { useEventBus } from "@vueuse/core";
-import { useFetchTo } from "@/composables/useFetch";
+import { useFetch, useFetchTo } from "@/composables/useFetch";
 // Importing types
 import {
   BusinessSearchResult,
@@ -208,9 +208,10 @@ watch([detailsData], () => {
     formData.value.location.addresses = exportAddress(
       forestClientDetails.addresses
     );
+    console.log(forestClientDetails.goodStanding === null ? false : (forestClientDetails.goodStanding ? false : true),forestClientDetails.goodStanding === null ? null : (forestClientDetails.goodStanding ? "Y" : "N"));
     formData.value.businessInformation.goodStandingInd =
-      forestClientDetails.goodStanding ? "Y" : "N";
-    toggleErrorMessages(!forestClientDetails.goodStanding, null);
+      forestClientDetails.goodStanding === null ? null : (forestClientDetails.goodStanding ? "Y" : "N");
+    toggleErrorMessages(forestClientDetails.goodStanding === null ? false : (forestClientDetails.goodStanding ? false : true), null);
     validation.business = forestClientDetails.goodStanding;
 
     emit("update:data", formData.value);
@@ -231,10 +232,23 @@ watch([selectedOption], () => {
     validation.business = true;
     formData.value.businessInformation.goodStandingInd = "Y";
     emit("update:data", formData.value);
+
+
+    const { error:validationError } = useFetch(`/api/clients/individual/${ForestClientUserSession.user?.userId.split('\\').pop()}?lastName=${ForestClientUserSession.user?.lastName}`);
+    watch([validationError], () => {
+      if (validationError.value.response?.status === 409) {   
+        validation.business = false;     
+        toggleErrorMessages(null, true, null);
+        generalErrorBus.emit(validationError.value.response?.data ?? "")
+      }  
+    });
+
+
   } else {
     formData.value.businessInformation.businessName = "";
     validation.business = false;
     showAutoCompleteInfo.value = true;
+    toggleErrorMessages(null, null, null);
   }
 });
 

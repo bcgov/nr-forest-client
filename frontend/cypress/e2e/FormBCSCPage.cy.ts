@@ -199,5 +199,73 @@ describe("BCSC Form", () => {
     cy.get('h4.fluid').should('contain', 'Application submitted!');
   });
 
+  describe("when a contact which is not the last one gets deleted", () => {
+    const otherContactNames = ["George", "Ringo"];
+    const addContact = (contactId: number, firstName: string) => {
+      cy.get('.form-steps-section > [kind="tertiary"]').should("be.visible").click();
 
+      cy.focused().should("have.id", `firstName_${contactId}`);
+
+      cy.get(`#firstName_${contactId}`)
+        .should("be.visible")
+        .shadow()
+        .find("input")
+        .should("have.value", "")
+        .type(firstName);
+    };
+    const fillContact = (contactId: number) => {
+      cy.get(`#role_${contactId}`).should("be.visible").shadow().find("input").click();
+
+      cy.get("cds-combo-box-item").should("be.visible").click();
+
+      cy.get(`#lastName_${contactId}`)
+        .should("be.visible")
+        .shadow()
+        .find("input")
+        .should("have.value", "")
+        .type("McCloud");
+
+      cy.get(`#email_${contactId}`)
+        .should("be.visible")
+        .shadow()
+        .find("input")
+        .should("have.value", "")
+        .type("jmccloud@starfox.aa");
+
+      cy.get(`#phoneNumber_${contactId}`)
+        .should("be.visible")
+        .shadow()
+        .find("input")
+        .should("have.value", "")
+        .type("2773008326");
+    };
+    beforeEach(() => {
+      otherContactNames.forEach((name, index) => {
+        addContact(index + 1, name);
+      });
+    });
+    it("removes the intended contact from the DOM", () => {
+      cy.get("#deleteContact_1").click();
+      cy.wait(150);
+      cy.get("#modal-global > cds-modal-footer > .cds--modal-submit-btn").click();
+      cy.get("#firstName_1").should("not.exist");
+      cy.get("#firstName_2").should("exist");
+    });
+    it.only("can submit the form (regardless of the deleted contact being invalid)", () => {
+      cy.get("#deleteContact_1").click();
+      cy.wait(150);
+      cy.get("#modal-global > cds-modal-footer > .cds--modal-submit-btn").click();
+
+      cy.get("#phoneNumberId")
+        .should("be.visible")
+        .shadow()
+        .find("input")
+        .should("have.value", "")
+        .type("2503008326");
+
+      fillContact(2);
+
+      cy.get('[data-test="wizard-submit-button"]').shadow().find("button").should("be.enabled");
+    });
+  });
 });

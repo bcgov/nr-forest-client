@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, getCurrentInstance, toRef } from "vue";
+import { ref, reactive, computed, watch, toRef } from "vue";
 import {
   newFormDataDto,
   emptyContact,
@@ -11,7 +11,7 @@ import {
   ClientTypeEnum,
   LegalTypeEnum,
 } from "@/dto/CommonTypesDto";
-import { useFetchTo, usePost } from "@/composables/useFetch";
+import { useFetch, useFetchTo, usePost } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 import { isTouchScreen } from "@/composables/useScreenSize";
 import { useEventBus } from "@vueuse/core";
@@ -131,13 +131,27 @@ const fetch = () => {
 };
 fetch();
 
+let lastContactId = -1; // The first contactId to be generated minus 1.
+const getNewContactId = () => ++lastContactId;
+
+// Associate each contact to a unique id, permanent for the lifecycle of this component.
+const contactsIdMap = new Map<Contact, number>(
+  formData.location.contacts.map((contact) => [contact, getNewContactId()]),
+);
+
 //New contact being added
 const otherContacts = computed(() => formData.location.contacts.slice(1));
 const addContact = (autoFocus = true) => {
-  emptyContact.locationNames.push(defaultLocation);
-  const newLength = formData.location.contacts.push(
-    JSON.parse(JSON.stringify(emptyContact))
-  );
+  const newContact = JSON.parse(JSON.stringify(emptyContact));
+  newContact.locationNames.push(defaultLocation);
+  const newLength = formData.location.contacts.push(newContact);
+
+  /*
+  For some reason we need to get the contact from the array to make it work.
+  It doesn't work with the value from newContact as key.
+  */
+  const contact = formData.location.contacts[newLength - 1];
+  contactsIdMap.set(contact, getNewContactId());
   if (autoFocus) {
     const focusIndex = newLength - 1;
     safeSetFocusedComponent(`firstName_${focusIndex}`);
@@ -148,9 +162,13 @@ const addContact = (autoFocus = true) => {
 const uniqueValues = isUniqueDescriptive();
 
 const removeContact = (index: number) => () => {
+  const contact = formData.location.contacts[index];
+  const contactId = contactsIdMap.get(contact);
+  contactsIdMap.delete(contact);
+
   updateContact(undefined, index);
-  delete validation[index];
-  uniqueValues.remove("Name", index + "");
+  delete validation[contactId];
+  uniqueValues.remove("Name", contactId + "");
   bus.emit({
     active: false,
     message: "",
@@ -180,8 +198,9 @@ const validation = reactive<Record<string, boolean>>({
 });
 
 const updateValidState = (index: number, valid: boolean) => {
-  if (validation[index] !== valid) {
-    validation[index] = valid;
+  const contactId = contactsIdMap.get(formData.location.contacts[index]);
+  if (validation[contactId] !== valid) {
+    validation[contactId] = valid;
   }
 };
 
@@ -332,6 +351,18 @@ watch([error], () => {
   );
   setScrollPoint("top-notification");
 });
+
+const { error:validationError } = useFetch(`/api/clients/individual/${ForestClientUserSession.user?.userId.split('\\').pop()}?lastName=${ForestClientUserSession.user?.lastName}`);
+watch([validationError], () => {
+  if (validationError.value.response?.status === 409) {
+    updateValidState(-1, false); //-1 to define the error as global
+    notificationBus.emit({
+      fieldId: "server.validation.error",
+      fieldName: '',
+      errorMsg: validationError.value.response?.data ?? "",
+    })
+  }  
+});
 </script>
 
 <template>
@@ -444,8 +475,8 @@ watch([error], () => {
         </div>
 
         <contact-group-component
-          :key="index + 1"
-          :id="index + 1"
+          :key="contactsIdMap.get(contact)"
+          :id="contactsIdMap.get(contact)"
           v-bind:modelValue="contact"
           :roleList="roleList"
           :validations="[uniqueValues.add]"

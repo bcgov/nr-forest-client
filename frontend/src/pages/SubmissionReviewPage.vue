@@ -12,7 +12,6 @@ import "@carbon/web-components/es/components/tooltip/index";
 // Composables
 import { useFetchTo, usePost } from "@/composables/useFetch";
 import { useRouter } from "vue-router";
-import { isSmallScreen, isMediumScreen } from "@/composables/useScreenSize";
 import { useEventBus } from "@vueuse/core";
 // Types
 import type {
@@ -89,9 +88,15 @@ const rejectReasons = ref<CodeNameType[]>([
 ]);
 const selectedRejectReasons = ref<CodeNameType[] | undefined>([]);
 const rejectReasonMessage = ref("");
+let networkErrorMsg = ref("");
 
 // Data loading
-useFetchTo(`/api/clients/submissions/${id.value}`, data);
+const { error: fetchError } = useFetchTo(`/api/clients/submissions/${id.value}`, data);
+watch([fetchError], () => {
+  if (fetchError.value.message) {
+    networkErrorMsg.value = fetchError.value.message;
+  }
+});
 
 const showClientNumberField = computed(() => {
   if (selectedRejectReasons.value && selectedRejectReasons.value.length > 0) {
@@ -125,7 +130,7 @@ const rejectionReasonMessage = computed(() => {
 const submit = (approved: boolean) => {
   rejectModal.value = false;
   approveModal.value = false;
-  const { response } = usePost(
+  const { response, error } = usePost(
     `/api/clients/submissions/${id.value}`,
     {
       approved,
@@ -140,6 +145,13 @@ const submit = (approved: boolean) => {
       },
     }
   );
+
+  watch([error], () => {
+    if (error.value.message) {
+      networkErrorMsg.value = error.value.message;
+    }
+  });
+
   watch(response, (response) => {
     if (response.status) {
       console.log(response);
@@ -255,6 +267,20 @@ const matchingData = computed(() => {
         <p class="body-01" data-testid="subtitle" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
         <p class="body-01" data-testid="subtitle" v-else>Check and manage this submission for a new client number</p>
       </div>
+      
+      <cds-actionable-notification
+        v-if="networkErrorMsg !== ''"
+        v-shadow="true"
+        low-contrast="true"
+        hide-close-button="true"
+        open="true"
+        kind="error"
+        title="Something went wrong:"      
+      >    
+        <div>
+          We're working to fix a problem with our network. Please try approving or rejecting the submission later.
+        </div>    
+      </cds-actionable-notification>
 
       <cds-actionable-notification
         v-if="data.submissionType === 'Auto approved client'"

@@ -572,3 +572,4 @@ frontend/reports/
 
 **/sonar-report.xml
 **/config/*.jks
+**/reports-merge/
