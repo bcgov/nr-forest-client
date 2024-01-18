@@ -355,7 +355,7 @@ const matchingData = computed(() => {
             <li 
               v-for="duplicatedClient in data.matchers.corporationName?.split(',')" 
               :key="duplicatedClient">
-                Partial match on business name: 
+                Partial match on business name - Client number: 
                 <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
             </li>
             <li 
