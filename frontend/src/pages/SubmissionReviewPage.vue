@@ -54,6 +54,8 @@ const data = ref<SubmissionDetails>({
     organizationName: "",
     clientType: "",
     goodStandingInd: "",
+    clientTypeDesc: "",
+    birthdate: ""
   },
   contact: [
     {
@@ -73,6 +75,7 @@ const data = ref<SubmissionDetails>({
     corporationName: "",
     incorporationNumber: "",
     contact: "",
+    location: "",
   },
 });
 
@@ -368,6 +371,12 @@ const matchingData = computed(() => {
               v-for="duplicatedClient in data.matchers.contact?.split(',')" 
               :key="duplicatedClient">
                 Matching one or more contacts - Client number: 
+                <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+            </li>
+            <li 
+              v-for="duplicatedClient in data.matchers.location?.split(',')" 
+              :key="duplicatedClient">
+                Matching one or more locations - Client number: 
                 <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
             </li>
           </ul>

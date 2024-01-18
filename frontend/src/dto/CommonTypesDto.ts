@@ -173,4 +173,5 @@ export interface SubmissionDetailsMatchers {
   corporationName: string
   incorporationNumber: string
   contact: string
+  location: string
 }
