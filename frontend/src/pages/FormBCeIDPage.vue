@@ -307,7 +307,7 @@ const processAndLogOut = () => {
         name: formData.businessInformation.businessName,
         userName: `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}` ?? "",
         userId: ForestClientUserSession.user.userId ?? "",
-        mail: ForestClientUserSession.user.email ?? "",
+        email: ForestClientUserSession.user.email ?? "",
       },
       {}
     );
