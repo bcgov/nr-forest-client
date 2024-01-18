@@ -303,7 +303,7 @@ const matchingData = computed(() => {
             <a href="https://www.bcregistry.gov.bc.ca/"
               target="_blank"
               rel="noopener noreferrer">BC Registries</a>
-            and update it below
+            to determine if this submission should be approved or rejected.
           </p>
         </div>
       </cds-actionable-notification>
@@ -315,32 +315,34 @@ const matchingData = computed(() => {
           hide-close-button="true"
           open="true"
           kind="warning"
-          title="Possible matching record found"      
+          title="Possible matching records found"      
         >    
         <div>
-          <p v-if="matchingData.length === 1" class="body-compact-01">
-            {{ matchingData.length }} similar client record was found. 
-            Review their information in the Client Management System to determine if this submission should be approved or rejected:
-          </p>
-          <p v-else class="body-compact-01">
-            {{ matchingData.length }} similar client records were found. 
+          <p class="body-compact-01">
+            {{ matchingData.length }} similar client record 
+            <span v-if="matchingData.length === 1">was</span> 
+            <span v-else>were</span> 
+            found. 
             Review their information in the Client Management System to determine if this submission should be approved or rejected:
           </p>
           <ul class="bulleted-list-disc body-compact-01">
             <li 
               v-for="duplicatedClient in data.matchers.corporationName?.split(',')" 
               :key="duplicatedClient">
-                Legal name: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+                Partial match on business name: 
+                <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
             </li>
             <li 
               v-for="duplicatedClient in data.matchers.incorporationNumber?.split(',')" 
               :key="duplicatedClient">
-                Incorporation number: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+                Partial match on incorporation number - Client number: 
+                <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
             </li>
             <li 
               v-for="duplicatedClient in data.matchers.contact?.split(',')" 
               :key="duplicatedClient">
-                Contact: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+                Matching one or more contacts - Client number: 
+                <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
             </li>
           </ul>
         </div>    
