@@ -1,6 +1,5 @@
 package ca.bc.gov.app;
 
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
