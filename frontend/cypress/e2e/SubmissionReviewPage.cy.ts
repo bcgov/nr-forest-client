@@ -117,7 +117,7 @@ describe("Submission Review Page", () => {
             .should("exist")
             .should("contain", "Check this client's standing with");
         }
-
+        
         if (testCase.incorporationName) {
           cy.get("cds-actionable-notification")
             .should("exist")
