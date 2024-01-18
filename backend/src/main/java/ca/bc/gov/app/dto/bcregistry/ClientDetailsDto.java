@@ -12,7 +12,7 @@ import lombok.With;
 public record ClientDetailsDto(
     String name,
     String id,
-    boolean goodStanding,
+    Boolean goodStanding,
     List<ClientAddressDto> addresses,
 
     List<ClientContactDto> contacts

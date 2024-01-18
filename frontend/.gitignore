@@ -187,3 +187,4 @@ cypress/videos/*
 
 reports/
 sonar-report.xml
+reports-merge/

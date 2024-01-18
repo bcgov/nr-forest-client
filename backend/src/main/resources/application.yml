@@ -143,6 +143,8 @@ ca:
               - X-User-Email
               - x-user-name
               - X-User-Name
+              - x-user-businessid
+              - X-User-Businessid
             methods:
               - OPTIONS
               - GET
