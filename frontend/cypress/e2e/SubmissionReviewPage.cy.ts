@@ -136,21 +136,21 @@ describe('Submission Review Page', () => {
           cy.get('cds-actionable-notification')
           .should('exist')
           .should('contain', "Review their information in the Client Management System to determine if this submission should be approved or rejected:")
-          .should('contain', `Legal name: ${testCase.incorporationName}`);
+          .should('contain', `Partial match on business name - Client number: ${testCase.incorporationName}`);
         }
 
         if(testCase.incorporationNumber){
           cy.get('cds-actionable-notification')
           .should('exist')
           .should('contain', "Review their information in the Client Management System to determine if this submission should be approved or rejected:")
-          .should('contain', `Incorporation number: ${testCase.incorporationNumber}`);
+          .should('contain', `Partial match on incorporation number - Client number: ${testCase.incorporationNumber}`);
         }
 
         if(testCase.contact){
           cy.get('cds-actionable-notification')
           .should('exist')
           .should('contain', "Review their information in the Client Management System to determine if this submission should be approved or rejected:")
-          .should('contain', `Contact: ${testCase.contact}`);
+          .should('contain', `Matching one or more contacts - Client number: ${testCase.contact}`);
         }
 
         cy.get('.grouping-15 > [kind="primary"]')
