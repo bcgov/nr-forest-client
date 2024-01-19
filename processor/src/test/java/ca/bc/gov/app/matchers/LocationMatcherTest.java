@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.util.stream.Stream;
 
 import ca.bc.gov.app.dto.MatcherResult;
+import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.dto.SubmissionLocationDto;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
@@ -53,10 +54,10 @@ class LocationMatcherTest {
   @MethodSource("location")
   @DisplayName("Match or not")
   void shouldMatchOrNot(
-      SubmissionLocationDto dto,
-      boolean success,
-      MatcherResult result,
-      String mockData
+	SubmissionInformationDto dto,
+    boolean success,
+	MatcherResult result,
+	String mockData
   ) {
     wireMockExtension.resetAll();
     wireMockExtension
