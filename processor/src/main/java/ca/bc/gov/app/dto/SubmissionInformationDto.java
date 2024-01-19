@@ -10,6 +10,7 @@ public record SubmissionInformationDto(
     LocalDate dateOfBirth,
     String incorporationNumber,
     String goodStanding,
-    String clientType
+    String clientType,
+    String addressesAsCsv
 ) {
 }

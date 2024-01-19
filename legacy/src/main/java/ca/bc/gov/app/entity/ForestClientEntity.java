@@ -3,7 +3,6 @@ package ca.bc.gov.app.entity;
 
 import static ca.bc.gov.app.ApplicationConstants.ORACLE_ATTRIBUTE_SCHEMA;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -75,11 +74,11 @@ public class ForestClientEntity {
 
   @Transient
   public String getName(){
-    if(Objects.equals(this.clientTypeCode, "I")){
+    if (Objects.equals(this.clientTypeCode, "I")) {
       return Stream.of(this.legalFirstName, this.legalMiddleName, this.clientName)
           .filter(Objects::nonNull)
           .collect(Collectors.joining(" "));
-    }else{
+    } else {
       return this.clientName;
     }
   }

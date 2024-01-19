@@ -54,6 +54,8 @@ const data = ref<SubmissionDetails>({
     organizationName: "",
     clientType: "",
     goodStandingInd: "",
+    clientTypeDesc: "",
+    birthdate: ""
   },
   contact: [
     {
@@ -73,6 +75,7 @@ const data = ref<SubmissionDetails>({
     corporationName: "",
     incorporationNumber: "",
     contact: "",
+    location: "",
   },
 });
 
@@ -241,6 +244,11 @@ const matchingData = computed(() => {
   }
   return results;
 });
+
+const getLegacyUrl = ref((duplicatedClient) => {
+  const encodedClientNumber = encodeURIComponent(duplicatedClient.trim());
+  return `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${encodedClientNumber}`;
+});
 </script>
 
 <template>
@@ -356,19 +364,25 @@ const matchingData = computed(() => {
               v-for="duplicatedClient in data.matchers.corporationName?.split(',')" 
               :key="duplicatedClient">
                 Partial match on business name - Client number: 
-                <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+                <a target="_blank" :href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
             </li>
             <li 
               v-for="duplicatedClient in data.matchers.incorporationNumber?.split(',')" 
               :key="duplicatedClient">
                 Partial match on incorporation number - Client number: 
-                <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+                <a target="_blank" :href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
             </li>
             <li 
               v-for="duplicatedClient in data.matchers.contact?.split(',')" 
               :key="duplicatedClient">
                 Matching one or more contacts - Client number: 
-                <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+                <a target="_blank" :href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
+            </li>
+            <li 
+              v-for="duplicatedClient in data.matchers.location?.split(',')" 
+              :key="duplicatedClient">
+                Matching one or more locations - Client number: 
+                <a target="_blank" :href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
             </li>
           </ul>
         </div>    

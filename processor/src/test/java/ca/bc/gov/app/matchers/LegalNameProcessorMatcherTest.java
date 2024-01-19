@@ -75,19 +75,19 @@ class LegalNameProcessorMatcherTest {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto(1,"James", null, null, null, "C"),
+                new SubmissionInformationDto(1,"James", null, null, null, "C", null),
                 true,
                 null,
                 "[]"
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,"Marco", null, null, null, "C"),
+                new SubmissionInformationDto(1,"Marco", null, null, null, "C", null),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000")),
                 "[{\"clientNumber\":\"00000000\"}]"
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,"Lucca", null, null, null, "C"),
+                new SubmissionInformationDto(1,"Lucca", null, null, null, "C", null),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000", "00000001")),
                 "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"

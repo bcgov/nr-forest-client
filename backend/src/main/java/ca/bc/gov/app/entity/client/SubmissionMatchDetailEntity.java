@@ -21,6 +21,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @With
 public class SubmissionMatchDetailEntity {
+  
   @Id
   @Column("submission_matching_detail_id")
   private Integer submissionMatchingId;
@@ -45,4 +46,5 @@ public class SubmissionMatchDetailEntity {
 
   @Transient
   private Map<String,Object> matchers;
+  
 }

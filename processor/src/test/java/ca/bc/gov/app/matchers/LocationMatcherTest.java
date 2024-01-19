@@ -9,13 +9,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.stream.Stream;
+
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.entity.SubmissionContactEntity;
-import ca.bc.gov.app.repository.SubmissionContactRepository;
+import ca.bc.gov.app.entity.SubmissionLocationEntity;
+import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import java.time.LocalDate;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -26,8 +26,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-@DisplayName("Unit Test | Contact Matcher")
-class ContactMatcherTest {
+@DisplayName("Unit Test | Location Matcher")
+class LocationMatcherTest {
 
   @RegisterExtension
   static WireMockExtension wireMockExtension = WireMockExtension
@@ -36,45 +36,43 @@ class ContactMatcherTest {
       .configureStaticDsl(true)
       .build();
 
-  private final SubmissionContactRepository contactRepository = mock(
-      SubmissionContactRepository.class);
-  private final ProcessorMatcher matcher = new ContactMatcher(
+  private final SubmissionLocationRepository locationRepository = mock(
+      SubmissionLocationRepository.class);
+  private final ProcessorMatcher matcher = new LocationMatcher(
       WebClient.builder().baseUrl("http://localhost:10012").build(),
-      contactRepository
+      locationRepository
   );
 
   @Test
   @DisplayName("Name matching")
   void shouldMatchName() {
-    assertEquals("Contact Matcher", matcher.name());
+    assertEquals("Location Matcher", matcher.name());
   }
 
   @ParameterizedTest
-  @MethodSource("contact")
+  @MethodSource("location")
   @DisplayName("Match or not")
   void shouldMatchOrNot(
-      SubmissionInformationDto dto,
-      boolean success,
-      MatcherResult result,
-      String mockData
+	SubmissionInformationDto dto,
+    boolean success,
+	MatcherResult result,
+	String mockData
   ) {
     wireMockExtension.resetAll();
     wireMockExtension
         .stubFor(
-            get(urlPathEqualTo("/api/contacts/search"))
+            get(urlPathEqualTo("/api/locations/search"))
                 .willReturn(okJson(mockData))
         );
 
-    when(contactRepository.findBySubmissionId(any()))
+    when(locationRepository.findBySubmissionId(any()))
         .thenReturn(
             Flux.just(
-                SubmissionContactEntity
+                SubmissionLocationEntity
                     .builder()
                     .submissionId(1)
-                    .firstName("John")
-                    .lastName("Smith")
-                    .emailAddress("mail@mail.ca")
-                    .businessPhoneNumber("1234567890")
+                    .streetAddress("123 Fake St")
+                    .postalCode("A1B2C3")
                     .build()
             )
         );
@@ -92,31 +90,28 @@ class ContactMatcherTest {
           .verifyComplete();
     }
   }
-
-  private static Stream<Arguments> contact(){
-    return Stream.of(
-        Arguments.of(
-            new SubmissionInformationDto(1,"James Frank", LocalDate.of(1985, 10, 4), null, "Y",
-                "I", null),
-            true,
-            null,
-            "[]"
-        ),
-        Arguments.of(
-            new SubmissionInformationDto(1,"Marco Polo", LocalDate.of(1977, 3, 22), null, "Y",
-                "I", null),
-            false,
-            new MatcherResult("contact", String.join(",", "00000000")),
-            "[{\"clientNumber\":\"00000000\"}]"
-        ),
-        Arguments.of(
-            new SubmissionInformationDto(1,"Lucca DeBiaggio", LocalDate.of(1951, 12, 25), null,
-                "Y", "I", null),
-            false,
-            new MatcherResult("contact", String.join(",", "00000000", "00000001")),
-            "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"
-        )
-    );
+  
+  private static Stream<Arguments> location() {
+	  return Stream.of(
+		        Arguments.of(
+		            new SubmissionInformationDto(1, null, null, null, null, null, "123 Fake St, A1B2C3"),
+		            true,
+		            null,
+		            "[]"
+		        ),
+		        Arguments.of(
+		        	new SubmissionInformationDto(1, null, null, null, null, null, "712 Maria Avenue, V9B1W7"),
+		            false,
+		            new MatcherResult("location", String.join(",", "00000000")),
+		            "[{\"clientNumber\":\"00000000\"}]"
+		        ),
+		        Arguments.of(
+		            new SubmissionInformationDto(1, null, null, null, null, null, "123 Fort St, 12345-1251"),
+		            false,
+		            new MatcherResult("location", String.join(",", "00000000", "00000001")),
+		            "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"
+		        )
+		    );
   }
 
 }
