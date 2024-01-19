@@ -238,6 +238,9 @@
                         <buildArg>
                             --initialize-at-build-time=ch.qos.logback.classic.Logger
                         </buildArg>
+                        <buildArg>
+                            --initialize-at-build-time=io.micrometer.common.util.internal.logging.Slf4JLoggerFactory
+                        </buildArg>
                     </buildArgs>
                 </configuration>
             </plugin>
