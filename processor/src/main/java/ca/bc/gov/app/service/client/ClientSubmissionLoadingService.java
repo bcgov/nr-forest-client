@@ -41,15 +41,23 @@ public class ClientSubmissionLoadingService {
   public Mono<MessagingWrapper<SubmissionInformationDto>> loadSubmissionDetails(
 	Integer submissionId) {
 
-
-	  Flux<SubmissionLocationEntity> locations = locationRepository.findBySubmissionId(submissionId);
-
-	String locationsAsCsv = locations
+	Flux<SubmissionLocationEntity> locations = locationRepository.findBySubmissionId(submissionId);
+	StringBuilder locationsAsCsvBuilder = new StringBuilder();
+	
+	if (locations != null) {
+		locationsAsCsvBuilder.append(
+								locations
 								.map(submissionLocation -> 
-											submissionLocation.getStreetAddress() + ", " + submissionLocation.getPostalCode())
-			    				.collect(Collectors.joining(","))
-			    				.block();
+										submissionLocation.getStreetAddress() 
+										+ ", " 
+										+ submissionLocation.getPostalCode())
+				    			.collect(Collectors.joining(","))
+				    			.block()
+			    			);
+	}
 	    
+	String locationsAsCsv = locationsAsCsvBuilder.toString();
+	
     return
         submissionDetailRepository
             .findBySubmissionId(submissionId)
