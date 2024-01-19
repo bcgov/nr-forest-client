@@ -245,10 +245,10 @@ const matchingData = computed(() => {
   return results;
 });
 
-const getLegacyUrl = (duplicatedClient) => {
+const getLegacyUrl = ref((duplicatedClient) => {
   const encodedClientNumber = encodeURIComponent(duplicatedClient.trim());
   return `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${encodedClientNumber}`;
-};
+});
 </script>
 
 <template>
@@ -364,25 +364,25 @@ const getLegacyUrl = (duplicatedClient) => {
               v-for="duplicatedClient in data.matchers.corporationName?.split(',')" 
               :key="duplicatedClient">
                 Partial match on business name - Client number: 
-                <a target="_blank" v-bind:href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
+                <a target="_blank" :href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
             </li>
             <li 
               v-for="duplicatedClient in data.matchers.incorporationNumber?.split(',')" 
               :key="duplicatedClient">
                 Partial match on incorporation number - Client number: 
-                <a target="_blank" v-bind:href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
+                <a target="_blank" :href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
             </li>
             <li 
               v-for="duplicatedClient in data.matchers.contact?.split(',')" 
               :key="duplicatedClient">
                 Matching one or more contacts - Client number: 
-                <a target="_blank" v-bind:href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
+                <a target="_blank" :href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
             </li>
             <li 
               v-for="duplicatedClient in data.matchers.location?.split(',')" 
               :key="duplicatedClient">
                 Matching one or more locations - Client number: 
-                <a target="_blank" v-bind:href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
+                <a target="_blank" :href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
             </li>
           </ul>
         </div>    
