@@ -9,8 +9,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.stream.Stream;
+
 import ca.bc.gov.app.dto.MatcherResult;
-import ca.bc.gov.app.dto.SubmissionInformationDto;
+import ca.bc.gov.app.dto.SubmissionLocationDto;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -18,6 +20,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -50,7 +53,7 @@ class LocationMatcherTest {
   @MethodSource("location")
   @DisplayName("Match or not")
   void shouldMatchOrNot(
-      SubmissionInformationDto dto,
+      SubmissionLocationDto dto,
       boolean success,
       MatcherResult result,
       String mockData
@@ -86,6 +89,29 @@ class LocationMatcherTest {
           .expectNext(result)
           .verifyComplete();
     }
+  }
+  
+  private static Stream<Arguments> location() {
+	  return Stream.of(
+		        Arguments.of(
+		            new SubmissionLocationDto(1, "123 Fake St", "A1B2C3"),
+		            true,
+		            null,
+		            "[]"
+		        ),
+		        Arguments.of(
+		            new SubmissionLocationDto(1, "712 Maria Avenue", "V9B1W7"),
+		            false,
+		            new MatcherResult("location", String.join(",", "00000000")),
+		            "[{\"clientNumber\":\"00000000\"}]"
+		        ),
+		        Arguments.of(
+		            new SubmissionLocationDto(1, "123 Fort St", "12345-1251"),
+		            false,
+		            new MatcherResult("location", String.join(",", "00000000", "00000001")),
+		            "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"
+		        )
+		    );
   }
 
 }

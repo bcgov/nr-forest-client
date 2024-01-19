@@ -8,6 +8,6 @@ public interface ProcessorMatcher {
 
   boolean enabled(SubmissionInformationDto submission);
   String name();
-  Mono<MatcherResult> matches(SubmissionInformationDto submission);
+  Mono<MatcherResult> matches(Object submission);
 
 }
