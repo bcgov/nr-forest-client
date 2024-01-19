@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.dto.SubmissionLocationDto;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -95,19 +94,19 @@ class LocationMatcherTest {
   private static Stream<Arguments> location() {
 	  return Stream.of(
 		        Arguments.of(
-		            new SubmissionLocationDto(1, "123 Fake St", "A1B2C3"),
+		            new SubmissionInformationDto(1, null, null, null, null, null, "123 Fake St, A1B2C3"),
 		            true,
 		            null,
 		            "[]"
 		        ),
 		        Arguments.of(
-		            new SubmissionLocationDto(1, "712 Maria Avenue", "V9B1W7"),
+		        	new SubmissionInformationDto(1, null, null, null, null, null, "712 Maria Avenue, V9B1W7"),
 		            false,
 		            new MatcherResult("location", String.join(",", "00000000")),
 		            "[{\"clientNumber\":\"00000000\"}]"
 		        ),
 		        Arguments.of(
-		            new SubmissionLocationDto(1, "123 Fort St", "12345-1251"),
+		            new SubmissionInformationDto(1, null, null, null, null, null, "123 Fort St, 12345-1251"),
 		            false,
 		            new MatcherResult("location", String.join(",", "00000000", "00000001")),
 		            "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"

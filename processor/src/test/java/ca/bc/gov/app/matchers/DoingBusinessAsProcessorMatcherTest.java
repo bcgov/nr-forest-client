@@ -65,14 +65,14 @@ class DoingBusinessAsProcessorMatcherTest {
         Stream.of(
             Arguments.of(
                 new SubmissionInformationDto(1,"James", LocalDate.of(1970, 3, 4), "FM001122334", "Y",
-                    "RSP"),
+                    "RSP", null),
                 true,
                 null,
                 Flux.empty()
             ),
             Arguments.of(
                 new SubmissionInformationDto(1,"Marco Polo Navigation Inc", LocalDate.of(1970, 3, 4),
-                    "FM001122334", "Y", "RSP"),
+                    "FM001122334", "Y", "RSP", null),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000")),
                 Flux.just(
@@ -80,7 +80,7 @@ class DoingBusinessAsProcessorMatcherTest {
                         StringUtils.EMPTY, 1L))
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,"Lucca", null, null, null, "RSP"),
+                new SubmissionInformationDto(1,"Lucca", null, null, null, "RSP", null),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000", "00000001")),
                 Flux.just(
