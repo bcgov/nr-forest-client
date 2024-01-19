@@ -240,7 +240,7 @@
                             --initialize-at-build-time=io.micrometer.common.util.internal.logging.LocationAwareSlf4JLogger
                         </buildArg>
                         <buildArg>
-                            --trace-object-instantiation=io.micrometer.common.util.internal.logging.LocationAwareSlf4JLogger
+                            --trace-object-instantiation=ch.qos.logback.classic.Logger
                         </buildArg>
                     </buildArgs>
                 </configuration>
