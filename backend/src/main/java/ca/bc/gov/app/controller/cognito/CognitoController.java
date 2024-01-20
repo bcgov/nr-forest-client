@@ -4,6 +4,7 @@ import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.exception.UnableToProcessRequestException;
 import ca.bc.gov.app.service.cognito.CognitoService;
+import io.micrometer.observation.annotation.Observed;
 import java.time.Duration;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -27,6 +28,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@Observed
 public class CognitoController {
 
   public static final String LOCATION = "Location";
@@ -75,9 +77,10 @@ public class CognitoController {
       serverResponse
           .getHeaders()
           .add(LOCATION, famUrl);
-
+      log.info("Executing login for provider: {}", code);
       return Mono.empty();
     } else {
+      log.error("Invalid provider code: {}", code);
       return Mono.error(new UnableToProcessRequestException("Invalid provider code."));
     }
   }
@@ -118,14 +121,14 @@ public class CognitoController {
     serverResponse
         .getHeaders()
         .add(LOCATION, famUrl);
-
+    log.info("Executing logout");
     return Mono.empty();
   }
 
   @GetMapping("/refresh")
   @ResponseStatus(HttpStatus.FOUND)
   public Mono<Void> refresh(@RequestParam String code, ServerHttpResponse serverResponse) {
-
+    log.info("Executing refresh for code: {}", code);
     return
         service
             .refreshToken(code)
@@ -163,6 +166,7 @@ public class CognitoController {
       @RequestParam("code") String code,
       ServerHttpResponse serverResponse
   ) {
+    log.info("Extracting JWT from code: {}", code);
 
     return
         Mono

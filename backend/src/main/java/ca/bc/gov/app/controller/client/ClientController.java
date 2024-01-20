@@ -7,6 +7,7 @@ import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientService;
+import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping(value = "/api/clients", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Slf4j
+@Observed
 public class ClientController {
 
   private final ClientService clientService;
@@ -40,6 +42,7 @@ public class ClientController {
       @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
       @RequestHeader(name = ApplicationConstant.BUSINESSID_HEADER, defaultValue = StringUtils.EMPTY) String businessId
   ) {
+    log.info("Requesting client details for client number {} from the client service.", clientNumber);
     return clientService.getClientDetails(clientNumber,userId,businessId);
   }
 
@@ -49,6 +52,7 @@ public class ClientController {
       Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10")
       Integer size) {
+    log.info("Requesting a list of countries from the client service.");
     return clientService
         .listCountries(page, size);
   }
@@ -56,6 +60,7 @@ public class ClientController {
   @GetMapping("/getCountryByCode/{countryCode}")
   public Mono<CodeNameDto> getCountryByCode(
       @PathVariable String countryCode) {
+    log.info("Requesting a country by code {} from the client service.", countryCode);
     return clientService.getCountryByCode(countryCode);
   }
 
@@ -66,6 +71,7 @@ public class ClientController {
       Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10")
       Integer size) {
+    log.info("Requesting a list of provinces for country code {} from the client service.", countryCode);
     return clientService
         .listProvinces(countryCode, page, size);
   }
@@ -73,11 +79,13 @@ public class ClientController {
   @GetMapping("/getClientTypeByCode/{code}")
   public Mono<CodeNameDto> getClientTypeByCode(
       @PathVariable String code) {
+    log.info("Requesting a client type by code {} from the client service.", code);
     return clientService.getClientTypeByCode(code);
   }
   
   @GetMapping("/activeClientTypeCodes")
   public Flux<CodeNameDto> findActiveClientTypeCodes() {
+    log.info("Requesting a list of active client type codes from the client service.");
     return clientService
         .findActiveClientTypeCodes(LocalDate.now());
   }
@@ -89,6 +97,7 @@ public class ClientController {
       @RequestParam(value = "size", required = false, defaultValue = "10")
       Integer size
   ) {
+    log.info("Requesting a list of active client contact type codes from the client service.");
     return clientService
         .listClientContactTypeCodes(LocalDate.now(),page, size);
   }
@@ -103,6 +112,7 @@ public class ClientController {
   public Flux<ClientLookUpDto> findByClientName(
       @PathVariable String name
   ) {
+    log.info("Requesting a list of clients with name {} from the client service.", name);
     return clientService
         .findByClientNameOrIncorporation(name)
         .map(client -> client.withName(WordUtils.capitalize(client.name())));
@@ -111,6 +121,7 @@ public class ClientController {
   @GetMapping(value = "/incorporation/{incorporationId}")
   public Mono<ClientLookUpDto> findByIncorporationNumber(
       @PathVariable String incorporationId) {
+    log.info("Requesting a client with incorporation number {} from the client service.", incorporationId);
     return clientService
         .findByClientNameOrIncorporation(incorporationId)
         .next()
@@ -133,6 +144,7 @@ public class ClientController {
       @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
       @RequestHeader(name = ApplicationConstant.BUSINESSID_HEADER, defaultValue = StringUtils.EMPTY) String businessId
       ) {
+    log.info("Sending email to {} from the client service.", emailRequestDto.email());
     return clientService.triggerEmailDuplicatedClient(emailRequestDto, userId, businessId);
   }
 
