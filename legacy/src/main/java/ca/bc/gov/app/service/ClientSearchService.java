@@ -7,6 +7,7 @@ import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.repository.ForestClientRepository;
+import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Observed
 public class ClientSearchService {
 
   private final ForestClientRepository forestClientRepository;
@@ -31,8 +33,12 @@ public class ClientSearchService {
   ) {
 
     if (StringUtils.isAllBlank(incorporationNumber, companyName)) {
+      log.error("Missing required parameter to search for incorporation or company name");
       throw new MissingRequiredParameterException("incorporationNumber or companyName");
     }
+
+    log.info("Searching for incorporation: {} or company name: {}", incorporationNumber,
+        companyName);
 
     return
         forestClientRepository
@@ -62,8 +68,11 @@ public class ClientSearchService {
   ) {
 
     if (StringUtils.isAnyBlank(firstName, lastName) || dob == null) {
+      log.error("Missing required parameter to search for individual");
       throw new MissingRequiredParameterException("firstName, lastName, or dob");
     }
+
+    log.info("Searching for individual: {} {} {}", firstName, lastName, dob);
 
     return
         forestClientRepository
@@ -75,6 +84,7 @@ public class ClientSearchService {
 
 
   public Flux<ForestClientDto> matchBy(String companyName) {
+    log.info("Searching for match: {}", companyName);
     return
         forestClientRepository
             .matchBy(companyName)
@@ -83,6 +93,7 @@ public class ClientSearchService {
   }
 
   public Flux<ForestClientDto> findByIdAndLastName(String clientId, String lastName) {
+    log.info("Searching for client: {} {}", clientId, lastName);
     return forestClientRepository
         .findByClientIdentificationIgnoreCaseAndClientNameIgnoreCase(clientId, lastName)
         .map(mapper::toDto)

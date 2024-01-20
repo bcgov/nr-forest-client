@@ -83,6 +83,14 @@
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-registry-prometheus</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-tracing-bridge-otel</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-exporter-zipkin</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>com.oracle.database.r2dbc</groupId>
@@ -189,6 +197,20 @@
         <artifactId>reactor-netty-http</artifactId>
         <version>1.1.13</version>
       </dependency>
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-bom</artifactId>
+        <version>${micrometer.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-tracing-bom</artifactId>
+        <version>${micrometer-tracing.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -212,6 +234,16 @@
       <plugin>
         <groupId>org.graalvm.buildtools</groupId>
         <artifactId>native-maven-plugin</artifactId>
+        <configuration>
+          <skip>false</skip>
+          <mainClass>ca.bc.gov.app.BootApplication</mainClass>
+          <buildArgs>
+            <buildArg>-H:+ReportExceptionStackTraces</buildArg>
+            <buildArg>
+              --initialize-at-build-time=org.apache.commons.logging.LogFactoryService
+            </buildArg>
+          </buildArgs>
+        </configuration>
       </plugin>
 
       <plugin>

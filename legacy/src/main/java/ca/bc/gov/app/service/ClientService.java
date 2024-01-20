@@ -4,6 +4,7 @@ import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ForestClientRepository;
+import io.micrometer.observation.annotation.Observed;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Observed
 public class ClientService {
 
   private final R2dbcEntityOperations entityTemplate;
@@ -22,6 +24,9 @@ public class ClientService {
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> mapper;
 
   public Mono<String> saveAndGetIndex(ForestClientDto dto) {
+
+    log.info("Saving forest client {}", dto);
+
     return
         Mono
             .just(dto)
@@ -63,6 +68,8 @@ public class ClientService {
   private Mono<Boolean> locateClient(
       ForestClientEntity entity
   ) {
+
+    log.info("Locating forest client {}", entity);
 
     if (
         entity
