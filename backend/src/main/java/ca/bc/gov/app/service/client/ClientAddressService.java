@@ -8,6 +8,7 @@ import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.exception.AddressLookupException;
+import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
+@Observed
 public class ClientAddressService {
 
   private final ForestClientConfiguration.AddressCompleteConfiguration configuration;

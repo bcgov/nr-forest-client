@@ -21,6 +21,7 @@ import ca.bc.gov.app.repository.client.EmailLogRepository;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import io.micrometer.observation.annotation.Observed;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
@@ -43,6 +44,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
+@Observed
 public class ChesService {
 
   public static final String FAILED_TO_SEND_EMAIL = "Failed to send email: {}";
@@ -90,6 +92,8 @@ public class ChesService {
         configuration.getCognito().getEnvironment().equalsIgnoreCase("prod")
             ? subject
             : String.format("[%s] %s", configuration.getCognito().getEnvironment(), subject);
+
+    log.info("Sending email to {} with subject {}", emailAddress, processedSubject);
 
     return this
         .buildTemplate(templateName, variables)
