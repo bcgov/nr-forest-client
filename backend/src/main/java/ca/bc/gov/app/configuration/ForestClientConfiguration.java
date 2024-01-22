@@ -155,25 +155,11 @@ public class ForestClientConfiguration {
       return String.format("https://%s.auth.%s.amazoncognito.com", domain, region);
     }
 
-    public String getRefreshUrl(){
+    public String getRefreshUrl() {
       if (StringUtils.isNotBlank(refreshUrl)) {
         return refreshUrl;
       }
       return String.format("https://cognito-idp.%s.amazonaws.com/", region);
-    }
-    
-    public String getRedirectUri() {
-      if ( StringUtils.isNotBlank(redirectUri)) {
-        return this.redirectUri;
-      }
-      return "https://www2.qa.gov.bc.ca/gov/content/industry/natural-resource-use/client-number/";
-    }
-    
-    public String getLogoutUri() {
-      if ( StringUtils.isNotBlank(logoutUri)) {
-        return this.logoutUri;
-      }
-      return "https://www2.qa.gov.bc.ca/gov/content/industry/natural-resource-use/client-number/";
     }
     
   }
