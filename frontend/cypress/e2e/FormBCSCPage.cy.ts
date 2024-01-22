@@ -251,7 +251,7 @@ describe("BCSC Form", () => {
       cy.get("#firstName_1").should("not.exist");
       cy.get("#firstName_2").should("exist");
     });
-    it.only("can submit the form (regardless of the deleted contact being invalid)", () => {
+    it("can submit the form (regardless of the deleted contact being invalid)", () => {
       cy.get("#deleteContact_1").click();
       cy.wait(150);
       cy.get("#modal-global > cds-modal-footer > .cds--modal-submit-btn").click();
