@@ -48,23 +48,23 @@ management:
       base-path: /
       exposure:
         include: health,info,metrics,otlp,tracing
-          httpexchanges:
-            recording:
-              include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
-          tracing:
-            enabled: false
-            baggage:
-              remote-fields:
-                - X-TRACE-ID
-              correlation:
-                fields:
-                  - X-TRACE-ID
-            sampling:
-              probability: 0.75
-          zipkin:
-            metrics:
-              export:
-                enabled: true
+  httpexchanges:
+    recording:
+      include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
+  tracing:
+    enabled: false
+    baggage:
+      remote-fields:
+        - X-TRACE-ID
+      correlation:
+        fields:
+          - X-TRACE-ID
+    sampling:
+      probability: 0.75
+  zipkin:
+    metrics:
+      export:
+        enabled: true
 
 info:
   app:
