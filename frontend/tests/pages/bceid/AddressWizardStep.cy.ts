@@ -80,6 +80,36 @@ describe("<AddressWizardStep />", () => {
 
     let bus: ReturnType<typeof useEventBus<ModalNotification>>;
 
+    const mountTest = (includeOtherAddressesInProps: boolean) => {
+      cy.mount(AddressWizardStep, {
+        props: {
+          data: {
+            location: {
+              addresses: [
+                {
+                  locationName: "Mailing address",
+                  streetAddress: "123 Forest Street",
+                  country: { value: "CA", text: "Canada" },
+                  province: { value: "BC", text: "British Columbia" },
+                  city: "Victoria",
+                  postalCode: "A0A0A0",
+                } as Address,
+                ...(includeOtherAddressesInProps ? otherAddressNames : []).map((locationName) => ({
+                  ...emptyAddress(),
+                  locationName,
+                })),
+              ],
+              contacts: [],
+            },
+          } as FormDataDto,
+          active: false,
+        },
+      })
+        .its("wrapper")
+        .as("vueWrapper");
+    };
+
+    // Multi-scenario test
     [
       { includeOtherAddressesInProps: true, predicate: "are provided in the props" },
       { includeOtherAddressesInProps: false, predicate: "are added manually" },
@@ -90,34 +120,8 @@ describe("<AddressWizardStep />", () => {
           bus.on((payload) => {
             payload.handler(); // automatically proceed with the deletion
           });
-          cy.mount(AddressWizardStep, {
-            props: {
-              data: {
-                location: {
-                  addresses: [
-                    {
-                      locationName: "Mailing address",
-                      streetAddress: "123 Forest Street",
-                      country: { value: "CA", text: "Canada" },
-                      province: { value: "BC", text: "British Columbia" },
-                      city: "Victoria",
-                      postalCode: "A0A0A0",
-                    } as Address,
-                    ...(includeOtherAddressesInProps ? otherAddressNames : []).map(
-                      (locationName) => ({
-                        ...emptyAddress(),
-                        locationName,
-                      }),
-                    ),
-                  ],
-                  contacts: [],
-                },
-              } as FormDataDto,
-              active: false,
-            },
-          })
-            .its("wrapper")
-            .as("vueWrapper");
+
+          mountTest(includeOtherAddressesInProps);
 
           if (!includeOtherAddressesInProps) {
             otherAddressNames.forEach((name, index) => {
