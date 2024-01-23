@@ -31,7 +31,7 @@
     "precoverage": "npm run test:report:clean",
     "coverage": "npm run test:unit && npm run test:component && npm run test:e2e",
     "postcoverage": "npm run test:report:merge",
-    "test:component": "TEST_MODE=test cypress run --component --headless",
+    "test:component": "VITE_MODE=test cypress run --component --headless",
     "posttest:component": "mv reports/.nyc_report reports/component",
     "test:unit": "vitest run --coverage",
     "posttest:unit": "mv reports/.vite_report reports/unit",
