@@ -71,6 +71,7 @@ export default defineConfig(({ command, mode }) => {
     },
     optimizeDeps: {
       exclude: ['@carbon/web-components'],
+      disabled: true,
     }
   }
 })
