@@ -236,7 +236,7 @@
         <artifactId>native-maven-plugin</artifactId>
         <configuration>
           <skip>false</skip>
-          <mainClass>ca.bc.gov.app.BootApplication</mainClass>
+          <mainClass>ca.bc.gov.app.LegacyApplication</mainClass>
           <buildArgs>
             <buildArg>-H:+ReportExceptionStackTraces</buildArg>
             <buildArg>
