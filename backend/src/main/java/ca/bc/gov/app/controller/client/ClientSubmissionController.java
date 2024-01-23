@@ -11,8 +11,10 @@ import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.service.client.ClientSubmissionService;
 import ca.bc.gov.app.validator.client.ClientSubmitRequestValidator;
+import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +34,8 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping(value = "/api/clients/submissions", produces = MediaType.APPLICATION_JSON_VALUE)
+@Slf4j
+@Observed
 public class ClientSubmissionController extends
     AbstractController<ClientSubmissionDto, ClientSubmitRequestValidator> {
 
@@ -61,6 +65,9 @@ public class ClientSubmissionController extends
       @RequestParam(required = false)
       String[] updatedAt
   ) {
+    log.info(
+        "Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, name={}, updatedAt={}",
+        page, size, requestType, requestStatus, clientType, name, updatedAt);
     return clientService
         .listSubmissions(
             page,
@@ -86,13 +93,17 @@ public class ClientSubmissionController extends
         .switchIfEmpty(
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
         )
+        .doOnNext(sub -> log.info("Submitting request: {}", sub))
         .doOnNext(this::validate)
+        .doOnNext(sub -> log.info("Request is valid: {}", sub))
+        .doOnError(e -> log.error("Request is invalid: {}", e.getMessage()))
         .flatMap(submissionDto -> clientService.submit(
-                                                  submissionDto, 
-                                                  userId, 
-                                                  userEmail, 
-                                                  userName, 
-                                                  businessId))
+            submissionDto,
+            userId,
+            userEmail,
+            userName,
+            businessId))
+        .doOnNext(submissionId -> log.info("Submission persisted: {}", submissionId))
         .doOnNext(submissionId ->
             serverResponse
                 .getHeaders()
@@ -115,6 +126,7 @@ public class ClientSubmissionController extends
       @PathVariable Long id,
       ServerHttpResponse serverResponse
   ) {
+    log.info("Requesting submission detail for id: {}", id);
     return clientService
         .getSubmissionDetail(id)
         .switchIfEmpty(Mono.error(new NoClientDataFound(String.valueOf(id))));
@@ -129,6 +141,7 @@ public class ClientSubmissionController extends
       @RequestHeader(ApplicationConstant.USERNAME_HEADER) String userName,
       @RequestBody SubmissionApproveRejectDto request
   ) {
+    log.info("Approving or rejecting submission with id: {} {}", id,request.approved());
     return clientService.approveOrReject(id, userId, userEmail, userName, request);
   }
 

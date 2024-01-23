@@ -75,7 +75,7 @@ public class LegacyService {
             StringUtils.EMPTY,
             "N",
             null,
-            "Y",
+            "N",
             StringUtils.EMPTY,
             ApplicationConstant.PROCESSOR_USER_NAME,
             ApplicationConstant.PROCESSOR_USER_NAME,

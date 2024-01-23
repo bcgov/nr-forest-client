@@ -25,6 +25,7 @@ import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import ca.bc.gov.app.service.ches.ChesService;
+import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Observed
 public class ClientService {
 
   private final ClientTypeCodeRepository clientTypeCodeRepository;
@@ -65,7 +67,7 @@ public class ClientService {
    * @return A list of {@link CodeNameDto}
    */
   public Flux<CodeNameDto> findActiveClientTypeCodes(LocalDate targetDate) {
-
+log.info("Loading active client type codes for {}", targetDate);
     return
         clientTypeCodeRepository
             .findActiveAt(targetDate)
@@ -87,6 +89,7 @@ public class ClientService {
    * @return A list of {@link CodeNameDto} entries.
    */
   public Flux<CodeNameDto> listCountries(int page, int size) {
+    log.info("Loading countries for page {} with size {}", page, size);
     return countryCodeRepository
         .findBy(PageRequest.of(page, size, Sort.by("order", "description")))
         .map(entity -> new CodeNameDto(entity.getCountryCode(), entity.getDescription()));
@@ -105,6 +108,7 @@ public class ClientService {
    * @see CodeNameDto
    */
   public Mono<CodeNameDto> getCountryByCode(String countryCode) {
+    log.info("Loading country for {}", countryCode);
     return countryCodeRepository
         .findByCountryCode(countryCode)
         .map(entity -> new CodeNameDto(entity.getCountryCode(),
@@ -123,6 +127,7 @@ public class ClientService {
    * @see CodeNameDto
    */
   public Mono<CodeNameDto> getClientTypeByCode(String code) {
+    log.info("Loading client type for {}", code);
     return clientTypeCodeRepository
         .findByCode(code)
         .map(entity -> new CodeNameDto(entity.getCode(),
@@ -140,6 +145,7 @@ public class ClientService {
    * @return A list of {@link CodeNameDto} entries.
    */
   public Flux<CodeNameDto> listProvinces(String countryCode, int page, int size) {
+    log.info("Loading provinces for {} with page {} and size {}", countryCode, page, size);
     return provinceCodeRepository
         .findByCountryCode(countryCode, PageRequest.of(page, size, Sort.by("description")))
         .map(entity -> new CodeNameDto(entity.getProvinceCode(), entity.getDescription()));
@@ -154,6 +160,7 @@ public class ClientService {
    * @return A list of {@link CodeNameDto} entries.
    */
   public Flux<CodeNameDto> listClientContactTypeCodes(LocalDate activeDate, int page, int size) {
+    log.info("Loading contact types for page {} with size {}", page, size);
     return contactTypeCodeRepository
         .findActiveAt(activeDate, PageRequest.of(page, size))
         .map(entity -> new CodeNameDto(
@@ -248,6 +255,7 @@ public class ClientService {
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
   public Flux<ClientLookUpDto> findByClientNameOrIncorporation(String value) {
+    log.info("Searching for {}", value);
     return bcRegistryService
         .searchByFacets(value)
         .map(entry -> new ClientLookUpDto(

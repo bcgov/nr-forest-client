@@ -15,6 +15,7 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryOfficesDto;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
+import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
+@Observed
 public class BcRegistryService {
 
   private final WebClient bcRegistryApi;

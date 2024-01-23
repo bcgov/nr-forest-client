@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import io.micrometer.observation.annotation.Observed;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Flux;
 
 @Slf4j
 @Service
+@Observed
 public class ClientLegacyService {
 
   private final WebClient legacyApi;
@@ -36,6 +38,10 @@ public class ClientLegacyService {
       String userId,
       String businessId
   ) {
+
+    log.info("Searching for incorporation number {} and company name {} in legacy",
+        incorporationNumber, companyName);
+
     return
         legacyApi
             .get()
@@ -65,6 +71,10 @@ public class ClientLegacyService {
       String id,
       String lastName
   ) {
+
+    log.info("Searching for id {} and last name {} in legacy",
+        id, lastName);
+
     return
         legacyApi
             .get()

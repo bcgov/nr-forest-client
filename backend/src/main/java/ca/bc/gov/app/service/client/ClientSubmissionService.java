@@ -33,6 +33,7 @@ import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.service.ches.ChesService;
+import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -58,6 +59,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Observed
 public class ClientSubmissionService {
 
   private final SubmissionRepository submissionRepository;
@@ -132,6 +134,11 @@ public class ClientSubmissionService {
       String businessId
   ) {
 
+    log.info("Submitting client submission for user {} with email {} and name {}",
+        userId,
+        userEmail,
+        userName);
+
     return
         Mono
             .just(
@@ -186,6 +193,8 @@ public class ClientSubmissionService {
   }
 
   public Mono<SubmissionDetailsDto> getSubmissionDetail(Long id) {
+
+    log.info("Getting submission detail for submission {}", id);
 
     DatabaseClient client = template.getDatabaseClient();
 
@@ -289,6 +298,12 @@ public class ClientSubmissionService {
       String userName,
       SubmissionApproveRejectDto request
   ) {
+    log.info("Approving or rejecting submission {} for user {} with email {} and name {}",
+        id,
+        userId,
+        userEmail,
+        userName);
+
     return
         submissionRepository
             .findById(id.intValue())
