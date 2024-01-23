@@ -71,6 +71,7 @@ export default defineConfig(({ command, mode }) => {
     },
     optimizeDeps: {
       exclude: ['@carbon/web-components'],
+      entries: process.env.VITE_MODE === "test" ? ['./src/**/*.{vue,js,jsx,ts,tsx}'] : undefined,
     }
   }
 })
