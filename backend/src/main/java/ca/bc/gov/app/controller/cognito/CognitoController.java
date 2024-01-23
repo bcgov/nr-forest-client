@@ -97,19 +97,6 @@ public class CognitoController {
       ServerHttpResponse serverResponse
   ) {
 
-    final String famUrl = String.format(
-        "%s/logout"
-        + "?client_id=%s"
-        + "&response_type=code"
-        + "&scope=openid"
-        + "&redirect_uri=%s"
-        + "&logout_uri=%s",
-        configuration.getCognito().getUrl(),
-        configuration.getCognito().getClientId(),
-        configuration.getCognito().getRedirectUri(),
-        configuration.getCognito().getLogoutUri()
-    );
-
     serverResponse
         .addCookie(buildCookie(ApplicationConstant.ACCESS_TOKEN, StringUtils.EMPTY, -3600));
     serverResponse
@@ -120,7 +107,7 @@ public class CognitoController {
 
     serverResponse
         .getHeaders()
-        .add(LOCATION, famUrl);
+        .add(LOCATION, configuration.getCognito().getLogoutUri());
     log.info("Executing logout");
     return Mono.empty();
   }
