@@ -363,6 +363,7 @@ watch([detailsData], () => {
     <div class="grouping-06">
       <cds-button
         v-if="id > 0"
+        :id="'deleteAddress_' + id"
         kind="danger--tertiary"
         @click.prevent="emit('remove', id)"
       >

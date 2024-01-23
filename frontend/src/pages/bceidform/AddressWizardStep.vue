@@ -70,10 +70,20 @@ const fetch = () => {
 watch(() => props.active, fetch);
 fetch();
 
+let lastAddressId = -1; // The first addressId to be generated minus 1.
+const getNewAddressId = () => ++lastAddressId;
+
+// Associate each address to a unique id, permanent for the lifecycle of this component.
+const addressesIdMap = new Map<Address, number>(
+  formData.location.addresses.map((address) => [address, getNewAddressId()]),
+);
+
 //New address being added
 const otherAddresses = computed(() => formData.location.addresses.slice(1));
 const addAddress = () => {
   const newLength = formData.location.addresses.push(emptyAddress());
+  const address = formData.location.addresses[newLength - 1];
+  addressesIdMap.set(address, getNewAddressId());
   const focusIndex = newLength - 1;
   safeSetFocusedComponent(`name_${focusIndex}`);
   return newLength;
@@ -96,18 +106,23 @@ watch([validation], () => emit("valid", checkValid()));
 emit("valid", false);
 
 const updateValidState = (index: number, valid: boolean) => {
-  if (validation[index] !== valid) {
-    validation[index] = valid;
+  const addressId = addressesIdMap.get(formData.location.addresses[index]);
+  if (validation[addressId] !== valid) {
+    validation[addressId] = valid;
   }
 };
 
 const uniqueValues = isUniqueDescriptive();
 
 const removeAddress = (index: number) => () => {
+  const address = formData.location.addresses[index];
+  const addressId = addressesIdMap.get(address);
+  addressesIdMap.delete(address);
+
   updateAddress(undefined, index);
-  delete validation[index];
-  uniqueValues.remove("Address", index + "");
-  uniqueValues.remove("Names", index + "");
+  delete validation[addressId];
+  uniqueValues.remove("Address", addressId + "");
+  uniqueValues.remove("Names", addressId + "");
   bus.emit({
     active: false,
     message: "",
@@ -154,8 +169,8 @@ onMounted(() => safeSetFocusedComponent("addr_0", 800));
       <h5>Additional address</h5>
     </div>
     <address-group-component
-      :key="index + 1"
-      :id="index + 1"
+      :key="addressesIdMap.get(address)"
+      :id="addressesIdMap.get(address)"
       v-bind:model-value="address"
       :countryList="countryList"
       :validations="[uniqueValues.add]"
