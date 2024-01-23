@@ -47,6 +47,11 @@ public interface ForestClientLocationMapper extends
       qualifiedByName = "InitialRevisionQualifier"
   )
   @Mapping(
+      target = "hdbsCompanyCode",
+      source = "clientNumber",
+      qualifiedByName = "EmptySpaceQualifier"
+  )
+  @Mapping(
       source = "createdBy",
       target = "createdBy",
       qualifiedByName = "UserIdSizeQualifier"
