@@ -229,19 +229,22 @@ const tagColor = (status: string) => {
 };
 
 const matchingData = computed(() => {
+  const { corporationName, incorporationNumber, contact, location } = data.value.matchers;
   let results = [];
-  if (data.value.matchers.corporationName) {
-    results = [...results, ...data.value.matchers.corporationName.split(",")];
+
+  if (corporationName) {
+    results.push(...corporationName.split(","));
   }
-  if (data.value.matchers.incorporationNumber) {
-    results = [
-      ...results,
-      ...data.value.matchers.incorporationNumber.split(","),
-    ];
+  if (incorporationNumber) {
+    results.push(...incorporationNumber.split(","));
   }
-  if (data.value.matchers.contact) {
-    results = [...results, ...data.value.matchers.contact.split(",")];
+  if (contact) {
+    results.push(...contact.split(","));
   }
+  if (location) {
+    results.push(...location.split(","));
+  }
+
   return results;
 });
 
