@@ -49,6 +49,7 @@ class ForestClientLocationMapperTest {
           .clientLocnCode("00")
           .clientLocnName("BILLING ADDRESS")
           .addressOne("2975 Jutland Road")
+          .hdbsCompanyCode(" ")
           .city("VICTORIA")
           .province("BC")
           .postalCode("V8V8V8")
