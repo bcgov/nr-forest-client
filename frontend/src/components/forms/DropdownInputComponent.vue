@@ -166,6 +166,7 @@ revalidateBus.on(() => validateInput(selectedValue.value));
         :invalid="error ? true : false"
         :invalidText="error"
         @cds-combo-box-selected="selectItem"
+        @blur="(event: any) => validateInput(event.target.value)"
         :data-focus="id"
         :data-scroll="id"
         v-shadow="3"

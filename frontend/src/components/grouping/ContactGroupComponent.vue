@@ -226,6 +226,7 @@ const logoutAndRedirect = () => {
       :requiredLabel="requiredLabel"
       @update:selected-value="updateContactType($event)"
       @empty="validation.contactType = !$event"
+      @error="validation.contactType = !$event"
     />
 
     <multiselect-input-component
@@ -245,6 +246,7 @@ const logoutAndRedirect = () => {
         selectedValue.locationNames = nameTypesToCodeDescr($event)
       "
       @empty="validation.locationNames = !$event"
+      @error="validation.locationNames = !$event"
     />
 
     <div class="grouping-06">
