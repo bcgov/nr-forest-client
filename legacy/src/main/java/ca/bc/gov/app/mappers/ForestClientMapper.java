@@ -54,7 +54,7 @@ public interface ForestClientMapper extends
   @Override
   @Mapping(
       source = "updatedByUnit",
-      target= "orgUnit",
+      target = "orgUnit",
       qualifiedByName = "InitialRevisionQualifier"
   )
   @Mapping(
