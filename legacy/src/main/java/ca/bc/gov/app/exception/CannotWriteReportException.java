@@ -7,6 +7,6 @@ import org.springframework.web.server.ResponseStatusException;
 @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
 public class CannotWriteReportException extends ResponseStatusException {
   public CannotWriteReportException(String errorMessage) {
-    super(HttpStatus.UNPROCESSABLE_ENTITY,errorMessage);
+    super(HttpStatus.UNPROCESSABLE_ENTITY, errorMessage);
   }
 }

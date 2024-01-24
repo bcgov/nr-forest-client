@@ -7,6 +7,6 @@ import org.springframework.web.server.ResponseStatusException;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class NoValueFoundException extends ResponseStatusException {
   public NoValueFoundException(String errorMessage) {
-    super(HttpStatus.NOT_FOUND,"No value found for " + errorMessage);
+    super(HttpStatus.NOT_FOUND, "No value found for " + errorMessage);
   }
 }
