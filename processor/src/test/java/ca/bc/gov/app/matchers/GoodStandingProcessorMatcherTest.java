@@ -65,22 +65,22 @@ class GoodStandingProcessorMatcherTest {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto(1,null, null,null, StringUtils.EMPTY,null,null),
+                new SubmissionInformationDto(1,null, null,null, StringUtils.EMPTY,null),
                 false,
                 new MatcherResult("goodStanding", "Value not found")
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,null, null,null, null,null,null),
+                new SubmissionInformationDto(1,null, null,null, null,null),
                 false,
                 new MatcherResult("goodStanding", "Value not found")
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,null, null,null, "N",null,null),
+                new SubmissionInformationDto(1,null, null,null, "N",null),
                 false,
                 new MatcherResult("goodStanding", "Client not in good standing")
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,null, null,null, "Y",null,null),
+                new SubmissionInformationDto(1,null, null,null, "Y",null),
                 true,
                 null
             )

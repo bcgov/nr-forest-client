@@ -3,23 +3,28 @@ package ca.bc.gov.app.controller.client;
 import static ca.bc.gov.app.TestConstants.REGISTERED_BUSINESS_SUBMISSION_DTO;
 import static ca.bc.gov.app.TestConstants.UNREGISTERED_BUSINESS_SUBMISSION_BROKEN_DTO;
 import static ca.bc.gov.app.TestConstants.UNREGISTERED_BUSINESS_SUBMISSION_DTO;
+import static ca.bc.gov.app.TestConstants.UNREGISTERED_BUSINESS_SUBMISSION_MULTI_DTO;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.submissions.SubmissionApproveRejectDto;
+import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
+import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
 import java.time.Duration;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -44,6 +49,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.BodyContentSpec;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 @DisplayName("Integrated Test | FSA Client Submission Controller")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -52,6 +58,8 @@ class ClientSubmissionControllerIntegrationTest
 
   @Autowired
   protected WebTestClient client;
+  @Autowired
+  private SubmissionContactRepository contactRepository;
 
   @RegisterExtension
   static WireMockExtension bcRegistryStub = WireMockExtension
@@ -269,6 +277,52 @@ class ClientSubmissionControllerIntegrationTest
         .hasSize(1)
         .contains(new ValidationError("businessInformation.businessName",
             "Business name must be composed of first and last name"));
+  }
+
+  @Test
+  @DisplayName("Submit Unregistered Business client with multiple contacts")
+  @Order(8)
+  void shouldSubmitMultipleContacts() {
+    client
+        .post()
+        .uri("/api/clients/submissions")
+        .header(ApplicationConstant.USERID_HEADER, "jamesbaxter")
+        .header(ApplicationConstant.USERMAIL_HEADER, "jamesbaxter@mail.ca")
+        .header(ApplicationConstant.USERNAME_HEADER, "James Baxter")
+        .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_MULTI_DTO), ClientSubmissionDto.class)
+        .exchange()
+        .expectStatus().isCreated()
+        .expectHeader().location("/api/clients/submissions/3")
+        .expectHeader().valueEquals("x-sub-id", "3")
+        .expectBody().isEmpty();
+
+
+    contactRepository
+        .findAll()
+        .filter(contact -> contact.getSubmissionId().intValue() == 3)
+        .sort(Comparator.comparing(SubmissionContactEntity::getContactTypeCode))
+        .as(StepVerifier::create)
+        .assertNext(contact ->
+            assertThat(contact)
+                .hasFieldOrPropertyWithValue("firstName", "James")
+                .hasFieldOrPropertyWithValue("lastName", "Baxter")
+                .hasFieldOrPropertyWithValue("emailAddress", "jbaxter@007.com")
+                .hasFieldOrPropertyWithValue("businessPhoneNumber","9826543210")
+                .hasFieldOrPropertyWithValue("userId", null)
+                .hasFieldOrPropertyWithValue("contactTypeCode","BL")
+        )
+        .assertNext(contact ->
+            assertThat(contact)
+                .hasFieldOrPropertyWithValue("firstName", "James")
+                .hasFieldOrPropertyWithValue("lastName", "Bond")
+                .hasFieldOrPropertyWithValue("emailAddress", "bond_james_bond@007.com")
+                .hasFieldOrPropertyWithValue("businessPhoneNumber","9876543210")
+                .hasFieldOrPropertyWithValue("userId", "jamesbaxter")
+                .hasFieldOrPropertyWithValue("contactTypeCode","LP")
+        )
+        .verifyComplete();
+
+
   }
 
   private static Stream<Arguments> listValues() {
