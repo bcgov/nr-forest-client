@@ -25,10 +25,8 @@ class ClientSubmissionLoadingServiceTest {
       mock(SubmissionDetailRepository.class);
   private final SubmissionContactRepository contactRepository =
       mock(SubmissionContactRepository.class);
-  private final SubmissionLocationRepository locationRepository =
-	      mock(SubmissionLocationRepository.class);
   private final ClientSubmissionLoadingService service = new ClientSubmissionLoadingService(
-      submissionDetailRepository, contactRepository, locationRepository);
+      submissionDetailRepository, contactRepository);
 
 
   @Test

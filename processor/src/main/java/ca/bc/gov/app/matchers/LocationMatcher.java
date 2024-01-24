@@ -45,7 +45,8 @@ public class LocationMatcher implements ProcessorMatcher {
 		
 		log.info("{} :: Validating {}", name(), submission.corporationName());
 
-		return locationRepository.findBySubmissionId(submission.submissionId())
+		return locationRepository
+				.findBySubmissionId(submission.submissionId())
 				.flatMap(location -> legacyClientApi
 				.get()
 				.uri(

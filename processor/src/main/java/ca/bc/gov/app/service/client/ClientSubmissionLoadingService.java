@@ -4,22 +4,14 @@ import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.EmailRequestDto;
 import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.entity.SubmissionLocationEntity;
 import ca.bc.gov.app.entity.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
-import ca.bc.gov.app.repository.SubmissionLocationRepository;
-
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
@@ -33,31 +25,13 @@ public class ClientSubmissionLoadingService {
 
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionContactRepository contactRepository;
-  private final SubmissionLocationRepository locationRepository;
 
   /**
    * Load the submission details to be processed later on
    */
   public Mono<MessagingWrapper<SubmissionInformationDto>> loadSubmissionDetails(
-	Integer submissionId) {
+      Integer submissionId) {
 
-	Flux<SubmissionLocationEntity> locations = locationRepository.findBySubmissionId(submissionId);
-	StringBuilder locationsAsCsvBuilder = new StringBuilder();
-	
-	if (locations != null) {
-		locationsAsCsvBuilder.append(
-								locations
-								.map(submissionLocation -> 
-										submissionLocation.getStreetAddress() 
-										+ ", " 
-										+ submissionLocation.getPostalCode())
-				    			.collect(Collectors.joining(","))
-				    			.block()
-			    			);
-	}
-	    
-	String locationsAsCsv = locationsAsCsvBuilder.toString();
-	
     return
         submissionDetailRepository
             .findBySubmissionId(submissionId)
@@ -69,8 +43,7 @@ public class ClientSubmissionLoadingService {
                     details.getBirthdate(),
                     details.getIncorporationNumber(),
                     details.getGoodStandingInd(),
-                    details.getClientTypeCode(),
-                    locationsAsCsv
+                    details.getClientTypeCode()
                 )
             )
 
