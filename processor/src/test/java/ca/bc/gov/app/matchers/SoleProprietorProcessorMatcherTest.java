@@ -82,21 +82,21 @@ class SoleProprietorProcessorMatcherTest {
         Stream.of(
             Arguments.of(
                 new SubmissionInformationDto(1,"James Frank", LocalDate.of(2023, 4, 5), null, null,
-                    "USP", null),
+                    "USP"),
                 true,
                 null,
                 "[]"
             ),
             Arguments.of(
                 new SubmissionInformationDto(1,"Marco Polo", LocalDate.of(2023, 9, 12), null, null,
-                    "RSP", null),
+                    "RSP"),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000")),
                 "[{\"clientNumber\":\"00000000\"}]"
             ),
             Arguments.of(
                 new SubmissionInformationDto(1,"Lucca DeBiaggio", LocalDate.of(2023, 10, 11), null,
-                    null, "USP", null),
+                    null, "USP"),
                 false,
                 new MatcherResult("corporationName", String.join(",", "00000000", "00000001")),
                 "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"

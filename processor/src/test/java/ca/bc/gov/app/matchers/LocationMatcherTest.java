@@ -9,6 +9,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import ca.bc.gov.app.dto.MatcherResult;
@@ -94,19 +96,19 @@ class LocationMatcherTest {
   private static Stream<Arguments> location() {
 	  return Stream.of(
 		        Arguments.of(
-		            new SubmissionInformationDto(1, null, null, null, null, null, "123 Fake St, A1B2C3"),
+		            new SubmissionInformationDto(1, null, null, null, null, null),
 		            true,
 		            null,
 		            "[]"
 		        ),
 		        Arguments.of(
-		        	new SubmissionInformationDto(1, null, null, null, null, null, "712 Maria Avenue, V9B1W7"),
+		        	new SubmissionInformationDto(1, null, null, null, null, null),
 		            false,
 		            new MatcherResult("location", String.join(",", "00000000")),
 		            "[{\"clientNumber\":\"00000000\"}]"
 		        ),
 		        Arguments.of(
-		            new SubmissionInformationDto(1, null, null, null, null, null, "123 Fort St, 12345-1251"),
+		            new SubmissionInformationDto(1, null, null, null, null, null),
 		            false,
 		            new MatcherResult("location", String.join(",", "00000000", "00000001")),
 		            "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"
