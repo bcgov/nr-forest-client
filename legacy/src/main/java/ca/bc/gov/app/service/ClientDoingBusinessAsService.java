@@ -23,7 +23,9 @@ public class ClientDoingBusinessAsService {
 
   private final R2dbcEntityOperations entityTemplate;
   private final ClientDoingBusinessAsRepository repository;
-  private final AbstractForestClientMapper<ClientDoingBusinessAsDto, ClientDoingBusinessAsEntity> mapper;
+  private final AbstractForestClientMapper<
+                  ClientDoingBusinessAsDto, 
+                  ClientDoingBusinessAsEntity> mapper;
 
   public Mono<String> saveAndGetIndex(ClientDoingBusinessAsDto dto) {
     return

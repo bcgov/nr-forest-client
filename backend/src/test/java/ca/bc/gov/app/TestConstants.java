@@ -487,6 +487,61 @@ public class TestConstants {
           )
       );
 
+  public static final ClientSubmissionDto UNREGISTERED_BUSINESS_SUBMISSION_MULTI_DTO =
+      new ClientSubmissionDto(
+          new ClientBusinessInformationDto(
+              "",
+              "James Baxter",
+              "U",
+              "I",
+              "",
+              "SP",
+              LocalDate.of(1975, 1, 31)
+          ),
+          new ClientLocationDto(
+              List.of(
+                  new ClientAddressDto(
+                      "3570 S Las Vegas Blvd",
+                      new ClientValueTextDto("US", ""),
+                      new ClientValueTextDto("NV", ""),
+                      "Las Vegas", "89109",
+                      0,
+                      "Billing Address"
+                  )
+              ),
+              List.of(
+                  new ClientContactDto(
+                      new ClientValueTextDto("LP", "LP"),
+                      "James",
+                      "Bond",
+                      "9876543210",
+                      "bond_james_bond@007.com",
+                      0,
+                      List.of(
+                          new ClientValueTextDto(
+                              "0",
+                              "Billing Address"
+                          )
+                      )
+                  ),
+                  new ClientContactDto(
+                      new ClientValueTextDto("BL", "BL"),
+                      "James",
+                      "Baxter",
+                      "9826543210",
+                      "jbaxter@007.com",
+                      1,
+                      List.of(
+                          new ClientValueTextDto(
+                              "0",
+                              "Billing Address"
+                          )
+                      )
+                  )
+              )
+          )
+      );
+
   public static final ClientSubmissionDto UNREGISTERED_BUSINESS_SUBMISSION_BROKEN_DTO =
       new ClientSubmissionDto(
           new ClientBusinessInformationDto(
