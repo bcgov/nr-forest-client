@@ -273,7 +273,7 @@ const renderListItem = (label, clientNumber) => {
     finalLabel = "Partial match on business name";
   }
   else {
-    finalLabel = "Partial match on " + convertFieldNameToSentence(label).toUpperCase() ;
+    finalLabel = "Partial match on " + convertFieldNameToSentence(label).toLowerCase() ;
   }
 
   return (
