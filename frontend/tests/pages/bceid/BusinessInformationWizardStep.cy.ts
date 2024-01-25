@@ -101,7 +101,7 @@ describe('<BusinessInformationWizardStep />', () => {
     cy.contains("cds-inline-notification", "Corporation").should("be.visible");
   });
 
-  it('shows "Unknown sole proprietor"', () => {
+  const showsUnknownSoleProprietor = () => {
     cy.mount(BusinessInformationWizardStep, {
       props: {
         data: {
@@ -144,5 +144,17 @@ describe('<BusinessInformationWizardStep />', () => {
       .shadow()
       .contains("Unknown sole proprietor")
       .should("be.visible");
+  };
+
+  it('shows "Unknown sole proprietor"', () => {
+    showsUnknownSoleProprietor();
+  });
+
+  it('clears the error when Type of business changes', () => {
+    showsUnknownSoleProprietor();
+
+    cy.get("#businessTyperbU").click();
+
+    cy.get("cds-inline-notification").should("not.exist");
   });
 });
