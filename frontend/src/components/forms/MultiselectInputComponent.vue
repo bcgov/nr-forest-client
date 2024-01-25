@@ -134,6 +134,7 @@ revalidateBus.on(() => validateInput(selectedValue.value));
           :invalid-text="error"
           filterable
           @cds-multi-select-selected="selectItems"
+          @blur="(event: any) => validateInput(event.target.value)"
           :data-focus="id"
           :data-scroll="id"
         >

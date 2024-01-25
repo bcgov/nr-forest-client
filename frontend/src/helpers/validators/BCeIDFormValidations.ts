@@ -83,7 +83,7 @@ formFieldValidations["location.contacts.*.locationNames"] = [
   isNotEmptyArray("You must select at least one location"),
 ];
 formFieldValidations["location.contacts.*.contactType.text"] = [
-  isNotEmpty("You must select at least one contact type"),
+  isNotEmpty("You must select a role."),
 ];
 formFieldValidations["location.contacts.*.firstName"] = [
   isMinSize("Enter a name")(1),
