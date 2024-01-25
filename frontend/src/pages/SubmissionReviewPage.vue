@@ -395,7 +395,7 @@ const renderListItem = (label, clientNumber) => {
             Review their information in the Client Management System to determine if this submission should be approved or rejected:
           </p>
           <ul class="bulleted-list-disc body-compact-01">
-            <li v-for="(matcher, label) in data.matchers" :key="label"
+            <li v-for="(matcher, label) in data.matchers" :key="matcher"
               v-html="getListItemContent(matcher, label)">
             </li>
           </ul>
