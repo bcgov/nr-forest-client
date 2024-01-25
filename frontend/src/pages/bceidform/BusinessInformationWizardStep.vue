@@ -252,6 +252,13 @@ watch([selectedOption], () => {
   }
 });
 
+watch(
+  () => formData.value.businessInformation.businessName,
+  () => {
+    toggleErrorMessages();
+  },
+);
+
 watch(showBirthDate, (value) => {
   if (value) {
     validation.birthdate = !!formData.value.businessInformation.birthdate;
