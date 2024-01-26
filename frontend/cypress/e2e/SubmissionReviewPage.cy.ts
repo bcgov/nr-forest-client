@@ -164,14 +164,16 @@ describe("Submission Review Page", () => {
     }
   });
 
+  const approveLabel = "Approve submission";
+  const rejectLabel = "Reject submission";
   const actions = [
     {
       action: "approve",
-      buttonLabel: "Approve submission",
+      buttonLabel: approveLabel,
     },
     {
       action: "reject",
-      buttonLabel: "Reject submission",
+      buttonLabel: rejectLabel,
     },
   ];
   actions.forEach(({ action, buttonLabel }) => {
@@ -226,11 +228,27 @@ describe("Submission Review Page", () => {
         it("should re-enable the buttons", () => {
           cy.wait("@action");
 
-          // all approve/reject buttons are enabled again.
-          actions.forEach(({ buttonLabel }) => {
-            cy.contains("cds-button", buttonLabel).should("not.have.attr", "disabled");
-            cy.contains("cds-modal-footer-button", buttonLabel).should("not.have.attr", "disabled");
-          });
+          // the approve/reject buttons are enabled again
+          cy.contains("cds-button", approveLabel).should("not.have.attr", "disabled");
+          cy.contains("cds-modal-footer-button", approveLabel).should("not.have.attr", "disabled");
+          cy.contains("cds-button", rejectLabel).should("not.have.attr", "disabled");
+
+          /*
+          For the Reject in the modal, it depends if the reason input is alread filled.
+          */
+          if (action === "reject") {
+            // Value is not empty
+            cy.get("#reject_reason_id").should("not.have.value", "");
+
+            // Thus button was properly re-enabled
+            cy.contains("cds-modal-footer-button", rejectLabel).should("not.have.attr", "disabled");
+          } else {
+            // Value is empty
+            cy.get("#reject_reason_id").should("have.value", "");
+
+            // Thus button remains disabled
+            cy.contains("cds-modal-footer-button", rejectLabel).should("have.attr", "disabled");
+          }
         });
       });
     });
