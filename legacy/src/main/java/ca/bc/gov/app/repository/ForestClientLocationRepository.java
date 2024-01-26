@@ -15,10 +15,12 @@ public interface ForestClientLocationRepository
       select *
       from the.client_location
       where
-      upper(address_1) like upper(concat(:address, '%'))
-      or upper(address_2) like upper(concat(:address, '%'))
-      or upper(address_3) like upper(concat(:address, '%'))
-      or upper(postal_code) = upper(replace(:postalCode, ' ', ''))""")
+      (
+          upper(address_1) like upper(concat(:address, '%'))
+          or upper(address_2) like upper(concat(:address, '%'))
+          or upper(address_3) like upper(concat(:address, '%'))
+      )
+      and upper(postal_code) = upper(replace(:postalCode, ' ', ''))""")
   Flux<ForestClientLocationEntity> matchBy(String address, String postalCode);
 
 }
