@@ -130,11 +130,16 @@ const rejectionReasonMessage = computed(() => {
   return [];
 });
 
+const submitDisabled = ref(false);
+
 // Submit the form changes to the backend
 const submit = (approved: boolean) => {
+  if (submitDisabled.value) return;
+  submitDisabled.value = true;
+
   rejectModal.value = false;
   approveModal.value = false;
-  const { response, error } = usePost(
+  const { response, error, loading } = usePost(
     `/api/clients/submissions/${id.value}`,
     {
       approved,
@@ -180,6 +185,10 @@ const submit = (approved: boolean) => {
       };
       toastBus.emit(toastNotification);
     }
+  });
+
+  watch(loading, (value) => {
+    submitDisabled.value = value;
   });
 };
 
@@ -569,12 +578,12 @@ const renderListItem = (label, clientNumber) => {
         </cds-accordion>
 
         <div class="grouping-15" v-if="data.submissionType === 'Review new client' && (data.submissionStatus !== 'Approved' && data.submissionStatus !== 'Rejected')">
-          <cds-button kind="primary" @click="approveModal = !approveModal">
+          <cds-button kind="primary" @click="approveModal = !approveModal" :disabled="submitDisabled">
             <span>Approve submission</span>
             <Check16 slot="icon" />
           </cds-button>
           <span class="spacer" v-if="!isSmallScreen && !isMediumScreen"></span>
-          <cds-button kind="danger" @click="rejectModal = !rejectModal">
+          <cds-button kind="danger" @click="rejectModal = !rejectModal" :disabled="submitDisabled">
             <span>Reject submission</span>
             <Error16 slot="icon" />
           </cds-button>
@@ -608,6 +617,7 @@ const renderListItem = (label, clientNumber) => {
           <cds-modal-footer-button 
             kind="primary" 
             @click="submit(true)"
+            :disabled="submitDisabled"
             class="cds--modal-submit-btn">
             <span>Approve submission</span>
             <Check16 slot="icon" />
@@ -663,7 +673,7 @@ const renderListItem = (label, clientNumber) => {
           <cds-modal-footer-button 
             kind="danger"
             @click="submit(false)"
-            :disabled="rejectYesDisabled"
+            :disabled="rejectYesDisabled || submitDisabled"
             class="cds--modal-close-btn">
             <span>Reject submission</span>
             <Error16 slot="icon" />
