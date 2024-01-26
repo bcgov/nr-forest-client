@@ -164,6 +164,78 @@ describe("Submission Review Page", () => {
     }
   });
 
+  const actions = [
+    {
+      action: "approve",
+      buttonLabel: "Approve submission",
+    },
+    {
+      action: "reject",
+      buttonLabel: "Reject submission",
+    },
+  ];
+  actions.forEach(({ action, buttonLabel }) => {
+    const testDisable = (success: boolean) => {
+      // Load the fixture for the details
+      cy.intercept("GET", "api/clients/submissions/*", {
+        fixture: "test-case-review-goodstanding.json",
+      }).as("loadSubmission");
+
+      const statusCode = success ? 202 : 400;
+      cy.intercept("POST", "api/clients/submissions/*", (req) => {
+        req.reply({
+          statusCode,
+          delay: 500, // allow some time to make some assertions before the response.
+        });
+      }).as("action");
+
+      // Click any submission
+      cy.get('[sort-id="0"] > :nth-child(2)').click();
+
+      cy.wait("@loadSubmission").its("response.body.submissionStatus").should("eq", "New");
+
+      cy.get('[data-testid="display-row-icon"]')
+        .should("exist")
+        .should("have.prop", "tagName", "svg")
+        .should("have.attr", "alt", "Review new client");
+
+      cy.contains("cds-button", buttonLabel).click();
+
+      if (action === "reject") {
+        cy.get("#reject_reason_id").click();
+        cy.get("[data-id='goodstanding']").click();
+      }
+
+      cy.contains("cds-modal-footer-button", buttonLabel).click();
+
+      // all approve/reject buttons are disabled, including the ones in the modal.
+      actions.forEach(({ buttonLabel }) => {
+        cy.contains("cds-button", buttonLabel).should("have.attr", "disabled");
+        cy.contains("cds-modal-footer-button", buttonLabel).should("have.attr", "disabled");
+      });
+    };
+
+    describe(`when the user clicks to ${action} the submission`, () => {
+      it("should disable the approve/reject buttons", () => {
+        testDisable(true);
+      });
+      describe("when the action fails", () => {
+        beforeEach(() => {
+          testDisable(false);
+        });
+        it("should re-enable the buttons", () => {
+          cy.wait("@action");
+
+          // all approve/reject buttons are enabled again.
+          actions.forEach(({ buttonLabel }) => {
+            cy.contains("cds-button", buttonLabel).should("not.have.attr", "disabled");
+            cy.contains("cds-modal-footer-button", buttonLabel).should("not.have.attr", "disabled");
+          });
+        });
+      });
+    });
+  });
+
   afterEach(() => {
     //Go to the submission list page
     cy.visit("/submissions");
