@@ -395,8 +395,10 @@ const renderListItem = (label, clientNumber) => {
             Review their information in the Client Management System to determine if this submission should be approved or rejected:
           </p>
           <ul class="bulleted-list-disc body-compact-01">
-            <li v-for="(matcher, label) in data.matchers" :key="matcher"
-              v-html="getListItemContent(matcher, label)">
+            <!-- The content here is sanitized using vue-3-sanitize, and it is safe. -->
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <li v-for="(matcher, label) in data.matchers" :key="matcher" 
+                v-dompurify-html="getListItemContent(matcher, label)">
             </li>
           </ul>
         </div>    
