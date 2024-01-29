@@ -31,6 +31,7 @@ import Review16 from "@carbon/icons-vue/es/data--view--alt/32";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 // @ts-ignore
 import Error16 from "@carbon/icons-vue/es/error--outline/16";
+import { convertFieldNameToSentence } from "@/services/ForestClientService";
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 
@@ -129,11 +130,16 @@ const rejectionReasonMessage = computed(() => {
   return [];
 });
 
+const submitDisabled = ref(false);
+
 // Submit the form changes to the backend
 const submit = (approved: boolean) => {
+  if (submitDisabled.value) return;
+  submitDisabled.value = true;
+
   rejectModal.value = false;
   approveModal.value = false;
-  const { response, error } = usePost(
+  const { response, error, loading } = usePost(
     `/api/clients/submissions/${id.value}`,
     {
       approved,
@@ -179,6 +185,10 @@ const submit = (approved: boolean) => {
       };
       toastBus.emit(toastNotification);
     }
+  });
+
+  watch(loading, (value) => {
+    submitDisabled.value = value;
   });
 };
 
@@ -248,10 +258,41 @@ const matchingData = computed(() => {
   return results;
 });
 
-const getLegacyUrl = ref((duplicatedClient) => {
+const getLegacyUrl = (duplicatedClient) => {
   const encodedClientNumber = encodeURIComponent(duplicatedClient.trim());
   return `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${encodedClientNumber}`;
+};
+
+const getListItemContent = ref((matcher, label) => {
+  if (matcher) {
+    const clients = matcher.split(", ");
+    return clients
+      .map((client) => renderListItem(label, client.trim()))
+      .join("");
+  }
+  return "";
 });
+
+const renderListItem = (label, clientNumber) => {
+  let finalLabel = "";
+  if (label === 'contact' || label === 'location') {
+    finalLabel = "Matching one or more " + label + "s";
+  }
+  else if (label === 'corporationName') {
+    finalLabel = "Partial match on business name";
+  }
+  else {
+    finalLabel = "Partial match on " + convertFieldNameToSentence(label).toLowerCase() ;
+  }
+
+  return (
+    finalLabel +
+    " - Client number: " +
+    '<a target="_blank" href="' + getLegacyUrl(clientNumber) +'">' +
+    clientNumber +
+    "</a>"
+  );
+};
 </script>
 
 <template>
@@ -363,29 +404,10 @@ const getLegacyUrl = ref((duplicatedClient) => {
             Review their information in the Client Management System to determine if this submission should be approved or rejected:
           </p>
           <ul class="bulleted-list-disc body-compact-01">
-            <li 
-              v-for="duplicatedClient in data.matchers.corporationName?.split(',')" 
-              :key="duplicatedClient">
-                Partial match on business name - Client number: 
-                <a target="_blank" :href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
-            </li>
-            <li 
-              v-for="duplicatedClient in data.matchers.incorporationNumber?.split(',')" 
-              :key="duplicatedClient">
-                Partial match on incorporation number - Client number: 
-                <a target="_blank" :href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
-            </li>
-            <li 
-              v-for="duplicatedClient in data.matchers.contact?.split(',')" 
-              :key="duplicatedClient">
-                Matching one or more contacts - Client number: 
-                <a target="_blank" :href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
-            </li>
-            <li 
-              v-for="duplicatedClient in data.matchers.location?.split(',')" 
-              :key="duplicatedClient">
-                Matching one or more locations - Client number: 
-                <a target="_blank" :href="getLegacyUrl(duplicatedClient.trim())">{{duplicatedClient.trim()}}</a>
+            <!-- The content here is sanitized using vue-3-sanitize, and it is safe. -->
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <li v-for="(matcher, label) in data.matchers" :key="matcher" 
+                v-dompurify-html="getListItemContent(matcher, label)">
             </li>
           </ul>
         </div>    
@@ -556,12 +578,12 @@ const getLegacyUrl = ref((duplicatedClient) => {
         </cds-accordion>
 
         <div class="grouping-15" v-if="data.submissionType === 'Review new client' && (data.submissionStatus !== 'Approved' && data.submissionStatus !== 'Rejected')">
-          <cds-button kind="primary" @click="approveModal = !approveModal">
+          <cds-button kind="primary" @click="approveModal = !approveModal" :disabled="submitDisabled">
             <span>Approve submission</span>
             <Check16 slot="icon" />
           </cds-button>
           <span class="spacer" v-if="!isSmallScreen && !isMediumScreen"></span>
-          <cds-button kind="danger" @click="rejectModal = !rejectModal">
+          <cds-button kind="danger" @click="rejectModal = !rejectModal" :disabled="submitDisabled">
             <span>Reject submission</span>
             <Error16 slot="icon" />
           </cds-button>
@@ -595,6 +617,7 @@ const getLegacyUrl = ref((duplicatedClient) => {
           <cds-modal-footer-button 
             kind="primary" 
             @click="submit(true)"
+            :disabled="submitDisabled"
             class="cds--modal-submit-btn">
             <span>Approve submission</span>
             <Check16 slot="icon" />
@@ -650,7 +673,7 @@ const getLegacyUrl = ref((duplicatedClient) => {
           <cds-modal-footer-button 
             kind="danger"
             @click="submit(false)"
-            :disabled="rejectYesDisabled"
+            :disabled="rejectYesDisabled || submitDisabled"
             class="cds--modal-close-btn">
             <span>Reject submission</span>
             <Error16 slot="icon" />

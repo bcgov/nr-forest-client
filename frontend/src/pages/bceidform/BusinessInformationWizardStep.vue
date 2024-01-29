@@ -218,8 +218,10 @@ watch([detailsData], () => {
   }
 });
 
-// -- Unregistered Proprietorship
 watch([selectedOption], () => {
+  toggleErrorMessages();
+
+  // Unregistered Proprietorship
   if (selectedOption.value === BusinessTypeEnum.U) {
     const fromName = `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`;
 
@@ -242,15 +244,20 @@ watch([selectedOption], () => {
         generalErrorBus.emit(validationError.value.response?.data ?? "")
       }  
     });
-
-
   } else {
+    // Registered business
     formData.value.businessInformation.businessName = "";
     validation.business = false;
     showAutoCompleteInfo.value = true;
-    toggleErrorMessages(null, null, null);
   }
 });
+
+watch(
+  () => formData.value.businessInformation.businessName,
+  () => {
+    toggleErrorMessages();
+  },
+);
 
 watch(showBirthDate, (value) => {
   if (value) {
