@@ -503,4 +503,31 @@ public class ClientSubmissionService {
     return stringBuilder.toString();
   }
 
+  public Mono<Long> getTotalSubmissionsCount(
+      String[] requestType,
+      SubmissionStatusEnum[] requestStatus, 
+      String[] clientType, 
+      String[] name,
+      String[] updatedAt) {
+    return getClientTypes().flatMapMany(
+        clientTypes -> loadSubmissions(0, Integer.MAX_VALUE, requestType, requestStatus, updatedAt)
+            .flatMap(submission -> 
+                      loadSubmissionDetail(clientType, name, submission)
+                        .map(submissionDetail -> 
+                          new ClientListSubmissionDto(
+                              submission.getSubmissionId(),
+                              submission.getSubmissionType().getDescription(),
+                              submissionDetail.getOrganizationName(),
+                              clientTypes.getOrDefault(
+                                  submissionDetail.getClientTypeCode(),
+                                  submissionDetail.getClientTypeCode()),
+                              Optional.ofNullable(submission.getUpdatedAt())
+                                .map(date -> 
+                                  date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                                      .orElse(StringUtils.EMPTY),
+                              StringUtils.defaultString(submission.getUpdatedBy()),
+                              submission.getSubmissionStatus().getDescription()))))
+          .count();
+  }
+
 }

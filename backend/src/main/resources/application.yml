@@ -145,6 +145,8 @@ ca:
               - X-User-Name
               - x-user-businessid
               - X-User-Businessid
+              - x-total-count
+              - X-Total-Count
             methods:
               - OPTIONS
               - GET

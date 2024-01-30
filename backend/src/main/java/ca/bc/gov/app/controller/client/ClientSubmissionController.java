@@ -16,8 +16,10 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,7 +50,7 @@ public class ClientSubmissionController extends
   }
 
   @GetMapping
-  public Flux<ClientListSubmissionDto> listSubmissions(
+  public Mono<ResponseEntity<Flux<ClientListSubmissionDto>>> listSubmissions(
 
       @RequestParam(required = false, defaultValue = "0")
       int page,
@@ -77,7 +79,20 @@ public class ClientSubmissionController extends
             clientType,
             name,
             updatedAt
-        );
+        )
+        .collectList()
+        .flatMap(submissions -> clientService.getTotalSubmissionsCount(
+            requestType,
+            requestStatus,
+            clientType,
+            name,
+            updatedAt
+        )
+        .map(totalCount -> {
+          HttpHeaders headers = new HttpHeaders();
+          headers.add("x-total-count", String.valueOf(totalCount));
+          return ResponseEntity.ok().headers(headers).body(Flux.fromIterable(submissions));
+        }));
   }
 
   @PostMapping

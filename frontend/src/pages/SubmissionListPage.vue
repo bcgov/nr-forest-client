@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, watchEffect } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/data-table/index";
 import "@carbon/web-components/es/components/button/index";
@@ -40,26 +40,30 @@ const uri = computed(
       pageSize.value
     }${tableReference.value}`
 );
+
 const { response, fetch, loading } = useFetchTo(uri, tableData);
 
 // Watch for changes on the uri to fetch the new data
 watch(uri, () => {
   if (!loading.value) fetch();
 });
+
 // Update the total items on the table
 watch(
   response,
-  () =>
-    (totalItems.value = parseInt(
-      response.value.headers["x-total-count"] || "0"
-    ))
+  () => {
+    const totalCount = parseInt(response.value.headers["x-total-count"] || "0");
+    totalItems.value = totalCount;
+    console.log('Total Count:', totalCount);
+  }
 );
 
 // Update values on pagination
 const paginate = (event: any) => {
-  pageNumber.value = event.detail.page - 1;
+  pageNumber.value = event.detail.page;
   pageSize.value = event.detail.pageSize;
 };
+
 // Update the tag colors
 const tagColor = (status: string) => {
   switch (status) {
@@ -118,9 +122,7 @@ onMounted(() => {
 </script>
 
 <template>
-
   <div id="screen" class="submission-list">
-    
     <div id="title">
       <div>
         <div class="form-header-title mg-sd-25">
@@ -186,9 +188,8 @@ onMounted(() => {
       />
             
     </div>
-    <div class="paginator">
-      <cds-pagination 
-          ref="paginationReference"
+    <div class="paginator" v-if="totalItems">
+      <cds-pagination
           items-per-page-text="Submissions per page"        
           :page-size="pageSize" 
           :total-items="totalItems"
@@ -199,7 +200,7 @@ onMounted(() => {
             <cds-select-item :value="30">30</cds-select-item>
             <cds-select-item :value="40">40</cds-select-item>
             <cds-select-item :value="50">50</cds-select-item>
-        </cds-pagination>
+      </cds-pagination>
     </div>
   </div>
 

@@ -18,6 +18,7 @@ public final class ApplicationConstant {
   public static final String BUSINESSID_HEADER = "x-user-businessid";
   public static final String USERMAIL_HEADER = "x-user-email";
   public static final String USERNAME_HEADER = "x-user-name";
+  public static final String X_TOTAL_COUNT = "x-total-count";
   
   public static final String INDIVIDUAL_CLIENT_TYPE_CODE = "I";
   public static final String REG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE = "RSP";
