@@ -105,7 +105,7 @@ public class ClientSubmissionService {
                                     submissionPair.getRight().getSubmissionType().getDescription(),
                                     submissionDetail.getOrganizationName(),
                                     clientTypes.getOrDefault(submissionDetail.getClientTypeCode(),
-                                        submissionDetail.getClientTypeCode()),
+                                    submissionDetail.getClientTypeCode()),
                                     Optional
                                         .ofNullable(submissionPair.getRight().getUpdatedAt())
                                         .map(date -> date.format(
@@ -113,8 +113,7 @@ public class ClientSubmissionService {
                                         .orElse(StringUtils.EMPTY),
                                     StringUtils.defaultString(
                                         submissionPair.getRight().getUpdatedBy()),
-                                    submissionPair.getRight().getSubmissionStatus()
-                                        .getDescription(),
+                                    submissionPair.getRight().getSubmissionStatus().getDescription(),
                                     submissionPair.getLeft()
                                 )
                             )

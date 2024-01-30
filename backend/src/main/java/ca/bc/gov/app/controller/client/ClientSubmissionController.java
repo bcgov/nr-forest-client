@@ -16,10 +16,8 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -81,10 +79,17 @@ public class ClientSubmissionController extends
             name,
             updatedAt
         )
-        .doOnNext(dto -> serverResponse.getHeaders()
-            .putIfAbsent(ApplicationConstant.X_TOTAL_COUNT, List.of(dto.count().toString())))
-        .doFinally(signalType -> serverResponse.getHeaders()
-                  .putIfAbsent(ApplicationConstant.X_TOTAL_COUNT, List.of("0"))
+        .doOnNext(dto -> serverResponse
+                          .getHeaders()
+                          .putIfAbsent(
+                              ApplicationConstant.X_TOTAL_COUNT, 
+                              List.of(dto.count().toString()))
+                          )
+        .doFinally(signalType -> serverResponse
+                          .getHeaders()
+                          .putIfAbsent(
+                              ApplicationConstant.X_TOTAL_COUNT, 
+                              List.of("0"))
         );
   }
 
