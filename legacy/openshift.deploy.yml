@@ -221,21 +221,3 @@ objects:
           targetPort: 9000
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
-# TODO: Remove this route once we have an updated deployer
-  - apiVersion: route.openshift.io/v1
-    kind: Route
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    spec:
-      host: ${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
-      port:
-        targetPort: 9000-tcp
-      to:
-        kind: Service
-        name: ${NAME}-${ZONE}-${COMPONENT}
-        weight: 100
-      tls:
-        termination: edge
-        insecureEdgeTerminationPolicy: Redirect
