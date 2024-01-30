@@ -69,6 +69,14 @@ public class ClientSubmissionController extends
     log.info(
         "Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, name={}, updatedAt={}",
         page, size, requestType, requestStatus, clientType, name, updatedAt);
+
+    serverResponse
+        .getHeaders()
+        .putIfAbsent(
+            ApplicationConstant.X_TOTAL_COUNT,
+            List.of("0")
+        );
+
     return clientService
         .listSubmissions(
             page,
@@ -80,16 +88,11 @@ public class ClientSubmissionController extends
             updatedAt
         )
         .doOnNext(dto -> serverResponse
-                          .getHeaders()
-                          .putIfAbsent(
-                              ApplicationConstant.X_TOTAL_COUNT, 
-                              List.of(dto.count().toString()))
-                          )
-        .doFinally(signalType -> serverResponse
-                          .getHeaders()
-                          .putIfAbsent(
-                              ApplicationConstant.X_TOTAL_COUNT, 
-                              List.of("0"))
+            .getHeaders()
+            .put(
+                ApplicationConstant.X_TOTAL_COUNT,
+                List.of(dto.count().toString())
+            )
         );
   }
 
