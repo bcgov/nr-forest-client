@@ -13,10 +13,4 @@ import org.springframework.web.reactive.function.client.WebClient;
     ForestClientDto.class
 })
 public class GlobalServiceConfiguration {
-
-  @Bean
-  public WebClient forestClientApi(LegacyConfiguration configuration) {
-    return WebClient.builder().baseUrl(configuration.getForest().getUri()).build();
-  }
-
 }
