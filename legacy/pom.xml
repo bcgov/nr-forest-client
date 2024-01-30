@@ -170,12 +170,6 @@
       <artifactId>spring-jdbc</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.wiremock</groupId>
-      <artifactId>wiremock-standalone</artifactId>
-      <version>3.3.1</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <dependencyManagement>
@@ -198,6 +192,22 @@
         <version>1.1.13</version>
       </dependency>
       <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.4.12</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>1.4.12</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jayway.jsonpath</groupId>
+        <artifactId>json-path</artifactId>
+        <version>2.9.0</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>io.micrometer</groupId>
         <artifactId>micrometer-bom</artifactId>
         <version>${micrometer.version}</version>
@@ -211,6 +221,7 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+
     </dependencies>
   </dependencyManagement>
 

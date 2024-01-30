@@ -93,10 +93,7 @@ jobs:
             ---
             Thanks for the PR!
 
-            Any successful deployments (not always required) will be available below.
-            [Backend](https://${{ env.PREFIX }}-backend.${{ env.DOMAIN }}/) available
-            [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/) available
-            [Legacy](https://${{ env.PREFIX }}-legacy.${{ env.DOMAIN }}/) available
+            Any successful deployments (not always required) will be available [here](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/)
 
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
