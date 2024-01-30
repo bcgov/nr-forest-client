@@ -23,7 +23,7 @@ parameters:
     value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
-    value: bcgov/nr-old-growth:prod-backend
+    value: bcgov/nr-forest-client-legacy:prod
   - name: ORACLEDB_KEYSTORE
     description: Oracle database keystore file  
   - name: CPU_REQUEST
@@ -138,10 +138,6 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               env:
-                - name: BACKEND_URL
-                  value: https://${NAME}-${URL_ZONE}-backend.${DOMAIN}
-                - name: FOREST_API_URL
-                  value: https://${NAME}-${URL_ZONE}-legacy.${DOMAIN}
                 - name: ORACLEDB_USER
                   valueFrom:
                     secretKeyRef:
@@ -225,20 +221,3 @@ objects:
           targetPort: 9000
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
-  - apiVersion: route.openshift.io/v1
-    kind: Route
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    spec:
-      host: ${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
-      port:
-        targetPort: 9000-tcp
-      to:
-        kind: Service
-        name: ${NAME}-${ZONE}-${COMPONENT}
-        weight: 100
-      tls:
-        termination: edge
-        insecureEdgeTerminationPolicy: Redirect
