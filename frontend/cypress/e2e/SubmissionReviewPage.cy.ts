@@ -177,13 +177,12 @@ describe("Submission Review Page", () => {
     },
   ];
   actions.forEach(({ action, buttonLabel }) => {
-    const testDisable = (success: boolean) => {
+    const testDisable = (statusCode = 202) => {
       // Load the fixture for the details
       cy.intercept("GET", "api/clients/submissions/*", {
         fixture: "test-case-review-goodstanding.json",
       }).as("loadSubmission");
 
-      const statusCode = success ? 202 : 400;
       cy.intercept("POST", "api/clients/submissions/*", (req) => {
         req.reply({
           statusCode,
@@ -219,36 +218,66 @@ describe("Submission Review Page", () => {
 
     describe(`when the user clicks to ${action} the submission`, () => {
       it("should disable the approve/reject buttons", () => {
-        testDisable(true);
+        testDisable(202);
       });
-      describe("when the action fails", () => {
-        beforeEach(() => {
-          testDisable(false);
+      describe("and the action fails", () => {
+        describe("and it's not a conflict eror", () => {
+          beforeEach(() => {
+            testDisable(400);
+          });
+          it("should re-enable the buttons", () => {
+            cy.wait("@action");
+
+            // the approve/reject buttons are enabled again
+            cy.contains("cds-button", approveLabel).should("not.have.attr", "disabled");
+            cy.contains("cds-modal-footer-button", approveLabel).should(
+              "not.have.attr",
+              "disabled",
+            );
+            cy.contains("cds-button", rejectLabel).should("not.have.attr", "disabled");
+
+            /*
+            For the Reject in the modal, it depends if the reason input is alread filled.
+            */
+            if (action === "reject") {
+              // Value is not empty
+              cy.get("#reject_reason_id").should("not.have.value", "");
+
+              // Thus button was properly re-enabled
+              cy.contains("cds-modal-footer-button", rejectLabel).should(
+                "not.have.attr",
+                "disabled",
+              );
+            } else {
+              // Value is empty
+              cy.get("#reject_reason_id").should("have.value", "");
+
+              // Thus button remains disabled
+              cy.contains("cds-modal-footer-button", rejectLabel).should("have.attr", "disabled");
+            }
+          });
         });
-        it("should re-enable the buttons", () => {
-          cy.wait("@action");
+        describe("and it is a conflict eror", () => {
+          beforeEach(() => {
+            testDisable(409);
+          });
+          it("should not re-enable the buttons", () => {
+            cy.wait("@action");
 
-          // the approve/reject buttons are enabled again
-          cy.contains("cds-button", approveLabel).should("not.have.attr", "disabled");
-          cy.contains("cds-modal-footer-button", approveLabel).should("not.have.attr", "disabled");
-          cy.contains("cds-button", rejectLabel).should("not.have.attr", "disabled");
-
-          /*
-          For the Reject in the modal, it depends if the reason input is alread filled.
-          */
-          if (action === "reject") {
-            // Value is not empty
-            cy.get("#reject_reason_id").should("not.have.value", "");
-
-            // Thus button was properly re-enabled
-            cy.contains("cds-modal-footer-button", rejectLabel).should("not.have.attr", "disabled");
-          } else {
-            // Value is empty
-            cy.get("#reject_reason_id").should("have.value", "");
-
-            // Thus button remains disabled
+            // all approve/reject buttons remain disabled.
+            cy.contains("cds-button", approveLabel).should("have.attr", "disabled");
+            cy.contains("cds-modal-footer-button", approveLabel).should("have.attr", "disabled");
+            cy.contains("cds-button", rejectLabel).should("have.attr", "disabled");
             cy.contains("cds-modal-footer-button", rejectLabel).should("have.attr", "disabled");
-          }
+          });
+          it("should display the corresponding error message", () => {
+            cy.wait("@action");
+
+            cy.get("cds-actionable-notification")
+              .shadow()
+              .contains("Submission already approved or rejected")
+              .should("be.visible");
+          });
         });
       });
     });
