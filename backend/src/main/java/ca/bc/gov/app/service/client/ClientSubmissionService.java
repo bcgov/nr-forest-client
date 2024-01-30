@@ -21,6 +21,7 @@ import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
+import ca.bc.gov.app.exception.RequestAlreadyProcessedException;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.predicates.QueryPredicates;
@@ -308,6 +309,12 @@ public class ClientSubmissionService {
     return
         submissionRepository
             .findById(id.intValue())
+            //If is not New or In Progress, return error as it was already processed
+            .filter(submission ->
+                List.of(SubmissionStatusEnum.N, SubmissionStatusEnum.P)
+                    .contains(submission.getSubmissionStatus())
+            )
+            .switchIfEmpty(Mono.error(new RequestAlreadyProcessedException()))
             .map(submission -> {
               submission.setUpdatedBy(userName);
               submission.setUpdatedAt(LocalDateTime.now());
@@ -456,7 +463,7 @@ public class ClientSubmissionService {
                   )
           );
     }
-
+    
     final Criteria finalUserQuery = userQuery;
 
     return
@@ -472,6 +479,7 @@ public class ClientSubmissionService {
                     )
                     .map(submission -> Pair.of(count, submission))
             );
+
   }
 
   private String processRejectionReason(SubmissionApproveRejectDto request) {

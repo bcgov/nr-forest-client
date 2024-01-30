@@ -44,6 +44,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.BodyContentSpec;
@@ -322,8 +323,24 @@ class ClientSubmissionControllerIntegrationTest
                 .hasFieldOrPropertyWithValue("contactTypeCode","LP")
         )
         .verifyComplete();
+  }
 
-
+  @Test
+  @DisplayName("Submission Approval / Rejection again fails")
+  @Order(9)
+  void shouldNotApproveRejectAgain(){
+    client
+        .post()
+        .uri("/api/clients/submissions/1")
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
+        .body(Mono.just(new SubmissionApproveRejectDto(true, List.of(), null)),
+            SubmissionApproveRejectDto.class)
+        .exchange()
+        .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+        .expectBody(String.class)
+        .isEqualTo("This submission was already processed");
   }
 
   private static Stream<Arguments> listValues() {
