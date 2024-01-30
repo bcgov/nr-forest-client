@@ -13,7 +13,9 @@
       },
       "response": {
         "status": 302,
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "headers": {
           "Location": "http://{{request.host}}:3000/dashboard",
           "Set-Cookie": [
@@ -35,7 +37,9 @@
       },
       "response": {
         "status": 302,
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "headers": {
           "Location": "http://{{request.host}}:3000/dashboard",
           "Set-Cookie": [
@@ -57,7 +61,9 @@
       },
       "response": {
         "status": 302,
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "headers": {
           "Location": "http://{{request.host}}:3000/dashboard",
           "Set-Cookie": [
@@ -74,7 +80,9 @@
       },
       "response": {
         "status": 302,
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "headers": {
           "Location": "http://{{request.host}}:3000/",
           "Set-Cookie": [
@@ -96,7 +104,9 @@
       },
       "response": {
         "status": 302,
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "headers": {
           "Location": "http://{{request.host}}:3000/"
         }
