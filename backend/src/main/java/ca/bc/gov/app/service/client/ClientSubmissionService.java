@@ -21,6 +21,7 @@ import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
+import ca.bc.gov.app.exception.RequestAlreadyProcessedException;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.predicates.QueryPredicates;
@@ -241,7 +242,7 @@ public class ClientSubmissionService {
                 row.get("business_phone_number", String.class),
                 row.get("email_address", String.class),
                 Arrays.stream(StringUtils.defaultString(row.get("locations", String.class))
-                    .split(", "))
+                        .split(", "))
                     .collect(Collectors.toSet()),
                 row.get("idp_user_id", String.class)
             ))
@@ -307,6 +308,12 @@ public class ClientSubmissionService {
     return
         submissionRepository
             .findById(id.intValue())
+            //If is not New or In Progress, return error as it was already processed
+            .filter(submission ->
+                List.of(SubmissionStatusEnum.N, SubmissionStatusEnum.P)
+                    .contains(submission.getSubmissionStatus())
+            )
+            .switchIfEmpty(Mono.error(new RequestAlreadyProcessedException()))
             .map(submission -> {
               submission.setUpdatedBy(userName);
               submission.setUpdatedAt(LocalDateTime.now());
@@ -372,11 +379,11 @@ public class ClientSubmissionService {
       String userName
   ) {
     return chesService.sendEmail(
-                        "registration",
-                        email,
-                        "Client number application received",
-                        clientSubmissionDto.description(userName),
-                        null)
+            "registration",
+            email,
+            "Client number application received",
+            clientSubmissionDto.description(userName),
+            null)
         .thenReturn(submissionId);
   }
 
@@ -455,7 +462,6 @@ public class ClientSubmissionService {
           );
     }
 
-
     return template
         .select(
             query(userQuery)
@@ -471,33 +477,35 @@ public class ClientSubmissionService {
     String duplicatedReason = "duplicated";
     String goodStandingReason = "goodstanding";
     String htmlBlankDiv = "<div>&nbsp;</div>";
-    List<String> reasons = request.reasons();  
-    
+    List<String> reasons = request.reasons();
+
     if (reasons.contains(duplicatedReason) && !reasons.contains(goodStandingReason)) {
       stringBuilder
-      .append(" already has one. The number is: ")
-      .append(request.message())
-      .append(". Be sure to keep it for your records.");
+          .append(" already has one. The number is: ")
+          .append(request.message())
+          .append(". Be sure to keep it for your records.");
     }
-    
+
     if (!reasons.contains(duplicatedReason) && reasons.contains(goodStandingReason)) {
       stringBuilder
-      .append(" is not in good standing with BC Registries.")
-      .append(htmlBlankDiv)
-      .append("<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a> ")
-      .append("account to find out why.</p>");
+          .append(" is not in good standing with BC Registries.")
+          .append(htmlBlankDiv)
+          .append(
+              "<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a> ")
+          .append("account to find out why.</p>");
     }
-    
+
     if (reasons.contains(duplicatedReason) && reasons.contains(goodStandingReason)) {
       stringBuilder
-      .append(" already has one. The number is: ")
-      .append(request.message())
-      .append(". Be sure to keep it for your records.")
-      .append(htmlBlankDiv)
-      .append("<p>Also, this business is not in good standing with BC Registries.</p>")
-      .append(htmlBlankDiv)
-      .append("<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a> ")
-      .append("account to find out why.</p>");
+          .append(" already has one. The number is: ")
+          .append(request.message())
+          .append(". Be sure to keep it for your records.")
+          .append(htmlBlankDiv)
+          .append("<p>Also, this business is not in good standing with BC Registries.</p>")
+          .append(htmlBlankDiv)
+          .append(
+              "<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a> ")
+          .append("account to find out why.</p>");
     }
 
     return stringBuilder.toString();

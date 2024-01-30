@@ -11,6 +11,7 @@ import "@carbon/web-components/es/components/modal/index";
 import "@carbon/web-components/es/components/tooltip/index";
 // Composables
 import { useFetchTo, usePost } from "@/composables/useFetch";
+import { useFocus } from "@/composables/useFocus";
 import { useRouter } from "vue-router";
 import { useEventBus } from "@vueuse/core";
 // Types
@@ -132,6 +133,8 @@ const rejectionReasonMessage = computed(() => {
 
 const submitDisabled = ref(false);
 
+const reviewConflictError = ref(false);
+
 // Submit the form changes to the backend
 const submit = (approved: boolean) => {
   if (submitDisabled.value) return;
@@ -155,9 +158,16 @@ const submit = (approved: boolean) => {
     }
   );
 
+  const { setScrollPoint } = useFocus();
+
   watch([error], () => {
-    if (error.value.message) {
+    if (error.value.response.status === 409) {
+      reviewConflictError.value = true;
+    } else if (error.value.message) {
       networkErrorMsg.value = error.value.message;
+    }
+    if (reviewConflictError.value || networkErrorMsg.value) {
+      setScrollPoint("top-notification");
     }
   });
 
@@ -187,8 +197,8 @@ const submit = (approved: boolean) => {
     }
   });
 
-  watch(loading, (value) => {
-    submitDisabled.value = value;
+  watch([loading, reviewConflictError], () => {
+    submitDisabled.value = loading.value || reviewConflictError.value;
   });
 };
 
@@ -320,19 +330,38 @@ const renderListItem = (label, clientNumber) => {
         <p class="body-01" data-testid="subtitle" v-else>Check and manage this submission for a new client number</p>
       </div>
       
-      <cds-actionable-notification
-        v-if="networkErrorMsg !== ''"
-        v-shadow="true"
-        low-contrast="true"
-        hide-close-button="true"
-        open="true"
-        kind="error"
-        title="Something went wrong:"      
-      >    
-        <div>
-          We're working to fix a problem with our network. Please try approving or rejecting the submission later.
-        </div>    
-      </cds-actionable-notification>
+      <div class="hide-when-less-than-two-children"><!--
+        This div is necessary to avoid the div.header-offset below from interfering in the flex flow.
+      -->
+        <div data-scroll="top-notification" class="header-offset"></div>
+        <cds-actionable-notification
+          v-if="networkErrorMsg !== ''"
+          v-shadow="true"
+          low-contrast="true"
+          hide-close-button="true"
+          open="true"
+          kind="error"
+          title="Something went wrong:"      
+        >    
+          <div>
+            We're working to fix a problem with our network. Please try approving or rejecting the submission later.
+          </div>    
+        </cds-actionable-notification>
+
+        <cds-actionable-notification
+          v-if="reviewConflictError"
+          v-shadow="true"
+          low-contrast="true"
+          hide-close-button="true"
+          open="true"
+          kind="error"
+          title="Submission already approved or rejected"
+        >
+          <div>
+          Reload the page for updated information.
+          </div>
+        </cds-actionable-notification>
+      </div>
 
       <cds-actionable-notification
         v-if="data.submissionType === 'Auto approved client'"
