@@ -110,9 +110,9 @@ objects:
                       name: ${NAME}-${ZONE}
                       key: database-user
                 - name: CLIENT_URI
-                  value: https://${NAME}-${URL_ZONE}-backend.${DOMAIN}/api
+                  value: http://${NAME}-${ZONE}-backend/api
                 - name: LEGACY_URI
-                  value: https://${NAME}-${URL_ZONE}-legacy.${DOMAIN}
+                  value: http://${NAME}-${ZONE}-legacy
                 - name: TIMING
                   value: 30S
                 - name: TZ
@@ -163,20 +163,3 @@ objects:
           targetPort: 3100
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
-  - apiVersion: route.openshift.io/v1
-    kind: Route
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    spec:
-      host: ${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
-      port:
-        targetPort: 3100-tcp
-      to:
-        kind: Service
-        name: ${NAME}-${ZONE}-${COMPONENT}
-        weight: 100
-      tls:
-        termination: edge
-        insecureEdgeTerminationPolicy: Redirect
