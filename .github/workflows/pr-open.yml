@@ -153,7 +153,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Initializing Deployment
-        uses: bcgov-nr/action-deployer-openshift@v2.0.0
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -186,7 +186,7 @@ jobs:
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
       - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v2.0.0
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -198,7 +198,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
 
       - name: Deploy Backend
-        uses: bcgov-nr/action-deployer-openshift@v2.0.0
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -217,7 +217,7 @@ jobs:
             -p URL_ZONE=${{ needs.pr-validation.outputs.url_zone }}
 
       - name: Deploy Legacy
-        uses: bcgov-nr/action-deployer-openshift@v2.0.0
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -231,7 +231,7 @@ jobs:
             -p URL_ZONE=${{ needs.pr-validation.outputs.url_zone }}
 
       - name: Deploy Frontend
-        uses: bcgov-nr/action-deployer-openshift@v2.0.0
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -246,7 +246,7 @@ jobs:
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
 
       - name: Deploy Processor
-        uses: bcgov-nr/action-deployer-openshift@v2.0.0
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
           file: processor/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
