@@ -47,6 +47,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -96,24 +97,25 @@ public class ClientSubmissionService {
         getClientTypes()
             .flatMapMany(clientTypes ->
                 loadSubmissions(page, size, requestType, requestStatus, updatedAt)
-                    .flatMap(submission ->
-                        loadSubmissionDetail(clientType, name, submission)
+                    .flatMap(submissionPair ->
+                        loadSubmissionDetail(clientType, name, submissionPair.getRight())
                             .map(submissionDetail ->
                                 new ClientListSubmissionDto(
-                                    submission.getSubmissionId(),
-                                    submission.getSubmissionType().getDescription(),
+                                    submissionPair.getRight().getSubmissionId(),
+                                    submissionPair.getRight().getSubmissionType().getDescription(),
                                     submissionDetail.getOrganizationName(),
                                     clientTypes.getOrDefault(submissionDetail.getClientTypeCode(),
                                         submissionDetail.getClientTypeCode()),
                                     Optional
-                                        .ofNullable(submission.getUpdatedAt())
+                                        .ofNullable(submissionPair.getRight().getUpdatedAt())
                                         .map(date -> date.format(
                                             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                                         .orElse(StringUtils.EMPTY),
-                                    StringUtils.defaultString(submission.getUpdatedBy()),
-                                    submission
-                                        .getSubmissionStatus()
-                                        .getDescription()
+                                    StringUtils.defaultString(
+                                        submissionPair.getRight().getUpdatedBy()),
+                                    submissionPair.getRight().getSubmissionStatus()
+                                        .getDescription(),
+                                    submissionPair.getLeft()
                                 )
                             )
                     )
@@ -241,7 +243,7 @@ public class ClientSubmissionService {
                 row.get("business_phone_number", String.class),
                 row.get("email_address", String.class),
                 Arrays.stream(StringUtils.defaultString(row.get("locations", String.class))
-                    .split(", "))
+                        .split(", "))
                     .collect(Collectors.toSet()),
                 row.get("idp_user_id", String.class)
             ))
@@ -372,11 +374,11 @@ public class ClientSubmissionService {
       String userName
   ) {
     return chesService.sendEmail(
-                        "registration",
-                        email,
-                        "Client number application received",
-                        clientSubmissionDto.description(userName),
-                        null)
+            "registration",
+            email,
+            "Client number application received",
+            clientSubmissionDto.description(userName),
+            null)
         .thenReturn(submissionId);
   }
 
@@ -422,7 +424,8 @@ public class ClientSubmissionService {
         );
   }
 
-  private Flux<SubmissionEntity> loadSubmissions(int page, int size, String[] requestType,
+  private Flux<Pair<Long, SubmissionEntity>> loadSubmissions(int page, int size,
+      String[] requestType,
       SubmissionStatusEnum[] requestStatus, String[] updatedAt) {
 
     Criteria userQuery = SubmissionPredicates
@@ -455,14 +458,21 @@ public class ClientSubmissionService {
           );
     }
 
+    final Criteria finalUserQuery = userQuery;
 
-    return template
-        .select(
-            query(userQuery)
-                .with(PageRequest.of(page, size))
-                .sort(Sort.by("updatedAt").descending()),
-            SubmissionEntity.class
-        );
+    return
+        template
+            .count(query(userQuery), SubmissionEntity.class)
+            .flatMapMany(count ->
+                template
+                    .select(
+                        query(finalUserQuery)
+                            .with(PageRequest.of(page, size))
+                            .sort(Sort.by("updatedAt").descending()),
+                        SubmissionEntity.class
+                    )
+                    .map(submission -> Pair.of(count, submission))
+            );
   }
 
   private String processRejectionReason(SubmissionApproveRejectDto request) {
@@ -471,63 +481,38 @@ public class ClientSubmissionService {
     String duplicatedReason = "duplicated";
     String goodStandingReason = "goodstanding";
     String htmlBlankDiv = "<div>&nbsp;</div>";
-    List<String> reasons = request.reasons();  
-    
+    List<String> reasons = request.reasons();
+
     if (reasons.contains(duplicatedReason) && !reasons.contains(goodStandingReason)) {
       stringBuilder
-      .append(" already has one. The number is: ")
-      .append(request.message())
-      .append(". Be sure to keep it for your records.");
+          .append(" already has one. The number is: ")
+          .append(request.message())
+          .append(". Be sure to keep it for your records.");
     }
-    
+
     if (!reasons.contains(duplicatedReason) && reasons.contains(goodStandingReason)) {
       stringBuilder
-      .append(" is not in good standing with BC Registries.")
-      .append(htmlBlankDiv)
-      .append("<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a> ")
-      .append("account to find out why.</p>");
+          .append(" is not in good standing with BC Registries.")
+          .append(htmlBlankDiv)
+          .append(
+              "<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a> ")
+          .append("account to find out why.</p>");
     }
-    
+
     if (reasons.contains(duplicatedReason) && reasons.contains(goodStandingReason)) {
       stringBuilder
-      .append(" already has one. The number is: ")
-      .append(request.message())
-      .append(". Be sure to keep it for your records.")
-      .append(htmlBlankDiv)
-      .append("<p>Also, this business is not in good standing with BC Registries.</p>")
-      .append(htmlBlankDiv)
-      .append("<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a> ")
-      .append("account to find out why.</p>");
+          .append(" already has one. The number is: ")
+          .append(request.message())
+          .append(". Be sure to keep it for your records.")
+          .append(htmlBlankDiv)
+          .append("<p>Also, this business is not in good standing with BC Registries.</p>")
+          .append(htmlBlankDiv)
+          .append(
+              "<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a> ")
+          .append("account to find out why.</p>");
     }
 
     return stringBuilder.toString();
-  }
-
-  public Mono<Long> getTotalSubmissionsCount(
-      String[] requestType,
-      SubmissionStatusEnum[] requestStatus, 
-      String[] clientType, 
-      String[] name,
-      String[] updatedAt) {
-    return getClientTypes().flatMapMany(
-        clientTypes -> loadSubmissions(0, Integer.MAX_VALUE, requestType, requestStatus, updatedAt)
-            .flatMap(submission -> 
-                      loadSubmissionDetail(clientType, name, submission)
-                        .map(submissionDetail -> 
-                          new ClientListSubmissionDto(
-                              submission.getSubmissionId(),
-                              submission.getSubmissionType().getDescription(),
-                              submissionDetail.getOrganizationName(),
-                              clientTypes.getOrDefault(
-                                  submissionDetail.getClientTypeCode(),
-                                  submissionDetail.getClientTypeCode()),
-                              Optional.ofNullable(submission.getUpdatedAt())
-                                .map(date -> 
-                                  date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                                      .orElse(StringUtils.EMPTY),
-                              StringUtils.defaultString(submission.getUpdatedBy()),
-                              submission.getSubmissionStatus().getDescription()))))
-          .count();
   }
 
 }

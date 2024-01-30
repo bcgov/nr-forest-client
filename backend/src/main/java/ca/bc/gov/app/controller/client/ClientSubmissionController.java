@@ -50,7 +50,7 @@ public class ClientSubmissionController extends
   }
 
   @GetMapping
-  public Mono<ResponseEntity<Flux<ClientListSubmissionDto>>> listSubmissions(
+  public Flux<ClientListSubmissionDto> listSubmissions(
 
       @RequestParam(required = false, defaultValue = "0")
       int page,
@@ -65,7 +65,8 @@ public class ClientSubmissionController extends
       @RequestParam(required = false)
       String[] name,
       @RequestParam(required = false)
-      String[] updatedAt
+      String[] updatedAt,
+      ServerHttpResponse serverResponse
   ) {
     log.info(
         "Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, name={}, updatedAt={}",
@@ -80,19 +81,11 @@ public class ClientSubmissionController extends
             name,
             updatedAt
         )
-        .collectList()
-        .flatMap(submissions -> clientService.getTotalSubmissionsCount(
-            requestType,
-            requestStatus,
-            clientType,
-            name,
-            updatedAt
-        )
-        .map(totalCount -> {
-          HttpHeaders headers = new HttpHeaders();
-          headers.add("x-total-count", String.valueOf(totalCount));
-          return ResponseEntity.ok().headers(headers).body(Flux.fromIterable(submissions));
-        }));
+        .doOnNext(dto -> serverResponse.getHeaders()
+            .putIfAbsent(ApplicationConstant.X_TOTAL_COUNT, List.of(dto.count().toString())))
+        .doFinally(signalType -> serverResponse.getHeaders()
+                  .putIfAbsent(ApplicationConstant.X_TOTAL_COUNT, List.of("0"))
+        );
   }
 
   @PostMapping
@@ -156,7 +149,7 @@ public class ClientSubmissionController extends
       @RequestHeader(ApplicationConstant.USERNAME_HEADER) String userName,
       @RequestBody SubmissionApproveRejectDto request
   ) {
-    log.info("Approving or rejecting submission with id: {} {}", id,request.approved());
+    log.info("Approving or rejecting submission with id: {} {}", id, request.approved());
     return clientService.approveOrReject(id, userId, userEmail, userName, request);
   }
 

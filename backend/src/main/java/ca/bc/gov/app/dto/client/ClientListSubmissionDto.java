@@ -7,6 +7,7 @@ public record ClientListSubmissionDto(
     String clientType,
     String updated,
     String user,
-    String status
+    String status,
+    Long count
 ) {
 }
