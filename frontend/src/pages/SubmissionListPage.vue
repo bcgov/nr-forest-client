@@ -25,7 +25,6 @@ const router = useRouter();
 // Reference for the skelleton table
 const skeletonReference = ref(null);
 const tableReference = ref("");
-const paginationReference = ref(null);
 
 // Table data
 const tableData = ref<SubmissionList[]>([]);
@@ -54,7 +53,6 @@ watch(
   () => {
     const totalCount = parseInt(response.value.headers["x-total-count"] || "0");
     totalItems.value = totalCount;
-    console.log('Total Count:', totalCount);
   }
 );
 
