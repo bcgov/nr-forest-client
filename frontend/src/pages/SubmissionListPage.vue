@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, watchEffect } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/data-table/index";
 import "@carbon/web-components/es/components/button/index";
