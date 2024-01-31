@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -82,21 +81,21 @@ public class ClientSubmissionController extends
             name,
             updatedAt
         )
-        .doOnNext(dto -> exchange.getResponse()
+        .doOnNext(dto -> exchange
+            .getResponse()
             .getHeaders()
             .putIfAbsent(
                 ApplicationConstant.X_TOTAL_COUNT,
                 List.of(dto.count().toString())
             )
         )
-        .doFinally(signalType -> {
-            HttpHeaders headers = new HttpHeaders();
-            headers.put(
-                    ApplicationConstant.X_TOTAL_COUNT,
-                    List.of(String.valueOf(0))
-            );
-            exchange.getResponse().getHeaders().addAll(headers);
-          }
+        .doFinally(signalType -> exchange
+            .getResponse()
+            .getHeaders()
+            .putIfAbsent(
+                ApplicationConstant.X_TOTAL_COUNT,
+                List.of("0")
+            )
         );
   }
 
