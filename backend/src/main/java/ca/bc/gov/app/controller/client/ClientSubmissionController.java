@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -64,19 +66,12 @@ public class ClientSubmissionController extends
       String[] name,
       @RequestParam(required = false)
       String[] updatedAt,
-      ServerHttpResponse serverResponse
+      ServerWebExchange exchange
   ) {
     log.info(
         "Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, name={}, updatedAt={}",
         page, size, requestType, requestStatus, clientType, name, updatedAt);
-
-    serverResponse
-        .getHeaders()
-        .putIfAbsent(
-            ApplicationConstant.X_TOTAL_COUNT,
-            List.of("0")
-        );
-
+    
     return clientService
         .listSubmissions(
             page,
@@ -87,12 +82,21 @@ public class ClientSubmissionController extends
             name,
             updatedAt
         )
-        .doOnNext(dto -> serverResponse
+        .doOnNext(dto -> exchange.getResponse()
             .getHeaders()
-            .put(
+            .putIfAbsent(
                 ApplicationConstant.X_TOTAL_COUNT,
                 List.of(dto.count().toString())
             )
+        )
+        .doFinally(signalType -> {
+            HttpHeaders headers = new HttpHeaders();
+            headers.put(
+                    ApplicationConstant.X_TOTAL_COUNT,
+                    List.of(String.valueOf(0))
+            );
+            exchange.getResponse().getHeaders().addAll(headers);
+          }
         );
   }
 
