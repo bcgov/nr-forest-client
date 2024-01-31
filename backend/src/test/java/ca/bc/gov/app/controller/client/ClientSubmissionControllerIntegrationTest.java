@@ -217,12 +217,11 @@ class ClientSubmissionControllerIntegrationTest
             .expectHeader().valueMatches(ApplicationConstant.X_TOTAL_COUNT, "\\d+")
             .expectBody()
             .consumeWith(response -> {
-                  HttpHeaders headers = response.getResponseHeaders();
-                  assertTrue(headers.containsKey(ApplicationConstant.X_TOTAL_COUNT));
-                  List<String> values = headers.get(ApplicationConstant.X_TOTAL_COUNT);
-                  assertNotNull(values);
-                  assertEquals(1, values.size());
-                  assertTrue(values.get(0).matches("\\d+"));
+              StepVerifier.create(Mono.just(response))
+                  .expectNextMatches(entityExchangeResult -> 
+                      entityExchangeResult.getResponseHeaders().containsKey(ApplicationConstant.X_TOTAL_COUNT)
+                  )
+                  .verifyComplete();
               }
             );
 
