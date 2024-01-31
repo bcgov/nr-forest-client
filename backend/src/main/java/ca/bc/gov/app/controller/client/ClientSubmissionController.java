@@ -70,13 +70,6 @@ public class ClientSubmissionController extends
         "Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, name={}, updatedAt={}",
         page, size, requestType, requestStatus, clientType, name, updatedAt);
 
-    serverResponse
-        .getHeaders()
-        .putIfAbsent(
-            ApplicationConstant.X_TOTAL_COUNT,
-            List.of("0")
-        );
-
     return clientService
         .listSubmissions(
             page,
@@ -89,9 +82,16 @@ public class ClientSubmissionController extends
         )
         .doOnNext(dto -> serverResponse
             .getHeaders()
-            .put(
+            .putIfAbsent(
                 ApplicationConstant.X_TOTAL_COUNT,
                 List.of(dto.count().toString())
+            )
+        )
+        .doFinally(signalType -> serverResponse
+            .getHeaders()
+            .putIfAbsent(
+                ApplicationConstant.X_TOTAL_COUNT,
+                List.of("0")
             )
         );
   }
