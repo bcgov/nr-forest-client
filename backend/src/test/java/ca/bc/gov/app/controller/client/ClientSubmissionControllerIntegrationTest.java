@@ -50,6 +50,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.BodyContentSpec;
 import org.springframework.web.util.UriBuilder;
@@ -211,30 +212,27 @@ class ClientSubmissionControllerIntegrationTest
       e.printStackTrace();
     }
         
-    BodyContentSpec expectedBody =
-        client
-            .get()
-            .uri(uri)
-            .header(ApplicationConstant.USERID_HEADER, "testUserId")
-            .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-            .header(ApplicationConstant.USERNAME_HEADER, "Test User")
-            .exchange()
-            .expectStatus().isOk()
-            .expectHeader().valueMatches(ApplicationConstant.X_TOTAL_COUNT, "\\d+")
-            .expectBody()
-            .consumeWith(response -> {
-              try {
-                  Thread.sleep(1000);
-              } catch (InterruptedException e) {
-                  Thread.currentThread().interrupt();
-              }
-
-              StepVerifier.create(Mono.just(response))
-                  .expectNextMatches(entityExchangeResult -> 
-                      entityExchangeResult.getResponseHeaders().containsKey(ApplicationConstant.X_TOTAL_COUNT)
-                  )
-                  .verifyComplete();
-          });
+    EntityExchangeResult<byte[]> response = client
+        .get()
+        .uri(uri)
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .returnResult();
+    
+    BodyContentSpec expectedBody = client
+        .get()
+        .uri(uri)
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
+        .exchange()
+        .expectStatus().isOk()
+        .expectHeader().valueMatches(ApplicationConstant.X_TOTAL_COUNT, "\\d+")
+        .expectBody();
 
     if (!found) {
       expectedBody.json(TestConstants.SUBMISSION_LIST_CONTENT_EMPTY);
@@ -247,6 +245,14 @@ class ClientSubmissionControllerIntegrationTest
           .jsonPath("$.[0].clientType").isEqualTo("Registered sole proprietorship")
           .jsonPath("$.[0].user").isEqualTo("Test User");
     }
+    
+    
+    HttpHeaders headers = response.getResponseHeaders();
+    assertTrue(headers.containsKey(ApplicationConstant.X_TOTAL_COUNT));
+    List<String> values = headers.get(ApplicationConstant.X_TOTAL_COUNT);
+    assertNotNull(values);
+    assertEquals(1, values.size());
+    assertTrue(values.get(0).matches("\\d+"));
   }
 
   @Test
