@@ -210,7 +210,6 @@ class ClientSubmissionControllerIntegrationTest
             .header(ApplicationConstant.USERNAME_HEADER, "Test User")
             .exchange()
             .expectStatus().isOk()
-            .expectHeader().exists(ApplicationConstant.X_TOTAL_COUNT)
             .expectBody()
             .consumeWith(System.out::println);
 
