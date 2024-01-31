@@ -206,13 +206,7 @@ class ClientSubmissionControllerIntegrationTest
             .apply(uriBuilder.path("/api/clients/submissions"))
             .build(Map.of());
 
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-        
-    EntityExchangeResult<byte[]> response = client
+    WebTestClient.ResponseSpec responseSpec = client
         .get()
         .uri(uri)
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
@@ -220,24 +214,13 @@ class ClientSubmissionControllerIntegrationTest
         .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .exchange()
         .expectStatus().isOk()
-        .expectBody()
-        .returnResult();
-    
-    BodyContentSpec expectedBody = client
-        .get()
-        .uri(uri)
-        .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
-        .exchange()
-        .expectStatus().isOk()
-        .expectHeader().valueMatches(ApplicationConstant.X_TOTAL_COUNT, "\\d+")
-        .expectBody();
+        .expectHeader().valueMatches(ApplicationConstant.X_TOTAL_COUNT, "\\d+");
 
     if (!found) {
-      expectedBody.json(TestConstants.SUBMISSION_LIST_CONTENT_EMPTY);
+        responseSpec.expectBody().json(TestConstants.SUBMISSION_LIST_CONTENT_EMPTY);
     } else {
-      expectedBody
+        responseSpec
+          .expectBody()
           .jsonPath("$.[0].id").isEqualTo(1)
           .jsonPath("$.[0].name").isEqualTo("Goldfinger")
           .jsonPath("$.[0].requestType").isEqualTo("Submission pending processing")
@@ -245,14 +228,6 @@ class ClientSubmissionControllerIntegrationTest
           .jsonPath("$.[0].clientType").isEqualTo("Registered sole proprietorship")
           .jsonPath("$.[0].user").isEqualTo("Test User");
     }
-    
-    
-    HttpHeaders headers = response.getResponseHeaders();
-    assertTrue(headers.containsKey(ApplicationConstant.X_TOTAL_COUNT));
-    List<String> values = headers.get(ApplicationConstant.X_TOTAL_COUNT);
-    assertNotNull(values);
-    assertEquals(1, values.size());
-    assertTrue(values.get(0).matches("\\d+"));
   }
 
   @Test
