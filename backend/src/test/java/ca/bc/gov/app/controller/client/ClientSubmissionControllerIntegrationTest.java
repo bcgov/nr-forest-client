@@ -210,8 +210,9 @@ class ClientSubmissionControllerIntegrationTest
             .header(ApplicationConstant.USERNAME_HEADER, "Test User")
             .exchange()
             .expectStatus().isOk()
-
-            .expectBody();
+            .expectHeader().exists(ApplicationConstant.X_TOTAL_COUNT)
+            .expectBody()
+            .consumeWith(System.out::println);
 
     if (!found) {
       expectedBody.json(TestConstants.SUBMISSION_LIST_CONTENT_EMPTY);
@@ -354,7 +355,8 @@ class ClientSubmissionControllerIntegrationTest
             Arguments.of("name", "Goldfinger", null, null, true),
             Arguments.of("name", "Auric", null, null, false),
             Arguments.of(null, null, 1, null, false),
-            Arguments.of(null, null, 1, 1, false)
+            Arguments.of(null, null, 1, 1, false),
+            Arguments.of(null, null, 99, 1, false)
         );
   }
 

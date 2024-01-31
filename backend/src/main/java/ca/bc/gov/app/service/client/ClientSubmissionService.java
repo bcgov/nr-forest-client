@@ -48,6 +48,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -97,24 +98,24 @@ public class ClientSubmissionService {
         getClientTypes()
             .flatMapMany(clientTypes ->
                 loadSubmissions(page, size, requestType, requestStatus, updatedAt)
-                    .flatMap(submission ->
-                        loadSubmissionDetail(clientType, name, submission)
+                    .flatMap(submissionPair ->
+                        loadSubmissionDetail(clientType, name, submissionPair.getRight())
                             .map(submissionDetail ->
                                 new ClientListSubmissionDto(
-                                    submission.getSubmissionId(),
-                                    submission.getSubmissionType().getDescription(),
+                                    submissionPair.getRight().getSubmissionId(),
+                                    submissionPair.getRight().getSubmissionType().getDescription(),
                                     submissionDetail.getOrganizationName(),
                                     clientTypes.getOrDefault(submissionDetail.getClientTypeCode(),
-                                        submissionDetail.getClientTypeCode()),
+                                    submissionDetail.getClientTypeCode()),
                                     Optional
-                                        .ofNullable(submission.getUpdatedAt())
+                                        .ofNullable(submissionPair.getRight().getUpdatedAt())
                                         .map(date -> date.format(
                                             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                                         .orElse(StringUtils.EMPTY),
-                                    StringUtils.defaultString(submission.getUpdatedBy()),
-                                    submission
-                                        .getSubmissionStatus()
-                                        .getDescription()
+                                    StringUtils.defaultString(
+                                        submissionPair.getRight().getUpdatedBy()),
+                                    submissionPair.getRight().getSubmissionStatus().getDescription(),
+                                    submissionPair.getLeft()
                                 )
                             )
                     )
@@ -429,7 +430,8 @@ public class ClientSubmissionService {
         );
   }
 
-  private Flux<SubmissionEntity> loadSubmissions(int page, int size, String[] requestType,
+  private Flux<Pair<Long, SubmissionEntity>> loadSubmissions(int page, int size,
+      String[] requestType,
       SubmissionStatusEnum[] requestStatus, String[] updatedAt) {
 
     Criteria userQuery = SubmissionPredicates
@@ -461,14 +463,23 @@ public class ClientSubmissionService {
                   )
           );
     }
+    
+    final Criteria finalUserQuery = userQuery;
 
-    return template
-        .select(
-            query(userQuery)
-                .with(PageRequest.of(page, size))
-                .sort(Sort.by("updatedAt").descending()),
-            SubmissionEntity.class
-        );
+    return
+        template
+            .count(query(userQuery), SubmissionEntity.class)
+            .flatMapMany(count ->
+                template
+                    .select(
+                        query(finalUserQuery)
+                            .with(PageRequest.of(page, size))
+                            .sort(Sort.by("updatedAt").descending()),
+                        SubmissionEntity.class
+                    )
+                    .map(submission -> Pair.of(count, submission))
+            );
+
   }
 
   private String processRejectionReason(SubmissionApproveRejectDto request) {

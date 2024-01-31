@@ -25,7 +25,6 @@ const router = useRouter();
 // Reference for the skelleton table
 const skeletonReference = ref(null);
 const tableReference = ref("");
-const paginationReference = ref(null);
 
 // Table data
 const tableData = ref<SubmissionList[]>([]);
@@ -40,26 +39,29 @@ const uri = computed(
       pageSize.value
     }${tableReference.value}`
 );
+
 const { response, fetch, loading } = useFetchTo(uri, tableData);
 
 // Watch for changes on the uri to fetch the new data
 watch(uri, () => {
   if (!loading.value) fetch();
 });
+
 // Update the total items on the table
 watch(
   response,
-  () =>
-    (totalItems.value = parseInt(
-      response.value.headers["x-total-count"] || "0"
-    ))
+  () => {
+    const totalCount = parseInt(response.value.headers["x-total-count"] || "0");
+    totalItems.value = totalCount;
+  }
 );
 
 // Update values on pagination
 const paginate = (event: any) => {
-  pageNumber.value = event.detail.page - 1;
+  pageNumber.value = event.detail.page;
   pageSize.value = event.detail.pageSize;
 };
+
 // Update the tag colors
 const tagColor = (status: string) => {
   switch (status) {
@@ -118,9 +120,7 @@ onMounted(() => {
 </script>
 
 <template>
-
   <div id="screen" class="submission-list">
-    
     <div id="title">
       <div>
         <div class="form-header-title mg-sd-25">
@@ -186,9 +186,8 @@ onMounted(() => {
       />
             
     </div>
-    <div class="paginator">
-      <cds-pagination 
-          ref="paginationReference"
+    <div class="paginator" v-if="totalItems">
+      <cds-pagination
           items-per-page-text="Submissions per page"        
           :page-size="pageSize" 
           :total-items="totalItems"
@@ -199,7 +198,7 @@ onMounted(() => {
             <cds-select-item :value="30">30</cds-select-item>
             <cds-select-item :value="40">40</cds-select-item>
             <cds-select-item :value="50">50</cds-select-item>
-        </cds-pagination>
+      </cds-pagination>
     </div>
   </div>
 

@@ -63,11 +63,20 @@ public class ClientSubmissionController extends
       @RequestParam(required = false)
       String[] name,
       @RequestParam(required = false)
-      String[] updatedAt
+      String[] updatedAt,
+      ServerHttpResponse serverResponse
   ) {
     log.info(
         "Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, name={}, updatedAt={}",
         page, size, requestType, requestStatus, clientType, name, updatedAt);
+
+    serverResponse
+        .getHeaders()
+        .putIfAbsent(
+            ApplicationConstant.X_TOTAL_COUNT,
+            List.of("0")
+        );
+
     return clientService
         .listSubmissions(
             page,
@@ -77,6 +86,13 @@ public class ClientSubmissionController extends
             clientType,
             name,
             updatedAt
+        )
+        .doOnNext(dto -> serverResponse
+            .getHeaders()
+            .put(
+                ApplicationConstant.X_TOTAL_COUNT,
+                List.of(dto.count().toString())
+            )
         );
   }
 
@@ -141,7 +157,7 @@ public class ClientSubmissionController extends
       @RequestHeader(ApplicationConstant.USERNAME_HEADER) String userName,
       @RequestBody SubmissionApproveRejectDto request
   ) {
-    log.info("Approving or rejecting submission with id: {} {}", id,request.approved());
+    log.info("Approving or rejecting submission with id: {} {}", id, request.approved());
     return clientService.approveOrReject(id, userId, userEmail, userName, request);
   }
 
