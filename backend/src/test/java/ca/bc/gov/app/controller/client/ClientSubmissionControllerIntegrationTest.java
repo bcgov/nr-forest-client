@@ -205,6 +205,12 @@ class ClientSubmissionControllerIntegrationTest
             .apply(uriBuilder.path("/api/clients/submissions"))
             .build(Map.of());
 
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+        
     BodyContentSpec expectedBody =
         client
             .get()
@@ -217,13 +223,18 @@ class ClientSubmissionControllerIntegrationTest
             .expectHeader().valueMatches(ApplicationConstant.X_TOTAL_COUNT, "\\d+")
             .expectBody()
             .consumeWith(response -> {
+              try {
+                  Thread.sleep(1000);
+              } catch (InterruptedException e) {
+                  Thread.currentThread().interrupt();
+              }
+
               StepVerifier.create(Mono.just(response))
                   .expectNextMatches(entityExchangeResult -> 
                       entityExchangeResult.getResponseHeaders().containsKey(ApplicationConstant.X_TOTAL_COUNT)
                   )
                   .verifyComplete();
-              }
-            );
+          });
 
     if (!found) {
       expectedBody.json(TestConstants.SUBMISSION_LIST_CONTENT_EMPTY);
