@@ -20,6 +20,7 @@ export interface BusinessSearchResult {
 
 export interface ValidationMessageType {
   fieldId: string;
+  fieldName: string;
   errorMsg: string;
   originalValue?: string;
 }
@@ -78,6 +79,7 @@ export interface Submitter {
   email: string;
   provider: string;
   userId: string | undefined;
+  businessId: string | undefined;
   firstName: string;
   lastName: string;
   businessName: string;
@@ -140,7 +142,9 @@ export interface SubmissionDetailsBusiness {
   clientNumber: string
   organizationName: string
   clientType: string
+  clientTypeDesc: string
   goodStandingInd: string
+  birthdate: string
 }
 
 export interface SubmissionDetailsContact {
@@ -166,5 +170,8 @@ export interface SubmissionDetailsAddress {
 
 export interface SubmissionDetailsMatchers {
   goodStanding: string
-  legalName: string
+  corporationName: string
+  incorporationNumber: string
+  contact: string
+  location: string
 }

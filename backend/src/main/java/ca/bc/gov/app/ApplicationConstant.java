@@ -15,8 +15,10 @@ public final class ApplicationConstant {
   public static final String POSTGRES_ATTRIBUTE_SCHEMA = "nrfc";
 
   public static final String USERID_HEADER = "x-user-id";
+  public static final String BUSINESSID_HEADER = "x-user-businessid";
   public static final String USERMAIL_HEADER = "x-user-email";
   public static final String USERNAME_HEADER = "x-user-name";
+  public static final String X_TOTAL_COUNT = "x-total-count";
   
   public static final String INDIVIDUAL_CLIENT_TYPE_CODE = "I";
   public static final String REG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE = "RSP";
@@ -40,11 +42,12 @@ public final class ApplicationConstant {
         s.submission_date,
         s.update_timestamp,
         s.update_user,
-        btc.description as business_type,
+        btc.business_type_code as business_type,
         sd.incorporation_number,
         sd.client_number,
         sd.organization_name,
-        ctc.description as client_type,
+        ctc.client_type_code as client_type,
+        ctc.description as client_type_desc,
         sd.good_standing_ind as good_standing,
         sd.birthdate
       FROM nrfc.submission s
@@ -92,5 +95,7 @@ public final class ApplicationConstant {
   public static final String REFRESH_TOKEN = "refreshToken";
   public static final String ID_TOKEN = "idToken";
   public static final String ACCESS_TOKEN = "accessToken";
+  public static final List<String> AVAILABLE_CLIENT_TYPES = List.of("A", "I", "S", "SP", "RSP",
+      "USP", "BC", "GP","C");
 }
 

@@ -29,7 +29,7 @@ const emit = defineEmits<{
 //Defining the event bus to send notifications up
 const bus = useEventBus<ModalNotification>("modal-notification");
 
-const { setFocusedComponent } = useFocus();
+const { safeSetFocusedComponent } = useFocus();
 
 //Set the prop as a ref, and then emit when it changes
 const formData = reactive<FormDataDto>(props.data);
@@ -67,23 +67,37 @@ const addresses = computed<CodeNameType[]>(() =>
 
 const uniqueValues = isUniqueDescriptive();
 
+let lastContactId = -1; // The first contactId to be generated minus 1.
+const getNewContactId = () => ++lastContactId;
+
+// Associate each contact to a unique id, permanent for the lifecycle of this component.
+const contactsIdMap = new Map<Contact, number>(
+  formData.location.contacts.map((contact) => [contact, getNewContactId()]),
+);
+
 //New contact being added
 const otherContacts = computed(() => formData.location.contacts.slice(1));
 const addContact = (autoFocus = true) => {
   const newLength = formData.location.contacts.push(
     JSON.parse(JSON.stringify(emptyContact))
   );
+  const contact = formData.location.contacts[newLength - 1];
+  contactsIdMap.set(contact, getNewContactId());
   if (autoFocus) {
     const focusIndex = newLength - 1;
-    setFocusedComponent(`firstName_${focusIndex}`);
+    safeSetFocusedComponent(`firstName_${focusIndex}`);
   }
   return newLength;
 };
 
 const removeContact = (index: number) => () => {
+  const contact = formData.location.contacts[index];
+  const contactId = contactsIdMap.get(contact);
+  contactsIdMap.delete(contact);
+
   updateContact(undefined, index);
-  delete validation[index];
-  uniqueValues.remove("Name", index + "");
+  delete validation[contactId];
+  uniqueValues.remove("Name", contactId + "");
   bus.emit({
     active: false,
     message: "",
@@ -99,8 +113,9 @@ const validation = reactive<Record<string, boolean>>({
 });
 
 const updateValidState = (index: number, valid: boolean) => {
-  if (validation[index] !== valid) {
-    validation[index] = valid;
+  const contactId = contactsIdMap.get(formData.location.contacts[index]);
+  if (validation[contactId] !== valid) {
+    validation[contactId] = valid;
   }
 };
 
@@ -130,7 +145,7 @@ const handleRemove = (index: number) => {
   });
 };
 
-onMounted(() => setFocusedComponent("phoneNumber_0", 800));
+onMounted(() => safeSetFocusedComponent("phoneNumber_0", 800));
 
 defineExpose({
   addContact,
@@ -156,11 +171,11 @@ defineExpose({
     <div  v-for="(contact, index) in otherContacts">
       <hr />
       <div class="grouping-09" :data-scroll="`additional-contact-${index + 1}`">
-      <span class="heading-03">Additional contact</span>
+      <h5>Additional contact</h5>
     </div>
     <contact-group-component
-      :key="index + 1"
-      :id="index + 1"
+      :key="contactsIdMap.get(contact)"
+      :id="contactsIdMap.get(contact)"
       v-bind:modelValue="contact"
       required-label
       :roleList="roleList"
@@ -175,10 +190,11 @@ defineExpose({
     </div>
   </div>
 
-  <span class="body-01">
-    You can add contacts to the account. For example, a person you want to give or receive
-    information on your behalf.
-  </span>
+  <p 
+    class="body-compact-01"
+    v-if="formData.location.contacts.length < 5">
+    You can add contacts to the account. For example, a person you want to give or receive information on your behalf.
+  </p>
 
   <cds-button
     kind="tertiary"
@@ -188,6 +204,12 @@ defineExpose({
     <span>Add another contact</span>
     <Add16 slot="icon" />
   </cds-button>
+
+  <p 
+    class="body-compact-01"
+    v-if="formData.location.contacts.length >= 5"
+    id="maxAdditionalContsReachedLblId">
+    You can only add a maximum of 5 contacts.
+  </p>
+  
 </template>
-
-

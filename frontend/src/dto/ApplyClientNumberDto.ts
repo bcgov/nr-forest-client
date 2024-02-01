@@ -28,7 +28,6 @@ export interface FormDataDto {
     goodStandingInd: string;
     birthdate: string;
     address: Address;
-    
   };
   location: {
     addresses: Address[];

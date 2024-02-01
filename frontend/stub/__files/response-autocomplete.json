@@ -42,9 +42,21 @@
     "legalType": "GP"
   },
   {
-    "code":"FM1234567",
-    "name":"The Great Pacific  Forest Company",
-    "status":"ACTIVE",
+    "code": "FM1234567",
+    "name": "The Great Pacific  Forest Company",
+    "status": "ACTIVE",
     "legalType": "SP"
+  },
+  {
+    "code": "FM7654321",
+    "name": "British Columbia Forest Products",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "BC1234567",
+    "name": "Unsupported Client Type Inc.",
+    "status": "ACTIVE",
+    "legalType": "BC"
   }
 ]

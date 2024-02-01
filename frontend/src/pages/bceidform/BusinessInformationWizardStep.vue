@@ -5,14 +5,14 @@ import "@carbon/web-components/es/components/inline-loading/index";
 import "@carbon/web-components/es/components/notification/index";
 // Importing composables
 import { useEventBus } from "@vueuse/core";
-import { useFetchTo } from "@/composables/useFetch";
+import { useFetch, useFetchTo } from "@/composables/useFetch";
 // Importing types
 import {
   BusinessSearchResult,
   ClientTypeEnum,
-  ProgressNotification
+  ProgressNotification,
 } from "@/dto/CommonTypesDto";
-import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
+import { BusinessTypeEnum, CodeNameType } from "@/dto/CommonTypesDto";
 import type {
   FormDataDto,
   ForestClientDetailsDto,
@@ -24,7 +24,7 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
 // Importing session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
-import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
+import { getEnumKeyByEnumValue, openMailtoLink, getObfuscatedEmail } from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>();
@@ -95,24 +95,37 @@ const autoCompleteUrl = computed(
 const showAutoCompleteInfo = ref<boolean>(false);
 const showGoodStandingError = ref<boolean>(false);
 const showDuplicatedError = ref<boolean>(false);
+const showNonPersonSPError = ref<boolean>(false);
+const showUnsupportedClientTypeError = ref<boolean>(false);
 const showDetailsLoading = ref<boolean>(false);
 const detailsData = ref(null);
 
 const toggleErrorMessages = (
-  goodStanding: boolean | null,
-  duplicated: boolean | null
+  goodStanding: boolean | null = null,
+  duplicated: boolean | null = null,
+  nonPersonSP: boolean | null = null,
+  unsupportedClientType: boolean | null = null,
 ) => {
   showGoodStandingError.value = goodStanding ?? false;
   showDuplicatedError.value = duplicated ?? false;
+  showNonPersonSPError.value = nonPersonSP ?? false;
+  showUnsupportedClientTypeError.value = unsupportedClientType ?? false;
 
-  if (goodStanding || duplicated) {
+  if (goodStanding || duplicated || nonPersonSP || unsupportedClientType) {
     progressIndicatorBus.emit({ kind: "disabled", value: true });
-    exitBus.emit({ goodStanding, duplicated });
+    exitBus.emit({ goodStanding, duplicated, nonPersonSP, unsupportedClientType });
   } else {
     progressIndicatorBus.emit({ kind: "disabled", value: false });
-    exitBus.emit({ goodStanding: false, duplicated: false });
+    exitBus.emit({
+      goodStanding: false,
+      duplicated: false,
+      nonPersonSP: false,
+      unsupportedClientType: false,
+    });
   }
 };
+
+const receivedClientType = ref<CodeNameType>();
 
 //Using this as we have to handle the selected result to get
 //incorporation number and client type
@@ -122,7 +135,7 @@ watch([autoCompleteResult], () => {
   validation.business = false;
 
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
-    toggleErrorMessages(false, false);
+    toggleErrorMessages(false, false, false);
 
     formData.value.businessInformation.incorporationNumber =
       autoCompleteResult.value.code;
@@ -152,11 +165,24 @@ watch([autoCompleteResult], () => {
     showDetailsLoading.value = true;
     watch(error, () => {
       if (error.value.response?.status === 409) {
-        toggleErrorMessages(null, true);
+        toggleErrorMessages(null, true, null);
+        return;
+      }
+      if (error.value.response?.status === 422) {
+        toggleErrorMessages(null, null, true);
+        return;
+      }
+      if (error.value.response?.status === 406) {
+        toggleErrorMessages(null, null, null, true);
+        receivedClientType.value = null;
+        useFetchTo(
+          `/api/clients/getClientTypeByCode/${formData.value.businessInformation.clientType}`,
+          receivedClientType,
+        );
         return;
       }
       if (error.value.response?.status === 404) {
-        toggleErrorMessages(null, null);
+        toggleErrorMessages();
         validation.business = true;
         emit("update:data", formData.value);
         return;
@@ -182,17 +208,20 @@ watch([detailsData], () => {
     formData.value.location.addresses = exportAddress(
       forestClientDetails.addresses
     );
+    console.log(forestClientDetails.goodStanding === null ? false : (forestClientDetails.goodStanding ? false : true),forestClientDetails.goodStanding === null ? null : (forestClientDetails.goodStanding ? "Y" : "N"));
     formData.value.businessInformation.goodStandingInd =
-      forestClientDetails.goodStanding ? "Y" : "N";
-    toggleErrorMessages(!forestClientDetails.goodStanding, null);
+      forestClientDetails.goodStanding === null ? null : (forestClientDetails.goodStanding ? "Y" : "N");
+    toggleErrorMessages(forestClientDetails.goodStanding === null ? false : (forestClientDetails.goodStanding ? false : true), null);
     validation.business = forestClientDetails.goodStanding;
 
     emit("update:data", formData.value);
   }
 });
 
-// -- Unregistered Proprietorship
 watch([selectedOption], () => {
+  toggleErrorMessages();
+
+  // Unregistered Proprietorship
   if (selectedOption.value === BusinessTypeEnum.U) {
     const fromName = `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`;
 
@@ -205,12 +234,30 @@ watch([selectedOption], () => {
     validation.business = true;
     formData.value.businessInformation.goodStandingInd = "Y";
     emit("update:data", formData.value);
+
+
+    const { error:validationError } = useFetch(`/api/clients/individual/${ForestClientUserSession.user?.userId.split('\\').pop()}?lastName=${ForestClientUserSession.user?.lastName}`);
+    watch([validationError], () => {
+      if (validationError.value.response?.status === 409) {   
+        validation.business = false;     
+        toggleErrorMessages(null, true, null);
+        generalErrorBus.emit(validationError.value.response?.data ?? "")
+      }  
+    });
   } else {
+    // Registered business
     formData.value.businessInformation.businessName = "";
     validation.business = false;
     showAutoCompleteInfo.value = true;
   }
 });
+
+watch(
+  () => formData.value.businessInformation.businessName,
+  () => {
+    toggleErrorMessages();
+  },
+);
 
 watch(showBirthDate, (value) => {
   if (value) {
@@ -223,12 +270,14 @@ watch(showBirthDate, (value) => {
     validation.birthdate = true;
   }
 });
+
+const bcRegistryEmail = "BCRegistries@gov.bc.ca";    
 </script>
 
 <template>
   <radio-input-component
     id="businessType"
-    label="Type of business (choose one of these options)"
+    label="Type of business"
     required-label
     :initialValue="formData?.businessInformation?.businessType"
     :modelValue="[
@@ -273,7 +322,14 @@ watch(showBirthDate, (value) => {
     <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
     <div
       class="grouping-02"
-      v-if="(showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R) || showGoodStandingError || showDuplicatedError">
+      v-if="
+        (showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R) ||
+        showGoodStandingError ||
+        showDuplicatedError ||
+        showNonPersonSPError ||
+        showUnsupportedClientTypeError
+      "
+    >
       <cds-inline-notification
         v-shadow="2"
         v-if="showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R"
@@ -297,7 +353,12 @@ watch(showBirthDate, (value) => {
             <li class="body-compact-01">
               If your name isn’t there, call BC Registry toll free at
               <a href="tel:18775261526">1-877-526-1526</a> or email them at
-              <a href="mailto:BCRegistries@gov.bc.ca">BCRegistries@gov.bc.ca</a>.
+              <button id="bcRegistryEmailId" 
+                      class="link-button" 
+                      @click="openMailtoLink(bcRegistryEmail)" 
+                      aria-label="Contact BC Registry via Email">
+                <span v-bind:innerHTML="getObfuscatedEmail(bcRegistryEmail)"></span>
+              </button>.
             </li>
           </ol>
         </div>
@@ -339,6 +400,34 @@ watch(showBirthDate, (value) => {
           have it sent to you at {{ formData.location.contacts[0].email }}
         </p>
       </cds-inline-notification>
+
+      <cds-inline-notification
+        v-if="showNonPersonSPError"
+        hide-close-button="true"
+        low-contrast="true"
+        open="true"
+        kind="error"
+        title="Unknown sole proprietor"
+      >
+        <p  class="cds--inline-notification-content">
+          We're unable to complete this application because we cannot identify the person who is the sole proprietor. Please email FORHVAP.CLIADMIN@gov.bc.ca for help.
+        </p>
+      </cds-inline-notification>
+
+      <cds-inline-notification
+        v-if="showUnsupportedClientTypeError && receivedClientType"
+        hide-close-button="true"
+        low-contrast="true"
+        open="true"
+        kind="error"
+        title="Client type not supported"
+      >
+        <p class="cds--inline-notification-content">
+          {{ receivedClientType.name }} client type is not supported. Please email
+          FORHVAP.CLIADMIN@gov.bc.ca for help.
+        </p>
+      </cds-inline-notification>
+      
     </div>
   </data-fetcher>
 

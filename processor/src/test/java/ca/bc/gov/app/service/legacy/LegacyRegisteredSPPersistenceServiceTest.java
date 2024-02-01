@@ -9,17 +9,13 @@ import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
-import ca.bc.gov.app.entity.legacy.ClientDoingBusinessAsEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientContactEntity;
-import ca.bc.gov.app.entity.legacy.ForestClientEntity;
-import ca.bc.gov.app.repository.client.CountryCodeRepository;
-import ca.bc.gov.app.repository.client.SubmissionContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
-import ca.bc.gov.app.repository.client.SubmissionRepository;
-import ca.bc.gov.app.repository.legacy.ClientDoingBusinessAsRepository;
+import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.entity.SubmissionDetailEntity;
+import ca.bc.gov.app.repository.SubmissionContactRepository;
+import ca.bc.gov.app.repository.SubmissionDetailRepository;
+import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
+import ca.bc.gov.app.repository.SubmissionLocationRepository;
+import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -29,12 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
-import org.springframework.data.r2dbc.core.ReactiveInsertOperation.ReactiveInsert;
-import org.springframework.integration.support.MessageBuilder;
-import org.springframework.r2dbc.core.DatabaseClient;
-import org.springframework.r2dbc.core.DatabaseClient.GenericExecuteSpec;
-import org.springframework.r2dbc.core.FetchSpec;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -49,12 +39,8 @@ class LegacyRegisteredSPPersistenceServiceTest {
       SubmissionLocationRepository.class);
   private final SubmissionContactRepository contactRepository = mock(
       SubmissionContactRepository.class);
-  private final SubmissionLocationContactRepository locationContactRepository = mock(
-      SubmissionLocationContactRepository.class);
-  private final R2dbcEntityTemplate legacyR2dbcEntityTemplate = mock(R2dbcEntityTemplate.class);
-  private final CountryCodeRepository countryCodeRepository = mock(CountryCodeRepository.class);
-  private final ClientDoingBusinessAsRepository doingBusinessAsRepository = mock(
-      ClientDoingBusinessAsRepository.class);
+
+  private final LegacyService legacyService = mock(LegacyService.class);
   private final BcRegistryService bcRegistryService = mock(BcRegistryService.class);
 
   private final LegacyRegisteredSPPersistenceService service = new LegacyRegisteredSPPersistenceService(
@@ -62,24 +48,16 @@ class LegacyRegisteredSPPersistenceServiceTest {
       submissionRepository,
       locationRepository,
       contactRepository,
-      locationContactRepository,
-      legacyR2dbcEntityTemplate,
-      countryCodeRepository,
-      doingBusinessAsRepository,
+      mock(SubmissionLocationContactRepository.class),
+      legacyService,
       bcRegistryService
   );
 
   @ParameterizedTest(name = "type: {0} expected: {1}")
   @MethodSource("byType")
   @DisplayName("filter by type")
-  void shouldFilterByType(String type, boolean expected){
+  void shouldFilterByType(String type, boolean expected) {
     assertEquals(expected, service.filterByType(type));
-  }
-
-  @Test
-  @DisplayName("get next channel")
-  void shouldGetNextChannel(){
-    assertEquals(ApplicationConstant.SUBMISSION_LEGACY_RSP_CHANNEL, service.getNextChannel());
   }
 
   @Test
@@ -107,14 +85,16 @@ class LegacyRegisteredSPPersistenceServiceTest {
 
     service
         .generateForestClient(
-            MessageBuilder
-                .withPayload("00000001")
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000001")
-                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow")
-                .build()
+            new MessagingWrapper<>(
+                "00000001",
+                Map.of(
+                    ApplicationConstant.SUBMISSION_ID, 2,
+                    ApplicationConstant.FOREST_CLIENT_NUMBER, "00000001",
+                    ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow"
+                )
+            )
         )
         .as(StepVerifier::create)
         .assertNext(message -> {
@@ -122,7 +102,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .isNotNull()
               .hasFieldOrProperty("payload");
 
-          assertThat(message.getPayload())
+          assertThat(message.payload())
               .isNotNull()
               .hasFieldOrPropertyWithValue("clientName", "BAXTER")
               .hasFieldOrPropertyWithValue("legalFirstName", "JAMES")
@@ -139,37 +119,30 @@ class LegacyRegisteredSPPersistenceServiceTest {
                       "BAXTER CORP"
                   )
               )
-              .hasFieldOrPropertyWithValue("clientTypeCode", "I")
-              .hasFieldOrPropertyWithValue("clientNumber", "00000001");
+              .hasFieldOrPropertyWithValue("clientTypeCode", "I");
 
-          assertThat(message.getHeaders().get(ApplicationConstant.SUBMISSION_ID))
+          assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
               .isNotNull()
               .isInstanceOf(Integer.class)
               .isEqualTo(2);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.CREATED_BY))
+          assertThat(message.parameters().get(ApplicationConstant.CREATED_BY))
               .isNotNull()
               .isInstanceOf(String.class);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.UPDATED_BY))
+          assertThat(message.parameters().get(ApplicationConstant.UPDATED_BY))
               .isNotNull()
               .isInstanceOf(String.class);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME))
+          assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME))
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("BAXTER CORP");
 
-          assertThat(message.getHeaders().get(ApplicationConstant.INCORPORATION_NUMBER))
+          assertThat(message.parameters().get(ApplicationConstant.INCORPORATION_NUMBER))
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("FM00184546");
-
-          assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
-              .isNotNull()
-              .isInstanceOf(String.class)
-              .isEqualTo("00000001");
-
         })
         .verifyComplete();
   }
@@ -199,14 +172,16 @@ class LegacyRegisteredSPPersistenceServiceTest {
 
     service
         .generateForestClient(
-            MessageBuilder
-                .withPayload("00000001")
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000001")
-                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow")
-                .build()
+            new MessagingWrapper<>(
+                "00000001",
+                Map.of(
+                    ApplicationConstant.SUBMISSION_ID, 2,
+                    ApplicationConstant.FOREST_CLIENT_NUMBER, "00000001",
+                    ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow"
+                )
+            )
         )
         .as(StepVerifier::create)
         .assertNext(message -> {
@@ -214,7 +189,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .isNotNull()
               .hasFieldOrProperty("payload");
 
-          assertThat(message.getPayload())
+          assertThat(message.payload())
               .isNotNull()
               .hasFieldOrPropertyWithValue("clientName", "BAXTER")
               .hasFieldOrPropertyWithValue("legalFirstName", "JAMES")
@@ -231,36 +206,31 @@ class LegacyRegisteredSPPersistenceServiceTest {
                       "BAXTER CORP"
                   )
               )
-              .hasFieldOrPropertyWithValue("clientTypeCode", "I")
-              .hasFieldOrPropertyWithValue("clientNumber", "00000001");
+              .hasFieldOrPropertyWithValue("clientTypeCode", "I");
 
-          assertThat(message.getHeaders().get(ApplicationConstant.SUBMISSION_ID))
+          assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
               .isNotNull()
               .isInstanceOf(Integer.class)
               .isEqualTo(2);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.CREATED_BY))
+          assertThat(message.parameters().get(ApplicationConstant.CREATED_BY))
               .isNotNull()
               .isInstanceOf(String.class);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.UPDATED_BY))
+          assertThat(message.parameters().get(ApplicationConstant.UPDATED_BY))
               .isNotNull()
               .isInstanceOf(String.class);
 
-          assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NAME))
+          assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME))
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("BAXTER CORP");
 
-          assertThat(message.getHeaders().get(ApplicationConstant.INCORPORATION_NUMBER))
+          assertThat(message.parameters().get(ApplicationConstant.INCORPORATION_NUMBER))
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("FM00184546");
 
-          assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
-              .isNotNull()
-              .isInstanceOf(String.class)
-              .isEqualTo("00000001");
 
         })
         .verifyComplete();
@@ -269,14 +239,6 @@ class LegacyRegisteredSPPersistenceServiceTest {
   @Test
   @DisplayName("create client with doing business")
   void shouldCreateClient() {
-    ReactiveInsert<ClientDoingBusinessAsEntity> doingBusinessInsert = mock(ReactiveInsert.class);
-    ReactiveInsert<ForestClientEntity> clientInsert = mock(ReactiveInsert.class);
-
-
-    ReactiveInsert<ForestClientContactEntity> insert = mock(ReactiveInsert.class);
-    DatabaseClient dbCLient = mock(DatabaseClient.class);
-    GenericExecuteSpec execSpec = mock(GenericExecuteSpec.class);
-    FetchSpec<Map<String, Object>> fetchSpec = mock(FetchSpec.class);
 
     SubmissionDetailEntity detailEntity = SubmissionDetailEntity
         .builder()
@@ -291,60 +253,38 @@ class LegacyRegisteredSPPersistenceServiceTest {
         .thenReturn(Mono.just(detailEntity));
     when(submissionDetailRepository.save(any()))
         .thenReturn(Mono.just(detailEntity));
-    when(doingBusinessAsRepository.existsByClientNumber(any()))
-        .thenReturn(Mono.just(false));
-    when(legacyR2dbcEntityTemplate.selectOne(any(),any()))
-        .thenReturn(Mono.just(ClientDoingBusinessAsEntity.builder().id(1).build()));
-    when(legacyR2dbcEntityTemplate.insert(ForestClientEntity.class))
-        .thenReturn(clientInsert);
-    when(legacyR2dbcEntityTemplate.insert(ClientDoingBusinessAsEntity.class))
-        .thenReturn(doingBusinessInsert);
-    when(doingBusinessInsert.using(any()))
-        .thenReturn(Mono.just(ClientDoingBusinessAsEntity.builder().clientNumber("00000000")
-                .build()
-            )
-        );
-    when(clientInsert.using(any()))
-        .thenReturn(Mono.just(
-            TestConstants
-                .CLIENT_ENTITY
-                .withClientTypeCode("I")
-                .withClientIdTypeCode("BCRE")
-        ));
-    when(legacyR2dbcEntityTemplate.getDatabaseClient())
-        .thenReturn(dbCLient);
-    when(dbCLient.sql(any(String.class)))
-        .thenReturn(execSpec);
-    when(execSpec.fetch()).thenReturn(fetchSpec);
-    when(fetchSpec.first()).thenReturn(Mono.just(Map.of("NEXTVAL", 1)));
+    when(legacyService.createDoingBusinessAs(any(), any(), any(), any()))
+        .thenReturn(Mono.just("00000000"));
+    when(legacyService.createClient(any()))
+        .thenReturn(Mono.just("00000000"));
 
     service
         .createForestClient(
-            MessageBuilder
-                .withPayload(
-                    TestConstants
-                        .CLIENT_ENTITY
-                        .withClientTypeCode("I")
-                        .withClientIdTypeCode("BCRE")
+            new MessagingWrapper<>(
+                TestConstants
+                    .CLIENT_ENTITY
+                    .withClientTypeCode("I")
+                    .withClientIdTypeCode("BCRE")
+                ,
+                Map.of(
+                    ApplicationConstant.SUBMISSION_ID, 2,
+                    ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.CLIENT_TYPE_CODE, "RSP",
+                    ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000",
+                    ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA",
+                    ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow"
                 )
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 2)
-                .setHeader(ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME)
-                .setHeader(ApplicationConstant.CLIENT_TYPE_CODE, "RSP")
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000")
-                .setHeader(ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA")
-                .setHeader(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow")
-                .build()
+            )
         )
         .as(StepVerifier::create)
         .assertNext(message -> {
           Assertions.assertThat(message)
               .as("message")
               .isNotNull()
-              .hasFieldOrPropertyWithValue("payload",2);
+              .hasFieldOrPropertyWithValue("payload", 2);
 
-
-          Assertions.assertThat(message.getHeaders().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
+          Assertions.assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
               .as("forest client number")
               .isNotNull()
               .isInstanceOf(String.class)
@@ -354,7 +294,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
 
   }
 
-  private static Stream<Arguments> byType(){
+  private static Stream<Arguments> byType() {
     return Stream.of(
         Arguments.of("I", false),
         Arguments.of("C", false),

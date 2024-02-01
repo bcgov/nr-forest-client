@@ -36,6 +36,8 @@ public class ForestClientConfiguration {
   @NestedConfigurationProperty
   private CognitoConfiguration cognito;
 
+  private Duration submissionLimit;
+
   /**
    * The Common hosted email service configuration.
    */
@@ -50,6 +52,7 @@ public class ForestClientConfiguration {
     private String clientId;
     private String clientSecret;
     private String scope;
+    private List<String> copyEmail;
   }
 
   /**
@@ -149,14 +152,15 @@ public class ForestClientConfiguration {
       if (StringUtils.isNotBlank(this.url)) {
         return this.url;
       }
-      return String.format("https://%s.auth.%s.amazoncognito.com",domain,region);
+      return String.format("https://%s.auth.%s.amazoncognito.com", domain, region);
     }
 
-    public String getRefreshUrl(){
-      if(StringUtils.isNotBlank(refreshUrl)){
+    public String getRefreshUrl() {
+      if (StringUtils.isNotBlank(refreshUrl)) {
         return refreshUrl;
       }
-      return String.format("https://cognito-idp.%s.amazonaws.com/",region);
+      return String.format("https://cognito-idp.%s.amazonaws.com/", region);
     }
+    
   }
 }

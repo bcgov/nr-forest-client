@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch, ref, onMounted } from "vue";
+import { reactive, watch, ref, onMounted, getCurrentInstance } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
 // Importing composables
@@ -33,7 +33,7 @@ const emit = defineEmits<{
   (e: "remove", value: number): void;
 }>();
 
-const { setFocusedComponent } = useFocus();
+const { safeSetFocusedComponent } = useFocus();
 const noValidation = (value: string) => "";
 
 //We set it as a separated ref due to props not being updatable
@@ -91,19 +91,21 @@ const nameTypesToCodeDescr = (
   return [];
 };
 
-onMounted(() => {
-  if (props.id === 0) {
-    setFocusedComponent(`phoneNumber_${props.id}`, 800);
-  } else {
-    setFocusedComponent(`firstName_${props.id}`, 800);
-  }
-});
-
 const updateContactType = (value: CodeNameType | undefined) => {
   if (value) {
     selectedValue.contactType = { value: value.code, text: value.name };
   }
 };
+
+const changePersonalInfoModalActive = ref(false);
+
+const instance = getCurrentInstance();
+const session = instance?.appContext.config.globalProperties.$session;
+
+const logoutAndRedirect = () => {
+  window.open("https://www.bceid.ca/", "_blank", "noopener");
+  session?.logOut();
+}
 </script>
 
 <template>
@@ -120,7 +122,12 @@ const updateContactType = (value: CodeNameType | undefined) => {
           <p class="cds--inline-notification-content">
             <strong>Read-only: </strong>
             If something is incorrect
-            <a href="https://www.bceid.ca/" target="_blank" rel="noopener noreferrer"
+            <a
+              id="change-personal-info-link"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              @click.prevent="changePersonalInfoModalActive = true"
               >go to BCeID</a
             >
             to correct it and then restart your application.
@@ -192,6 +199,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
     <text-input-component
       :id="'phoneNumber_' + id"
       label="Phone number"
+      type="tel"
       placeholder="( ) ___-____"
       mask="(###) ###-####"
       v-model="selectedValue.phoneNumber"
@@ -218,6 +226,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
       :requiredLabel="requiredLabel"
       @update:selected-value="updateContactType($event)"
       @empty="validation.contactType = !$event"
+      @error="validation.contactType = !$event"
     />
 
     <multiselect-input-component
@@ -237,6 +246,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
         selectedValue.locationNames = nameTypesToCodeDescr($event)
       "
       @empty="validation.locationNames = !$event"
+      @error="validation.locationNames = !$event"
     />
 
     <div class="grouping-06">
@@ -251,4 +261,39 @@ const updateContactType = (value: CodeNameType | undefined) => {
       </cds-button>
     </div>
   </div>
+
+  <cds-modal
+    v-if="id === 0"
+    id="logout-and-redirect-modal"
+    size="md"
+    :open="changePersonalInfoModalActive"
+    @cds-modal-closed="changePersonalInfoModalActive = false"
+  >
+    <cds-modal-header>
+      <cds-modal-close-button></cds-modal-close-button>
+      <cds-modal-heading>
+        You will be automatically logged out and redirected to BCeID
+      </cds-modal-heading>
+    </cds-modal-header>
+    <cds-modal-body>
+      <p>Update your personal information at BCeID and then log back into this application.</p>
+      <br />
+      <p>Your data will not be saved.</p>
+    </cds-modal-body>
+    <cds-modal-footer>
+      <cds-modal-footer-button kind="secondary" data-modal-close class="cds--modal-close-btn">
+        Cancel
+      </cds-modal-footer-button>
+
+      <cds-modal-footer-button
+        kind="danger"
+        class="cds--modal-submit-btn"
+        v-on:click="logoutAndRedirect"
+      >
+        Logout and redirect
+        <Logout16 slot="icon" />
+      </cds-modal-footer-button>
+
+    </cds-modal-footer>
+  </cds-modal>
 </template>

@@ -1,5 +1,8 @@
 package ca.bc.gov.app.service.client;
 
+import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
@@ -14,15 +17,19 @@ import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
+import ca.bc.gov.app.exception.UnableToProcessRequestException;
+import ca.bc.gov.app.exception.UnsuportedClientTypeException;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import ca.bc.gov.app.service.ches.ChesService;
+import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -38,6 +45,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Observed
 public class ClientService {
 
   private final ClientTypeCodeRepository clientTypeCodeRepository;
@@ -59,7 +67,7 @@ public class ClientService {
    * @return A list of {@link CodeNameDto}
    */
   public Flux<CodeNameDto> findActiveClientTypeCodes(LocalDate targetDate) {
-
+log.info("Loading active client type codes for {}", targetDate);
     return
         clientTypeCodeRepository
             .findActiveAt(targetDate)
@@ -81,6 +89,7 @@ public class ClientService {
    * @return A list of {@link CodeNameDto} entries.
    */
   public Flux<CodeNameDto> listCountries(int page, int size) {
+    log.info("Loading countries for page {} with size {}", page, size);
     return countryCodeRepository
         .findBy(PageRequest.of(page, size, Sort.by("order", "description")))
         .map(entity -> new CodeNameDto(entity.getCountryCode(), entity.getDescription()));
@@ -99,32 +108,32 @@ public class ClientService {
    * @see CodeNameDto
    */
   public Mono<CodeNameDto> getCountryByCode(String countryCode) {
+    log.info("Loading country for {}", countryCode);
     return countryCodeRepository
         .findByCountryCode(countryCode)
         .map(entity -> new CodeNameDto(entity.getCountryCode(),
-                                       entity.getDescription()));
+            entity.getDescription()));
   }
 
   /**
-   * Retrieves a client type by its unique code.
-   * This method queries the clientTypeCodeRepository to find a client type entity
-   * with the specified code. If a matching entity is found, it is converted to a
-   * {@code CodeNameDto} object containing the code and description, and wrapped
-   * in a Mono. If no matching entity is found, the Mono will complete without emitting
-   * any items.
+   * Retrieves a client type by its unique code. This method queries the clientTypeCodeRepository to
+   * find a client type entity with the specified code. If a matching entity is found, it is
+   * converted to a {@code CodeNameDto} object containing the code and description, and wrapped in a
+   * Mono. If no matching entity is found, the Mono will complete without emitting any items.
    *
    * @param code The unique code of the client type to retrieve.
-   * @return A Mono emitting a {@code CodeNameDto} if a matching client type is found, or an
-   *         empty result if no match is found.
+   * @return A Mono emitting a {@code CodeNameDto} if a matching client type is found, or an empty
+   * result if no match is found.
    * @see CodeNameDto
    */
   public Mono<CodeNameDto> getClientTypeByCode(String code) {
+    log.info("Loading client type for {}", code);
     return clientTypeCodeRepository
         .findByCode(code)
         .map(entity -> new CodeNameDto(entity.getCode(),
-                                       entity.getDescription()));
+            entity.getDescription()));
   }
-  
+
   /**
    * <p><b>List Provinces</b></p>
    * <p>List provinces by country (which include states) by page with a defined size.
@@ -136,6 +145,7 @@ public class ClientService {
    * @return A list of {@link CodeNameDto} entries.
    */
   public Flux<CodeNameDto> listProvinces(String countryCode, int page, int size) {
+    log.info("Loading provinces for {} with page {} and size {}", countryCode, page, size);
     return provinceCodeRepository
         .findByCountryCode(countryCode, PageRequest.of(page, size, Sort.by("description")))
         .map(entity -> new CodeNameDto(entity.getProvinceCode(), entity.getDescription()));
@@ -149,9 +159,10 @@ public class ClientService {
    * @param size The amount of entries per page.
    * @return A list of {@link CodeNameDto} entries.
    */
-  public Flux<CodeNameDto> listClientContactTypeCodes(int page, int size) {
+  public Flux<CodeNameDto> listClientContactTypeCodes(LocalDate activeDate, int page, int size) {
+    log.info("Loading contact types for page {} with size {}", page, size);
     return contactTypeCodeRepository
-        .findBy(PageRequest.of(page, size))
+        .findActiveAt(activeDate, PageRequest.of(page, size))
         .map(entity -> new CodeNameDto(
             entity.getContactTypeCode(),
             entity.getDescription()));
@@ -165,7 +176,9 @@ public class ClientService {
    * @return a Mono that emits a ClientDetailsDto object representing the details of the client
    */
   public Mono<ClientDetailsDto> getClientDetails(
-      String clientNumber
+      String clientNumber,
+      String userId,
+      String businessId
   ) {
     log.info("Loading details for {}", clientNumber);
     return
@@ -180,7 +193,12 @@ public class ClientService {
             )
             .flatMap(document ->
                 legacyService
-                    .searchLegacy(document.business().identifier(), document.business().legalName())
+                    .searchLegacy(
+                        document.business().identifier(),
+                        document.business().legalName(),
+                        userId,
+                        businessId
+                    )
                     .next()
                     .filter(isMatchWith(document))
                     .doOnNext(legacy ->
@@ -205,7 +223,25 @@ public class ClientService {
                     )
             )
             .map(BcRegistryDocumentDto.class::cast)
-            .flatMap(buildDetails());
+
+            .flatMap(client -> {
+              if (ApplicationConstant.AVAILABLE_CLIENT_TYPES.contains(
+                  client.business().legalType())) {
+                return Mono.just(client);
+              }
+              return Mono.error(new UnsuportedClientTypeException(client.business().legalType()));
+            })
+
+            //if document type is SP and party contains only one entry that is not a person, fail
+            .filter(document ->
+                !("SP".equalsIgnoreCase(document.business().legalType())
+                  && document.parties().size() == 1
+                  && !document.parties().get(0).isPerson())
+            )
+            .flatMap(buildDetails())
+            .switchIfEmpty(Mono.error(new UnableToProcessRequestException(
+                "Unable to process request. This sole proprietor is not owner by a person"
+            )));
   }
 
   /**
@@ -219,6 +255,7 @@ public class ClientService {
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
   public Flux<ClientLookUpDto> findByClientNameOrIncorporation(String value) {
+    log.info("Searching for {}", value);
     return bcRegistryService
         .searchByFacets(value)
         .map(entry -> new ClientLookUpDto(
@@ -235,10 +272,10 @@ public class ClientService {
    * <p>Send email to a client.</p>
    *
    * @param emailRequestDto The request data containing client details.
-   * @return A {@link Mono} of {@link Void}.
+   * @return A {@link Mono} of {@link String}.
    */
-  public Mono<Void> sendEmail(EmailRequestDto emailRequestDto) {
-    return triggerEmail(emailRequestDto).then();
+  public Mono<String> sendEmail(EmailRequestDto emailRequestDto) {
+    return triggerEmail(emailRequestDto);
   }
 
   /**
@@ -248,26 +285,66 @@ public class ClientService {
    * @param emailRequestDto The request data containing user and client details.
    * @return A {@link Mono} of {@link Void}.
    */
-  public Mono<Void> triggerEmailDuplicatedClient(EmailRequestDto emailRequestDto) {
+  public Mono<Void> triggerEmailDuplicatedClient(
+      EmailRequestDto emailRequestDto,
+      String userId,
+      String businessId
+  ) {
     return
         legacyService
-            .searchLegacy(emailRequestDto.incorporation(), emailRequestDto.name())
+            .searchLegacy(
+                emailRequestDto.incorporation(),
+                emailRequestDto.name(),
+                userId,
+                businessId
+            )
             .next()
             .flatMap(
                 triggerEmailDuplicatedClient(emailRequestDto.email(), emailRequestDto.userName()))
             .then();
   }
 
+
+  public Mono<Void> findByIndividual(String userId, String lastName) {
+    return legacyService
+        .searchIdAndLastName(userId, lastName)
+        .doOnNext(legacy -> log.info("Found legacy entry for {} {}", userId, lastName))
+        //If we have result, we return a Mono.error with the exception, otherwise return a Mono.empty
+        .next()
+        .flatMap(legacy -> Mono
+            .error(new ClientAlreadyExistException(legacy.clientNumber()))
+        );
+  }
+
   private Function<BcRegistryDocumentDto, Mono<ClientDetailsDto>> buildDetails() {
     return document ->
-        buildAddress(document,
-            new ClientDetailsDto(
-                document.business().legalName(),
-                document.business().identifier(),
-                document.business().goodStanding(),
-                List.of(),
-                List.of()
-            )
+        buildAddress(
+            document,
+            buildSimpleClientDetails(document.business())
+        );
+  }
+
+  private ClientDetailsDto buildSimpleClientDetails(
+      BcRegistryBusinessDto businessDto
+  ) {
+
+    if (businessDto == null) {
+      return new ClientDetailsDto(
+          "",
+          "",
+          false,
+          List.of(),
+          List.of()
+      );
+    }
+    log.info("Building simple client details for {} with standing {}", businessDto.identifier(),businessDto.goodStanding());
+    return
+        new ClientDetailsDto(
+            businessDto.legalName(),
+            businessDto.identifier(),
+            businessDto.goodStanding(),
+            List.of(),
+            List.of()
         );
   }
 
@@ -283,15 +360,21 @@ public class ClientService {
                     .offices()
                     .addresses()
             )
+            .filter(BcRegistryAddressDto::isValid)
             .map(addressDto ->
                 new ClientAddressDto(
                     addressDto.streetAddress(),
                     new ClientValueTextDto("", addressDto.addressCountry()),
                     new ClientValueTextDto(addressDto.addressRegion(), ""),
                     addressDto.addressCity(),
-                    addressDto.postalCode().trim().replaceAll("\\s+", ""),
+                    Optional
+                        .ofNullable(addressDto.postalCode())
+                        .map(String::trim)
+                        .map(value -> value.replaceAll("\\s+", ""))
+                        .orElse(StringUtils.EMPTY),
                     index.getAndIncrement(),
-                    (addressDto.addressType() != null ? addressDto.addressType() : "").concat(" address").toUpperCase()
+                    (addressDto.addressType() != null ? addressDto.addressType() : "").concat(
+                        " address").toUpperCase()
                 )
             )
             .flatMap(address -> loadCountry(address.country().text()).map(address::withCountry))
@@ -303,6 +386,8 @@ public class ClientService {
             .defaultIfEmpty(new ArrayList<>())
             .flatMap(addresses ->
                 Flux.fromIterable(document.parties())
+                    .filter(party ->
+                        !"SP".equalsIgnoreCase(document.business().legalType()) || party.isPerson())
                     .map(party ->
                         new ClientContactDto(
                             null,
@@ -381,21 +466,21 @@ public class ClientService {
       String email, String userName) {
 
     return legacy -> chesService.sendEmail(
-                                   "matched",
-                                    email,
-                                    "Client number application can’t go ahead",
-                                    legacy.description(userName), 
-                                    null)
+            "matched",
+            email,
+            "Client number application can’t go ahead",
+            legacy.description(userName),
+            null)
         .thenReturn(legacy);
   }
 
   private Mono<String> triggerEmail(EmailRequestDto emailRequestDto) {
     return chesService.sendEmail(
-                        emailRequestDto.templateName(),
-                        emailRequestDto.email(),
-                        emailRequestDto.subject(),
-                        emailRequestDto.variables(),
-                        null);
+        emailRequestDto.templateName(),
+        emailRequestDto.email(),
+        emailRequestDto.subject(),
+        emailRequestDto.variables(),
+        null);
   }
 
 }

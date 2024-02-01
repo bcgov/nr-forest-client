@@ -55,18 +55,21 @@ onMounted(() => {
 
 <template>
   <div class="grouping-05">
-    <label class="heading-03">Business information</label>
-    <div class="grouping-01">
-      <p class="heading-02 review-icon-title">
-        <Enterprise20 />
-        {{ formData.businessInformation.businessName }}
-      </p>
-      <p class="body-compact-01" id="clientTypeId">
-        {{ clientType.text }}
-      </p>
-      <p class="body-compact-01" id="birthdate" v-if="formData.businessInformation.birthdate">
-        Proprietor’s birthdate: {{ formData.businessInformation.birthdate }}
-      </p>
+    <h5>Business information</h5>
+    <div class="grouping-22">
+      <div class="grouping-01">
+        <h6 class="review-icon-title">
+          <Enterprise20 />
+          {{ formData.businessInformation.businessName }}
+        </h6>
+        <p class="body-compact-01 grouping-22-item" id="clientTypeId">
+          {{ clientType.text }}
+        </p>
+      </div>
+      <div v-if="formData.businessInformation.birthdate" class="grouping-22-item">
+        <p class="label-01">Proprietor’s birthdate</p>
+        <p class="body-compact-01">{{ formData.businessInformation.birthdate }}</p>
+      </div>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(0)">
@@ -76,19 +79,21 @@ onMounted(() => {
     </div>
   </div>
   <div class="grouping-05">
-    <label class="heading-03">Address</label>
+    <h5>Address</h5>
     <div v-for="(address, index) in formData.location.addresses" 
         :key="address.locationName" 
         class="grouping-07">
       <hr class="divider" v-if="index > 0" />
-      <span class="heading-02 review-icon-title">
+      <h6 class="review-icon-title">
         <LocationStar20 v-if="index === 0" />
         <Location20 v-else />{{ address.locationName }}
-      </span>
-      <span class="body-compact-01">{{ address.streetAddress }}</span>
-      <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
-      <span class="body-compact-01">{{ address.country.text }}</span>
-      <span class="body-compact-01">{{ address.postalCode }}</span>
+      </h6>
+      <div class="grouping-23">
+        <span class="body-compact-01">{{ address.streetAddress }}</span>
+        <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
+        <span class="body-compact-01">{{ address.country.text }}</span>
+        <span class="body-compact-01">{{ address.postalCode }}</span>
+      </div>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(1)">
@@ -98,21 +103,23 @@ onMounted(() => {
     </div>
   </div>
   <div class="grouping-05">
-    <label class="heading-03">Contacts</label>
+    <h5>Contacts</h5>
     <div v-for="(contact, index) in formData.location.contacts" 
         :key="contact.email" 
         class="grouping-07">
       <hr class="divider" 
           v-if="index > 0" />
-      <span class="heading-02 review-icon-title">
+      <h6 class="review-icon-title">
         <User20 />{{ contact.firstName }} {{ contact.lastName }}
-      </span>
-      <span class="body-compact-01">
-        {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
-      </span>
-      <span class="body-compact-01">{{ contact.contactType.text }}</span>
-      <span class="body-compact-01">{{ contact.email }}</span>
-      <span class="body-compact-01">{{ contact.phoneNumber }}</span>
+      </h6>
+      <div class="grouping-23">
+        <span class="body-compact-01">
+          {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
+        </span>
+        <span class="body-compact-01">{{ contact.contactType.text }}</span>
+        <span class="body-compact-01">{{ contact.email }}</span>
+        <span class="body-compact-01">{{ contact.phoneNumber }}</span>
+      </div>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(2)">

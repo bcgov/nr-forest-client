@@ -1,10 +1,35 @@
 import { mount } from "@vue/test-utils";
-import { describe, it, expect } from "vitest";
+import type { DOMWrapper } from "@vue/test-utils";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import ContactWizardStep from "@/pages/bceidform/ContactWizardStep.vue";
 import { emptyContact } from "@/dto/ApplyClientNumberDto";
 import { useEventBus } from "@vueuse/core";
+import * as fetcher from "@/composables/useFetch";
 import type { ModalNotification } from "@/dto/CommonTypesDto";
 import type { Contact, FormDataDto } from "@/dto/ApplyClientNumberDto";
+
+const mockFetchTo = (data: any) => (url: string, received: any) => ({
+  fetch: async () => {
+    received.value = data;
+  },
+});
+
+const setInputValue = async (inputWrapper: DOMWrapper<HTMLInputElement>, value: string) => {
+  inputWrapper.element.value = value;
+  await inputWrapper.trigger("input");
+};
+
+const comboBoxEventContent = (value: string) => {
+  return {
+    detail: {
+      item: { "data-value": value, getAttribute: (key: string) => value },
+    },
+  };
+};
+
+const multiSelectEventContent = (value: string) => {
+  return { data: value };
+};
 
 describe("ContactWizardStep.vue", () => {
   describe("when contact's firstName is null", () => {
@@ -48,5 +73,192 @@ describe("ContactWizardStep.vue", () => {
         kind: "contact",
       });
     });
+  });
+
+  describe("when the number of contacts is less than 5", () => {
+    it("renders the 'Add another contact' button", () => {
+      const wrapper = mount(ContactWizardStep, {
+        props: {
+          data: {
+            location: {
+              addresses: [],
+              contacts: [
+                {
+                  ...emptyContact,
+                  firstName: "John",
+                  lastName: "Doe",
+                } as Contact,
+              ],
+            },
+          } as unknown as FormDataDto,
+          active: false,
+        },
+      });
+
+      const addButton = wrapper.find("cds-button");
+
+      expect(addButton.text()).toContain("Add another contact");
+      expect(addButton.exists()).toBe(true);
+    });
+  });
+
+  describe("when a contact which is not the last one gets deleted", () => {
+    const firstContactName = "John";
+    const otherContactNames = ["Paul", "George", "Ringo"];
+
+    const mountTest = (includeOtherContacts: boolean) =>
+      mount(ContactWizardStep, {
+        props: {
+          data: {
+            location: {
+              addresses: [{ locationName: "Mailing address" }],
+              contacts: [firstContactName, ...(includeOtherContacts ? otherContactNames : [])].map(
+                (firstName) =>
+                  ({
+                    ...emptyContact,
+                    firstName,
+                    lastName: "Doe",
+                  }) as Contact,
+              ),
+            },
+          } as unknown as FormDataDto,
+          active: true,
+        },
+        attachTo: document.body,
+      });
+    let wrapper: ReturnType<typeof mountTest>;
+
+    const findContact = (firstName: string) => {
+      const inputArray = wrapper
+        .findAll("cds-text-input[id^='firstName_']")
+        .filter((domWrapper) => {
+          return domWrapper.element.value === firstName;
+        });
+      return inputArray.length > 0 ? inputArray[0] : null;
+    };
+
+    let bus: ReturnType<typeof useEventBus<ModalNotification>>;
+
+    const fillContactName = async (contactId: number, firstName?: string) => {
+      let domWrapper: DOMWrapper<HTMLInputElement>;
+      if (contactId > 0) {
+        domWrapper = wrapper.find(`cds-text-input#firstName_${contactId}`);
+        if (!domWrapper.element.value) {
+          await setInputValue(domWrapper, firstName || "First" + contactId);
+        }
+        domWrapper = wrapper.find(`cds-text-input#lastName_${contactId}`);
+        if (!domWrapper.element.value) {
+          await setInputValue(domWrapper, "Doe");
+        }
+      }
+    };
+
+    const fillContactRemaining = async (contactId: number) => {
+      let domWrapper: DOMWrapper<HTMLInputElement>;
+      if (contactId > 0) {
+        domWrapper = wrapper.find(`cds-text-input#firstName_${contactId}`);
+        if (!domWrapper.element.value) {
+          await setInputValue(domWrapper, otherContactNames[contactId] || "First" + contactId);
+        }
+        domWrapper = wrapper.find(`cds-text-input#lastName_${contactId}`);
+        if (!domWrapper.element.value) {
+          await setInputValue(domWrapper, "Last" + contactId);
+        }
+        domWrapper = wrapper.find(`cds-text-input#email_${contactId}`);
+        if (!domWrapper.element.value) {
+          await setInputValue(domWrapper, "value@value.com");
+        }
+      }
+
+      await setInputValue(
+        wrapper.find(`cds-text-input#phoneNumber_${contactId}`),
+        "(123) 456-7890",
+      );
+      await wrapper
+        .get(`#role_${contactId}`)
+        .trigger("cds-combo-box-selected", comboBoxEventContent("Person"));
+
+      // Sanity check
+      expect(wrapper.get(`#role_${contactId}`).element.value).toEqual("Person");
+
+      await wrapper
+        .get(`#addressname_${contactId}`)
+        .trigger("cds-multi-select-selected", multiSelectEventContent("Mailing address"));
+
+      // Sanity check
+      expect(wrapper.get(`#addressname_${contactId}`).element.value).toEqual("Mailing address");
+    };
+
+    describe.each([
+      { includeOtherContactsInProps: true, otherContactsVerb: "are" },
+      { includeOtherContactsInProps: false, otherContactsVerb: "are not" },
+    ])(
+      "when other contacts $otherContactsVerb provided in the props",
+      ({ includeOtherContactsInProps }) => {
+        beforeEach(async () => {
+          vi.spyOn(fetcher, "useFetchTo").mockImplementation(
+            mockFetchTo([{ code: "P", name: "Person" }]) as any,
+          );
+          wrapper = mountTest(includeOtherContactsInProps);
+
+          bus = useEventBus<ModalNotification>("modal-notification");
+          bus.on((payload) => {
+            payload.handler(); // automatically proceed with the deletion
+          });
+
+          if (!includeOtherContactsInProps) {
+            const addButton = wrapper.findAll("cds-button").filter((domWrapper) => {
+              return domWrapper.text() === "Add another contact";
+            })[0];
+
+            // add contacts manually
+            for (let i = 0; i < otherContactNames.length; i++) {
+              const firstName = otherContactNames[i];
+              await addButton.trigger("click");
+              await fillContactName(i + 1, firstName);
+            }
+          }
+        });
+
+        afterEach(() => {
+          bus.reset();
+        });
+
+        it("removes the intended contact from the DOM", async () => {
+          expect(findContact("George").exists()).toBe(true);
+
+          await wrapper.get("cds-button#deleteContact_2").trigger("click");
+
+          // properly removed from the DOM
+          expect(findContact("George")).toBeFalsy();
+
+          // others are kept in the DOM
+          expect(wrapper.get("#fullName_0").text()).toMatch("John");
+          expect(findContact("Paul").exists()).toBe(true);
+          expect(findContact("Ringo").exists()).toBe(true);
+        });
+
+        it("can proceed to the next step (regardless of the deleted contact being invalid)", async () => {
+          /*
+          This test essentially makes sure the validation data structure is not messed up when a
+          contact gets deleted.
+          */
+
+          // Just making sure the contact to be deleted has some empty, invalid information.
+          expect(wrapper.get("cds-text-input[id^='email_2']").element.value).toBe("");
+
+          await wrapper.get("cds-button#deleteContact_2").trigger("click");
+
+          await fillContactRemaining(0);
+          await fillContactRemaining(1);
+          await fillContactRemaining(3);
+
+          const lastValid = wrapper.emitted("valid")[wrapper.emitted("valid").length - 1];
+
+          // The last valid event was emitted with true.
+          expect(lastValid[0]).toEqual(true);
+        });
+      },
+    );
   });
 });

@@ -1,126 +1,180 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/ui-shell/index';
-import '@carbon/web-components/es/components/breadcrumb/index';
-import '@carbon/web-components/es/components/tag/index';
-import '@carbon/web-components/es/components/accordion/index';
-import '@carbon/web-components/es/components/notification/index';
-import '@carbon/web-components/es/components/button/index';
-import '@carbon/web-components/es/components/modal/index';
-import '@carbon/web-components/es/components/tooltip/index';
+import "@carbon/web-components/es/components/ui-shell/index";
+import "@carbon/web-components/es/components/breadcrumb/index";
+import "@carbon/web-components/es/components/tag/index";
+import "@carbon/web-components/es/components/accordion/index";
+import "@carbon/web-components/es/components/notification/index";
+import "@carbon/web-components/es/components/button/index";
+import "@carbon/web-components/es/components/modal/index";
+import "@carbon/web-components/es/components/tooltip/index";
 // Composables
-import { useFetchTo, usePost } from '@/composables/useFetch'
-import { useRouter } from 'vue-router'
-import { isSmallScreen, isMediumScreen } from '@/composables/useScreenSize';
-import { useEventBus } from '@vueuse/core';
+import { useFetchTo, usePost } from "@/composables/useFetch";
+import { useFocus } from "@/composables/useFocus";
+import { useRouter } from "vue-router";
+import { useEventBus } from "@vueuse/core";
 // Types
-import type { SubmissionDetails, CodeNameType, ModalNotification } from '@/dto/CommonTypesDto'
-import { formatDistanceToNow, format } from 'date-fns'
-import { greenDomain } from '@/CoreConstants'
+import type {
+  SubmissionDetails,
+  CodeNameType,
+  ModalNotification,
+} from "@/dto/CommonTypesDto";
+import { formatDistanceToNow, format } from "date-fns";
+import { greenDomain } from "@/CoreConstants";
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // @ts-ignore
-import Approved16 from '@carbon/icons-vue/es/task--complete/32';
+import Approved16 from "@carbon/icons-vue/es/task--complete/32";
 // @ts-ignore
-import Review16 from '@carbon/icons-vue/es/data--view--alt/32';
+import Review16 from "@carbon/icons-vue/es/data--view--alt/32";
 // @ts-ignore
-import Check16 from '@carbon/icons-vue/es/checkmark/16';
+import Check16 from "@carbon/icons-vue/es/checkmark/16";
 // @ts-ignore
-import Error16 from '@carbon/icons-vue/es/error--outline/16';
+import Error16 from "@carbon/icons-vue/es/error--outline/16";
+import { convertFieldNameToSentence } from "@/services/ForestClientService";
 
-const toastBus = useEventBus<ModalNotification>('toast-notification')
+const toastBus = useEventBus<ModalNotification>("toast-notification");
 
 //Route related
-const router = useRouter()
-const id = ref(router.currentRoute.value.params.id)
+const router = useRouter();
+const id = ref(router.currentRoute.value.params.id);
 
 // Base data
 const data = ref<SubmissionDetails>({
-    submissionId: 0,
-    submissionType: '',
-    submissionStatus: '',
-    submittedTimestamp: new Date(0),
-    updateTimestamp: new Date(0),
-    approvedTimestamp: new Date(0),
-    updateUser: '',
-    business: {
-      businessType: '',
-      incorporationNumber: '',
-      clientNumber: '',
-      organizationName: '',
-      clientType: '',
-      goodStandingInd: '',
+  submissionId: 0,
+  submissionType: "",
+  submissionStatus: "",
+  submittedTimestamp: new Date(0),
+  updateTimestamp: new Date(0),
+  approvedTimestamp: new Date(0),
+  updateUser: "",
+  business: {
+    businessType: "",
+    incorporationNumber: "",
+    clientNumber: "",
+    organizationName: "",
+    clientType: "",
+    goodStandingInd: "",
+    clientTypeDesc: "",
+    birthdate: ""
+  },
+  contact: [
+    {
+      index: 0,
+      firstName: "",
+      lastName: "",
+      contactType: "",
+      phoneNumber: "",
+      emailAddress: "",
+      locations: [],
+      userId: "",
     },
-    contact: [{index:0, firstName:'', lastName:'', contactType:'', phoneNumber:'', emailAddress:'', locations:[],userId:''}],
-    address: [],
-    matchers: {
-      goodStanding: '',
-      legalName: '',
-    }
-})
+  ],
+  address: [],
+  matchers: {
+    goodStanding: "",
+    corporationName: "",
+    incorporationNumber: "",
+    contact: "",
+    location: "",
+  },
+});
 
 // Modal related
-const approveModal = ref(false)
-const rejectModal = ref(false)
+const approveModal = ref(false);
+const rejectModal = ref(false);
 const rejectReasons = ref<CodeNameType[]>([
-  { code: 'goodstanding', name: 'Client is not in good standing with BC Registries' },
-  { code: 'duplicated', name: 'Client already exists' }
-])
-const selectedRejectReasons = ref<CodeNameType[]|undefined>([])
-const rejectReasonMessage = ref('')
+  {
+    code: "goodstanding",
+    name: "Client is not in good standing with BC Registries",
+  },
+  { code: "duplicated", name: "Client already exists" },
+]);
+const selectedRejectReasons = ref<CodeNameType[] | undefined>([]);
+const rejectReasonMessage = ref("");
+let networkErrorMsg = ref("");
 
 // Data loading
-useFetchTo(`/api/clients/submissions/${id.value}`, data)
+const { error: fetchError } = useFetchTo(`/api/clients/submissions/${id.value}`, data);
+watch([fetchError], () => {
+  if (fetchError.value.message) {
+    networkErrorMsg.value = fetchError.value.message;
+  }
+});
 
 const showClientNumberField = computed(() => {
-  if(selectedRejectReasons.value && selectedRejectReasons.value.length > 0){
-    return selectedRejectReasons
-            .value
-            .some((reason:CodeNameType) => reason.code === 'duplicated')
+  if (selectedRejectReasons.value && selectedRejectReasons.value.length > 0) {
+    return selectedRejectReasons.value.some(
+      (reason: CodeNameType) => reason.code === "duplicated"
+    );
   }
-  return false
-})
+  return false;
+});
 
-const rejectYesDisabled = computed(() =>{
-  if(selectedRejectReasons.value && selectedRejectReasons.value.length > 0){
-    if(showClientNumberField.value) return !rejectReasonMessage.value
-    return !selectedRejectReasons.value.some((reason:CodeNameType) => reason.code === 'goodstanding')
+const rejectYesDisabled = computed(() => {
+  if (selectedRejectReasons.value && selectedRejectReasons.value.length > 0) {
+    if (showClientNumberField.value) return !rejectReasonMessage.value;
+    return !selectedRejectReasons.value.some(
+      (reason: CodeNameType) => reason.code === "goodstanding"
+    );
   }
-  return true
-})
+  return true;
+});
 
 const rejectionReasonMessage = computed(() => {
-  if(selectedRejectReasons.value && selectedRejectReasons.value.length > 0){    
-    return selectedRejectReasons.value.map((reason:CodeNameType) => reason.code)
+  if (selectedRejectReasons.value && selectedRejectReasons.value.length > 0) {
+    return selectedRejectReasons.value.map(
+      (reason: CodeNameType) => reason.code
+    );
   }
-  return []
-})
+  return [];
+});
+
+const submitDisabled = ref(false);
+
+const reviewConflictError = ref(false);
 
 // Submit the form changes to the backend
 const submit = (approved: boolean) => {
-  
-  rejectModal.value = false
-  approveModal.value = false
-  const { response } = usePost(
+  if (submitDisabled.value) return;
+  submitDisabled.value = true;
+
+  rejectModal.value = false;
+  approveModal.value = false;
+  const { response, error, loading } = usePost(
     `/api/clients/submissions/${id.value}`,
-    { 
+    {
       approved,
       reasons: rejectionReasonMessage.value,
-      message: rejectReasonMessage.value
+      message: rejectReasonMessage.value,
     },
     {
       headers: {
-      "x-user-id": ForestClientUserSession.user?.userId ?? "",
-      "x-user-email": ForestClientUserSession.user?.email ?? "",
-      "x-user-name": `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`,
-    },
+        "x-user-id": ForestClientUserSession.user?.userId ?? "",
+        "x-user-email": ForestClientUserSession.user?.email ?? "",
+        "x-user-name": `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`,
+      },
     }
   );
+
+  const { setScrollPoint } = useFocus();
+
+  watch([error], () => {
+    if (error.value.response.status === 409) {
+      reviewConflictError.value = true;
+    } else if (error.value.message) {
+      networkErrorMsg.value = error.value.message;
+    }
+    if (reviewConflictError.value || networkErrorMsg.value) {
+      setScrollPoint("top-notification");
+    }
+  });
+
   watch(response, (response) => {
     if (response.status) {
       console.log(response);
-      router.push({ name: "internal" })
+      router.push({ name: "internal" });
       const toastNotification: ModalNotification = {
         kind: "Success",
         active: true,
@@ -128,68 +182,127 @@ const submit = (approved: boolean) => {
         ...(approved
           ? {
               message: `New client number has been created for “${normalizeString(
-                data.value.business.organizationName,
+                data.value.business.organizationName
               )}”`,
               toastTitle: "Submission approved",
             }
           : {
               message: `New client number has been rejected for “${normalizeString(
-                data.value.business.organizationName,
+                data.value.business.organizationName
               )}”`,
               toastTitle: "Submission rejected",
             }),
-      }
+      };
       toastBus.emit(toastNotification);
     }
   });
-}
+
+  watch([loading, reviewConflictError], () => {
+    submitDisabled.value = loading.value || reviewConflictError.value;
+  });
+};
 
 // Normalize the string to capitalize the first letter of each word
-const normalizeString = (input:string):string => {  
-  const words = input.split(' ');
-  const capitalizedWords = words.map(word => {    
+const normalizeString = (input: string): string => {
+  const words = input.split(" ");
+  const capitalizedWords = words.map((word) => {
     if (word.length > 0) {
       return word[0].toUpperCase() + word.slice(1).toLocaleLowerCase();
     } else {
-      return '';
+      return "";
     }
-  });  
-  return capitalizedWords.join(' ');
-}
+  });
+  return capitalizedWords.join(" ");
+};
 // Get the icon for the row
-const iconForRow = (requestType:string) => {
-  if(requestType ==='Auto approved client')
-    return Approved16        
-  return Review16
-}
+const iconForRow = (requestType: string) => {
+  if (requestType === "Auto approved client") return Approved16;
+  return Review16;
+};
 // Format the date to a friendly format
-const friendlyDate = (date:Date):string => {  
-  if(!date) return ''
-  return `${formatDistanceToNow(new Date(date))} ago`
-}
-const formattedDate = (date:Date):string => {
-  if(!date) return ''
-  return format(new Date(date),'MMM dd, yyyy')
-}
+const friendlyDate = (date: Date): string => {
+  if (!date) return "";
+  return `${formatDistanceToNow(new Date(date))} ago`;
+};
+const formattedDate = (date: Date): string => {
+  if (!date) return "";
+  return format(new Date(date), "MMM dd, yyyy");
+};
 // Format the good standing parameter
-const goodStanding = (goodStanding:string):string => {
-  if(goodStanding)
-    return goodStanding === 'Y' ? 'Good standing' : 'Not in good standing'
-  return 'Unknown'
-}
+const goodStanding = (goodStanding: string): string => {
+  if (goodStanding)
+    return goodStanding === "Y" ? "Good standing" : "Not in good standing";
+  return "Unknown";
+};
 
-const tagColor = (status: string) =>{
-  switch(status){
-    case 'New':
-      return 'blue'
-    case 'Approved':
-      return 'green'
-    case 'Rejected':
-      return 'red'
+const tagColor = (status: string) => {
+  switch (status) {
+    case "New":
+      return "blue";
+    case "Approved":
+      return "green";
+    case "Rejected":
+      return "red";
     default:
-      return 'purple'
+      return "purple";
   }
-}
+};
+
+const matchingData = computed(() => {
+  const { corporationName, incorporationNumber, contact, location } = data.value.matchers;
+  let results = [];
+
+  if (corporationName) {
+    results.push(...corporationName.split(","));
+  }
+  if (incorporationNumber) {
+    results.push(...incorporationNumber.split(","));
+  }
+  if (contact) {
+    results.push(...contact.split(","));
+  }
+  if (location) {
+    results.push(...location.split(","));
+  }
+
+  return results;
+});
+
+const getLegacyUrl = (duplicatedClient) => {
+  const encodedClientNumber = encodeURIComponent(duplicatedClient.trim());
+  return `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${encodedClientNumber}`;
+};
+
+const getListItemContent = ref((matcher, label) => {
+  if (matcher) {
+    const clients = matcher.split(", ");
+    return clients
+      .map((client) => renderListItem(label, client.trim()))
+      .join("");
+  }
+  return "";
+});
+
+const renderListItem = (label, clientNumber) => {
+  let finalLabel = "";
+  if (label === 'contact' || label === 'location') {
+    finalLabel = "Matching one or more " + label + "s";
+  }
+  else if (label === 'corporationName') {
+    finalLabel = "Partial match on business name";
+  }
+  else {
+    finalLabel = "Partial match on " + convertFieldNameToSentence(label).toLowerCase() ;
+  }
+
+  return (
+    finalLabel +
+    " - Client number: " +
+    '<a target="_blank" href="' + getLegacyUrl(clientNumber) +'">' +
+    clientNumber +
+    "</a>"
+  );
+};
 </script>
 
 <template>
@@ -203,7 +316,7 @@ const tagColor = (status: string) =>{
           
         </cds-breadcrumb>
 
-        <p class="submission-details--title heading-05">
+        <h3 class="submission-details--title">
           <component
             data-testid="display-row-icon"
             :is="iconForRow(data.submissionType)"      
@@ -212,9 +325,42 @@ const tagColor = (status: string) =>{
           <span>
             {{ data.submissionType }}: {{ normalizeString(data.business.organizationName) }}
           </span>
-        </p>
-        <p class="body-01" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
-        <p class="body-01" v-else>Check and manage this submission for a new client number</p>
+        </h3>
+        <p class="body-01" data-testid="subtitle" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
+        <p class="body-01" data-testid="subtitle" v-else>Check and manage this submission for a new client number</p>
+      </div>
+      
+      <div class="hide-when-less-than-two-children"><!--
+        This div is necessary to avoid the div.header-offset below from interfering in the flex flow.
+      -->
+        <div data-scroll="top-notification" class="header-offset"></div>
+        <cds-actionable-notification
+          v-if="networkErrorMsg !== ''"
+          v-shadow="true"
+          low-contrast="true"
+          hide-close-button="true"
+          open="true"
+          kind="error"
+          title="Something went wrong:"      
+        >    
+          <div>
+            We're working to fix a problem with our network. Please try approving or rejecting the submission later.
+          </div>    
+        </cds-actionable-notification>
+
+        <cds-actionable-notification
+          v-if="reviewConflictError"
+          v-shadow="true"
+          low-contrast="true"
+          hide-close-button="true"
+          open="true"
+          kind="error"
+          title="Submission already approved or rejected"
+        >
+          <div>
+          Reload the page for updated information.
+          </div>
+        </cds-actionable-notification>
       </div>
 
       <cds-actionable-notification
@@ -226,7 +372,12 @@ const tagColor = (status: string) =>{
         kind="info"
         title="This submission was automatically approved by the system"      
       >    
-        <div>No matching client records or BC Registries standing issues were found. Review the details in the read-only version below.</div>    
+        <div v-if="data.business.businessType !== 'U'">
+          No matching client records or BC Registries standing issues were found. Review the details in the read-only version below.
+        </div>    
+        <div v-if="data.business.businessType === 'U'">
+          No matching client records were found. Review the details in the read-only version below.
+        </div> 
       </cds-actionable-notification>
 
       <cds-inline-notification
@@ -259,34 +410,33 @@ const tagColor = (status: string) =>{
             <a href="https://www.bcregistry.gov.bc.ca/"
               target="_blank"
               rel="noopener noreferrer">BC Registries</a>
-            and update it below
+            to determine if this submission should be approved or rejected.
           </p>
         </div>
       </cds-actionable-notification>
 
       <cds-actionable-notification
-          v-if="data.submissionType === 'Review new client' && data.matchers.legalName && data.submissionStatus !== 'Approved'"
+          v-if="data.submissionType === 'Review new client' && matchingData.length > 0 && data.submissionStatus !== 'Approved'"
           v-shadow="true"
           low-contrast="true"
           hide-close-button="true"
           open="true"
           kind="warning"
-          title="Possible matching record found"      
+          title="Possible matching records found"      
         >    
         <div>
-          <p v-if="data.matchers.legalName.split(',').length === 1" class="body-compact-01">
-            {{ data.matchers.legalName.split(',').length }} similar client record was found. 
-            Review their information in the Client Management System to determine if this submission should be approved or rejected:
-          </p>
-          <p v-else class="body-compact-01">
-            {{ data.matchers.legalName.split(',').length }} similar client records were found. 
+          <p class="body-compact-01">
+            {{ matchingData.length }} similar client record 
+            <span v-if="matchingData.length === 1">was</span> 
+            <span v-else>were</span> 
+            found. 
             Review their information in the Client Management System to determine if this submission should be approved or rejected:
           </p>
           <ul class="bulleted-list-disc body-compact-01">
-            <li 
-              v-for="duplicatedClient in data.matchers.legalName.split(',')" 
-              :key="duplicatedClient">
-                Legal name: <a target="_blank" :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${duplicatedClient.trim()}`">{{duplicatedClient.trim()}}</a>
+            <!-- The content here is sanitized using vue-3-sanitize, and it is safe. -->
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <li v-for="(matcher, label) in data.matchers" :key="matcher" 
+                v-dompurify-html="getListItemContent(matcher, label)">
             </li>
           </ul>
         </div>    
@@ -295,8 +445,9 @@ const tagColor = (status: string) =>{
       <div class="grouping-14">
         <div class="grouping-05-short">
           <div>
-            <p class="heading-02 mg-tl-2">Client summary</p>
+            <h6 class="mg-tl-2">Client summary</h6>
             <div class="grouping-10">
+              
               <read-only-component label="Name">
                 <span class="body-compact-01">{{ normalizeString(data.business.organizationName) }}</span>
               </read-only-component>
@@ -306,14 +457,18 @@ const tagColor = (status: string) =>{
               </read-only-component>
 
               <read-only-component label="Client type">
-                <span class="body-compact-01">{{ data.business.clientType }}</span>
+                <span class="body-compact-01">{{ data.business.clientTypeDesc }}</span>
+              </read-only-component>
+
+              <read-only-component label="Birthdate" v-if="data.business.clientType === 'I'">
+                <span class="body-compact-01">{{ data.business.birthdate }}</span>
               </read-only-component>
 
               <read-only-component label="Incorporation number" v-if="data.business.incorporationNumber">
                 <span class="body-compact-01">{{ data.business.incorporationNumber }}</span>
               </read-only-component>
 
-              <read-only-component label="B.C. Registries standing">
+              <read-only-component label="B.C. Registries standing" v-if="data.business.businessType === 'R'">
                 <span class="body-compact-01">{{ goodStanding(data.business.goodStandingInd) }}</span>
               </read-only-component>
 
@@ -452,12 +607,12 @@ const tagColor = (status: string) =>{
         </cds-accordion>
 
         <div class="grouping-15" v-if="data.submissionType === 'Review new client' && (data.submissionStatus !== 'Approved' && data.submissionStatus !== 'Rejected')">
-          <cds-button kind="primary" @click="approveModal = !approveModal">
+          <cds-button kind="primary" @click="approveModal = !approveModal" :disabled="submitDisabled">
             <span>Approve submission</span>
             <Check16 slot="icon" />
           </cds-button>
           <span class="spacer" v-if="!isSmallScreen && !isMediumScreen"></span>
-          <cds-button kind="danger" @click="rejectModal = !rejectModal">
+          <cds-button kind="danger" @click="rejectModal = !rejectModal" :disabled="submitDisabled">
             <span>Reject submission</span>
             <Error16 slot="icon" />
           </cds-button>
@@ -478,7 +633,7 @@ const tagColor = (status: string) =>{
         </cds-modal-header>
         
         <cds-modal-body>
-          <p>A new client number will be created and an email will be sent to the submitter.</p>
+          <p class="body-compact-01">A new client number will be created and an email will be sent to the submitter.</p>
         </cds-modal-body>
 
         <cds-modal-footer>
@@ -491,6 +646,7 @@ const tagColor = (status: string) =>{
           <cds-modal-footer-button 
             kind="primary" 
             @click="submit(true)"
+            :disabled="submitDisabled"
             class="cds--modal-submit-btn">
             <span>Approve submission</span>
             <Check16 slot="icon" />
@@ -512,7 +668,7 @@ const tagColor = (status: string) =>{
         </cds-modal-header>
 
         <cds-modal-body class="grouping-12">
-          <p>This submission will be rejected and the submitter will receive an email notification. Please choose the reason below:</p>
+          <p class="body-compact-01">This submission will be rejected and the submitter will receive an email notification. Please choose the reason below:</p>
           <multiselect-input-component
             id="reject_reason_id"
             label="Reason for rejection"
@@ -524,7 +680,7 @@ const tagColor = (status: string) =>{
             @update:selected-value="event => selectedRejectReasons = event"        
           />
           <text-input-component
-            v-if="showClientNumberField"
+            :class="{invisible: !showClientNumberField}"
             id="reject_reason_message"
             label="Matching client number"
             placeholder=""
@@ -546,7 +702,7 @@ const tagColor = (status: string) =>{
           <cds-modal-footer-button 
             kind="danger"
             @click="submit(false)"
-            :disabled="rejectYesDisabled"
+            :disabled="rejectYesDisabled || submitDisabled"
             class="cds--modal-close-btn">
             <span>Reject submission</span>
             <Error16 slot="icon" />

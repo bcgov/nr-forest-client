@@ -28,6 +28,9 @@ public class ForestClientConfiguration {
   private BackendConfiguration backend;
 
   @NestedConfigurationProperty
+  private BackendConfiguration legacy;
+
+  @NestedConfigurationProperty
   private BcRegistryConfiguration bcregistry;
 
   @Data

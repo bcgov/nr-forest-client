@@ -9,6 +9,7 @@ import { useFocus } from "@/composables/useFocus";
 // Types
 import type { CodeNameType, BusinessSearchResult } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
+import type { TextInputType} from "@/components/types"
 // Validators
 import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
@@ -32,7 +33,7 @@ const emit = defineEmits<{
 }>();
 
 const generalErrorBus = useEventBus<string>("general-error-notification");
-const { setFocusedComponent } = useFocus();
+const { safeSetFocusedComponent } = useFocus();
 
 const noValidation = (value: string) => "";
 
@@ -165,6 +166,15 @@ const postalCodePlaceholder = computed(() => {
   }
 });
 
+const postalCodeInputType = computed<TextInputType>(() => {
+  switch (selectedValue.country.value) {
+    case "CA":
+      return "text";
+    default:
+      return "tel";
+  }
+});
+
 const provinceNaming = computed(() => {
   switch (selectedValue.country.value) {
     case "CA":
@@ -229,11 +239,6 @@ watch([detailsData], () => {
     //addressControl is responsible for giving an empty list instead of the AC value
     setTimeout(() => (addressControl.value = false), 200);
   }
-});
-
-onMounted(() => {
-  if (props.id == 0) setFocusedComponent(`addr_${props.id}`, 800);
-  else setFocusedComponent(`name_${props.id}`, 200);
 });
 </script>
 
@@ -343,6 +348,7 @@ onMounted(() => {
     <text-input-component
       :id="'postalCode_' + id"
       :label="postalCodeNaming"
+      :type="postalCodeInputType"
       required-label
       placeholder=""
       :tip="postalCodePlaceholder"
@@ -357,6 +363,7 @@ onMounted(() => {
     <div class="grouping-06">
       <cds-button
         v-if="id > 0"
+        :id="'deleteAddress_' + id"
         kind="danger--tertiary"
         @click.prevent="emit('remove', id)"
       >

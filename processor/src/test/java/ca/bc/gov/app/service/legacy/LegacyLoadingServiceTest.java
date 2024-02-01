@@ -2,44 +2,30 @@ package ca.bc.gov.app.service.legacy;
 
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.MatcherResult;
+import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.service.processor.ProcessorMatcher;
-import java.util.ArrayList;
+import ca.bc.gov.app.matchers.ProcessorMatcher;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.integration.support.MessageBuilder;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHeaders;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @DisplayName("Unit Test | Legacy Service")
 class LegacyLoadingServiceTest {
 
-  private final LegacyLoadingService service = new LegacyLoadingService(List.of(new TestProcessorMatcher()));
+  private final LegacyLoadingService service = new LegacyLoadingService(
+      List.of(new TestProcessorMatcher()));
 
-  @Test
-  @DisplayName("Forward it")
-  void shouldJustForwardMessage() {
-    List<MatcherResult> matchers = new ArrayList<>();
-    Message<List<MatcherResult>> message = MessageBuilder
-        .withPayload(matchers)
-        .setHeader(ApplicationConstant.SUBMISSION_ID, 1)
-        .build();
-
-    assertEquals(message, service.approved(message));
-  }
 
   @ParameterizedTest
   @MethodSource("matchCheck")
@@ -47,24 +33,23 @@ class LegacyLoadingServiceTest {
   void shouldCheckAndMatch(SubmissionInformationDto input, String responseChannel) {
     service
         .matchCheck(
-            MessageBuilder
-                .withPayload(input)
-                .setHeader(ApplicationConstant.SUBMISSION_ID, 1)
-                .build()
+            new MessagingWrapper<>(
+                input,
+                Map.of(ApplicationConstant.SUBMISSION_ID, 1)
+            )
         )
         .as(StepVerifier::create)
         .assertNext(message ->
             assertThat(message)
                 .isNotNull()
-                .isInstanceOf(Message.class)
+                .isInstanceOf(MessagingWrapper.class)
                 .hasFieldOrProperty("payload")
-                .hasFieldOrProperty("headers")
-                .extracting(Message::getHeaders, as(InstanceOfAssertFactories.MAP))
+                .hasFieldOrProperty("parameters")
+                .extracting(MessagingWrapper::parameters, as(InstanceOfAssertFactories.MAP))
                 .isNotNull()
                 .isNotEmpty()
-                .containsKey("id")
-                .containsKey("timestamp")
-                .containsEntry(MessageHeaders.REPLY_CHANNEL, responseChannel)
+                .containsKey("submission-id")
+                .containsKey("submission-status")
                 .containsEntry(ApplicationConstant.SUBMISSION_ID, 1)
         )
         .verifyComplete();
@@ -84,7 +69,7 @@ class LegacyLoadingServiceTest {
         );
   }
 
-  private static class TestProcessorMatcher implements ProcessorMatcher{
+  private static class TestProcessorMatcher implements ProcessorMatcher {
 
     @Override
     public boolean enabled(SubmissionInformationDto submission) {
@@ -101,7 +86,7 @@ class LegacyLoadingServiceTest {
       return Mono
           .just(submission.goodStanding())
           .filter(value -> value.equalsIgnoreCase("N"))
-          .map(value -> new MatcherResult("test",value));
+          .map(value -> new MatcherResult("test", value));
     }
   }
 

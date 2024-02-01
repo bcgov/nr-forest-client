@@ -1,6 +1,6 @@
 spring:
   application:
-    name: FSA Forest Client
+    name: nr-forest-client-${APP_COMPONENT:backend}
   main:
     lazy-initialization: false
     banner-mode: "off"
@@ -30,41 +30,63 @@ spring:
       charset: UTF-8
       enabled: true
       force: true
+  sleuth:
+    propagation-keys:
+      - X-TRACE-ID
+    baggage-keys:
+      - X-TRACE-ID
+    log:
+      slf4j:
+        whitelisted-mdc-keys:
+          - X-TRACE-ID
 
 management:
+  enable-native-support: true
   endpoint:
     health:
       show-details: always
   endpoints:
     web:
+      path-mapping:
+        prometheus: metrics
       base-path: /
       exposure:
-        include: "*"
+        include: health,info,metrics,otlp,tracing
   httpexchanges:
     recording:
       include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
+  tracing:
+    enabled: false
+    baggage:
+      remote-fields:
+        - X-TRACE-ID
+      correlation:
+        fields:
+          - X-TRACE-ID
+    sampling:
+      probability: 0.75
+  zipkin:
+    metrics:
+      export:
+        enabled: true
 
-springdoc:
-  enable-native-support: true
-  webjars:
-    prefix: /v3
-  api-docs:
-    groups:
-      enabled: true
-  show-actuator: false
-  swagger-ui:
-    path: /
+info:
+  app:
+    name: ${spring.application.name}
+    zone: ${APP_ZONE:local}
 
 ca:
   bc:
     gov:
       nrs:
+        submissionLimit: ${SUBMISSION_LIMIT:7D}
         ches:
           uri: ${CHES_API_URL:http://127.0.0.1:10010/chess/uri}
           tokenUrl: ${CHES_TOKEN_URL:http://127.0.0.1:10010/token/uri}
           clientId: ${CHES_CLIENT_ID:clientId}
           clientSecret: ${CHES_CLIENT_SECRET:secret}
           scope: scope
+          copyEmail: ${CHES_COPY_EMAIL:email@email.ca}
         bcregistry:
           uri: ${BCREGISTRY_URI:https://bcregistry-sandbox.apigee.net}
           apiKey: ${BCREGISTRY_KEY:123456}
@@ -121,6 +143,10 @@ ca:
               - X-User-Email
               - x-user-name
               - X-User-Name
+              - x-user-businessid
+              - X-User-Businessid
+              - x-total-count
+              - X-Total-Count
             methods:
               - OPTIONS
               - GET
@@ -128,3 +154,27 @@ ca:
               - PUT
               - DELETE
             age: 5m
+
+logging:
+  pattern:
+    correlation: "[${spring.application.name:},%X{${X-TRACE-ID:traceId}:-},%X{spanId:-}] "
+
+# Profile Specific Properties
+---
+spring:
+  config:
+    activate:
+      on-profile: container
+  sleuth:
+    propagation-keys:
+      - X-TRACE-ID
+    baggage-keys:
+      - X-TRACE-ID
+    log:
+      slf4j:
+        whitelisted-mdc-keys:
+          - X-TRACE-ID
+
+logging:
+  pattern:
+    console: "{\"time\": \"%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}\", \"level\": \"${LOG_LEVEL:%5p}\", \"app\":\"${spring.application.name:-}\", \"traceId\":\"%X{${X-TRACE-ID:traceId}:-}\", \"spanId\":\"%X{spanId:-}\", \"pid\": \"${PID: }\", \"thread\": \"%t\", \"source\": \"%logger{63}:%L\", \"message\": \"%m${LOG_EXCEPTION_CONVERSION_WORD:%wEx}\"}%n"

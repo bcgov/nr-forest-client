@@ -13,15 +13,16 @@
 		<#include "emailLogo.html">
 
 		<p>
-			Client Admin,
+			Dear <b>${userName}</b>,
 		</p>
 		<div>&nbsp;</div>
 
 		<p>
-			An application for a client number for <b>${userName}</b> has been approved.
+			An application for a client number for <b>${business.name}</b> has been approved.
 		</p>
+		<div>&nbsp;</div>
 		<p>
-			The client number is ${clientNumber}.
+			The client number is ${business.clientNumber}. Be sure to keep it for your records.
 		</p>
 		<div>&nbsp;</div>
 			

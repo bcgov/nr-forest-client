@@ -3,24 +3,38 @@ server:
 
 spring:
   application:
-    name: FSA Forest Client Processor
+    name: nr-forest-client-${APP_COMPONENT:processor}
   main:
     lazy-initialization: false
     banner-mode: "off"
     allow-bean-definition-overriding: true
   r2dbc:
-    url: r2dbcs:oracle:thin:@tcps://${ca.bc.gov.nrs.oracle.host}:${ca.bc.gov.nrs.oracle.port}/${ca.bc.gov.nrs.oracle.service}?javax.net.ssl.trustStore=${ca.bc.gov.nrs.oracle.keystore}&javax.net.ssl.trustStorePassword=${ca.bc.gov.nrs.oracle.secret}&javax.net.ssl.keyStore=${ca.bc.gov.nrs.oracle.keystore}&javax.net.ssl.keyStorePassword=${ca.bc.gov.nrs.oracle.secret}&oracle.net.ssl_certificate_alias=${ca.bc.gov.nrs.oracle.host}&oracle.net.ssl_server_dn_match=false
-    username: ${ca.bc.gov.nrs.oracle.username}
-    password: ${ca.bc.gov.nrs.oracle.password}
+    url: r2dbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
+    username: ${ca.bc.gov.nrs.postgres.username}
+    password: ${ca.bc.gov.nrs.postgres.password}
     pool:
       enabled: true
       initialSize: 1
       minIdle: 1
-      maxSize: 3
+      maxSize: 1
       maxLifeTime: 60000
       maxIdleTime: 45000
       maxCreateConnectionTime: 90000
-      poolName: FsaLegacyClientConPool
+      poolName: FsaProcessorClientConPool
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  sleuth:
+    propagation-keys:
+      - X-TRACE-ID
+    baggage-keys:
+      - X-TRACE-ID
+    log:
+      slf4j:
+        whitelisted-mdc-keys:
+          - X-TRACE-ID
 
 management:
   enable-native-support: true
@@ -29,9 +43,33 @@ management:
       show-details: always
   endpoints:
     web:
+      path-mapping:
+        prometheus: metrics
       base-path: /
       exposure:
-        include: health,metrics
+        include: health,info,metrics,otlp,tracing
+  httpexchanges:
+    recording:
+      include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
+  tracing:
+    enabled: false
+    baggage:
+      remote-fields:
+        - X-TRACE-ID
+      correlation:
+        fields:
+          - X-TRACE-ID
+    sampling:
+      probability: 0.75
+  zipkin:
+    metrics:
+      export:
+        enabled: true
+
+info:
+  app:
+    name: ${spring.application.name}
+    zone: ${APP_ZONE:local}
 
 ca:
   bc:
@@ -41,15 +79,8 @@ ca:
           poolTime: ${TIMING:5M}
         backend:
           uri: ${CLIENT_URI:http://localhost:8080/api}
-        oracle:
-          service: ${ORACLEDB_SERVICENAME:fsa-forest}
-          database: ${ORACLEDB_DATABASE:fsa-forest}
-          host: ${ORACLEDB_HOST:localhost}
-          port: ${ORACLEDB_PORT:1521}
-          username: ${ORACLEDB_USER:user}
-          password: ${ORACLEDB_PASSWORD:passwd}
-          keystore: ${ORACLEDB_KEYSTORE:jssecacerts.jks}
-          secret: ${ORACLEDB_SECRET:changeit}
+        legacy:
+          uri: ${LEGACY_URI:http://localhost:9999/api}
         postgres:
           database: ${POSTGRESQL_DATABASE:fsa-forest}
           host: ${POSTGRESQL_HOST:localhost}:5432
@@ -60,3 +91,28 @@ ca:
           uri: ${BCREGISTRY_URI:https://bcregistry-sandbox.apigee.net}
           apiKey: ${BCREGISTRY_KEY:123456}
           accountId: ${BCREGISTRY_ACCOUNT:123456}
+
+
+logging:
+  pattern:
+    correlation: "[${spring.application.name:},%X{${X-TRACE-ID:traceId}:-},%X{spanId:-}] "
+
+# Profile Specific Properties
+---
+spring:
+  config:
+    activate:
+      on-profile: container
+  sleuth:
+    propagation-keys:
+      - X-TRACE-ID
+    baggage-keys:
+      - X-TRACE-ID
+    log:
+      slf4j:
+        whitelisted-mdc-keys:
+          - X-TRACE-ID
+
+logging:
+  pattern:
+    console: "{\"time\": \"%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}\", \"level\": \"${LOG_LEVEL:%5p}\", \"app\":\"${spring.application.name:-}\", \"traceId\":\"%X{${X-TRACE-ID:traceId}:-}\", \"spanId\":\"%X{spanId:-}\", \"pid\": \"${PID: }\", \"thread\": \"%t\", \"source\": \"%logger{63}:%L\", \"message\": \"%m${LOG_EXCEPTION_CONVERSION_WORD:%wEx}\"}%n"

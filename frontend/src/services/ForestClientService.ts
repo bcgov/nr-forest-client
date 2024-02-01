@@ -49,3 +49,29 @@ export const getEnumKeyByEnumValue = <T extends Record<string, any>>(enumObject:
   const key = Object.keys(enumObject).find((x) => enumObject[x] === enumValue);
   return key ? String(key) : "Unknown";
 };
+
+export const getObfuscatedEmail = email => {
+  const obfuscatedEmail = email.replace('@', '&#64;');
+  return obfuscatedEmail;
+};
+
+export const getMailtoLink = email => {
+  const encodedEmail = encodeURIComponent(email);
+  return 'mailto:' + encodedEmail;
+};
+
+export const openMailtoLink = (email) => {
+  const encodedEmail = encodeURIComponent(email);
+  const mailtoLink = 'mailto:' +  encodedEmail;
+  location.assign(mailtoLink);
+}
+
+export const convertFieldNameToSentence = (input: string): string => {
+  const lastPart = input.split('.').pop();
+
+  const words = lastPart
+                  .replace(/([a-z])([A-Z])/g, '$1 $2') // Insert space between camel case
+                  .split(/\s+/);
+  
+  return words.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+};

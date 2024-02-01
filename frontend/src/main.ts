@@ -6,6 +6,7 @@ import directivesMap from "@/directivesMap";
 import { featureFlags, backendUrl } from "@/CoreConstants";
 import type { SessionProperties } from "@/dto/CommonTypesDto";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
+import VueDOMPurifyHTML from "vue-dompurify-html";
 
 // Importing Styles
 import "@/styles";
@@ -14,6 +15,15 @@ const app = createApp(App);
 
 app.use(router);
 app.use(VueTheMask);
+app.use(VueDOMPurifyHTML, {
+  hooks: {
+    afterSanitizeAttributes: (node) => {
+      node.setAttribute("target", "_blank");
+      node.setAttribute("rel", "noopener");
+    },
+  },
+});
+
 for (const directiveName in directivesMap) {
   const directive = directivesMap[directiveName as keyof typeof directivesMap];
   app.directive(directiveName, directive);

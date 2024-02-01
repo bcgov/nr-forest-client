@@ -2,6 +2,7 @@ name: Pull Request Open
 
 on:
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   # PR open and close use the same group, allowing only one at a time
@@ -48,7 +49,7 @@ jobs:
       - name: Conventional Changelog Update
         id: changelog
         continue-on-error: true
-        uses: TriPSs/conventional-changelog-action@v4
+        uses: TriPSs/conventional-changelog-action@v5
         with:
           github-token: ${{ github.token }}
           output-file: "CHANGELOG.md"
@@ -79,7 +80,7 @@ jobs:
     needs: pr-validation
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
-      URL_ZONE: $((${{ github.event.number }} % 50))
+      URL_ZONE: ${{ needs.pr-validation.outputs.url_zone }}
       PREFIX: ${{ github.event.repository.name }}-${{ needs.pr-validation.outputs.url_zone }}
     runs-on: ubuntu-22.04
     permissions:
@@ -93,10 +94,7 @@ jobs:
             ---
             Thanks for the PR!
 
-            Any successful deployments (not always required) will be available below.
-            [Backend](https://${{ env.PREFIX }}-backend.${{ env.DOMAIN }}/) available
-            [Frontend](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/) available
-            [Legacy](https://${{ env.PREFIX }}-legacy.${{ env.DOMAIN }}/) available
+            Any successful deployments (not always required) will be available [here](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/)
 
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
@@ -128,7 +126,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: bcgov-nr/action-builder-ghcr@v2.0.0
+      - uses: bcgov-nr/action-builder-ghcr@v2.0.1
         name: Build (${{ matrix.package }})
         with:
           package: ${{ matrix.package }}
@@ -143,16 +141,17 @@ jobs:
     name: Deploy Application
     needs:
       - builds
+      - pr-validation
     environment: dev
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))
+      PREFIX: ${{ github.event.repository.name }}-${{ needs.pr-validation.outputs.url_zone }}
       ZONE: dev
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: Initializing Deployment
-        uses: bcgov-nr/action-deployer-openshift@v2.0.0
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -181,10 +180,11 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=DEV
             -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
-            -p COGNITO_LOGOUT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+            -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}'
+            -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
       - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v2.0.0
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -196,7 +196,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
 
       - name: Deploy Backend
-        uses: bcgov-nr/action-deployer-openshift@v2.0.0
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -212,10 +212,10 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
-            -p URL_ZONE=$((${{ github.event.number }} % 50))
+            -p URL_ZONE=${{ needs.pr-validation.outputs.url_zone }}
 
       - name: Deploy Legacy
-        uses: bcgov-nr/action-deployer-openshift@v2.0.0
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -226,10 +226,10 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
-            -p URL_ZONE=$((${{ github.event.number }} % 50))
+            -p URL_ZONE=${{ needs.pr-validation.outputs.url_zone }}
 
       - name: Deploy Frontend
-        uses: bcgov-nr/action-deployer-openshift@v2.0.0
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -240,11 +240,11 @@ jobs:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
-            -p URL_ZONE=$((${{ github.event.number }} % 50))
+            -p URL_ZONE=${{ needs.pr-validation.outputs.url_zone }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
 
       - name: Deploy Processor
-        uses: bcgov-nr/action-deployer-openshift@v2.0.0
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
           file: processor/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -255,7 +255,7 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ github.event.number }}
-            -p URL_ZONE=$((${{ github.event.number }} % 50))
+            -p URL_ZONE=${{ needs.pr-validation.outputs.url_zone }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             
   cypress-run:
@@ -296,7 +296,7 @@ jobs:
           detailed_summary: true
           job_name: User Journeys
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: Upload Cypress Screenshots with error
         if: failure()
         with:
@@ -304,7 +304,7 @@ jobs:
           path: cypress/cypress/screenshots
           retention-days: 7
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: Upload Cypress Videos with error
         if: failure()
         with:

@@ -5,15 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.Message;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 @Slf4j
 @RegisterReflectionForBinding({
     SubmissionInformationDto.class,
-    Integer.class,
-    Message.class
+    Integer.class
 })
 public class GlobalServiceConfiguration {
 
@@ -22,6 +20,14 @@ public class GlobalServiceConfiguration {
     return WebClient
         .builder()
         .baseUrl(configuration.getBackend().getUri())
+        .build();
+  }
+
+  @Bean
+  public WebClient legacyClientApi(ForestClientConfiguration configuration) {
+    return WebClient
+        .builder()
+        .baseUrl(configuration.getLegacy().getUri())
         .build();
   }
 

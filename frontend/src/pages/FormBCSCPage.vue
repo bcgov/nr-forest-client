@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, getCurrentInstance, toRef } from "vue";
+import { ref, reactive, computed, watch, toRef } from "vue";
 import {
   newFormDataDto,
   emptyContact,
@@ -11,11 +11,13 @@ import {
   ClientTypeEnum,
   LegalTypeEnum,
 } from "@/dto/CommonTypesDto";
-import { useFetchTo, usePost } from "@/composables/useFetch";
+import { useFetch, useFetchTo, usePost } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
+import { isTouchScreen } from "@/composables/useScreenSize";
 import { useEventBus } from "@vueuse/core";
 import {
   codeConversionFn,
+  convertFieldNameToSentence,
   getEnumKeyByEnumValue,
 } from "@/services/ForestClientService";
 import {
@@ -38,7 +40,7 @@ import Check16 from "@carbon/icons-vue/es/checkmark/16";
 import Logout16 from "@carbon/icons-vue/es/logout/16";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-const { setFocusedComponent } = useFocus();
+const { safeSetFocusedComponent } = useFocus();
 const errorMessage = ref<string | undefined>("");
 const submitterInformation = ForestClientUserSession.user;
 
@@ -118,7 +120,7 @@ const { setScrollPoint } = useFocus();
 
 const scrollToNewContact = () => {
   setScrollPoint("", undefined, () => {
-    setFocusedComponent("");
+    safeSetFocusedComponent("");
   });
 };
 
@@ -129,16 +131,30 @@ const fetch = () => {
 };
 fetch();
 
+let lastContactId = -1; // The first contactId to be generated minus 1.
+const getNewContactId = () => ++lastContactId;
+
+// Associate each contact to a unique id, permanent for the lifecycle of this component.
+const contactsIdMap = new Map<Contact, number>(
+  formData.location.contacts.map((contact) => [contact, getNewContactId()]),
+);
+
 //New contact being added
 const otherContacts = computed(() => formData.location.contacts.slice(1));
 const addContact = (autoFocus = true) => {
-  emptyContact.locationNames.push(defaultLocation);
-  const newLength = formData.location.contacts.push(
-    JSON.parse(JSON.stringify(emptyContact))
-  );
+  const newContact = JSON.parse(JSON.stringify(emptyContact));
+  newContact.locationNames.push(defaultLocation);
+  const newLength = formData.location.contacts.push(newContact);
+
+  /*
+  For some reason we need to get the contact from the array to make it work.
+  It doesn't work with the value from newContact as key.
+  */
+  const contact = formData.location.contacts[newLength - 1];
+  contactsIdMap.set(contact, getNewContactId());
   if (autoFocus) {
     const focusIndex = newLength - 1;
-    setFocusedComponent(`role_${focusIndex}`);
+    safeSetFocusedComponent(`firstName_${focusIndex}`);
   }
   return newLength;
 };
@@ -146,9 +162,13 @@ const addContact = (autoFocus = true) => {
 const uniqueValues = isUniqueDescriptive();
 
 const removeContact = (index: number) => () => {
+  const contact = formData.location.contacts[index];
+  const contactId = contactsIdMap.get(contact);
+  contactsIdMap.delete(contact);
+
   updateContact(undefined, index);
-  delete validation[index];
-  uniqueValues.remove("Name", index + "");
+  delete validation[contactId];
+  uniqueValues.remove("Name", contactId + "");
   bus.emit({
     active: false,
     message: "",
@@ -172,14 +192,15 @@ const updateContact = (value: Contact | undefined, index: number) => {
   revalidate.value = !revalidate.value;
 };
 
-//Validation
+// Validation
 const validation = reactive<Record<string, boolean>>({
   0: false,
 });
 
 const updateValidState = (index: number, valid: boolean) => {
-  if (validation[index] !== valid) {
-    validation[index] = valid;
+  const contactId = contactsIdMap.get(formData.location.contacts[index]);
+  if (validation[contactId] !== valid) {
+    validation[contactId] = valid;
   }
 };
 
@@ -195,7 +216,11 @@ const emit = defineEmits<{
   (e: "valid", value: boolean): void;
 }>();
 
-watch([validation], () => emit("valid", checkValid()));
+watch([validation], () => {
+  const valid = checkValid();
+  emit("valid", valid);
+  submitBtnDisabled.value = !valid;
+});
 emit("valid", false);
 
 const bus = useEventBus<ModalNotification>("modal-notification");
@@ -207,8 +232,9 @@ const handleRemove = (index: number) => {
     ? `${formData.location.contacts[index].firstName} ${formData.location.contacts[index].lastName}`
     : "Contact #" + index;
   bus.emit({
-    message: selectedContact,
-    kind: "Contact deleted",
+    name: selectedContact,
+    message: `“${selectedContact}” additional contact was deleted`,
+    kind: "contact",
     toastTitle: "The additional contact was deleted",
     handler: removeContact(index),
     active: true,
@@ -242,7 +268,7 @@ const progressData = reactive([
   },
 ]);
 
-let submitBtnDisabled = ref(false);
+const submitBtnDisabled = ref(true);
 
 const errorBus = useEventBus<ValidationMessageType[]>(
   "submission-error-notification"
@@ -298,9 +324,11 @@ const submit = () => {
   notificationBus.emit(undefined);
 
   if (checkStepValidity(currentTab.value)) {
-    submitBtnDisabled.value = true;
+    submitBtnDisabled.value = false;
     console.log(toRef(formData).value);
     fecthSubmit();
+  } else {
+    submitBtnDisabled.value = true;
   }
 };
 
@@ -317,32 +345,50 @@ watch([error], () => {
   validationErrors.forEach((errorItem: ValidationMessageType) =>
     notificationBus.emit({
       fieldId: "server.validation.error",
+      fieldName: convertFieldNameToSentence(errorItem.fieldId),
       errorMsg: errorItem.errorMsg,
     })
   );
-  setScrollPoint("top");
+  setScrollPoint("top-notification");
+});
+
+const { error:validationError } = useFetch(`/api/clients/individual/${ForestClientUserSession.user?.userId.split('\\').pop()}?lastName=${ForestClientUserSession.user?.lastName}`);
+watch([validationError], () => {
+  if (validationError.value.response?.status === 409) {
+    updateValidState(-1, false); //-1 to define the error as global
+    notificationBus.emit({
+      fieldId: "server.validation.error",
+      fieldName: '',
+      errorMsg: validationError.value.response?.data ?? "",
+    })
+  }  
 });
 </script>
 
 <template>
   <div class="form-header">
     <div class="form-header-title">
-      <span class="heading-05" data-scroll="top">
+      <h3 data-scroll="top">
         New client application
-      </span>
+      </h3>
     </div>
-    <error-notification-grouping-component
-      :form-data="formData"
-      :scroll-to-element-fn="scrollToNewContact"
-    />
+    <div class="hide-when-less-than-two-children"><!--
+      This div is necessary to avoid the div.header-offset below from interfering in the flex flow.
+    -->
+      <div data-scroll="top-notification" class="header-offset"></div>
+      <error-notification-grouping-component
+        :form-data="formData"
+        :scroll-to-element-fn="scrollToNewContact"
+      />
+    </div>
   </div>
     
   <div class="form-steps-section">
-    <span class="heading-04" data-scroll="scroll-0">
+    <h4 data-scroll="scroll-0">
       Personal information
-    </span>
+    </h4>
     <p class="body-compact-01">
-      Review the personal information below. It’s from your BC Services card. We use it to know who we're giving a number to and for communicating with clients. 
+      Review the information below. It’s from your BC Services card. We use it to know who we're giving a number to and for communicating with clients. 
     </p>
 
     <div class="card">
@@ -356,14 +402,14 @@ watch([error], () => {
           title="">
           <p class="cds--inline-notification-content">
             <strong>Read-only: </strong>
-            If something is incorrect visit 
+            If something is incorrect
             <a
               href=""
               target="_blank"
               rel="noopener noreferrer"
               @click.prevent="changePersonalInfoModalActive = true"
-              >Change your personal information
-            </a> 
+              >change your personal information</a
+            >
             and then restart your application.
           </p>
         </cds-inline-notification>
@@ -394,9 +440,9 @@ watch([error], () => {
       </div>
     </div>
 
-    <span class="heading-04" data-scroll="scroll-0">
+    <h4 data-scroll="scroll-0">
       Contact information
-    </span>
+    </h4>
     <p class="body-compact-01">
       We need your phone number to communicate with you.
     </p>
@@ -415,8 +461,8 @@ watch([error], () => {
           submissionValidation(`location.contacts[0].phoneNumber`)
         ]"
         :error-message="errorMessage"
-        @empty="validation.phoneNumber = !$event"
-        @error="validation.phoneNumber = !$event"
+        @empty="validation[0] = !$event"
+        @error="validation[0] = !$event"
       />
     </div>
     
@@ -425,12 +471,12 @@ watch([error], () => {
         <hr />
 
         <div class="grouping-09" :data-scroll="`additional-contact-${index + 1}`">
-          <span class="heading-03">Additional contact</span>
+          <h5>Additional contact</h5>
         </div>
 
         <contact-group-component
-          :key="index + 1"
-          :id="index + 1"
+          :key="contactsIdMap.get(contact)"
+          :id="contactsIdMap.get(contact)"
           v-bind:modelValue="contact"
           :roleList="roleList"
           :validations="[uniqueValues.add]"
@@ -445,7 +491,9 @@ watch([error], () => {
       </div>
     </div>
 
-    <p class="body-compact-01">
+    <p 
+      class="body-compact-01"
+      v-if="formData.location.contacts.length < 5">
       You can add contacts to the account. For example, a person you want to give or receive information on your behalf.
     </p>
 
@@ -457,21 +505,37 @@ watch([error], () => {
       <Add16 slot="icon" />
     </cds-button>
 
+    <p 
+      class="body-compact-01"
+      v-if="formData.location.contacts.length >= 5">
+      You can only add a maximum of 5 contacts.
+    </p>
+
     <hr class="divider" />
 
-    <cds-button
-        data-test="wizard-submit-button"
-        kind="primary"
-        size="lg"
-        @click.prevent="submit"
-        :disabled="submitBtnDisabled"
-      >
-      <span>Submit application</span>
-      <Check16 slot="icon" />
-    </cds-button>
+    <div class="form-footer-group-next">
+      <span class="body-compact-01" v-if="submitBtnDisabled">
+        All fields must be filled in correctly to enable the “Submit application” button below.
+      </span>
+      <cds-tooltip>
+        <cds-button
+          data-test="wizard-submit-button"
+          kind="primary"
+          size="lg"
+          v-on:click="submit"
+          :disabled="submitBtnDisabled"
+        >
+          <span>Submit application</span>
+          <Check16 slot="icon" />
+        </cds-button>
+        <cds-tooltip-content v-if="!isTouchScreen" v-show="submitBtnDisabled">
+          All fields must be filled in correctly.
+        </cds-tooltip-content>
+      </cds-tooltip>
+    </div>
 
     <cds-modal
-      id="help-modal"
+      id="address-change-bc-modal"
       size="md"
       :open="changePersonalInfoModalActive"
       @cds-modal-closed="changePersonalInfoModalActive = false"
@@ -484,19 +548,19 @@ watch([error], () => {
       </cds-modal-header>
       <cds-modal-body>
         <p>
-          Visit 
-          <a 
+          Visit
+          <a
             href='https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card/your-card/change-personal-information' 
-            target="_blank">Change your personal information
-          </a> 
+            target="_blank"
+            rel="noopener noreferrer"
+            >Change your personal information</a
+          >
           to update your name, address or date of birth.<br /><br />
-          Go to your 
-          <a 
-            href='https://id.gov.bc.ca/account/'
-            target="_blank">BC Services account
-          </a> 
+          Go to your
+          <a href="https://id.gov.bc.ca/account/" target="_blank" rel="noopener noreferrer">BC Services account</a>
           to update your email address.<br /><br />
-          You can then log back into this application using your BC Services Card.
+          You can then log back into this application using your BC Services Card.<br /><br />
+          Your data will not be saved.
         </p>
       </cds-modal-body>
       <cds-modal-footer>

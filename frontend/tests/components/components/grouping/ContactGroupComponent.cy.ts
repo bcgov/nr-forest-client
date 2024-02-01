@@ -4,6 +4,17 @@ import type { Contact } from "@/dto/ApplyClientNumberDto";
 // load app validations
 import "@/helpers/validators/BCeIDFormValidations";
 
+Cypress.on("fail", (error, runnable) => {
+  // we now have access to the err instance
+  // and the mocha runnable this failed on
+
+  cy.get("@vueWrapper").then(({ wrapperElement }) => {
+    cy.task("log", wrapperElement.parentElement.innerHTML);
+  });
+
+  throw error; // throw error to have test still fail
+});
+
 describe("<ContactGroupComponent />", () => {
   const dummyValidation = (): ((
     key: string,
@@ -53,6 +64,56 @@ describe("<ContactGroupComponent />", () => {
     });
   });
 
+  it("should render the component with validation", () => {
+    cy.get("@contactFixture").then((contact: Contact) => {
+      cy.get("@rolesFixture").then((roles) => {
+        cy.get("@addressesFixture").then((addresses) => {
+          cy.mount(ContactGroupComponent, {
+            props: {
+              id: 1,
+              modelValue: {
+                ...contact,
+                firstName: contact.firstName + " fault",
+              },
+              enabled: true,
+              roleList: roles,
+              addressList: addresses,
+              validations: [dummyValidation()],
+            },
+          });
+        });
+      });
+    });
+
+    cy.get("@contactFixture").then((contact: Contact) => {
+      cy.get("#firstName_1")
+        .should("be.visible")
+        .and("have.value", contact.firstName + " fault");
+
+      cy.get("#firstName_1")
+        .shadow()
+        .find(".cds--form-requirement")
+        .should("be.visible")
+        .find("slot")
+        .and("include.text", "Error");
+
+      cy.get("#lastName_1")
+        .should("be.visible")
+        .and("have.value", contact.lastName);
+
+      cy.get("#lastName_1")
+        .shadow()
+        .find(".cds--form-requirement")
+        .should("be.visible")
+        .find("slot")
+        .and("include.text", "Error");
+
+      cy.get("#email_1").should("be.visible").and("have.value", contact.email);
+
+      cy.get("#phoneNumber_1").should("be.visible").and("have.value", "");
+    });
+  });
+
   it("should render the component and select first address and show on component", () => {
     cy.get("@contactFixture").then((contact: Contact) => {
       cy.get("@rolesFixture").then((roles) => {
@@ -74,12 +135,7 @@ describe("<ContactGroupComponent />", () => {
       });
     });
 
-    cy.focused().should('have.id', 'phoneNumber_0');
-
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
-
-    // This seems to be useful in the PC, but harmful in the pipeline.
-    // cy.wait(100);
 
     cy.get("#addressname_0")
       .click()
@@ -113,8 +169,6 @@ describe("<ContactGroupComponent />", () => {
         });
       });
     });
-
-    cy.focused().should('have.id', 'phoneNumber_0');
 
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
 
@@ -158,8 +212,6 @@ describe("<ContactGroupComponent />", () => {
       });
     });
 
-    cy.focused().should('have.id', 'phoneNumber_0');
-
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
 
     cy.get("#addressname_0")
@@ -183,6 +235,50 @@ describe("<ContactGroupComponent />", () => {
     cy.get("#addressname_0").should("be.visible").and("have.value", "");
   });
 
+  it("should logout and redirect to BCeID", () => {
+    const $session = {
+      logOut() {},
+    };
+    cy.get("@contactFixture").then((contact: Contact) => {
+      cy.get("@rolesFixture").then((roles) => {
+        cy.get("@addressesFixture").then((addresses) => {
+          cy.mount(ContactGroupComponent, {
+            props: {
+              id: 0,
+              modelValue: {
+                ...contact,
+                addresses: [addresses[0], addresses[1]],
+              },
+              enabled: true,
+              roleList: roles,
+              addressList: addresses,
+              validations: [],
+            },
+            global: {
+              config: {
+                globalProperties: {
+                  $session,
+                },
+              },
+            },
+          });
+        });
+      });
+    });
+
+    cy.get("#change-personal-info-link").click();
+
+    cy.get("#logout-and-redirect-modal").should("be.visible");
+
+    cy.spy(window, "open").as("windowOpen");
+    cy.spy($session, "logOut").as("sessionLogOut");
+
+    cy.get('#logout-and-redirect-modal > cds-modal-footer > .cds--modal-submit-btn').click();
+
+    cy.get("@windowOpen").should("be.calledWith", "https://www.bceid.ca/", "_blank", "noopener");
+    cy.get("@sessionLogOut").should("be.called");
+  });
+
   describe('when it has last emitted "valid" with false due to a single, not empty, invalid field', () => {
     const genericTest = (
       fieldSelector: string,
@@ -194,6 +290,10 @@ describe("<ContactGroupComponent />", () => {
       const onValid = (valid: boolean) => {
         calls.push(valid);
       };
+
+      // Trying to fix issue on the CI pipeline.
+      // cy.wait(200);
+
       cy.get("@contactFixture").then((contact: Contact) => {
         cy.get("@rolesFixture").then((roles) => {
           cy.get("@addressesFixture").then((addresses) => {
@@ -216,12 +316,13 @@ describe("<ContactGroupComponent />", () => {
                 validations: [],
                 onValid,
               },
-            });
+            })
+              .its("wrapper")
+              .as("vueWrapper");
           });
         });
       });
 
-      cy.focused().should('have.id', 'firstName_1');
       cy.get(fieldSelector).shadow().find("input").clear(); // emits false
       cy.get(fieldSelector).blur(); // (doesn't emit)
       cy.get(fieldSelector).shadow().find("input").type(firstContent); // emits true before blurring

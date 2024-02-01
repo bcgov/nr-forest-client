@@ -10,7 +10,7 @@ import { useEventBus } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useFocus } from "@/composables/useFocus";
 import { usePost } from "@/composables/useFetch";
-import { isSmallScreen } from "@/composables/useScreenSize";
+import { isSmallScreen, isTouchScreen } from "@/composables/useScreenSize";
 // Imported Pages
 import BusinessInformationWizardStep from "@/pages/bceidform/BusinessInformationWizardStep.vue";
 import AddressWizardStep from "@/pages/bceidform/AddressWizardStep.vue";
@@ -41,6 +41,7 @@ import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 import LogOut16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
+import { convertFieldNameToSentence } from "@/services/ForestClientService";
 
 const errorBus = useEventBus<ValidationMessageType[]>(
   "submission-error-notification"
@@ -56,7 +57,7 @@ const progressIndicatorBus = useEventBus<ProgressNotification>(
 );
 
 const router = useRouter();
-const { setScrollPoint, setFocusedComponent } = useFocus();
+const { setScrollPoint, safeSetFocusedComponent } = useFocus();
 const submitterInformation = ForestClientUserSession.user;
 const instance = getCurrentInstance();
 const session = instance?.appContext.config.globalProperties.$session;
@@ -127,10 +128,11 @@ watch([error], () => {
   validationErrors.forEach((errorItem: ValidationMessageType) =>
     notificationBus.emit({
       fieldId: "server.validation.error",
+      fieldName: convertFieldNameToSentence(errorItem.fieldId),
       errorMsg: errorItem.errorMsg,
     })
   );
-  setScrollPoint("top");
+  setScrollPoint("top-notification");
 });
 
 addValidation(
@@ -271,8 +273,10 @@ const onNext = () => {
       currentTab.value++;
       progressData[currentTab.value - 1].kind = "complete";
       progressData[currentTab.value].kind = "current";
+      setScrollPoint("step-title");
+    } else {
+      setScrollPoint("top-notification");
     }
-    setScrollPoint("top");
   }
 };
 const onBack = () => {
@@ -280,7 +284,7 @@ const onBack = () => {
     currentTab.value--;
     progressData[currentTab.value + 1].kind = "incomplete";
     progressData[currentTab.value].kind = "current";
-    setScrollPoint("top");
+    setScrollPoint("step-title");
     setTimeout(revalidateBus.emit, 1000);
   }
 };
@@ -301,9 +305,9 @@ const processAndLogOut = () => {
       {
         incorporation: formData.businessInformation.incorporationNumber,
         name: formData.businessInformation.businessName,
-        userName: submitterInformation?.name ?? "",
-        userId: submitterInformation?.userId ?? "",
-        mail: submitterInformation?.email ?? "",
+        userName: `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}` ?? "",
+        userId: ForestClientUserSession.user.userId ?? "",
+        email: ForestClientUserSession.user.email ?? "",
       },
       {}
     );
@@ -326,6 +330,8 @@ const submit = () => {
 exitBus.on((event: Record<string, boolean | null>) => {
   endAndLogOut.value = event.goodStanding ? event.goodStanding : false;
   mailAndLogOut.value = event.duplicated ? event.duplicated : false;
+  endAndLogOut.value = event.nonPersonSP ? event.nonPersonSP : endAndLogOut.value;
+  endAndLogOut.value = event.unsupportedClientType || endAndLogOut.value;
 });
 
 progressIndicatorBus.on((event: ProgressNotification) => {
@@ -355,7 +361,7 @@ const scrollToNewContact = () => {
     // Skip auto-focus so to do it only when scroll is done.
     const index = contactWizardRef.value.addContact(false) - 1;
     setScrollPoint(`additional-contact-${index}`, undefined, () => {
-      setFocusedComponent(`firstName_${index}`);
+      safeSetFocusedComponent(`firstName_${index}`);
     });
   }
 };
@@ -364,7 +370,10 @@ const scrollToNewContact = () => {
 <template>
   <div class="form-header">
     <div class="form-header-title">
-      <span class="heading-05" data-scroll="top">New client application</span>
+      <h3>
+        <div data-scroll="top" class="header-offset"></div>
+        New client application
+      </h3>
     </div>
     <cds-progress-indicator space-equally :vertical="isSmallScreen">
       <cds-progress-step 
@@ -378,17 +387,22 @@ const scrollToNewContact = () => {
         v-shadow="3"
       />
     </cds-progress-indicator>
-    <error-notification-grouping-component
-      :form-data="formData"
-      :scroll-to-element-fn="scrollToNewContact"
-    />
+    <div class="hide-when-less-than-two-children"><!--
+      This div is necessary to avoid the div.header-offset below from interfering in the flex flow.
+    -->
+      <div data-scroll="top-notification" class="header-offset"></div>
+      <error-notification-grouping-component
+        :form-data="formData"
+        :scroll-to-element-fn="scrollToNewContact"
+      />
+    </div>
   </div>
 
   <div class="form-steps">
 
     <div v-if="currentTab == 0" class="form-steps-01">
       <div class="form-steps-01-title">
-        <span class="heading-04" data-scroll="scroll-0">Before you begin</span>
+        <h4 data-scroll="scroll-0">Before you begin</h4>
         <ol type="1" class="bulleted-list body-compact-01">
           <li>
             A registered business must be in good standing with BC
@@ -404,7 +418,10 @@ const scrollToNewContact = () => {
       <hr class="divider" />
 
       <div class="form-steps-section">
-        <label class="heading-04" data-scroll="focus-0">{{ progressData[0].title}}</label>
+        <h4 data-scroll="focus-0">
+          <div data-scroll="step-title" class="header-offset"></div>
+          {{ progressData[0].title}}
+        </h4>
         <div class="frame-01">
           <business-information-wizard-step
               v-model:data="formData"
@@ -417,7 +434,10 @@ const scrollToNewContact = () => {
 
     <div v-if="currentTab == 1" class="form-steps-02">
       <div class="form-steps-section">
-        <span class="heading-04" data-scroll="scroll-1">{{ progressData[1].title}}</span>
+        <h4 data-scroll="scroll-1">
+          <div data-scroll="step-title" class="header-offset"></div>
+          {{ progressData[1].title}}
+        </h4>
         
         <div class="form-steps-section-01">
             <p class="body-01 heading-compact-01-dark">
@@ -435,12 +455,13 @@ const scrollToNewContact = () => {
 
     <div v-if="currentTab == 2" class="form-steps-03">
       <div class="form-steps-section">
-        <span class="heading-04" data-scroll="scroll-2">{{ progressData[2].title}}</span>
+        <h4 data-scroll="scroll-2">
+          <div data-scroll="step-title" class="header-offset"></div>
+          {{ progressData[2].title}}
+        </h4>
         
         <div class="form-steps-section-01">
-          <span class="heading-03"
-              >Add authorized people to the account</span
-            >
+          <h5>Add authorized people to the account</h5>
             <p class="body-01 heading-compact-01-dark">
               Review your name and email address. They’re from your BCeID.
             </p>
@@ -458,7 +479,10 @@ const scrollToNewContact = () => {
     <div v-if="currentTab == 3" class="form-steps-04">
 
       <div class="form-steps-section form-steps-section-04">
-        <span class="heading-04" data-scroll="scroll-3">{{ progressData[3].title}}</span>
+        <h4 data-scroll="scroll-3">
+          <div data-scroll="step-title" class="header-offset"></div>
+          {{ progressData[3].title}}
+        </h4>
         <span class="body-02">
           Review the content and make any changes by using the "Edit" buttons in each section below.
         </span>
@@ -509,7 +533,7 @@ const scrollToNewContact = () => {
               <span>Next</span>
               <ArrowRight16 slot="icon" />
             </cds-button>
-            <cds-tooltip-content v-show="progressData[currentTab].valid === false">
+            <cds-tooltip-content v-if="!isTouchScreen" v-show="progressData[currentTab].valid === false">
               All fields must be filled in correctly.
             </cds-tooltip-content>
           </cds-tooltip>

@@ -7,6 +7,7 @@ import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
 import static org.springframework.data.relational.core.query.Query.query;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
@@ -20,6 +21,7 @@ import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
+import ca.bc.gov.app.exception.RequestAlreadyProcessedException;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.predicates.QueryPredicates;
@@ -32,9 +34,11 @@ import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.service.ches.ChesService;
+import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,6 +48,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -56,6 +61,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Observed
 public class ClientSubmissionService {
 
   private final SubmissionRepository submissionRepository;
@@ -66,6 +72,7 @@ public class ClientSubmissionService {
   private final SubmissionMatchDetailRepository submissionMatchDetailRepository;
   private final ChesService chesService;
   private final R2dbcEntityTemplate template;
+  private final ForestClientConfiguration configuration;
 
   public Flux<ClientListSubmissionDto> listSubmissions(
       int page,
@@ -91,24 +98,24 @@ public class ClientSubmissionService {
         getClientTypes()
             .flatMapMany(clientTypes ->
                 loadSubmissions(page, size, requestType, requestStatus, updatedAt)
-                    .flatMap(submission ->
-                        loadSubmissionDetail(clientType, name, submission)
+                    .flatMap(submissionPair ->
+                        loadSubmissionDetail(clientType, name, submissionPair.getRight())
                             .map(submissionDetail ->
                                 new ClientListSubmissionDto(
-                                    submission.getSubmissionId(),
-                                    submission.getSubmissionType().getDescription(),
+                                    submissionPair.getRight().getSubmissionId(),
+                                    submissionPair.getRight().getSubmissionType().getDescription(),
                                     submissionDetail.getOrganizationName(),
                                     clientTypes.getOrDefault(submissionDetail.getClientTypeCode(),
-                                        submissionDetail.getClientTypeCode()),
+                                    submissionDetail.getClientTypeCode()),
                                     Optional
-                                        .ofNullable(submission.getUpdatedAt())
+                                        .ofNullable(submissionPair.getRight().getUpdatedAt())
                                         .map(date -> date.format(
                                             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                                         .orElse(StringUtils.EMPTY),
-                                    StringUtils.defaultString(submission.getUpdatedBy()),
-                                    submission
-                                        .getSubmissionStatus()
-                                        .getDescription()
+                                    StringUtils.defaultString(
+                                        submissionPair.getRight().getUpdatedBy()),
+                                    submissionPair.getRight().getSubmissionStatus().getDescription(),
+                                    submissionPair.getLeft()
                                 )
                             )
                     )
@@ -125,8 +132,14 @@ public class ClientSubmissionService {
       ClientSubmissionDto clientSubmissionDto,
       String userId,
       String userEmail,
-      String userName
+      String userName,
+      String businessId
   ) {
+
+    log.info("Submitting client submission for user {} with email {} and name {}",
+        userId,
+        userEmail,
+        userName);
 
     return
         Mono
@@ -137,7 +150,7 @@ public class ClientSubmissionService {
                     .submissionType(SubmissionTypeCodeEnum.SPP)
                     .submissionDate(LocalDateTime.now())
                     .createdBy(userId)
-                    .updatedBy(userId)
+                    .updatedBy(userName)
                     .build()
             )
             //Save submission to begin with
@@ -183,6 +196,8 @@ public class ClientSubmissionService {
 
   public Mono<SubmissionDetailsDto> getSubmissionDetail(Long id) {
 
+    log.info("Getting submission detail for submission {}", id);
+
     DatabaseClient client = template.getDatabaseClient();
 
     Mono<SubmissionDetailsDto> detailsBusiness =
@@ -204,6 +219,7 @@ public class ClientSubmissionService {
                         row.get("client_number", String.class),
                         row.get("organization_name", String.class),
                         row.get("client_type", String.class),
+                        row.get("client_type_desc", String.class),
                         row.get("good_standing", String.class),
                         row.get("birthdate", LocalDate.class)
                     ),
@@ -226,7 +242,9 @@ public class ClientSubmissionService {
                 row.get("last_name", String.class),
                 row.get("business_phone_number", String.class),
                 row.get("email_address", String.class),
-                List.of(StringUtils.defaultString(row.get("locations", String.class)).split(", ")),
+                Arrays.stream(StringUtils.defaultString(row.get("locations", String.class))
+                        .split(", "))
+                    .collect(Collectors.toSet()),
                 row.get("idp_user_id", String.class)
             ))
             .all();
@@ -282,9 +300,21 @@ public class ClientSubmissionService {
       String userName,
       SubmissionApproveRejectDto request
   ) {
+    log.info("Approving or rejecting submission {} for user {} with email {} and name {}",
+        id,
+        userId,
+        userEmail,
+        userName);
+
     return
         submissionRepository
             .findById(id.intValue())
+            //If is not New or In Progress, return error as it was already processed
+            .filter(submission ->
+                List.of(SubmissionStatusEnum.N, SubmissionStatusEnum.P)
+                    .contains(submission.getSubmissionStatus())
+            )
+            .switchIfEmpty(Mono.error(new RequestAlreadyProcessedException()))
             .map(submission -> {
               submission.setUpdatedBy(userName);
               submission.setUpdatedAt(LocalDateTime.now());
@@ -350,11 +380,11 @@ public class ClientSubmissionService {
       String userName
   ) {
     return chesService.sendEmail(
-                        "registration",
-                        email,
-                        "Client number application received",
-                        clientSubmissionDto.description(userName),
-                        null)
+            "registration",
+            email,
+            "Client number application received",
+            clientSubmissionDto.description(userName),
+            null)
         .thenReturn(submissionId);
   }
 
@@ -400,7 +430,8 @@ public class ClientSubmissionService {
         );
   }
 
-  private Flux<SubmissionEntity> loadSubmissions(int page, int size, String[] requestType,
+  private Flux<Pair<Long, SubmissionEntity>> loadSubmissions(int page, int size,
+      String[] requestType,
       SubmissionStatusEnum[] requestStatus, String[] updatedAt) {
 
     Criteria userQuery = SubmissionPredicates
@@ -415,7 +446,15 @@ public class ClientSubmissionService {
           .orEqualTo(new String[]{"SPP"}, ApplicationConstant.SUBMISSION_TYPE)
           .or(
               QueryPredicates
-                  .isAfter(LocalDateTime.now().minusDays(1L), "submissionDate")
+                  .isAfter(
+                      LocalDateTime
+                          .now()
+                          .minus(configuration.getSubmissionLimit())
+                          .withHour(0)
+                          .withMinute(0)
+                          .withSecond(0),
+                      "submissionDate"
+                  )
                   .and(
                       QueryPredicates
                           //When I said AAC and RNC, I meant AAC or RNC for query purpose
@@ -424,36 +463,61 @@ public class ClientSubmissionService {
                   )
           );
     }
+    
+    final Criteria finalUserQuery = userQuery;
 
+    return
+        template
+            .count(query(userQuery), SubmissionEntity.class)
+            .flatMapMany(count ->
+                template
+                    .select(
+                        query(finalUserQuery)
+                            .with(PageRequest.of(page, size))
+                            .sort(Sort.by("updatedAt").descending()),
+                        SubmissionEntity.class
+                    )
+                    .map(submission -> Pair.of(count, submission))
+            );
 
-    return template
-        .select(
-            query(userQuery)
-                .with(PageRequest.of(page, size))
-                .sort(Sort.by("updatedAt").descending()),
-            SubmissionEntity.class
-        );
   }
 
   private String processRejectionReason(SubmissionApproveRejectDto request) {
 
     StringBuilder stringBuilder = new StringBuilder();
+    String duplicatedReason = "duplicated";
+    String goodStandingReason = "goodstanding";
+    String htmlBlankDiv = "<div>&nbsp;</div>";
+    List<String> reasons = request.reasons();
 
-    request
-        .reasons()
-        .forEach(reason -> {
-          if (reason.equalsIgnoreCase("duplicated")) {
-            stringBuilder.append(
-                    "A client that matches your submission already exists with number: ")
-                .append(request.message())
-                .append("< /br>");
-          }
-          if (reason.equalsIgnoreCase("goodstanding")) {
-            stringBuilder.append("Client is not in good standing with BC Registries")
-                .append("< /br>");
-          }
+    if (reasons.contains(duplicatedReason) && !reasons.contains(goodStandingReason)) {
+      stringBuilder
+          .append(" already has one. The number is: ")
+          .append(request.message())
+          .append(". Be sure to keep it for your records.");
+    }
 
-        });
+    if (!reasons.contains(duplicatedReason) && reasons.contains(goodStandingReason)) {
+      stringBuilder
+          .append(" is not in good standing with BC Registries.")
+          .append(htmlBlankDiv)
+          .append(
+              "<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a> ")
+          .append("account to find out why.</p>");
+    }
+
+    if (reasons.contains(duplicatedReason) && reasons.contains(goodStandingReason)) {
+      stringBuilder
+          .append(" already has one. The number is: ")
+          .append(request.message())
+          .append(". Be sure to keep it for your records.")
+          .append(htmlBlankDiv)
+          .append("<p>Also, this business is not in good standing with BC Registries.</p>")
+          .append(htmlBlankDiv)
+          .append(
+              "<p>Log into your <a href=\"https://www.bcregistry.gov.bc.ca/\">BC Registries</a> ")
+          .append("account to find out why.</p>");
+    }
 
     return stringBuilder.toString();
   }

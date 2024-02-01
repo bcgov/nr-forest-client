@@ -170,7 +170,7 @@ const focusedPart = ref<DatePart | null>(null);
 
 const getPartsExcept = (datePart: DatePart) =>
   Object.values(DatePart)
-    .filter((current) => typeof current === typeof DatePart.year) // get the type from any enum value
+    .filter((current) => typeof current === typeof datePart) // filter out key names from the enum reverse mapping
     .filter((current) => current !== datePart) as DatePart[];
 
 // This function emits the events on update

@@ -1,7 +1,7 @@
 {
   "mappings": [
     {
-      "name":"Autocomplete BC Registry",
+      "name": "Autocomplete BC Registry",
       "request": {
         "urlPattern": "/api/clients/name/(.*)",
         "method": "GET"
@@ -9,11 +9,13 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-autocomplete.json",
-        "transformers": ["response-template"]
+        "transformers": [
+          "response-template"
+        ]
       }
     },
     {
-      "name":"BC Registry Details OK",
+      "name": "BC Registry Details OK",
       "request": {
         "urlPattern": "/api/clients/(XX|YY|UU|JJ|FM)(.*)",
         "method": "GET"
@@ -21,12 +23,14 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-details-{{regexExtract request.path.[2] '(XX|YY|UU|JJ|FM)(.*)' 'parts'}}{{parts.0}}.json",
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "fixedDelayMilliseconds": 2500
       }
     },
     {
-      "name":"BC Registry Details Duplicated",
+      "name": "BC Registry Details Duplicated",
       "request": {
         "urlPattern": "/api/clients/ZZ(.*)",
         "method": "GET"
@@ -34,12 +38,41 @@
       "response": {
         "status": 409,
         "body": "The Edgar Paciolli already exists with the Incorporation number {{request.path.[2]}} and client number 999999",
-        "transformers": ["response-template"]
+        "transformers": [
+          "response-template"
+        ]
       }
     },
-
     {
-      "name":"Country Codes",
+      "name": "BC Registry Details Non Person",
+      "request": {
+        "url": "/api/clients/FM7654321",
+        "method": "GET"
+      },
+      "response": {
+        "status": 422,
+        "body": "Unable to process request. This sole proprietor is not owner by a person",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+    {
+      "name": "BC Registry Details Unsupported Client Type",
+      "request": {
+        "url": "/api/clients/BC1234567",
+        "method": "GET"
+      },
+      "response": {
+        "status": 406,
+        "body": "Client type BC is not supported at the moment",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+    {
+      "name": "Country Codes",
       "request": {
         "url": "/api/clients/activeCountryCodes?page=0&size=250",
         "method": "GET"
@@ -50,20 +83,21 @@
       }
     },
     {
-      "name":"Province Codes",
+      "name": "Province Codes",
       "request": {
         "urlPattern": "/api/clients/activeCountryCodes/(.*)?page=0&size=250",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "bodyFileName": "response-provinces-{{request.path.[3]}}.json"
       }
     },
-
     {
-      "name":"Contact Type Codes",
+      "name": "Contact Type Codes",
       "request": {
         "url": "/api/clients/activeContactTypeCodes?page=0&size=250",
         "method": "GET"
@@ -73,21 +107,57 @@
         "body": "[{\"code\":\"P\",\"name\":\"Person\"}]"
       }
     },
-
     {
-      "name":"Get Country by CountryCode",
+      "name": "Get Country by CountryCode",
       "request": {
         "urlPattern": "/api/clients/getCountryByCode/(.*)",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "transformers": ["response-template"],
-        "bodyFileName": "response-getCountryByCode-{{request.path.[3]}}.json"      }
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-getCountryByCode-{{request.path.[3]}}.json"
+      }
     },
-
     {
-      "name":"Submission Success for XX",
+      "name": "Get ClientType by Code",
+      "request": {
+        "urlPattern": "/api/clients/getClientTypeByCode/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "transformerParameters": {
+          "clientTypeMapping": {
+            "A": "Association",
+            "B": "First Nation Band",
+            "C": "Corporation",
+            "F": "Ministry of Forests and Range",
+            "G": "Government",
+            "I": "Individual",
+            "L": "Limited Partnership",
+            "P": "General Partnership",
+            "R": "First Nation Group",
+            "S": "Society",
+            "T": "First Nation Tribal Council",
+            "U": "Unregistered Company",
+            "USP": "Unregistered sole proprietorship",
+            "RSP": "Registered sole proprietorship"
+          }
+        },
+        "jsonBody": {
+          "code": "{{#assign 'code'}}{{request.pathSegments.[3]}}{{/assign}}{{code}}",
+          "name": "{{lookup parameters.clientTypeMapping code}}"
+        }
+      }
+    },
+    {
+      "name": "Submission Success for XX",
       "request": {
         "url": "/api/clients/submissions",
         "method": "POST",
@@ -109,7 +179,7 @@
       }
     },
     {
-      "name":"Submission Error for UU",
+      "name": "Submission Error for UU",
       "request": {
         "url": "/api/clients/submissions",
         "method": "POST",
@@ -128,7 +198,7 @@
       }
     },
     {
-      "name":"Send email for ZZ",
+      "name": "Send email for ZZ",
       "request": {
         "url": "/api/clients/mail",
         "method": "POST",
@@ -146,7 +216,7 @@
       }
     },
     {
-      "name":"Submission Error for FM1234567",
+      "name": "Submission Error for FM1234567",
       "request": {
         "url": "/api/clients/submissions",
         "method": "POST",
@@ -161,11 +231,11 @@
       },
       "response": {
         "status": 400,
-        "body":"[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]"
+        "body": "[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]"
       }
     },
     {
-      "name":"Submission for Unregistered",
+      "name": "Submission for Unregistered",
       "request": {
         "url": "/api/clients/submissions",
         "method": "POST",
@@ -188,9 +258,8 @@
         "status": 201
       }
     },
-
     {
-      "name":"Autocompete Canada Post Canada",
+      "name": "Autocompete Canada Post Canada",
       "request": {
         "urlPath": "/api/clients/addresses",
         "method": "GET",
@@ -212,7 +281,7 @@
       }
     },
     {
-      "name":"Autocompete Canada Post US",
+      "name": "Autocompete Canada Post US",
       "request": {
         "urlPath": "/api/clients/addresses",
         "method": "GET",
@@ -234,7 +303,7 @@
       }
     },
     {
-      "name":"Canada Post details for success",
+      "name": "Canada Post details for success",
       "request": {
         "urlPattern": "/api/clients/addresses/(.*)",
         "method": "GET"
@@ -242,26 +311,28 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-address-{{request.path.[3]}}.json",
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "fixedDelayMilliseconds": 2500
       }
     },
     {
-      "name":"Canada Post error details for F8F8F8",
+      "name": "Canada Post error details for F8F8F8",
       "request": {
         "url": "/api/clients/addresses/F8F8F8",
         "method": "GET"
       },
       "response": {
         "status": 404,
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "fixedDelayMilliseconds": 2500
       }
     },
-
-
     {
-      "name":"Submission List Page",
+      "name": "Submission List Page",
       "request": {
         "urlPath": "/api/clients/submissions",
         "method": "GET",
@@ -282,12 +353,14 @@
           "Access-Control-Expose-Headers": "x-total-count"
         },
         "bodyFileName": "response-submissions-page{{request.query.page}}.json",
-        "transformers": ["response-template"],
+        "transformers": [
+          "response-template"
+        ],
         "fixedDelayMilliseconds": 2500
       }
     },
     {
-      "name":"Submission List Empty",
+      "name": "Submission List Empty",
       "request": {
         "urlPath": "/api/clients/submissions",
         "method": "GET",
@@ -308,11 +381,13 @@
           "Access-Control-Expose-Headers": "x-total-count"
         },
         "body": "[]",
-        "transformers": ["response-template"]
+        "transformers": [
+          "response-template"
+        ]
       }
     },
     {
-      "name":"Submission List Search",
+      "name": "Submission List Search",
       "request": {
         "urlPath": "/api/clients/submissions",
         "method": "GET",
@@ -323,7 +398,7 @@
           "size": {
             "matches": "^\\d+$"
           },
-          "keyword":{
+          "keyword": {
             "matches": "^(.*)$"
           }
         }
@@ -336,72 +411,83 @@
           "Access-Control-Expose-Headers": "x-total-count"
         },
         "bodyFileName": "response-submissions-search.json",
-        "transformers": ["response-template"]
+        "transformers": [
+          "response-template"
+        ]
       }
     },
     {
-      "name":"Submission Details Review",
+      "name": "Submission Details Review",
       "request": {
         "urlPattern": "/api/clients/submissions/(.*)",
-        "method": "GET"        
+        "method": "GET"
       },
       "response": {
-        "status": 200,        
+        "status": 200,
         "bodyFileName": "response-submissions-details-review.json",
-        "transformers": ["response-template"]
+        "transformers": [
+          "response-template"
+        ]
       }
     },
     {
-      "name":"Submission Details Approved",
+      "name": "Submission Details Approved",
       "request": {
         "urlPath": "/api/clients/submissions/a17d274f-3f5f-425b-b94e-757fea4dcfbb",
-        "method": "GET"        
+        "method": "GET"
       },
       "response": {
-        "status": 200,        
+        "status": 200,
         "bodyFileName": "response-submissions-details-approved.json",
-        "transformers": ["response-template"]
+        "transformers": [
+          "response-template"
+        ]
       }
     },
     {
-      "name":"Submission Details Review Dupped",
+      "name": "Submission Details Review Dupped",
       "request": {
         "urlPath": "/api/clients/submissions/5f1f7209-fb2f-487d-9619-786c63a52a07",
-        "method": "GET"        
+        "method": "GET"
       },
       "response": {
-        "status": 200,        
+        "status": 200,
         "bodyFileName": "response-submissions-details-dupped.json",
-        "transformers": ["response-template"]
+        "transformers": [
+          "response-template"
+        ]
       }
     },
-
     {
-      "name":"Submission Details Review Approved",
+      "name": "Submission Details Review Approved",
       "request": {
         "urlPath": "/api/clients/submissions/e14ad3a8-c7a1-4bd4-8cdf-8a6e9e013888",
-        "method": "GET"        
+        "method": "GET"
       },
       "response": {
-        "status": 200,        
+        "status": 200,
         "bodyFileName": "response-submissions-details-reviewedapproved.json",
-        "transformers": ["response-template"]
+        "transformers": [
+          "response-template"
+        ]
       }
     },
     {
-      "name":"Submission Details Review Unregistered",
+      "name": "Submission Details Review Unregistered",
       "request": {
         "urlPath": "/api/clients/submissions/9ceca504-f014-44f9-8a62-24e9b4311865",
-        "method": "GET"        
+        "method": "GET"
       },
       "response": {
-        "status": 200,        
+        "status": 200,
         "bodyFileName": "response-submissions-details-unregistered.json",
-        "transformers": ["response-template"]
+        "transformers": [
+          "response-template"
+        ]
       }
     },
     {
-      "name":"Submission processed successfully",
+      "name": "Submission processed successfully",
       "request": {
         "urlPattern": "/api/clients/submissions/(.*)",
         "method": "POST",
@@ -415,13 +501,86 @@
           "x-user-name": {
             "equalTo": "Uat Test"
           }
-          }
-        
+        }
       },
       "response": {
         "status": 202
       }
+    },
+    {
+      "name": "Individual Match for BCSC",
+      "request": {
+        "urlPath": "/api/clients/individual/NA5TCPGMIGUFVCSS6SAO3TIDBMAHXL3F",
+        "method": "GET",
+        "headers": {
+          "x-user-id": {
+            "equalTo": "bcsc\\NA5TCPGMIGUFVCSS6SAO3TIDBMAHXL3F"
+          },
+          "x-user-email": {
+            "equalTo": "jbaxter@gov.bc.ca"
+          },
+          "x-user-name": {
+            "equalTo": "James Baxter"
+          },
+          "x-user-businessid": {
+            "equalTo": ""
+          }
+        },
+        "queryParameters": {
+          "lastName": {
+            "equalTo": "Baxter"
+          }
+        }
+      },
+      "response": {
+        "status": 409,
+        "body": "Client already exists with the client number 00000002"
+      }
+    },
+    {
+      "name": "No Individual Match for IDIR",
+      "request": {
+        "urlPath": "/api/clients/individual/JRYAN",
+        "method": "GET",
+        "queryParameters": {
+          "lastName": {
+            "equalTo": "Ryan"
+          }
+        }
+      },
+      "response": {
+        "status": 409,
+        "body": "Client already exists with the client number 00000002"
+      }
+    },
+    {
+      "name": "No Individual Match for BCeID",
+      "request": {
+        "urlPath": "/api/clients/individual/uattest",
+        "method": "GET",
+        "headers": {
+          "x-user-id": {
+            "equalTo": "bceidbusiness\\uattest"
+          },
+          "x-user-email": {
+            "equalTo": "uattest@gov.bc.ca"
+          },
+          "x-user-name": {
+            "equalTo": "Uat Test"
+          },
+          "x-user-businessid": {
+            "equalTo": "automationinc"
+          }
+        },
+        "queryParameters": {
+          "lastName": {
+            "equalTo": "Test"
+          }
+        }
+      },
+      "response": {
+        "status": 200
+      }
     }
   ]
 }
-

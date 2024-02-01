@@ -23,7 +23,7 @@ parameters:
     value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
-    value: bcgov/nr-old-growth:prod-backend
+    value: bcgov/nr-forest-client-legacy:prod
   - name: ORACLEDB_KEYSTORE
     description: Oracle database keystore file  
   - name: CPU_REQUEST
@@ -94,6 +94,10 @@ objects:
         type: Rolling
       template:
         metadata:
+          annotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "9000"
+            prometheus.io/path: "/metrics"
           labels:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
@@ -134,20 +138,16 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               env:
-                - name: BACKEND_URL
-                  value: https://${NAME}-${URL_ZONE}-backend.${DOMAIN}
-                - name: FOREST_API_URL
-                  value: https://${NAME}-${URL_ZONE}-legacy.${DOMAIN}
                 - name: ORACLEDB_USER
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
-                      key: oracle-user
+                      key: oracle-user-write
                 - name: ORACLEDB_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
-                      key: oracle-password
+                      key: oracle-password-write
                 - name: ORACLEDB_DATABASE
                   valueFrom:
                     secretKeyRef:
@@ -221,20 +221,3 @@ objects:
           targetPort: 9000
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
-  - apiVersion: route.openshift.io/v1
-    kind: Route
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    spec:
-      host: ${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
-      port:
-        targetPort: 9000-tcp
-      to:
-        kind: Service
-        name: ${NAME}-${ZONE}-${COMPONENT}
-        weight: 100
-      tls:
-        termination: edge
-        insecureEdgeTerminationPolicy: Redirect

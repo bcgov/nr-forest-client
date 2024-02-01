@@ -19,6 +19,7 @@ public class ClientAddressDtoValidator implements Validator {
   private final ProvinceCodeRepository provinceCodeRepository;
 
   private static final Pattern CA_POSTAL_CODE_FORMAT = Pattern.compile("[A-Z]\\d[A-Z]\\d[A-Z]\\d");
+  private static final Pattern US_ZIP_CODE_FORMAT = Pattern.compile("^\\d{5}(?:-\\d{4})?$");
 
   @Override
   public boolean supports(Class<?> clazz) {
@@ -113,7 +114,7 @@ public class ClientAddressDtoValidator implements Validator {
         errors.rejectValue(postalCodeField, "You must include a postal code in the format A9A9A9.");
       } 
       else if ("US".equalsIgnoreCase(country)) {
-        errors.rejectValue(postalCodeField, "You must include a ZIP code in the format 00000.");
+        errors.rejectValue(postalCodeField, "You must include a ZIP code in the format 000000 or 00000-0000.");
       } 
       else {
         errors.rejectValue(postalCodeField, "You must include a postal code.");
@@ -134,13 +135,13 @@ public class ClientAddressDtoValidator implements Validator {
       }
     } 
     else if ("US".equalsIgnoreCase(country)) {
-      // For US, postal code should be digits (numbers only)
-      if (!StringUtils.isNumeric(postalCode)) {
-        errors.rejectValue(postalCodeField, "should be numeric");
+      // For US, postal code should be up to 10 digits
+      if (StringUtils.length(postalCode) > 10) {
+        errors.rejectValue(postalCodeField, "has more than 10 characters");
       }
-      // For US, postal code should be up to 5 digits
-      if (StringUtils.length(postalCode) > 5) {
-        errors.rejectValue(postalCodeField, "has more than 5 characters");
+      // CA postal code format is A9A9A9
+      if (!US_ZIP_CODE_FORMAT.matcher(postalCode).matches()) {
+        errors.rejectValue(postalCodeField, "invalid US zip code format");
       }
     } 
     else {

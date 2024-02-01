@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, watchEffect, getCurrentInstance } from "vue";
+import { openMailtoLink, getObfuscatedEmail } from "@/services/ForestClientService";
+
 // Carbon
 import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/ui-shell/index";
 import type { CDSHeaderPanel } from "@carbon/web-components";
 import type CDSHeaderGlobalAction from "@carbon/web-components/es/components/ui-shell/header-global-action";
+
 // Composables
 import { isSmallScreen, isMediumScreen } from "@/composables/useScreenSize";
 import { useRoute } from "vue-router";
@@ -90,6 +93,8 @@ const onClickLogout = () => {
     logoutModalActive.value = true;
   }
 }
+
+const adminEmail = "forhvap.cliadmin@gov.bc.ca"; 
 </script>
 
 <template>
@@ -161,7 +166,7 @@ const onClickLogout = () => {
 
     <cds-header-panel :id="myProfilePanelId" v-if="$route.meta.profile" ref="myProfilePanel">
       <div class="grouping-16" id="panel-title">
-        <span class="heading-03">My profile</span>
+        <h5>My profile</h5>
         <cds-button kind="ghost" size="sm" @click.prevent="closePanel" class="close-panel-button">
           <Close16 slot="icon" />
         </cds-button>
@@ -237,7 +242,10 @@ const onClickLogout = () => {
     </cds-modal-header>
     <cds-modal-body>
       <p>
-        Can’t proceed with your application? Let us know by emailing your issue to <a href='mailto:forhvap.cliadmin@gov.bc.ca'>forhvap.cliadmin@gov.bc.ca</a> and we’ll get back to you.
+        Can’t proceed with your application? Let us know by emailing your issue to 
+        <button class="link-button" @click="openMailtoLink(adminEmail)" aria-label="Contact Admin via Email">
+          <span v-bind:innerHTML="getObfuscatedEmail(adminEmail)"></span>
+        </button>
       </p>
     </cds-modal-body>
   </cds-modal>

@@ -13,6 +13,7 @@ ca:
           clientId: clientId
           clientSecret: secret
           scope: scope
+          copyEmail: sample@email.ca,mail@mail.ca,nobody@mail.ca
         bcregistry:
           uri: 'http://127.0.0.1:10040'
           apiKey: abc1234
@@ -33,6 +34,8 @@ ca:
           cookie-domain: localhost
           url: http://localhost:10070
           refreshUrl: http://localhost:10070
+        frontend:
+          url: http://localhost:1234
 
 
 logging:
