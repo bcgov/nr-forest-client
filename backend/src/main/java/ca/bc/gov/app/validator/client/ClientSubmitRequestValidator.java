@@ -7,8 +7,11 @@ import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
+import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -23,6 +26,7 @@ public class ClientSubmitRequestValidator implements Validator {
   private final RegisteredBusinessInformationValidator registeredBusinessInformationValidator;
   private final UnregisteredBusinessInformationValidator unregisteredBusinessInformationValidator;
   private final ClientLocationDtoValidator locationDtoValidator;
+  private final ClientTypeCodeRepository clientTypeCodeRepository;
 
   @Override
   public boolean supports(Class<?> clazz) {
@@ -39,6 +43,7 @@ public class ClientSubmitRequestValidator implements Validator {
     validateLocation(request.location(), errors);
   }
 
+  @SneakyThrows
   private void validateBusinessInformation(
       ClientBusinessInformationDto businessInformation, Errors errors) {
 
@@ -62,24 +67,29 @@ public class ClientSubmitRequestValidator implements Validator {
       return;
     }
 
-    String clientType = businessInformation.clientType();
+    String clientTypeCode = businessInformation.clientType();
 
-    if (StringUtils.isBlank(clientType)) {
+    if (StringUtils.isBlank(clientTypeCode)) {
       errors.rejectValue("clientType", "Client does not have a type");
       errors.popNestedPath();
       return;
     }
 
-    if (ApplicationConstant.REG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientType)
-        || ApplicationConstant.UNREG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientType)
-        || ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientType)
+    if (ApplicationConstant.REG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientTypeCode)
+        || ApplicationConstant.UNREG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientTypeCode)
+        || ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientTypeCode)
     ) {
       validateBirthdate(businessInformation.birthdate(), errors);
     }
 
-    if (!ApplicationConstant.AVAILABLE_CLIENT_TYPES.contains(clientType)) {
-      errors.rejectValue("businessType",
-          String.format("%s %s is not supported at the moment", "Business type",clientType));
+    if (!ApplicationConstant.AVAILABLE_CLIENT_TYPES.contains(clientTypeCode)) {
+      ClientTypeCodeEntity clientTypeCodeEntity = clientTypeCodeRepository
+          .findByCode(clientTypeCode)
+          .toFuture()
+          .get();
+      
+      errors.rejectValue("clientType",
+          String.format("'%s' is not supported at the moment", clientTypeCodeEntity.getDescription()));
     }
 
     errors.popNestedPath();
