@@ -91,11 +91,14 @@ public class ClientSubmissionLoadingService {
                             .flatMap(isAdmin ->
                                 forestClientApi
                                     .get()
-                                    .uri("/api/clients/districts/{districtId}", details.getDistrictId())
+                                    .uri("/api/clients/districts/{districtCode}", details.getDistrictCode())
                                     .exchangeToMono(clientResponse -> clientResponse.bodyToMono(
                                         DistrictDto.class)
                                     )
-                                    .doOnNext(district -> log.info("Loaded district details {} {}", district.code(),district.description()))
+                                    .doOnNext(district -> log.info(
+                                                                "Loaded district details {} {}", 
+                                                                district.code(),
+                                                                district.description()))
                                     .map(DistrictDto::emails)
                             )
                             .defaultIfEmpty(submissionContact.getEmailAddress())
