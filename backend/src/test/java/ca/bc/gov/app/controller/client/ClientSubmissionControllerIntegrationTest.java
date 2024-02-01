@@ -199,6 +199,19 @@ class ClientSubmissionControllerIntegrationTest
             )
             .apply(uriBuilder.path("/api/clients/submissions"))
             .build(Map.of());
+    
+    StepVerifier.create(client
+        .get()
+        .uri(uri)
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
+        .exchange()
+        .returnResult(byte[].class)
+        .getResponseBody())
+        .expectNextCount(1)
+        .expectComplete()
+        .verify();
 
     WebTestClient.ResponseSpec responseSpec = client
         .get()
@@ -209,12 +222,6 @@ class ClientSubmissionControllerIntegrationTest
         .exchange()
         .expectStatus().isOk()
         .expectHeader().valueMatches(ApplicationConstant.X_TOTAL_COUNT, "\\d+");
-
-    try {
-      Thread.sleep(2000);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-    }
     
     if (!found) {
         responseSpec.expectBody().json(TestConstants.SUBMISSION_LIST_CONTENT_EMPTY);
