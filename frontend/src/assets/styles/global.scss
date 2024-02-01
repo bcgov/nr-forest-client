@@ -178,10 +178,12 @@ cds-inline-notification {
 }
 
 cds-inline-notification::part(div),
+cds-inline-notification::before,
 cds-inline-notification,
 .cds--inline-notification {
   max-width: 100%;
   border-radius: 0.25rem;
+  box-sizing: border-box;
 }
 
 cds-inline-notification::part(cds--inline-notification__details) {
