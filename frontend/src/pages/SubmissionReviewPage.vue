@@ -573,7 +573,7 @@ const renderListItem = (label, clientNumber) => {
               <hr class="grouping-divider" v-if="contact.index > 0"/>
               <p class="body-01">{{contact.firstName}} {{ contact.lastName }}</p>
               <div class="grouping-07">
-                <read-only-component label="Associated location">
+                <read-only-component label="Associated location" v-if="$features.BCEID_MULTI_ADDRESS">
                   <span class="body-compact-01">{{ contact.locations.join(", ") }}</span>
                 </read-only-component>               
                 <read-only-component label="Primary role">
