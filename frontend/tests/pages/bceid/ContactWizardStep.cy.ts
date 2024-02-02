@@ -2,6 +2,16 @@ import ContactWizardStep from "@/pages/bceidform/ContactWizardStep.vue";
 import type { Contact, FormDataDto } from "@/dto/ApplyClientNumberDto";
 import { emptyContact } from "@/dto/ApplyClientNumberDto";
 
+const globalDefault = {
+  config: {
+    globalProperties: {
+      $features: {
+        BCEID_MULTI_ADDRESS: false,
+      },
+    },
+  },
+};
+
 describe('<ContactWizardStep />', () => {
   beforeEach(() => {
     cy.fixture("contact.json").as("contactFixture");
@@ -31,6 +41,7 @@ describe('<ContactWizardStep />', () => {
         } as unknown as FormDataDto,
         active: false,
       },
+      global: globalDefault,
     });
 
     // Assert that the main component is rendered
@@ -52,6 +63,7 @@ describe('<ContactWizardStep />', () => {
           } as unknown as FormDataDto,
           active: false,
         },
+        global: globalDefault,
       });
 
       // Assert that the element with v-if condition is displayed when the condition is met
