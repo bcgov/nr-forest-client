@@ -13,6 +13,7 @@ import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
+import ca.bc.gov.app.dto.client.LegalTypeEnum;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
@@ -25,6 +26,7 @@ import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import ca.bc.gov.app.service.ches.ChesService;
+import ca.bc.gov.app.util.ClientValidationUtils;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -67,7 +69,7 @@ public class ClientService {
    * @return A list of {@link CodeNameDto}
    */
   public Flux<CodeNameDto> findActiveClientTypeCodes(LocalDate targetDate) {
-log.info("Loading active client type codes for {}", targetDate);
+    log.info("Loading active client type codes for {}", targetDate);
     return
         clientTypeCodeRepository
             .findActiveAt(targetDate)
@@ -226,10 +228,19 @@ log.info("Loading active client type codes for {}", targetDate);
 
             .flatMap(client -> {
               if (ApplicationConstant.AVAILABLE_CLIENT_TYPES.contains(
-                  client.business().legalType())) {
+                  ClientValidationUtils.getClientType(
+                          LegalTypeEnum.valueOf(client.business().legalType())
+                      )
+                      .toString()
+              )
+              ) {
                 return Mono.just(client);
               }
-              return Mono.error(new UnsuportedClientTypeException(client.business().legalType()));
+              return Mono.error(new UnsuportedClientTypeException(ClientValidationUtils.getClientType(
+                      LegalTypeEnum.valueOf(client.business().legalType())
+                  )
+                  .toString()
+              ));
             })
 
             //if document type is SP and party contains only one entry that is not a person, fail
@@ -337,7 +348,8 @@ log.info("Loading active client type codes for {}", targetDate);
           List.of()
       );
     }
-    log.info("Building simple client details for {} with standing {}", businessDto.identifier(),businessDto.goodStanding());
+    log.info("Building simple client details for {} with standing {}", businessDto.identifier(),
+        businessDto.goodStanding());
     return
         new ClientDetailsDto(
             businessDto.legalName(),
