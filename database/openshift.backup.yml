@@ -128,22 +128,22 @@ objects:
                     - name: POSTGRESQL_DATABASE
                       valueFrom:
                         secretKeyRef:
-                          name: "${NAME}-${ZONE}-database"
+                          name: "${NAME}-${ZONE}"
                           key: "database-name"
                     - name: POSTGRESQL_USER
                       valueFrom:
                         secretKeyRef:
-                          name: ${NAME}-${ZONE}-database
+                          name: ${NAME}-${ZONE}
                           key: "database-user"
                     - name: POSTGRESQL_PASSWORD
                       valueFrom:
                         secretKeyRef:
-                          name: ${NAME}-${ZONE}-database
+                          name: ${NAME}-${ZONE}
                           key: "database-password"
                     - name: PGPASSWORD
                       valueFrom:
                         secretKeyRef:
-                          name: ${NAME}-${ZONE}-database
+                          name: ${NAME}-${ZONE}
                           key: "database-password"
               volumes:
                 - name: ${NAME}-${ZONE}-${COMPONENT}
