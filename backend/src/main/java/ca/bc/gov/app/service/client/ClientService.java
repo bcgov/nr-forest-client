@@ -516,4 +516,25 @@ public class ClientService {
         null);
   }
 
+  /**
+   * Retrieves natural resource district information by its district code. This method queries the
+   * {@code districtCodeRepository} to find a district entity with the specified district code. If a
+   * matching entity is found, it is mapped to a {@code CodeNameDto} object, which encapsulates the
+   * district code and description. The resulting data is wrapped in a Mono, which represents the
+   * asynchronous result of the operation.
+   *
+   * @param districtCode The code of the district to retrieve information for.
+   * @return A Mono that emits the {@code CodeNameDto} object if a matching district is found, or an
+   * empty result if no match is found.
+   * @see CodeNameDto
+   */
+  public Mono<CodeNameDto> getDistrictByCode(String districtCode) {
+    log.info("Loading district for {}", districtCode);
+    return districtCodeRepository
+            .findByDistrictCode(districtCode)
+            .map(entity -> new CodeNameDto(
+                                entity.getDistrictCode(),
+                                entity.getDescription()));
+  }
+
 }
