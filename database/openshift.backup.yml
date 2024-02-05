@@ -120,11 +120,16 @@ objects:
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
-                    pg_dump -U ${POSTGRESQL_USER} -h ${NAME}-${ZONE}-database -d ${POSTGRESQL_DATABASE} --data-only > /tmp/backup/backup_$(date +%Y-%m-%d).sql
+                    pg_dump -U ${POSTGRESQL_USER} -h ${NAME}-${ZONE}-database -d ${POSTGRESQL_DATABASE} --data-only > ${BACKUP_DIR}/backup_$(date +%Y-%m-%d).sql &&
+                    find "${BACKUP_DIR}" -type f -mtime +$NUM_BACKUPS -exec rm -f {} \;
                   volumeMounts:
                     - mountPath: "${BACKUP_DIR}"
                       name: ${NAME}-${ZONE}-${COMPONENT}
                   env:
+                    - name: BACKUP_DIR
+                      value: "${BACKUP_DIR}"
+                    - name: NUM_BACKUPS
+                      value: "${NUM_BACKUPS}"
                     - name: POSTGRESQL_DATABASE
                       valueFrom:
                         secretKeyRef:
