@@ -57,6 +57,7 @@ public class ClientService {
   private final BcRegistryService bcRegistryService;
   private final ChesService chesService;
   private final ClientLegacyService legacyService;
+  private final Predicate<BcRegistryAddressDto> isMultiAddressEnabled;
 
   /**
    * <p><b>Find Active Client Type Codes</b></p>
@@ -373,6 +374,7 @@ public class ClientService {
                     .addresses()
             )
             .filter(BcRegistryAddressDto::isValid)
+            .filter(isMultiAddressEnabled)
             .map(addressDto ->
                 new ClientAddressDto(
                     addressDto.streetAddress(),
