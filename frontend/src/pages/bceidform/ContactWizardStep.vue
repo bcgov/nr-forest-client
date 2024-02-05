@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, ref, computed, reactive, onMounted } from "vue";
+import { watch, ref, computed, reactive, onMounted, getCurrentInstance } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
 // Composables
@@ -8,7 +8,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Type Imports
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
-import { emptyContact } from "@/dto/ApplyClientNumberDto";
+import { emptyContact, locationName as defaultLocation } from "@/dto/ApplyClientNumberDto";
 import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";
 // Validators
 import {
@@ -75,12 +75,22 @@ const contactsIdMap = new Map<Contact, number>(
   formData.location.contacts.map((contact) => [contact, getNewContactId()]),
 );
 
+const instance = getCurrentInstance();
+const features = instance.appContext.config.globalProperties.$features;
+
 //New contact being added
 const otherContacts = computed(() => formData.location.contacts.slice(1));
 const addContact = (autoFocus = true) => {
-  const newLength = formData.location.contacts.push(
-    JSON.parse(JSON.stringify(emptyContact))
-  );
+  const newContact = JSON.parse(JSON.stringify(emptyContact));
+  if (!features.BCEID_MULTI_ADDRESS) {
+    newContact.locationNames.push(defaultLocation);
+  }
+  const newLength = formData.location.contacts.push(newContact);
+
+  /*
+  For some reason we need to get the contact from the array to make it work.
+  It doesn't work with the value from newContact as key.
+  */
   const contact = formData.location.contacts[newLength - 1];
   contactsIdMap.set(contact, getNewContactId());
   if (autoFocus) {

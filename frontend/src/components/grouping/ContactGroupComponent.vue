@@ -231,7 +231,7 @@ const logoutAndRedirect = () => {
 
     <multiselect-input-component
       :id="'addressname_' + id"
-      v-if="!hideAddressNameField"
+      v-if="$features.BCEID_MULTI_ADDRESS && !hideAddressNameField"
       label="Location or address name"
       tip="A contact can have more than one address"
       :initial-value="''"
