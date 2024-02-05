@@ -283,6 +283,33 @@ describe("Submission Review Page", () => {
     });
   });
 
+  const testGoodStanding = () => {
+    // Load the fixture for the details
+    cy.intercept("GET", "api/clients/submissions/*", {
+      fixture: "test-case-review-goodstanding.json",
+    }).as("loadSubmission");
+
+    // Click any submission
+    cy.get('[sort-id="0"] > :nth-child(2)').click();
+
+    cy.wait("@loadSubmission").its("response.body.submissionStatus").should("eq", "New");
+  };
+
+  // TODO: have e2e tests running with BCEID_MULTI_ADDRESS enabled
+  // describe("when BCEID_MULTI_ADDRESS is enabled", () => {
+  //   it("should render 'Associated location' information", () => {
+  //     testGoodStanding();
+  //     cy.contains("Associated location").should("be.visible");
+  //   });
+  // });
+
+  describe("when BCEID_MULTI_ADDRESS is disabled", () => {
+    it("should not render 'Associated location' information", () => {
+      testGoodStanding();
+      cy.contains("Associated location").should("not.exist");
+    });
+  });
+
   afterEach(() => {
     //Go to the submission list page
     cy.visit("/submissions");

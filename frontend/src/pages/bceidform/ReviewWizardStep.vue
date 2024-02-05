@@ -113,7 +113,7 @@ onMounted(() => {
         <User20 />{{ contact.firstName }} {{ contact.lastName }}
       </h6>
       <div class="grouping-23">
-        <span class="body-compact-01">
+        <span class="body-compact-01" v-if="$features.BCEID_MULTI_ADDRESS">
           {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
         </span>
         <span class="body-compact-01">{{ contact.contactType.text }}</span>

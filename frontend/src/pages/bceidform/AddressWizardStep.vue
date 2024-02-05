@@ -161,38 +161,38 @@ onMounted(() => safeSetFocusedComponent("addr_0", 800));
     @valid="updateValidState(0, $event)"
   />
 
-<div class="frame-01" v-if="otherAddresses.length > 0">
-  
-  <div v-for="(address, index) in otherAddresses">
-    <hr />
-    <div class="grouping-09">
-      <h5>Additional address</h5>
+  <template v-if="$features.BCEID_MULTI_ADDRESS">
+    <div class="frame-01" v-if="otherAddresses.length > 0">
+      <div v-for="(address, index) in otherAddresses">
+        <hr />
+        <div class="grouping-09">
+          <h5>Additional address</h5>
+        </div>
+        <address-group-component
+          :key="addressesIdMap.get(address)"
+          :id="addressesIdMap.get(address)"
+          v-bind:model-value="address"
+          :countryList="countryList"
+          :validations="[uniqueValues.add]"
+          :revalidate="revalidate"
+          @update:model-value="updateAddress($event, index + 1)"
+          @valid="updateValidState(index + 1, $event)"
+          @remove="handleRemove(index + 1)"
+        />
+      </div>
     </div>
-    <address-group-component
-      :key="addressesIdMap.get(address)"
-      :id="addressesIdMap.get(address)"
-      v-bind:model-value="address"
-      :countryList="countryList"
-      :validations="[uniqueValues.add]"
-      :revalidate="revalidate"
-      @update:model-value="updateAddress($event, index + 1)"
-      @valid="updateValidState(index + 1, $event)"
-      @remove="handleRemove(index + 1)"
-    />
-  </div>
-
-</div>
-<div class="grouping-02">
-  <p class="body-01 heading-compact-01-dark">
-    If the business operates in more than one location you can include additional addresses.
-  </p>
-</div>
-<cds-button
-    kind="tertiary"
-    @click.prevent="addAddress"
-    v-if="formData.location.addresses.length < 5"
-  >
-    <span>Add another address</span>
-    <Add16 slot="icon" />
-  </cds-button>
+    <div class="grouping-02">
+      <p class="body-01 heading-compact-01-dark">
+        If the business operates in more than one location you can include additional addresses.
+      </p>
+    </div>
+    <cds-button
+      kind="tertiary"
+      @click.prevent="addAddress"
+      v-if="formData.location.addresses.length < 5"
+    >
+      <span>Add another address</span>
+      <Add16 slot="icon" />
+    </cds-button>
+  </template>
 </template>

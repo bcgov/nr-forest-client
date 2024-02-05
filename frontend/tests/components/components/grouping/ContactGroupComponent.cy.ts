@@ -32,6 +32,16 @@ describe("<ContactGroupComponent />", () => {
     cy.fixture("addresses.json").as("addressesFixture");
   });
 
+  const globalDefault = {
+    config: {
+      globalProperties: {
+        $features: {
+          BCEID_MULTI_ADDRESS: false,
+        },
+      },
+    },
+  };
+
   it("should render the component", () => {
     cy.get("@contactFixture").then((contact: Contact) => {
       cy.get("@rolesFixture").then((roles) => {
@@ -45,6 +55,7 @@ describe("<ContactGroupComponent />", () => {
               addressList: addresses,
               validations: [],
             },
+            global: globalDefault,
           });
         });
       });
@@ -80,6 +91,7 @@ describe("<ContactGroupComponent />", () => {
               addressList: addresses,
               validations: [dummyValidation()],
             },
+            global: globalDefault,
           });
         });
       });
@@ -114,125 +126,202 @@ describe("<ContactGroupComponent />", () => {
     });
   });
 
-  it("should render the component and select first address and show on component", () => {
-    cy.get("@contactFixture").then((contact: Contact) => {
-      cy.get("@rolesFixture").then((roles) => {
-        cy.get("@addressesFixture").then((addresses) => {
-          cy.mount(ContactGroupComponent, {
-            props: {
-              id: 0,
-              modelValue: {
-                ...contact,
-                addresses: [addresses[0], addresses[1]],
+  describe("when feature BCEID_MULTI_ADDRESS is enabled", () => {
+    const global = {
+      config: {
+        globalProperties: {
+          $features: {
+            BCEID_MULTI_ADDRESS: true,
+          },
+        },
+      },
+    };
+
+    it("should render the field 'Location or address name'", () => {
+      cy.get("@contactFixture").then((contact: Contact) => {
+        cy.get("@rolesFixture").then((roles) => {
+          cy.get("@addressesFixture").then((addresses) => {
+            cy.mount(ContactGroupComponent, {
+              props: {
+                id: 0,
+                modelValue: {
+                  ...contact,
+                  addresses: [addresses[0], addresses[1]],
+                },
+                enabled: true,
+                roleList: roles,
+                addressList: addresses,
+                validations: [],
               },
-              enabled: true,
-              roleList: roles,
-              addressList: addresses,
-              validations: [],
-            },
+              global,
+            });
           });
         });
       });
+
+      cy.get("#addressname_0").should("be.visible");
     });
 
-    cy.get("#addressname_0").should("be.visible").and("have.value", "");
-
-    cy.get("#addressname_0")
-      .click()
-      .find('cds-multi-select-item[data-value="Mailing address"]')
-      .should("exist")
-      .and("be.visible")
-      .click();
-
-    cy.get("#addressname_0")
-      .should("be.visible")
-      .and("have.value", "Mailing address");
+    it("should render the component and select first address and show on component", () => {
+      cy.get("@contactFixture").then((contact: Contact) => {
+        cy.get("@rolesFixture").then((roles) => {
+          cy.get("@addressesFixture").then((addresses) => {
+            cy.mount(ContactGroupComponent, {
+              props: {
+                id: 0,
+                modelValue: {
+                  ...contact,
+                  addresses: [addresses[0], addresses[1]],
+                },
+                enabled: true,
+                roleList: roles,
+                addressList: addresses,
+                validations: [],
+              },
+              global,
+            });
+          });
+        });
+      });
+  
+      cy.get("#addressname_0").should("be.visible").and("have.value", "");
+  
+      cy.get("#addressname_0")
+        .click()
+        .find('cds-multi-select-item[data-value="Mailing address"]')
+        .should("exist")
+        .and("be.visible")
+        .click();
+  
+      cy.get("#addressname_0")
+        .should("be.visible")
+        .and("have.value", "Mailing address");
+    });
+  
+    it("should render the component and select both addresses and show it as value", () => {
+      cy.get("@contactFixture").then((contact: Contact) => {
+        cy.get("@rolesFixture").then((roles) => {
+          cy.get("@addressesFixture").then((addresses) => {
+            cy.mount(ContactGroupComponent, {
+              props: {
+                id: 0,
+                modelValue: {
+                  ...contact,
+                  addresses: [addresses[0], addresses[1]],
+                },
+                enabled: true,
+                roleList: roles,
+                addressList: addresses,
+                validations: [],
+              },
+              global,
+            });
+          });
+        });
+      });
+  
+      cy.get("#addressname_0").should("be.visible").and("have.value", "");
+  
+      cy.get("#addressname_0")
+        .click()
+        .find('cds-multi-select-item[data-value="Mailing address"]')
+        .should("exist")
+        .and("be.visible")
+        .click();
+  
+      cy.get("#addressname_0")
+        .click()
+        .find('cds-multi-select-item[data-value="Jutland office"]')
+        .should("exist")
+        .and("be.visible")
+        .click();
+  
+      cy.get("#addressname_0")
+        .should("be.visible")
+        .and("have.value", "Mailing address,Jutland office");
+    });
+  
+    it("should render the component and select first address and show it then remove it", () => {
+      cy.get("@contactFixture").then((contact: Contact) => {
+        cy.get("@rolesFixture").then((roles) => {
+          cy.get("@addressesFixture").then((addresses) => {
+            cy.mount(ContactGroupComponent, {
+              props: {
+                id: 0,
+                modelValue: {
+                  ...contact,
+                  addresses: [addresses[0], addresses[1]],
+                },
+                enabled: true,
+                roleList: roles,
+                addressList: addresses,
+                validations: [],
+              },
+              global,
+            });
+          });
+        });
+      });
+  
+      cy.get("#addressname_0").should("be.visible").and("have.value", "");
+  
+      cy.get("#addressname_0")
+        .click()
+        .find('cds-multi-select-item[data-value="Mailing address"]')
+        .should("exist")
+        .and("be.visible")
+        .click();
+  
+      cy.get("#addressname_0")
+        .should("be.visible")
+        .and("have.value", "Mailing address");
+  
+      cy.get("#addressname_0")
+        .click()
+        .find('cds-multi-select-item[data-value="Mailing address"]')
+        .should("exist")
+        .and("be.visible")
+        .click();
+  
+      cy.get("#addressname_0").should("be.visible").and("have.value", "");
+    });
   });
 
-  it("should render the component and select both addresses and show it as value", () => {
-    cy.get("@contactFixture").then((contact: Contact) => {
-      cy.get("@rolesFixture").then((roles) => {
-        cy.get("@addressesFixture").then((addresses) => {
-          cy.mount(ContactGroupComponent, {
-            props: {
-              id: 0,
-              modelValue: {
-                ...contact,
-                addresses: [addresses[0], addresses[1]],
+  describe("when feature BCEID_MULTI_ADDRESS is disabled", () => {
+    const global = {
+      config: {
+        globalProperties: {
+          $features: {
+            BCEID_MULTI_ADDRESS: false,
+          },
+        },
+      },
+    };
+
+    it("should not render the field 'Location or address name'", () => {
+      cy.get("@contactFixture").then((contact: Contact) => {
+        cy.get("@rolesFixture").then((roles) => {
+          cy.get("@addressesFixture").then((addresses) => {
+            cy.mount(ContactGroupComponent, {
+              props: {
+                id: 0,
+                modelValue: {
+                  ...contact,
+                  addresses: [addresses[0], addresses[1]],
+                },
+                enabled: true,
+                roleList: roles,
+                addressList: addresses,
+                validations: [],
               },
-              enabled: true,
-              roleList: roles,
-              addressList: addresses,
-              validations: [],
-            },
+              global,
+            });
           });
         });
       });
+
+      cy.get("#addressname_0").should("not.exist");
     });
-
-    cy.get("#addressname_0").should("be.visible").and("have.value", "");
-
-    cy.get("#addressname_0")
-      .click()
-      .find('cds-multi-select-item[data-value="Mailing address"]')
-      .should("exist")
-      .and("be.visible")
-      .click();
-
-    cy.get("#addressname_0")
-      .click()
-      .find('cds-multi-select-item[data-value="Jutland office"]')
-      .should("exist")
-      .and("be.visible")
-      .click();
-
-    cy.get("#addressname_0")
-      .should("be.visible")
-      .and("have.value", "Mailing address,Jutland office");
-  });
-
-  it("should render the component and select first address and show it then remove it", () => {
-    cy.get("@contactFixture").then((contact: Contact) => {
-      cy.get("@rolesFixture").then((roles) => {
-        cy.get("@addressesFixture").then((addresses) => {
-          cy.mount(ContactGroupComponent, {
-            props: {
-              id: 0,
-              modelValue: {
-                ...contact,
-                addresses: [addresses[0], addresses[1]],
-              },
-              enabled: true,
-              roleList: roles,
-              addressList: addresses,
-              validations: [],
-            },
-          });
-        });
-      });
-    });
-
-    cy.get("#addressname_0").should("be.visible").and("have.value", "");
-
-    cy.get("#addressname_0")
-      .click()
-      .find('cds-multi-select-item[data-value="Mailing address"]')
-      .should("exist")
-      .and("be.visible")
-      .click();
-
-    cy.get("#addressname_0")
-      .should("be.visible")
-      .and("have.value", "Mailing address");
-
-    cy.get("#addressname_0")
-      .click()
-      .find('cds-multi-select-item[data-value="Mailing address"]')
-      .should("exist")
-      .and("be.visible")
-      .click();
-
-    cy.get("#addressname_0").should("be.visible").and("have.value", "");
   });
 
   it("should logout and redirect to BCeID", () => {
@@ -242,6 +331,10 @@ describe("<ContactGroupComponent />", () => {
     cy.get("@contactFixture").then((contact: Contact) => {
       cy.get("@rolesFixture").then((roles) => {
         cy.get("@addressesFixture").then((addresses) => {
+          const globalLogout = {
+            ...globalDefault,
+          };
+          globalLogout.config.globalProperties.$session = $session;
           cy.mount(ContactGroupComponent, {
             props: {
               id: 0,
@@ -254,13 +347,7 @@ describe("<ContactGroupComponent />", () => {
               addressList: addresses,
               validations: [],
             },
-            global: {
-              config: {
-                globalProperties: {
-                  $session,
-                },
-              },
-            },
+            global: globalLogout,
           });
         });
       });
@@ -316,6 +403,7 @@ describe("<ContactGroupComponent />", () => {
                 validations: [],
                 onValid,
               },
+              global: globalDefault,
             })
               .its("wrapper")
               .as("vueWrapper");

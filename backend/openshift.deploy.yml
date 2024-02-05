@@ -202,6 +202,8 @@ objects:
                   value: ${ZONE}
                 - name: APP_COMPONENT
                   value: ${COMPONENT}
+                - name: FEATURES_BCREGISTRY_MULTIADDRESS
+                  value: "false"
               ports:
                 - containerPort: 8080
                   protocol: TCP
