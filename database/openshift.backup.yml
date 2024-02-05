@@ -120,7 +120,7 @@ objects:
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
-                    pg_dump -U ${POSTGRESQL_USER} -h ${NAME}-${ZONE}-${COMPONENT} -d ${POSTGRESQL_DATABASE} --data-only > /tmp/backup/backup_$(date +%Y-%m-%d).sql
+                    pg_dump -U ${POSTGRESQL_USER} -h ${NAME}-${ZONE}-database -d ${POSTGRESQL_DATABASE} --data-only > /tmp/backup/backup_$(date +%Y-%m-%d).sql
                   volumeMounts:
                     - mountPath: "${BACKUP_DIR}"
                       name: ${NAME}-${ZONE}-${COMPONENT}
