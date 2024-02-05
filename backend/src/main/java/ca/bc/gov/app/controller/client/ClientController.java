@@ -45,6 +45,16 @@ public class ClientController {
     log.info("Requesting client details for client number {} from the client service.", clientNumber);
     return clientService.getClientDetails(clientNumber,userId,businessId);
   }
+  
+  @GetMapping("/activeDistrictCodes")
+  public Flux<CodeNameDto> listDistricts(
+      @RequestParam(value = "page", required = false, defaultValue = "0")
+      Integer page,
+      @RequestParam(value = "size", required = false, defaultValue = "10")
+      Integer size) {
+    log.info("Requesting a list of districts from the client service.");
+    return clientService.listDistricts(page, size);
+  }
 
   @GetMapping("/activeCountryCodes")
   public Flux<CodeNameDto> listCountries(

@@ -23,6 +23,7 @@ import ca.bc.gov.app.exception.UnsuportedClientTypeException;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
+import ca.bc.gov.app.repository.client.DistrictCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import ca.bc.gov.app.service.ches.ChesService;
@@ -51,6 +52,7 @@ import reactor.core.publisher.Mono;
 public class ClientService {
 
   private final ClientTypeCodeRepository clientTypeCodeRepository;
+  private final DistrictCodeRepository districtCodeRepository;
   private final CountryCodeRepository countryCodeRepository;
   private final ProvinceCodeRepository provinceCodeRepository;
   private final ContactTypeCodeRepository contactTypeCodeRepository;
@@ -80,6 +82,23 @@ public class ClientService {
             );
   }
 
+  /**
+   * <p><b>List natural resource districts</b></p>
+   * <p>List natural resource districts by page with a defined size.</p> 
+   * List natural resource districts by page with a defined
+   * size. The list will be sorted by district name.
+   *
+   * @param page The page number, it is a 0-index base.
+   * @param size The amount of entries per page.
+   * @return A list of {@link CodeNameDto} entries.
+   */
+  public Flux<CodeNameDto> listDistricts(int page, int size) {
+    log.info("Loading natural resource districts for page {} with size {}", page, size);
+    return districtCodeRepository
+        .findBy(PageRequest.of(page, size, Sort.by("description")))
+        .map(entity -> new CodeNameDto(entity.getDistrictCode(), entity.getDescription()));
+  }
+  
   /**
    * <p><b>List countries</b></p>
    * <p>List countries by page with a defined size.
