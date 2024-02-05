@@ -573,34 +573,34 @@ const renderListItem = (label, clientNumber) => {
               <hr class="grouping-divider" v-if="contact.index > 0"/>
               <p class="body-01">{{contact.firstName}} {{ contact.lastName }}</p>
               <div class="grouping-07">
-                <read-only-component label="Associated location">
-                    <span class="body-compact-01">{{ contact.locations.join(", ") }}</span>
-                  </read-only-component>               
-                  <read-only-component label="Primary role">
-                    <span class="body-compact-01">{{ contact.contactType }}</span>
-                  </read-only-component>
-                  
-                  <read-only-component label="Email">
-                    <cds-tooltip>
-                      <div class="sb-tooltip-trigger" aria-labelledby="content">
-                        <a :href="'mailto:'+contact.emailAddress"><span class="body-compact-01-colorless">{{ contact.emailAddress }}</span></a>
-                      </div>
-                      <cds-tooltip-content id="content">
-                        Click to send email
-                      </cds-tooltip-content>
-                    </cds-tooltip>
-                  </read-only-component>
+                <read-only-component label="Associated location" v-if="$features.BCEID_MULTI_ADDRESS">
+                  <span class="body-compact-01">{{ contact.locations.join(", ") }}</span>
+                </read-only-component>               
+                <read-only-component label="Primary role">
+                  <span class="body-compact-01">{{ contact.contactType }}</span>
+                </read-only-component>
+                
+                <read-only-component label="Email">
+                  <cds-tooltip>
+                    <div class="sb-tooltip-trigger" aria-labelledby="content">
+                      <a :href="'mailto:'+contact.emailAddress"><span class="body-compact-01-colorless">{{ contact.emailAddress }}</span></a>
+                    </div>
+                    <cds-tooltip-content id="content">
+                      Click to send email
+                    </cds-tooltip-content>
+                  </cds-tooltip>
+                </read-only-component>
 
-                  <read-only-component label="Phone number">
-                    <cds-tooltip>
-                      <div class="sb-tooltip-trigger" aria-labelledby="content">
-                        <a :href="'tel:'+contact.phoneNumber"><span class="body-compact-01-colorless">{{ contact.phoneNumber }}</span></a>
-                      </div>
-                      <cds-tooltip-content id="content">
-                        Click to call
-                      </cds-tooltip-content>
-                    </cds-tooltip>
-                  </read-only-component>
+                <read-only-component label="Phone number">
+                  <cds-tooltip>
+                    <div class="sb-tooltip-trigger" aria-labelledby="content">
+                      <a :href="'tel:'+contact.phoneNumber"><span class="body-compact-01-colorless">{{ contact.phoneNumber }}</span></a>
+                    </div>
+                    <cds-tooltip-content id="content">
+                      Click to call
+                    </cds-tooltip-content>
+                  </cds-tooltip>
+                </read-only-component>
               </div>
             </div>
           </cds-accordion-item>
