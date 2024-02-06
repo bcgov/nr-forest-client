@@ -93,10 +93,12 @@ public class ClientService {
    * @param size The amount of entries per page.
    * @return A list of {@link CodeNameDto} entries.
    */
-  public Flux<CodeNameDto> listDistricts(int page, int size) {
+  public Flux<CodeNameDto> getActiveDistrictCodes(int page, int size) {
     log.info("Loading natural resource districts for page {} with size {}", page, size);
+    LocalDate currentDate = LocalDate.now();
     return districtCodeRepository
         .findAllBy(PageRequest.of(page, size, Sort.by("description")))
+        .filter(entity -> currentDate.isBefore(entity.getExpiredAt())) // Filter out expired codes
         .map(entity -> new CodeNameDto(entity.getDistrictCode(), entity.getDescription()));
   }
   

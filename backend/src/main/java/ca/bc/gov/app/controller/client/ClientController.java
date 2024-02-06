@@ -47,13 +47,13 @@ public class ClientController {
   }
   
   @GetMapping("/activeDistrictCodes")
-  public Flux<CodeNameDto> listDistricts(
+  public Flux<CodeNameDto> getActiveDistrictCodes(
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10")
       Integer size) {
     log.info("Requesting a list of districts from the client service.");
-    return clientService.listDistricts(page, size);
+    return clientService.getActiveDistrictCodes(page, size);
   }
   
   @GetMapping("/getDistrictByCode/{districtCode}")
