@@ -34,13 +34,4 @@ public class DistrictCodeEntity extends ExpirableBaseEntity {
   @NotNull
   private String emailAddress;
 
-  public DistrictCodeEntity(
-      @NotNull @Size(min = 2, max = 5) String districtCode,
-      @NotNull String description,
-      @NotNull String emailAddress) {
-    this.districtCode = districtCode;
-    this.description = description;
-    this.emailAddress = emailAddress;
-  }
-
 }

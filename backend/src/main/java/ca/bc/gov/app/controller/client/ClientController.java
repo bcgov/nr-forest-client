@@ -56,7 +56,7 @@ public class ClientController {
     return clientService.listDistricts(page, size);
   }
   
-  @GetMapping("/activeDistrictCodes/{districtCode}")
+  @GetMapping("/getDistrictByCode/{districtCode}")
   public Mono<CodeNameDto> getDistrictByCode(@PathVariable String districtCode) {
     log.info("Requesting a district by code {} from the client service.", districtCode);
     return clientService.getDistrictByCode(districtCode);
