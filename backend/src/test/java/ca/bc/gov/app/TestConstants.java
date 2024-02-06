@@ -414,7 +414,8 @@ public class TestConstants {
               "RSP",
               "Y",
               "SP",
-              LocalDate.now().minusYears(20)
+              LocalDate.now().minusYears(20),
+              "DCC"
           ),
           new ClientLocationDto(
               List.of(
@@ -455,7 +456,8 @@ public class TestConstants {
               "I",
               "",
               "SP",
-              LocalDate.of(1975, 1, 31)
+              LocalDate.of(1975, 1, 31),
+              "DCC"
           ),
           new ClientLocationDto(
               List.of(
@@ -496,7 +498,8 @@ public class TestConstants {
               "I",
               "",
               "SP",
-              LocalDate.of(1975, 1, 31)
+              LocalDate.of(1975, 1, 31),
+              "DCC"
           ),
           new ClientLocationDto(
               List.of(
@@ -551,7 +554,8 @@ public class TestConstants {
               "I",
               "",
               "SP",
-              LocalDate.of(1975, 1, 31)
+              LocalDate.of(1975, 1, 31),
+              "DCC"
           ),
           new ClientLocationDto(
               List.of(
