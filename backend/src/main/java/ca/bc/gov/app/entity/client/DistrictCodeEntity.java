@@ -25,16 +25,22 @@ import org.springframework.data.relational.core.mapping.Table;
 public class DistrictCodeEntity extends ExpirableBaseEntity {
 
   @Id
-  @Column("country_code")
+  @Column("district_code")
   @NotNull
-  @Size(min = 2, max = 2)
+  @Size(min = 2, max = 5)
   private String districtCode;
+  
+  @Column("email_address")
+  @NotNull
+  private String emailAddress;
 
   public DistrictCodeEntity(
-      @NotNull @Size(min = 2, max = 2) String districtCode,
-      @NotNull String description) {
+      @NotNull @Size(min = 2, max = 5) String districtCode,
+      @NotNull String description,
+      @NotNull String emailAddress) {
     this.districtCode = districtCode;
     this.description = description;
+    this.emailAddress = emailAddress;
   }
 
 }
