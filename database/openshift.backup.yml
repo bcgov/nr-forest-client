@@ -120,7 +120,25 @@ objects:
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
-                    pg_dump -U ${POSTGRESQL_USER} -h ${NAME}-${ZONE}-database -d ${POSTGRESQL_DATABASE} --data-only > ${BACKUP_DIR}/backup_$(date +%Y-%m-%d).sql &&
+                    pg_dump \
+                    -U ${POSTGRESQL_USER} \
+                    -h ${NAME}-${ZONE}-database \
+                    -d ${POSTGRESQL_DATABASE} \
+                    -a \
+                    --schema=nrfc \
+                    --inserts \
+                    --no-comments \
+                    --on-conflict-do-nothing \
+                    --no-sync \
+                    --exclude-table=nrfc.client_type_code \
+                    --exclude-table=nrfc.submission_status_code \
+                    --exclude-table=nrfc.submission_type_code \
+                    --exclude-table=nrfc.province_code \
+                    --exclude-table=nrfc.country_code \
+                    --exclude-table=nrfc.contact_type_code \
+                    --exclude-table=nrfc.business_type_code \
+                    --file=${BACKUP_DIR}/backup_$(date +%Y-%m-%d).sql \
+                    &&
                     find "${BACKUP_DIR}" -type f -mtime +$NUM_BACKUPS -exec rm -f {} \;
                   volumeMounts:
                     - mountPath: "${BACKUP_DIR}"
