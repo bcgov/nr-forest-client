@@ -104,7 +104,7 @@ public class ClientService {
                           && 
                           (currentDate.isAfter(entity.getEffectiveAt()) 
                             || currentDate.isEqual(entity.getEffectiveAt())))
-        .map(entity -> new CodeNameDto(entity.getDistrictCode(), entity.getDescription()));
+        .map(entity -> new CodeNameDto(entity.getCode(), entity.getDescription()));
   }
   
   /**
@@ -543,9 +543,9 @@ public class ClientService {
   public Mono<CodeNameDto> getDistrictByCode(String districtCode) {
     log.info("Loading district for {}", districtCode);
     return districtCodeRepository
-            .findByDistrictCode(districtCode)
+            .findByCode(districtCode)
             .map(entity -> new CodeNameDto(
-                                entity.getDistrictCode(),
+                                entity.getCode(),
                                 entity.getDescription()));
   }
 

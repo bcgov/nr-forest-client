@@ -57,7 +57,9 @@ const data = ref<SubmissionDetails>({
     clientType: "",
     goodStandingInd: "",
     clientTypeDesc: "",
-    birthdate: ""
+    birthdate: "",
+    district: "",
+    districtDesc: ""
   },
   contact: [
     {
@@ -482,6 +484,10 @@ const renderListItem = (label, clientNumber) => {
 
               <read-only-component label="Approved on" v-if="data.submissionStatus === 'Approved'">
                 <span class="body-compact-01">{{ friendlyDate(data.approvedTimestamp) }}</span>
+              </read-only-component>
+
+              <read-only-component label="District">
+                <span class="body-compact-01">{{ data.business.districtDesc }}</span>
               </read-only-component>
             </div>
           </div>

@@ -15,6 +15,6 @@ public interface DistrictCodeRepository
 
   Flux<DistrictCodeEntity> findAllBy(Pageable pageable);
 
-  Mono<DistrictCodeEntity> findByDistrictCode(String code);
+  Mono<DistrictCodeEntity> findByCode(String code);
 
 }

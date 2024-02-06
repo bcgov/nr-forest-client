@@ -60,7 +60,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         new CodeNameDto("DMH", "100 Mile House Natural Resource District");
 
     when(districtCodeRepository
-          .findByDistrictCode("DMH"))
+          .findByCode("DMH"))
           .thenReturn(Mono.just(districtCodeEntity));
 
     service

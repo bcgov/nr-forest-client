@@ -28,7 +28,7 @@ public class DistrictCodeEntity extends ExpirableBaseEntity {
   @Column("district_code")
   @NotNull
   @Size(min = 2, max = 5)
-  private String districtCode;
+  private String code;
   
   @Column("email_address")
   @NotNull
