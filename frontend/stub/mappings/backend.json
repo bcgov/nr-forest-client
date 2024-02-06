@@ -72,6 +72,17 @@
       }
     },
     {
+      "name": "District Codes",
+      "request": {
+        "url": "/api/clients/activeDistricCodes?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-districts.json"
+      }
+    },
+    {
       "name": "Country Codes",
       "request": {
         "url": "/api/countries?page=0&size=250",

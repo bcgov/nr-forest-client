@@ -9,7 +9,7 @@ import "@carbon/web-components/es/components/tooltip/index";
 import { useEventBus } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useFocus } from "@/composables/useFocus";
-import { usePost } from "@/composables/useFetch";
+import { usePost, useFetchTo } from "@/composables/useFetch";
 import { isSmallScreen, isTouchScreen } from "@/composables/useScreenSize";
 // Imported Pages
 import BusinessInformationWizardStep from "@/pages/bceidform/BusinessInformationWizardStep.vue";
@@ -107,7 +107,7 @@ const associatedLocations = computed(() =>
     )
 );
 
-const { response, error, fetch } = usePost(
+const { response, error, fetch: post } = usePost(
   "/api/clients/submissions",
   toRef(formData).value,
   {
@@ -328,7 +328,7 @@ const submit = () => {
 
   if (checkStepValidity(currentTab.value)) {
     submitBtnDisabled.value = true;
-    fetch();
+    post();
   }
 };
 
@@ -370,6 +370,9 @@ const scrollToNewContact = () => {
     });
   }
 };
+
+const districtsList = ref([]);
+useFetchTo("/api/clients/activeDistricCodes?page=0&size=250", districtsList);
 </script>
 
 <template>
@@ -423,17 +426,13 @@ const scrollToNewContact = () => {
       <hr class="divider" />
 
       <div class="form-steps-section">
-        <h4 data-scroll="focus-0">
-          <div data-scroll="step-title" class="header-offset"></div>
-          {{ progressData[0].title}}
-        </h4>
-        <div class="frame-01">
-          <business-information-wizard-step
-              v-model:data="formData"
-              :active="currentTab == 0"
-              @valid="validateStep"
-          />
-        </div>
+        <business-information-wizard-step
+            v-model:data="formData"
+            :active="currentTab == 0"
+            :title="progressData[0].title"
+            :districts-list="districtsList"
+            @valid="validateStep"
+        />
       </div>
     </div>
 
