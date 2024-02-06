@@ -188,14 +188,14 @@ describe("<ContactGroupComponent />", () => {
   
       cy.get("#addressname_0")
         .click()
-        .find('cds-multi-select-item[data-value="Mailing address"]')
+        .find('cds-multi-select-item[data-value="MAILING ADDRESS"]')
         .should("exist")
         .and("be.visible")
         .click();
   
       cy.get("#addressname_0")
         .should("be.visible")
-        .and("have.value", "Mailing address");
+        .and("have.value", "MAILING ADDRESS");
     });
   
     it("should render the component and select both addresses and show it as value", () => {
@@ -224,7 +224,7 @@ describe("<ContactGroupComponent />", () => {
   
       cy.get("#addressname_0")
         .click()
-        .find('cds-multi-select-item[data-value="Mailing address"]')
+        .find('cds-multi-select-item[data-value="MAILING ADDRESS"]')
         .should("exist")
         .and("be.visible")
         .click();
@@ -238,7 +238,7 @@ describe("<ContactGroupComponent />", () => {
   
       cy.get("#addressname_0")
         .should("be.visible")
-        .and("have.value", "Mailing address,Jutland office");
+        .and("have.value", "MAILING ADDRESS,Jutland office");
     });
   
     it("should render the component and select first address and show it then remove it", () => {
@@ -267,18 +267,18 @@ describe("<ContactGroupComponent />", () => {
   
       cy.get("#addressname_0")
         .click()
-        .find('cds-multi-select-item[data-value="Mailing address"]')
+        .find('cds-multi-select-item[data-value="MAILING ADDRESS"]')
         .should("exist")
         .and("be.visible")
         .click();
   
       cy.get("#addressname_0")
         .should("be.visible")
-        .and("have.value", "Mailing address");
+        .and("have.value", "MAILING ADDRESS");
   
       cy.get("#addressname_0")
         .click()
-        .find('cds-multi-select-item[data-value="Mailing address"]')
+        .find('cds-multi-select-item[data-value="MAILING ADDRESS"]')
         .should("exist")
         .and("be.visible")
         .click();

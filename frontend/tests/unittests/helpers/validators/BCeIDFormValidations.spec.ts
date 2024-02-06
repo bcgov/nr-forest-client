@@ -28,7 +28,7 @@ describe("BCeIDFormValidations.ts", () => {
     location: {
       addresses: [
         {
-          locationName: "Mailing address",
+          locationName: "MAILING ADDRESS",
           streetAddress: "",
           country: { value: "CA", text: "Canada" },
           province: { value: "", text: "" },
@@ -38,7 +38,7 @@ describe("BCeIDFormValidations.ts", () => {
       ],
       contacts: [
         {
-          locationNames: [{ text: "Mailing address", value: "0" }],
+          locationNames: [{ text: "MAILING ADDRESS", value: "0" }],
         },
       ],
     },
@@ -81,7 +81,7 @@ describe("BCeIDFormValidations.ts", () => {
   it("should return the value of a nested field within a nested field", () => {
     expect(
       getFieldValue("location.contacts.*.locationNames.*.text", formDataDto)
-    ).toEqual([["Mailing address"]]);
+    ).toEqual([["MAILING ADDRESS"]]);
   });
   it("should return true for a valid businessName", () => {
     expect(
