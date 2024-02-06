@@ -194,6 +194,7 @@ const updateContact = (value: Contact | undefined, index: number) => {
 
 // Validation
 const validation = reactive<Record<string, boolean>>({
+  district: false,
   0: false,
 });
 
@@ -256,6 +257,7 @@ const progressData = reactive([
     valid: false,
     step: 0,
     fields: [
+      "district",
       "businessInformation.businessType",
       "businessInformation.businessName",
       "location.contacts.*.contactType.text",
@@ -363,6 +365,15 @@ watch([validationError], () => {
     })
   }  
 });
+
+const districtsList = ref([]);
+useFetchTo("/api/clients/activeDistricCodes?page=0&size=250", districtsList);
+
+const updateDistrict = (value: CodeNameType | undefined) => {
+  if (value) {
+    formData.district = { value: value.code, text: value.name };
+  }
+};
 </script>
 
 <template>
@@ -439,6 +450,37 @@ watch([validationError], () => {
         </p>
       </div>
     </div>
+
+    <hr class="divider" />
+
+    <div class="frame-01">
+      <h4 data-scroll="focus-0">
+        Natural resource district
+      </h4>
+      <p class="body-02">
+        Select the district your application should go to. If you don’t know the district
+        <a
+          href="https://www2.gov.bc.ca/gov/content/industry/forestry/managing-our-forest-resources/ministry-of-forests-lands-and-natural-resource-operations-region-district-contacts"
+          target="_blank"
+          rel="noopener noreferrer"
+          >check this map</a
+        >.
+      </p>
+      <dropdown-input-component
+        id="district"
+        label="District"
+        :initial-value="formData.district?.text"
+        required-label
+        :model-value="districtsList"
+        :enabled="true"
+        tip=""
+        :validations="[...getValidations('district.text'), submissionValidation('district.text')]"
+        @update:selected-value="updateDistrict($event)"
+        @empty="validation.district = !$event"
+      />
+    </div>
+
+    <hr class="divider" />
 
     <h4 data-scroll="scroll-0">
       Contact information
