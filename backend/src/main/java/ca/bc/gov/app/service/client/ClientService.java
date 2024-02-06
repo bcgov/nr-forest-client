@@ -96,7 +96,7 @@ public class ClientService {
   public Flux<CodeNameDto> listDistricts(int page, int size) {
     log.info("Loading natural resource districts for page {} with size {}", page, size);
     return districtCodeRepository
-        .findBy(PageRequest.of(page, size, Sort.by("description")))
+        .findAllBy(PageRequest.of(page, size, Sort.by("description")))
         .map(entity -> new CodeNameDto(entity.getDistrictCode(), entity.getDescription()));
   }
   

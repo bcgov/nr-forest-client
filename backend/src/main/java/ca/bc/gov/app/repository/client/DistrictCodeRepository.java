@@ -10,10 +10,10 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface DistrictCodeRepository
-    extends ReactiveCrudRepository<DistrictCodeRepository, String>,
-    ReactiveSortingRepository<DistrictCodeRepository, String> {
+    extends ReactiveCrudRepository<DistrictCodeEntity, String>,
+    ReactiveSortingRepository<DistrictCodeEntity, String> {
 
-  Flux<DistrictCodeEntity> findBy(Pageable pageable);
+  Flux<DistrictCodeEntity> findAllBy(Pageable pageable);
 
   Mono<DistrictCodeEntity> findByDistrictCode(String code);
 
