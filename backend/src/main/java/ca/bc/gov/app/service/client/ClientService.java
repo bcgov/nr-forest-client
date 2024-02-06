@@ -60,6 +60,8 @@ public class ClientService {
   private final ChesService chesService;
   private final ClientLegacyService legacyService;
   private final Predicate<BcRegistryAddressDto> isMultiAddressEnabled;
+  
+  LocalDate currentDate = LocalDate.now();
 
   /**
    * <p><b>Find Active Client Type Codes</b></p>
@@ -95,10 +97,9 @@ public class ClientService {
    */
   public Flux<CodeNameDto> getActiveDistrictCodes(int page, int size) {
     log.info("Loading natural resource districts for page {} with size {}", page, size);
-    LocalDate currentDate = LocalDate.now();
     return districtCodeRepository
         .findAllBy(PageRequest.of(page, size, Sort.by("description")))
-        .filter(entity -> currentDate.isBefore(entity.getExpiredAt())) // Filter out expired codes
+        .filter(entity -> currentDate.isBefore(entity.getExpiredAt()))
         .map(entity -> new CodeNameDto(entity.getDistrictCode(), entity.getDescription()));
   }
   
@@ -115,7 +116,8 @@ public class ClientService {
   public Flux<CodeNameDto> listCountries(int page, int size) {
     log.info("Loading countries for page {} with size {}", page, size);
     return countryCodeRepository
-        .findBy(PageRequest.of(page, size, Sort.by("order", "description")))
+        .findAllBy(PageRequest.of(page, size, Sort.by("order", "description")))
+        .filter(entity -> currentDate.isBefore(entity.getExpiredAt()))
         .map(entity -> new CodeNameDto(entity.getCountryCode(), entity.getDescription()));
   }
 
