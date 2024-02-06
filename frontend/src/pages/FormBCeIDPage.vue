@@ -155,6 +155,7 @@ const progressData = reactive([
     valid: false,
     step: 0,
     fields: [
+      "district",
       "businessInformation.businessType",
       "businessInformation.businessName",
       "businessInformation.clientType",

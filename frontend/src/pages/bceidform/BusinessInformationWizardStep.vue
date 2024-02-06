@@ -309,7 +309,8 @@ const updateDistrict = (value: CodeNameType | undefined) => {
       required-label
       :model-value="districtsList"
       :enabled="true"
-      :validations="[...getValidations('district'), submissionValidation('district')]"
+      tip=""
+      :validations="[...getValidations('district.text'), submissionValidation('district.text')]"
       @update:selected-value="updateDistrict($event)"
       @empty="validation.district = !$event"
     />
