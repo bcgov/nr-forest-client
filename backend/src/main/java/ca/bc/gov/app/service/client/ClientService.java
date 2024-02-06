@@ -99,7 +99,11 @@ public class ClientService {
     log.info("Loading natural resource districts for page {} with size {}", page, size);
     return districtCodeRepository
         .findAllBy(PageRequest.of(page, size, Sort.by("description")))
-        .filter(entity -> currentDate.isBefore(entity.getExpiredAt()))
+        .filter(entity -> (currentDate.isBefore(entity.getExpiredAt()) 
+                            || currentDate.isEqual(entity.getExpiredAt())) 
+                          && 
+                          (currentDate.isAfter(entity.getEffectiveAt()) 
+                            || currentDate.isEqual(entity.getEffectiveAt())))
         .map(entity -> new CodeNameDto(entity.getDistrictCode(), entity.getDescription()));
   }
   
@@ -117,7 +121,11 @@ public class ClientService {
     log.info("Loading countries for page {} with size {}", page, size);
     return countryCodeRepository
         .findAllBy(PageRequest.of(page, size, Sort.by("order", "description")))
-        .filter(entity -> currentDate.isBefore(entity.getExpiredAt()))
+        .filter(entity -> (currentDate.isBefore(entity.getExpiredAt()) 
+                            || currentDate.isEqual(entity.getExpiredAt())) 
+                          && 
+                          (currentDate.isAfter(entity.getEffectiveAt()) 
+                            || currentDate.isEqual(entity.getEffectiveAt())))
         .map(entity -> new CodeNameDto(entity.getCountryCode(), entity.getDescription()));
   }
 
