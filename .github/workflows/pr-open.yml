@@ -183,7 +183,6 @@ jobs:
             -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}'
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
-      # Temporary here for test, should be only in prod
       - name: Deploy Database Backup
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
@@ -201,7 +200,7 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
           # Run a backup before deploying a new version
-          oc create job --from=cronjob/nr-forest-client-${{ github.event.number }}-database-backup nr-forest-client-${{ github.event.number }}-database-backup-$(date +%Y%m%d%H%M%S)
+          oc create job --from=cronjob/${{ github.event.repository.name }}-${{ github.event.number }}-database-backup ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup-$(date +%Y%m%d%H%M%S)
 
       - name: Deploy Database
         uses: bcgov-nr/action-deployer-openshift@v2.1.0

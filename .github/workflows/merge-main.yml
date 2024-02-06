@@ -232,6 +232,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Deploy Database Backup
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
+        with:
+          file: database/openshift.backup.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          parameters:
+            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
+
+      - name: Backup database before update
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }}
+          # Run a backup before deploying a new version
+          oc create job --from=cronjob/${{ github.event.repository.name }}-${{ github.event.number }}-database-backup ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup-$(date +%Y%m%d%H%M%S)
+
       - name: Deploy Database
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
@@ -380,6 +399,25 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+
+      - name: Deploy Database Backup
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
+        with:
+          file: database/openshift.backup.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          parameters:
+            -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
+
+      - name: Backup database before update
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }}
+          # Run a backup before deploying a new version
+          oc create job --from=cronjob/${{ github.event.repository.name }}-${{ github.event.number }}-database-backup ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup-$(date +%Y%m%d%H%M%S)
 
       - name: Deploy Database
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
