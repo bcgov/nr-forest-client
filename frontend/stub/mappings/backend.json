@@ -74,7 +74,7 @@
     {
       "name": "Country Codes",
       "request": {
-        "url": "/api/clients/activeCountryCodes?page=0&size=250",
+        "url": "/api/clients/countries?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -85,7 +85,7 @@
     {
       "name": "Province Codes",
       "request": {
-        "urlPattern": "/api/clients/activeCountryCodes/(.*)?page=0&size=250",
+        "urlPattern": "/api/clients/countries/(.*)?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -99,7 +99,7 @@
     {
       "name": "Contact Type Codes",
       "request": {
-        "url": "/api/clients/activeContactTypeCodes?page=0&size=250",
+        "url": "/api/clients/contact-type-codes?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -110,7 +110,7 @@
     {
       "name": "Get Country by CountryCode",
       "request": {
-        "urlPattern": "/api/clients/getCountryByCode/(.*)",
+        "urlPattern": "/api/clients/countries/(.*)",
         "method": "GET"
       },
       "response": {
@@ -118,13 +118,13 @@
         "transformers": [
           "response-template"
         ],
-        "bodyFileName": "response-getCountryByCode-{{request.path.[3]}}.json"
+        "bodyFileName": "response-countries-{{request.path.[3]}}.json"
       }
     },
     {
       "name": "Get ClientType by Code",
       "request": {
-        "urlPattern": "/api/clients/getClientTypeByCode/(.*)",
+        "urlPattern": "/api/clients/client-type-codes/(.*)",
         "method": "GET"
       },
       "response": {
