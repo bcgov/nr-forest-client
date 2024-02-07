@@ -10,7 +10,7 @@
   "location": {
     "addresses": [
       {
-        "locationName": "Mailing address",
+        "locationName": "MAILING ADDRESS",
         "streetAddress": "511-439 Nowhere St",
         "country": {
           "value": "CA",
@@ -29,7 +29,7 @@
         "locationNames": [
           {
             "value": "0",
-            "text": "Mailing address"
+            "text": "MAILING ADDRESS"
           }
         ],
         "contactType": {

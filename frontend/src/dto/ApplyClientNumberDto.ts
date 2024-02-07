@@ -43,7 +43,7 @@ export interface ForestClientDetailsDto {
   contacts: Contact[];
 }
 
-export const locationName = { value: "0", text: "Mailing address" };
+export const locationName = { value: "0", text: "MAILING ADDRESS" };
 
 export const formDataDto: FormDataDto = {
   businessInformation: {
