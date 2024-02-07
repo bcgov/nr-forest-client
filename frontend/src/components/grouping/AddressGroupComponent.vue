@@ -82,7 +82,7 @@ const updateStateProvince = (
 //Province related data
 const provinceUrl = computed(
   () =>
-    `/api/clients/activeCountryCodes/${selectedValue.country.value}?page=0&size=250`
+    `/api/countries/${selectedValue.country.value}/provinces?page=0&size=250`
 );
 
 const resetProvinceOnChange = (receivedCountry: any) => {
@@ -192,7 +192,7 @@ const postalCodeNaming = computed(() =>
 
 const autoCompleteUrl = computed(
   () =>
-    `/api/clients/addresses?country=${
+    `/api/addresses?country=${
       selectedValue.country.value ?? ""
     }&maxSuggestions=10&searchTerm=${selectedValue.streetAddress ?? ""}`,
 );
@@ -206,7 +206,7 @@ watch([autoCompleteResult], () => {
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
     showDetailsLoading.value = true;
     const { error, loading: detailsLoading } = useFetchTo(
-      `/api/clients/addresses/${encodeURIComponent(
+      `/api/addresses/${encodeURIComponent(
         autoCompleteResult.value.code
       )}`,
       detailsData,

@@ -66,7 +66,7 @@ class ClientAddressControllerIntegrationTest  extends AbstractTestContainerInteg
         .get()
         .uri(uriBuilder ->
             uriBuilder
-                .path("/api/clients/addresses")
+                .path("/api/addresses")
                 .queryParam("country", "BR")
                 .queryParam("searchTerm", "")
                 .build(Map.of()))
@@ -100,7 +100,7 @@ class ClientAddressControllerIntegrationTest  extends AbstractTestContainerInteg
         .get()
         .uri(uriBuilder ->
             uriBuilder
-                .path("/api/clients/addresses")
+                .path("/api/addresses")
                 .queryParam("country", "BR")
                 .queryParam("searchTerm", "rua oito jp")
                 .build(Map.of()))
@@ -134,7 +134,7 @@ class ClientAddressControllerIntegrationTest  extends AbstractTestContainerInteg
         .get()
         .uri(uriBuilder ->
             uriBuilder
-                .path("/api/clients/addresses")
+                .path("/api/addresses")
                 .queryParam("country", "BR")
                 .queryParam("searchTerm", "rua oito jp")
                 .build(Map.of()))
@@ -160,7 +160,7 @@ class ClientAddressControllerIntegrationTest  extends AbstractTestContainerInteg
         .get()
         .uri(uriBuilder ->
             uriBuilder
-                .path("/api/clients/addresses")
+                .path("/api/addresses")
                 .queryParam("searchTerm", "511-860")
                 .build(Map.of()))
         .exchange()
@@ -181,7 +181,7 @@ class ClientAddressControllerIntegrationTest  extends AbstractTestContainerInteg
 
     client
         .get()
-        .uri("/api/clients/addresses/CA|CP|B|0000001")
+        .uri("/api/addresses/CA|CP|B|0000001")
         .exchange()
         .expectStatus()
         .isBadRequest();
@@ -200,7 +200,7 @@ class ClientAddressControllerIntegrationTest  extends AbstractTestContainerInteg
 
     client
         .get()
-        .uri("/api/clients/addresses/CA|CP|B|0000001")
+        .uri("/api/addresses/CA|CP|B|0000001")
         .exchange()
         .expectStatus()
         .isOk();

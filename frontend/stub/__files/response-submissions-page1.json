@@ -1,81 +1,102 @@
-[{
-  "id": "a0248d25-0044-41d2-8e61-0ab0543f453f",
-  "requestType": "Auto approved client",
-  "name": "Wilkinson-Konopelski",
-  "clientType": "Corporation",
-  "updated": "{{now offset='-8 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
-  "status": "Approved",
-  "user": "Laetitia Marke"
-}, {
-  "id": "81dd1b96-b112-4fa5-90f6-4bbb0123834b",
-  "requestType": "Review new client",
-  "name": "Hane Inc",
-  "clientType": "Corporation",
-  "updated": "{{now offset='-3 hours' format='yyyy-MM-dd HH:mm:ss'}}",
-  "status": "Approved",
-  "user": "Danny Kitteringham"
-}, {
-  "id": "5bce6dba-4c09-4aa4-a7da-5cacfb0bba52",
-  "requestType": "Review new client",
-  "name": "Hamill, Windler and Pfannerstill",
-  "clientType": "Corporation",
-  "updated": "{{now offset='-0 hours' format='yyyy-MM-dd HH:mm:ss'}}",
-  "status": "Approved",
-  "user": "Lolly Agass"
-}, {
-  "id": "d51f75b5-78ac-4121-a0a3-362a820f14aa",
-  "requestType": "Auto approved client",
-  "name": "Wiegand-Hansen",
-  "clientType": "Corporation",
-  "updated": "{{now offset='-4 hours' format='yyyy-MM-dd HH:mm:ss'}}",
-  "status": "Rejected",
-  "user": "Adena Botley"
-}, {
-  "id": "1ea4027a-34bb-450e-a762-3a90252a75c6",
-  "requestType": "Auto approved client",
-  "name": "O'Connell, Zulauf and Luettgen",
-  "clientType": "Corporation",
-  "updated": "{{now offset='-0 hours' format='yyyy-MM-dd HH:mm:ss'}}",
-  "status": "Rejected",
-  "user": "Bibi Larway"
-}, {
-  "id": "5d4add16-587d-4757-aed7-9c8bd29789e5",
-  "requestType": "Auto approved client",
-  "name": "Adams Inc",
-  "clientType": "Corporation",
-  "updated": "{{now offset='-5 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
-  "status": "In progres",
-  "user": "Corine McFater"
-}, {
-  "id": "2e9593ca-4fd6-446c-a233-c78c4c672b47",
-  "requestType": "Auto approved client",
-  "name": "Boyle-Willms",
-  "clientType": "Individual",
-  "updated": "{{now offset='-0 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
-  "status": "New",
-  "user": "Annice Duley"
-}, {
-  "id": "4693b5da-4a63-4632-b1b1-92a6dcf14db5",
-  "requestType": "Review new client",
-  "name": "Stracke-Murazik",
-  "clientType": "General partnership",
-  "updated": "{{now offset='-1 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
-  "status": "New",
-  "user": "Talbot Zouch"
-}, {
-  "id": "008eaadc-810a-4b2a-8054-2347f64a5665",
-  "requestType": "Auto approved client",
-  "name": "Dickinson Inc",
-  "clientType": "Unregistered sole proprietorship",
-  "updated": "{{now offset='-7 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
-  "status": "Rejected",
-  "user": "Devy Pingstone"
-}, {
-  "id": "36e24902-58ab-4a93-a1c4-da26f9636f20",
-  "requestType": "Auto approved client",
-  "name": "Monahan LLC",
-  "clientType": "Corporation",
-  "updated": "{{now offset='-1 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
-  "status": "In progres",
-  "user": "Madelina Mulford"
-}]
+[
+  {
+    "id": "a0248d25-0044-41d2-8e61-0ab0543f453f",
+    "requestType": "Auto approved client",
+    "name": "Wilkinson-Konopelski",
+    "clientType": "Corporation",
+    "updated": "{{now offset='-8 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+    "status": "Approved",
+    "user": "Laetitia Marke",
+    "district": "DCC - Cariboo-Chilcotin Natural Resource District"
+  },
+  {
+    "id": "81dd1b96-b112-4fa5-90f6-4bbb0123834b",
+    "requestType": "Review new client",
+    "name": "Hane Inc",
+    "clientType": "Corporation",
+    "updated": "{{now offset='-3 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+    "status": "Approved",
+    "user": "Danny Kitteringham",
+    "district": "DCS - Cascades Natural Resource District"
+  },
+  {
+    "id": "5bce6dba-4c09-4aa4-a7da-5cacfb0bba52",
+    "requestType": "Review new client",
+    "name": "Hamill, Windler and Pfannerstill",
+    "clientType": "Corporation",
+    "updated": "{{now offset='-0 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+    "status": "Approved",
+    "user": "Lolly Agass",
+    "district": "DCK - Chilliwack Natural Resource District"
+  },
+  {
+    "id": "d51f75b5-78ac-4121-a0a3-362a820f14aa",
+    "requestType": "Auto approved client",
+    "name": "Wiegand-Hansen",
+    "clientType": "Corporation",
+    "updated": "{{now offset='-4 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+    "status": "Rejected",
+    "user": "Adena Botley",
+    "district": "DQU - Quesnel Natural Resource District"
+  },
+  {
+    "id": "1ea4027a-34bb-450e-a762-3a90252a75c6",
+    "requestType": "Auto approved client",
+    "name": "O'Connell, Zulauf and Luettgen",
+    "clientType": "Corporation",
+    "updated": "{{now offset='-0 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+    "status": "Rejected",
+    "user": "Bibi Larway",
+    "district": "DQU - Quesnel Natural Resource District"
+  },
+  {
+    "id": "5d4add16-587d-4757-aed7-9c8bd29789e5",
+    "requestType": "Auto approved client",
+    "name": "Adams Inc",
+    "clientType": "Corporation",
+    "updated": "{{now offset='-5 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "status": "In progres",
+    "user": "Corine McFater",
+    "district": "DQU - Quesnel Natural Resource District"
+  },
+  {
+    "id": "2e9593ca-4fd6-446c-a233-c78c4c672b47",
+    "requestType": "Auto approved client",
+    "name": "Boyle-Willms",
+    "clientType": "Individual",
+    "updated": "{{now offset='-0 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "status": "New",
+    "user": "Annice Duley",
+    "district": "DQC - Haida Gwaii Natural Resource District"
+  },
+  {
+    "id": "4693b5da-4a63-4632-b1b1-92a6dcf14db5",
+    "requestType": "Review new client",
+    "name": "Stracke-Murazik",
+    "clientType": "General partnership",
+    "updated": "{{now offset='-1 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+    "status": "New",
+    "user": "Talbot Zouch",
+    "district": "DKA - Thompson Rivers Natural Resource District"
+  },
+  {
+    "id": "008eaadc-810a-4b2a-8054-2347f64a5665",
+    "requestType": "Auto approved client",
+    "name": "Dickinson Inc",
+    "clientType": "Unregistered sole proprietorship",
+    "updated": "{{now offset='-7 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "status": "Rejected",
+    "user": "Devy Pingstone",
+    "district": "DKA - Thompson Rivers Natural Resource District"
+  },
+  {
+    "id": "36e24902-58ab-4a93-a1c4-da26f9636f20",
+    "requestType": "Auto approved client",
+    "name": "Monahan LLC",
+    "clientType": "Corporation",
+    "updated": "{{now offset='-1 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+    "status": "In progres",
+    "user": "Madelina Mulford",
+    "district": "DSE - Selkirk Natural Resource District"
+  }
+]

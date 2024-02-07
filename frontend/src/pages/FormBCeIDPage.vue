@@ -306,7 +306,7 @@ const validateStep = (valid: boolean) => {
 const processAndLogOut = () => {
   if (mailAndLogOut.value) {
     usePost(
-      "/api/clients/mail",
+      "/api/ches/duplicate",
       {
         incorporation: formData.businessInformation.incorporationNumber,
         name: formData.businessInformation.businessName,

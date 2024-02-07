@@ -12,16 +12,11 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.dto.client.CodeNameDto;
-import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import java.net.URI;
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,11 +27,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.util.UriBuilder;
-import reactor.core.publisher.Mono;
 
 @DisplayName("Integrated Test | FSA Client Controller")
 class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTest {
@@ -108,123 +100,6 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     client = client.mutate()
         .responseTimeout(Duration.ofSeconds(10))
         .build();
-  }
-
-  @Test
-  @DisplayName("Codes are in expected order")
-  void shouldListCodesAsExpected() {
-
-    client
-        .get()
-        .uri("/api/clients/activeClientTypeCodes")
-        .exchange()
-        .expectStatus().isOk()
-        .expectBody()
-        .jsonPath("$[0].code").isNotEmpty()
-        .jsonPath("$[0].code").isEqualTo("A")
-
-        .jsonPath("$[1].code").isNotEmpty()
-        .jsonPath("$[1].code").isEqualTo("C");
-
-  }
-
-  @ParameterizedTest(name = "{2} - {3} is the first on page {0} with size {1}")
-  @MethodSource("countryCode")
-  @DisplayName("List countries by")
-  void shouldListCountryData(Integer page, Integer size, String code, String name) {
-
-    //This is to allow parameter to be ommitted during test
-    Function<UriBuilder, URI> uri = uriBuilder -> {
-
-      UriBuilder localBuilder = uriBuilder
-          .path("/api/clients/activeCountryCodes");
-
-      if (page != null) {
-        localBuilder = localBuilder.queryParam("page", page);
-      }
-      if (size != null) {
-        localBuilder = localBuilder.queryParam("size", size);
-      }
-
-      return localBuilder.build(new HashMap<>());
-    };
-
-    client
-        .get()
-        .uri(uri)
-        .exchange()
-        .expectStatus().isOk()
-        .expectBody()
-        .jsonPath("$[0].code").isNotEmpty()
-        .jsonPath("$[0].code").isEqualTo(code)
-        .jsonPath("$[0].name").isNotEmpty()
-        .jsonPath("$[0].name").isEqualTo(name);
-  }
-
-
-  @ParameterizedTest(name = "{3} - {4} is the first on page {1} with size {2} for country {0}")
-  @MethodSource("provinceCode")
-  @DisplayName("List provinces by")
-  void shouldListProvinceData(String countryCode, Integer page, Integer size, String code,
-      String name) {
-
-    //This is to allow parameter to be ommitted during test
-    Function<UriBuilder, URI> uri = uriBuilder -> {
-
-      UriBuilder localBuilder = uriBuilder
-          .path("/api/clients/activeCountryCodes/{countryCode}");
-
-      if (page != null) {
-        localBuilder = localBuilder.queryParam("page", page);
-      }
-      if (size != null) {
-        localBuilder = localBuilder.queryParam("size", size);
-      }
-
-      return localBuilder.build(Map.of("countryCode", countryCode));
-    };
-
-    client
-        .get()
-        .uri(uri)
-        .exchange()
-        .expectStatus().isOk()
-        .expectBody()
-        .jsonPath("$[0].code").isNotEmpty()
-        .jsonPath("$[0].code").isEqualTo(code)
-        .jsonPath("$[0].name").isNotEmpty()
-        .jsonPath("$[0].name").isEqualTo(name);
-  }
-
-  @ParameterizedTest(name = "{2} - {3} is the first on page {0} with size {1}")
-  @MethodSource("contactTypeCodes")
-  @DisplayName("List contact type codes")
-  void shouldListContactTypes(Integer page, Integer size, String code, String description) {
-    Function<UriBuilder, URI> uri = uriBuilder -> {
-
-      UriBuilder localBuilder = uriBuilder
-          .path("/api/clients/activeContactTypeCodes");
-
-      if (page != null) {
-        localBuilder = localBuilder.queryParam("page", page);
-      }
-      if (size != null) {
-        localBuilder = localBuilder.queryParam("size", size);
-      }
-
-      return localBuilder.build(new HashMap<>());
-    };
-
-    client
-        .get()
-        .uri(uri)
-        .exchange()
-        .expectStatus().isOk()
-        .expectBody()
-        .jsonPath("$[0].code").isNotEmpty()
-        .jsonPath("$[0].code").isEqualTo(code)
-        .jsonPath("$[0].name").isNotEmpty()
-        .jsonPath("$[0].name").isEqualTo(description);
   }
 
   @ParameterizedTest
@@ -401,69 +276,13 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
   }
 
   @Test
-  @DisplayName("Send an email for already existing client")
-  void shouldSendEmail() {
-    chesStub
-        .stubFor(
-            post("/chess/uri")
-                .willReturn(
-                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                )
-        );
-
-    chesStub
-        .stubFor(
-            post("/token/uri")
-                .willReturn(
-                    ok(TestConstants.CHES_TOKEN_MESSAGE)
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                )
-        );
-
-    ///search/incorporationOrName?incorporationNumber=XX1234567&companyName=Example%20Inc.
-    legacyStub
-        .stubFor(
-            get(urlPathEqualTo("/search/incorporationOrName"))
-                .withQueryParam("incorporationNumber",
-                    equalTo(TestConstants.EMAIL_REQUEST.incorporation()))
-                .withQueryParam("companyName", equalTo(TestConstants.EMAIL_REQUEST.name()))
-                .willReturn(okJson(TestConstants.LEGACY_OK))
-        );
-
-    client
-        .post()
-        .uri("/api/clients/mail")
-        .body(Mono.just(TestConstants.EMAIL_REQUEST), EmailRequestDto.class)
-        .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .exchange()
-        .expectStatus().isAccepted()
-        .expectBody().isEmpty();
-
-  }
-
-  @Test
-  @DisplayName("get country by code")
-  void shouldGetCountryByCode() {
-
-    client
-        .get()
-        .uri("/api/clients/getCountryByCode/{countryCode}", Map.of("countryCode", "CA"))
-        .exchange()
-        .expectStatus().isOk()
-        .expectBody(CodeNameDto.class)
-        .isEqualTo(new CodeNameDto("CA", "Canada"));
-
-  }
-
-  @Test
   @DisplayName("check for individual conflicts")
   void shouldCheckIndividual() {
 
     legacyStub
         .stubFor(
             get(urlPathEqualTo("/search/idAndLastName"))
-                .withQueryParam("clientId",equalTo("123456"))
+                .withQueryParam("clientId", equalTo("123456"))
                 .withQueryParam("lastName", equalTo("Doe"))
                 .willReturn(okJson(TestConstants.LEGACY_OK))
         );
@@ -484,7 +303,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     legacyStub
         .stubFor(
             get(urlPathEqualTo("/search/idAndLastName"))
-                .withQueryParam("clientId",equalTo("123456"))
+                .withQueryParam("clientId", equalTo("123456"))
                 .withQueryParam("lastName", equalTo("Doe"))
                 .willReturn(okJson("[]"))
         );
@@ -577,35 +396,6 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 422, "Unable to process request. This sole proprietor is not owner by a person",
                 TestConstants.LEGACY_EMPTY
             )
-        );
-  }
-
-  private static Stream<Arguments> countryCode() {
-    return
-        Stream.of(
-            Arguments.of(null, null, "CA", "Canada"),
-            Arguments.of(0, 1, "CA", "Canada"),
-            Arguments.of(1, 1, "US", "United States of America"),
-            Arguments.of(7, null, "EE", "Estonia"),
-            Arguments.of(3, 10, "BA", "Bosnia and Herzegovina"),
-            Arguments.of(33, 1, "BR", "Brazil"),
-            Arguments.of(49, 1, "CO", "Colombia")
-        );
-  }
-
-  private static Stream<Arguments> provinceCode() {
-    return
-        Stream.of(
-            Arguments.of("CA", null, null, "AB", "Alberta"),
-            Arguments.of("CA", 0, 1, "AB", "Alberta"),
-            Arguments.of("US", 1, 1, "AK", "Alaska"));
-  }
-
-  private static Stream<Arguments> contactTypeCodes() {
-    return
-        Stream.of(
-            Arguments.of(null, null, "TC", "BCTS Contractor"),
-            Arguments.of(0, 1, "TC", "BCTS Contractor")
         );
   }
 
