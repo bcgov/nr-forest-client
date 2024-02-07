@@ -91,7 +91,7 @@ public class ClientSubmissionLoadingService {
                             .flatMap(isAdmin ->
                                 forestClientApi
                                     .get()
-                                    .uri("/api/clients/districts/{districtCode}", details.getDistrictCode())
+                                    .uri("/api/districts/{districtCode}", details.getDistrictCode())
                                     .exchangeToMono(clientResponse -> clientResponse.bodyToMono(
                                         DistrictDto.class)
                                     )
