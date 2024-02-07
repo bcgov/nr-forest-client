@@ -4,6 +4,7 @@ import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
+import ca.bc.gov.app.dto.client.DistrictDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientService;
@@ -45,6 +46,22 @@ public class ClientController {
     log.info("Requesting client details for client number {} from the client service.", clientNumber);
     return clientService.getClientDetails(clientNumber,userId,businessId);
   }
+  
+  @GetMapping("/activeDistrictCodes")
+  public Flux<CodeNameDto> getActiveDistrictCodes(
+      @RequestParam(value = "page", required = false, defaultValue = "0")
+      Integer page,
+      @RequestParam(value = "size", required = false, defaultValue = "10")
+      Integer size) {
+    log.info("Requesting a list of districts from the client service.");
+    return clientService.getActiveDistrictCodes(page, size);
+  }
+  
+  @GetMapping("/activeDistrictCodes/{districtCode}")
+  public Mono<DistrictDto> getDistrictByCode(@PathVariable String districtCode) {
+    log.info("Requesting a district by code {} from the client service.", districtCode);
+    return clientService.getDistrictByCode(districtCode);
+  }
 
   @GetMapping("/activeCountryCodes")
   public Flux<CodeNameDto> listCountries(
@@ -53,8 +70,7 @@ public class ClientController {
       @RequestParam(value = "size", required = false, defaultValue = "10")
       Integer size) {
     log.info("Requesting a list of countries from the client service.");
-    return clientService
-        .listCountries(page, size);
+    return clientService.listCountries(page, size);
   }
 
   @GetMapping("/getCountryByCode/{countryCode}")

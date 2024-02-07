@@ -44,4 +44,7 @@ public class SubmissionDetailEntity {
   @Column("birthdate")
   private LocalDate birthdate;
   
+  @Column("district_code")
+  private String districtCode;
+  
 }
