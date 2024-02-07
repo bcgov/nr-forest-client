@@ -453,32 +453,28 @@ const updateDistrict = (value: CodeNameType | undefined) => {
 
     <hr class="divider" />
 
-    <div class="frame-01">
-      <h4 data-scroll="focus-0">
-        Natural resource district
-      </h4>
-      <p class="body-02">
-        Select the district your application should go to. If you don’t know the district
-        <a
-          href="https://www2.gov.bc.ca/gov/content/industry/forestry/managing-our-forest-resources/ministry-of-forests-lands-and-natural-resource-operations-region-district-contacts"
-          target="_blank"
-          rel="noopener noreferrer"
-          >check this map</a
-        >.
-      </p>
-      <dropdown-input-component
-        id="district"
-        label="District"
-        :initial-value="formData.district?.text"
-        required-label
-        :model-value="districtsList"
-        :enabled="true"
-        tip=""
-        :validations="[...getValidations('district.text'), submissionValidation('district.text')]"
-        @update:selected-value="updateDistrict($event)"
-        @empty="validation.district = !$event"
-      />
-    </div>
+    <h4 data-scroll="focus-0">Natural resource district</h4>
+    <p class="body-02">
+      Select the district your application should go to. If you don’t know the district
+      <a
+        href="https://www2.gov.bc.ca/gov/content/industry/forestry/managing-our-forest-resources/ministry-of-forests-lands-and-natural-resource-operations-region-district-contacts"
+        target="_blank"
+        rel="noopener noreferrer"
+        >check this map</a
+      >.
+    </p>
+    <dropdown-input-component
+      id="district"
+      label="District"
+      :initial-value="formData.district?.text"
+      required-label
+      :model-value="districtsList"
+      :enabled="true"
+      tip=""
+      :validations="[...getValidations('district.text'), submissionValidation('district.text')]"
+      @update:selected-value="updateDistrict($event)"
+      @empty="validation.district = !$event"
+    />
 
     <hr class="divider" />
 
