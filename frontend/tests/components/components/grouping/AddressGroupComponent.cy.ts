@@ -16,11 +16,11 @@ describe("<AddressGroupComponent />", () => {
   };
 
   beforeEach(() => {
-    cy.intercept("GET", "/api/clients/activeCountryCodes/CA?page=0&size=250", {
+    cy.intercept("GET", "/api/countries/CA/provinces?page=0&size=250", {
       fixture: "provinces.json",
     }).as("getProvinces");
 
-    cy.intercept("GET", "/api/clients/activeCountryCodes/US?page=0&size=250", {
+    cy.intercept("GET", "/api/countries/US/provinces?page=0&size=250", {
       fixture: "states.json",
     }).as("getStates");
 
@@ -33,7 +33,7 @@ describe("<AddressGroupComponent />", () => {
 
     cy.intercept(
       "GET",
-      `/api/clients/addresses?country=CA&maxSuggestions=10&searchTerm=${encodeURI(
+      `/api/addresses?country=CA&maxSuggestions=10&searchTerm=${encodeURI(
         "2975 Jutland Rd"
       )}*`,
       {
@@ -43,7 +43,7 @@ describe("<AddressGroupComponent />", () => {
 
     cy.intercept(
       "GET",
-      `/api/clients/addresses?country=CA&maxSuggestions=10&searchTerm=${encodeURI(
+      `/api/addresses?country=CA&maxSuggestions=10&searchTerm=${encodeURI(
         "158 Hargrave St"
       )}*`,
       {
@@ -53,7 +53,7 @@ describe("<AddressGroupComponent />", () => {
 
     cy.intercept(
       "GET",
-      `/api/clients/addresses?country=CA&maxSuggestions=10&searchTerm=111`,
+      `/api/addresses?country=CA&maxSuggestions=10&searchTerm=111`,
       [
         {
           code: "A1A1A1",
@@ -62,11 +62,11 @@ describe("<AddressGroupComponent />", () => {
       ]
     ).as("searchAddress111");
 
-    cy.intercept("GET", "/api/clients/addresses/V8T5J9", {
+    cy.intercept("GET", "/api/addresses/V8T5J9", {
       fixture: "address.json",
     }).as("getAddress");
 
-    cy.intercept("GET", "/api/clients/addresses/R3C3N2", {
+    cy.intercept("GET", "/api/addresses/R3C3N2", {
       fixture: "addressMB.json",
     }).as("getaddressMB");
   });

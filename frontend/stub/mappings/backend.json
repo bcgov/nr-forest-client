@@ -74,7 +74,7 @@
     {
       "name": "Country Codes",
       "request": {
-        "url": "/api/clients/activeCountryCodes?page=0&size=250",
+        "url": "/api/countries?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -83,9 +83,20 @@
       }
     },
     {
+      "name": "District Codes",
+      "request": {
+        "url": "/api/districts?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-districts.json"
+      }
+    },
+    {
       "name": "Province Codes",
       "request": {
-        "urlPattern": "/api/clients/activeCountryCodes/(.*)?page=0&size=250",
+        "urlPattern": "/api/countries/(.*)/provinces?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -99,7 +110,7 @@
     {
       "name": "Contact Type Codes",
       "request": {
-        "url": "/api/clients/activeContactTypeCodes?page=0&size=250",
+        "url": "/api/codes/contactTypes?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -110,7 +121,7 @@
     {
       "name": "Get Country by CountryCode",
       "request": {
-        "urlPattern": "/api/clients/getCountryByCode/(.*)",
+        "urlPattern": "/api/countries/(.*)",
         "method": "GET"
       },
       "response": {
@@ -118,13 +129,13 @@
         "transformers": [
           "response-template"
         ],
-        "bodyFileName": "response-getCountryByCode-{{request.path.[3]}}.json"
+        "bodyFileName": "response-countries-{{request.path.[3]}}.json"
       }
     },
     {
       "name": "Get ClientType by Code",
       "request": {
-        "urlPattern": "/api/clients/getClientTypeByCode/(.*)",
+        "urlPattern": "/api/codes/clientTypes/(.*)",
         "method": "GET"
       },
       "response": {
@@ -200,7 +211,7 @@
     {
       "name": "Send email for ZZ",
       "request": {
-        "url": "/api/clients/mail",
+        "url": "/api/ches/duplicate",
         "method": "POST",
         "bodyPatterns": [
           {
@@ -261,7 +272,7 @@
     {
       "name": "Autocompete Canada Post Canada",
       "request": {
-        "urlPath": "/api/clients/addresses",
+        "urlPath": "/api/addresses",
         "method": "GET",
         "queryParameters": {
           "country": {
@@ -283,7 +294,7 @@
     {
       "name": "Autocompete Canada Post US",
       "request": {
-        "urlPath": "/api/clients/addresses",
+        "urlPath": "/api/addresses",
         "method": "GET",
         "queryParameters": {
           "country": {
@@ -305,7 +316,7 @@
     {
       "name": "Canada Post details for success",
       "request": {
-        "urlPattern": "/api/clients/addresses/(.*)",
+        "urlPattern": "/api/addresses/(.*)",
         "method": "GET"
       },
       "response": {
@@ -320,7 +331,7 @@
     {
       "name": "Canada Post error details for F8F8F8",
       "request": {
-        "url": "/api/clients/addresses/F8F8F8",
+        "url": "/api/addresses/F8F8F8",
         "method": "GET"
       },
       "response": {

@@ -52,7 +52,7 @@ const updateContact = (value: Contact | undefined, index: number) => {
 const roleList = ref([]);
 const fetch = () => {
   if (props.active)
-    useFetchTo("/api/clients/activeContactTypeCodes?page=0&size=250", roleList);
+    useFetchTo("/api/codes/contactTypes?page=0&size=250", roleList);
 };
 
 watch(() => props.active, fetch);

@@ -92,7 +92,7 @@ let formData = reactive<FormDataDto>({
 const receviedCountry = ref({} as CodeNameType);
 
 useFetchTo(
-  `/api/clients/getCountryByCode/${submitterInformation?.address?.country?.code}`,
+  `/api/countries/${submitterInformation?.address?.country?.code}`,
   receviedCountry
 );
 
@@ -127,7 +127,7 @@ const scrollToNewContact = () => {
 //Role related data
 const roleList = ref([]);
 const fetch = () => {
-  useFetchTo("/api/clients/activeContactTypeCodes?page=0&size=250", roleList);
+  useFetchTo("/api/codes/contactTypes?page=0&size=250", roleList);
 };
 fetch();
 
