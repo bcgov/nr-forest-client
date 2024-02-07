@@ -74,7 +74,7 @@
     {
       "name": "District Codes",
       "request": {
-        "url": "/api/clients/activeDistricCodes?page=0&size=250",
+        "url": "/api/clients/districts?page=0&size=250",
         "method": "GET"
       },
       "response": {

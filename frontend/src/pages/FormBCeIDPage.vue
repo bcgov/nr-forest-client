@@ -373,7 +373,7 @@ const scrollToNewContact = () => {
 };
 
 const districtsList = ref([]);
-useFetchTo("/api/clients/activeDistricCodes?page=0&size=250", districtsList);
+useFetchTo("/api/clients/districts?page=0&size=250", districtsList);
 </script>
 
 <template>

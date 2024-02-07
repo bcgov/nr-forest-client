@@ -367,7 +367,7 @@ watch([validationError], () => {
 });
 
 const districtsList = ref([]);
-useFetchTo("/api/clients/activeDistricCodes?page=0&size=250", districtsList);
+useFetchTo("/api/clients/districts?page=0&size=250", districtsList);
 
 const updateDistrict = (value: CodeNameType | undefined) => {
   if (value) {
