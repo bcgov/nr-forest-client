@@ -75,7 +75,7 @@ create table if not exists nrfc.country_code (
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		  null,
+    update_user                 varchar(60)		null,
     constraint country_code_pk  primary key (country_code),
     constraint display_order_uk unique (display_order)
 );
@@ -100,7 +100,7 @@ create table if not exists nrfc.province_code (
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		  null,
+    update_user                 varchar(60)		null,
     constraint province_code_pk primary key (country_code, province_code),
     constraint province_code_country_code_fk foreign key (country_code) references nrfc.country_code(country_code)
 );
@@ -124,7 +124,7 @@ create table if not exists nrfc.contact_type_code (
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		  null,
+    update_user                 varchar(60)		null,
     constraint contact_type_code_pk primary key (contact_type_code)
 );
 
@@ -146,7 +146,7 @@ create table if not exists nrfc.business_type_code (
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		  null,
+    update_user                 varchar(60)		null,
     constraint business_type_code_pk primary key (business_type_code)
 );
 
@@ -169,7 +169,7 @@ create table if not exists nrfc.district_code (
     create_timestamp            timestamp       default current_timestamp not null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
-    update_user                 varchar(60)		  null,
+    update_user                 varchar(60)		null,
     constraint district_code_pk primary key (district_code)
 );
 
@@ -208,22 +208,21 @@ comment on column nrfc.submission.create_user is 'The user or proxy account that
 comment on column nrfc.submission.update_user is 'The user or proxy account that created or last updated the record.';
 
 create table if not exists nrfc.submission_detail (
-    submission_detail_id    integer		      not null,
-	  submission_id		        integer   		  not null,
+    submission_detail_id    integer		    not null,
+    submission_id		    integer   		not null,
     client_number           varchar(8)      null,
-	  business_type_code		  varchar(1)    	not null,
-	  incorporation_number	  varchar(50)    	null,
+    business_type_code		varchar(1)    	not null,
+    incorporation_number	varchar(50)    	null,
     organization_name       varchar(100)    null,
-	  client_type_code        varchar(5)    	not null,
+    client_type_code        varchar(5)    	not null,
     good_standing_ind       varchar(1)      null,
     birthdate               date            null,
-    district_code           varchar(100)    NULL,
-	  constraint submission_detail_id_pk primary key (submission_detail_id),
-	  constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
+    district_code           varchar(100)    null,
+	constraint submission_detail_id_pk primary key (submission_detail_id),
+	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
     constraint submission_detail_business_type_code_fk foreign key (business_type_code) references nrfc.business_type_code(business_type_code),
     constraint submission_detail_client_type_code_fk foreign key (client_type_code) references nrfc.client_type_code(client_type_code),
     constraint submission_detail_district_code_fk foreign key (district_code) references nrfc.district_code(district_code)
-
 );
 
 comment on table nrfc.submission_detail is 'The details of a submission request to create a client.';
@@ -233,6 +232,7 @@ comment on column nrfc.submission_detail.business_type_code is 'A code indicatin
 comment on column nrfc.submission_detail.incorporation_number is 'A number provided to B.C. corporations, businesses or societies as part of the registration or incorporation process.';
 comment on column nrfc.submission_detail.organization_name is 'The name of the client.';
 comment on column nrfc.submission_detail.client_type_code is 'A code representing the type of a client.';
+comment on column nrfc.submission_detail.district_code is 'A code representing the natural resource district of a client.';
 comment on column nrfc.submission_detail.good_standing_ind is 'An indicator that determines whether a client is in good standing with respect to their financial obligations.';
 comment on column nrfc.submission_detail.birthdate is 'The date that the BC Services Card logged in person was born.';
 
@@ -285,10 +285,10 @@ comment on column nrfc.submission_location.location_name is 'The location name o
 
 create table if not exists nrfc.submission_contact (
     submission_contact_id      integer		    not null,
-	  submission_id              integer			not null,
+    submission_id              integer			not null,
     contact_type_code          varchar(2)       not null,
     first_name                 varchar(100)     null,
-	  last_name                  varchar(100)     null,
+    last_name                  varchar(100)     null,
     business_phone_number      varchar(20)      not null,
     email_address              varchar(100)     not null,
     idp_user_id                varchar(50)      null,
@@ -323,7 +323,7 @@ create table if not exists nrfc.email_log (
     email_log_id            integer		    not null,
     email_id                varchar(40)     null,
     email_sent_ind          varchar(1)      null,
-	  exception_message       text            null,
+    exception_message       text            null,
     template_name           varchar(40)     not null,
     email_address           varchar(100)    not null,
     email_subject           varchar(50)     not null,
