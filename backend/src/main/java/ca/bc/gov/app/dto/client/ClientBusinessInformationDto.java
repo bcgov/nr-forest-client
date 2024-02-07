@@ -10,9 +10,10 @@ public record ClientBusinessInformationDto(
     String businessName,
     String businessType, 
     String clientType, 
-    String goodStandingInd,
+    String goodStandingInd, 
     String legalType,
-    LocalDate birthdate) {
+    LocalDate birthdate, 
+    String district) {
   /**
    * Returns a map containing the description of the client's business information.
    *
@@ -21,13 +22,13 @@ public record ClientBusinessInformationDto(
   public Map<String, Object> description() {
     return Map.of(
         "incorporation", StringUtils.isBlank(incorporationNumber) ? "" : incorporationNumber, 
-        "name", StringUtils.isBlank(businessName) ? "" : businessName, 
-        "businessType", StringUtils.isBlank(businessType) ? "" : businessType, 
-        "clientType", StringUtils.isBlank(clientType) ? "" : clientType,
-        "goodStanding", StringUtils.isBlank(goodStandingInd) ? "" : goodStandingInd,
-        "legalType", StringUtils.isBlank(legalType) ? "" : legalType,
-        "birthdate", Optional.ofNullable(birthdate).isPresent() 
-                      ? birthdate : LocalDate.of(1975, 1, 31)
-        );
+        "name", StringUtils.isBlank(businessName) ? "" : businessName,
+            "businessType", StringUtils.isBlank(businessType) ? "" : businessType, 
+            "clientType", StringUtils.isBlank(clientType) ? "" : clientType, 
+            "goodStanding", StringUtils.isBlank(goodStandingInd) ? "" : goodStandingInd, 
+            "legalType", StringUtils.isBlank(legalType) ? "" : legalType, 
+            "birthdate", Optional.ofNullable(birthdate).isPresent() ? birthdate : LocalDate.of(1975, 1, 31),
+            "district", StringUtils.isBlank(district) ? "" : district
+    );
   }
 }

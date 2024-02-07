@@ -43,6 +43,7 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
         StringUtils.isNotBlank(birthdateAsString)
          ? LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(birthdateAsString))
         : null;
+    String district = accessor.getString(9);
 
     return new ClientBusinessInformationDto(
                 incorporationNumber, 
@@ -51,7 +52,8 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
                 clientType, 
                 goodStanding, 
                 legalType, 
-                birthdate);
+                birthdate,
+                district);
   }
 
   private static ClientLocationDto createLocation(ArgumentsAccessor accessor) {

@@ -49,12 +49,15 @@ public final class ApplicationConstant {
         ctc.client_type_code as client_type,
         ctc.description as client_type_desc,
         sd.good_standing_ind as good_standing,
-        sd.birthdate
+        sd.birthdate,
+        dc.district_code as district,
+        dc.district_code || ' - ' || dc.description as district_desc
       FROM nrfc.submission s
       left join nrfc.submission_status_code ssc on ssc.submission_status_code = s.submission_status_code\s
       left join nrfc.submission_type_code stc on stc.submission_type_code = s.submission_type_code
       left join nrfc.submission_detail sd on sd.submission_id = s.submission_id\s
       left join nrfc.business_type_code btc on btc.business_type_code = sd.business_type_code\s
+      left join nrfc.district_code dc on dc.district_code = sd.district_code\s
       left join nrfc.client_type_code ctc on ctc.client_type_code = sd.client_type_code\s
       where s.submission_id = :submissionId""";
   
