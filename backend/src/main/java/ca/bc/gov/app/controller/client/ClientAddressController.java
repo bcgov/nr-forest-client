@@ -17,14 +17,14 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @Slf4j
-@RequestMapping(value = "/api/clients", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/addresses", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Observed
 public class ClientAddressController {
 
   private final ClientAddressService clientAddressService;
 
-  @GetMapping("/addresses")
+  @GetMapping
   public Flux<CodeNameDto> findPossibleAddresses(
       @RequestParam(value = "country", required = false, defaultValue = "CA")
       String country,
@@ -38,7 +38,7 @@ public class ClientAddressController {
         .findPossibleAddresses(country, maxSuggestions, searchTerm);
   }
 
-  @GetMapping("/addresses/{addressId}")
+  @GetMapping("/{addressId}")
   public Mono<ClientAddressDto> getAddress(
       @PathVariable String addressId) {
     log.info("Requesting address for addressId: {}", addressId);

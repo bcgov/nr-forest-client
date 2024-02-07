@@ -1,10 +1,15 @@
 package ca.bc.gov.app.controller.ches;
 
 import static ca.bc.gov.app.TestConstants.EMAIL_REQUEST;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
@@ -32,6 +37,19 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
       .options(
           wireMockConfig()
               .port(10010)
+              .notifier(new WiremockLogNotifier())
+              .asynchronousResponseEnabled(true)
+              .stubRequestLoggingDisabled(false)
+      )
+      .configureStaticDsl(true)
+      .build();
+
+  @RegisterExtension
+  static WireMockExtension legacyStub = WireMockExtension
+      .newInstance()
+      .options(
+          wireMockConfig()
+              .port(10060)
               .notifier(new WiremockLogNotifier())
               .asynchronousResponseEnabled(true)
               .stubRequestLoggingDisabled(false)
@@ -76,6 +94,48 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
         .expectStatus().isAccepted()
         .expectBody(String.class)
         .isEqualTo("Email sent successfully. Transaction ID: 00000000-0000-0000-0000-000000000000");
+  }
+
+  @Test
+  @DisplayName("Send an email for already existing client")
+  void shouldSendEmail() {
+    chesStub
+        .stubFor(
+            post("/chess/uri")
+                .willReturn(
+                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
+
+    chesStub
+        .stubFor(
+            post("/token/uri")
+                .willReturn(
+                    ok(TestConstants.CHES_TOKEN_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
+
+    ///search/incorporationOrName?incorporationNumber=XX1234567&companyName=Example%20Inc.
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/search/incorporationOrName"))
+                .withQueryParam("incorporationNumber",
+                    equalTo(TestConstants.EMAIL_REQUEST.incorporation()))
+                .withQueryParam("companyName", equalTo(TestConstants.EMAIL_REQUEST.name()))
+                .willReturn(okJson(TestConstants.LEGACY_OK))
+        );
+
+    client
+        .post()
+        .uri("/api/ches/duplicate")
+        .body(Mono.just(TestConstants.EMAIL_REQUEST), EmailRequestDto.class)
+        .header(ApplicationConstant.USERID_HEADER, "testUserId")
+        .exchange()
+        .expectStatus().isAccepted()
+        .expectBody().isEmpty();
+
   }
 
 }
