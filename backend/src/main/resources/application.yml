@@ -22,6 +22,7 @@ spring:
     locations: classpath:db/migration
     enabled: true
     validate-on-migrate: true
+    baseline-on-migrate: true
     user: ${ca.bc.gov.nrs.postgres.username}
     password: ${ca.bc.gov.nrs.postgres.password}
     url: jdbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
