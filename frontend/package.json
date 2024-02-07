@@ -39,7 +39,7 @@
     "posttest:e2e": "mv reports/.nyc_report reports/e2e",
     "pretest:report:merge": "rm -rf reports-merge && mkdir -p reports-merge && for name in component e2e unit; do cp reports/$name/coverage-final.json reports-merge/$name.json; done",
     "test:report:merge": "mkdir -p .nyc_output && rm -rf coverage && nyc --config nyc.config.json merge reports-merge &&  mv coverage.json .nyc_output/out.json && nyc --config nyc.config.json report --reporter lcov --reporter text-summary --report-dir coverage --temp-dir .nyc_output",
-    "test:report:clean": "mkdir -p reports/.nyc_output/processinfo && mkdir -p coverage",
+    "test:report:clean": "rm -rf reports && mkdir -p reports/.nyc_output/processinfo && mkdir -p coverage",
     "test:build": "start-server-and-test preview http://127.0.0.1:3000/ 'cypress open'",
     "test:flush": "rm -rf reports && rm -rf .nyc_output && rm -rf coverage && rm -rf reports-merge",
     "posttest:flush": "npm run coverage"
