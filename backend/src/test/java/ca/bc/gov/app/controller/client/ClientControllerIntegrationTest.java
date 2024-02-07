@@ -116,7 +116,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     client
         .get()
-        .uri("/api/clients/activeClientTypeCodes")
+        .uri("/api/clients/client-type-codes")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
@@ -137,7 +137,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     Function<UriBuilder, URI> uri = uriBuilder -> {
 
       UriBuilder localBuilder = uriBuilder
-          .path("/api/clients/activeCountryCodes");
+          .path("/api/clients/countries");
 
       if (page != null) {
         localBuilder = localBuilder.queryParam("page", page);
@@ -172,7 +172,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     Function<UriBuilder, URI> uri = uriBuilder -> {
 
       UriBuilder localBuilder = uriBuilder
-          .path("/api/clients/activeCountryCodes/{countryCode}");
+          .path("/api/clients/countries/provinces/{countryCode}");
 
       if (page != null) {
         localBuilder = localBuilder.queryParam("page", page);
@@ -203,7 +203,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     Function<UriBuilder, URI> uri = uriBuilder -> {
 
       UriBuilder localBuilder = uriBuilder
-          .path("/api/clients/activeContactTypeCodes");
+          .path("/api/clients/contact-type-codes");
 
       if (page != null) {
         localBuilder = localBuilder.queryParam("page", page);
@@ -448,7 +448,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     client
         .get()
-        .uri("/api/clients/getCountryByCode/{countryCode}", Map.of("countryCode", "CA"))
+        .uri("/api/clients/countries/{countryCode}", Map.of("countryCode", "CA"))
         .exchange()
         .expectStatus().isOk()
         .expectBody(CodeNameDto.class)
