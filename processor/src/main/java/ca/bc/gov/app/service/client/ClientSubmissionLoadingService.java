@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.DistrictDto;
 import ca.bc.gov.app.dto.EmailRequestDto;
 import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
@@ -11,7 +12,10 @@ import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 
@@ -25,6 +29,7 @@ public class ClientSubmissionLoadingService {
 
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionContactRepository contactRepository;
+  private final WebClient forestClientApi;
 
   /**
    * Load the submission details to be processed later on
@@ -66,34 +71,51 @@ public class ClientSubmissionLoadingService {
       return Mono.empty();
     }
 
-    //TODO: read from config
-    String clientAdminTeamEmail = "clientadminteamemail@email.ca";
     return
         submissionDetailRepository
             .findBySubmissionId(message.payload())
             .doOnNext(
-                submission -> log.info("Loaded submission details for mail purpose {}", submission))
+                submission -> log.info("Loaded submission details for mail purpose {}", submission)
+            )
             .flatMap(details ->
                 contactRepository
                     .findFirstBySubmissionId(message.payload())
                     .doOnNext(submissionContact -> log.info(
-                        "Loaded submission contact details for mail purpose {}", submissionContact))
-                    .map(submissionContact ->
+                        "Loaded submission contact details for mail purpose {}", submissionContact)
+                    )
+                    // Reads the district information from the forest client district endpoint if is a client admin email
+                    .flatMap(submissionContact ->
+                        Mono
+                            .just(isClientAdminEmail(message))
+                            .filter(Boolean::booleanValue)
+                            .flatMap(isAdmin ->
+                                forestClientApi
+                                    .get()
+                                    .uri("/api/districts/{districtCode}", details.getDistrictCode())
+                                    .exchangeToMono(clientResponse -> clientResponse.bodyToMono(
+                                        DistrictDto.class)
+                                    )
+                                    .doOnNext(district -> log.info(
+                                                                "Loaded district details {} {}", 
+                                                                district.code(),
+                                                                district.description()))
+                                    .map(DistrictDto::emails)
+                            )
+                            .defaultIfEmpty(submissionContact.getEmailAddress())
+                            .map(mail -> Pair.of(submissionContact, mail))
+                    )
+                    .map(submissionContactPair ->
                         new EmailRequestDto(
                             details.getIncorporationNumber(),
                             details.getOrganizationName(),
-                            submissionContact.getUserId(),
-                            submissionContact.getFirstName(),
-                            isClientAdminEmail(message)
-                                ?
-                                clientAdminTeamEmail
-                                :
-                                    submissionContact.getEmailAddress(),
+                            submissionContactPair.getLeft().getUserId(),
+                            submissionContactPair.getLeft().getFirstName(),
+                            submissionContactPair.getRight(),
                             getTemplate(message),
                             getSubject(message, details.getOrganizationName()),
                             getParameter(
                                 message,
-                                submissionContact.getFirstName(),
+                                submissionContactPair.getLeft().getFirstName(),
                                 details.getOrganizationName(),
                                 Objects.toString(details.getClientNumber(), ""),
                                 String.valueOf(
