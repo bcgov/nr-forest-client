@@ -257,7 +257,7 @@ const progressData = reactive([
     valid: false,
     step: 0,
     fields: [
-      "district",
+      "businessInformation.district",
       "businessInformation.businessType",
       "businessInformation.businessName",
       "location.contacts.*.contactType.text",
@@ -371,7 +371,7 @@ useFetchTo("/api/clients/districts?page=0&size=250", districtsList);
 
 const updateDistrict = (value: CodeNameType | undefined) => {
   if (value) {
-    formData.district = { value: value.code, text: value.name };
+    formData.businessInformation.district = { value: value.code, text: value.name };
   }
 };
 </script>
@@ -466,12 +466,15 @@ const updateDistrict = (value: CodeNameType | undefined) => {
     <dropdown-input-component
       id="district"
       label="District"
-      :initial-value="formData.district?.text"
+      :initial-value="formData.businessInformation.district?.text"
       required-label
       :model-value="districtsList"
       :enabled="true"
       tip=""
-      :validations="[...getValidations('district.text'), submissionValidation('district.text')]"
+      :validations="[
+        ...getValidations('businessInformation.district.text'),
+        submissionValidation('businessInformation.district.text'),
+      ]"
       @update:selected-value="updateDistrict($event)"
       @empty="validation.district = !$event"
     />
@@ -490,7 +493,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
         id="phoneNumberId"
         label="Phone number"
         placeholder="( ) ___-____"
-        :enabled="true" 
+        :enabled="true"
         v-model="formData.location.contacts[0].phoneNumber"
         mask="(###) ###-####"
         :required-label="true"

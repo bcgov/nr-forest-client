@@ -19,8 +19,8 @@ export interface Contact {
 }
 
 export interface FormDataDto {
-  district: CodeDescrType;
   businessInformation: {
+    district: CodeDescrType;
     businessType: string;
     legalType: string;
     clientType: string;
@@ -47,8 +47,8 @@ export interface ForestClientDetailsDto {
 export const locationName = { value: "0", text: "MAILING ADDRESS" };
 
 export const formDataDto: FormDataDto = {
-  district: { value: "", text: "" },
   businessInformation: {
+    district: { value: "", text: "" },
     businessType: "",
     legalType: "",
     clientType: "",
