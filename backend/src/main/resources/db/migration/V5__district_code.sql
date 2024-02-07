@@ -1,5 +1,3 @@
-drop table if exists nrfc.district_code;
-
 create table if not exists nrfc.district_code (
     district_code               varchar(5)      not null,
     description                 varchar(100)    not null,
