@@ -1,6 +1,10 @@
 /* eslint-disable no-undef */
 describe("BCSC Form", () => {
   beforeEach(() => {
+    cy.intercept("GET", "/api/clients/districts?page=0&size=250", {
+      fixture: "districts.json",
+    }).as("getDistricts");
+
     cy.intercept("http://localhost:8080/api/clients/name/*", {
       fixture: "business.json",
     }).as("searchCompany");
@@ -9,15 +13,15 @@ describe("BCSC Form", () => {
       fixture: "example.json",
     }).as("selectCompany");
 
-    cy.intercept("GET","/api/countries/CA",{
+    cy.intercept("GET", "/api/countries/CA",{
       fixture: "countryCodeCA.json",
     }).as("getCanadaByCode");
 
     cy.intercept("POST", "/api/clients/submissions", {
       statusCode: 201,
-      headers: { 
+      headers: {
         location: "http://localhost:8080/api/clients/submissions/1",
-        "x-sub-id": "123456" 
+        "x-sub-id": "123456",
       },
     }).as("submitForm");
 
@@ -42,9 +46,19 @@ describe("BCSC Form", () => {
       birthdate: "1986-11-12"
     }
     );
+
+    cy.wait("@getDistricts");
   });
 
-  it("should submit the form with a phone number", () => {
+  it("should submit the form with the required information", () => {
+    cy.get("#district")
+      .should("be.visible")
+      .and("have.value", "")
+      .click()
+      .find('cds-combo-box-item[data-id="DCC"]')
+      .should("be.visible")
+      .click()
+      .and("have.value", "DCC - Cariboo-Chilcotin Natural Resource District");
 
     cy
     .get('#phoneNumberId')
@@ -65,6 +79,15 @@ describe("BCSC Form", () => {
   });
 
   it("should add a new contact", () => {
+
+    cy.get("#district")
+      .should("be.visible")
+      .and("have.value", "")
+      .click()
+      .find('cds-combo-box-item[data-id="DCC"]')
+      .should("be.visible")
+      .click()
+      .and("have.value", "DCC - Cariboo-Chilcotin Natural Resource District");
 
     cy
     .get('#phoneNumberId')
@@ -89,7 +112,8 @@ describe("BCSC Form", () => {
     .click();
 
     cy
-    .get('cds-combo-box-item')
+    .get('#role_1')
+    .find('cds-combo-box-item')
     .should("be.visible")
     .click();
 
@@ -131,6 +155,15 @@ describe("BCSC Form", () => {
 
   it("should add a new contact, then remove it", () => {
 
+    cy.get("#district")
+      .should("be.visible")
+      .and("have.value", "")
+      .click()
+      .find('cds-combo-box-item[data-id="DCC"]')
+      .should("be.visible")
+      .click()
+      .and("have.value", "DCC - Cariboo-Chilcotin Natural Resource District");
+
     cy
     .get('#phoneNumberId')
     .should("be.visible")
@@ -154,7 +187,8 @@ describe("BCSC Form", () => {
     .click();
 
     cy
-    .get('cds-combo-box-item')
+    .get('#role_1')
+    .find('cds-combo-box-item')
     .should("be.visible")
     .click();
 
@@ -216,7 +250,7 @@ describe("BCSC Form", () => {
     const fillContact = (contactId: number) => {
       cy.get(`#role_${contactId}`).should("be.visible").shadow().find("input").click();
 
-      cy.get("cds-combo-box-item").should("be.visible").click();
+      cy.get(`#role_${contactId}`).find("cds-combo-box-item").should("be.visible").click();
 
       cy.get(`#lastName_${contactId}`)
         .should("be.visible")
@@ -255,6 +289,15 @@ describe("BCSC Form", () => {
       cy.get("#deleteContact_1").click();
       cy.wait(150);
       cy.get("#modal-global > cds-modal-footer > .cds--modal-submit-btn").click();
+
+      cy.get("#district")
+        .should("be.visible")
+        .and("have.value", "")
+        .click()
+        .find('cds-combo-box-item[data-id="DCC"]')
+        .should("be.visible")
+        .click()
+        .and("have.value", "DCC - Cariboo-Chilcotin Natural Resource District");
 
       cy.get("#phoneNumberId")
         .should("be.visible")
