@@ -3,6 +3,7 @@ package ca.bc.gov.app.service.client;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+import ca.bc.gov.app.dto.client.DistrictDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
@@ -51,13 +52,14 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
   }
   
   @Test
+  @DisplayName("Return district by code")
   void testGetDistrictByCode() {
 
     DistrictCodeEntity districtCodeEntity = 
         new DistrictCodeEntity("DMH", "100 Mile House Natural Resource District");
     
-    CodeNameDto expectedDto = 
-        new CodeNameDto("DMH", "100 Mile House Natural Resource District");
+    DistrictDto expectedDto =
+        new DistrictDto("DMH", "100 Mile House Natural Resource District","FLNR.100MileHouseDistrict@gov.bc.ca");
 
     when(districtCodeRepository
           .findByCode("DMH"))

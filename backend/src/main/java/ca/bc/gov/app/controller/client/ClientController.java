@@ -4,6 +4,7 @@ import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
+import ca.bc.gov.app.dto.client.DistrictDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientService;
@@ -56,8 +57,8 @@ public class ClientController {
     return clientService.getActiveDistrictCodes(page, size);
   }
   
-  @GetMapping("/getDistrictByCode/{districtCode}")
-  public Mono<CodeNameDto> getDistrictByCode(@PathVariable String districtCode) {
+  @GetMapping("/activeDistrictCodes/{districtCode}")
+  public Mono<DistrictDto> getDistrictByCode(@PathVariable String districtCode) {
     log.info("Requesting a district by code {} from the client service.", districtCode);
     return clientService.getDistrictByCode(districtCode);
   }
