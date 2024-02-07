@@ -115,7 +115,7 @@
         "transformers": [
           "response-template"
         ],
-        "bodyFileName": "response-provinces-{{request.path.[3]}}.json"
+        "bodyFileName": "response-provinces-{{request.path.[2]}}.json"
       }
     },
     {
@@ -140,7 +140,7 @@
         "transformers": [
           "response-template"
         ],
-        "bodyFileName": "response-countries-{{request.path.[3]}}.json"
+        "bodyFileName": "response-getCountryByCode-{{request.path.[2]}}.json"
       }
     },
     {
@@ -332,7 +332,7 @@
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-address-{{request.path.[3]}}.json",
+        "bodyFileName": "response-address-{{request.path.[2]}}.json",
         "transformers": [
           "response-template"
         ],
