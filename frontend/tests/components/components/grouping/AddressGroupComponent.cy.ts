@@ -16,11 +16,11 @@ describe("<AddressGroupComponent />", () => {
   };
 
   beforeEach(() => {
-    cy.intercept("GET", "/api/clients/activeCountryCodes/CA?page=0&size=250", {
+    cy.intercept("GET", "/api/clients/countries/CA?page=0&size=250", {
       fixture: "provinces.json",
     }).as("getProvinces");
 
-    cy.intercept("GET", "/api/clients/activeCountryCodes/US?page=0&size=250", {
+    cy.intercept("GET", "/api/clients/countries/US?page=0&size=250", {
       fixture: "states.json",
     }).as("getStates");
 

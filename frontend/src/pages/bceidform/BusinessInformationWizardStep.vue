@@ -176,7 +176,7 @@ watch([autoCompleteResult], () => {
         toggleErrorMessages(null, null, null, true);
         receivedClientType.value = null;
         useFetchTo(
-          `/api/clients/getClientTypeByCode/${formData.value.businessInformation.clientType}`,
+          `/api/clients/client-type-codes/${formData.value.businessInformation.clientType}`,
           receivedClientType,
         );
         return;

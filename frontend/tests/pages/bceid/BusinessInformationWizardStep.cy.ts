@@ -18,7 +18,7 @@ describe('<BusinessInformationWizardStep />', () => {
       body: "Unable to process request. This sole proprietor is not owner by a person",
     });
 
-    cy.intercept("GET", "/api/clients/getClientTypeByCode/C", {
+    cy.intercept("GET", "/api/clients/client-type-codes/C", {
       statusCode: 200,
       body: {
         code: "C",

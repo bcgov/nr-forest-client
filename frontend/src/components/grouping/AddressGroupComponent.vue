@@ -82,7 +82,7 @@ const updateStateProvince = (
 //Province related data
 const provinceUrl = computed(
   () =>
-    `/api/clients/activeCountryCodes/${selectedValue.country.value}?page=0&size=250`
+    `/api/clients/countries/provinces/${selectedValue.country.value}?page=0&size=250`
 );
 
 const resetProvinceOnChange = (receivedCountry: any) => {

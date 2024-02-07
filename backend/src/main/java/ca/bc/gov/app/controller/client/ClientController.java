@@ -47,7 +47,7 @@ public class ClientController {
     return clientService.getClientDetails(clientNumber,userId,businessId);
   }
   
-  @GetMapping("/activeDistrictCodes")
+  @GetMapping("/districts")
   public Flux<CodeNameDto> getActiveDistrictCodes(
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
@@ -57,14 +57,14 @@ public class ClientController {
     return clientService.getActiveDistrictCodes(page, size);
   }
   
-  @GetMapping("/activeDistrictCodes/{districtCode}")
+  @GetMapping("/districts/{districtCode}")
   public Mono<DistrictDto> getDistrictByCode(@PathVariable String districtCode) {
     log.info("Requesting a district by code {} from the client service.", districtCode);
     return clientService.getDistrictByCode(districtCode);
   }
 
-  @GetMapping("/activeCountryCodes")
-  public Flux<CodeNameDto> listCountries(
+  @GetMapping("/countries")
+  public Flux<CodeNameDto> countries(
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10")
@@ -73,14 +73,14 @@ public class ClientController {
     return clientService.listCountries(page, size);
   }
 
-  @GetMapping("/getCountryByCode/{countryCode}")
+  @GetMapping("/countries/{countryCode}")
   public Mono<CodeNameDto> getCountryByCode(
       @PathVariable String countryCode) {
     log.info("Requesting a country by code {} from the client service.", countryCode);
     return clientService.getCountryByCode(countryCode);
   }
 
-  @GetMapping("/activeCountryCodes/{countryCode}")
+  @GetMapping("/countries/provinces/{countryCode}")
   public Flux<CodeNameDto> listProvinces(
       @PathVariable String countryCode,
       @RequestParam(value = "page", required = false, defaultValue = "0")
@@ -92,21 +92,21 @@ public class ClientController {
         .listProvinces(countryCode, page, size);
   }
 
-  @GetMapping("/getClientTypeByCode/{code}")
+  @GetMapping("/client-type-codes/{code}")
   public Mono<CodeNameDto> getClientTypeByCode(
       @PathVariable String code) {
     log.info("Requesting a client type by code {} from the client service.", code);
     return clientService.getClientTypeByCode(code);
   }
   
-  @GetMapping("/activeClientTypeCodes")
+  @GetMapping("/client-type-codes")
   public Flux<CodeNameDto> findActiveClientTypeCodes() {
     log.info("Requesting a list of active client type codes from the client service.");
     return clientService
         .findActiveClientTypeCodes(LocalDate.now());
   }
 
-  @GetMapping("/activeContactTypeCodes")
+  @GetMapping("/contact-type-codes")
   public Flux<CodeNameDto> listClientContactTypeCodes(
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
