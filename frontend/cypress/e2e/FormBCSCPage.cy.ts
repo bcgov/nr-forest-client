@@ -9,7 +9,7 @@ describe("BCSC Form", () => {
       fixture: "example.json",
     }).as("selectCompany");
 
-    cy.intercept("GET","/api/clients/countries/CA",{
+    cy.intercept("GET","/api/countries/CA",{
       fixture: "countryCodeCA.json",
     }).as("getCanadaByCode");
 

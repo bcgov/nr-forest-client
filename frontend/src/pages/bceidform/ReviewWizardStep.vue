@@ -37,7 +37,7 @@ watch([formData], () => emit("update:data", formData.value));
 const receviedClientType = ref({} as CodeNameType);
 
 useFetchTo(
-  `/api/clients/client-type-codes/${formData.value.businessInformation.clientType}`,
+  `/api/codes/clientTypes/${formData.value.businessInformation.clientType}`,
   receviedClientType
 );
 

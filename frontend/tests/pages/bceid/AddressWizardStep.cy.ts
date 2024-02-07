@@ -6,7 +6,7 @@ import { useEventBus } from "@vueuse/core";
 
 describe("<AddressWizardStep />", () => {
   beforeEach(() => {
-    cy.intercept("GET", `/api/clients/addresses?country=CA&maxSuggestions=10&searchTerm=*`, {
+    cy.intercept("GET", `/api/addresses?country=CA&maxSuggestions=10&searchTerm=*`, {
       fixture: "addressSearch.json",
     });
   });
