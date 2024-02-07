@@ -120,6 +120,7 @@ export interface SubmissionList {
   user: string
   requestType: string
   clientType: string
+  district: string
 }
 
 export interface SubmissionDetails {
@@ -144,7 +145,9 @@ export interface SubmissionDetailsBusiness {
   clientType: string
   clientTypeDesc: string
   goodStandingInd: string
-  birthdate: string
+  birthdate: string,
+  district: string,
+  districtDesc: string
 }
 
 export interface SubmissionDetailsContact {

@@ -17,6 +17,7 @@ import ca.bc.gov.app.dto.submissions.SubmissionBusinessDto;
 import ca.bc.gov.app.dto.submissions.SubmissionContactDto;
 import ca.bc.gov.app.dto.submissions.SubmissionDetailsDto;
 import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
+import ca.bc.gov.app.entity.client.DistrictCodeEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
@@ -27,6 +28,7 @@ import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.predicates.QueryPredicates;
 import ca.bc.gov.app.predicates.SubmissionDetailPredicates;
 import ca.bc.gov.app.predicates.SubmissionPredicates;
+import ca.bc.gov.app.repository.client.DistrictCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
@@ -45,6 +47,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -70,6 +73,7 @@ public class ClientSubmissionService {
   private final SubmissionContactRepository submissionContactRepository;
   private final SubmissionLocationContactRepository submissionLocationContactRepository;
   private final SubmissionMatchDetailRepository submissionMatchDetailRepository;
+  private final DistrictCodeRepository districtCodeRepository;
   private final ChesService chesService;
   private final R2dbcEntityTemplate template;
   private final ForestClientConfiguration configuration;
@@ -80,47 +84,61 @@ public class ClientSubmissionService {
       String[] requestType,
       SubmissionStatusEnum[] requestStatus,
       String[] clientType,
+      String[] district,
       String[] name,
       String[] updatedAt
   ) {
 
-    log.info("Searching for Page {} Size {} Type {} Status {} Client {} Name {} Updated {}",
+    log.info("Searching for Page {} Size {} Type {} Status {} Client {} District {} Name {} Updated {}",
         page,
         size,
         requestType,
         requestStatus,
         clientType,
+        district,
         name,
         updatedAt
     );
-
-    return
-        getClientTypes()
-            .flatMapMany(clientTypes ->
-                loadSubmissions(page, size, requestType, requestStatus, updatedAt)
-                    .flatMap(submissionPair ->
-                        loadSubmissionDetail(clientType, name, submissionPair.getRight())
-                            .map(submissionDetail ->
-                                new ClientListSubmissionDto(
-                                    submissionPair.getRight().getSubmissionId(),
-                                    submissionPair.getRight().getSubmissionType().getDescription(),
-                                    submissionDetail.getOrganizationName(),
-                                    clientTypes.getOrDefault(submissionDetail.getClientTypeCode(),
-                                    submissionDetail.getClientTypeCode()),
-                                    Optional
-                                        .ofNullable(submissionPair.getRight().getUpdatedAt())
-                                        .map(date -> date.format(
-                                            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                                        .orElse(StringUtils.EMPTY),
-                                    StringUtils.defaultString(
-                                        submissionPair.getRight().getUpdatedBy()),
-                                    submissionPair.getRight().getSubmissionStatus().getDescription(),
-                                    submissionPair.getLeft()
+    
+    return getClientTypes()
+        .flatMapMany(clientTypes ->
+            loadSubmissions(page, size, requestType, requestStatus, updatedAt)
+                .flatMap(submissionPair ->
+                    loadSubmissionDetail(clientType, name, submissionPair.getRight())
+                        .flatMap(submissionDetail ->
+                            getDistrictFullDescByCode(submissionDetail.getDistrictCode())
+                                .map(districtFullDesc ->
+                                    new ClientListSubmissionDto(
+                                        submissionPair.getRight().getSubmissionId(),
+                                        submissionPair.getRight().getSubmissionType().getDescription(),
+                                        submissionDetail.getOrganizationName(),
+                                        clientTypes.getOrDefault(
+                                            submissionDetail.getClientTypeCode(),
+                                            submissionDetail.getClientTypeCode()
+                                        ),
+                                        districtFullDesc,
+                                        Optional
+                                            .ofNullable(submissionPair.getRight().getUpdatedAt())
+                                            .map(date -> date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                                            .orElse(StringUtils.EMPTY),
+                                        StringUtils.defaultString(submissionPair.getRight().getUpdatedBy()),
+                                        submissionPair.getRight().getSubmissionStatus().getDescription(),
+                                        submissionPair.getLeft()
+                                    )
                                 )
-                            )
-                    )
-            );
+                        )
+                )
+        );
   }
+
+  private Mono<String> getDistrictFullDescByCode(String districtCode) {
+    return Mono.justOrEmpty(districtCode)
+            .flatMap(districtCodeRepository::findByCode)
+            .map(districtCodeEntity -> districtCodeEntity.getCode() + " - "
+                  + districtCodeEntity.getDescription())
+            .defaultIfEmpty("");
+  }
+
 
   /**
    * Submits a new client submission and returns a Mono of the submission ID.
@@ -221,7 +239,9 @@ public class ClientSubmissionService {
                         row.get("client_type", String.class),
                         row.get("client_type_desc", String.class),
                         row.get("good_standing", String.class),
-                        row.get("birthdate", LocalDate.class)
+                        row.get("birthdate", LocalDate.class),
+                        row.get("district", String.class),
+                        row.get("district_desc", String.class)
                     ),
                     List.of(),
                     List.of(),

@@ -61,6 +61,8 @@ public class ClientSubmissionController extends
       @RequestParam(required = false)
       String[] clientType,
       @RequestParam(required = false)
+      String[] district,
+      @RequestParam(required = false)
       String[] name,
       @RequestParam(required = false)
       String[] updatedAt,
@@ -68,7 +70,7 @@ public class ClientSubmissionController extends
   ) {
     log.info(
         "Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, name={}, updatedAt={}",
-        page, size, requestType, requestStatus, clientType, name, updatedAt);
+        page, size, requestType, requestStatus, clientType, district, name, updatedAt);
 
     return clientService
         .listSubmissions(
@@ -77,6 +79,7 @@ public class ClientSubmissionController extends
             requestType,
             requestStatus,
             clientType,
+            district,
             name,
             updatedAt
         )

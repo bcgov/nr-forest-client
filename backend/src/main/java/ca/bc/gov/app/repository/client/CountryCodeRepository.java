@@ -12,8 +12,10 @@ import reactor.core.publisher.Mono;
 public interface CountryCodeRepository extends ReactiveCrudRepository<CountryCodeEntity, String>,
     ReactiveSortingRepository<CountryCodeEntity, String> {
 
-  Flux<CountryCodeEntity> findBy(Pageable pageable);
+  Flux<CountryCodeEntity> findAllBy(Pageable pageable);
 
   Mono<CountryCodeEntity> findByCountryCode(String code);
+
   Mono<CountryCodeEntity> findByDescription(String description);
+
 }

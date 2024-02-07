@@ -3,12 +3,15 @@ package ca.bc.gov.app.service.client;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+import ca.bc.gov.app.dto.client.DistrictDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
 import ca.bc.gov.app.entity.client.CountryCodeEntity;
+import ca.bc.gov.app.entity.client.DistrictCodeEntity;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
+import ca.bc.gov.app.repository.client.DistrictCodeRepository;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +35,9 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
   private CountryCodeRepository countryCodeRepository;
   
   @Mock
+  private DistrictCodeRepository districtCodeRepository;
+  
+  @Mock
   private ClientTypeCodeRepository clientTypeCodeRepository;
 
   @ParameterizedTest
@@ -46,6 +52,27 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
   }
   
   @Test
+  @DisplayName("Return district by code")
+  void testGetDistrictByCode() {
+
+    DistrictCodeEntity districtCodeEntity = 
+        new DistrictCodeEntity("DMH", "100 Mile House Natural Resource District");
+    
+    DistrictDto expectedDto =
+        new DistrictDto("DMH", "100 Mile House Natural Resource District","FLNR.100MileHouseDistrict@gov.bc.ca");
+
+    when(districtCodeRepository
+          .findByCode("DMH"))
+          .thenReturn(Mono.just(districtCodeEntity));
+
+    service
+        .getDistrictByCode("DMH")
+        .as(StepVerifier::create)
+        .expectNext(expectedDto)
+        .verifyComplete();
+  }
+  
+  @Test
   void testGetCountryByCode() {
 
     CountryCodeEntity countryCodeEntity = new CountryCodeEntity("CA", "Canada");
@@ -55,7 +82,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     service
         .getCountryByCode("CA")
-            .as(StepVerifier::create)
+        .as(StepVerifier::create)
         .expectNext(expectedDto)
         .verifyComplete();
   }

@@ -138,6 +138,7 @@ onMounted(() => {
             <cds-table-header-cell>Submission type</cds-table-header-cell>
             <cds-table-header-cell>Client name</cds-table-header-cell>
             <cds-table-header-cell>Client type</cds-table-header-cell>
+            <cds-table-header-cell>District</cds-table-header-cell>
             <cds-table-header-cell>Last updated</cds-table-header-cell>
             <cds-table-header-cell>Submission status</cds-table-header-cell>
             <cds-table-header-cell />
@@ -157,7 +158,8 @@ onMounted(() => {
               </div>
             </cds-table-cell>
             <cds-table-cell><span>{{ normalizeString(row.name) }}</span></cds-table-cell>
-            <cds-table-cell><span>{{row.clientType}}</span></cds-table-cell>
+            <cds-table-cell><span>{{ row.clientType }}</span></cds-table-cell>
+            <cds-table-cell><span>{{ row.district }}</span></cds-table-cell>
             <cds-table-cell>
               <div>
                 {{ (row.user || '') }} 

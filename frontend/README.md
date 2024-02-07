@@ -33,6 +33,8 @@ For more information check the [stubs](#stubs) section.
 
 We introduced feature flags to the application and it can be controlled by adding `VITE_FEATURE_FLAGS` property to your environment. The value should be a JSON stringified that will be consumed and are available as a global value `$features`.
 
+- BCEID_MULTI_ADDRESS: enables multiple addresses. When this is turned off, every contact is automatically associated to the Mailing address.
+
 ### **Authentication**
 
 Authentication is provided by FAM through our backend, and can be consumed both through `$session` global value or by importing `ForestClientUserSession` from `@/helpers/ForestClientUserSession`

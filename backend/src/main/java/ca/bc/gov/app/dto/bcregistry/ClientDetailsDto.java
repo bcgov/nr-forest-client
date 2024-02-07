@@ -14,7 +14,6 @@ public record ClientDetailsDto(
     String id,
     Boolean goodStanding,
     List<ClientAddressDto> addresses,
-
     List<ClientContactDto> contacts
 ) {
 

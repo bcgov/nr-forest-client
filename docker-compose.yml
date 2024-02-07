@@ -36,51 +36,6 @@ services:
       retries: 10
     <<: *defaults
 
-  backend:
-    container_name: backend
-    image: maven:3.9.6-eclipse-temurin-17
-    entrypoint: sh -c "cd /app && mvn -ntp spring-boot:run -Dspring-boot.run.jvmArguments='-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n'"
-    environment:
-      POSTGRESQL_HOST: *POSTGRES_HOST
-      POSTGRESQL_USER: *POSTGRES_USER
-      POSTGRESQL_PASSWORD: *POSTGRES_PASSWORD
-      POSTGRESQL_DATABASE: *POSTGRES_DATABASE
-      CHES_CLIENT_ID: id    
-      CHES_CLIENT_SECRET: secret
-      CHES_TOKEN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token
-      CHES_API_URL: https://ches-dev.api.gov.bc.ca/api/v1
-      ENV LANG: en_CA.UTF-8
-      LANGUAGE: en_CA.UTF-8
-      LC_ALL: en_CA.UTF-8
-    ports: [3000:3000]
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-    depends_on: [*POSTGRES_HOST]
-    volumes: ["./backend:/app"]
-    <<: *defaults
-
-  frontend:
-    container_name: frontend
-    image: node:20-bullseye
-    entrypoint: sh -c "cd /app && npm i && npm start"
-    environment:
-      NODE_ENV: development
-      VITE_BACKEND_URL: backend
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    depends_on: [backend]
-    ports: [8080:8080]
-    volumes: ["./frontend:/app", "/app/node_modules"]
-    <<: *defaults
-
   legacydb:
     container_name: oracle
     environment:

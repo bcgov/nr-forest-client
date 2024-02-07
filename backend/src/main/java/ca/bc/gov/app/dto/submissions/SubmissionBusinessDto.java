@@ -10,7 +10,9 @@ public record SubmissionBusinessDto(
     String clientType,
     String clientTypeDesc,
     String goodStandingInd,
-    LocalDate birthdate
+    LocalDate birthdate,
+    String district,
+    String districtDesc
 ) {
 
 }

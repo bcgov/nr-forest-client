@@ -143,7 +143,7 @@ const goToStep = (step: number) => {
       kind="error"
       title="Your application could not be submitted:"      
     >    
-      <div>{{ globalErrorMessage.fieldName }} {{ globalErrorMessage.errorMsg }}</div>    
+      <div>{{ globalErrorMessage.fieldName }}: {{ globalErrorMessage.errorMsg }}</div>    
     </cds-actionable-notification>
 
     <cds-actionable-notification

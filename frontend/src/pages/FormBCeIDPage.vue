@@ -17,7 +17,7 @@ import AddressWizardStep from "@/pages/bceidform/AddressWizardStep.vue";
 import ContactWizardStep from "@/pages/bceidform/ContactWizardStep.vue";
 import ReviewWizardStep from "@/pages/bceidform/ReviewWizardStep.vue";
 // Imported types
-import { newFormDataDto } from "@/dto/ApplyClientNumberDto";
+import { newFormDataDto, locationName as defaultLocation } from "@/dto/ApplyClientNumberDto";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 import type {
   ValidationMessageType,
@@ -70,6 +70,11 @@ const submitterContact: Contact = {
   lastName: session?.user?.lastName ?? "",
   email: session?.user?.email ?? "",
 };
+
+const features = instance.appContext.config.globalProperties.$features;
+if (!features.BCEID_MULTI_ADDRESS) {
+  submitterContact.locationNames = [{ ...defaultLocation }];
+}
 
 let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
 

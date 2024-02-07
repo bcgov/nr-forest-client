@@ -75,6 +75,12 @@ public class ClientSubmitRequestValidator implements Validator {
       return;
     }
 
+    if (StringUtils.isBlank(businessInformation.district())) {
+      errors.rejectValue("district", "Client does not have a district");
+      errors.popNestedPath();
+      return;
+    }
+
     if (ApplicationConstant.REG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientTypeCode)
         || ApplicationConstant.UNREG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientTypeCode)
         || ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientTypeCode)
