@@ -74,6 +74,7 @@ const formattedDate = `${year}-${month}-${day}`;
 let formData = reactive<FormDataDto>({
   ...formDataDto.value,
   businessInformation: {
+    district: { value: "", text: "" },
     businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
     legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
     clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.I),
