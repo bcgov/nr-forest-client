@@ -369,6 +369,13 @@ watch([validationError], () => {
 const districtsList = ref([]);
 useFetchTo("/api/clients/districts?page=0&size=250", districtsList);
 
+const formattedDistrictsList = computed(() =>
+  districtsList.value.map((district) => ({
+    ...district,
+    name: `${district.code} - ${district.name}`,
+  })),
+);
+
 const updateDistrict = (value: CodeNameType | undefined) => {
   if (value) {
     formData.businessInformation.district = { value: value.code, text: value.name };
@@ -468,7 +475,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
       label="District"
       :initial-value="formData.businessInformation.district?.text"
       required-label
-      :model-value="districtsList"
+      :model-value="formattedDistrictsList"
       :enabled="true"
       tip=""
       :validations="[

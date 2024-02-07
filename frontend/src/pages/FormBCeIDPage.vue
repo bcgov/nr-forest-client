@@ -374,6 +374,12 @@ const scrollToNewContact = () => {
 
 const districtsList = ref([]);
 useFetchTo("/api/clients/districts?page=0&size=250", districtsList);
+const formattedDistrictsList = computed(() =>
+  districtsList.value.map((district) => ({
+    ...district,
+    name: `${district.code} - ${district.name}`,
+  })),
+);
 </script>
 
 <template>
@@ -431,7 +437,7 @@ useFetchTo("/api/clients/districts?page=0&size=250", districtsList);
             v-model:data="formData"
             :active="currentTab == 0"
             :title="progressData[0].title"
-            :districts-list="districtsList"
+            :districts-list="formattedDistrictsList"
             @valid="validateStep"
         />
       </div>
