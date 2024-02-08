@@ -55,8 +55,6 @@ public class ClientSubmissionController extends
       @RequestParam(required = false, defaultValue = "10")
       int size,
       @RequestParam(required = false)
-      String[] requestType,
-      @RequestParam(required = false)
       SubmissionStatusEnum[] requestStatus,
       @RequestParam(required = false)
       String[] clientType,
@@ -65,23 +63,22 @@ public class ClientSubmissionController extends
       @RequestParam(required = false)
       String[] name,
       @RequestParam(required = false)
-      String[] updatedAt,
+      String[] submittedAt,
       ServerHttpResponse serverResponse
   ) {
     log.info(
-        "Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, name={}, updatedAt={}",
-        page, size, requestType, requestStatus, clientType, district, name, updatedAt);
+        "Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, name={}, submittedAt={}",
+        page, size, requestStatus, clientType, district, name, submittedAt);
 
     return clientService
         .listSubmissions(
             page,
             size,
-            requestType,
             requestStatus,
             clientType,
             district,
             name,
-            updatedAt
+            submittedAt
         )
         .doOnNext(dto -> serverResponse
             .getHeaders()

@@ -1,21 +1,14 @@
 package ca.bc.gov.app.controller.client;
 
-import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.DistrictDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
-import java.net.URI;
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.util.UriBuilder;
 
 @DisplayName("Integrated Test | FSA Client District Controller")
 class ClientDistrictControllerIntegrationTest extends AbstractTestContainerIntegrationTest {
