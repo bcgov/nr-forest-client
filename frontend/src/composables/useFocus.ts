@@ -52,36 +52,41 @@ export const useFocus = (): {
   ): Ref<OptionalElement> => {
     const refComponent = ref<OptionalElement>(undefined)
     setTimeout(() => {
-      if (!document) {
-        // Prevent error on CI
-        return;
-      }
-      refComponent.value = setActionOn(componentName, key, action)
-      if (callback) {
-        // We need to detect the end of the scrolling
-        // Use event 'scroll' if browser does not support 'scrollend'
-        const eventName = 'onscrollend' in window ? 'scrollend' : 'scroll'
+      try {
+        if (!document) {
+          // Prevent error on CI
+          return;
+        }
+        refComponent.value = setActionOn(componentName, key, action)
+        if (callback) {
+          // We need to detect the end of the scrolling
+          // Use event 'scroll' if browser does not support 'scrollend'
+          const eventName = 'onscrollend' in window ? 'scrollend' : 'scroll'
 
-        const scrollEndListener = () => {
-          callback(refComponent);
-          if (!document) {
-            // Prevent error on CI
-            return;
-          }
-          document.removeEventListener(eventName, polyfilledListener);
-        };
+          const scrollEndListener = () => {
+            callback(refComponent);
+            if (!document) {
+              // Prevent error on CI
+              return;
+            }
+            document.removeEventListener(eventName, polyfilledListener);
+          };
 
-        let scrollEndTimer: NodeJS.Timeout
+          let scrollEndTimer: NodeJS.Timeout
 
-        const polyfilledListener =
-          eventName === 'scrollend'
-            ? scrollEndListener
-            : () => {
-                clearTimeout(scrollEndTimer)
-                scrollEndTimer = setTimeout(scrollEndListener, 100)
-              }
+          const polyfilledListener =
+            eventName === 'scrollend'
+              ? scrollEndListener
+              : () => {
+                  clearTimeout(scrollEndTimer)
+                  scrollEndTimer = setTimeout(scrollEndListener, 100)
+                }
 
-        document.addEventListener(eventName, polyfilledListener)
+          document.addEventListener(eventName, polyfilledListener)
+        }
+      } catch (error) {
+        console.log(error);
+        throw error;
       }
     }, time)
     return refComponent
