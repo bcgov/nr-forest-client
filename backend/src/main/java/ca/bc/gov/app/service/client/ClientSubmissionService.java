@@ -17,7 +17,6 @@ import ca.bc.gov.app.dto.submissions.SubmissionBusinessDto;
 import ca.bc.gov.app.dto.submissions.SubmissionContactDto;
 import ca.bc.gov.app.dto.submissions.SubmissionDetailsDto;
 import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
-import ca.bc.gov.app.entity.client.DistrictCodeEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
@@ -47,7 +46,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -81,28 +79,26 @@ public class ClientSubmissionService {
   public Flux<ClientListSubmissionDto> listSubmissions(
       int page,
       int size,
-      String[] requestType,
       SubmissionStatusEnum[] requestStatus,
       String[] clientType,
       String[] district,
       String[] name,
-      String[] updatedAt
+      String[] submittedAt
   ) {
 
-    log.info("Searching for Page {} Size {} Type {} Status {} Client {} District {} Name {} Updated {}",
+    log.info("Searching for Page {} Size {} Type {} Status {} Client {} District {} Name {} submittedAt {}",
         page,
         size,
-        requestType,
         requestStatus,
         clientType,
         district,
         name,
-        updatedAt
+        submittedAt
     );
     
     return getClientTypes()
         .flatMapMany(clientTypes ->
-            loadSubmissions(page, size, requestType, requestStatus, updatedAt)
+            loadSubmissions(page, size, requestStatus, submittedAt)
                 .flatMap(submissionPair ->
                     loadSubmissionDetail(clientType, name, submissionPair.getRight())
                         .flatMap(submissionDetail ->
@@ -118,7 +114,7 @@ public class ClientSubmissionService {
                                         ),
                                         districtFullDesc,
                                         Optional
-                                            .ofNullable(submissionPair.getRight().getUpdatedAt())
+                                            .ofNullable(submissionPair.getRight().getSubmissionDate())
                                             .map(date -> date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                                             .orElse(StringUtils.EMPTY),
                                         StringUtils.defaultString(submissionPair.getRight().getUpdatedBy()),
@@ -450,14 +446,15 @@ public class ClientSubmissionService {
         );
   }
 
-  private Flux<Pair<Long, SubmissionEntity>> loadSubmissions(int page, int size,
-      String[] requestType,
-      SubmissionStatusEnum[] requestStatus, String[] updatedAt) {
+  private Flux<Pair<Long, SubmissionEntity>> loadSubmissions(
+      int page, 
+      int size,
+      SubmissionStatusEnum[] requestStatus, 
+      String[] submittedAt) {
 
     Criteria userQuery = SubmissionPredicates
-        .orUpdatedAt(updatedAt)
-        .and(SubmissionPredicates.orStatus(requestStatus))
-        .and(QueryPredicates.orEqualTo(requestType, ApplicationConstant.SUBMISSION_TYPE));
+        .orSubmittedAt(submittedAt)
+        .and(SubmissionPredicates.orStatus(requestStatus));
 
     //If no user provided query found, then use the default one
     if (userQuery.isEmpty()) {
@@ -494,7 +491,7 @@ public class ClientSubmissionService {
                     .select(
                         query(finalUserQuery)
                             .with(PageRequest.of(page, size))
-                            .sort(Sort.by("updatedAt").descending()),
+                            .sort(Sort.by("submissionDate").descending()),
                         SubmissionEntity.class
                     )
                     .map(submission -> Pair.of(count, submission))

@@ -28,13 +28,13 @@ class SubmissionPredicatesTest {
   }
 
   @ParameterizedTest
-  @MethodSource("orUpdatedAt")
-  @DisplayName("CASE 2: Should check orUpdateAt")
+  @MethodSource("orSubmittedAt")
+  @DisplayName("CASE 2: Should check orSubmittedAt")
   void shouldCheckOrUpdateAt(String[] values, Criteria expected) {
     assertTrue(
         areCriteriaEqual(
             expected,
-            SubmissionPredicates.orUpdatedAt(values)
+            SubmissionPredicates.orSubmittedAt(values)
         )
     );
   }
@@ -70,7 +70,7 @@ class SubmissionPredicatesTest {
     assertTrue(
         areCriteriaEqual(
             expected,
-            QueryPredicates.isBefore(value, "updatedAt")
+            QueryPredicates.isBefore(value, "submittedAt")
         )
     );
   }
@@ -82,7 +82,7 @@ class SubmissionPredicatesTest {
     assertTrue(
         areCriteriaEqual(
             expected,
-            QueryPredicates.isAfter(value, "updatedAt")
+            QueryPredicates.isAfter(value, "submittedAt")
         )
     );
   }
@@ -105,7 +105,7 @@ class SubmissionPredicatesTest {
     );
   }
 
-  private static Stream<Arguments> orUpdatedAt() {
+  private static Stream<Arguments> orSubmittedAt() {
     return Stream.of(
         Arguments.of(
             null, Criteria.empty()
@@ -118,7 +118,7 @@ class SubmissionPredicatesTest {
         ),
         Arguments.of(
             new String[]{"2020-01-01"},
-            Criteria.where("updatedAt")
+            Criteria.where("submittedAt")
                 .lessThanOrEquals(LocalDateTime.of(2020, 1, 2, 0, 0))
         )
 
@@ -170,7 +170,7 @@ class SubmissionPredicatesTest {
         ),
         Arguments.of(
             LocalDateTime.of(2020, 1, 1, 0, 0),
-            Criteria.where("updatedAt")
+            Criteria.where("submittedAt")
                 .greaterThanOrEquals(LocalDateTime.of(2020, 1, 1, 0, 0))
         )
 
@@ -184,7 +184,7 @@ class SubmissionPredicatesTest {
         ),
         Arguments.of(
             LocalDateTime.of(2020, 1, 1, 0, 0),
-            Criteria.where("updatedAt")
+            Criteria.where("submittedAt")
                 .lessThanOrEquals(LocalDateTime.of(2020, 1, 1, 0, 0))
         )
 

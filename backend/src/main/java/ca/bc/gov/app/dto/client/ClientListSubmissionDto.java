@@ -6,7 +6,7 @@ public record ClientListSubmissionDto(
     String name,
     String clientType,
     String district,
-    String updated,
+    String submittedAt,
     String user,
     String status,
     Long count
