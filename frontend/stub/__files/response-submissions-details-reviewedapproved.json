@@ -12,7 +12,8 @@
         "clientNumber":"{{randomValue length=8 type='NUMERIC'}}",
         "organizationName": "Carter, Mante and Rau",
         "clientType": "Individual",
-        "goodStanding": "Y"
+        "goodStanding": "Y",
+        "districtDesc": "DKA - Thompson Rivers Natural Resource District"
     },
     "contact": [
         {

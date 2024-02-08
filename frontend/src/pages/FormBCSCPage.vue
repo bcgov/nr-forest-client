@@ -74,6 +74,7 @@ const formattedDate = `${year}-${month}-${day}`;
 let formData = reactive<FormDataDto>({
   ...formDataDto.value,
   businessInformation: {
+    district: { value: "", text: "" },
     businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
     legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
     clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.I),
@@ -194,6 +195,7 @@ const updateContact = (value: Contact | undefined, index: number) => {
 
 // Validation
 const validation = reactive<Record<string, boolean>>({
+  district: false,
   0: false,
 });
 
@@ -256,6 +258,7 @@ const progressData = reactive([
     valid: false,
     step: 0,
     fields: [
+      "businessInformation.district",
       "businessInformation.businessType",
       "businessInformation.businessName",
       "location.contacts.*.contactType.text",
@@ -363,6 +366,22 @@ watch([validationError], () => {
     })
   }  
 });
+
+const districtsList = ref([]);
+useFetchTo("/api/districts?page=0&size=250", districtsList);
+
+const formattedDistrictsList = computed(() =>
+  districtsList.value.map((district) => ({
+    ...district,
+    name: `${district.code} - ${district.name}`,
+  })),
+);
+
+const updateDistrict = (value: CodeNameType | undefined) => {
+  if (value) {
+    formData.businessInformation.district = { value: value.code, text: value.name };
+  }
+};
 </script>
 
 <template>
@@ -440,6 +459,36 @@ watch([validationError], () => {
       </div>
     </div>
 
+    <hr class="divider" />
+
+    <h4 data-scroll="focus-0">Natural resource district</h4>
+    <p class="body-02">
+      Select the district your application should go to. If you don’t know the district
+      <a
+        href="https://www2.gov.bc.ca/gov/content/industry/forestry/managing-our-forest-resources/ministry-of-forests-lands-and-natural-resource-operations-region-district-contacts"
+        target="_blank"
+        rel="noopener noreferrer"
+        >check this map</a
+      >.
+    </p>
+    <dropdown-input-component
+      id="district"
+      label="District"
+      :initial-value="formData.businessInformation.district?.text"
+      required-label
+      :model-value="formattedDistrictsList"
+      :enabled="true"
+      tip=""
+      :validations="[
+        ...getValidations('businessInformation.district.text'),
+        submissionValidation('businessInformation.district.text'),
+      ]"
+      @update:selected-value="updateDistrict($event)"
+      @empty="validation.district = !$event"
+    />
+
+    <hr class="divider" />
+
     <h4 data-scroll="scroll-0">
       Contact information
     </h4>
@@ -452,7 +501,7 @@ watch([validationError], () => {
         id="phoneNumberId"
         label="Phone number"
         placeholder="( ) ___-____"
-        :enabled="true" 
+        :enabled="true"
         v-model="formData.location.contacts[0].phoneNumber"
         mask="(###) ###-####"
         :required-label="true"

@@ -12,7 +12,8 @@
         "clientNumber":"",
         "organizationName": "Orn-O'Hara",
         "clientType": "Unregistered sole proprietorship",
-        "goodStanding": "Y"
+        "goodStanding": "Y",
+        "districtDesc": "DQU - Quesnel Natural Resource District"
     },
     "contact": [
         {
