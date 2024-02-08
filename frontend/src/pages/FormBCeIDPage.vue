@@ -451,9 +451,7 @@ const formattedDistrictsList = computed(() =>
         </h4>
         
         <div class="form-steps-section-01">
-            <p class="body-01 heading-compact-01-dark">
-              This is the primary address where you will receive mail.
-            </p>
+          <h5>This is the primary address where you will receive mail.</h5>
         </div>
       
         <address-wizard-step
