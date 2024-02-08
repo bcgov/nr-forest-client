@@ -373,7 +373,7 @@ const scrollToNewContact = () => {
 };
 
 const districtsList = ref([]);
-useFetchTo("/api/clients/districts?page=0&size=250", districtsList);
+useFetchTo("/api/districts?page=0&size=250", districtsList);
 const formattedDistrictsList = computed(() =>
   districtsList.value.map((district) => ({
     ...district,

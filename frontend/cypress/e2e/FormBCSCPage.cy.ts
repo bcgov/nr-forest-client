@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 describe("BCSC Form", () => {
   beforeEach(() => {
-    cy.intercept("GET", "/api/clients/districts?page=0&size=250", {
+    cy.intercept("GET", "/api/districts?page=0&size=250", {
       fixture: "districts.json",
     }).as("getDistricts");
 
