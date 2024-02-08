@@ -11,7 +11,8 @@
         "incorporationNumber": "BC{{randomValue length=8 type='NUMERIC'}}",
         "clientNumber":"",
         "organizationName": "Ziemann Group",
-        "clientType": "Corporation",
+        "clientType": "C",
+        "clientTypeDesc": "Corporation",
         "goodStanding": "Y",
         "districtDesc": "DCS - Cascades Natural Resource District"
     },
