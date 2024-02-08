@@ -1,6 +1,10 @@
 /* eslint-disable no-undef */
 describe("General Form", () => {
   beforeEach(() => {
+    cy.intercept("GET", "/api/districts?page=0&size=250", {
+      fixture: "districts.json",
+    }).as("getDistricts");
+
     cy.intercept("http://localhost:8080/api/clients/name/*", {
       fixture: "business.json",
     }).as("searchCompany");
@@ -25,6 +29,17 @@ describe("General Form", () => {
     cy.wait(500);
 
     cy.login("uattest@forest.client", "Uat Test", "bceidbusiness");
+
+    cy.wait("@getDistricts");
+
+    cy.get("#district")
+      .should("be.visible")
+      .and("have.value", "")
+      .click()
+      .find('cds-combo-box-item[data-id="DCC"]')
+      .should("be.visible")
+      .click()
+      .and("have.value", "DCC - Cariboo-Chilcotin Natural Resource District");
 
     cy.get("#business").should("not.exist");
 

@@ -474,6 +474,10 @@ const renderListItem = (label, clientNumber) => {
                 <span class="body-compact-01">{{ goodStanding(data.business.goodStandingInd) }}</span>
               </read-only-component>
 
+              <read-only-component label="District">
+                <span class="body-compact-01">{{ data.business.districtDesc }}</span>
+              </read-only-component>
+
               <read-only-component label="Last updated">
                 <span class="body-compact-01">{{ friendlyDate(data.updateTimestamp) }} | {{ data.updateUser }}</span>
               </read-only-component>
@@ -484,10 +488,6 @@ const renderListItem = (label, clientNumber) => {
 
               <read-only-component label="Approved on" v-if="data.submissionStatus === 'Approved'">
                 <span class="body-compact-01">{{ friendlyDate(data.approvedTimestamp) }}</span>
-              </read-only-component>
-
-              <read-only-component label="District">
-                <span class="body-compact-01">{{ data.business.districtDesc }}</span>
               </read-only-component>
             </div>
           </div>

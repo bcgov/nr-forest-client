@@ -12,7 +12,8 @@
         "clientNumber":"",
         "organizationName": "Ziemann Group",
         "clientType": "Corporation",
-        "goodStanding": "Y"
+        "goodStanding": "Y",
+        "districtDesc": "DCS - Cascades Natural Resource District"
     },
     "contact": [
         {
