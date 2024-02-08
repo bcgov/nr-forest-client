@@ -29,6 +29,10 @@ formFieldValidations["businessInformation.birthdate.year"] = [
   isGreaterThan(1899, "Please check the birth year"),
 ];
 
+formFieldValidations["businessInformation.district.text"] = [
+  isNotEmpty("You must select a district."),
+];
+
 // Step 2: Addresses
 formFieldValidations["location.addresses.*.locationName"] = [
   isNotEmpty("You must provide a name for this location"),

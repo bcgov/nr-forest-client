@@ -180,13 +180,19 @@ onMounted(() => {
       </cds-table>
 
       <cds-table-skeleton
-      v-else
-      ref="skeletonReference"
-      zebra
-      :row-count="pageSize"
-      :headers="['Submission type','Client name','Client type','Last updated','Submission status']"
+        v-else
+        ref="skeletonReference"
+        zebra
+        :row-count="pageSize"
+        :headers="[
+          'Submission type',
+          'Client name',
+          'Client type',
+          'District',
+          'Last updated',
+          'Submission status',
+        ]"
       />
-            
     </div>
     <div class="paginator" v-if="totalItems">
       <cds-pagination

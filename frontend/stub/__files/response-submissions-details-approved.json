@@ -12,7 +12,8 @@
         "clientNumber":"{{randomValue length=8 type='NUMERIC'}}",
         "organizationName": "THE TIMBER SOCIETY OF NORTH SASKATCHEWAN AND REGION LLC",
         "clientType": "Corporation",
-        "goodStanding": "Y"
+        "goodStanding": "Y",
+        "districtDesc": "DCK - Chilliwack Natural Resource District"
     },
     "contact": [
         {
