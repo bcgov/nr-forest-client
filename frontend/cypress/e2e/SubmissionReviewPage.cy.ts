@@ -44,16 +44,6 @@ describe("Submission Review Page", () => {
           .its("response.body.submissionStatus")
           .should("eq", "Approved");
 
-        cy.get(".submission-details--title > span").should(
-          "contain",
-          "Auto approved client:"
-        );
-
-        cy.get('[data-testid="display-row-icon"]')
-          .should("exist")
-          .should("have.prop", "tagName", "svg")
-          .should("have.attr", "alt", "Auto approved client");
-
         cy.get('[data-testid="subtitle"]')
           .should("exist")
           .should("contain", "Check this new client data");
@@ -68,6 +58,8 @@ describe("Submission Review Page", () => {
         cy.get(".grouping-10 > :nth-child(2) > .body-compact-01")
           .should("exist")
           .should("contain", testCase.clientNumber);
+
+        cy.contains("Submission status").parent().should("contain", "Approved");
 
         //Go to the submission list page
         cy.visit("/submissions");
@@ -94,16 +86,6 @@ describe("Submission Review Page", () => {
         cy.wait("@loadSubmission")
           .its("response.body.submissionStatus")
           .should("eq", "New");
-
-        cy.get(".submission-details--title > span").should(
-          "contain",
-          "Review new client:"
-        );
-
-        cy.get('[data-testid="display-row-icon"]')
-          .should("exist")
-          .should("have.prop", "tagName", "svg")
-          .should("have.attr", "alt", "Review new client");
 
         cy.get('[data-testid="subtitle"]')
           .should("exist")
@@ -157,6 +139,8 @@ describe("Submission Review Page", () => {
             );
         }
 
+        cy.contains("Submission status").parent().should("contain", "New");
+
         cy.get('.grouping-15 > [kind="primary"]').should("exist");
 
         cy.get('.grouping-15 > [kind="danger"]').should("exist");
@@ -195,10 +179,7 @@ describe("Submission Review Page", () => {
 
       cy.wait("@loadSubmission").its("response.body.submissionStatus").should("eq", "New");
 
-      cy.get('[data-testid="display-row-icon"]')
-        .should("exist")
-        .should("have.prop", "tagName", "svg")
-        .should("have.attr", "alt", "Review new client");
+      cy.contains("Submission status").parent().should("contain", "New");
 
       cy.contains("cds-button", buttonLabel).click();
 
