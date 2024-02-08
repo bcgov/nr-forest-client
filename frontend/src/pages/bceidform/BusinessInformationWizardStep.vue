@@ -288,9 +288,15 @@ watch(showBirthDate, (value) => {
 
 const bcRegistryEmail = "BCRegistries@gov.bc.ca";
 
+const districtInitialValue = computed(() =>
+  props.districtsList.find(
+    (district) => district.code === formData.value.businessInformation.district,
+  ),
+);
+
 const updateDistrict = (value: CodeNameType | undefined) => {
   if (value) {
-    formData.value.businessInformation.district = { value: value.code, text: value.name };
+    formData.value.businessInformation.district = value.code;
   }
 };
 </script>
@@ -313,7 +319,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
   <dropdown-input-component
     id="district"
     label="District"
-    :initial-value="formData.businessInformation.district?.text"
+    :initial-value="districtInitialValue?.name"
     required-label
     :model-value="districtsList"
     :enabled="true"
