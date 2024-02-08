@@ -11,7 +11,7 @@
         "incorporationNumber": "BC{{randomValue length=8 type='NUMERIC'}}",
         "clientNumber":"",
         "organizationName": "Ziemann Group",
-        "clientType": "Corporation",
+        "clientType": "C",
         "goodStanding": "Y"
     },
     "contact": [

@@ -11,8 +11,10 @@
         "incorporationNumber": "XX{{randomValue length=8 type='NUMERIC'}}",
         "clientNumber":"{{randomValue length=8 type='NUMERIC'}}",
         "organizationName": "THE TIMBER SOCIETY OF NORTH SASKATCHEWAN AND REGION LLC",
-        "clientType": "Corporation",
-        "goodStanding": "Y"
+        "clientType": "C",
+        "goodStanding": "Y",
+        "clientTypeDesc": "Corporation",
+        "districtDesc": "DCC - Cariboo-Chilcotin Natural Resource District"
     },
     "contact": [
         {

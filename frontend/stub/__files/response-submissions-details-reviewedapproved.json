@@ -11,7 +11,7 @@
         "incorporationNumber": "",
         "clientNumber":"{{randomValue length=8 type='NUMERIC'}}",
         "organizationName": "Carter, Mante and Rau",
-        "clientType": "Individual",
+        "clientType": "I",
         "goodStanding": "Y"
     },
     "contact": [

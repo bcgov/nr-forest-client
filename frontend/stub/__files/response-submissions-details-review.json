@@ -11,8 +11,10 @@
         "incorporationNumber": "GP{{randomValue length=8 type='NUMERIC'}}",
         "clientNumber":"",
         "organizationName": "KOVACEK, THOMPSON AND BOYER",
-        "clientType": "General partnership",
-        "goodStanding": null
+        "clientType": "P",
+        "goodStanding": null,
+        "clientTypeDesc": "General Partnership",
+        "districtDesc": "DCC - Cariboo-Chilcotin Natural Resource District"
     },
     "contact": [
         {
