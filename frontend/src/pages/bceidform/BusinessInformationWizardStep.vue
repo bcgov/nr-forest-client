@@ -27,7 +27,12 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import { getEnumKeyByEnumValue, openMailtoLink, getObfuscatedEmail } from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update
-const props = defineProps<{ data: FormDataDto; active: boolean }>();
+const props = defineProps<{
+  data: FormDataDto;
+  active: boolean;
+  title: string;
+  districtsList: Array<CodeNameType>;
+}>();
 
 const emit = defineEmits<{
   (e: "update:data", value: FormDataDto): void;
@@ -54,6 +59,7 @@ const validation = reactive<Record<string, boolean>>({
   businessType: !!formData.value.businessInformation.businessType,
   business: !!formData.value.businessInformation.businessName,
   birthdate: true, // temporary value
+  district: false,
 });
 
 const checkValid = () =>
@@ -271,190 +277,234 @@ watch(showBirthDate, (value) => {
   }
 });
 
-const bcRegistryEmail = "BCRegistries@gov.bc.ca";    
+const bcRegistryEmail = "BCRegistries@gov.bc.ca";
+
+const updateDistrict = (value: CodeNameType | undefined) => {
+  if (value) {
+    formData.value.businessInformation.district = { value: value.code, text: value.name };
+  }
+};
 </script>
 
 <template>
-  <radio-input-component
-    id="businessType"
-    label="Type of business"
+  <h4 data-scroll="focus-0">
+    <div data-scroll="step-title" class="header-offset"></div>
+    <!-- This is not the title of the step, but it's the first section. -->
+    Natural resource district
+  </h4>
+  <p class="body-02">
+    Select the district your application should go to. If you don’t know the district
+    <a
+      href="https://www2.gov.bc.ca/gov/content/industry/forestry/managing-our-forest-resources/ministry-of-forests-lands-and-natural-resource-operations-region-district-contacts"
+      target="_blank"
+      rel="noopener noreferrer"
+      >check this map</a
+    >.
+  </p>
+  <dropdown-input-component
+    id="district"
+    label="District"
+    :initial-value="formData.businessInformation.district?.text"
     required-label
-    :initialValue="formData?.businessInformation?.businessType"
-    :modelValue="[
-      {
-        value: 'R',
-        text: 'I have a BC registered business (corporation, sole proprietorship, society, etc.)'
-      },
-      { value: 'U', text: 'I have an unregistered sole proprietorship' }
+    :model-value="districtsList"
+    :enabled="true"
+    tip=""
+    :validations="[
+      ...getValidations('businessInformation.district.text'),
+      submissionValidation('businessInformation.district.text'),
     ]"
-    :validations="[...getValidations('businessInformation.businessType'),submissionValidation('businessInformation.businessType')]"
-    @update:model-value="
-      formData.businessInformation.businessType = $event ?? ''
-    "
-    @empty="validation.businessType = !$event"
+    @update:selected-value="updateDistrict($event)"
+    @empty="validation.district = !$event"
   />
 
-  <data-fetcher
-    v-model:url="autoCompleteUrl"
-    :min-length="3"
-    :init-value="[]"
-    :init-fetch="false"
-    #="{ content, loading, error }"
-  >
-    <AutoCompleteInputComponent
-      v-if="selectedOption === BusinessTypeEnum.R"
-      id="business"
-      label="BC registered business name"
+  <hr class="divider" />
+
+  <h4 data-scroll="focus-0">
+    {{ title }}
+  </h4>
+
+  <div class="frame-01">
+    <radio-input-component
+      id="businessType"
+      label="Type of business"
       required-label
-      tip="Start typing to search for your BC registered business name"
-      v-model="formData.businessInformation.businessName"
-      :contents="content"
-      :validations="[
-        ...getValidations('businessInformation.businessName'),
-        submissionValidation('businessInformation.businessName'),
-        submissionValidation('businessInformation.clientType')
-        ]"
-      :loading="loading"
-      @update:selected-value="autoCompleteResult = $event"
-      @update:model-value="validation.business = false"
-    />
-
-    <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
-    <div
-      class="grouping-02"
-      v-if="
-        (showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R) ||
-        showGoodStandingError ||
-        showDuplicatedError ||
-        showNonPersonSPError ||
-        showUnsupportedClientTypeError
+      :initialValue="formData?.businessInformation?.businessType"
+      :modelValue="[
+        {
+          value: 'R',
+          text: 'I have a BC registered business (corporation, sole proprietorship, society, etc.)'
+        },
+        { value: 'U', text: 'I have an unregistered sole proprietorship' }
+      ]"
+      :validations="[...getValidations('businessInformation.businessType'),submissionValidation('businessInformation.businessType')]"
+      @update:model-value="
+        formData.businessInformation.businessType = $event ?? ''
       "
-    >
-      <cds-inline-notification
-        v-shadow="2"
-        v-if="showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R"
-        low-contrast="true"
-        open="true"
-        kind="info"
-        hide-close-button="true"
-        title="If the name of your registered business does not appear in the list, follow these steps:">
-        <div class="cds--inline-notification-content">
-          <ol type="1" class="bulleted-list">
-            <li class="body-compact-01">
-              Log into Manage Account in
-              <a
-                href="https://www.bceid.ca/"
-                target="_blank"
-                rel="noopener noreferrer"
-                >BCeID</a
-              >
-              to find your business name
-            </li>
-            <li class="body-compact-01">
-              If your name isn’t there, call BC Registry toll free at
-              <a href="tel:18775261526">1-877-526-1526</a> or email them at
-              <button id="bcRegistryEmailId" 
-                      class="link-button" 
-                      @click="openMailtoLink(bcRegistryEmail)" 
-                      aria-label="Contact BC Registry via Email">
-                <span v-bind:innerHTML="getObfuscatedEmail(bcRegistryEmail)"></span>
-              </button>.
-            </li>
-          </ol>
-        </div>
-      </cds-inline-notification>
-
-      <cds-inline-notification
-        v-if="showGoodStandingError"
-        hide-close-button="true"
-        low-contrast="true"
-        open="true"
-        kind="error"
-        title="Not in good standing with BC Registries"
-      >
-        <p class="cds--inline-notification-content">
-          Your request for a client number cannot go ahead because “{{
-            formData.businessInformation.businessName
-          }}” is not in good standing with BC Registries. Go to your
-          <a
-            href="https://www.bcregistry.gov.bc.ca/"
-            target="_blank"
-            rel="noopener noreferrer"
-            >BC Registries</a
-          >
-          account to find out why.
-        </p>
-      </cds-inline-notification>
-
-      <cds-inline-notification
-        v-if="showDuplicatedError"
-        hide-close-button="true"
-        low-contrast="true"
-        open="true"
-        kind="error"
-        title="Client already exists"
-      >
-        <p class="cds--inline-notification-content">
-          Looks like “{{ formData.businessInformation.businessName }}” has a
-          client number. Select the 'Receive email and logout' button below to
-          have it sent to you at {{ formData.location.contacts[0].email }}
-        </p>
-      </cds-inline-notification>
-
-      <cds-inline-notification
-        v-if="showNonPersonSPError"
-        hide-close-button="true"
-        low-contrast="true"
-        open="true"
-        kind="error"
-        title="Unknown sole proprietor"
-      >
-        <p  class="cds--inline-notification-content">
-          We're unable to complete this application because we cannot identify the person who is the sole proprietor. Please email FORHVAP.CLIADMIN@gov.bc.ca for help.
-        </p>
-      </cds-inline-notification>
-
-      <cds-inline-notification
-        v-if="showUnsupportedClientTypeError && receivedClientType"
-        hide-close-button="true"
-        low-contrast="true"
-        open="true"
-        kind="error"
-        title="Client type not supported"
-      >
-        <p class="cds--inline-notification-content">
-          {{ receivedClientType.name }} client type is not supported. Please email
-          FORHVAP.CLIADMIN@gov.bc.ca for help.
-        </p>
-      </cds-inline-notification>
-      
-    </div>
-  </data-fetcher>
-
-  <text-input-component
-    v-if="selectedOption === BusinessTypeEnum.U"
-    id="businessName"
-    label="Unregistered sole proprietorship"
-    placeholder=""
-    v-model="formData.businessInformation.businessName"
-    :validations="[]"
-    :enabled="false"
-  />
-
-  <div v-if="showBirthDate">
-    <p class="body-02 date-label">
-      We need the proprietor's birthdate to confirm their identity
-      <span class="cds-text-input-required-label">(required)</span>
-    </p>
-    <date-input-component
-      id="birthdate"
-      title="Date of birth"
-      v-model="formData.businessInformation.birthdate"
-      :enabled="true"
-      :validations="[...getValidations('businessInformation.birthdate')]"
-      :year-validations="[...getValidations('businessInformation.birthdate.year')]"
-      @error="validation.birthdate = !$event"
-      @possibly-valid="validation.birthdate = $event"
+      @empty="validation.businessType = !$event"
     />
+
+    <data-fetcher
+      v-model:url="autoCompleteUrl"
+      :min-length="3"
+      :init-value="[]"
+      :init-fetch="false"
+      #="{ content, loading, error }"
+    >
+      <AutoCompleteInputComponent
+        v-if="selectedOption === BusinessTypeEnum.R"
+        id="business"
+        label="BC registered business name"
+        required-label
+        tip="Start typing to search for your BC registered business name"
+        v-model="formData.businessInformation.businessName"
+        :contents="content"
+        :validations="[
+          ...getValidations('businessInformation.businessName'),
+          submissionValidation('businessInformation.businessName'),
+          submissionValidation('businessInformation.clientType')
+          ]"
+        :loading="loading"
+        @update:selected-value="autoCompleteResult = $event"
+        @update:model-value="validation.business = false"
+      />
+
+      <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
+      <div
+        class="grouping-02"
+        v-if="
+          (showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R) ||
+          showGoodStandingError ||
+          showDuplicatedError ||
+          showNonPersonSPError ||
+          showUnsupportedClientTypeError
+        "
+      >
+        <cds-inline-notification
+          v-shadow="2"
+          v-if="showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R"
+          low-contrast="true"
+          open="true"
+          kind="info"
+          hide-close-button="true"
+          title="If the name of your registered business does not appear in the list, follow these steps:">
+          <div class="cds--inline-notification-content">
+            <ol type="1" class="bulleted-list">
+              <li class="body-compact-01">
+                Log into Manage Account in
+                <a
+                  href="https://www.bceid.ca/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >BCeID</a
+                >
+                to find your business name
+              </li>
+              <li class="body-compact-01">
+                If your name isn’t there, call BC Registry toll free at
+                <a href="tel:18775261526">1-877-526-1526</a> or email them at
+                <button id="bcRegistryEmailId" 
+                        class="link-button" 
+                        @click="openMailtoLink(bcRegistryEmail)" 
+                        aria-label="Contact BC Registry via Email">
+                  <span v-bind:innerHTML="getObfuscatedEmail(bcRegistryEmail)"></span>
+                </button>.
+              </li>
+            </ol>
+          </div>
+        </cds-inline-notification>
+
+        <cds-inline-notification
+          v-if="showGoodStandingError"
+          hide-close-button="true"
+          low-contrast="true"
+          open="true"
+          kind="error"
+          title="Not in good standing with BC Registries"
+        >
+          <p class="cds--inline-notification-content">
+            Your request for a client number cannot go ahead because “{{
+              formData.businessInformation.businessName
+            }}” is not in good standing with BC Registries. Go to your
+            <a
+              href="https://www.bcregistry.gov.bc.ca/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >BC Registries</a
+            >
+            account to find out why.
+          </p>
+        </cds-inline-notification>
+
+        <cds-inline-notification
+          v-if="showDuplicatedError"
+          hide-close-button="true"
+          low-contrast="true"
+          open="true"
+          kind="error"
+          title="Client already exists"
+        >
+          <p class="cds--inline-notification-content">
+            Looks like “{{ formData.businessInformation.businessName }}” has a
+            client number. Select the 'Receive email and logout' button below to
+            have it sent to you at {{ formData.location.contacts[0].email }}
+          </p>
+        </cds-inline-notification>
+
+        <cds-inline-notification
+          v-if="showNonPersonSPError"
+          hide-close-button="true"
+          low-contrast="true"
+          open="true"
+          kind="error"
+          title="Unknown sole proprietor"
+        >
+          <p  class="cds--inline-notification-content">
+            We're unable to complete this application because we cannot identify the person who is the sole proprietor. Please email FORHVAP.CLIADMIN@gov.bc.ca for help.
+          </p>
+        </cds-inline-notification>
+
+        <cds-inline-notification
+          v-if="showUnsupportedClientTypeError && receivedClientType"
+          hide-close-button="true"
+          low-contrast="true"
+          open="true"
+          kind="error"
+          title="Client type not supported"
+        >
+          <p class="cds--inline-notification-content">
+            {{ receivedClientType.name }} client type is not supported. Please email
+            FORHVAP.CLIADMIN@gov.bc.ca for help.
+          </p>
+        </cds-inline-notification>
+        
+      </div>
+    </data-fetcher>
+
+    <text-input-component
+      v-if="selectedOption === BusinessTypeEnum.U"
+      id="businessName"
+      label="Unregistered sole proprietorship"
+      placeholder=""
+      v-model="formData.businessInformation.businessName"
+      :validations="[]"
+      :enabled="false"
+    />
+
+    <div v-if="showBirthDate">
+      <p class="body-02 date-label">
+        We need the proprietor's birthdate to confirm their identity
+        <span class="cds-text-input-required-label">(required)</span>
+      </p>
+      <date-input-component
+        id="birthdate"
+        title="Date of birth"
+        v-model="formData.businessInformation.birthdate"
+        :enabled="true"
+        :validations="[...getValidations('businessInformation.birthdate')]"
+        :year-validations="[...getValidations('businessInformation.birthdate.year')]"
+        @error="validation.birthdate = !$event"
+        @possibly-valid="validation.birthdate = $event"
+      />
+    </div>
   </div>
 </template>

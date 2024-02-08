@@ -20,6 +20,7 @@ export interface Contact {
 
 export interface FormDataDto {
   businessInformation: {
+    district: CodeDescrType;
     businessType: string;
     legalType: string;
     clientType: string;
@@ -47,6 +48,7 @@ export const locationName = { value: "0", text: "MAILING ADDRESS" };
 
 export const formDataDto: FormDataDto = {
   businessInformation: {
+    district: { value: "", text: "" },
     businessType: "",
     legalType: "",
     clientType: "",

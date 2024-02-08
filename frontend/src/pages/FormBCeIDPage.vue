@@ -9,7 +9,7 @@ import "@carbon/web-components/es/components/tooltip/index";
 import { useEventBus } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useFocus } from "@/composables/useFocus";
-import { usePost } from "@/composables/useFetch";
+import { usePost, useFetchTo } from "@/composables/useFetch";
 import { isSmallScreen, isTouchScreen } from "@/composables/useScreenSize";
 // Imported Pages
 import BusinessInformationWizardStep from "@/pages/bceidform/BusinessInformationWizardStep.vue";
@@ -107,7 +107,7 @@ const associatedLocations = computed(() =>
     )
 );
 
-const { response, error, fetch } = usePost(
+const { response, error, fetch: post } = usePost(
   "/api/clients/submissions",
   toRef(formData).value,
   {
@@ -155,6 +155,7 @@ const progressData = reactive([
     valid: false,
     step: 0,
     fields: [
+      "businessInformation.district",
       "businessInformation.businessType",
       "businessInformation.businessName",
       "businessInformation.clientType",
@@ -328,7 +329,7 @@ const submit = () => {
 
   if (checkStepValidity(currentTab.value)) {
     submitBtnDisabled.value = true;
-    fetch();
+    post();
   }
 };
 
@@ -370,6 +371,15 @@ const scrollToNewContact = () => {
     });
   }
 };
+
+const districtsList = ref([]);
+useFetchTo("/api/districts?page=0&size=250", districtsList);
+const formattedDistrictsList = computed(() =>
+  districtsList.value.map((district) => ({
+    ...district,
+    name: `${district.code} - ${district.name}`,
+  })),
+);
 </script>
 
 <template>
@@ -423,17 +433,13 @@ const scrollToNewContact = () => {
       <hr class="divider" />
 
       <div class="form-steps-section">
-        <h4 data-scroll="focus-0">
-          <div data-scroll="step-title" class="header-offset"></div>
-          {{ progressData[0].title}}
-        </h4>
-        <div class="frame-01">
-          <business-information-wizard-step
-              v-model:data="formData"
-              :active="currentTab == 0"
-              @valid="validateStep"
-          />
-        </div>
+        <business-information-wizard-step
+            v-model:data="formData"
+            :active="currentTab == 0"
+            :title="progressData[0].title"
+            :districts-list="formattedDistrictsList"
+            @valid="validateStep"
+        />
       </div>
     </div>
 
@@ -445,9 +451,7 @@ const scrollToNewContact = () => {
         </h4>
         
         <div class="form-steps-section-01">
-            <p class="body-01 heading-compact-01-dark">
-              This is the primary address where you will receive mail.
-            </p>
+          <h5>This is the primary address where you will receive mail.</h5>
         </div>
       
         <address-wizard-step
