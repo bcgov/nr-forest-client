@@ -135,11 +135,10 @@ onMounted(() => {
         <cds-table-head>
           <cds-table-header-row>
             <cds-table-header-cell />
-            <cds-table-header-cell>Submission type</cds-table-header-cell>
             <cds-table-header-cell>Client name</cds-table-header-cell>
             <cds-table-header-cell>Client type</cds-table-header-cell>
             <cds-table-header-cell>District</cds-table-header-cell>
-            <cds-table-header-cell>Last updated</cds-table-header-cell>
+            <cds-table-header-cell>Submitted on</cds-table-header-cell>
             <cds-table-header-cell>Submission status</cds-table-header-cell>
             <cds-table-header-cell />
           </cds-table-header-row>
@@ -147,28 +146,10 @@ onMounted(() => {
         <cds-table-body>
           <cds-table-row v-for="row in tableData" :key="row.name" @click="selectEntry(row)">
             <cds-table-cell />
-            <cds-table-cell>
-              <div class="sp-1">
-                <component
-                  data-testid="display-row-icon"
-                  :is="iconForRow(row)"      
-                  :alt="row.requestType"
-                />
-                <span>{{ row.requestType }}</span>
-              </div>
-            </cds-table-cell>
             <cds-table-cell><span>{{ normalizeString(row.name) }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientType }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.district }}</span></cds-table-cell>
-            <cds-table-cell>
-              <div>
-                {{ (row.user || '') }} 
-                <cds-tooltip align="top">
-                  <div class="sb-tooltip-trigger" aria-labelledby="content">| {{ friendlyDate(row.updated) }}</div>
-                  <cds-tooltip-content id="content">{{ formattedDate(row.updated) }}</cds-tooltip-content>
-                </cds-tooltip>              
-              </div>
-            </cds-table-cell>
+            <cds-table-cell><span>{{ formattedDate(row.submittedAt) }}</span></cds-table-cell>
             <cds-table-cell>
               <div>
                 <cds-tag :type="tagColor(row.status)" title=""><span>{{ row.status }}</span></cds-tag>
@@ -180,18 +161,11 @@ onMounted(() => {
       </cds-table>
 
       <cds-table-skeleton
-        v-else
-        ref="skeletonReference"
-        zebra
-        :row-count="pageSize"
-        :headers="[
-          'Submission type',
-          'Client name',
-          'Client type',
-          'District',
-          'Last updated',
-          'Submission status',
-        ]"
+      v-else
+      ref="skeletonReference"
+      zebra
+      :row-count="pageSize"
+      :headers="['Client name', 'Client type', 'District', 'Submitted on', 'Submission status']"
       />
     </div>
     <div class="paginator" v-if="totalItems">
