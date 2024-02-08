@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, computed, ref, reactive } from "vue";
+import { watch, computed, ref, reactive, getCurrentInstance } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/inline-loading/index";
 import "@carbon/web-components/es/components/notification/index";
@@ -13,6 +13,7 @@ import {
   ProgressNotification,
 } from "@/dto/CommonTypesDto";
 import { BusinessTypeEnum, CodeNameType } from "@/dto/CommonTypesDto";
+import { locationName as defaultLocation } from "@/dto/ApplyClientNumberDto";
 import type {
   FormDataDto,
   ForestClientDetailsDto,
@@ -38,6 +39,9 @@ const emit = defineEmits<{
   (e: "update:data", value: FormDataDto): void;
   (e: "valid", value: boolean): void;
 }>();
+
+const instance = getCurrentInstance();
+const features = instance.appContext.config.globalProperties.$features;
 
 //Defining the event bus to send notifications up
 const progressIndicatorBus = useEventBus<ProgressNotification>(
@@ -207,6 +211,11 @@ watch([autoCompleteResult], () => {
 watch([detailsData], () => {
   if (detailsData.value) {
     const forestClientDetails: ForestClientDetailsDto = detailsData.value;
+    if (!features.BCEID_MULTI_ADDRESS) {
+      forestClientDetails?.contacts?.forEach((contact) => {
+        contact.locationNames = [{ ...defaultLocation }];
+      });
+    }
     formData.value.location.contacts = [
       formData.value.location.contacts[0],
       ...forestClientDetails.contacts,
