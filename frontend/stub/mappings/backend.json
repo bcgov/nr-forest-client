@@ -72,6 +72,17 @@
       }
     },
     {
+      "name": "District Codes",
+      "request": {
+        "url": "/api/districts?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-districts.json"
+      }
+    },
+    {
       "name": "Country Codes",
       "request": {
         "url": "/api/countries?page=0&size=250",
@@ -104,7 +115,7 @@
         "transformers": [
           "response-template"
         ],
-        "bodyFileName": "response-provinces-{{request.path.[3]}}.json"
+        "bodyFileName": "response-provinces-{{request.path.[2]}}.json"
       }
     },
     {
@@ -129,7 +140,7 @@
         "transformers": [
           "response-template"
         ],
-        "bodyFileName": "response-countries-{{request.path.[3]}}.json"
+        "bodyFileName": "response-getCountryByCode-{{request.path.[2]}}.json"
       }
     },
     {
@@ -321,7 +332,7 @@
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-address-{{request.path.[3]}}.json",
+        "bodyFileName": "response-address-{{request.path.[2]}}.json",
         "transformers": [
           "response-template"
         ],
