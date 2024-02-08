@@ -319,13 +319,8 @@ const renderListItem = (label, clientNumber) => {
         </cds-breadcrumb>
 
         <h3 class="submission-details--title">
-          <component
-            data-testid="display-row-icon"
-            :is="iconForRow(data.submissionType)"      
-            :alt="data.submissionType"
-          />
           <span>
-            {{ data.submissionType }}: {{ normalizeString(data.business.organizationName) }}
+            {{ normalizeString(data.business.organizationName) }}
           </span>
         </h3>
         <p class="body-01" data-testid="subtitle" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>

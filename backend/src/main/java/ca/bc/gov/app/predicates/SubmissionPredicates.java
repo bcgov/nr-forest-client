@@ -30,8 +30,8 @@ public class SubmissionPredicates implements QueryPredicates {
     }
     return Criteria.empty();
   }
-
-  public static Criteria orUpdatedAt(String[] values) {
+  
+  public static Criteria orSubmittedAt(String[] values) {
     if (values != null) {
       return
           Stream
@@ -39,11 +39,11 @@ public class SubmissionPredicates implements QueryPredicates {
               .filter(StringUtils::isNotBlank)
               .map(value -> LocalDate.parse(value,DateTimeFormatter.ISO_DATE))
               .map(value -> value.plusDays(1))
-              .map(value -> QueryPredicates.isBefore(value.atStartOfDay(),"updatedAt"))
+              .map(value -> QueryPredicates.isBefore(value.atStartOfDay(),"submittedAt"))
               .reduce(Criteria::or)
               .orElse(Criteria.empty());
     }
     return Criteria.empty();
   }
-
+  
 }
