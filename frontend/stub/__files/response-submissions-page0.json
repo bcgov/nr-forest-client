@@ -4,7 +4,7 @@
     "requestType": "Review new client",
     "name": "KOVACEK, Thompson and Boyer",
     "clientType": "General partnership",
-    "updated": "{{now offset='-9 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+    "submittedAt": "{{now offset='-9 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
     "status": "New",
     "user": "Isador Driver",
     "district": "DCC - Cariboo-Chilcotin Natural Resource District"
@@ -14,7 +14,7 @@
     "requestType": "Review new client",
     "name": "Ziemann Group",
     "clientType": "Corporation",
-    "updated": "{{now offset='-2 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+    "submittedAt": "{{now offset='-2 hours' format='yyyy-MM-dd HH:mm:ss'}}",
     "status": "In progres",
     "user": "Rinaldo Hendrix",
     "district": "DCS - Cascades Natural Resource District"
@@ -24,7 +24,7 @@
     "requestType": "Auto approved client",
     "name": "Christiansen LLC",
     "clientType": "Unregistered sole proprietorship",
-    "updated": "{{now offset='-1 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+    "submittedAt": "{{now offset='-1 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
     "status": "Approved",
     "user": "Sholom Philippeaux",
     "district": "DCK - Chilliwack Natural Resource District"
@@ -34,7 +34,7 @@
     "requestType": "Review new client",
     "name": "Orn-O'Hara",
     "clientType": "Unregistered sole proprietorship",
-    "updated": "{{now offset='-9 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "submittedAt": "{{now offset='-9 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
     "status": "In progress",
     "user": "Christie Overill",
     "district": "DQU - Quesnel Natural Resource District"
@@ -44,7 +44,7 @@
     "requestType": "Review new client",
     "name": "Stroman-Haag",
     "clientType": "General partnership",
-    "updated": "{{now offset='-3 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+    "submittedAt": "{{now offset='-3 hours' format='yyyy-MM-dd HH:mm:ss'}}",
     "status": "New",
     "user": "Othelia Cove",
     "district": "DQC - Haida Gwaii Natural Resource District"
@@ -54,7 +54,7 @@
     "requestType": "Review new client",
     "name": "Stanton-Gulgowski",
     "clientType": "Individual",
-    "updated": "{{now offset='-8 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+    "submittedAt": "{{now offset='-8 hours' format='yyyy-MM-dd HH:mm:ss'}}",
     "status": "In progres",
     "user": "Wallis Blindmann",
     "district": "DSE - Selkirk Natural Resource District"
@@ -64,7 +64,7 @@
     "requestType": "Auto approved client",
     "name": "Schneider-Upton",
     "clientType": "Individual",
-    "updated": "{{now offset='-3 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "submittedAt": "{{now offset='-3 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
     "status": "Approved",
     "user": "Sianna Whittuck",
     "district": "DRM - Rocky Mountain Natural Resource District"
@@ -74,7 +74,7 @@
     "requestType": "Review new client",
     "name": "Carter, Mante and Rau",
     "clientType": "Individual",
-    "updated": "{{now offset='-5 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "submittedAt": "{{now offset='-5 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
     "status": "Approved",
     "user": "Dionis Pulman",
     "district": "DKA - Thompson Rivers Natural Resource District"
@@ -84,7 +84,7 @@
     "requestType": "Auto approved client",
     "name": "O'Connell-Cassin",
     "clientType": "General partnership",
-    "updated": "{{now offset='-7 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "submittedAt": "{{now offset='-7 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
     "status": "Rejected",
     "user": "Darsey Molder",
     "district": "DSQ - Sea to Sky Natural Resource District"
@@ -94,7 +94,7 @@
     "requestType": "Auto approved client",
     "name": "Langworth-Conn",
     "clientType": "Individual",
-    "updated": "{{now offset='-1 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+    "submittedAt": "{{now offset='-1 hours' format='yyyy-MM-dd HH:mm:ss'}}",
     "status": "Rejected",
     "user": "Maire Antonelli",
     "district": "DKM - Coast Mountains Natural Resource District"

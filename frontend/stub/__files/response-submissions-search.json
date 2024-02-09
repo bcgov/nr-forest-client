@@ -3,7 +3,7 @@
   "requestType": "Auto approved client",
   "name": "Rice-Torp",
   "clientType": "Unregistered sole proprietorship",
-  "updated": "{{now offset='-6 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "submittedAt": "{{now offset='-6 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
   "status": "In progres",
   "user": "Perl Tottie"
 }, {
@@ -11,7 +11,7 @@
   "requestType": "Auto approved client",
   "name": "Corwin-Leannon",
   "clientType": "Individual",
-  "updated": "{{now offset='-3 hours' format='yyyy-MM-dd HH:mm:ss'}}",
+  "submittedAt": "{{now offset='-3 hours' format='yyyy-MM-dd HH:mm:ss'}}",
   "status": "Approved",
   "user": "Martie Matiebe"
 }, {
@@ -19,7 +19,7 @@
   "requestType": "Auto approved client",
   "name": "Ullrich LLC",
   "clientType": "Corporation",
-  "updated": "{{now offset='-2 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
+  "submittedAt": "{{now offset='-2 seconds' format='yyyy-MM-dd HH:mm:ss'}}",
   "status": "In progres",
   "user": "Bertrando Shenfisch"
 }]
