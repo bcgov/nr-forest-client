@@ -116,7 +116,7 @@ export interface SubmissionList {
   id: string
   name: string
   status: string
-  updated: string
+  submittedAt: string
   user: string
   requestType: string
   clientType: string

@@ -521,7 +521,7 @@ const renderListItem = (label, clientNumber) => {
                   </read-only-component>
 
               <read-only-component label="Submitted on">
-                <span class="body-compact-01">{{ formattedDate(data.updateTimestamp) }}</span>
+                <span class="body-compact-01">{{ formattedDate(data.submittedTimestamp) }}</span>
               </read-only-component>
 
             </div>
