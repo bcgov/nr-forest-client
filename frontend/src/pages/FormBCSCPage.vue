@@ -74,7 +74,7 @@ const formattedDate = `${year}-${month}-${day}`;
 let formData = reactive<FormDataDto>({
   ...formDataDto.value,
   businessInformation: {
-    district: { value: "", text: "" },
+    district: "",
     businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
     legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
     clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.I),
@@ -377,9 +377,13 @@ const formattedDistrictsList = computed(() =>
   })),
 );
 
+const districtInitialValue = computed(() =>
+  districtsList.value.find((district) => district.code === formData.businessInformation.district),
+);
+
 const updateDistrict = (value: CodeNameType | undefined) => {
   if (value) {
-    formData.businessInformation.district = { value: value.code, text: value.name };
+    formData.businessInformation.district = value.code;
   }
 };
 </script>
@@ -474,7 +478,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
     <dropdown-input-component
       id="district"
       label="District"
-      :initial-value="formData.businessInformation.district?.text"
+      :initial-value="districtInitialValue?.name"
       required-label
       :model-value="formattedDistrictsList"
       :enabled="true"
