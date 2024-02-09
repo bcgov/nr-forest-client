@@ -34,7 +34,8 @@ public class ClientMapper {
         .withBusinessTypeCode(clientBusinessInformationDto.businessType())
         .withClientTypeCode(clientBusinessInformationDto.clientType())
         .withGoodStandingInd(clientBusinessInformationDto.goodStandingInd())
-        .withBirthdate(clientBusinessInformationDto.birthdate());
+        .withBirthdate(clientBusinessInformationDto.birthdate())
+        .withDistrictCode(clientBusinessInformationDto.district());
   }
   
   /**
