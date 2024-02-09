@@ -1,5 +1,6 @@
 import BusinessInformationWizardStep from "@/pages/bceidform/BusinessInformationWizardStep.vue";
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
+import districts from "../../../cypress/fixtures/districts.json"
 
 describe('<BusinessInformationWizardStep />', () => {
 
@@ -42,6 +43,7 @@ describe('<BusinessInformationWizardStep />', () => {
             address: ""
           },
         } as unknown as FormDataDto,
+        districtsList: districts,
         active: false,
       },
     });
@@ -76,6 +78,7 @@ describe('<BusinessInformationWizardStep />', () => {
             ],
           },
         } as unknown as FormDataDto,
+        districtsList: districts,
         active: false,
       },
     });
@@ -124,6 +127,7 @@ describe('<BusinessInformationWizardStep />', () => {
             ],
           },
         } as unknown as FormDataDto,
+        districtsList: districts,
         active: false,
       },
     });
