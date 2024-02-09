@@ -21,8 +21,8 @@ public record ClientBusinessInformationDto(
    */
   public Map<String, Object> description() {
     return Map.of(
-        "incorporation", StringUtils.isBlank(incorporationNumber) ? "" : incorporationNumber, 
-        "name", StringUtils.isBlank(businessName) ? "" : businessName,
+            "incorporation", StringUtils.isBlank(incorporationNumber) ? "" : incorporationNumber, 
+            "name", StringUtils.isBlank(businessName) ? "" : businessName,
             "businessType", StringUtils.isBlank(businessType) ? "" : businessType, 
             "clientType", StringUtils.isBlank(clientType) ? "" : clientType, 
             "goodStanding", StringUtils.isBlank(goodStandingInd) ? "" : goodStandingInd, 

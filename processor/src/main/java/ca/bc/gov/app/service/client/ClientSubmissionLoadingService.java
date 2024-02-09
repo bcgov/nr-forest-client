@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -91,7 +90,7 @@ public class ClientSubmissionLoadingService {
                             .flatMap(isAdmin ->
                                 forestClientApi
                                     .get()
-                                    .uri("/api/districts/{districtCode}", details.getDistrictCode())
+                                    .uri("/districts/{districtCode}", details.getDistrictCode())
                                     .exchangeToMono(clientResponse -> clientResponse.bodyToMono(
                                         DistrictDto.class)
                                     )
