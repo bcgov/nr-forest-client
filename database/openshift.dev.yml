@@ -14,21 +14,13 @@ parameters:
     description: Deployment zone, e.g. pr-### or prod
     required: true
 objects: 
-  - kind: DeploymentConfig
-    apiVersion: v1
+  - kind: Job
+    apiVersion: batch/v1
     metadata:
       name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
         app: ${NAME}-${ZONE}
-    spec:
-      replicas: 1      
-      selector:
-        deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
-      strategy:
-        type: Recreate
-        recreateParams:
-          timeoutSeconds: 600
-        activeDeadlineSeconds: 21600
+    spec:      
       template:
         metadata:
           name: ${NAME}-${ZONE}-${COMPONENT}
@@ -69,6 +61,4 @@ objects:
                       name: ${NAME}-${ZONE}
                       key: "database-password"           
               imagePullPolicy: Always
-          terminationGracePeriodSeconds: 30
-          dnsPolicy: ClusterFirst
-          schedulerName: default-scheduler
+          restartPolicy: Never
