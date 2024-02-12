@@ -85,7 +85,7 @@ public class ClientSubmissionLoadingService {
                     // Reads the district information from the forest client district endpoint if is a client admin email
                     .flatMap(submissionContact ->
                         Mono
-                            .just(isClientAdminEmail(message))
+                            .just(isSubmissionStatusNew(message))
                             .filter(Boolean::booleanValue)
                             .flatMap(isAdmin ->
                                 forestClientApi
@@ -126,7 +126,7 @@ public class ClientSubmissionLoadingService {
             );
   }
 
-  private boolean isClientAdminEmail(MessagingWrapper<Integer> message) {
+  private boolean isSubmissionStatusNew(MessagingWrapper<Integer> message) {
     return SubmissionStatusEnum.N.equals(
         message
             .parameters()
