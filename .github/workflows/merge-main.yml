@@ -282,6 +282,16 @@ jobs:
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
             -p URL_ZONE=${{ env.ZONE }}
 
+      - name: Dev data replacement
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
+        with:
+          file: database/openshift.dev.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          parameters: -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
