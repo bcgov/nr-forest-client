@@ -46,6 +46,7 @@ objects:
                   -U ${POSTGRESQL_USER} \
                   -h ${NAME}-${ZONE}-database \
                   -d ${POSTGRESQL_DATABASE} \
+                  -p 5432 \
                   -c "UPDATE nrfc.district_code SET email_address = 'alliance@mail.ca';"
               env:
                 - name: POSTGRES_DB
