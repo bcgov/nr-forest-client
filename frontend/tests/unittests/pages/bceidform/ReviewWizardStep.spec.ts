@@ -13,6 +13,21 @@ describe("ReviewWizardStep.vue", () => {
     },
   };
 
+  const districtsList = [
+    {
+      code: "DMH",
+      name: "DMH - 100 Mile House Natural Resource District",
+    },
+    {
+      code: "DCR",
+      name: "DCR - Campbell River Natural Resource District",
+    },
+    {
+      code: "DCC",
+      name: "DCC - Cariboo-Chilcotin Natural Resource District",
+    },
+  ];
+
   it("renders business information", async () => {
     const wrapper = mount(ReviewWizardStep, {
       props: {
@@ -20,6 +35,7 @@ describe("ReviewWizardStep.vue", () => {
           businessInformation: {
             businessName: "Your Business Name",
             businessType: "R",
+            district: "DCR",
           },
           location: {
             addresses: [
@@ -44,6 +60,7 @@ describe("ReviewWizardStep.vue", () => {
             ],
           },
         },
+        districtsList,
         active: true,
         goToStep: () => {},
       },
@@ -51,6 +68,50 @@ describe("ReviewWizardStep.vue", () => {
     });
 
     wrapper.unmount();
+  });
+
+  it("should render the district name", () => {
+    const wrapper = mount(ReviewWizardStep, {
+      props: {
+        data: {
+          businessInformation: {
+            businessName: "Your Business Name",
+            businessType: "R",
+            district: "DCR",
+          },
+          location: {
+            addresses: [
+              {
+                locationName: "Location 1",
+                streetAddress: "123 Main St",
+                city: "City",
+                province: { text: "Province" },
+                country: { text: "Country" },
+                postalCode: "12345",
+              },
+            ],
+            contacts: [
+              {
+                firstName: "John",
+                lastName: "Doe",
+                locationNames: [{ text: "Location 1" }],
+                contactType: { text: "Contact Type" },
+                email: "john@example.com",
+                phoneNumber: "123-456-7890",
+              },
+            ],
+          },
+        },
+        districtsList,
+        active: true,
+        goToStep: () => {},
+      },
+      global: globalDefault,
+    });
+
+    expect(wrapper.get("#district").text()).toEqual(
+      "DCR - Campbell River Natural Resource District",
+    );
   });
 
   const locationName = "Location 1";
@@ -72,6 +133,7 @@ describe("ReviewWizardStep.vue", () => {
             businessInformation: {
               businessName: "Your Business Name",
               businessType: "R",
+              district: "DCR",
             },
             location: {
               addresses: [
@@ -96,6 +158,7 @@ describe("ReviewWizardStep.vue", () => {
               ],
             },
           },
+          districtsList,
           active: true,
           goToStep: () => {},
         },
@@ -126,6 +189,7 @@ describe("ReviewWizardStep.vue", () => {
             businessInformation: {
               businessName: "Your Business Name",
               businessType: "R",
+              district: "DCR",
             },
             location: {
               addresses: [
@@ -150,6 +214,7 @@ describe("ReviewWizardStep.vue", () => {
               ],
             },
           },
+          districtsList,
           active: true,
           goToStep: () => {},
         },
@@ -170,7 +235,8 @@ describe("ReviewWizardStep.vue", () => {
           businessInformation: {
             businessName: "Your Business Name",
             businessType: "R",
-            clientType: "C"
+            clientType: "C",
+            district: "DCR",
           },
           location: {
             addresses: [
@@ -195,6 +261,7 @@ describe("ReviewWizardStep.vue", () => {
             ],
           },
         },
+        districtsList,
         active: true,
         goToStep: () => {},
       },
