@@ -69,7 +69,6 @@ objects:
                       name: ${NAME}-${ZONE}
                       key: "database-password"           
               imagePullPolicy: Always
-          restartPolicy: "Never"
           terminationGracePeriodSeconds: 30
           dnsPolicy: ClusterFirst
           schedulerName: default-scheduler
