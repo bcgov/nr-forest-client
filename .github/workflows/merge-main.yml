@@ -290,7 +290,7 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: true
-          parameters: -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
+          parameters: -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
