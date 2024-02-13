@@ -8,7 +8,7 @@
     "updateUser": "Dionis Pulman",
     "business": {
         "businessType": "U",
-        "incorporationNumber": "",
+        "registrationNumber": "",
         "clientNumber":"{{randomValue length=8 type='NUMERIC'}}",
         "organizationName": "Carter, Mante and Rau",
         "clientType": "I",

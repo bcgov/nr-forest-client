@@ -78,7 +78,7 @@ let formData = reactive<FormDataDto>({
     businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
     legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
     clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.I),
-    incorporationNumber: "",
+    registrationNumber: "",
     businessName: submitterInformation?.name ?? "",
     goodStandingInd: "Y",
     birthdate: formattedDate,

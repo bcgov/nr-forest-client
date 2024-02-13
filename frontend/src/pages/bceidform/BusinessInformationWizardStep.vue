@@ -138,7 +138,7 @@ const toggleErrorMessages = (
 const receivedClientType = ref<CodeNameType>();
 
 //Using this as we have to handle the selected result to get
-//incorporation number and client type
+//registration number and client type
 const autoCompleteResult = ref<BusinessSearchResult>();
 watch([autoCompleteResult], () => {
   // reset business validation state
@@ -147,7 +147,7 @@ watch([autoCompleteResult], () => {
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
     toggleErrorMessages(false, false, false);
 
-    formData.value.businessInformation.incorporationNumber =
+    formData.value.businessInformation.registrationNumber =
       autoCompleteResult.value.code;
     formData.value.businessInformation.legalType =
       autoCompleteResult.value.legalType;

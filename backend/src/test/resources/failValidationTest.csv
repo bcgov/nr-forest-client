@@ -1,4 +1,4 @@
-userId,businessInformationNull,incorporationNumber,businessName,clientType,businessType,legalType,goodStanding,birthdate,locationNull,addressNull,addressEmpty,streetAddress,country,province,city,postalCode,contactsNull,contactsEmpty,contactType,contactFirstName,contactLastName,contactPhoneNumber,contactEmail,
+userId,businessInformationNull,registrationNumber,businessName,clientType,businessType,legalType,goodStanding,birthdate,locationNull,addressNull,addressEmpty,streetAddress,country,province,city,postalCode,contactsNull,contactsEmpty,contactType,contactFirstName,contactLastName,contactPhoneNumber,contactEmail,
 ,TRUE,1234,Auric Enterprises,A,R,GP,Y,1986-11-11,TRUE,TRUE,TRUE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,TRUE,TRUE,LP,James,Bond,987654321,bond_james_bond@007.com,
 userIdTest,TRUE,1234,Auric Enterprises,C,R,GP,Y,1986-11-11,TRUE,TRUE,TRUE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,TRUE,TRUE,LP,James,Bond,987654321,bond_james_bond@007.com,
 userIdTest,TRUE,1234,Auric Enterprises,C,R,GP,Y,1986-11-11,TRUE,TRUE,TRUE,3570 S Las Vegas Blvd,US,NV,Las Vegas,89109,TRUE,TRUE,LP,James,Bond,987654321,bond_james_bond@007.com,

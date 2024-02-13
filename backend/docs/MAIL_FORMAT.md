@@ -76,7 +76,7 @@ The properties on business are:
 - legalType
 - name
 - goodStanding
-- incorporation
+- registrationNumber
 - businessType
 - clientType
 
@@ -85,7 +85,7 @@ So for example, to get the name of the business, the variable would be `${busine
 
 ### 100% Match when Searching
 
-When doing an auto-complete search for a client name, one thing that can happen is what we call **100% match**. This happens when both the name and the incorporation number
+When doing an auto-complete search for a client name, one thing that can happen is what we call **100% match**. This happens when both the name and the registration number
 matches with one entry already present inside the Oracle database. When this happens, we will automatically email the user with some information regarding the existing entry.
 
 For that, we have a single entry with the following parameters:
@@ -94,7 +94,7 @@ For that, we have a single entry with the following parameters:
 - name (The legal name of the client)
 - status (Actual status on Oracle)
 - type (Type of the client on Oracle)
-- identifier (The incorporation number for this client on Oracle)
+- identifier (The registration number for this client on Oracle)
 
 
 The file name for this is [matched.html](src/main/resources/templates/matched.html) and can be found inside the [src/main/resources/templates/](src/main/resources/templates/) folder.

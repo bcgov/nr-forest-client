@@ -18,10 +18,10 @@
     "incorporationName": "00141847"
   },
   {
-    "name": "Review one match - incorporation number",
-    "fixture": "test-case-review-incorporationNumber.json",
+    "name": "Review one match - registration number",
+    "fixture": "test-case-review-registrationNumber.json",
     "approved": false,
-    "incorporationNumber": "00151847"
+    "registrationNumber": "00151847"
   },
   {
     "name": "Review one match - contact",
@@ -35,7 +35,7 @@
     "approved": false,
     "goodStanding": true,
     "incorporationName": "00141847",
-    "incorporationNumber": "00151847",
+    "registrationNumber": "00151847",
     "contact": "00161847"
   }
 ]

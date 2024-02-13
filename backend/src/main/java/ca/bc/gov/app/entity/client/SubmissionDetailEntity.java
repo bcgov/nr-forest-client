@@ -27,7 +27,7 @@ public class SubmissionDetailEntity {
   private Integer submissionId;
 
   @Column("incorporation_number")
-  private String incorporationNumber;
+  private String registrationNumber;
 
   @Column("organization_name")
   private String organizationName;

@@ -24,33 +24,33 @@ public class ClientLegacyService {
 
   /**
    * Searches for a list of {@link ForestClientDto} in the legacy API based on the given
-   * incorporation number and company name.
+   * registration number and company name.
    *
-   * @param incorporationNumber the incorporation number to search for
+   * @param registrationNumber  the registration number to search for
    * @param companyName         the company name to search for
    * @param userId              the id of the user making the request
    * @param businessId          the id of the business making the request in case of bceid
    * @return a Flux of ForestClientDto objects matching the search criteria
    */
   public Flux<ForestClientDto> searchLegacy(
-      String incorporationNumber,
+      String registrationNumber,
       String companyName,
       String userId,
       String businessId
   ) {
 
-    log.info("Searching for incorporation number {} and company name {} in legacy",
-        incorporationNumber, companyName);
+    log.info("Searching for registration number {} and company name {} in legacy",
+        registrationNumber, companyName);
 
     return
         legacyApi
             .get()
             .uri(builder ->
                 builder
-                    .path("/search/incorporationOrName")
-                    .queryParamIfPresent("incorporationNumber",
+                    .path("/search/registrationOrName")
+                    .queryParamIfPresent("registrationNumber",
                         Optional
-                            .ofNullable(incorporationNumber)
+                            .ofNullable(registrationNumber)
                             .filter(StringUtils::isNotBlank)
                             .or(
                                 () -> Optional
@@ -64,7 +64,7 @@ public class ClientLegacyService {
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
             .doOnNext(
                 dto -> log.info("Loading Legacy data for {} {} from legacy with client number {}",
-                    incorporationNumber, companyName, dto.clientNumber()));
+                    registrationNumber, companyName, dto.clientNumber()));
   }
 
   public Flux<ForestClientDto> searchIdAndLastName(

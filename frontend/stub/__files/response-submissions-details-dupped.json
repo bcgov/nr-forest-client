@@ -8,7 +8,7 @@
     "updateUser": "Rinaldo Hendrix",
     "business": {
         "businessType": "Registered Business",
-        "incorporationNumber": "BC{{randomValue length=8 type='NUMERIC'}}",
+        "registrationNumber": "BC{{randomValue length=8 type='NUMERIC'}}",
         "clientNumber":"",
         "organizationName": "Ziemann Group",
         "clientType": "C",

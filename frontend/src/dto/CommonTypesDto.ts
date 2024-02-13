@@ -139,7 +139,7 @@ export interface SubmissionDetails {
 
 export interface SubmissionDetailsBusiness {
   businessType: string
-  incorporationNumber: string
+  registrationNumber: string
   clientNumber: string
   organizationName: string
   clientType: string
@@ -174,7 +174,7 @@ export interface SubmissionDetailsAddress {
 export interface SubmissionDetailsMatchers {
   goodStanding: string
   corporationName: string
-  incorporationNumber: string
+  registrationNumber: string
   contact: string
   location: string
 }

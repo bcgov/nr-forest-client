@@ -67,15 +67,15 @@ public class LegacyClientPersistenceService extends LegacyAbstractPersistenceSer
                     .withClientComment(
                         getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
                         " submitted the client details acquired from BC Registry " +
-                        submissionDetail.getIncorporationNumber()
+                        submissionDetail.getRegistrationNumber()
                     )
                     .withClientName(submissionDetail.getOrganizationName().toUpperCase())
                     .withClientTypeCode(submissionDetail.getClientTypeCode())
                     .withRegistryCompanyTypeCode(
-                        ProcessorUtil.extractLetters(submissionDetail.getIncorporationNumber())
+                        ProcessorUtil.extractLetters(submissionDetail.getRegistrationNumber())
                     )
                     .withCorpRegnNmbr(
-                        ProcessorUtil.extractNumbers(submissionDetail.getIncorporationNumber())
+                        ProcessorUtil.extractNumbers(submissionDetail.getRegistrationNumber())
                     )
                     .withClientNumber(message.payload())
             )
@@ -87,7 +87,7 @@ public class LegacyClientPersistenceService extends LegacyAbstractPersistenceSer
                     .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
                         forestClient.clientName()
                     )
-                    .withParameter(ApplicationConstant.INCORPORATION_NUMBER,
+                    .withParameter(ApplicationConstant.REGISTRATION_NUMBER,
                         String.join(StringUtils.EMPTY,
                             forestClient.registryCompanyTypeCode(),
                             forestClient.corpRegnNmbr()

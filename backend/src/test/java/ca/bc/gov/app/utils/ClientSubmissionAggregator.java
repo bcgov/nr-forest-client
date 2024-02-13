@@ -32,7 +32,7 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
       return null;
     }
 
-    String incorporationNumber = accessor.getString(2);
+    String registrationNumber = accessor.getString(2);
     String businessName = accessor.getString(3);
     String clientType = accessor.getString(4);
     String businessType = accessor.getString(5);
@@ -46,7 +46,7 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     String district = accessor.getString(9);
 
     return new ClientBusinessInformationDto(
-                incorporationNumber, 
+                registrationNumber, 
                 businessName, 
                 businessType,
                 clientType, 

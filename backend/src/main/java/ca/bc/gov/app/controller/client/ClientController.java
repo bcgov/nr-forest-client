@@ -56,15 +56,15 @@ public class ClientController {
         .map(client -> client.withName(WordUtils.capitalize(client.name())));
   }
 
-  @GetMapping(value = "/incorporation/{incorporationId}")
-  public Mono<ClientLookUpDto> findByIncorporationNumber(
-      @PathVariable String incorporationId) {
-    log.info("Requesting a client with incorporation number {} from the client service.",
-        incorporationId);
+  @GetMapping(value = "/incorporation/{registrationNumber}")
+  public Mono<ClientLookUpDto> findByRegistrationNumber(
+      @PathVariable String registrationNumber) {
+    log.info("Requesting a client with registration number {} from the client service.",
+        registrationNumber);
     return clientService
-        .findByClientNameOrIncorporation(incorporationId)
+        .findByClientNameOrIncorporation(registrationNumber)
         .next()
-        .switchIfEmpty(Mono.error(new NoClientDataFound(incorporationId)));
+        .switchIfEmpty(Mono.error(new NoClientDataFound(registrationNumber)));
   }
 
   @GetMapping(value = "/individual/{userId}")

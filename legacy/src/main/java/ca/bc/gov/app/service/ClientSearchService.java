@@ -27,22 +27,22 @@ public class ClientSearchService {
   private final ClientDoingBusinessAsRepository doingBusinessAsRepository;
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> mapper;
 
-  public Flux<ForestClientDto> findByIncorporationOrName(
-      String incorporationNumber,
+  public Flux<ForestClientDto> findByRegistrationNumberOrCompanyName(
+      String registrationNumber,
       String companyName
   ) {
 
-    if (StringUtils.isAllBlank(incorporationNumber, companyName)) {
-      log.error("Missing required parameter to search for incorporation or company name");
-      throw new MissingRequiredParameterException("incorporationNumber or companyName");
+    if (StringUtils.isAllBlank(registrationNumber, companyName)) {
+      log.error("Missing required parameter to search for registration number or company name");
+      throw new MissingRequiredParameterException("registrationNumber or companyName");
     }
 
-    log.info("Searching for incorporation: {} or company name: {}", incorporationNumber,
+    log.info("Searching for registration number: {} or company name: {}", registrationNumber,
         companyName);
 
     return
         forestClientRepository
-            .findClientByIncorporationOrName(incorporationNumber, companyName)
+            .findClientByIncorporationOrName(registrationNumber, companyName)
             .doOnNext(
                 dto -> log.info("Found client: {} {}", dto.getClientNumber(), dto.getClientName()))
             .switchIfEmpty(
