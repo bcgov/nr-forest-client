@@ -1,0 +1,64 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app: ${NAME}-${ZONE}
+  app.kubernetes.io/part-of: ${NAME}-${ZONE}
+parameters:
+  - name: NAME
+    description: Product name
+    value: nr-forest-client
+  - name: COMPONENT
+    description: Component name
+    value: database-data
+  - name: ZONE
+    description: Deployment zone, e.g. pr-### or prod
+    required: true
+objects: 
+  - kind: Job
+    apiVersion: batch/v1
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+      labels:
+        app: ${NAME}-${ZONE}
+    spec:      
+      template:
+        metadata:
+          name: ${NAME}-${ZONE}-${COMPONENT}
+          labels:
+            app: ${NAME}-${ZONE}
+            deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+        spec:          
+          containers:
+            - name: ${NAME}
+              image: "postgres"
+              command: ["/bin/sh", "-c"]
+              args:
+              - |
+                psql -U "${POSTGRES_USER}" -h "${NAME}-${ZONE}-database" -d "${POSTGRES_DB}" -p 5432 -c "UPDATE nrfc.district_code SET email_address = 'alliance@mail.ca';"
+              env:
+                - name: NAME
+                  value: ${NAME}
+                - name: ZONE
+                  value: ${ZONE}
+                - name: POSTGRES_DB
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: database-name
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: database-password
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: database-user   
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: "database-password"           
+              imagePullPolicy: Always
+          restartPolicy: Never
