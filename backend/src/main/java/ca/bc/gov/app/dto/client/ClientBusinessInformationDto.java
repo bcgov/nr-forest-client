@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 public record ClientBusinessInformationDto(
-    String incorporationNumber, 
+    String registrationNumber, 
     String businessName,
     String businessType, 
     String clientType, 
@@ -21,7 +21,7 @@ public record ClientBusinessInformationDto(
    */
   public Map<String, Object> description() {
     return Map.of(
-            "incorporation", StringUtils.isBlank(incorporationNumber) ? "" : incorporationNumber, 
+            "registrationNumber", StringUtils.isBlank(registrationNumber) ? "" : registrationNumber, 
             "name", StringUtils.isBlank(businessName) ? "" : businessName,
             "businessType", StringUtils.isBlank(businessType) ? "" : businessType, 
             "clientType", StringUtils.isBlank(clientType) ? "" : clientType, 

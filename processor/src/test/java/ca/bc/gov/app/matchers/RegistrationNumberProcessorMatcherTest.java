@@ -9,8 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.matchers.IncorporationNumberProcessorMatcher;
-import ca.bc.gov.app.matchers.ProcessorMatcher;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -23,8 +21,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
 
 
-@DisplayName("Unit Test | Incorporation Number Matcher")
-class IncorporationNumberProcessorMatcherTest {
+@DisplayName("Unit Test | Registration Number Matcher")
+class RegistrationNumberProcessorMatcherTest {
 
   @RegisterExtension
   static WireMockExtension wireMockExtension = WireMockExtension
@@ -33,18 +31,18 @@ class IncorporationNumberProcessorMatcherTest {
       .configureStaticDsl(true)
       .build();
 
-  ProcessorMatcher matcher = new IncorporationNumberProcessorMatcher(
+  ProcessorMatcher matcher = new RegistrationNumberProcessorMatcher(
       WebClient.builder().baseUrl("http://localhost:10011").build()
   );
 
   @Test
   @DisplayName("Name matching")
   void shouldMatchName() {
-    assertEquals("Incorporation Number Matcher", matcher.name());
+    assertEquals("Registration Number Matcher", matcher.name());
   }
 
   @ParameterizedTest
-  @MethodSource("incorporation")
+  @MethodSource("registrationNumber")
   @DisplayName("Match or not")
   void shouldBeEnabled(
       SubmissionInformationDto dto,
@@ -56,7 +54,7 @@ class IncorporationNumberProcessorMatcherTest {
   }
 
   @ParameterizedTest
-  @MethodSource("incorporation")
+  @MethodSource("registrationNumber")
   @DisplayName("Match or not")
   void shouldMatchOrNot(
       SubmissionInformationDto dto,
@@ -68,7 +66,7 @@ class IncorporationNumberProcessorMatcherTest {
     wireMockExtension.resetAll();
     wireMockExtension
         .stubFor(
-            get(urlPathEqualTo("/api/search/incorporationOrName"))
+            get(urlPathEqualTo("/api/search/registrationOrName"))
                 .willReturn(okJson(mockData))
         );
 
@@ -86,7 +84,7 @@ class IncorporationNumberProcessorMatcherTest {
     }
   }
 
-  private static Stream<Arguments> incorporation() {
+  private static Stream<Arguments> registrationNumber() {
     return
         Stream.of(
             Arguments.of(
@@ -98,7 +96,7 @@ class IncorporationNumberProcessorMatcherTest {
             Arguments.of(
                 new SubmissionInformationDto(1,null, null, "00000006", null, "C"),
                 false,
-                new MatcherResult("incorporationNumber", "00000006"),
+                new MatcherResult("registrationNumber", "00000006"),
                 "[{\"clientNumber\":\"00000006\"}]"
             )
         );

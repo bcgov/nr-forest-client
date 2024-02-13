@@ -74,21 +74,21 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
                     .withBirthdate(submissionDetail.getBirthdate())
-                    .withClientIdentification(submissionDetail.getIncorporationNumber())
+                    .withClientIdentification(submissionDetail.getRegistrationNumber())
                     .withClientComment(
                         String.join(" ",
                             getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME),
                             "submitted the",
                             "sole proprietor registered on BC Registry with number",
-                            submissionDetail.getIncorporationNumber(),
+                            submissionDetail.getRegistrationNumber(),
                             "and company name",
                             submissionDetail.getOrganizationName().toUpperCase()
                         )
                     )
                     .withRegistryCompanyTypeCode(ProcessorUtil.extractLetters(
-                        submissionDetail.getIncorporationNumber()))
+                        submissionDetail.getRegistrationNumber()))
                     .withCorpRegnNmbr(ProcessorUtil.extractNumbers(
-                        submissionDetail.getIncorporationNumber()))
+                        submissionDetail.getRegistrationNumber()))
                     .withClientNumber(message.payload())
             )
             //Load the details to set the remaining fields
@@ -152,7 +152,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                             .clientComment()
                             .split("and company name ")[1]
                     )
-                    .withParameter(ApplicationConstant.INCORPORATION_NUMBER,
+                    .withParameter(ApplicationConstant.REGISTRATION_NUMBER,
                         String.join(StringUtils.EMPTY,
                             forestClient.registryCompanyTypeCode(),
                             forestClient.corpRegnNmbr()

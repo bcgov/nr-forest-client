@@ -68,7 +68,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
         .submissionId(2)
         .submissionDetailId(2)
         .organizationName("Baxter Corp")
-        .incorporationNumber("FM00184546")
+        .registrationNumber("FM00184546")
         .businessTypeCode("R")
         .clientTypeCode("RSP")
         .goodStandingInd("Y")
@@ -139,7 +139,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .isInstanceOf(String.class)
               .isEqualTo("BAXTER CORP");
 
-          assertThat(message.parameters().get(ApplicationConstant.INCORPORATION_NUMBER))
+          assertThat(message.parameters().get(ApplicationConstant.REGISTRATION_NUMBER))
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("FM00184546");
@@ -155,7 +155,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
         .submissionId(2)
         .submissionDetailId(2)
         .organizationName("Baxter Corp")
-        .incorporationNumber("FM00184546")
+        .registrationNumber("FM00184546")
         .businessTypeCode("R")
         .clientTypeCode("RSP")
         .goodStandingInd("Y")
@@ -226,7 +226,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .isInstanceOf(String.class)
               .isEqualTo("BAXTER CORP");
 
-          assertThat(message.parameters().get(ApplicationConstant.INCORPORATION_NUMBER))
+          assertThat(message.parameters().get(ApplicationConstant.REGISTRATION_NUMBER))
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("FM00184546");
@@ -243,7 +243,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
     SubmissionDetailEntity detailEntity = SubmissionDetailEntity
         .builder()
         .submissionId(2)
-        .incorporationNumber("XX0000000")
+        .registrationNumber("XX0000000")
         .organizationName("Sample test")
         .clientTypeCode("RSP")
         .clientNumber("00000000")

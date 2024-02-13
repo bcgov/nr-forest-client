@@ -95,7 +95,7 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                             forestClient.clientName()
                         )
                     )
-                    .withParameter(ApplicationConstant.INCORPORATION_NUMBER,
+                    .withParameter(ApplicationConstant.REGISTRATION_NUMBER,
                         "not applicable")
             );
   }

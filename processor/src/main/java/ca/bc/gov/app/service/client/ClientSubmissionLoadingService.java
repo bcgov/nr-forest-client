@@ -45,7 +45,7 @@ public class ClientSubmissionLoadingService {
                     submissionId,
                     details.getOrganizationName(),
                     details.getBirthdate(),
-                    details.getIncorporationNumber(),
+                    details.getRegistrationNumber(),
                     details.getGoodStandingInd(),
                     details.getClientTypeCode()
                 )
@@ -105,7 +105,7 @@ public class ClientSubmissionLoadingService {
                     )
                     .map(submissionContactPair ->
                         new EmailRequestDto(
-                            details.getIncorporationNumber(),
+                            details.getRegistrationNumber(),
                             details.getOrganizationName(),
                             submissionContactPair.getLeft().getUserId(),
                             submissionContactPair.getLeft().getFirstName(),

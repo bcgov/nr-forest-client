@@ -118,7 +118,7 @@ class LegacyUnregisteredSPPersistenceServiceTest {
               .isInstanceOf(String.class)
               .isEqualTo("JAMES BAXTER");
 
-          assertThat(message.parameters().get(ApplicationConstant.INCORPORATION_NUMBER))
+          assertThat(message.parameters().get(ApplicationConstant.REGISTRATION_NUMBER))
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("not applicable");

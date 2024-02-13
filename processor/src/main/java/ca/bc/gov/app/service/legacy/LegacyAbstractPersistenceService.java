@@ -78,7 +78,7 @@ public abstract class LegacyAbstractPersistenceService {
                     "Loaded submission detail for persistence on oracle {} {} {}",
                     message.payload(),
                     submissionDetail.getOrganizationName(),
-                    submissionDetail.getIncorporationNumber()
+                    submissionDetail.getRegistrationNumber()
                 )
         )
         .flatMap(submissionDetail ->
@@ -142,7 +142,7 @@ public abstract class LegacyAbstractPersistenceService {
                             "Updating submission detail for persistence on oracle {} {} {}",
                             message.payload().clientNumber(),
                             submissionDetail.getOrganizationName(),
-                            submissionDetail.getIncorporationNumber()
+                            submissionDetail.getRegistrationNumber()
                         )
                     )
                     .flatMap(submissionDetailRepository::save)

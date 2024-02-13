@@ -309,7 +309,7 @@ const processAndLogOut = () => {
     usePost(
       "/api/ches/duplicate",
       {
-        incorporation: formData.businessInformation.incorporationNumber,
+        registrationNumber: formData.businessInformation.registrationNumber,
         name: formData.businessInformation.businessName,
         userName: `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}` ?? "",
         userId: ForestClientUserSession.user.userId ?? "",

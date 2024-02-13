@@ -51,7 +51,7 @@ const data = ref<SubmissionDetails>({
   updateUser: "",
   business: {
     businessType: "",
-    incorporationNumber: "",
+    registrationNumber: "",
     clientNumber: "",
     organizationName: "",
     clientType: "",
@@ -77,7 +77,7 @@ const data = ref<SubmissionDetails>({
   matchers: {
     goodStanding: "",
     corporationName: "",
-    incorporationNumber: "",
+    registrationNumber: "",
     contact: "",
     location: "",
   },
@@ -251,14 +251,14 @@ const tagColor = (status: string) => {
 };
 
 const matchingData = computed(() => {
-  const { corporationName, incorporationNumber, contact, location } = data.value.matchers;
+  const { corporationName, registrationNumber, contact, location } = data.value.matchers;
   let results = [];
 
   if (corporationName) {
     results.push(...corporationName.split(","));
   }
-  if (incorporationNumber) {
-    results.push(...incorporationNumber.split(","));
+  if (registrationNumber) {
+    results.push(...registrationNumber.split(","));
   }
   if (contact) {
     results.push(...contact.split(","));
@@ -461,8 +461,8 @@ const renderListItem = (label, clientNumber) => {
                 <span class="body-compact-01">{{ data.business.birthdate }}</span>
               </read-only-component>
 
-              <read-only-component label="Incorporation number" v-if="data.business.incorporationNumber">
-                <span class="body-compact-01">{{ data.business.incorporationNumber }}</span>
+              <read-only-component label="Registration number" v-if="data.business.registrationNumber">
+                <span class="body-compact-01">{{ data.business.registrationNumber }}</span>
               </read-only-component>
 
               <read-only-component label="B.C. Registries standing" v-if="data.business.businessType === 'R'">

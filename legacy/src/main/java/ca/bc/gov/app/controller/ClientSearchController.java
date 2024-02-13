@@ -22,15 +22,15 @@ public class ClientSearchController {
 
   private final ClientSearchService service;
 
-  @GetMapping("/incorporationOrName")
+  @GetMapping("/registrationOrName")
   public Flux<ForestClientDto> findByIncorporationOrName(
-      @RequestParam(required = false) String incorporationNumber,
+      @RequestParam(required = false) String registrationNumber,
       @RequestParam(required = false) String companyName
   ) {
-    log.info("Receiving request to search by incorporation number {} or company name {}",
-        incorporationNumber, companyName);
+    log.info("Receiving request to search by registration number {} or company name {}",
+        registrationNumber, companyName);
     return service
-        .findByIncorporationOrName(incorporationNumber, companyName);
+        .findByRegistrationNumberOrCompanyName(registrationNumber, companyName);
   }
 
   @GetMapping("/individual")

@@ -44,8 +44,8 @@ public class RegisteredBusinessInformationValidator implements Validator {
 
     validateClientType(businessInformation.clientType(), legalType, errors);
 
-    validateIncorporationNumberAndLegalType(
-        businessInformation.incorporationNumber(),
+    validateRegistrationNumberAndLegalType(
+        businessInformation.registrationNumber(),
         legalType,
         errors);
 
@@ -80,15 +80,15 @@ public class RegisteredBusinessInformationValidator implements Validator {
     }
   }
 
-  private void validateIncorporationNumberAndLegalType(
-      String incorporationNumber, LegalTypeEnum legalType, Errors errors) {
+  private void validateRegistrationNumberAndLegalType(
+      String registrationNumber, LegalTypeEnum legalType, Errors errors) {
 
-    String incorporationNumberField = "incorporationNumber";
+    String registrationNumberField = "registrationNumber";
 
-    if (StringUtils.isBlank(incorporationNumber)) {
+    if (StringUtils.isBlank(registrationNumber)) {
       errors.rejectValue(
-          incorporationNumberField,
-          fieldIsMissingErrorMessage(incorporationNumberField));
+          registrationNumberField,
+          fieldIsMissingErrorMessage(registrationNumberField));
       return;
     }
 
@@ -97,12 +97,12 @@ public class RegisteredBusinessInformationValidator implements Validator {
     }
 
     if (LegalTypeEnum.SP.equals(legalType) || LegalTypeEnum.GP.equals(legalType)) {
-      bcRegistryService.requestDocumentData(incorporationNumber)
+      bcRegistryService.requestDocumentData(registrationNumber)
           .doOnError(ResponseStatusException.class, e -> errors.rejectValue(
               "businessName", "Incorporation Number was not found in BC Registry"))
           .doOnNext(bcRegistryBusinessDto -> {
             if (Boolean.FALSE.equals(bcRegistryBusinessDto.business().goodStanding())) {
-              errors.rejectValue(incorporationNumberField,
+              errors.rejectValue(registrationNumberField,
                   "Company is not in goodStanding in BC Registry");
             }
           })

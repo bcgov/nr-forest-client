@@ -8,7 +8,7 @@
     "updateUser": "Isador Driver",
     "business": {
         "businessType": "Registered Business",
-        "incorporationNumber": "GP{{randomValue length=8 type='NUMERIC'}}",
+        "registrationNumber": "GP{{randomValue length=8 type='NUMERIC'}}",
         "clientNumber":"",
         "organizationName": "KOVACEK, THOMPSON AND BOYER",
         "clientType": "P",

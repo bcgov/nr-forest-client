@@ -30,13 +30,13 @@ class ClientSearchControllerIntegrationTest extends
   @ParameterizedTest
   @MethodSource("noResults")
   @DisplayName("Empty results for not found values")
-  void shouldReturnEmpty(String name, String incorporationNumber) {
+  void shouldReturnEmpty(String name, String registrationNumber) {
     client
         .get()
         .uri(uriBuilder ->
             uriBuilder
-                .path("/api/search/incorporationOrName")
-                .queryParam("incorporationNumber", incorporationNumber)
+                .path("/api/search/registrationOrName")
+                .queryParam("registrationNumber", registrationNumber)
                 .queryParam("companyName", name)
                 .build(new HashMap<>())
         )
@@ -48,14 +48,14 @@ class ClientSearchControllerIntegrationTest extends
   }
 
   @Test
-  @DisplayName("Search someone by incorporation number")
-  void shouldSearchByIncorporationNumber() {
+  @DisplayName("Search someone by registration number")
+  void shouldSearchByRegistrationNumber() {
     client
         .get()
         .uri(uriBuilder ->
             uriBuilder
-                .path("/api/search/incorporationOrName")
-                .queryParam("incorporationNumber", "00000001")
+                .path("/api/search/registrationOrName")
+                .queryParam("registrationNumber", "00000001")
                 .build(new HashMap<>())
         )
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -77,12 +77,12 @@ class ClientSearchControllerIntegrationTest extends
   void shouldFailIfNoParamProvided() {
     client
         .get()
-        .uri("/api/search/incorporationOrName", new HashMap<>())
+        .uri("/api/search/registrationOrName", new HashMap<>())
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
         .exchange()
         .expectStatus().isEqualTo(HttpStatusCode.valueOf(HttpStatus.EXPECTATION_FAILED.value()))
         .expectBody()
-        .equals("Missing value for parameter incorporationNumber or companyName");
+        .equals("Missing value for parameter registrationNumber or companyName");
   }
 
   @ParameterizedTest
@@ -93,7 +93,7 @@ class ClientSearchControllerIntegrationTest extends
         .get()
         .uri(uriBuilder ->
             uriBuilder
-                .path("/api/search/incorporationOrName")
+                .path("/api/search/registrationOrName")
                 .queryParam("companyName", name)
                 .build(new HashMap<>())
         )

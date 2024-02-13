@@ -24,7 +24,7 @@ public final class ApplicationConstant {
   public static final String UPDATED_BY = "updatedBy";
   public static final String FOREST_CLIENT_NUMBER = "forestClientNumber";
   public static final String FOREST_CLIENT_NAME = "forestClientName";
-  public static final String INCORPORATION_NUMBER = "incorporationNumber";
+  public static final String REGISTRATION_NUMBER = "registrationNumber";
   public static final String LOCATION_ID = "locationId";
   public static final String TOTAL = "total";
   public static final String INDEX = "index";

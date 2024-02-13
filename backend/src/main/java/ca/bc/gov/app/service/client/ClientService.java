@@ -338,7 +338,7 @@ public class ClientService {
     return
         legacyService
             .searchLegacy(
-                emailRequestDto.incorporation(),
+                emailRequestDto.registrationNumber(),
                 emailRequestDto.name(),
                 userId,
                 businessId
