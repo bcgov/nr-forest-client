@@ -453,7 +453,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
       </div>
       <hr class="divider" />
       <div>
-        <p class="label-01">Address</p>
+        <p class="label-01">Mailing address</p>
         <p class="body-compact-01">
           {{ formData.businessInformation.address.streetAddress }} <br />
           {{ formData.businessInformation.address.city }}, {{ formData.businessInformation.address.province.value }} <br />
