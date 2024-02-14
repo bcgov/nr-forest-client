@@ -401,7 +401,7 @@ div#app {
   background-blend-mode: multiply;
 }
 
-.heading-compact-01 {
+.heading-compact-01, cds-accordion-item::part(title) {
   color: var(--dark-theme-text-text-primary, #f3f3f5);
 
   /* Fixed heading styles/heading-compact-01 */
@@ -411,6 +411,10 @@ div#app {
   font-weight: 700;
   line-height: 1.125rem;
   letter-spacing: 0.01rem;
+}
+
+cds-accordion-item::part(title) {
+  color: var(--light-theme-text-text-primary, #131315);
 }
 
 .heading-compact-01-dark {
