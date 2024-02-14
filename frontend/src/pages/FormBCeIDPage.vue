@@ -498,6 +498,7 @@ const formattedDistrictsList = computed(() =>
 
         <review-wizard-step
             v-model:data="formData"
+            :districts-list="formattedDistrictsList"
             :active="currentTab == 3"
             @valid="validateStep"
             :goToStep="goToStep"

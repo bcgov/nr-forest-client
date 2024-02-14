@@ -19,6 +19,7 @@ import { codeConversionFn, toTitleCase } from "@/services/ForestClientService";
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
   data: FormDataDto;
+  districtsList: Array<CodeNameType>;
   active: boolean;
   goToStep: Function;
 }>();
@@ -33,6 +34,12 @@ const revalidateBus = useEventBus<void>("revalidate-bus");
 //Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data);
 watch([formData], () => emit("update:data", formData.value));
+
+const districtObject = computed(() =>
+  props.districtsList.find(
+    (district) => district.code === formData.value.businessInformation.district,
+  ),
+);
 
 const receviedClientType = ref({} as CodeNameType);
 
@@ -64,6 +71,9 @@ onMounted(() => {
         </h6>
         <p class="body-compact-01 grouping-22-item" id="clientTypeId">
           {{ clientType.text }}
+        </p>
+        <p class="body-compact-01 grouping-22-item" id="district">
+          {{ districtObject.name }}
         </p>
       </div>
       <div v-if="formData.businessInformation.birthdate" class="grouping-22-item">
