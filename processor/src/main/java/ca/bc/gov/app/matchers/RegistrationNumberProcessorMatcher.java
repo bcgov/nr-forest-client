@@ -16,11 +16,11 @@ import reactor.core.publisher.Mono;
 
 @Component
 @Slf4j
-public class IncorporationNumberProcessorMatcher implements ProcessorMatcher {
+public class RegistrationNumberProcessorMatcher implements ProcessorMatcher {
 
   private final WebClient legacyClientApi;
 
-  public IncorporationNumberProcessorMatcher(
+  public RegistrationNumberProcessorMatcher(
       @Qualifier("legacyClientApi") WebClient legacyClientApi
   ) {
     this.legacyClientApi = legacyClientApi;
@@ -28,18 +28,18 @@ public class IncorporationNumberProcessorMatcher implements ProcessorMatcher {
 
   @Override
   public boolean enabled(SubmissionInformationDto submission) {
-    return StringUtils.isNotBlank(submission.incorporationNumber());
+    return StringUtils.isNotBlank(submission.registrationNumber());
   }
 
   @Override
   public String name() {
-    return "Incorporation Number Matcher";
+    return "Registration Number Matcher";
   }
 
   @Override
   public Mono<MatcherResult> matches(SubmissionInformationDto submission) {
 
-    log.info("{} :: Validating {}", name(), submission.incorporationNumber());
+    log.info("{} :: Validating {}", name(), submission.registrationNumber());
 
     return
         legacyClientApi
@@ -47,8 +47,8 @@ public class IncorporationNumberProcessorMatcher implements ProcessorMatcher {
             .uri(
                 uriBuilder ->
                     uriBuilder
-                        .path("/api/search/incorporationOrName")
-                        .queryParam("incorporationNumber", submission.incorporationNumber())
+                        .path("/api/search/registrationOrName")
+                        .queryParam("registrationNumber", submission.registrationNumber())
                         .build(Map.of())
             )
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
@@ -57,7 +57,7 @@ public class IncorporationNumberProcessorMatcher implements ProcessorMatcher {
             .collectList()
             .filter(not(List::isEmpty))
             .map(values ->
-                new MatcherResult("incorporationNumber", String.join(",", values))
+                new MatcherResult("registrationNumber", String.join(",", values))
             );
   }
 

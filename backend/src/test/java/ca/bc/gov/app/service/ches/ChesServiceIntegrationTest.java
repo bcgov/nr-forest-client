@@ -211,7 +211,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
   void shouldBuildTemplate() {
     Map<String, Object> variables = Map.of("business", Map.of(
         "name", "John",
-        "incorporation", "john@example.com")
+        "registrationNumber", "john@example.com")
     );
     String expected = """
         <html>

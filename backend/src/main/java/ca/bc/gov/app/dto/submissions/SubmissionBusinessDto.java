@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public record SubmissionBusinessDto(
     String businessType,
-    String incorporationNumber,
+    String registrationNumber,
     String clientNumber,
     String organizationName,
     String clientType,

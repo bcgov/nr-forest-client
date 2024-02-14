@@ -117,12 +117,12 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
                 )
         );
 
-    ///search/incorporationOrName?incorporationNumber=XX1234567&companyName=Example%20Inc.
+    ///search/registrationOrName?registrationNumber=XX1234567&companyName=Example%20Inc.
     legacyStub
         .stubFor(
-            get(urlPathEqualTo("/search/incorporationOrName"))
-                .withQueryParam("incorporationNumber",
-                    equalTo(TestConstants.EMAIL_REQUEST.incorporation()))
+            get(urlPathEqualTo("/search/registrationOrName"))
+                .withQueryParam("registrationNumber",
+                    equalTo(TestConstants.EMAIL_REQUEST.registrationNumber()))
                 .withQueryParam("companyName", equalTo(TestConstants.EMAIL_REQUEST.name()))
                 .willReturn(okJson(TestConstants.LEGACY_OK))
         );

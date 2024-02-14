@@ -30,7 +30,7 @@ public class SubmissionDetailEntity {
   private String clientNumber;
 
   @Column("incorporation_number")
-  private String incorporationNumber;
+  private String registrationNumber;
 
   @Column("organization_name")
   private String organizationName;
@@ -49,4 +49,5 @@ public class SubmissionDetailEntity {
 
   @Column("district_code")
   private String districtCode;
+  
 }

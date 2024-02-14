@@ -87,7 +87,7 @@ class LegacyAbstractPersistenceServiceTest {
                     ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
                     ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000",
                     ApplicationConstant.FOREST_CLIENT_NAME, "STAR DOT STAR VENTURES",
-                    ApplicationConstant.INCORPORATION_NUMBER, "FM0159297",
+                    ApplicationConstant.REGISTRATION_NUMBER, "FM0159297",
                     ApplicationConstant.CLIENT_TYPE_CODE, "C"
                 )
             )
@@ -120,8 +120,8 @@ class LegacyAbstractPersistenceServiceTest {
               .isInstanceOf(String.class)
               .isEqualTo("STAR DOT STAR VENTURES");
 
-          assertThat(message.parameters().get(ApplicationConstant.INCORPORATION_NUMBER))
-              .as("incorporation number")
+          assertThat(message.parameters().get(ApplicationConstant.REGISTRATION_NUMBER))
+              .as("registration number")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("FM0159297");
@@ -185,7 +185,7 @@ class LegacyAbstractPersistenceServiceTest {
         ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
         ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000",
         ApplicationConstant.FOREST_CLIENT_NAME, "STAR DOT STAR VENTURES",
-        ApplicationConstant.INCORPORATION_NUMBER, "FM0159297",
+        ApplicationConstant.REGISTRATION_NUMBER, "FM0159297",
         ApplicationConstant.LOCATION_CODE, "00",
         ApplicationConstant.LOCATION_ID, 1,
         ApplicationConstant.CLIENT_TYPE_CODE, "C"
@@ -225,8 +225,8 @@ class LegacyAbstractPersistenceServiceTest {
               .isInstanceOf(String.class)
               .isEqualTo("STAR DOT STAR VENTURES");
 
-          assertThat(message.parameters().get(ApplicationConstant.INCORPORATION_NUMBER))
-              .as("incorporation number")
+          assertThat(message.parameters().get(ApplicationConstant.REGISTRATION_NUMBER))
+              .as("registration number")
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("FM0159297");
@@ -266,7 +266,7 @@ class LegacyAbstractPersistenceServiceTest {
                 SubmissionDetailEntity
                     .builder()
                     .submissionId(2)
-                    .incorporationNumber("XX0000000")
+                    .registrationNumber("XX0000000")
                     .organizationName("Sample test")
                     .clientTypeCode(clientTypeCode)
                     .clientNumber(clientNumber)
@@ -340,7 +340,7 @@ class LegacyAbstractPersistenceServiceTest {
     SubmissionDetailEntity detailEntity = SubmissionDetailEntity
         .builder()
         .submissionId(2)
-        .incorporationNumber("XX0000000")
+        .registrationNumber("XX0000000")
         .organizationName("Sample test")
         .clientTypeCode("C")
         .clientNumber("00000000")

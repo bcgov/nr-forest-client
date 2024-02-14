@@ -21,7 +21,7 @@ describe("BCeIDFormValidations.ts", () => {
       businessType: "JJ",
       legalType: "",
       clientType: "",
-      incorporationNumber: "",
+      registrationNumber: "",
       businessName: "The Test Client Corp",
       goodStandingInd: "",
     },

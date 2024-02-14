@@ -24,7 +24,7 @@ export interface FormDataDto {
     businessType: string;
     legalType: string;
     clientType: string;
-    incorporationNumber: string;
+    registrationNumber: string;
     businessName: string;
     goodStandingInd: string;
     birthdate: string;
@@ -52,7 +52,7 @@ export const formDataDto: FormDataDto = {
     businessType: "",
     legalType: "",
     clientType: "",
-    incorporationNumber: "",
+    registrationNumber: "",
     businessName: "",
     goodStandingInd: "",
     birthdate: "",

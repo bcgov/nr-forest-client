@@ -632,7 +632,7 @@ public class TestConstants {
         "updateUser": "Test User",
         "business": {
           "businessType": "Unegistered Business",
-          "incorporationNumber": "",
+          "registrationNumber": "",
           "clientNumber": null,
           "organizationName": "James",
           "clientType": "Individual",

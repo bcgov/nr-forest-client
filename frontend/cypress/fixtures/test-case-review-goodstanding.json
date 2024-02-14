@@ -8,7 +8,7 @@
     "updateUser": "Isador Driver",
     "business": {
         "businessType": "Registered Business",
-        "incorporationNumber": "GP12345678",
+        "registrationNumber": "GP12345678",
         "clientNumber":"",
         "organizationName": "KOVACEK, THOMPSON AND BOYER",
         "clientType": "P",

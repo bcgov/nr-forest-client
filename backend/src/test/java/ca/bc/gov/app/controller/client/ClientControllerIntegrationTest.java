@@ -149,8 +149,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     legacyStub
         .stubFor(
-            get(urlPathEqualTo("/search/incorporationOrName"))
-                .withQueryParam("incorporationNumber", equalTo("AA0000001"))
+            get(urlPathEqualTo("/search/registrationOrName"))
+                .withQueryParam("registrationNumber", equalTo("AA0000001"))
                 .withQueryParam("companyName", equalTo("SAMPLE COMPANY"))
                 .willReturn(okJson(legacyResponse))
         );

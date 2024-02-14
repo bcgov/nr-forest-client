@@ -62,7 +62,7 @@ class LegacyClientPersistenceServiceTest {
         .submissionId(2)
         .submissionDetailId(2)
         .organizationName("STAR DOT STAR VENTURES")
-        .incorporationNumber("FM0159297")
+        .registrationNumber("FM0159297")
         .businessTypeCode("R")
         .clientTypeCode("C")
         .goodStandingInd("Y")
@@ -93,7 +93,7 @@ class LegacyClientPersistenceServiceTest {
           assertThat(message.parameters())
               .isNotNull()
               .hasFieldOrPropertyWithValue("forestClientName", "STAR DOT STAR VENTURES")
-              .hasFieldOrPropertyWithValue("incorporationNumber", "FM0159297");
+              .hasFieldOrPropertyWithValue("registrationNumber", "FM0159297");
 
           assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
               .isNotNull()
@@ -113,7 +113,7 @@ class LegacyClientPersistenceServiceTest {
               .isInstanceOf(String.class)
               .isEqualTo("STAR DOT STAR VENTURES");
 
-          assertThat(message.parameters().get(ApplicationConstant.INCORPORATION_NUMBER))
+          assertThat(message.parameters().get(ApplicationConstant.REGISTRATION_NUMBER))
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("FM0159297");

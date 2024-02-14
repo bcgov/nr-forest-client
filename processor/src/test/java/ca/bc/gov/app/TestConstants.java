@@ -22,7 +22,7 @@ public class TestConstants {
       .builder()
       .submissionDetailId(1)
       .submissionId(1)
-      .incorporationNumber("00000000")
+      .registrationNumber("00000000")
       .organizationName("TEST")
       .businessTypeCode("T")
       .clientTypeCode("C")
@@ -51,7 +51,7 @@ public class TestConstants {
 
   public static final String EMAIL_REQUEST_JSON = """
       {
-        "incorporation": "ABC1234",
+        "registrationNumber": "ABC1234",
         "name": "Test Corp",
         "userId": "testuserid",
         "userName": "Test User",
@@ -75,7 +75,7 @@ public class TestConstants {
       .userId("abc1234")
       .build();
   public static final EmailRequestDto EMAIL_REQUEST_DTO = new EmailRequestDto(
-      SUBMISSION_DETAIL.getIncorporationNumber(),
+      SUBMISSION_DETAIL.getRegistrationNumber(),
       SUBMISSION_DETAIL.getOrganizationName(),
       SUBMISSION_CONTACT.getUserId(),
       SUBMISSION_CONTACT.getFirstName(),

@@ -37,7 +37,7 @@
       },
       "response": {
         "status": 409,
-        "body": "The Edgar Paciolli already exists with the Incorporation number {{request.path.[2]}} and client number 999999",
+        "body": "The Edgar Paciolli already exists with the registration number {{request.path.[2]}} and client number 999999",
         "transformers": [
           "response-template"
         ]
@@ -186,7 +186,7 @@
         "bodyPatterns": [
           {
             "matchesJsonPath": {
-              "expression": "$.businessInformation.incorporationNumber",
+              "expression": "$.businessInformation.registrationNumber",
               "contains": "XX"
             }
           }
@@ -208,7 +208,7 @@
         "bodyPatterns": [
           {
             "matchesJsonPath": {
-              "expression": "$.businessInformation.incorporationNumber",
+              "expression": "$.businessInformation.registrationNumber",
               "contains": "UU"
             }
           }
@@ -227,7 +227,7 @@
         "bodyPatterns": [
           {
             "matchesJsonPath": {
-              "expression": "$.incorporation",
+              "expression": "$.registrationNumber",
               "contains": "ZZ"
             }
           }
@@ -245,7 +245,7 @@
         "bodyPatterns": [
           {
             "matchesJsonPath": {
-              "expression": "$.businessInformation.incorporationNumber",
+              "expression": "$.businessInformation.registrationNumber",
               "contains": "FM1234567"
             }
           }

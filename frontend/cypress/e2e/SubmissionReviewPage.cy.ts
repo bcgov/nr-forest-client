@@ -113,7 +113,7 @@ describe("Submission Review Page", () => {
             );
         }
 
-        if (testCase.incorporationNumber) {
+        if (testCase.registrationNumber) {
           cy.get("cds-actionable-notification")
             .should("exist")
             .should(
@@ -122,7 +122,7 @@ describe("Submission Review Page", () => {
             )
             .should(
               "contain",
-              `Partial match on incorporation number - Client number: ${testCase.incorporationNumber}`
+              `Partial match on registration number - Client number: ${testCase.registrationNumber}`
             );
         }
 

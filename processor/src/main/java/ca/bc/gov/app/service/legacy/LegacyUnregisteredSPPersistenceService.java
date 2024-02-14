@@ -112,7 +112,7 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                             .filter(StringUtils::isNotBlank)
                             .collect(Collectors.joining(" "))
                     )
-                    .withParameter(ApplicationConstant.INCORPORATION_NUMBER,
+                    .withParameter(ApplicationConstant.REGISTRATION_NUMBER,
                         "not applicable")
             );
   }

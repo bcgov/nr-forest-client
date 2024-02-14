@@ -29,7 +29,7 @@ public class ClientMapper {
 
     return new SubmissionDetailEntity()
         .withSubmissionId(submissionId)
-        .withIncorporationNumber(clientBusinessInformationDto.incorporationNumber())
+        .withRegistrationNumber(clientBusinessInformationDto.registrationNumber())
         .withOrganizationName(clientBusinessInformationDto.businessName())
         .withBusinessTypeCode(clientBusinessInformationDto.businessType())
         .withClientTypeCode(clientBusinessInformationDto.clientType())
