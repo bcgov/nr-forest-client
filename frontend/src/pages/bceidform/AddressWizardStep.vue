@@ -182,7 +182,7 @@ onMounted(() => safeSetFocusedComponent("addr_0", 800));
       </div>
     </div>
     <div class="grouping-02">
-      <p class="body-01 heading-compact-01-dark">
+      <p class="body-02 heading-compact-01-dark">
         If the business operates in more than one location you can include additional addresses.
       </p>
     </div>

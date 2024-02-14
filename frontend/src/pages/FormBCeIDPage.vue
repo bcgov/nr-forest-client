@@ -471,7 +471,7 @@ const formattedDistrictsList = computed(() =>
         
         <div class="form-steps-section-01">
           <h5>Add authorized people to the account</h5>
-            <p class="body-01 heading-compact-01-dark">
+            <p class="body-02 heading-compact-01-dark">
               Review your name and email address. They’re from your BCeID.
             </p>
         </div>

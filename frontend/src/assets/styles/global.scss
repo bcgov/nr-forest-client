@@ -36,6 +36,7 @@
   --light-theme-notifications-notification-info-background: #c2e0ff;
   --light-theme-background-background-inverse: #2d2d2f;
   --light-theme-text-text-primary: #131315;
+  --light-theme-text-text-secondary: #606062;
   --border-subtle-02: #dfdfe1;
   --light-theme-tag-blue-background: #c2e0ff;
   --light-theme-tag-blue-text: #00478f;
@@ -507,11 +508,11 @@ h4.fluid {
 
   /* Body styles/body-01 */
 
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 1.25rem;
-  letter-spacing: 0.01rem;
+  line-height: 1.5rem;
+  letter-spacing: 0;
 }
 
 .body-02 {
@@ -537,6 +538,10 @@ cds-actionable-notification * {
   font-weight: 400;
   line-height: 1.25rem;
   letter-spacing: 0.01rem;
+}
+
+.light-theme-text-text-secondary {
+  color: var(--light-theme-text-text-secondary, #606062);
 }
 
 .content {
