@@ -473,10 +473,6 @@ const renderListItem = (label, clientNumber) => {
                 <span class="body-compact-01">{{ data.business.districtDesc }}</span>
               </read-only-component>
 
-              <read-only-component label="Last updated">
-                <span class="body-compact-01">{{ friendlyDate(data.updateTimestamp) }} | {{ data.updateUser }}</span>
-              </read-only-component>
-
               <read-only-component label="Submission status">
                 <cds-tag :type="tagColor(data.submissionStatus)" title=""><span>{{ data.submissionStatus }}</span></cds-tag>
               </read-only-component>
@@ -539,26 +535,26 @@ const renderListItem = (label, clientNumber) => {
             
               <hr class="grouping-divider" v-if="location.index > 0"/>
               <p class="body-01">{{location.name}}</p>
-              <div class="grouping-07">
+              <div class="grouping-07">                 
+                <read-only-component label="Street address">
+                  <span class="body-compact-01">{{ location.streetAddress }}</span>
+                </read-only-component>
+                  
+                <read-only-component label="City">
+                  <span class="body-compact-01">{{ location.city }}</span>
+                </read-only-component>
+
+                <read-only-component label="Province or territory">
+                  <span class="body-compact-01">{{ location.province }}</span>
+                </read-only-component>
+
                 <read-only-component label="Country">
-                    <span class="body-compact-01">{{ location.country }}</span>
-                  </read-only-component>
-                  
-                  <read-only-component label="Street address">
-                    <span class="body-compact-01">{{ location.streetAddress }}</span>
-                  </read-only-component>
-                  
-                  <read-only-component label="City">
-                    <span class="body-compact-01">{{ location.city }}</span>
-                  </read-only-component>
+                  <span class="body-compact-01">{{ location.country }}</span>
+                </read-only-component>
 
-                  <read-only-component label="Province or territory">
-                    <span class="body-compact-01">{{ location.province }}</span>
-                  </read-only-component>
-
-                  <read-only-component label="Postal code">
-                    <span class="body-compact-01">{{ location.postalCode }}</span>
-                  </read-only-component>
+                <read-only-component label="Postal code">
+                  <span class="body-compact-01">{{ location.postalCode }}</span>
+                </read-only-component>
               </div>
             </div>
           </cds-accordion-item>
