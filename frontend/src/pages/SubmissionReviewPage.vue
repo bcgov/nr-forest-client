@@ -323,8 +323,8 @@ const renderListItem = (label, clientNumber) => {
             {{ normalizeString(data.business.organizationName) }}
           </span>
         </h3>
-        <p class="body-01" data-testid="subtitle" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
-        <p class="body-01" data-testid="subtitle" v-else>Check and manage this submission for a new client number</p>
+        <p class="body-02 light-theme-text-text-secondary" data-testid="subtitle" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
+        <p class="body-02 light-theme-text-text-secondary" data-testid="subtitle" v-else>Check and manage this submission for a new client number</p>
       </div>
       
       <div class="hide-when-less-than-two-children"><!--
@@ -534,7 +534,7 @@ const renderListItem = (label, clientNumber) => {
             :key="location.name">
             
               <hr class="grouping-divider" v-if="location.index > 0"/>
-              <p class="body-01">{{location.name}}</p>
+              <p class="body-01 light-theme-text-text-primary">{{location.name}}</p>
               <div class="grouping-07">                 
                 <read-only-component label="Street address">
                   <span class="body-compact-01">{{ location.streetAddress }}</span>
@@ -568,7 +568,7 @@ const renderListItem = (label, clientNumber) => {
             :key="contact.index">
 
               <hr class="grouping-divider" v-if="contact.index > 0"/>
-              <p class="body-01">{{contact.firstName}} {{ contact.lastName }}</p>
+              <p class="body-01 light-theme-text-text-primary">{{contact.firstName}} {{ contact.lastName }}</p>
               <div class="grouping-07">
                 <read-only-component label="Associated location" v-if="$features.BCEID_MULTI_ADDRESS">
                   <span class="body-compact-01">{{ contact.locations.join(", ") }}</span>

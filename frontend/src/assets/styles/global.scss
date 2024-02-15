@@ -36,6 +36,7 @@
   --light-theme-notifications-notification-info-background: #c2e0ff;
   --light-theme-background-background-inverse: #2d2d2f;
   --light-theme-text-text-primary: #131315;
+  --light-theme-text-text-secondary: #606062;
   --border-subtle-02: #dfdfe1;
   --light-theme-tag-blue-background: #c2e0ff;
   --light-theme-tag-blue-text: #00478f;
@@ -401,10 +402,22 @@ div#app {
   background-blend-mode: multiply;
 }
 
-.heading-compact-01 {
-  color: var(--dark-theme-text-text-primary, #f3f3f5);
+.heading-compact-01, cds-accordion-item::part(title) {
+  color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-compact-01 */
+
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.375rem;
+  letter-spacing: 0;
+}
+
+.heading-compact-02 {
+  color: var(--dark-theme-text-text-primary, #f3f3f5);
+
+  /* Fixed heading styles/heading-compact-02 */
 
   font-size: 0.875rem;
   font-style: normal;
@@ -413,8 +426,12 @@ div#app {
   letter-spacing: 0.01rem;
 }
 
-.heading-compact-01-dark {
+.light-theme-text-text-primary {
   color: var(--light-theme-text-text-primary, #131315) !important;
+}
+
+.light-theme-text-text-secondary {
+  color: var(--light-theme-text-text-secondary, #606062);
 }
 
 .heading-07,
@@ -503,11 +520,11 @@ h4.fluid {
 
   /* Body styles/body-01 */
 
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 1.25rem;
-  letter-spacing: 0.01rem;
+  line-height: 1.5rem;
+  letter-spacing: 0;
 }
 
 .body-02 {

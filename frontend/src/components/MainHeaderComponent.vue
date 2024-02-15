@@ -124,9 +124,9 @@ const adminEmail = "forhvap.cliadmin@gov.bc.ca";
     </a>
     
     <cds-header-name href="javascript:void 0">
-      <span class="heading-compact-01" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
-      <span class="heading-compact-01" v-else>Client Management System</span>
-      <span class="heading-compact-01" v-if="env !== 'Prod' && !isSmallScreen">Env. {{ env }} - Rel. {{appVersion}}</span>
+      <span class="heading-compact-02" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
+      <span class="heading-compact-02" v-else>Client Management System</span>
+      <span class="heading-compact-02" v-if="env !== 'Prod' && !isSmallScreen">Env. {{ env }} - Rel. {{appVersion}}</span>
     </cds-header-name>
     
     <div class="heading-buttons">
