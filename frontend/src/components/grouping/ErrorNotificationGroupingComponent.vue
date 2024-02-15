@@ -173,7 +173,7 @@ const goToStep = (step: number) => {
       kind="error"
     >
       <p class="body-compact-01">
-        <span class="heading-compact-01 heading-compact-01-dark"
+        <span class="heading-compact-02 light-theme-text-text-primary"
           >Contact required: “{{ item }}”</span
         >
         must have a contact.

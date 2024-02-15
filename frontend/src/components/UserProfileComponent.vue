@@ -36,7 +36,7 @@ const initials = computed(() =>
     <span class="avatar-text">{{ initials }}</span>
   </div>
   <div class="grouping-20">
-    <p class="heading-compact-01 heading-compact-01-dark">{{name}}</p>
+    <p class="heading-compact-02 light-theme-text-text-primary">{{name}}</p>
     <p class="helper-text-01">{{provider.toUpperCase()}}: {{identifier}}</p>
     <p class="helper-text-01">{{email}}</p>
   </div>
