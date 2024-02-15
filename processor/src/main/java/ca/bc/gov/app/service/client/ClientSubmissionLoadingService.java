@@ -59,71 +59,57 @@ public class ClientSubmissionLoadingService {
             );
   }
 
-  public Mono<EmailRequestDto> buildMailMessage(
-      MessagingWrapper<Integer> message
-  ) {
-
+  public Mono<EmailRequestDto> buildMailMessage(MessagingWrapper<Integer> message) {
     if (message
-            .parameters()
-            .get(ApplicationConstant.SUBMISSION_STATUS) == null
-    ) {
+          .parameters()
+          .get(ApplicationConstant.SUBMISSION_STATUS) == null
+        ) {
       return Mono.empty();
     }
 
-    return
-        submissionDetailRepository
+    return submissionDetailRepository
             .findBySubmissionId(message.payload())
             .doOnNext(
                 submission -> log.info("Loaded submission details for mail purpose {}", submission)
             )
             .flatMap(details ->
-                contactRepository
-                    .findFirstBySubmissionId(message.payload())
-                    .doOnNext(submissionContact -> log.info(
-                        "Loaded submission contact details for mail purpose {}", submissionContact)
+              contactRepository
+                .findFirstBySubmissionId(message.payload())
+                .flatMap(submissionContact -> Mono.just(isSubmissionStatusNew(message))
+                .filter(Boolean::booleanValue)
+                .flatMap(isAdmin -> getDistrictEmailsAndDescription(details.getDistrictCode())
+                    .map(districtInfo -> 
+                      new EmailRequestDto(
+                          details.getRegistrationNumber(),
+                          details.getOrganizationName(), 
+                          submissionContact.getUserId(),
+                          submissionContact.getFirstName(), 
+                          districtInfo.getLeft(),
+                          getTemplate(message), 
+                          getSubject(message, details.getOrganizationName()),
+                          getParameter(message, submissionContact.getFirstName(),
+                          details.getOrganizationName(), 
+                          districtInfo.getRight(),
+                          Objects.toString(details.getClientNumber(), ""),
+                          String.valueOf(message.parameters().get(ApplicationConstant.MATCHING_REASON)),
+                          message.payload()
+                      )
                     )
-                    // Reads the district information from the forest client district endpoint if is a client admin email
-                    .flatMap(submissionContact ->
-                        Mono
-                            .just(isSubmissionStatusNew(message))
-                            .filter(Boolean::booleanValue)
-                            .flatMap(isAdmin ->
-                                forestClientApi
-                                    .get()
-                                    .uri("/districts/{districtCode}", details.getDistrictCode())
-                                    .exchangeToMono(clientResponse -> clientResponse.bodyToMono(
-                                        DistrictDto.class)
-                                    )
-                                    .doOnNext(district -> log.info(
-                                                                "Loaded district details {} {}", 
-                                                                district.code(),
-                                                                district.description()))
-                                    .map(DistrictDto::emails)
-                            )
-                            .defaultIfEmpty(submissionContact.getEmailAddress())
-                            .map(mail -> Pair.of(submissionContact, mail))
-                    )
-                    .map(submissionContactPair ->
-                        new EmailRequestDto(
-                            details.getRegistrationNumber(),
-                            details.getOrganizationName(),
-                            submissionContactPair.getLeft().getUserId(),
-                            submissionContactPair.getLeft().getFirstName(),
-                            submissionContactPair.getRight(),
-                            getTemplate(message),
-                            getSubject(message, details.getOrganizationName()),
-                            getParameter(
-                                message,
-                                submissionContactPair.getLeft().getFirstName(),
-                                details.getOrganizationName(),
-                                Objects.toString(details.getClientNumber(), ""),
-                                String.valueOf(
-                                    message.parameters().get(ApplicationConstant.MATCHING_REASON)),
-                                message.payload()
-                            )
-                        )
-                    )
-            );
+                )
+            )
+          )
+      );
+  }
+
+  private Mono<Pair<String, String>> getDistrictEmailsAndDescription(String districtCode) {
+    return forestClientApi
+            .get()
+            .uri("/districts/{districtCode}", districtCode)
+            .exchangeToMono(clientResponse -> clientResponse.bodyToMono(DistrictDto.class))
+            .doOnNext(district -> log.info("Loaded district details {} {}", 
+                                            district.code(),
+                                            district.description()))
+            .map(district -> Pair.of(district.emails(), district.description()));
   }
 
   private boolean isSubmissionStatusNew(MessagingWrapper<Integer> message) {
@@ -159,6 +145,7 @@ public class ClientSubmissionLoadingService {
       MessagingWrapper<Integer> message,
       String username,
       String businessName,
+      String districtName,
       String clientNumber,
       String reason,
       Integer submissionId
@@ -167,20 +154,22 @@ public class ClientSubmissionLoadingService {
         .get(ApplicationConstant.SUBMISSION_STATUS)) {
       case A -> approvalParameters(username, businessName, clientNumber);
       case R -> rejectionParameters(username, businessName, clientNumber, reason);
-      default -> revisionParameters(username, businessName, submissionId);
+      default -> revisionParameters(username, businessName, submissionId, districtName);
     };
   }
 
   private Map<String, Object> revisionParameters(
       String username,
       String businessName,
-      Integer submissionId
+      Integer submissionId,
+      String districtName
   ) {
     return Map.of(
         "userName", username,
         "submission", submissionId,
         "business", Map.of(
-            "name", businessName
+            "name", businessName,
+            "districtName", districtName
         )
     );
   }
