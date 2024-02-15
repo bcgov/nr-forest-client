@@ -403,23 +403,35 @@ div#app {
 }
 
 .heading-compact-01, cds-accordion-item::part(title) {
-  color: var(--dark-theme-text-text-primary, #f3f3f5);
+  color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-compact-01 */
+
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.375rem;
+  letter-spacing: 0;
+}
+
+.light-theme-text-text-primary {
+  color: var(--light-theme-text-text-primary, #131315) !important;
+}
+
+.light-theme-text-text-secondary {
+  color: var(--light-theme-text-text-secondary, #606062);
+}
+
+.heading-compact-02 {
+  color: var(--dark-theme-text-text-primary, #f3f3f5);
+
+  /* Fixed heading styles/heading-compact-02 */
 
   font-size: 0.875rem;
   font-style: normal;
   font-weight: 700;
   line-height: 1.125rem;
   letter-spacing: 0.01rem;
-}
-
-cds-accordion-item::part(title) {
-  color: var(--light-theme-text-text-primary, #131315);
-}
-
-.heading-compact-01-dark {
-  color: var(--light-theme-text-text-primary, #131315) !important;
 }
 
 .heading-07,
@@ -538,10 +550,6 @@ cds-actionable-notification * {
   font-weight: 400;
   line-height: 1.25rem;
   letter-spacing: 0.01rem;
-}
-
-.light-theme-text-text-secondary {
-  color: var(--light-theme-text-text-secondary, #606062);
 }
 
 .content {
