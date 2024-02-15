@@ -473,6 +473,10 @@ const renderListItem = (label, clientNumber) => {
                 <span class="body-compact-01">{{ data.business.districtDesc }}</span>
               </read-only-component>
 
+              <read-only-component label="Submitted on">
+                <span class="body-compact-01">{{ formattedDate(data.submittedTimestamp) }}</span>
+              </read-only-component>
+
               <read-only-component label="Submission status">
                 <cds-tag :type="tagColor(data.submissionStatus)" title=""><span>{{ data.submissionStatus }}</span></cds-tag>
               </read-only-component>
@@ -515,10 +519,6 @@ const renderListItem = (label, clientNumber) => {
                       </cds-tooltip-content>
                     </cds-tooltip>
                   </read-only-component>
-
-              <read-only-component label="Submitted on">
-                <span class="body-compact-01">{{ formattedDate(data.submittedTimestamp) }}</span>
-              </read-only-component>
 
             </div>
             </cds-accordion-item>
