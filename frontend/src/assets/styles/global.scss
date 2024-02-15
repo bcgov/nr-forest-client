@@ -414,14 +414,6 @@ div#app {
   letter-spacing: 0;
 }
 
-.light-theme-text-text-primary {
-  color: var(--light-theme-text-text-primary, #131315) !important;
-}
-
-.light-theme-text-text-secondary {
-  color: var(--light-theme-text-text-secondary, #606062);
-}
-
 .heading-compact-02 {
   color: var(--dark-theme-text-text-primary, #f3f3f5);
 
@@ -432,6 +424,14 @@ div#app {
   font-weight: 700;
   line-height: 1.125rem;
   letter-spacing: 0.01rem;
+}
+
+.light-theme-text-text-primary {
+  color: var(--light-theme-text-text-primary, #131315) !important;
+}
+
+.light-theme-text-text-secondary {
+  color: var(--light-theme-text-text-secondary, #606062);
 }
 
 .heading-07,
