@@ -326,7 +326,7 @@ create table if not exists nrfc.email_log (
     exception_message       text            null,
     template_name           varchar(40)     not null,
     email_address           varchar(100)    not null,
-    email_subject           varchar(50)     not null,
+    email_subject           varchar(100)     not null,
     email_variables         JSONB           null,
     create_timestamp        timestamp       default current_timestamp not null,
     update_timestamp        timestamp       default current_timestamp,
