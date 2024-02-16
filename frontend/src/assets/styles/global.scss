@@ -127,6 +127,10 @@ b {
   --cds-button-tertiary: var(--dark-theme-text-text-primary);
 }
 
+.heading-buttons cds-button[kind="ghost"]::part(button) {
+  color: var(--light-theme-text-text-on-color);
+}
+
 .heading-buttons cds-button span {
   width: 5rem;
 }
@@ -415,7 +419,7 @@ div#app {
 }
 
 .heading-compact-02 {
-  color: var(--dark-theme-text-text-primary, #f3f3f5);
+  color: var(--light-theme-text-text-on-color, #ffffff);
 
   /* Fixed heading styles/heading-compact-02 */
 
