@@ -10,6 +10,8 @@ import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -61,55 +63,59 @@ public class ClientSubmissionLoadingService {
 
   public Mono<EmailRequestDto> buildMailMessage(MessagingWrapper<Integer> message) {
     if (message
-          .parameters()
-          .get(ApplicationConstant.SUBMISSION_STATUS) == null
-        ) {
+            .parameters()
+            .get(ApplicationConstant.SUBMISSION_STATUS) == null
+    ) {
       return Mono.empty();
     }
 
     return submissionDetailRepository
-            .findBySubmissionId(message.payload())
-            .doOnNext(
-                submission -> log.info("Loaded submission details for mail purpose {}", submission)
-            )
-            .flatMap(details ->
-              contactRepository
+        .findBySubmissionId(message.payload())
+        .doOnNext(
+            submission -> log.info("Loaded submission details for mail purpose {}", submission)
+        )
+        .flatMap(details ->
+            contactRepository
                 .findFirstBySubmissionId(message.payload())
-                .flatMap(submissionContact -> Mono.just(isSubmissionStatusNew(message))
-                .filter(Boolean::booleanValue)
-                .flatMap(isAdmin -> getDistrictEmailsAndDescription(details.getDistrictCode())
-                    .map(districtInfo -> 
-                      new EmailRequestDto(
-                          details.getRegistrationNumber(),
-                          details.getOrganizationName(), 
-                          submissionContact.getUserId(),
-                          submissionContact.getFirstName(), 
-                          districtInfo.getLeft(),
-                          getTemplate(message), 
-                          getSubject(message, details.getOrganizationName()),
-                          getParameter(message, submissionContact.getFirstName(),
-                          details.getOrganizationName(), 
-                          districtInfo.getRight(),
-                          Objects.toString(details.getClientNumber(), ""),
-                          String.valueOf(message.parameters().get(ApplicationConstant.MATCHING_REASON)),
-                          message.payload()
-                      )
-                    )
+                .flatMap(
+                    submissionContact -> getDistrictEmailsAndDescription(details.getDistrictCode())
+                        .map(districtInfo ->
+                            new EmailRequestDto(
+                                details.getRegistrationNumber(),
+                                details.getOrganizationName(),
+                                submissionContact.getUserId(),
+                                submissionContact.getFirstName(),
+                                Stream
+                                    .of(districtInfo.getLeft(),
+                                        submissionContact.getEmailAddress()
+                                    )
+                                    .filter(Objects::nonNull)
+                                    .collect(Collectors.joining(",")),
+                                getTemplate(message),
+                                getSubject(message, details.getOrganizationName()),
+                                getParameter(message, submissionContact.getFirstName(),
+                                    details.getOrganizationName(),
+                                    districtInfo.getRight(),
+                                    Objects.toString(details.getClientNumber(), ""),
+                                    String.valueOf(message.parameters()
+                                        .get(ApplicationConstant.MATCHING_REASON)),
+                                    message.payload()
+                                )
+                            )
+                        )
                 )
-            )
-          )
-      );
+        );
   }
 
   private Mono<Pair<String, String>> getDistrictEmailsAndDescription(String districtCode) {
     return forestClientApi
-            .get()
-            .uri("/districts/{districtCode}", districtCode)
-            .exchangeToMono(clientResponse -> clientResponse.bodyToMono(DistrictDto.class))
-            .doOnNext(district -> log.info("Loaded district details {} {}", 
-                                            district.code(),
-                                            district.description()))
-            .map(district -> Pair.of(district.emails(), district.description()));
+        .get()
+        .uri("/districts/{districtCode}", districtCode)
+        .exchangeToMono(clientResponse -> clientResponse.bodyToMono(DistrictDto.class))
+        .doOnNext(district -> log.info("Loaded district details {} {}",
+            district.code(),
+            district.description()))
+        .map(district -> Pair.of(district.emails(), district.description()));
   }
 
   private boolean isSubmissionStatusNew(MessagingWrapper<Integer> message) {

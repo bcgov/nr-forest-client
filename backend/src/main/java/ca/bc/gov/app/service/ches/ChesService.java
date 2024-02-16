@@ -25,13 +25,17 @@ import io.micrometer.observation.annotation.Observed;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -95,9 +99,15 @@ public class ChesService {
 
     log.info("Sending email to {} with subject {}", emailAddress, processedSubject);
 
+    List<String> emailAddressList = Optional.ofNullable(emailAddress)
+        .filter(StringUtils::isNotBlank)
+        .map(email -> email.split(","))
+        .map(Arrays::asList)
+        .orElse(new ArrayList<>());
+
     return this
         .buildTemplate(templateName, variables)
-        .map(body -> new ChesRequestDto(List.of(emailAddress), body))
+        .map(body -> new ChesRequestDto(emailAddressList, body))
         .flatMap(chesRequestDto ->
             this
                 .sendEmail(chesRequestDto, processedSubject)
