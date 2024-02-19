@@ -215,6 +215,11 @@ cds-combo-box::part(title-text) {
   color: var(--light-theme-text-text-primary, #131315);
 }
 
+cds-combo-box::part(title-text)::after {
+  color: var(--light-theme-text-text-error, #b32001);
+  content: ' (required)';
+}
+
 cds-combo-box::part(trigger-button) {
   padding: 0px 3rem 0px 0;
 }
