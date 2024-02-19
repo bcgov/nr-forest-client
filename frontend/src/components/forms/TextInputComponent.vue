@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, nextTick } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/text-input/index";
 // Composables
@@ -7,6 +7,7 @@ import { useEventBus } from "@vueuse/core";
 // Types
 import { isEmpty } from "@/dto/CommonTypesDto";
 import type { TextInputType } from "@/components/types";
+import type { CDSTextInput } from "@carbon/web-components";
 
 //Define the input properties for this component
 const props = withDefaults(
@@ -117,25 +118,30 @@ const selectValue = (event: any) => {
   selectedValue.value = event.target.value;
   isUserEvent.value = true
 };
+
+const cdsTextInput = ref<InstanceType<typeof CDSTextInput> | null>(null);
+
+watch(cdsTextInput, async (value) => {
+  if (value) {
+    await nextTick();
+    const label = value.shadowRoot.querySelector("label");
+    if (label) {
+      // Effectively associates the label with the input.
+      label.htmlFor = "input";
+    }
+  }
+});
 </script>
 
 <template>
   <div v-if="enabled" class="grouping-02" :class="$attrs.class">
     <div class="input-group">
-      <div class="cds--text-input__label-wrapper">
-        <label :id="id + 'Label'" 
-               :for="id" 
-               class="cds-text-input-label">
-          {{ enabled ? label : null }}
-          <span v-if="requiredLabel"
-                class="cds-text-input-required-label">
-                 (required)
-          </span>
-        </label>
-      </div>
       <cds-text-input
         v-if="enabled"
+        ref="cdsTextInput"
         :id="id"
+        :label="label"
+        :data-required-label="requiredLabel"
         :type="type"
         :placeholder="placeholder"
         :value="selectedValue"
@@ -149,6 +155,7 @@ const selectValue = (event: any) => {
         :data-focus="id"
         :data-scroll="id"
         :data-id="'input-' + id"
+        v-shadow="3"
       />
     </div>
   </div>
