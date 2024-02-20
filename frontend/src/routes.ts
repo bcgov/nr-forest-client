@@ -2,6 +2,7 @@
  * Router configuration for the application.
  */
 import { createRouter, createWebHistory } from "vue-router";
+import { useLocalStorage } from '@vueuse/core';
 
 import SubmissionList from '@/pages/SubmissionListPage.vue'
 import SubmissionReview from '@/pages/SubmissionReviewPage.vue'
@@ -223,25 +224,44 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const user = ForestClientUserSession.loadDetails();
+  const targetPathStorage = useLocalStorage('targetPath', '');
+  
+  if(to.query.fd_to){
+    targetPathStorage.value = to.query.fd_to as string;
+  }
+
   // Page requires auth
-  if (to.meta.requireAuth) {
+  if (to.meta.requireAuth) {    
     // User is logged in
-    if (user) {
+    if (user) {      
       // If user can see this page, continue, otherwise go to specific page or error
-      to.meta.visibleTo.includes(user.provider)
-        ? next()
-        : next({ name: to.meta.redirectTo?.[user.provider] || "error" });
+      if(to.meta.visibleTo.includes(user.provider)){
+        // If there is a target path, redirect to it and clear the storage
+        if(targetPathStorage.value){  
+          next({ path: targetPathStorage.value });
+          targetPathStorage.value = '';
+        }else{
+          // Otherwise, continue to the page
+          next();
+        }
+      }else{
+        // If user is not allowed to see this page, redirect to specific page or error
+        next({ name: to.meta.redirectTo?.[user.provider] || "error" });
+      }
+
     } else {
       // User is not logged in, redirect to home for login
-      next({ name: "home" });
+      next({ name: "home",query: { fd_to: to.path }});
     }
     // Page does not require auth
   } else {
     if (user && !to.meta.showLoggedIn) {
+      // If user is logged in and the page is not for logged in users, redirect to specific page or error
       next({
         name: to.meta.redirectTo?.[user?.provider || "error"] ?? "error",
       });
     } else {
+      // Otherwise, continue to the page
       next();
     }
   }
