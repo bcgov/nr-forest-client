@@ -267,7 +267,11 @@ const matchingData = computed(() => {
     results.push(...location.split(","));
   }
 
-  return results;
+  return results.filter(
+    (value, index, self) => {
+      return self.indexOf(value) === index;
+    }
+  );
 });
 
 const getLegacyUrl = (duplicatedClient) => {
