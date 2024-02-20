@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/combo-box/index";
 import "@carbon/web-components/es/components/inline-loading/index";
@@ -168,22 +168,31 @@ By checking the item has a code, we know this is a real option instead of a mock
 We need the mock one (with no suffix) when the component mounts with a pre-filled value.
 */
 const getComboBoxItemValue = (item: CodeNameType) => item.name + (item.code ? nameSuffix : "");
+
+watch(cdsComboBoxRef, async (value) => {
+  if (value) {
+    // wait for the DOM updates to complete
+    await nextTick();
+
+    const label = value.shadowRoot.querySelector("label");
+    if (label) {
+      // Effectively associates the label with the input.
+      label.htmlFor = "trigger-label";
+    }
+  }
+});
 </script>
 
 <template>
   <div class="grouping-02">
     <div class="input-group">
-      <div class="cds--text-input__label-wrapper">
-        <label :id="id + 'Label'" :for="id" class="cds-text-input-label">
-          {{ label }}
-          <span v-if="requiredLabel" class="cds-text-input-required-label"> (required) </span>
-        </label>
-      </div>
       <cds-combo-box
         ref="cdsComboBoxRef"
         :id="id"
-        :name="id"
+        :title-text="label"
+        :data-required-label="requiredLabel"
         :helper-text="tip"
+        :label="placeholder"
         :value="inputValue"
         filterable
         :invalid="error ? true : false"
