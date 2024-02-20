@@ -148,7 +148,9 @@ const cdsComboBoxRefArray = ref<InstanceType<typeof CDSComboBox>[] | null>(null)
 
 watch(cdsComboBoxRefArray, async (array) => {
   if (array) {
+    // wait for the DOM updates to complete
     await nextTick();
+
     const combo = array[0];
     const label = combo?.shadowRoot?.querySelector("label");
     if (label) {

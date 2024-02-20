@@ -123,7 +123,9 @@ const cdsTextInput = ref<InstanceType<typeof CDSTextInput> | null>(null);
 
 watch(cdsTextInput, async (value) => {
   if (value) {
+    // wait for the DOM updates to complete
     await nextTick();
+
     const label = value.shadowRoot.querySelector("label");
     if (label) {
       // Effectively associates the label with the input.
