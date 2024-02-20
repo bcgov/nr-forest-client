@@ -222,7 +222,7 @@ const router = createRouter({
   scrollBehavior: () => ({ top: 0 }),
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, next) => {
   const user = ForestClientUserSession.loadDetails();
   const targetPathStorage = useLocalStorage("targetPath", "");
 
