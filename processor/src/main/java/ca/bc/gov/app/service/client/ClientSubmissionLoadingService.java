@@ -93,7 +93,9 @@ public class ClientSubmissionLoadingService {
                                     .collect(Collectors.joining(",")),
                                 getTemplate(message),
                                 getSubject(message, details.getOrganizationName()),
-                                getParameter(message, submissionContact.getFirstName(),
+                                getParameter(
+                                    message, 
+                                    submissionContact.getFirstName() + " " + submissionContact.getLastName(),
                                     details.getOrganizationName(),
                                     districtInfo.getRight(),
                                     Objects.toString(details.getClientNumber(), ""),
@@ -116,14 +118,6 @@ public class ClientSubmissionLoadingService {
             district.code(),
             district.description()))
         .map(district -> Pair.of(district.emails(), district.description()));
-  }
-
-  private boolean isSubmissionStatusNew(MessagingWrapper<Integer> message) {
-    return SubmissionStatusEnum.N.equals(
-        message
-            .parameters()
-            .get(ApplicationConstant.SUBMISSION_STATUS)
-    );
   }
 
   private String getTemplate(MessagingWrapper<Integer> message) {
