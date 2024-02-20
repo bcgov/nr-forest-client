@@ -215,7 +215,7 @@ cds-combo-box::part(title-text) {
   color: var(--light-theme-text-text-primary, #131315);
 }
 
-cds-combo-box::part(title-text)::after {
+cds-combo-box[data-required-label="true"]::part(title-text)::after {
   color: var(--light-theme-text-text-error, #b32001);
   content: ' (required)';
 }
