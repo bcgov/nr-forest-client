@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, nextTick } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/radio-button/index";
+import type { CDSRadioButtonGroup, CDSRadioButton } from "@carbon/web-components";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
@@ -69,38 +70,74 @@ watch(selectedValue, () => {
 const updateSelectedValue = (event: any) =>
   (selectedValue.value = event.detail.value);
 revalidateBus.on(() => validateInput());
+
+const cdsRadioButtonGroup = ref<InstanceType<typeof CDSRadioButtonGroup> | null>(null);
+
+watch(cdsRadioButtonGroup, async (value) => {
+  if (value) {
+    // wait for the DOM updates to complete
+    await nextTick();
+
+    const legend = value.shadowRoot.querySelector("legend");
+    if (legend) {
+      legend.id = "legend";
+    }
+    const fieldset = value.shadowRoot.querySelector("fieldset");
+    if (fieldset) {
+      fieldset.role = "radiogroup";
+      fieldset.setAttribute("aria-labelledby", "legend");
+    }
+  }
+});
+
+const cdsRadioButtonArray = ref<InstanceType<typeof CDSRadioButton>[] | null>(null);
+
+watch(cdsRadioButtonArray, async (array) => {
+  if (array) {
+    // wait for the DOM updates to complete
+    await nextTick();
+
+    for (const radio of cdsRadioButtonArray.value) {
+      const label = radio.shadowRoot.querySelector("label");
+      if (label) {
+        // Fixes the association as it's wrong in the component.
+        label.htmlFor = "radio";
+      }
+    }
+  }
+});
 </script>
 
 <template>
   <div class="grouping-01">
     <div class="input-group">
-      <div class="cds--text-input__label-wrapper">
-        <label :id="id + 'Label'" :for="id" class="cds-text-input-label">
-          {{ label }}
-          <span v-if="requiredLabel" class="cds-text-input-required-label"> (required) </span>
-        </label>
-      </div>
       <cds-radio-button-group
+        ref="cdsRadioButtonGroup"
         :id="id + 'rb'"
         :name="id + 'rb'"
+        :legend-text="label"
+        :data-required-label="requiredLabel"
         label-position="right"
         orientation="vertical"
         :helper-text="tip"
         v-model="selectedValue"
-        
         :invalid="error ? true : false"
         :invalid-text="error"
         @cds-radio-button-group-changed="updateSelectedValue"
         :data-focus="id"
         :data-scroll="id"
+        v-shadow="2"
       >
         <cds-radio-button
+          ref="cdsRadioButtonArray"
           v-shadow="1"
           :id="id + 'rb' + option.value"
           v-for="option in modelValue"
           :key="id + 'rb' + option.value"
           :label-text="option.text"
           :value="option.value"
+          role="radio"
+          :aria-checked="selectedValue === option.value"
         />
       </cds-radio-button-group>
     </div>

@@ -207,6 +207,11 @@ cds-radio-button-group {
   --cds-text-secondary: var(--light-theme-text-text-primary);
 }
 
+cds-radio-button-group[data-required-label="true"]::part(legend)::after {
+  color: var(--light-theme-text-text-error, #b32001);
+  content: ' (required)';
+}
+
 cds-radio-button:not(:last-child) {
   margin-bottom: 0.5rem;
 }
