@@ -16,8 +16,6 @@ jobs:
     name: Backend Tests
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     uses: ./.github/workflows/reusable-tests-be.yml
-    with:
-      uid: ${{ github.event.number || 'main' }}
 
   tests-frontend:
     name: Frontend Unit Tests

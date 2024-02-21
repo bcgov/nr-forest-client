@@ -2,11 +2,6 @@ name: Reusable Unit Tests and Analysis
 
 on:
   workflow_call:
-    inputs:
-      uid:
-        description: "The unique identifier of the workflow run"
-        required: true
-        type: string
 
 jobs:
   tests-java:
