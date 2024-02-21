@@ -27,6 +27,7 @@ jobs:
     steps:
       - name: Download coverage artifacts
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: code-coverage-report-be-${{ github.event.number || 'main' }}
 
