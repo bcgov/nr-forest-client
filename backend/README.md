@@ -65,13 +65,7 @@ ca:
           #The API key used
           apiKey: ${BCREGISTRY_KEY:123456}
           #The account ID used. We only need to receive the number here, as the account fixed text is set
-          accountId: account ${BCREGISTRY_ACCOUNT:123456}
-        #OrgBook URL
-        orgbook:
-          uri: https://orgbook.gov.bc.ca/api
-        #OpenMaps URL
-        openmaps:
-          uri: https://openmaps.gov.bc.ca/geo/pub/ows
+          accountId: account ${BCREGISTRY_ACCOUNT:123456}       
         #Frontend parameters used to configure CORS
         frontend:
           #The Frontend URL
