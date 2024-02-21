@@ -54,7 +54,47 @@ jobs:
 
   tests-frontend:
     name: Frontend Unit Tests
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     uses: ./.github/workflows/reusable-tests-fe.yml
+
+  coverage-frontend:
+    needs: tests-frontend
+    name: Frontend Coverage
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Download coverage artifacts
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: code-coverage-report-fe-${{ github.event.number || 'main' }}
+
+      - name: Frontend Unit Coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        continue-on-error: true
+        with:
+          title: Frontend unit Test Coverage
+          delete-old-comments: true
+          github-token: ${{ github.token }}
+          lcov-file: ./frontend/reports/unit/lcov.info
+
+      - name: Frontend Component Coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        continue-on-error: true
+        with:
+          title: Frontend component Test Coverage
+          delete-old-comments: true
+          github-token: ${{ github.token }}
+          lcov-file: ./frontend/reports/component/lcov.info
+
+      - name: Frontend E2E Coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        continue-on-error: true
+        with:
+          title: Frontend e2e Test Coverage
+          delete-old-comments: true
+          github-token: ${{ github.token }}
+          lcov-file: ./frontend/reports/e2e/lcov.info
 
   trivy:
     name: Repository Report
