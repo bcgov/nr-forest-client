@@ -1,0 +1,139 @@
+name: Reusable Unit Tests and Analysis
+
+on:
+  workflow_call:
+
+jobs:
+  tests-java:
+    name: Backend Tests
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
+        name: Backend Coverage
+        with:
+          commands: |
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: backend
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=forest-client-backend
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
+            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+            -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/models/**,**/repository/**,**/*$*Builder*,**/BootApplication*
+          sonar_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
+          triggers: ('backend/')
+
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
+        name: Legacy Coverage
+        with:
+          commands: |
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: legacy
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=forest-client-legacy
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
+            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+            -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/repository/**,**/*$*Builder*,**/LegacyApplication***/ApplicationConstants*
+          sonar_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
+          triggers: ('legacy/')
+
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
+        name: Processor Coverage
+        with:
+          commands: |
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: processor
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=nr-forest-client_processor
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
+            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+            -Dsonar.coverage.exclusions=**/configuration/**,**/dto/**,**/exception/**,**/entity/**,**/repository/**,**/*$*Builder*,**/ProcessApplication***/ApplicationConstant*
+          sonar_token: ${{ secrets.SONAR_TOKEN_PROCESSOR }}
+          triggers: ('processor/')
+
+      - name: Archive CycloneDX
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyclone-backend
+          path: |
+            backend/target/bom.json
+            legacy/target/bom.json
+            processor/target/bom.json
+          retention-days: 5
+
+      - name: Checkstyle report
+        continue-on-error: true
+        uses: jwgmeligmeyling/checkstyle-github-action@master
+        with:
+          path: (backend|legacy|processor)/**/checkstyle-result.xml
+
+  tests-frontend:
+    name: Frontend Unit Tests
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: bcgov-nr/action-test-and-analyse@v1.1.0
+        env:
+          VITE_BACKEND_URL: http://localhost:8080
+          VITE_FRONTEND_URL: http://localhost:3000
+          VITE_NODE_ENV: ci
+          VITE_COVERAGE: true
+          VITE_PORT: 3000
+        with:
+          node_version: 18
+          commands: |
+            npm ci
+            npm run coverage
+          dir: frontend
+          sonar_args: >
+            -Dsonar.exclusions=**/coverage/**,**/tests/**,**/stub/**,**/reports/**,**/cypress/**,,**/assets/**,,**/dto/**,**/CoreConstants.ts,**/src/CoreConstants.ts,**/main.ts,**/routes.ts,**/sims-vue.d.ts,**/styles.ts,**/components.d.ts
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info            
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=forest-client-frontend
+          sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+          triggers: ('frontend/')
+
+      - uses: actions/upload-artifact@v4
+        name: Upload Cypress Screenshots with error
+        continue-on-error: true
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: frontend/cypress/screenshots
+          retention-days: 7
+
+  trivy:
+    name: Repository Report
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@0.16.1
+        with:
+          scan-type: "fs"
+          format: "sarif"
+          output: "trivy-results.sarif"
+          ignore-unfixed: true
+          severity: "CRITICAL,HIGH"
+          scanners: "vuln,secret,config"
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "trivy-results.sarif"
