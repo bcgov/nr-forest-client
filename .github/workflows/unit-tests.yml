@@ -17,6 +17,9 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - uses: ./.github/workflows/reusable-tests.yml#tests-java
 
       - name: Publish Test Report
@@ -45,6 +48,9 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - uses: ./.github/workflows/reusable-tests.yml#tests-frontend
         env:
           VITE_BACKEND_URL: http://localhost:8080
