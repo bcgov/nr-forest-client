@@ -32,6 +32,9 @@ jobs:
           sonar_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
           triggers: ('backend/')
 
+      - name: sample1
+        run: find . -type f -regex ".*/\(backend|legacy|processor)/.*/checkstyle-result.xml"
+
       - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
         name: Legacy Coverage
         with:
