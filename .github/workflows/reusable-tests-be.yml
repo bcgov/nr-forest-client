@@ -2,6 +2,11 @@ name: Reusable Unit Tests and Analysis
 
 on:
   workflow_call:
+    inputs:
+      uid:
+        description: "The unique identifier of the workflow run"
+        required: true
+        type: string
 
 jobs:
   tests-java:
@@ -79,3 +84,12 @@ jobs:
         uses: jwgmeligmeyling/checkstyle-github-action@master
         with:
           path: (backend|legacy|processor)/**/checkstyle-result.xml
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          name: code-coverage-report-be-${{ inputs.uid}}
+          path: (backend|legacy|processor)/target/**/TEST-*.xml
+          retention-days: 1
