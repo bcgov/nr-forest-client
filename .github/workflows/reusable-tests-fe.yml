@@ -39,11 +39,32 @@ jobs:
           path: frontend/cypress/screenshots
           retention-days: 7
 
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
+      - name: Frontend Unit Coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
         continue-on-error: true
-        if: success() || failure() # always run even if the previous step fails
+        if: github.event_name == 'pull_request'
         with:
-          name: code-coverage-report-fe-${{ inputs.uid}}
-          path: ./frontend/reports/(unit|component|e2e)/lcov.info
-          retention-days: 1
+          title: Frontend unit Test Coverage
+          delete-old-comments: true
+          github-token: ${{ github.token }}
+          lcov-file: ./frontend/reports/unit/lcov.info
+
+      - name: Frontend Component Coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        continue-on-error: true
+        if: github.event_name == 'pull_request'
+        with:
+          title: Frontend component Test Coverage
+          delete-old-comments: true
+          github-token: ${{ github.token }}
+          lcov-file: ./frontend/reports/component/lcov.info
+
+      - name: Frontend E2E Coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        continue-on-error: true
+        if: github.event_name == 'pull_request'
+        with:
+          title: Frontend e2e Test Coverage
+          delete-old-comments: true
+          github-token: ${{ github.token }}
+          lcov-file: ./frontend/reports/e2e/lcov.info
