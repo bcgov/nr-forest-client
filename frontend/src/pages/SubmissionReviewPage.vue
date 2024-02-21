@@ -427,9 +427,9 @@ const renderListItem = (label, clientNumber) => {
         >    
         <div>
           <p class="body-compact-01">
-            {{ matchingData.length }} similar client record 
-            <span v-if="matchingData.length === 1">was</span> 
-            <span v-else>were</span> 
+            {{ matchingData.length }} similar client
+            <span v-if="matchingData.length === 1">record was</span> 
+            <span v-else>records were</span> 
             found. 
             Review their information in the Client Management System to determine if this submission should be approved or rejected:
           </p>
