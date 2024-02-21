@@ -18,6 +18,7 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import { nodeEnv } from "@/CoreConstants";
 
 const CONFIRMATION_ROUTE_NAME = "confirmation";
+const targetPathStorage = useLocalStorage("targetPath", "");
 
 const routes = [
   {
@@ -222,9 +223,9 @@ const router = createRouter({
   scrollBehavior: () => ({ top: 0 }),
 });
 
-router.beforeEach(async (to, next) => {
+router.beforeEach(async (to,from, next) => {
   const user = ForestClientUserSession.loadDetails();
-  const targetPathStorage = useLocalStorage("targetPath", "");
+
 
   if (to.query.fd_to) {
     targetPathStorage.value = to.query.fd_to as string;
