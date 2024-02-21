@@ -30,7 +30,7 @@ public class ClientAddressController {
       String country,
       @RequestParam(value = "maxSuggestions", required = false, defaultValue = "7")
       Integer maxSuggestions,
-      @RequestParam(value = "searchTerm", required = true)
+      @RequestParam(value = "searchTerm")
       String searchTerm) {
     log.info("Requesting possible addresses for country: {}, maxSuggestions: {}, searchTerm: {}",
         country, maxSuggestions, searchTerm);
