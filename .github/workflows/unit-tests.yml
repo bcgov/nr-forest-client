@@ -118,7 +118,7 @@ jobs:
         env:
           VITE_BACKEND_URL: http://localhost:8080
           VITE_FRONTEND_URL: http://localhost:3000
-          VITE_NODE_ENV: openshift-dev
+          VITE_NODE_ENV: ci
           VITE_COVERAGE: true
           VITE_PORT: 3000
         with:
