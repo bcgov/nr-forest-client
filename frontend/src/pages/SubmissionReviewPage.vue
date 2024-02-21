@@ -279,17 +279,11 @@ const getLegacyUrl = (duplicatedClient) => {
   return `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${encodedClientNumber}`;
 };
 
-const getListItemContent = ref((matcher, label) => {
-  if (matcher) {
-    const clients = matcher.split(", ");
-    return clients
-      .map((client) => renderListItem(label, client.trim()))
-      .join("");
-  }
-  return "";
+const getListItemContent = ref((clientNumbers, label) => {
+  return clientNumbers ? renderListItem(label, clientNumbers.trim()) : "";
 });
 
-const renderListItem = (label, clientNumber) => {
+const renderListItem = (label, clientNumbers) => {
   let finalLabel = "";
   if (label === 'contact' || label === 'location') {
     finalLabel = "Matching one or more " + label + "s";
@@ -301,12 +295,18 @@ const renderListItem = (label, clientNumber) => {
     finalLabel = "Partial match on " + convertFieldNameToSentence(label).toLowerCase() ;
   }
 
+  finalLabel += " - Client number: ";
+
+  const clients = clientNumbers.split(",");
+  finalLabel += clients
+                  .map(clientNumber =>
+                    '<a target="_blank" href="' + getLegacyUrl(clientNumber) +'">' +
+                    clientNumber +
+                    "</a>")
+                  .join(', ');
+  
   return (
-    finalLabel +
-    " - Client number: " +
-    '<a target="_blank" href="' + getLegacyUrl(clientNumber) +'">' +
-    clientNumber +
-    "</a>"
+    finalLabel
   );
 };
 </script>
