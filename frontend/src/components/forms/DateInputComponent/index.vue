@@ -433,6 +433,7 @@ const datePartComponentRefs = {
       <date-input-part
         :ref="datePartComponentRefs[DatePart.year]"
         :parent-id="id"
+        :parent-title="title"
         :datePart="DatePart.year"
         :selectedValue="selectedYear"
         :enabled="enabled"
@@ -443,6 +444,7 @@ const datePartComponentRefs = {
       <date-input-part
         :ref="datePartComponentRefs[DatePart.month]"
         :parent-id="id"
+        :parent-title="title"
         :datePart="DatePart.month"
         :selectedValue="selectedMonth"
         :enabled="enabled"
@@ -453,6 +455,7 @@ const datePartComponentRefs = {
       <date-input-part
         :ref="datePartComponentRefs[DatePart.day]"
         :parent-id="id"
+        :parent-title="title"
         :datePart="DatePart.day"
         :selectedValue="selectedDay"
         :enabled="enabled"
