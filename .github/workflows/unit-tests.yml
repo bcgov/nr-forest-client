@@ -20,6 +20,7 @@ jobs:
       uid: ${{ github.event.number || 'main' }}
 
   coverage-java:
+    needs: tests-java
     name: Backend Coverage
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
