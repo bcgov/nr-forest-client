@@ -33,7 +33,7 @@ jobs:
           triggers: ('backend/')
 
       - name: sample1
-        run: find . -type f -regex ".*/backend/.*/target/.*/TEST-*.xml"
+        run: find ./backend/target/ -type f -name "*.xml"
 
       - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
         name: Legacy Coverage
