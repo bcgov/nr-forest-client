@@ -110,25 +110,24 @@ watch(
 );
 
 revalidateBus.on(() => validateInput(selectedValue.value));
+
+let ariaLabel = props.label;
+if (props.requiredLabel) {
+  ariaLabel += " (required)";
+}
 </script>
 
 <template>
   <div class="grouping-03">
     <div class="frame-02">
       <div class="input-group">
-        <div class="cds--text-input__label-wrapper">
-          <label :for="id" class="cds-text-input-label">
-            {{ label }}
-            <span v-if="requiredLabel"
-                  class="cds-text-input-required-label">
-                  (required)
-            </span>
-          </label>
-        </div>
         <cds-multi-select
           :id="id"
           :value="selectedValue"
           :label="selectedValue"
+          :title-text="label"
+          :aria-label="ariaLabel"
+          :data-required-label="requiredLabel"
           :helper-text="tip"
           :invalid="error ? true : false"
           :invalid-text="error"
