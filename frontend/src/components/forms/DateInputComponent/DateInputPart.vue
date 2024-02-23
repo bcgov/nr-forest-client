@@ -50,7 +50,6 @@ watch(cdsTextInput, async (value) => {
 
     const label = value.shadowRoot.querySelector("label");
     if (label) {
-      console.log("has label");
       // Effectively associates the label with the input.
       label.htmlFor = "input";
     }
