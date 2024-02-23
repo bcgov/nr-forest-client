@@ -18,6 +18,7 @@ const props = defineProps<{
   initialValue: string;
   validations: Array<Function>;
   errorMessage?: string;
+  required?: boolean;
   requiredLabel?: boolean;
 }>();
 
@@ -110,11 +111,6 @@ watch(
 );
 
 revalidateBus.on(() => validateInput(selectedValue.value));
-
-let ariaLabel = props.label;
-if (props.requiredLabel) {
-  ariaLabel += " (required)";
-}
 </script>
 
 <template>
@@ -126,7 +122,8 @@ if (props.requiredLabel) {
           :value="selectedValue"
           :label="selectedValue"
           :title-text="label"
-          :aria-label="ariaLabel"
+          :aria-label="label"
+          :required="required"
           :data-required-label="requiredLabel"
           :helper-text="tip"
           :invalid="error ? true : false"

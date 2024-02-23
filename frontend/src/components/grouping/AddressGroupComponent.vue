@@ -247,6 +247,7 @@ watch([detailsData], () => {
     <text-input-component
       :id="'name_' + id"
       label="Location or address name"
+      required
       required-label
       placeholder=""
       tip="For example, 'Campbell River Region' or 'Castlegar Woods Division'"
@@ -272,6 +273,7 @@ watch([detailsData], () => {
       <AutoCompleteInputComponent
         :id="'addr_' + id"
         label="Street address or PO box"
+        required
         required-label
         placeholder=""
         tip="Start typing to search for your street address or PO box"
@@ -293,6 +295,7 @@ watch([detailsData], () => {
     <text-input-component
       :id="'city_' + id"
       label="City"
+      required
       required-label
       placeholder=""
       v-model="selectedValue.city"
@@ -318,6 +321,7 @@ watch([detailsData], () => {
       <dropdown-input-component
         :id="'province_' + id"
         :label="provinceNaming"
+        required
         required-label
         :initial-value="selectedValue.province.text"
         :model-value="content"
@@ -333,6 +337,7 @@ watch([detailsData], () => {
     <dropdown-input-component
       :id="'country_' + id"
       label="Country"
+      required
       required-label
       :initial-value="selectedValue.country.text"
       tip=""
@@ -349,6 +354,7 @@ watch([detailsData], () => {
       :id="'postalCode_' + id"
       :label="postalCodeNaming"
       :type="postalCodeInputType"
+      required
       required-label
       placeholder=""
       :tip="postalCodePlaceholder"

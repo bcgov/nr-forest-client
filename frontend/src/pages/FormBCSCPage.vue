@@ -508,6 +508,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
         :enabled="true"
         v-model="formData.location.contacts[0].phoneNumber"
         mask="(###) ###-####"
+        required
         :required-label="true"
         :validations="[
           ...getValidations('location.contacts.*.phoneNumber'),

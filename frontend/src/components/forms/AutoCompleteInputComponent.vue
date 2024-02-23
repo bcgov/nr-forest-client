@@ -22,6 +22,7 @@ const props = withDefaults(defineProps<{
     errorMessage?: string;
     loading?: boolean;
     showLoadingAfterTime?: number;
+    required?: boolean;
     requiredLabel?: boolean;
   }>(),
   {
@@ -174,10 +175,11 @@ watch(cdsComboBoxRef, async (value) => {
     // wait for the DOM updates to complete
     await nextTick();
 
-    const label = value.shadowRoot.querySelector("label");
-    if (label) {
-      // Effectively associates the label with the input.
-      label.htmlFor = "trigger-label";
+    const input = value.shadowRoot.querySelector("input");
+    if (input) {
+      // Propagate attributes to the input
+      input.required = props.required;
+      input.ariaLabel = props.label;
     }
   }
 });
@@ -190,6 +192,8 @@ watch(cdsComboBoxRef, async (value) => {
         ref="cdsComboBoxRef"
         :id="id"
         :title-text="label"
+        :aria-label="label"
+        :required="required"
         :data-required-label="requiredLabel"
         :helper-text="tip"
         :label="placeholder"

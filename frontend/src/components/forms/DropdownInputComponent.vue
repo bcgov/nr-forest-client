@@ -19,6 +19,7 @@ const props = defineProps<{
   initialValue: string;
   validations: Array<Function>;
   errorMessage?: string;
+  required?: boolean;
   requiredLabel?: boolean;
 }>();
 
@@ -152,10 +153,11 @@ watch(cdsComboBoxRefArray, async (array) => {
     await nextTick();
 
     const combo = array[0];
-    const label = combo?.shadowRoot?.querySelector("label");
-    if (label) {
-      // Effectively associates the label with the input.
-      label.htmlFor = "trigger-label";
+    const input = combo?.shadowRoot?.querySelector("input");
+    if (input) {
+      // Propagate attributes to the input
+      input.required = props.required;
+      input.ariaLabel = props.label;
     }
   }
 });
@@ -170,6 +172,8 @@ watch(cdsComboBoxRefArray, async (array) => {
         :key="time"
         :id="id"
         :title-text="label"
+        :aria-label="label"
+        :required="required"
         :data-required-label="requiredLabel"
         filterable
         :helper-text="tip"

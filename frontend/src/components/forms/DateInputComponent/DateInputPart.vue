@@ -2,7 +2,6 @@
 import { ref, watch, nextTick } from "vue";
 // Carbon
 import '@carbon/web-components/es/components/text-input/index';
-import type { CDSTextInput } from "@carbon/web-components";
 // Types
 import { DatePart } from "./common";
 
@@ -14,6 +13,7 @@ const props = defineProps<{
   selectedValue: string;
   enabled?: boolean;
   invalid: boolean;
+  required?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -41,26 +41,7 @@ const placeholder = placeholders[props.datePart];
 
 const mask = "#".repeat(placeholder.length);
 
-const cdsTextInput = ref<InstanceType<typeof CDSTextInput> | null>(null);
-
-watch(cdsTextInput, async (value) => {
-  if (value) {
-    // wait for the DOM updates to complete
-    await nextTick();
-
-    const label = value.shadowRoot.querySelector("label");
-    if (label) {
-      // Effectively associates the label with the input.
-      label.htmlFor = "input";
-    }
-
-    const input = value.shadowRoot.querySelector("input");
-    if (input) {
-      // custom label for screen readers
-      input.ariaLabel = `${props.parentTitle} ${datePartName}`;
-    }
-  }
-});
+const ariaLabel = `${props.parentTitle} ${datePartName}`;
 </script>
 
 <template>
@@ -69,7 +50,9 @@ watch(cdsTextInput, async (value) => {
       v-if="enabled"
       ref="cdsTextInput"
       :id="id"
+      :required="required"
       :label="capitalizedDatePart"
+      :aria-label="ariaLabel"
       type="tel"
       :placeholder="placeholder"
       :value="selectedValue"

@@ -17,6 +17,7 @@ const props = defineProps<{
   initialValue: string;
   validations: Array<Function>;
   errorMessage?: string;
+  required?: boolean;
   requiredLabel?: boolean;
 }>();
 
@@ -102,6 +103,11 @@ watch(cdsRadioButtonArray, async (array) => {
       if (label) {
         // Fixes the association as it's wrong in the component.
         label.htmlFor = "radio";
+      }
+      const input = radio.shadowRoot.querySelector("input");
+      if (input) {
+        // Propagate attributes to the input
+        input.required = props.required;
       }
     }
   }

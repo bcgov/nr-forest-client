@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from "vue";
+import { ref, watch } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/text-input/index";
 // Composables
@@ -7,7 +7,6 @@ import { useEventBus } from "@vueuse/core";
 // Types
 import { isEmpty } from "@/dto/CommonTypesDto";
 import type { TextInputType } from "@/components/types";
-import type { CDSTextInput } from "@carbon/web-components";
 
 //Define the input properties for this component
 const props = withDefaults(
@@ -21,6 +20,7 @@ const props = withDefaults(
     validations: Array<Function>;
     errorMessage?: string;
     mask?: string;
+    required?: boolean;
     requiredLabel?: boolean;
     type?: TextInputType;
   }>(),
@@ -119,20 +119,6 @@ const selectValue = (event: any) => {
   isUserEvent.value = true
 };
 
-const cdsTextInput = ref<InstanceType<typeof CDSTextInput> | null>(null);
-
-watch(cdsTextInput, async (value) => {
-  if (value) {
-    // wait for the DOM updates to complete
-    await nextTick();
-
-    const label = value.shadowRoot.querySelector("label");
-    if (label) {
-      // Effectively associates the label with the input.
-      label.htmlFor = "input";
-    }
-  }
-});
 </script>
 
 <template>
@@ -140,9 +126,10 @@ watch(cdsTextInput, async (value) => {
     <div class="input-group">
       <cds-text-input
         v-if="enabled"
-        ref="cdsTextInput"
         :id="id"
+        :required="required"
         :label="label"
+        :aria-label="label"
         :data-required-label="requiredLabel"
         :type="type"
         :placeholder="placeholder"
