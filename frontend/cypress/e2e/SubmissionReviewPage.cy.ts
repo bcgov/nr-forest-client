@@ -143,7 +143,7 @@ describe("Submission Review Page", () => {
 
         cy.get('.grouping-15 > [kind="primary"]').should("exist");
 
-        cy.get('.grouping-15 > [kind="danger"]').should("exist");
+        cy.get('.grouping-15 > [kind="danger--tertiary"]').should("exist");
       });
     }
   });
