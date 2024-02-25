@@ -608,14 +608,18 @@ const renderListItem = (label, clientNumbers) => {
         </cds-accordion>
 
         <div class="grouping-15" v-if="data.submissionType === 'Review new client' && (data.submissionStatus !== 'Approved' && data.submissionStatus !== 'Rejected')">
-          <cds-button kind="primary" @click="approveModal = !approveModal" :disabled="submitDisabled">
-            <span>Approve submission</span>
-            <Check16 slot="icon" />
-          </cds-button>
-          <span class="spacer" v-if="!isSmallScreen && !isMediumScreen"></span>
-          <cds-button kind="danger" @click="rejectModal = !rejectModal" :disabled="submitDisabled">
+          <cds-button kind="danger--tertiary" 
+                      @click="rejectModal = !rejectModal" 
+                      :disabled="submitDisabled">
             <span>Reject submission</span>
             <Error16 slot="icon" />
+          </cds-button>
+          <span class="spacer" v-if="!isSmallScreen && !isMediumScreen"></span>
+          <cds-button kind="primary" 
+                      @click="approveModal = !approveModal" 
+                      :disabled="submitDisabled">
+            <span>Approve submission</span>
+            <Check16 slot="icon" />
           </cds-button>
         </div>
         
