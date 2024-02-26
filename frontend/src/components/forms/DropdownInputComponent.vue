@@ -173,6 +173,7 @@ watch(cdsComboBoxRefArray, async (array) => {
         :id="id"
         :title-text="label"
         :aria-label="label"
+        :clear-selection-label="`Clear ${label}`"
         :required="required"
         :data-required-label="requiredLabel"
         filterable
