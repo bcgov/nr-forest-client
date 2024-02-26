@@ -227,6 +227,7 @@ const logoutAndRedirect = () => {
         ...getValidations('location.contacts.*.contactType.text'),
         submissionValidation(`location.contacts[${id}].contactType`)
       ]"
+      required
       :requiredLabel="requiredLabel"
       @update:selected-value="updateContactType($event)"
       @empty="validation.contactType = !$event"

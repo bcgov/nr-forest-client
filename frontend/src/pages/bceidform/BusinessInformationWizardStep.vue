@@ -343,6 +343,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
     <radio-input-component
       id="businessType"
       label="Type of business"
+      required
       required-label
       :initialValue="formData?.businessInformation?.businessType"
       :modelValue="[
