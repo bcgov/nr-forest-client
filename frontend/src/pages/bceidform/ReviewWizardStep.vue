@@ -14,7 +14,7 @@ import Location20 from "@carbon/icons-vue/es/location/20"
 import User20 from "@carbon/icons-vue/es/user/20"
 import { useFetchTo } from "@/composables/useFetch";
 import { CodeNameType } from "@/dto/CommonTypesDto";
-import { codeConversionFn, toTitleCase } from "@/services/ForestClientService";
+import { codeConversionFn, toSentenceCase } from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
@@ -96,7 +96,7 @@ onMounted(() => {
       <hr class="divider" v-if="index > 0" />
       <h6 class="review-icon-title">
         <LocationStar20 v-if="index === 0" />
-        <Location20 v-else />{{ toTitleCase(address.locationName) }}
+        <Location20 v-else />{{ toSentenceCase(address.locationName) }}
       </h6>
       <div class="grouping-23">
         <span class="body-compact-01">{{ address.streetAddress }}</span>
