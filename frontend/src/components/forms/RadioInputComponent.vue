@@ -79,14 +79,10 @@ watch(cdsRadioButtonGroup, async (value) => {
     // wait for the DOM updates to complete
     await nextTick();
 
-    const legend = value.shadowRoot.querySelector("legend");
-    if (legend) {
-      legend.id = "legend";
-    }
     const fieldset = value.shadowRoot.querySelector("fieldset");
     if (fieldset) {
       fieldset.role = "radiogroup";
-      fieldset.setAttribute("aria-labelledby", "legend");
+      fieldset.setAttribute("aria-label", props.label);
     }
   }
 });
