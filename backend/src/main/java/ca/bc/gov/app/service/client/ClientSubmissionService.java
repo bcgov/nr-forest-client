@@ -202,10 +202,13 @@ public class ClientSubmissionService {
                     //Return what we need only
                     .thenReturn(submission.getSubmissionId())
             )
-            .flatMap(submissionId -> sendEmail(submissionId,
-                clientSubmissionDto,
-                userEmail,
-                userName));
+            .flatMap(submissionId -> sendEmail(
+                                      submissionId,
+                                      clientSubmissionDto,
+                                      userEmail,
+                                      userName
+                                     )
+            );
   }
 
   public Mono<SubmissionDetailsDto> getSubmissionDetail(Long id) {

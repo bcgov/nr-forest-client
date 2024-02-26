@@ -1,0 +1,103 @@
+name: Reusable Unit Tests and Analysis
+
+on:
+  workflow_call:
+
+jobs:
+  tests-java:
+    name: Backend Tests
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
+        name: Backend Coverage
+        with:
+          commands: |
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: backend
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=forest-client-backend
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
+            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+            -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/models/**,**/repository/**,**/*$*Builder*,**/BootApplication*
+          sonar_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
+          triggers: ('backend/')
+
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
+        name: Legacy Coverage
+        with:
+          commands: |
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: legacy
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=forest-client-legacy
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
+            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+            -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/repository/**,**/*$*Builder*,**/LegacyApplication***/ApplicationConstants*
+          sonar_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
+          triggers: ('legacy/')
+
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
+        name: Processor Coverage
+        with:
+          commands: |
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: processor
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=nr-forest-client_processor
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
+            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+            -Dsonar.coverage.exclusions=**/configuration/**,**/dto/**,**/exception/**,**/entity/**,**/repository/**,**/*$*Builder*,**/ProcessApplication***/ApplicationConstant*
+          sonar_token: ${{ secrets.SONAR_TOKEN_PROCESSOR }}
+          triggers: ('processor/')
+
+      - name: Archive CycloneDX
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyclone-backend
+          path: |
+            backend/target/bom.json
+            legacy/target/bom.json
+            processor/target/bom.json
+          retention-days: 5
+
+      - name: Checkstyle report
+        continue-on-error: true
+        uses: jwgmeligmeyling/checkstyle-github-action@master
+        with:
+          path: (backend|legacy|processor)/**/checkstyle-result.xml
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v4
+        continue-on-error: true
+        if: github.event_name == 'pull_request' && (success() || failure())
+        with:
+          report_paths: (backend|legacy|processor)/target/**/TEST-*.xml
+          commit: ${{ github.event.pull_request.head.sha }}
+          summary: Pull Request Tests for Backend
+          detailed_summary: true
+          job_name: Backend Tests
+
+      - name: Add coverage to PR
+        id: jacoco
+        continue-on-error: true
+        if: github.event_name == 'pull_request'
+        uses: madrapps/jacoco-report@v1.6
+        with:
+          paths: (backend|legacy|processor)/target/coverage-reports/merged-test-report/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 75
+          min-coverage-changed-files: 75

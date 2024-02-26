@@ -267,7 +267,11 @@ const matchingData = computed(() => {
     results.push(...location.split(","));
   }
 
-  return results;
+  return results.filter(
+    (value, index, self) => {
+      return self.indexOf(value) === index;
+    }
+  );
 });
 
 const getLegacyUrl = (duplicatedClient) => {
@@ -275,17 +279,11 @@ const getLegacyUrl = (duplicatedClient) => {
   return `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${encodedClientNumber}`;
 };
 
-const getListItemContent = ref((matcher, label) => {
-  if (matcher) {
-    const clients = matcher.split(", ");
-    return clients
-      .map((client) => renderListItem(label, client.trim()))
-      .join("");
-  }
-  return "";
+const getListItemContent = ref((clientNumbers, label) => {
+  return clientNumbers ? renderListItem(label, clientNumbers.trim()) : "";
 });
 
-const renderListItem = (label, clientNumber) => {
+const renderListItem = (label, clientNumbers) => {
   let finalLabel = "";
   if (label === 'contact' || label === 'location') {
     finalLabel = "Matching one or more " + label + "s";
@@ -297,12 +295,18 @@ const renderListItem = (label, clientNumber) => {
     finalLabel = "Partial match on " + convertFieldNameToSentence(label).toLowerCase() ;
   }
 
+  finalLabel += " - Client number: ";
+
+  const clients = clientNumbers.split(",");
+  finalLabel += clients
+                  .map(clientNumber =>
+                    '<a target="_blank" href="' + getLegacyUrl(clientNumber) +'">' +
+                    clientNumber +
+                    "</a>")
+                  .join(', ');
+  
   return (
-    finalLabel +
-    " - Client number: " +
-    '<a target="_blank" href="' + getLegacyUrl(clientNumber) +'">' +
-    clientNumber +
-    "</a>"
+    finalLabel
   );
 };
 </script>
@@ -423,9 +427,9 @@ const renderListItem = (label, clientNumber) => {
         >    
         <div>
           <p class="body-compact-01">
-            {{ matchingData.length }} similar client record 
-            <span v-if="matchingData.length === 1">was</span> 
-            <span v-else>were</span> 
+            {{ matchingData.length }} similar client
+            <span v-if="matchingData.length === 1">record was</span> 
+            <span v-else>records were</span> 
             found. 
             Review their information in the Client Management System to determine if this submission should be approved or rejected:
           </p>
@@ -604,14 +608,18 @@ const renderListItem = (label, clientNumber) => {
         </cds-accordion>
 
         <div class="grouping-15" v-if="data.submissionType === 'Review new client' && (data.submissionStatus !== 'Approved' && data.submissionStatus !== 'Rejected')">
-          <cds-button kind="primary" @click="approveModal = !approveModal" :disabled="submitDisabled">
-            <span>Approve submission</span>
-            <Check16 slot="icon" />
-          </cds-button>
-          <span class="spacer" v-if="!isSmallScreen && !isMediumScreen"></span>
-          <cds-button kind="danger" @click="rejectModal = !rejectModal" :disabled="submitDisabled">
+          <cds-button kind="danger--tertiary" 
+                      @click="rejectModal = !rejectModal" 
+                      :disabled="submitDisabled">
             <span>Reject submission</span>
             <Error16 slot="icon" />
+          </cds-button>
+          <span class="spacer" v-if="!isSmallScreen && !isMediumScreen"></span>
+          <cds-button kind="primary" 
+                      @click="approveModal = !approveModal" 
+                      :disabled="submitDisabled">
+            <span>Approve submission</span>
+            <Check16 slot="icon" />
           </cds-button>
         </div>
         
