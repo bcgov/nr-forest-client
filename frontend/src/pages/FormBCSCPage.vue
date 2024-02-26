@@ -479,6 +479,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
       id="district"
       label="District"
       :initial-value="districtInitialValue?.name"
+      required
       required-label
       :model-value="formattedDistrictsList"
       :enabled="true"
