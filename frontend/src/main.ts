@@ -1,12 +1,26 @@
+// Base libraries
 import { createApp } from "vue";
+import VueDOMPurifyHTML from "vue-dompurify-html";
+import { Amplify } from "aws-amplify";
+import { CookieStorage } from 'aws-amplify/utils';
+import { cognitoUserPoolsTokenProvider } from 'aws-amplify/auth/cognito';
 import VueTheMask from "vue-the-mask";
+
+// App Related
 import App from "@/App.vue";
 import { router } from "@/routes";
 import directivesMap from "@/directivesMap";
-import { featureFlags, backendUrl } from "@/CoreConstants";
+
+// Session related
 import type { SessionProperties } from "@/dto/CommonTypesDto";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
-import VueDOMPurifyHTML from "vue-dompurify-html";
+
+// Constants
+import { featureFlags, backendUrl, awsconfig } from "@/CoreConstants";
+
+// AWS Amplify and Cookie Storage
+Amplify.configure(awsconfig);
+cognitoUserPoolsTokenProvider.setKeyValueStorage(new CookieStorage());
 
 // Importing Styles
 import "@/styles";
