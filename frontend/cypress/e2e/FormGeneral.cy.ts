@@ -35,7 +35,10 @@ describe("General Form", () => {
     cy.get("#district")
       .should("be.visible")
       .and("have.value", "")
-      .click()
+      .find("[part='trigger-button']")
+      .click();
+
+    cy.get("#district")
       .find('cds-combo-box-item[data-id="DCC"]')
       .should("be.visible")
       .click()

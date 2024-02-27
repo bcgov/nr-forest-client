@@ -158,6 +158,7 @@ const logoutAndRedirect = () => {
           submissionValidation(`location.contacts[${id}].firstName`)
         ]"
         :enabled="enabled"
+        required
         :requiredLabel="requiredLabel"
         :error-message="error"
         @empty="validation.firstName = !$event"
@@ -174,6 +175,7 @@ const logoutAndRedirect = () => {
           submissionValidation(`location.contacts[${id}].lastName`)
         ]"
         :enabled="enabled"
+        required
         :requiredLabel="requiredLabel"
         :error-message="error"
         @empty="validation.lastName = !$event"
@@ -190,6 +192,7 @@ const logoutAndRedirect = () => {
           submissionValidation(`location.contacts[${id}].email`)
         ]"
         :enabled="enabled"
+        required
         :requiredLabel="requiredLabel"
         @empty="validation.email = !$event"
         @error="validation.email = !$event"
@@ -208,6 +211,7 @@ const logoutAndRedirect = () => {
         ...getValidations('location.contacts.*.phoneNumber'),
         submissionValidation(`location.contacts[${id}].phoneNumber`)
       ]"
+      required
       :requiredLabel="requiredLabel"
       @empty="validation.phoneNumber = !$event"
       @error="validation.phoneNumber = !$event"
@@ -223,6 +227,7 @@ const logoutAndRedirect = () => {
         ...getValidations('location.contacts.*.contactType.text'),
         submissionValidation(`location.contacts[${id}].contactType`)
       ]"
+      required
       :requiredLabel="requiredLabel"
       @update:selected-value="updateContactType($event)"
       @empty="validation.contactType = !$event"
@@ -241,6 +246,7 @@ const logoutAndRedirect = () => {
         ...getValidations('location.contacts.*.locationNames'),
         submissionValidation(`location.contacts[${id}].locationNames`)
       ]"
+      required
       :requiredLabel="requiredLabel"
       @update:selected-value="
         selectedValue.locationNames = nameTypesToCodeDescr($event)

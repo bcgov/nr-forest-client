@@ -143,7 +143,7 @@ describe("Submission Review Page", () => {
 
         cy.get('.grouping-15 > [kind="primary"]').should("exist");
 
-        cy.get('.grouping-15 > [kind="danger"]').should("exist");
+        cy.get('.grouping-15 > [kind="danger--tertiary"]').should("exist");
       });
     }
   });
@@ -184,7 +184,7 @@ describe("Submission Review Page", () => {
       cy.contains("cds-button", buttonLabel).click();
 
       if (action === "reject") {
-        cy.get("#reject_reason_id").click();
+        cy.get("#reject_reason_id").find("[part='trigger-button']").click();
         cy.get("[data-id='goodstanding']").click();
       }
 

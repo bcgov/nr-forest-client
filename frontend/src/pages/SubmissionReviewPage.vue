@@ -279,17 +279,11 @@ const getLegacyUrl = (duplicatedClient) => {
   return `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${encodedClientNumber}`;
 };
 
-const getListItemContent = ref((matcher, label) => {
-  if (matcher) {
-    const clients = matcher.split(", ");
-    return clients
-      .map((client) => renderListItem(label, client.trim()))
-      .join("");
-  }
-  return "";
+const getListItemContent = ref((clientNumbers, label) => {
+  return clientNumbers ? renderListItem(label, clientNumbers.trim()) : "";
 });
 
-const renderListItem = (label, clientNumber) => {
+const renderListItem = (label, clientNumbers) => {
   let finalLabel = "";
   if (label === 'contact' || label === 'location') {
     finalLabel = "Matching one or more " + label + "s";
@@ -301,12 +295,18 @@ const renderListItem = (label, clientNumber) => {
     finalLabel = "Partial match on " + convertFieldNameToSentence(label).toLowerCase() ;
   }
 
+  finalLabel += " - Client number: ";
+
+  const clients = clientNumbers.split(",");
+  finalLabel += clients
+                  .map(clientNumber =>
+                    '<a target="_blank" href="' + getLegacyUrl(clientNumber) +'">' +
+                    clientNumber +
+                    "</a>")
+                  .join(', ');
+  
   return (
-    finalLabel +
-    " - Client number: " +
-    '<a target="_blank" href="' + getLegacyUrl(clientNumber) +'">' +
-    clientNumber +
-    "</a>"
+    finalLabel
   );
 };
 </script>
@@ -608,14 +608,18 @@ const renderListItem = (label, clientNumber) => {
         </cds-accordion>
 
         <div class="grouping-15" v-if="data.submissionType === 'Review new client' && (data.submissionStatus !== 'Approved' && data.submissionStatus !== 'Rejected')">
-          <cds-button kind="primary" @click="approveModal = !approveModal" :disabled="submitDisabled">
-            <span>Approve submission</span>
-            <Check16 slot="icon" />
-          </cds-button>
-          <span class="spacer" v-if="!isSmallScreen && !isMediumScreen"></span>
-          <cds-button kind="danger" @click="rejectModal = !rejectModal" :disabled="submitDisabled">
+          <cds-button kind="danger--tertiary" 
+                      @click="rejectModal = !rejectModal" 
+                      :disabled="submitDisabled">
             <span>Reject submission</span>
             <Error16 slot="icon" />
+          </cds-button>
+          <span class="spacer" v-if="!isSmallScreen && !isMediumScreen"></span>
+          <cds-button kind="primary" 
+                      @click="approveModal = !approveModal" 
+                      :disabled="submitDisabled">
+            <span>Approve submission</span>
+            <Check16 slot="icon" />
           </cds-button>
         </div>
         
@@ -673,6 +677,7 @@ const renderListItem = (label, clientNumber) => {
           <multiselect-input-component
             id="reject_reason_id"
             label="Reason for rejection"
+            required
             tip="Choose one or more reasons"
             initial-value=""
             :model-value="rejectReasons"
@@ -687,6 +692,7 @@ const renderListItem = (label, clientNumber) => {
             placeholder=""
             v-model="rejectReasonMessage"
             :validations="[]"
+            :required="showClientNumberField"
             :enabled="true"
           />
         </cds-modal-body>
