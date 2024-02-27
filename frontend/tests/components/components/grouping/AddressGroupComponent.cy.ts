@@ -182,6 +182,7 @@ describe("<AddressGroupComponent />", () => {
     cy.get("#country_0")
       .should("be.visible")
       .and("have.value", "Canada")
+      .find("[part='trigger-button']")
       .click();
 
     cy.get("#country_0", { timeout: 10000 })
@@ -198,7 +199,10 @@ describe("<AddressGroupComponent />", () => {
     cy.get("#province_0")
       .should("be.visible")
       .and("have.value", "")
-      .click()
+      .find("[part='trigger-button']")
+      .click();
+
+    cy.get("#province_0")
       .find('cds-combo-box-item[data-id="IL"]')
       .should("be.visible")
       .click()
@@ -443,7 +447,10 @@ describe("<AddressGroupComponent />", () => {
         .and("have.value", "British Columbia");
 
       cy.get("#province_0")
-        .click()
+        .find("[part='trigger-button']")
+        .click();
+
+      cy.get("#province_0")
         .find('cds-combo-box-item[data-id="MB"]')
         .should("be.visible")
         .click();

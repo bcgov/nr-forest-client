@@ -42,6 +42,7 @@ const props = withDefaults(
     dayValidations?: Array<Function>;
     errorMessage?: string;
     requiredLabel?: boolean;
+    required?: boolean;
   }>(),
   {
     yearValidations: () => [],
@@ -433,32 +434,38 @@ const datePartComponentRefs = {
       <date-input-part
         :ref="datePartComponentRefs[DatePart.year]"
         :parent-id="id"
+        :parent-title="title"
         :datePart="DatePart.year"
         :selectedValue="selectedYear"
         :enabled="enabled"
         :invalid="!!partError[DatePart.year] || !!fullDateError"
         @blur="(event: any) => onBlurYear(event.target.value)"
         @input="selectYear"
+        :required="required"
       />
       <date-input-part
         :ref="datePartComponentRefs[DatePart.month]"
         :parent-id="id"
+        :parent-title="title"
         :datePart="DatePart.month"
         :selectedValue="selectedMonth"
         :enabled="enabled"
         :invalid="!!partError[DatePart.month] || !!fullDateError"
         @blur="(event: any) => onBlurMonth(event.target.value)"
         @input="selectMonth"
+        :required="required"
       />
       <date-input-part
         :ref="datePartComponentRefs[DatePart.day]"
         :parent-id="id"
+        :parent-title="title"
         :datePart="DatePart.day"
         :selectedValue="selectedDay"
         :enabled="enabled"
         :invalid="!!partError[DatePart.day] || !!fullDateError"
         @blur="(event: any) => onBlurDay(event.target.value)"
         @input="selectDay"
+        :required="required"
       />
     </div>
     <div class="cds--form-requirement field-error">{{ error }}</div>

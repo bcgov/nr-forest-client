@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/combo-box/index";
+import type { CDSComboBox } from "@carbon/web-components";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
@@ -18,6 +19,7 @@ const props = defineProps<{
   initialValue: string;
   validations: Array<Function>;
   errorMessage?: string;
+  required?: boolean;
   requiredLabel?: boolean;
 }>();
 
@@ -141,24 +143,39 @@ watch(
 );
 
 revalidateBus.on(() => validateInput(selectedValue.value));
+
+// This is an array due to the v-for attribute.
+const cdsComboBoxRefArray = ref<InstanceType<typeof CDSComboBox>[] | null>(null);
+
+watch(cdsComboBoxRefArray, async (array) => {
+  if (array) {
+    // wait for the DOM updates to complete
+    await nextTick();
+
+    const combo = array[0];
+    const input = combo?.shadowRoot?.querySelector("input");
+    if (input) {
+      // Propagate attributes to the input
+      input.required = props.required;
+      input.ariaLabel = props.label;
+    }
+  }
+});
 </script>
 
 <template>
   <div class="grouping-03">
     <div class="input-group">
-      <div class="cds--text-input__label-wrapper">
-        <label :for="id" class="cds-text-input-label">
-          {{ label }}
-          <span v-if="requiredLabel"
-                class="cds-text-input-required-label">
-                 (required)
-          </span>
-        </label>
-      </div>
       <cds-combo-box
         v-for="time in comboBoxMountTime"
+        ref="cdsComboBoxRefArray"
         :key="time"
         :id="id"
+        :title-text="label"
+        :aria-label="label"
+        :clear-selection-label="`Clear ${label}`"
+        :required="required"
+        :data-required-label="requiredLabel"
         filterable
         :helper-text="tip"
         :label="placeholder"

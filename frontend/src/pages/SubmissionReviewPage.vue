@@ -677,6 +677,7 @@ const renderListItem = (label, clientNumbers) => {
           <multiselect-input-component
             id="reject_reason_id"
             label="Reason for rejection"
+            required
             tip="Choose one or more reasons"
             initial-value=""
             :model-value="rejectReasons"
@@ -691,6 +692,7 @@ const renderListItem = (label, clientNumbers) => {
             placeholder=""
             v-model="rejectReasonMessage"
             :validations="[]"
+            :required="showClientNumberField"
             :enabled="true"
           />
         </cds-modal-body>

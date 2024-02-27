@@ -184,7 +184,7 @@ describe("Submission Review Page", () => {
       cy.contains("cds-button", buttonLabel).click();
 
       if (action === "reject") {
-        cy.get("#reject_reason_id").click();
+        cy.get("#reject_reason_id").find("[part='trigger-button']").click();
         cy.get("[data-id='goodstanding']").click();
       }
 
