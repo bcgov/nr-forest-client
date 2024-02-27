@@ -320,6 +320,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
     id="district"
     label="District"
     :initial-value="districtInitialValue?.name"
+    required
     required-label
     :model-value="districtsList"
     :enabled="true"
@@ -342,6 +343,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
     <radio-input-component
       id="businessType"
       label="Type of business"
+      required
       required-label
       :initialValue="formData?.businessInformation?.businessType"
       :modelValue="[
@@ -369,6 +371,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
         v-if="selectedOption === BusinessTypeEnum.R"
         id="business"
         label="BC registered business name"
+        required
         required-label
         tip="Start typing to search for your BC registered business name"
         v-model="formData.businessInformation.businessName"
@@ -519,6 +522,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
         :year-validations="[...getValidations('businessInformation.birthdate.year')]"
         @error="validation.birthdate = !$event"
         @possibly-valid="validation.birthdate = $event"
+        required
       />
     </div>
   </div>

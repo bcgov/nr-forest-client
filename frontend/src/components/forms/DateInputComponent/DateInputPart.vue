@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, watch, nextTick } from "vue";
 // Carbon
 import '@carbon/web-components/es/components/text-input/index';
 // Types
@@ -7,10 +8,12 @@ import { DatePart } from "./common";
 // Define the input properties for this component
 const props = defineProps<{
   parentId: string;
+  parentTitle: string;
   datePart: DatePart;
   selectedValue: string;
   enabled?: boolean;
   invalid: boolean;
+  required?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -31,26 +34,27 @@ defineExpose({
 const placeholders = {
   [DatePart.year]: "YYYY",
   [DatePart.month]: "MM",
-  [DatePart.day]: "DD"
+  [DatePart.day]: "DD",
 };
 
 const placeholder = placeholders[props.datePart];
 
 const mask = "#".repeat(placeholder.length);
+
+const ariaLabel = `${props.parentTitle} ${datePartName}`;
 </script>
 
 <template>
   <div class="input-group">
-    <div class="cds--text-input__label-wrapper">
-      <label :id="parentId + capitalizedDatePart + 'Label'" :for="id" class="cds-text-input-label">
-        {{ enabled ? capitalizedDatePart : null }}
-      </label>
-    </div>
     <cds-text-input
       v-if="enabled"
+      ref="cdsTextInput"
       :id="id"
+      :required="required"
+      :label="capitalizedDatePart"
+      :aria-label="ariaLabel"
       type="tel"
-      :placeholder="placeholders[datePart]"
+      :placeholder="placeholder"
       :value="selectedValue"
       :disabled="!enabled"
       :invalid="invalid"

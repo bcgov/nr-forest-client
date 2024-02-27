@@ -127,6 +127,10 @@ b {
   --cds-button-tertiary: var(--dark-theme-text-text-primary);
 }
 
+.heading-buttons cds-button[kind="ghost"]::part(button) {
+  color: var(--light-theme-text-text-on-color);
+}
+
 .heading-buttons cds-button span {
   width: 5rem;
 }
@@ -203,12 +207,22 @@ cds-radio-button-group {
   --cds-text-secondary: var(--light-theme-text-text-primary);
 }
 
+cds-radio-button-group[data-required-label="true"]::part(legend)::after {
+  color: var(--light-theme-text-text-error, #b32001);
+  content: ' (required)';
+}
+
 cds-radio-button:not(:last-child) {
   margin-bottom: 0.5rem;
 }
 
 cds-combo-box::part(title-text) {
   color: var(--light-theme-text-text-primary, #131315);
+}
+
+:is(cds-combo-box, cds-multi-select)[data-required-label="true"]::part(title-text)::after {
+  color: var(--light-theme-text-text-error, #b32001);
+  content: ' (required)';
 }
 
 cds-combo-box::part(trigger-button) {
@@ -415,7 +429,7 @@ div#app {
 }
 
 .heading-compact-02 {
-  color: var(--dark-theme-text-text-primary, #f3f3f5);
+  color: var(--light-theme-text-text-on-color, #ffffff);
 
   /* Fixed heading styles/heading-compact-02 */
 
@@ -1003,7 +1017,7 @@ cds-actionable-notification * {
   gap: 8px;
 }
 
-.cds-text-input-label {
+cds-text-input::part(label), .cds-text-input-label {
   color: var(--light-theme-text-text-primary, #131315);
   font-family: BC Sans;
   font-size: 0.75rem;
@@ -1014,8 +1028,16 @@ cds-actionable-notification * {
   padding-bottom: 0.5rem;
 }
 
-.cds-text-input-required-label {
+cds-text-input::part(label) {
+  padding-bottom: unset;
+}
+
+cds-text-input::part(label)::after, .cds-text-input-required-label {
   color: var(--light-theme-text-text-error, #b32001);
+}
+
+cds-text-input[data-required-label="true"]::part(label)::after {
+  content: ' (required)';
 }
 
 cds-modal::part(dialog) {

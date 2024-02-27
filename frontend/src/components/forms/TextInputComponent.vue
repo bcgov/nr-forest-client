@@ -20,6 +20,7 @@ const props = withDefaults(
     validations: Array<Function>;
     errorMessage?: string;
     mask?: string;
+    required?: boolean;
     requiredLabel?: boolean;
     type?: TextInputType;
   }>(),
@@ -117,25 +118,19 @@ const selectValue = (event: any) => {
   selectedValue.value = event.target.value;
   isUserEvent.value = true
 };
+
 </script>
 
 <template>
   <div v-if="enabled" class="grouping-02" :class="$attrs.class">
     <div class="input-group">
-      <div class="cds--text-input__label-wrapper">
-        <label :id="id + 'Label'" 
-               :for="id" 
-               class="cds-text-input-label">
-          {{ enabled ? label : null }}
-          <span v-if="requiredLabel"
-                class="cds-text-input-required-label">
-                 (required)
-          </span>
-        </label>
-      </div>
       <cds-text-input
         v-if="enabled"
         :id="id"
+        :required="required"
+        :label="label"
+        :aria-label="label"
+        :data-required-label="requiredLabel"
         :type="type"
         :placeholder="placeholder"
         :value="selectedValue"
@@ -149,6 +144,7 @@ const selectValue = (event: any) => {
         :data-focus="id"
         :data-scroll="id"
         :data-id="'input-' + id"
+        v-shadow="3"
       />
     </div>
   </div>

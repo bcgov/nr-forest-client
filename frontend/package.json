@@ -50,7 +50,7 @@
     "@carbon/icons-vue": "^10.72.1",
     "@carbon/pictograms": "^12.22.0",
     "@carbon/styles": "^1.36.0",
-    "@carbon/web-components": "~2.0.1",
+    "@carbon/web-components": "^2.3.0",
     "@vueuse/core": "^10.2.0",
     "axios": "^1.6.0",
     "date-fns": "^3.0.0",
