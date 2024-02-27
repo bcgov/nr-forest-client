@@ -79,7 +79,7 @@ watch(cdsRadioButtonGroup, async (value) => {
     // wait for the DOM updates to complete
     await nextTick();
 
-    const fieldset = value.shadowRoot.querySelector("fieldset");
+    const fieldset = value.shadowRoot?.querySelector("fieldset");
     if (fieldset) {
       fieldset.role = "radiogroup";
       fieldset.setAttribute("aria-label", props.label);
@@ -95,12 +95,12 @@ watch(cdsRadioButtonArray, async (array) => {
     await nextTick();
 
     for (const radio of cdsRadioButtonArray.value) {
-      const label = radio.shadowRoot.querySelector("label");
+      const label = radio.shadowRoot?.querySelector("label");
       if (label) {
         // Fixes the association as it's wrong in the component.
         label.htmlFor = "radio";
       }
-      const input = radio.shadowRoot.querySelector("input");
+      const input = radio.shadowRoot?.querySelector("input");
       if (input) {
         // Propagate attributes to the input
         input.required = props.required;

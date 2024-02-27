@@ -175,7 +175,7 @@ watch(cdsComboBoxRef, async (value) => {
     // wait for the DOM updates to complete
     await nextTick();
 
-    const input = value.shadowRoot.querySelector("input");
+    const input = value.shadowRoot?.querySelector("input");
     if (input) {
       // Propagate attributes to the input
       input.required = props.required;

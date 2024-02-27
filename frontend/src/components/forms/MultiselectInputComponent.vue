@@ -120,7 +120,7 @@ watch(cdsMultiSelect, async (value) => {
     // wait for the DOM updates to complete
     await nextTick();
 
-    const triggerDiv = value.shadowRoot.querySelector("div[role='button']");
+    const triggerDiv = value.shadowRoot?.querySelector("div[role='button']");
     if (triggerDiv) {
       // Properly indicate as required.
       triggerDiv.ariaRequired = props.required ? "true" : "false";
