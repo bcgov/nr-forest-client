@@ -136,7 +136,7 @@ describe("ContactWizardStep.vue", () => {
           props: {
             data: {
               location: {
-                addresses: [{ locationName: "MAILING ADDRESS" }],
+                addresses: [{ locationName: "Mailing address" }],
                 contacts: [
                   firstContactName,
                   ...(includeOtherContacts ? otherContactNames : []),
@@ -180,7 +180,7 @@ describe("ContactWizardStep.vue", () => {
           expect(newContact.locationNames).toHaveLength(1);
             expect(newContact.locationNames[0]).toMatchObject({
               value: "0",
-              text: "MAILING ADDRESS",
+              text: "Mailing address",
             });
         });
       }
@@ -244,10 +244,10 @@ describe("ContactWizardStep.vue", () => {
         if (BCEID_MULTI_ADDRESS) {
           await wrapper
             .get(`#addressname_${contactId}`)
-            .trigger("cds-multi-select-selected", multiSelectEventContent("MAILING ADDRESS"));
+            .trigger("cds-multi-select-selected", multiSelectEventContent("Mailing address"));
 
             // Sanity check
-            expect(wrapper.get(`#addressname_${contactId}`).element.value).toEqual("MAILING ADDRESS");
+            expect(wrapper.get(`#addressname_${contactId}`).element.value).toEqual("Mailing address");
         }
       };
   

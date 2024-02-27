@@ -60,7 +60,7 @@ describe("Error Notification Grouping Component", () => {
         "error-notification"
       );
       const locationNames = [
-        "MAILING ADDRESS",
+        "Mailing address",
         "My location 1",
         "My location 2",
         "My location 3",
@@ -99,7 +99,7 @@ describe("Error Notification Grouping Component", () => {
     describe("when there are some rendered notifications initially", () => {
       let wrapper: VueWrapper<any, any>;
       const locationNames = [
-        "MAILING ADDRESS",
+        "Mailing address",
         "My location 1",
         "My location 2",
         "My location 3",
