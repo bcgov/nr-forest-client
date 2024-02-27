@@ -533,7 +533,7 @@ const renderListItem = (label, clientNumbers) => {
                 </read-only-component>
                   
                 <read-only-component label="City">
-                  <span class="body-compact-01">{{ location.city }}</span>
+                  <span class="body-compact-01">{{ toTitleCase(location.city) }}</span>
                 </read-only-component>
 
                 <read-only-component label="Province or territory">
