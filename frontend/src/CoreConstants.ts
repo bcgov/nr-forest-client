@@ -21,7 +21,7 @@ export const cognitoEnvironment = checkEnv("VITE_AWS_COGNITO_ENVIRONMENT");
 export const awsconfig  = {
   Auth:{
     Cognito:{
-      userPoolId: `${cognitoRegion}_${cognitoPoolId}`,
+      userPoolId: `${cognitoPoolId}`,
       userPoolClientId: cognitoClientId,      
       loginWith: {
         oauth: {
