@@ -185,9 +185,12 @@ describe("<ContactGroupComponent />", () => {
       });
   
       cy.get("#addressname_0").should("be.visible").and("have.value", "");
-  
+
       cy.get("#addressname_0")
-        .click()
+        .find("[part='trigger-button']")
+        .click();
+
+      cy.get("#addressname_0")
         .find('cds-multi-select-item[data-value="Mailing address"]')
         .should("exist")
         .and("be.visible")
@@ -223,19 +226,25 @@ describe("<ContactGroupComponent />", () => {
       cy.get("#addressname_0").should("be.visible").and("have.value", "");
   
       cy.get("#addressname_0")
-        .click()
+        .find("[part='trigger-button']")
+        .click();
+
+      cy.get("#addressname_0")
         .find('cds-multi-select-item[data-value="Mailing address"]')
         .should("exist")
         .and("be.visible")
         .click();
-  
+
       cy.get("#addressname_0")
-        .click()
+        .find("[part='trigger-button']")
+        .click();
+
+      cy.get("#addressname_0")
         .find('cds-multi-select-item[data-value="Jutland office"]')
         .should("exist")
         .and("be.visible")
         .click();
-  
+
       cy.get("#addressname_0")
         .should("be.visible")
         .and("have.value", "Mailing address,Jutland office");
@@ -266,7 +275,10 @@ describe("<ContactGroupComponent />", () => {
       cy.get("#addressname_0").should("be.visible").and("have.value", "");
   
       cy.get("#addressname_0")
-        .click()
+        .find("[part='trigger-button']")
+        .click();
+
+      cy.get("#addressname_0")
         .find('cds-multi-select-item[data-value="Mailing address"]')
         .should("exist")
         .and("be.visible")
@@ -277,7 +289,10 @@ describe("<ContactGroupComponent />", () => {
         .and("have.value", "Mailing address");
   
       cy.get("#addressname_0")
-        .click()
+        .find("[part='trigger-button']")
+        .click();
+
+      cy.get("#addressname_0")
         .find('cds-multi-select-item[data-value="Mailing address"]')
         .should("exist")
         .and("be.visible")
