@@ -32,7 +32,7 @@ import Review16 from "@carbon/icons-vue/es/data--view--alt/32";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 // @ts-ignore
 import Error16 from "@carbon/icons-vue/es/error--outline/16";
-import { convertFieldNameToSentence } from "@/services/ForestClientService";
+import { convertFieldNameToSentence, toTitleCase } from "@/services/ForestClientService";
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 
@@ -183,13 +183,13 @@ const submit = (approved: boolean) => {
         handler: () => {},
         ...(approved
           ? {
-              message: `New client number has been created for “${normalizeString(
+              message: `New client number has been created for “${toTitleCase(
                 data.value.business.organizationName
               )}”`,
               toastTitle: "Submission approved",
             }
           : {
-              message: `New client number has been rejected for “${normalizeString(
+              message: `New client number has been rejected for “${toTitleCase(
                 data.value.business.organizationName
               )}”`,
               toastTitle: "Submission rejected",
@@ -204,18 +204,6 @@ const submit = (approved: boolean) => {
   });
 };
 
-// Normalize the string to capitalize the first letter of each word
-const normalizeString = (input: string): string => {
-  const words = input.split(" ");
-  const capitalizedWords = words.map((word) => {
-    if (word.length > 0) {
-      return word[0].toUpperCase() + word.slice(1).toLocaleLowerCase();
-    } else {
-      return "";
-    }
-  });
-  return capitalizedWords.join(" ");
-};
 // Get the icon for the row
 const iconForRow = (requestType: string) => {
   if (requestType === "Auto approved client") return Approved16;
@@ -324,7 +312,7 @@ const renderListItem = (label, clientNumbers) => {
 
         <h3 class="submission-details--title">
           <span>
-            {{ normalizeString(data.business.organizationName) }}
+            {{ toTitleCase(data.business.organizationName) }}
           </span>
         </h3>
         <p class="body-02 light-theme-text-text-secondary" data-testid="subtitle" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
@@ -450,7 +438,7 @@ const renderListItem = (label, clientNumbers) => {
             <div class="grouping-10">
               
               <read-only-component label="Name">
-                <span class="body-compact-01">{{ normalizeString(data.business.organizationName) }}</span>
+                <span class="body-compact-01">{{ toTitleCase(data.business.organizationName) }}</span>
               </read-only-component>
               
               <read-only-component label="Client number" v-if="data.business.clientNumber">
@@ -495,7 +483,7 @@ const renderListItem = (label, clientNumbers) => {
             <cds-accordion-item open title="Submitter information" size="lg" class="grouping-05-internal">
               <div class="grouping-10-internal">
               <read-only-component label="First name">
-                <span class="body-compact-01">{{ normalizeString(data.contact[0].firstName) }}</span>
+                <span class="body-compact-01">{{ toTitleCase(data.contact[0].firstName) }}</span>
               </read-only-component>
               
               <read-only-component label="Last name">
