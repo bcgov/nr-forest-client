@@ -11,13 +11,29 @@ const generateRandomHex = (length: number): string => {
   return result;
 };
 
+const jwtfy = (jwtBody: any) => btoa(JSON.stringify(jwtBody))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+
+const generateRandomUUID = (): string => {
+  const parts = [
+    generateRandomHex(8),
+    generateRandomHex(4),
+    generateRandomHex(4),
+    generateRandomHex(4),
+    generateRandomHex(12)
+  ];
+  return parts.join("-");
+};
+
 Cypress.Commands.add("addCookie", (name: string, value: string) => {
   cy.setCookie(name, value, {
     domain: "127.0.0.1",
     path: "/",
     httpOnly: false,
-    secure: false,
-    expiry: Date.now() + 86400000,
+    secure: true,
+    expiry: Date.now() + 86400000,    
   });
 });
 
@@ -59,24 +75,53 @@ Cypress.Commands.add(
   "login",
   (email: string, name: string, provider: string, extra: any = "{}") => {
     cy.get(".landing-button").should("be.visible");
+
+    const userId = generateRandomHex(32);
+
     const jwtBody = {
       "custom:idp_display_name": name,
       "custom:idp_name": provider,
-      "custom:idp_user_id": generateRandomHex(32),
+      "custom:idp_user_id": userId,
       email,
       firstName: "UAT",
       lastName: "Test",
       ...extra,
     };
 
-    const payloadString = btoa(JSON.stringify(jwtBody))
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=+$/, "");
-    cy.addCookie(
-      "idToken",
-      `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${payloadString}.`
-    );
+    const accessToken = {
+      "sub": generateRandomUUID(),
+      "iss": `https://cognito-idp.${Cypress.env('AWS_COGNITO_REGION')}.amazonaws.com/${Cypress.env('AWS_COGNITO_REGION')}_${Cypress.env('VITE_AWS_COGNITO_POOL_ID')}`,
+      "version": 2,
+      "client_id": Cypress.env('VITE_AWS_COGNITO_CLIENT_ID'),
+      "origin_jti": generateRandomUUID(),
+      "token_use": "access",
+      "scope": "openid",
+      "auth_time": 1708985572,
+      "exp": 2908989880,
+      "iat": 2908989581,
+      "jti": generateRandomUUID(),
+      "username": userId
+    };
+
+    const baseCookieName = `CognitoIdentityServiceProvider.${Cypress.env('AWS_COGNITO_CLIENT_ID')}`;
+    const baseUserCookieName = `${baseCookieName}.${userId}`;
+    const cognitoResponse = {
+      "AccessToken": `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${jwtfy(accessToken)}.`,
+      "ExpiresIn": 300,
+      "IdToken": `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${jwtfy(jwtBody)}.`,
+      "TokenType": "Bearer"
+    };
+
+
+    cy.intercept(
+      "POST", 
+      `https://cognito-idp.${Cypress.env('AWS_COGNITO_REGION')}.amazonaws.com/`,
+      { statusCode: 200, body: cognitoResponse, }
+    ).as("cognitoPull");
+
+    cy.addCookie(`${baseCookieName}.LastAuthUser`,userId);    
+    cy.addCookie(`${baseUserCookieName}.idToken`,`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${jwtfy(jwtBody)}.`);
+    
     cy.reload();
     cy.wait(1000);
   }

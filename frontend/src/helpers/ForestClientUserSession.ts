@@ -1,7 +1,7 @@
 import type { SessionProperties, Submitter } from "@/dto/CommonTypesDto";
 import { toTitleCase } from "@/services/ForestClientService";
 import { fetchAuthSession, signInWithRedirect, signOut } from "aws-amplify/auth";
-import { cognitoEnvironment} from "@/CoreConstants";
+import { cognitoEnvironment, nodeEnv, cognitoClientId } from "@/CoreConstants";
 
 class ForestClientUserSession implements SessionProperties {
   public user: Submitter | undefined;
@@ -25,7 +25,7 @@ class ForestClientUserSession implements SessionProperties {
   };
 
   loadUser = async (): Promise<void> => {
-    const { idToken } = (await fetchAuthSession()).tokens ?? {};
+    const { idToken } = await this.loadUserToken();
     if (idToken) {
       const parsedUser: any = idToken.payload;  
       const address = parsedUser["address"];
@@ -101,6 +101,33 @@ class ForestClientUserSession implements SessionProperties {
     const nameArrayWithoutSpaces = nameArray.filter((name) => name !== "");
     return nameArrayWithoutSpaces;
   };
+
+  private loadUserToken = async (): Promise<any> => {
+    if(nodeEnv !== "test"){
+      return (await fetchAuthSession({forceRefresh: false})).tokens ?? {};
+    }else {
+      // This is for test only
+      
+      const baseCookieName = `CognitoIdentityServiceProvider.${cognitoClientId}`;
+      const userId = encodeURIComponent(this.getCookie(`${baseCookieName}.LastAuthUser`));
+      if(userId){
+        const idTokenCookieName = `${baseCookieName}.${userId}.idToken`;
+        const idToken = this.getCookie(idTokenCookieName);
+        const jwtBody = idToken ? JSON.parse(atob(idToken.split(".")[1])) : null;
+        return Promise.resolve({ idToken: { payload:jwtBody } });
+      }else{
+        return Promise.resolve({ idToken: null });
+      }
+    }
+  }
+
+  private getCookie = (name: string): string => {
+    const cookie = document.cookie
+      .split(";")
+      .find((cookie) => cookie.trim().startsWith(name));
+    return cookie ? cookie.split("=")[1] : "";
+  };
+
 
 }
 
