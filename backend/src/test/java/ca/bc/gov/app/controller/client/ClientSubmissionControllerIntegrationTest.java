@@ -10,6 +10,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
@@ -129,6 +131,8 @@ class ClientSubmissionControllerIntegrationTest
   @Order(1)
   void shouldSubmitRegisteredBusinessData() {
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
         .post()
         .uri("/api/clients/submissions")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
@@ -147,6 +151,8 @@ class ClientSubmissionControllerIntegrationTest
   @Order(4)
   void shouldSubmitUnregisteredBusinessData() {
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
         .post()
         .uri("/api/clients/submissions")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
@@ -167,6 +173,8 @@ class ClientSubmissionControllerIntegrationTest
   void shouldFailValidationSubmit(
       @AggregateWith(ClientSubmissionAggregator.class) ClientSubmissionDto clientSubmissionDto) {
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
         .post()
         .uri("/api/clients/submissions")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
@@ -203,6 +211,8 @@ class ClientSubmissionControllerIntegrationTest
 
     BodyContentSpec expectedBody =
         client
+            .mutateWith(csrf())
+            .mutateWith(mockUser().roles(ApplicationConstant.ROLE_IDIR_USER))
             .get()
             .uri(uri)
             .header(ApplicationConstant.USERID_HEADER, "testUserId")
@@ -232,6 +242,8 @@ class ClientSubmissionControllerIntegrationTest
   void shouldGetSubmissionDetails() {
 
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_IDIR_USER))
         .get()
         .uri("/api/clients/submissions/1")
         .exchange()
@@ -248,6 +260,8 @@ class ClientSubmissionControllerIntegrationTest
   void shouldApproveOrReject() {
 
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_IDIR_USER))
         .post()
         .uri("/api/clients/submissions/1")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
@@ -266,6 +280,8 @@ class ClientSubmissionControllerIntegrationTest
   @Order(7)
   void shouldSubmitBrokenUnregisteredBusinessData() {
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
         .post()
         .uri("/api/clients/submissions")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
@@ -285,6 +301,8 @@ class ClientSubmissionControllerIntegrationTest
   @Order(8)
   void shouldSubmitMultipleContacts() {
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
         .post()
         .uri("/api/clients/submissions")
         .header(ApplicationConstant.USERID_HEADER, "jamesbaxter")
@@ -329,6 +347,8 @@ class ClientSubmissionControllerIntegrationTest
   @Order(9)
   void shouldNotApproveRejectAgain(){
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_IDIR_USER))
         .post()
         .uri("/api/clients/submissions/1")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")

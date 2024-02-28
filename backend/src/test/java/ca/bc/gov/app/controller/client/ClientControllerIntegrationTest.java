@@ -9,6 +9,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
@@ -157,6 +159,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     WebTestClient.BodyContentSpec response =
         client
+            .mutateWith(csrf())
+            .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
             .get()
             .uri("/api/clients/{clientNumber}", Map.of("clientNumber", clientNumber))
             .header(ApplicationConstant.USERID_HEADER, "testUserId")
@@ -190,6 +194,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         );
 
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
         .get()
         .uri("/api/clients/incorporation/BC0772006")
         .exchange()
@@ -214,6 +220,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         );
 
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
         .get()
         .uri("/api/clients/incorporation/BC0000000")
         .exchange()
@@ -238,6 +246,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         );
 
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
         .get()
         .uri("/api/clients/name/Power")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
@@ -264,6 +274,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         );
 
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
         .get()
         .uri("/api/clients/name/Jhon")
         .header(ApplicationConstant.USERID_HEADER, "testUserId")
@@ -288,6 +300,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         );
 
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
         .get()
         .uri("/api/clients/individual/{userId}?lastName=Doe", Map.of("userId", "123456"))
         .exchange()
@@ -309,6 +323,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         );
 
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
         .get()
         .uri("/api/clients/individual/{userId}?lastName=Doe", Map.of("userId", "123456"))
         .exchange()

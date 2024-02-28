@@ -52,8 +52,8 @@ parameters:
     description: Zone to use for URL
     required: true
 objects:
-  - apiVersion: v1
-    kind: ImageStream
+  - kind: ImageStream
+    apiVersion: v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}
@@ -68,8 +68,8 @@ objects:
             name: ${REGISTRY}/${PROMOTE}
           referencePolicy:
             type: Local
-  - apiVersion: v1
-    kind: DeploymentConfig
+  - kind: DeploymentConfig
+    apiVersion: v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}
@@ -162,40 +162,38 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
                       key: address-complete-key
-                - name: COGNITO_CLIENT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: cognito-client-id
                 - name: COGNITO_USER_POOL
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
                       key: cognito-user-pool
-                - name: COGNITO_DOMAIN
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: cognito-domain
                 - name: COGNITO_ENVIRONMENT
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
                       key: cognito-environment
-                - name: COGNITO_REDIRECT_URI
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: cognito-redirect-uri
-                - name: COGNITO_LOGOUT_URI
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: cognito-logout-uri
                 - name: COGNITO_REGION
                   value: ${COGNITO_REGION}
-                - name: COGNITO_COOKIE_DOMAIN
-                  value: ${COGNITO_COOKIE_DOMAIN}
+                - name: LEGACY_SERVICE_ACCOUNT_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: legacy-service-account-name
+                - name: LEGACY_SERVICE_ACCOUNT_SECRET
+                  valueFrom:
+                      secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: legacy-service-account-secret
+                - name: PROCESSOR_SERVICE_ACCOUNT_NAME
+                  valueFrom:
+                      secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: processor-service-account-name
+                - name: PROCESSOR_SERVICE_ACCOUNT_SECRET
+                  valueFrom:
+                      secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: processor-service-account-secret
                 - name: TZ
                   value: America/Vancouver
                 - name: APP_ZONE
@@ -224,8 +222,8 @@ objects:
                 initialDelaySeconds: 10
                 periodSeconds: 30
                 timeoutSeconds: 5
-  - apiVersion: v1
-    kind: Service
+  - kind: Service
+    apiVersion: v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}
@@ -238,8 +236,8 @@ objects:
           targetPort: 8080
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
-  - apiVersion: route.openshift.io/v1
-    kind: Route
+  - kind: Route
+    apiVersion: route.openshift.io/v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}

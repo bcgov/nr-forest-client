@@ -5,6 +5,11 @@ spring:
     lazy-initialization: false
     banner-mode: "off"
     allow-bean-definition-overriding: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${JWK_SET_URI:https://cognito-idp.${ca.bc.gov.nrs.cognito.region}.amazonaws.com/${ca.bc.gov.nrs.cognito.user-pool}/.well-known/jwks.json}
   r2dbc:
     url: r2dbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
     username: ${ca.bc.gov.nrs.postgres.username}
@@ -102,15 +107,15 @@ ca:
         addressComplete:
           url: ${ADDRESS_COMPLETE_URL:https://ws1.postescanada-canadapost.ca/addresscomplete/interactive}
           apiKey: ${ADDRESS_COMPLETE_KEY:apiKey}
-        cognito:
+        security:
           region: ${COGNITO_REGION}
-          client-id: ${COGNITO_CLIENT_ID}
           user-pool: ${COGNITO_USER_POOL}
-          domain: ${COGNITO_DOMAIN}
           environment: ${COGNITO_ENVIRONMENT}
-          redirect-uri: ${COGNITO_REDIRECT_URI}
-          logout-uri: ${COGNITO_LOGOUT_URI}
-          cookie-domain: ${COGNITO_COOKIE_DOMAIN}
+          service-accounts:
+            - name: ${LEGACY_SERVICE_ACCOUNT_NAME}
+              secret: ${LEGACY_SERVICE_ACCOUNT_SECRET}
+            - name: ${PROCESSOR_SERVICE_ACCOUNT_NAME}
+              secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
         frontend:
           url: ${FRONTEND_URL:*}
           cors:

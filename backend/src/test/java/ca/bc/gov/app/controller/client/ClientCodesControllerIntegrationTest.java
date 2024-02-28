@@ -1,5 +1,9 @@
 package ca.bc.gov.app.controller.client;
 
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
+
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.net.URI;
 import java.time.Duration;
@@ -24,7 +28,10 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
 
   @BeforeEach
   public void reset() {
-    client = client.mutate()
+    client = client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCSC_USER))
+        .mutate()
         .responseTimeout(Duration.ofSeconds(10))
         .build();
   }

@@ -8,6 +8,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
@@ -87,6 +89,8 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
   @DisplayName("Submit email request")
   void shouldSubmitRegisteredBusinessData() {
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_SERVICE_USER))
         .post()
         .uri("/api/ches/email")
         .body(Mono.just(EMAIL_REQUEST), EmailRequestDto.class)
@@ -94,6 +98,31 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
         .expectStatus().isAccepted()
         .expectBody(String.class)
         .isEqualTo("Email sent successfully. Transaction ID: 00000000-0000-0000-0000-000000000000");
+  }
+
+  @Test
+  @DisplayName("Does not accept unauthorized request")
+  void shouldRejectUnauthenticated() {
+    client
+        .mutateWith(csrf())
+        .post()
+        .uri("/api/ches/email")
+        .body(Mono.just(EMAIL_REQUEST), EmailRequestDto.class)
+        .exchange()
+        .expectStatus().isUnauthorized();
+  }
+
+  @Test
+  @DisplayName("Does not accept forbidden request")
+  void shouldRejectForbidden() {
+    client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        .post()
+        .uri("/api/ches/email")
+        .body(Mono.just(EMAIL_REQUEST), EmailRequestDto.class)
+        .exchange()
+        .expectStatus().isForbidden();
   }
 
   @Test
@@ -128,6 +157,8 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
         );
 
     client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
         .post()
         .uri("/api/ches/duplicate")
         .body(Mono.just(TestConstants.EMAIL_REQUEST), EmailRequestDto.class)
