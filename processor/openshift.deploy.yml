@@ -129,6 +129,16 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
                       key: bcregistry-account
+                - name: PROCESSOR_SERVICE_ACCOUNT_NAME
+                  valueFrom:
+                    secretKeyRef:
+                    name: ${NAME}-${ZONE}
+                    key: processor-service-account-name
+                - name: PROCESSOR_SERVICE_ACCOUNT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                    name: ${NAME}-${ZONE}
+                    key: processor-service-account-secret
               ports:
                 - containerPort: 3000
                   protocol: TCP

@@ -33,6 +33,9 @@ public class ForestClientConfiguration {
   @NestedConfigurationProperty
   private BcRegistryConfiguration bcregistry;
 
+  @NestedConfigurationProperty
+  private SecurityConfiguration security;
+
   @Data
   @Builder
   @NoArgsConstructor
@@ -61,6 +64,15 @@ public class ForestClientConfiguration {
     private String uri;
     private String apiKey;
     private String accountId;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class SecurityConfiguration {
+    private String serviceAccountName;
+    private String serviceAccountSecret;
   }
 
 }
