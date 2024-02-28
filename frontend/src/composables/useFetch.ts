@@ -48,6 +48,7 @@ export const useFetchTo = (
       "x-user-businessid": ForestClientUserSession.user?.businessId ?? "",
       "x-user-email": ForestClientUserSession.user?.email ?? "",
       "x-user-name": `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`,
+      "Authorization": `Bearer ${ForestClientUserSession.token}`,
     },
   };
 
@@ -106,6 +107,7 @@ export const usePost = (url: string, body: any, config: any = {}) => {
       "x-user-businessid": ForestClientUserSession.user?.businessId ?? "",
       "x-user-email": ForestClientUserSession.user?.email ?? "",
       "x-user-name": `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`,
+      "Authorization": `Bearer ${ForestClientUserSession.token}`,
     },
   };
 
