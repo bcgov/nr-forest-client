@@ -174,16 +174,6 @@ objects:
                       key: cognito-environment
                 - name: COGNITO_REGION
                   value: ${COGNITO_REGION}
-                - name: LEGACY_SERVICE_ACCOUNT_NAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: legacy-service-account-name
-                - name: LEGACY_SERVICE_ACCOUNT_SECRET
-                  valueFrom:
-                      secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: legacy-service-account-secret
                 - name: PROCESSOR_SERVICE_ACCOUNT_NAME
                   valueFrom:
                       secretKeyRef:

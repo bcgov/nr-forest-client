@@ -112,8 +112,6 @@ ca:
           user-pool: ${COGNITO_USER_POOL}
           environment: ${COGNITO_ENVIRONMENT}
           service-accounts:
-            - name: ${LEGACY_SERVICE_ACCOUNT_NAME}
-              secret: ${LEGACY_SERVICE_ACCOUNT_SECRET}
             - name: ${PROCESSOR_SERVICE_ACCOUNT_NAME}
               secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
         frontend:
