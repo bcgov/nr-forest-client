@@ -138,8 +138,6 @@ class ForestClientUserSession implements SessionProperties {
       this.token = undefined;
     }
   }
-
-
 }
 
 export default new ForestClientUserSession();

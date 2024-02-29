@@ -16,7 +16,7 @@
       "city": "Victoria",
       "postalCode": "A0A0A0",
       "index": 0,
-      "locationName": "MAILING ADDRESS"
+      "locationName": "Mailing address"
     }
   ],
   "contacts": [
@@ -33,7 +33,7 @@
       "locationNames": [
         {
           "value": "0",
-          "text": "MAILING ADDRESS"
+          "text": "Mailing address"
         }
       ]
     }

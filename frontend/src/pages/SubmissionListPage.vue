@@ -19,6 +19,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import Approved16 from "@carbon/icons-vue/es/task--complete/16";
 // @ts-ignore
 import Review16 from "@carbon/icons-vue/es/data--view--alt/16";
+import { toTitleCase } from "@/services/ForestClientService";
 
 const router = useRouter();
 
@@ -53,6 +54,8 @@ watch(
   () => {
     const totalCount = parseInt(response.value.headers["x-total-count"] || "0");
     totalItems.value = totalCount;
+
+    tableData.value.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
   }
 );
 
@@ -75,36 +78,24 @@ const tagColor = (status: string) => {
       return "purple";
   }
 };
+
 // Select an entry to go to the details page
 const selectEntry = (entry: SubmissionList) => {
   const params = { id: entry.id };
   if (entry.requestType !== "Submission pending processing")
     router.push({ name: "review", params });
 };
-// Format the date to a friendly format
-const friendlyDate = (date: string): string => {
-  return `${formatDistanceToNow(new Date(date))} ago`;
-};
+
 const formattedDate = (date: string): string => {
   return format(new Date(date), "MMM dd, yyyy");
 };
-// Normalize the string to capitalize the first letter of each word
-const normalizeString = (input: string): string => {
-  const words = input.split(" ");
-  const capitalizedWords = words.map((word) => {
-    if (word.length > 0) {
-      return word[0].toUpperCase() + word.slice(1).toLocaleLowerCase();
-    } else {
-      return "";
-    }
-  });
-  return capitalizedWords.join(" ");
-};
+
 // Get the icon for the row
 const iconForRow = (row: SubmissionList) => {
   if (row.requestType === "Auto approved client") return Approved16;
   return Review16;
 };
+
 // Disable the skelleton table header
 const disableSkelleton = () => {
   if (skeletonReference && skeletonReference.value) {
@@ -146,7 +137,7 @@ onMounted(() => {
         <cds-table-body>
           <cds-table-row v-for="row in tableData" :key="row.name" @click="selectEntry(row)">
             <cds-table-cell />
-            <cds-table-cell><span>{{ normalizeString(row.name) }}</span></cds-table-cell>
+            <cds-table-cell><span>{{ toTitleCase(row.name) }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientType }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.district }}</span></cds-table-cell>
             <cds-table-cell><span>{{ formattedDate(row.submittedAt) }}</span></cds-table-cell>

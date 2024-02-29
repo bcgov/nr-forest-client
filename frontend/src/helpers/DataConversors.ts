@@ -1,4 +1,5 @@
 import { type Address, emptyAddress, locationName } from "@/dto/ApplyClientNumberDto";
+import { toSentenceCase } from "@/services/ForestClientService";
 
 export const retrieveClientType = (legalType: string): string => {
   if (legalType) {
@@ -36,7 +37,10 @@ export const retrieveClientType = (legalType: string): string => {
 
 export const exportAddress = (addresses: Address[]): Address[] => {
   if (addresses && addresses.length > 0) {
-    return addresses;
+    return addresses.map(address => ({
+      ...address,
+      locationName: toSentenceCase(address.locationName),
+    }));
   }
   return [{ ...emptyAddress(), locationName: locationName.text }];
 };
