@@ -22,7 +22,7 @@ export const awsconfig  = {
   Auth:{
     Cognito:{
       userPoolId: `${cognitoPoolId}`,
-      userPoolClientId: cognitoClientId,      
+      userPoolClientId: `${cognitoClientId}`,      
       loginWith: {
         oauth: {
           domain: `${cognitoDomain}.auth.${cognitoRegion}.amazoncognito.com`,
