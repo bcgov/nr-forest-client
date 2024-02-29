@@ -43,6 +43,7 @@ const props = withDefaults(
     errorMessage?: string;
     requiredLabel?: boolean;
     required?: boolean;
+    autoMoveFocus?: boolean;
   }>(),
   {
     yearValidations: () => [],
@@ -377,13 +378,13 @@ const selectValue = (datePart: DatePart) => (event: any) => {
   datePartRef.value = event.target.value;
   isUserEvent.value = true;
   selectedValue.value = buildFullDate();
-  if (datePartRef.value.length >= partLength[datePart]) {
+  if (props.autoMoveFocus && datePartRef.value.length >= partLength[datePart]) {
     const nextDatePartIndex = datePart + 1;
     if (DatePart[nextDatePartIndex] !== undefined) {
       const nextDatePart = nextDatePartIndex as DatePart;
       const nextComponent = datePartComponentRefs[nextDatePart].value;
       if (nextComponent) {
-        setFocusedComponent(nextComponent.id)
+        setFocusedComponent(nextComponent.id);
       }
     }
   }
