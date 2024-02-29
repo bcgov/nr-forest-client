@@ -158,18 +158,11 @@ watch([autoCompleteResult], () => {
 
     emit("update:data", formData.value);
 
-    const config = {
-      headers: {
-        "x-user-email": formData.value.location.contacts[0].email,
-        "x-user-id": formData.value.location.contacts[0].firstName,
-      },
-    };
-
     //Also, we will load the backend data to fill all the other information as well
     const { error, loading: detailsLoading } = useFetchTo(
       `/api/clients/${autoCompleteResult.value.code}`,
       detailsData,
-      config
+      {},
     );
 
     showDetailsLoading.value = true;

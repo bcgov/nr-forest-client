@@ -151,13 +151,7 @@ const submit = (approved: boolean) => {
       reasons: rejectionReasonMessage.value,
       message: rejectReasonMessage.value,
     },
-    {
-      headers: {
-        "x-user-id": ForestClientUserSession.user?.userId ?? "",
-        "x-user-email": ForestClientUserSession.user?.email ?? "",
-        "x-user-name": `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`,
-      },
-    }
+    {}
   );
 
   const { setScrollPoint } = useFocus();
