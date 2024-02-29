@@ -132,13 +132,13 @@ objects:
                 - name: PROCESSOR_SERVICE_ACCOUNT_NAME
                   valueFrom:
                     secretKeyRef:
-                    name: ${NAME}-${ZONE}
-                    key: processor-service-account-name
+                      name: ${NAME}-${ZONE}
+                      key: processor-service-account-name
                 - name: PROCESSOR_SERVICE_ACCOUNT_SECRET
                   valueFrom:
                     secretKeyRef:
-                    name: ${NAME}-${ZONE}
-                    key: processor-service-account-secret
+                      name: ${NAME}-${ZONE}
+                      key: processor-service-account-secret
               ports:
                 - containerPort: 3000
                   protocol: TCP
