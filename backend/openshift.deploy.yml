@@ -173,17 +173,20 @@ objects:
                       name: ${NAME}-${ZONE}
                       key: cognito-environment
                 - name: COGNITO_REGION
-                  value: ${COGNITO_REGION}
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: cognito-region
                 - name: PROCESSOR_SERVICE_ACCOUNT_NAME
                   valueFrom:
                       secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: processor-service-account-name
+                        name: ${NAME}-${ZONE}
+                        key: processor-service-account-name
                 - name: PROCESSOR_SERVICE_ACCOUNT_SECRET
                   valueFrom:
                       secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: processor-service-account-secret
+                        name: ${NAME}-${ZONE}
+                        key: processor-service-account-secret
                 - name: TZ
                   value: America/Vancouver
                 - name: APP_ZONE
