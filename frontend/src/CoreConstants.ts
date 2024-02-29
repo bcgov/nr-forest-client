@@ -11,6 +11,32 @@ export const nodeEnv = checkEnv("VITE_NODE_ENV");
 
 export const appVersion = version;
 
+export const cognitoRegion = checkEnv("VITE_AWS_COGNITO_REGION");
+export const cognitoDomain = checkEnv("VITE_AWS_COGNITO_DOMAIN");
+export const cognitoClientId = checkEnv("VITE_AWS_COGNITO_CLIENT_ID");
+export const cognitoPoolId = checkEnv("VITE_AWS_COGNITO_POOL_ID");
+export const cognitoLogoutChainUrl = checkEnv("VITE_AWS_COGNITO_LOGOUT_CHAIN_URL");
+export const cognitoEnvironment = checkEnv("VITE_AWS_COGNITO_ENVIRONMENT");
+
+export const awsconfig  = {
+  Auth:{
+    Cognito:{
+      userPoolId: `${cognitoPoolId}`,
+      userPoolClientId: cognitoClientId,      
+      loginWith: {
+        oauth: {
+          domain: `${cognitoDomain}.auth.${cognitoRegion}.amazoncognito.com`,
+          scopes: ["openid","profile","email"],
+          redirectSignIn: [`${frontendUrl}/dashboard`],
+          redirectSignOut: [`${cognitoLogoutChainUrl}`],
+          responseType: "code",
+        },
+        username: 'true'
+      }
+    }
+  }
+};
+
 // constant
 export const maxFileSizePerFile = 1000000 * 20; // 20 mb
 export const maxTotalFileSize = 1000000 * 20 * 5; // 100 mb

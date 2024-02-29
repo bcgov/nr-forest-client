@@ -1,35 +1,68 @@
 import type { SessionProperties, Submitter } from "@/dto/CommonTypesDto";
-import { backendUrl } from "@/CoreConstants";
 import { toTitleCase } from "@/services/ForestClientService";
+import { fetchAuthSession, signInWithRedirect, signOut } from "aws-amplify/auth";
+import { cognitoEnvironment, nodeEnv, cognitoClientId } from "@/CoreConstants";
 
 class ForestClientUserSession implements SessionProperties {
   public user: Submitter | undefined;
 
-  public constructor() {
-    this.loadUser();
-  }
-
   logIn = (provider: string): void => {
-    window.location.href = `${backendUrl}/login?code=${provider}`;
+    console.log("Logging in with provider: ", provider);
+    signInWithRedirect({ provider: { custom: `${cognitoEnvironment}-${provider}`.toUpperCase() } });
   };
 
   logOut = (): void => {
     this.user = undefined;
-    window.location.href = `${backendUrl}/logout`;
+    signOut();
   };
 
   isLoggedIn = (): boolean => {
     return this.loadDetails() !== undefined;
   };
 
-  loadDetails = (): Submitter | undefined => {
-    if (this.user === undefined) {
-      this.loadUser();
-      
-    }    
+  loadDetails = (): Submitter | undefined => {    
     return this.user;
   };
 
+  loadUser = async (): Promise<void> => {
+    const { idToken } = await this.loadUserToken();
+    if (idToken) {
+      const parsedUser: any = idToken.payload;  
+      const address = parsedUser["address"];
+      const streetAddress = address !== undefined ? JSON.parse(address.formatted) : {};
+
+      const provider =parsedUser["custom:idp_name"].startsWith("ca.bc.gov.flnr.fam.")
+        ? "bcsc"
+        : parsedUser["custom:idp_name"];
+
+      this.user = {
+        name: toTitleCase(parsedUser["custom:idp_display_name"]),
+        provider: provider,
+        userId: `${provider}\\${parsedUser["custom:idp_username"] ?? parsedUser["custom:idp_user_id"]}`,
+        businessId: parsedUser["custom:idp_business_id"] ?? "",
+        birthdate: parsedUser["birthdate"],
+        address: {
+          locationName: "",
+          streetAddress: toTitleCase(streetAddress.street_address),
+          city: toTitleCase(streetAddress.locality),
+          country: {
+            value: streetAddress.country, //TODO: double check this
+            text: ""
+          },
+          province: {
+            value: streetAddress.region, //TODO: double check this
+            text: ""
+          },
+          postalCode: streetAddress.postal_code
+        },
+        email: parsedUser.email,
+        ...this.processName(parsedUser, parsedUser["custom:idp_name"]),
+      };
+    }else{
+      this.user = undefined;
+    }
+  };
+  
   private processName = (
     payload: any,
     provider: string
@@ -69,63 +102,33 @@ class ForestClientUserSession implements SessionProperties {
     return nameArrayWithoutSpaces;
   };
 
-  private loadUser = (): void => {
-    const accessToken = this.getCookie("idToken");
-    if (accessToken) {
-      const parsedUser = this.parseJwt(accessToken);      
-      const address = parsedUser["address"];
-      const streetAddress = address !== undefined ? JSON.parse(address.formatted) : {};
-
-      const provider =parsedUser["custom:idp_name"].startsWith("ca.bc.gov.flnr.fam.")
-        ? "bcsc"
-        : parsedUser["custom:idp_name"];
-
-      this.user = {
-        name: toTitleCase(parsedUser["custom:idp_display_name"]),
-        provider: provider,
-        userId: `${provider}\\${parsedUser["custom:idp_username"] ?? parsedUser["custom:idp_user_id"]}`,
-        businessId: parsedUser["custom:idp_business_id"] ?? "",
-        birthdate: parsedUser["birthdate"],
-        address: {
-          locationName: "",
-          streetAddress: toTitleCase(streetAddress.street_address),
-          city: toTitleCase(streetAddress.locality),
-          country: {
-            code: streetAddress.country,
-            text: ""
-          },
-          province: {
-            code: streetAddress.region,
-            text: ""
-          },
-          postalCode: streetAddress.postal_code
-        },
-        email: parsedUser.email,
-        ...this.processName(parsedUser, parsedUser["custom:idp_name"]),
-      };
-    }
-  };
-
-  private getCookie = (name: string): string | null => {
-    const cookieString = document.cookie;
-    if (cookieString !== "") {
-      const cookies = cookieString.split(";");
-      for (const cookie of cookies) {
-        const [cookieName, cookieValue] = cookie.trim().split("=");
-        if (cookieName === name) {
-          return decodeURIComponent(cookieValue);
-        }
+  private loadUserToken = async (): Promise<any> => {
+    if(nodeEnv !== "test"){
+      return (await fetchAuthSession({forceRefresh: false})).tokens ?? {};
+    }else {
+      // This is for test only
+      
+      const baseCookieName = `CognitoIdentityServiceProvider.${cognitoClientId}`;
+      const userId = encodeURIComponent(this.getCookie(`${baseCookieName}.LastAuthUser`));
+      if(userId){
+        const idTokenCookieName = `${baseCookieName}.${userId}.idToken`;
+        const idToken = this.getCookie(idTokenCookieName);
+        const jwtBody = idToken ? JSON.parse(atob(idToken.split(".")[1])) : null;
+        return Promise.resolve({ idToken: { payload:jwtBody } });
+      }else{
+        return Promise.resolve({ idToken: null });
       }
     }
-    return null;
+  }
+
+  private getCookie = (name: string): string => {
+    const cookie = document.cookie
+      .split(";")
+      .find((cookie) => cookie.trim().startsWith(name));
+    return cookie ? cookie.split("=")[1] : "";
   };
 
-  private parseJwt = (token: string): any => {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const decodedPayload = JSON.parse(atob(base64));
-    return decodedPayload;
-  };
+
 }
 
 export default new ForestClientUserSession();
