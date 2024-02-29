@@ -3,8 +3,8 @@
 import "@carbon/web-components/es/components/button/index";
 // Composables
 import { useRouter } from "vue-router";
-// Constants
-import { backendUrl } from "@/CoreConstants";
+// Session
+import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // Assets
 import landingImagePath from "@/assets/images/pexels-james-wheeler-1544935.jpg";
 import logo from "@/assets/images/bc-gov-logo.png";
@@ -16,7 +16,10 @@ const router = useRouter();
 const { query } = router.currentRoute.value;
 // check if a querystring parameter called ref exists and if it has a value of external
 if (query.ref && query.ref === "external") {
-  window.location.href = `${backendUrl}/login?code=bceidbusiness`;
+  ForestClientUserSession.logIn('bceidbusiness');
+}
+if (query.ref && query.ref === "individual") {
+  ForestClientUserSession.logIn('bcsc');
 }
 </script>
 
@@ -39,7 +42,7 @@ if (query.ref && query.ref === "external") {
       kind="primary"
       iconLayout=""
       class="landing-button"
-      :href="$backend+'/login?code=idir'"
+      @click.prevent="ForestClientUserSession.logIn('idir')"
     >
       <span>Log in with IDIR</span>
       <login16 slot="icon" />
@@ -49,7 +52,7 @@ if (query.ref && query.ref === "external") {
       kind="primary"
       iconLayout=""
       class="landing-button"
-      :href="$backend+'/login?code=bcsc'"
+      @click.prevent="ForestClientUserSession.logIn('bcsc')"
     >
       <span>Log in with BC Services Card</span>
       <login16 slot="icon" />
@@ -59,7 +62,7 @@ if (query.ref && query.ref === "external") {
       kind="primary"
       iconLayout=""
       class="landing-button"
-      :href="$backend+'/login?code=bceidbusiness'"
+      @click.prevent="ForestClientUserSession.logIn('bceidbusiness')"
     >
       <span>Log in with BCeID</span>
       <login16 slot="icon" />

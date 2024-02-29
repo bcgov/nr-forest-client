@@ -13,9 +13,15 @@ jobs:
         env:
           VITE_BACKEND_URL: http://localhost:8080
           VITE_FRONTEND_URL: http://localhost:3000
-          VITE_NODE_ENV: ci
+          VITE_NODE_ENV: test
           VITE_COVERAGE: true
           VITE_PORT: 3000
+          VITE_AWS_COGNITO_REGION: ${{ secrets.COGNITO_REGION }}
+          VITE_AWS_COGNITO_POOL_ID: ${{ secrets.COGNITO_USER_POOL }}
+          VITE_AWS_COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
+          VITE_AWS_COGNITO_DOMAIN: ${{ secrets.COGNITO_DOMAIN }}
+          VITE_AWS_COGNITO_LOGOUT_CHAIN_URL: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=http://localhost:3000/
+          VITE_AWS_COGNITO_ENVIRONMENT: dev
         with:
           node_version: 18
           commands: |
