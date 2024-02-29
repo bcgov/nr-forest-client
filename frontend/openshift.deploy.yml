@@ -53,10 +53,31 @@ parameters:
   - name: GREEN_DOMAIN
     description: Green domain
     required: true
+  - name: COGNITO_REGION
+    description: Cognito region information
+    required: true
+  - name: COGNITO_CLIENT_ID
+    description: Cognito client id
+    required: true
+  - name: COGNITO_USER_POOL
+    description: Cognito user pool id
+    required: true
+  - name: COGNITO_DOMAIN
+    description: Cognito domain
+    required: true
+  - name: COGNITO_ENVIRONMENT
+    description: Cognito environment
+    required: true
+  - name: COGNITO_REDIRECT_URI
+    description: Cognito redirect url once logged in
+    required: true
+  - name: COGNITO_LOGOUT_URI
+    description: Cognito redirect url once logged out
+    required: true
 objects:
 objects:
-  - apiVersion: v1
-    kind: ImageStream
+  - kind: ImageStream
+    apiVersion: v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}
@@ -71,8 +92,8 @@ objects:
             name: ${REGISTRY}/${PROMOTE}
           referencePolicy:
             type: Local
-  - apiVersion: v1
-    kind: ConfigMap
+  - kind: ConfigMap
+    apiVersion: v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}
@@ -82,9 +103,15 @@ objects:
         window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${URL_ZONE}-backend.${DOMAIN}');
         window.localStorage.setItem('VITE_FRONTEND_URL', 'https://${NAME}-${URL_ZONE}-frontend.${DOMAIN}');
         window.localStorage.setItem('VITE_NODE_ENV', '${VITE_NODE_ENV}');
-        window.localStorage.setItem('VITE_GREEN_DOMAIN', '${GREEN_DOMAIN}');
-  - apiVersion: v1
-    kind: DeploymentConfig
+        window.localStorage.setItem('VITE_GREEN_DOMAIN', '${GREEN_DOMAIN}');        
+        window.localStorage.setItem('VITE_AWS_COGNITO_REGION','${COGNITO_REGION}');
+        window.localStorage.setItem('VITE_AWS_COGNITO_POOL_ID','${COGNITO_USER_POOL}');
+        window.localStorage.setItem('VITE_AWS_COGNITO_CLIENT_ID','${COGNITO_CLIENT_ID}');
+        window.localStorage.setItem('VITE_AWS_COGNITO_DOMAIN','${COGNITO_DOMAIN}');
+        window.localStorage.setItem('VITE_AWS_COGNITO_LOGOUT_CHAIN_URL','${COGNITO_LOGOUT_URI}');
+        window.localStorage.setItem('VITE_AWS_COGNITO_ENVIRONMENT','${COGNITO_ENVIRONMENT}');
+  - kind: DeploymentConfig
+    apiVersion: v1    
     metadata:
       labels:
         app: ${NAME}-${ZONE}
@@ -160,8 +187,8 @@ objects:
                 initialDelaySeconds: 15
                 periodSeconds: 30
                 timeoutSeconds: 5
-  - apiVersion: v1
-    kind: Service
+  - kind: Service
+    apiVersion: v1    
     metadata:
       labels:
         app: ${NAME}-${ZONE}
@@ -174,8 +201,8 @@ objects:
           targetPort: 3000
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
-  - apiVersion: route.openshift.io/v1
-    kind: Route
+  - kind: Route
+    apiVersion: route.openshift.io/v1    
     metadata:
       labels:
         app: ${NAME}-${ZONE}
