@@ -9,7 +9,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: ${JWK_SET_URI:https://cognito-idp.${ca.bc.gov.nrs.cognito.region}.amazonaws.com/${ca.bc.gov.nrs.cognito.user-pool}/.well-known/jwks.json}
+          jwk-set-uri: ${JWK_SET_URI:https://cognito-idp.${ca.bc.gov.nrs.security.region}.amazonaws.com/${ca.bc.gov.nrs.security.user-pool}/.well-known/jwks.json}
   r2dbc:
     url: r2dbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
     username: ${ca.bc.gov.nrs.postgres.username}

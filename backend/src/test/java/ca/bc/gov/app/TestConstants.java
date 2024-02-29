@@ -10,6 +10,7 @@ import ca.bc.gov.app.dto.client.EmailRequestDto;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class TestConstants {
 
@@ -668,4 +669,46 @@ public class TestConstants {
           "ChallengeParameters": {}
       }""";
 
+
+  public static Map<String,Object> getClaims(String idpName) {
+
+    Map<String,Object> idir = Map.of(
+        "custom:idp_user_id", UUID.randomUUID().toString(),
+        "custom:idp_username", "jdoe",
+        "custom:idp_name", "idir",
+        "custom:idp_display_name", "Doe, Jhon UAT:EX",
+        "email","jdoe@mail.ca"
+    );
+
+    Map<String,Object> bceid = Map.of(
+        "custom:idp_user_id", UUID.randomUUID().toString(),
+        "custom:idp_username", "jdoe",
+        "custom:idp_name", "bceidbusiness",
+        "custom:idp_display_name", "Jhon Doe",
+        "email","jdoe@mail.ca",
+        "custom:idp_business_id", UUID.randomUUID().toString(),
+        "custom:idp_business_name", "Example Inc.",
+        "given_name", "Jhon",
+        "family_name", "Doe"
+    );
+
+    Map<String,Object> bcsc = Map.of(
+        "custom:idp_user_id", UUID.randomUUID().toString(),
+        "custom:idp_username", "jdoe",
+        "custom:idp_name", "idir",
+        "custom:idp_display_name", "Jhon Doe",
+        "email","jdoe@mail.ca",
+        "address", Map.of("formatted", "{\\\"street_address\\\":\\\"4000 SEYMOUR PLACE\\\",\\\"country\\\":\\\"CA\\\",\\\"locality\\\":\\\"VICTORIA\\\",\\\"region\\\":\\\"BC\\\",\\\"postal_code\\\":\\\"V8Z 1C8\\\"}" ),
+        "birthdate", "1986-11-12",
+        "given_name", "Jhon",
+        "family_name", "Doe"
+    );
+
+    return switch (idpName) {
+      case "bceidbusiness" -> bceid;
+      case "bcsc" -> bcsc;
+      default -> idir;
+    };
+
+  }
 }

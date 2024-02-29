@@ -1,19 +1,18 @@
 package ca.bc.gov.app.controller.client;
 
-import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientService;
+import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,12 +31,18 @@ public class ClientController {
   @GetMapping("/{clientNumber}")
   public Mono<ClientDetailsDto> getClientDetails(
       @PathVariable String clientNumber,
-      @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
-      @RequestHeader(name = ApplicationConstant.BUSINESSID_HEADER, defaultValue = StringUtils.EMPTY) String businessId
+      JwtAuthenticationToken principal
   ) {
-    log.info("Requesting client details for client number {} from the client service.",
-        clientNumber);
-    return clientService.getClientDetails(clientNumber, userId, businessId);
+    log.info("Requesting client details for client number {} from the client service. {}",
+        clientNumber,
+        principal
+    );
+    return clientService
+        .getClientDetails(
+            clientNumber,
+            JwtPrincipalUtil.getUserId(principal),
+            JwtPrincipalUtil.getBusinessId(principal)
+        );
   }
 
   /**
@@ -47,9 +52,7 @@ public class ClientController {
    * @return A Flux of ClientLookUpDto objects that match the given name.
    */
   @GetMapping(value = "/name/{name}")
-  public Flux<ClientLookUpDto> findByClientName(
-      @PathVariable String name
-  ) {
+  public Flux<ClientLookUpDto> findByClientName(@PathVariable String name) {
     log.info("Requesting a list of clients with name {} from the client service.", name);
     return clientService
         .findByClientNameOrIncorporation(name)

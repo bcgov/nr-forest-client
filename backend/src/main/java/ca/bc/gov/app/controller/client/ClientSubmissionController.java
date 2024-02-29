@@ -10,21 +10,21 @@ import ca.bc.gov.app.exception.InvalidRequestObjectException;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.service.client.ClientSubmissionService;
+import ca.bc.gov.app.util.JwtPrincipalUtil;
 import ca.bc.gov.app.validator.client.ClientSubmitRequestValidator;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -100,11 +100,9 @@ public class ClientSubmissionController extends
   @ResponseStatus(HttpStatus.CREATED)
   public Mono<Void> submit(
       @RequestBody ClientSubmissionDto request,
-      @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
-      @RequestHeader(name = ApplicationConstant.BUSINESSID_HEADER, defaultValue = StringUtils.EMPTY) String businessId,
-      @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail,
-      @RequestHeader(ApplicationConstant.USERNAME_HEADER) String userName,
-      ServerHttpResponse serverResponse) {
+      ServerHttpResponse serverResponse,
+      JwtAuthenticationToken principal
+  ) {
     return Mono.just(request)
         .switchIfEmpty(
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
@@ -114,11 +112,13 @@ public class ClientSubmissionController extends
         .doOnNext(sub -> log.info("Request is valid: {}", sub))
         .doOnError(e -> log.error("Request is invalid: {}", e.getMessage()))
         .flatMap(submissionDto -> clientService.submit(
-            submissionDto,
-            userId,
-            userEmail,
-            userName,
-            businessId))
+                submissionDto,
+                JwtPrincipalUtil.getUserId(principal),
+                JwtPrincipalUtil.getEmail(principal),
+                JwtPrincipalUtil.getName(principal),
+                JwtPrincipalUtil.getBusinessId(principal)
+            )
+        )
         .doOnNext(submissionId -> log.info("Submission persisted: {}", submissionId))
         .doOnNext(submissionId ->
             serverResponse
@@ -152,13 +152,18 @@ public class ClientSubmissionController extends
   @ResponseStatus(HttpStatus.ACCEPTED)
   public Mono<Void> approveOrReject(
       @PathVariable Long id,
-      @RequestHeader(ApplicationConstant.USERID_HEADER) String userId,
-      @RequestHeader(ApplicationConstant.USERMAIL_HEADER) String userEmail,
-      @RequestHeader(ApplicationConstant.USERNAME_HEADER) String userName,
+      JwtAuthenticationToken principal,
       @RequestBody SubmissionApproveRejectDto request
   ) {
     log.info("Approving or rejecting submission with id: {} {}", id, request.approved());
-    return clientService.approveOrReject(id, userId, userEmail, userName, request);
+    return clientService
+        .approveOrReject(
+            id,
+            JwtPrincipalUtil.getUserId(principal),
+            JwtPrincipalUtil.getEmail(principal),
+            JwtPrincipalUtil.getName(principal),
+            request
+        );
   }
 
 }

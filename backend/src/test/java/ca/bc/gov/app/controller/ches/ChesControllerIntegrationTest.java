@@ -9,6 +9,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockOAuth2Login;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import ca.bc.gov.app.ApplicationConstant;
@@ -24,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -158,11 +161,14 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
 
     client
         .mutateWith(csrf())
-        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        )
         .post()
         .uri("/api/ches/duplicate")
         .body(Mono.just(TestConstants.EMAIL_REQUEST), EmailRequestDto.class)
-        .header(ApplicationConstant.USERID_HEADER, "testUserId")
         .exchange()
         .expectStatus().isAccepted()
         .expectBody().isEmpty();
