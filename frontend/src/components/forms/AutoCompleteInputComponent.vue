@@ -183,6 +183,9 @@ watch(cdsComboBoxRef, async (value) => {
     }
   }
 });
+
+// For some reason, if helper-text is empty, invalid-text message doesn't work.
+const safeHelperText = computed(() => props.tip || " ");
 </script>
 
 <template>
@@ -196,7 +199,7 @@ watch(cdsComboBoxRef, async (value) => {
         :clear-selection-label="`Clear ${label}`"
         :required="required"
         :data-required-label="requiredLabel"
-        :helper-text="tip"
+        :helper-text="safeHelperText"
         :label="placeholder"
         :value="inputValue"
         filterable
