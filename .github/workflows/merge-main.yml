@@ -238,6 +238,13 @@ jobs:
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
             -p URL_ZONE=${{ env.ZONE }}
+            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
+            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
+            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
+            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
+            -p COGNITO_ENVIRONMENT=TEST
+            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
+            -p COGNITO_LOGOUT_URI=${{ secrets.COGNITO_LOGOUT_URI }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -406,6 +413,13 @@ jobs:
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
             -p URL_ZONE=${{ env.ZONE }}
+            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
+            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
+            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
+            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
+            -p COGNITO_ENVIRONMENT=PROD
+            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
+            -p COGNITO_LOGOUT_URI=${{ secrets.COGNITO_LOGOUT_URI }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
