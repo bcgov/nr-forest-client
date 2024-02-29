@@ -125,6 +125,7 @@ watch(cdsRadioButtonArray, async (array) => {
         v-model="selectedValue"
         :invalid="error ? true : false"
         :invalid-text="error"
+        aria-live="polite"
         @cds-radio-button-group-changed="updateSelectedValue"
         :data-focus="id"
         :data-scroll="id"

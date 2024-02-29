@@ -138,6 +138,7 @@ const selectValue = (event: any) => {
         :disabled="!enabled"
         :invalid="error ? true : false"
         :invalid-text="error"
+        aria-live="polite"
         v-masked="mask"
         @blur="(event:any) => validateInput(event.target.value)"
         @input="selectValue"
