@@ -23,7 +23,7 @@
             "phoneNumber": "2502502550",
             "emailAddress": "uattest@gov.bc.ca",
             "locations": [
-                "MAILING ADDRESS",
+                "Mailing address",
                 "Accountant's address"
             ],
             "userId": "290fae20-5694-4dfa-84a0-baabae352ad5"
@@ -37,7 +37,7 @@
             "province":"Saskatchewan",
             "city":"Hampton",
             "postalCode": "H0H0H0",
-            "name": "MAILING ADDRESS"
+            "name": "Mailing address"
         },
         {
             "index": 1,

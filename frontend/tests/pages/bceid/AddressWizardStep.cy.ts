@@ -28,7 +28,7 @@ describe("<AddressWizardStep />", () => {
             location: {
               addresses: [
                 {
-                  locationName: "MAILING ADDRESS",
+                  locationName: "Mailing address",
                   streetAddress: "123 Forest Street",
                   country: { value: "CA", text: "Canada" },
                   province: { value: "BC", text: "British Columbia" },
@@ -98,7 +98,7 @@ describe("<AddressWizardStep />", () => {
               location: {
                 addresses: [
                   {
-                    locationName: "MAILING ADDRESS",
+                    locationName: "Mailing address",
                     streetAddress: "123 Forest Street",
                     country: { value: "CA", text: "Canada" },
                     province: { value: "BC", text: "British Columbia" },
@@ -192,7 +192,7 @@ describe("<AddressWizardStep />", () => {
             location: {
               addresses: [
                 {
-                  locationName: "MAILING ADDRESS",
+                  locationName: "Mailing address",
                   streetAddress: "123 Forest Street",
                   country: { value: "CA", text: "Canada" },
                   province: { value: "BC", text: "British Columbia" },

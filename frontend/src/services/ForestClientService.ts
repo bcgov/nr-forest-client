@@ -38,6 +38,11 @@ export const toTitleCase = (inputString: string): string => {
     .join(" ");
 };
 
+export const toSentenceCase = (inputString: string): string => {
+  if (inputString === undefined) return "";
+  return inputString.charAt(0).toUpperCase() + inputString.slice(1).toLowerCase();
+};
+
 export const codeConversionFn = (code: any) => {
   return {
     value: code.code,

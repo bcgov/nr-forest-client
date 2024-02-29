@@ -25,7 +25,7 @@
             "phoneNumber": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
             "emailAddress": "uattest@gov.bc.ca",
             "locations": [
-                "MAILING ADDRESS",
+                "Mailing address",
                 "Accountant's address"
             ],
             "userId": "{{randomValue type='UUID'}}"
@@ -39,7 +39,7 @@
             "province":"Saskatchewan",
             "city":"Hampton",
             "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
-            "name": "MAILING ADDRESS"
+            "name": "Mailing address"
         },
         {
             "index": 1,

@@ -154,7 +154,7 @@ describe("<AddressGroupComponent />", () => {
 
     cy.get("#name_1")
       .should("be.visible")
-      .and("have.value", "MAILING ADDRESS");
+      .and("have.value", "Mailing address");
   });
 
   it("should render the component and reset province when country changes", () => {
