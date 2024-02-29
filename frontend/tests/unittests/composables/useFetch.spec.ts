@@ -40,10 +40,7 @@ describe('useFetch', () => {
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
         'Content-Type': 'application/json',
-        'x-user-businessid': '',
-        'x-user-email': '',
-        'x-user-id': '',
-        'x-user-name': 'undefined undefined',
+        'Authorization': 'Bearer undefined',
       },
       skip: true,
       url: '/api/data'
@@ -82,10 +79,7 @@ describe('useFetch', () => {
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
         'Content-Type': 'application/json',
-        'x-user-businessid': '',
-        'x-user-email': '',
-        'x-user-id': '',
-        'x-user-name': 'undefined undefined',
+        'Authorization': 'Bearer undefined',
       },
       skip: true,
       url: '/api/data',
@@ -128,10 +122,7 @@ describe('useFetch', () => {
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
         'Content-Type': 'application/json',
-        'x-user-businessid': '',
-        'x-user-email': '',
-        'x-user-id': '',
-        'x-user-name': 'undefined undefined',
+        'Authorization': 'Bearer undefined',
       },
       skip: true,
       url: '/api/data'
@@ -176,10 +167,7 @@ describe('useFetch', () => {
       headers: {
         'Access-Control-Allow-Origin': 'http://localhost:3000',
         'Content-Type': 'application/json',
-        'x-user-businessid': '',
-        'x-user-email': '',
-        'x-user-id': '',
-        'x-user-name': 'undefined undefined',
+        'Authorization': 'Bearer undefined',
       },
       skip: true,
       url: '/api/data',
