@@ -185,6 +185,7 @@ const safeHelperText = computed(() => props.tip || " ");
         :value="selectedValue"
         :invalid="error ? true : false"
         :invalidText="error"
+        aria-live="polite"
         @cds-combo-box-selected="selectItem"
         @blur="(event: any) => validateInput(event.target.value)"
         :data-focus="id"

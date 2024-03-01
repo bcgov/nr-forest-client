@@ -430,7 +430,7 @@ const datePartComponentRefs = {
 </style>
 
 <template>
-  <div>
+  <div aria-live="polite">
     <div class="grouping-02" v-if="enabled" :id="id">
       <date-input-part
         :ref="datePartComponentRefs[DatePart.year]"
