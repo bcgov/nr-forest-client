@@ -93,7 +93,7 @@ let formData = reactive<FormDataDto>({
 const receviedCountry = ref({} as CodeNameType);
 
 useFetchTo(
-  `/api/countries/${submitterInformation?.address?.country?.code}`,
+  `/api/countries/${submitterInformation?.address?.country?.value}`,
   receviedCountry
 );
 
