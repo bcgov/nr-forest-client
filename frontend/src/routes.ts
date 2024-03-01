@@ -3,6 +3,7 @@
  */
 import { createRouter, createWebHistory } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
+import { Hub } from 'aws-amplify/utils';
 
 import SubmissionList from "@/pages/SubmissionListPage.vue";
 import SubmissionReview from "@/pages/SubmissionReviewPage.vue";
@@ -224,8 +225,8 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+  await ForestClientUserSession.loadUser();
   const user = ForestClientUserSession.loadDetails();
-
 
   if (to.query.fd_to) {
     targetPathStorage.value = to.query.fd_to as string;
@@ -264,6 +265,15 @@ router.beforeEach(async (to, from, next) => {
       // Otherwise, continue to the page
       next();
     }
+  }
+});
+
+
+Hub.listen("auth", async ({ payload }) => {
+  switch (payload.event) {
+    case "signInWithRedirect":      
+      await ForestClientUserSession.loadUser();
+      break;    
   }
 });
 

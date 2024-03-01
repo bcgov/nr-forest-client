@@ -54,6 +54,8 @@ watch(
   () => {
     const totalCount = parseInt(response.value.headers["x-total-count"] || "0");
     totalItems.value = totalCount;
+
+    tableData.value.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
   }
 );
 
@@ -82,11 +84,6 @@ const selectEntry = (entry: SubmissionList) => {
   const params = { id: entry.id };
   if (entry.requestType !== "Submission pending processing")
     router.push({ name: "review", params });
-};
-
-// Format the date to a friendly format
-const friendlyDate = (date: string): string => {
-  return `${formatDistanceToNow(new Date(date))} ago`;
 };
 
 const formattedDate = (date: string): string => {
