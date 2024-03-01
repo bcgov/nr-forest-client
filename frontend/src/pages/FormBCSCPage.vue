@@ -93,7 +93,7 @@ let formData = reactive<FormDataDto>({
 const receviedCountry = ref({} as CodeNameType);
 
 useFetchTo(
-  `/api/countries/${submitterInformation?.address?.country?.code}`,
+  `/api/countries/${submitterInformation?.address?.country?.value}`,
   receviedCountry
 );
 
@@ -105,7 +105,6 @@ watch(country, (newValue) => {
   formData.businessInformation.address = {
     ...formData.businessInformation.address,
     country: { value: newValue.value, text: newValue.text },
-    province: codeConversionFn(formData.businessInformation.address.province),
     postalCode: formData.businessInformation.address.postalCode.replace(
       /\s/g,
       ""
