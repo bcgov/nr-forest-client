@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { reactive, watch, toRef, ref, getCurrentInstance, computed } from "vue";
+import { reactive, watch, toRef, ref, getCurrentInstance, computed, nextTick } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/progress-indicator/index";
 import "@carbon/web-components/es/components/notification/index";
 import "@carbon/web-components/es/components/tooltip/index";
+import type { CDSProgressStep } from "@carbon/web-components";
 // Composables
 import { useEventBus } from "@vueuse/core";
 import { useRouter } from "vue-router";
@@ -375,6 +376,28 @@ const formattedDistrictsList = computed(() =>
     name: `${district.code} - ${district.name}`,
   })),
 );
+
+const cdsProgressStepArray = ref<InstanceType<typeof CDSProgressStep>[] | null>(null);
+
+watch(cdsProgressStepArray, async (array) => {
+  if (array) {
+    // wait for the DOM updates to complete
+    await nextTick();
+
+    for (const step of cdsProgressStepArray.value) {
+      const div = step.shadowRoot?.querySelector("div");
+      if (div) {
+        // Make the step unfocusable.
+        div.tabIndex = -1;
+      }
+      const p = step.shadowRoot?.querySelector("p[role='button']");
+      if (p) {
+        // Prevent the step from being treated a button.
+        p.removeAttribute("role");
+      }
+    }
+  }
+});
 </script>
 
 <template>
@@ -388,6 +411,7 @@ const formattedDistrictsList = computed(() =>
     <cds-progress-indicator space-equally :vertical="isSmallScreen">
       <cds-progress-step 
         v-for="item in progressData"
+        ref="cdsProgressStepArray"
         :key="item.step"
         :label="item.title"
         :secondary-label="item.subtitle"
