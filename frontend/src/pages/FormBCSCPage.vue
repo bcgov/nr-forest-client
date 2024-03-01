@@ -315,11 +315,6 @@ const {
   fetch: fecthSubmit,
 } = usePost("/api/clients/submissions", toRef(formData).value, {
   skip: true,
-  headers: {
-    "x-user-id": submitterInformation?.userId ?? "",
-    "x-user-email": submitterInformation?.email ?? "",
-    "x-user-name": submitterInformation?.firstName ?? "",
-  },
 });
 
 const submit = () => {

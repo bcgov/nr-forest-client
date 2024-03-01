@@ -9,6 +9,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockOAuth2Login;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
@@ -28,6 +32,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @DisplayName("Integrated Test | FSA Client Controller")
@@ -157,11 +162,14 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     WebTestClient.BodyContentSpec response =
         client
+            .mutateWith(csrf())
+            .mutateWith(
+                mockJwt()
+                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                    .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+            )
             .get()
             .uri("/api/clients/{clientNumber}", Map.of("clientNumber", clientNumber))
-            .header(ApplicationConstant.USERID_HEADER, "testUserId")
-            .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
-            .header(ApplicationConstant.USERNAME_HEADER, "Test User")
             .exchange()
             .expectStatus().isEqualTo(HttpStatus.valueOf(responseStatus))
             .expectBody()
@@ -190,6 +198,12 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         );
 
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        )
         .get()
         .uri("/api/clients/incorporation/BC0772006")
         .exchange()
@@ -214,6 +228,12 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         );
 
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        )
         .get()
         .uri("/api/clients/incorporation/BC0000000")
         .exchange()
@@ -238,11 +258,14 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         );
 
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        )
         .get()
         .uri("/api/clients/name/Power")
-        .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
-        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
@@ -264,11 +287,14 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         );
 
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        )
         .get()
         .uri("/api/clients/name/Jhon")
-        .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@test.ca")
-        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
@@ -288,6 +314,12 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         );
 
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        )
         .get()
         .uri("/api/clients/individual/{userId}?lastName=Doe", Map.of("userId", "123456"))
         .exchange()
@@ -309,6 +341,12 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         );
 
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        )
         .get()
         .uri("/api/clients/individual/{userId}?lastName=Doe", Map.of("userId", "123456"))
         .exchange()

@@ -5,9 +5,9 @@ import { cognitoEnvironment, nodeEnv, cognitoClientId } from "@/CoreConstants";
 
 class ForestClientUserSession implements SessionProperties {
   public user: Submitter | undefined;
+  public token: string | undefined;
 
   logIn = (provider: string): void => {
-    console.log("Logging in with provider: ", provider);
     signInWithRedirect({ provider: { custom: `${cognitoEnvironment}-${provider}`.toUpperCase() } });
   };
 
@@ -103,17 +103,16 @@ class ForestClientUserSession implements SessionProperties {
   };
 
   private loadUserToken = async (): Promise<any> => {
+
     if(nodeEnv !== "test"){
-      return (await fetchAuthSession({forceRefresh: false})).tokens ?? {};
+      const cognitoTokens = (await fetchAuthSession()).tokens ?? {};
+      this.setUserTokenFromCookie();
+      return Promise.resolve(cognitoTokens);
     }else {
       // This is for test only
-      
-      const baseCookieName = `CognitoIdentityServiceProvider.${cognitoClientId}`;
-      const userId = encodeURIComponent(this.getCookie(`${baseCookieName}.LastAuthUser`));
-      if(userId){
-        const idTokenCookieName = `${baseCookieName}.${userId}.idToken`;
-        const idToken = this.getCookie(idTokenCookieName);
-        const jwtBody = idToken ? JSON.parse(atob(idToken.split(".")[1])) : null;
+      this.setUserTokenFromCookie();
+      if(this.token){       
+        const jwtBody = this.token ? JSON.parse(atob(this.token.split(".")[1])) : null;
         return Promise.resolve({ idToken: { payload:jwtBody } });
       }else{
         return Promise.resolve({ idToken: null });
@@ -128,7 +127,17 @@ class ForestClientUserSession implements SessionProperties {
     return cookie ? cookie.split("=")[1] : "";
   };
 
-
+  private setUserTokenFromCookie = (): void => {
+    const baseCookieName = `CognitoIdentityServiceProvider.${cognitoClientId}`;
+    const userId = encodeURIComponent(this.getCookie(`${baseCookieName}.LastAuthUser`));
+    if(userId){
+      const idTokenCookieName = `${baseCookieName}.${userId}.idToken`;
+      const idToken = this.getCookie(idTokenCookieName);
+      this.token = idToken;        
+    }else{
+      this.token = undefined;
+    }
+  }
 }
 
 export default new ForestClientUserSession();

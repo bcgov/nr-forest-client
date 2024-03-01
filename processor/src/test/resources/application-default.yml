@@ -25,6 +25,9 @@ ca:
           uri: 'http://127.0.0.1:10040'
           apiKey: abc1234
           accountId: 'account 0000'
+        security:
+          service-account-name: uat
+          service-account-secret: thisisasupersecret
 
 logging:
   level:

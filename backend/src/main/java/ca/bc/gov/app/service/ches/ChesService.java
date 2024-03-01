@@ -93,9 +93,9 @@ public class ChesService {
     final Map<String,Object> variables = new HashMap<>(emailVariables);
 
     String processedSubject =
-        configuration.getCognito().getEnvironment().equalsIgnoreCase("prod")
+        configuration.getSecurity().getEnvironment().equalsIgnoreCase("prod")
             ? subject
-            : String.format("[%s] %s", configuration.getCognito().getEnvironment(), subject);
+            : String.format("[%s] %s", configuration.getSecurity().getEnvironment(), subject);
 
     log.info("Sending email to {} with subject {}", emailAddress, processedSubject);
 

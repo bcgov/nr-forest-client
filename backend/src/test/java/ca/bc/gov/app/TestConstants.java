@@ -7,12 +7,10 @@ import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
-import ca.bc.gov.app.dto.cognito.AuthResponseDto;
-import ca.bc.gov.app.dto.cognito.RefreshResponseDto;
-import ca.bc.gov.app.dto.cognito.RefreshResponseResultDto;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class TestConstants {
 
@@ -614,14 +612,6 @@ public class TestConstants {
         "id_token": "g.h.i"
       }""";
 
-  public static final AuthResponseDto AUTH_RESPONSE = new AuthResponseDto(
-      "a.b.c",
-      300,
-
-      "Bearer",
-      "d.e.f",
-      "g.h.i"
-  );
   public static final String SUBMISSION_DETAILS = """
       {
         "submissionId": 2,
@@ -679,13 +669,46 @@ public class TestConstants {
           "ChallengeParameters": {}
       }""";
 
-  public static final RefreshResponseDto COGNITO_DTO = new RefreshResponseDto(
-      new RefreshResponseResultDto(
-          "eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiaWRpciIsImN1c3RvbTppZHBfZGlzcGxheV9uYW1lIjoiVGVzdCwgVUFUIFdMUlM6RVgiLCJnaXZlbl9uYW1lIjoiVWF0IiwiZmFtaWx5X25hbWUiOiJUZXN0IiwiZW1haWwiOiJ1YXR0ZXN0QHRlc3QuY29tIiwiaWRwX2J1c2luZXNzX25hbWUiOiJBdXRvbWF0ZWQgVGVzdCJ9.lzTcimHRjALlD2sNDH8nPqMnAHvt2j_vt-l1IuLJYcE",
-          300,
-          "Bearer",
-          "eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiaWRpciIsImN1c3RvbTppZHBfZGlzcGxheV9uYW1lIjoiVGVzdCwgVUFUIFdMUlM6RVgiLCJnaXZlbl9uYW1lIjoiVWF0IiwiZmFtaWx5X25hbWUiOiJUZXN0IiwiZW1haWwiOiJ1YXR0ZXN0QHRlc3QuY29tIiwiaWRwX2J1c2luZXNzX25hbWUiOiJBdXRvbWF0ZWQgVGVzdCJ9.lzTcimHRjALlD2sNDH8nPqMnAHvt2j_vt-l1IuLJYcE"
-      ),
-      Map.of()
-  );
+
+  public static Map<String,Object> getClaims(String idpName) {
+
+    Map<String,Object> idir = Map.of(
+        "custom:idp_user_id", UUID.randomUUID().toString(),
+        "custom:idp_username", "jdoe",
+        "custom:idp_name", "idir",
+        "custom:idp_display_name", "Doe, Jhon UAT:EX",
+        "email","jdoe@mail.ca"
+    );
+
+    Map<String,Object> bceid = Map.of(
+        "custom:idp_user_id", UUID.randomUUID().toString(),
+        "custom:idp_username", "jdoe",
+        "custom:idp_name", "bceidbusiness",
+        "custom:idp_display_name", "Jhon Doe",
+        "email","jdoe@mail.ca",
+        "custom:idp_business_id", UUID.randomUUID().toString(),
+        "custom:idp_business_name", "Example Inc.",
+        "given_name", "Jhon",
+        "family_name", "Doe"
+    );
+
+    Map<String,Object> bcsc = Map.of(
+        "custom:idp_user_id", UUID.randomUUID().toString(),
+        "custom:idp_username", "jdoe",
+        "custom:idp_name", "idir",
+        "custom:idp_display_name", "Jhon Doe",
+        "email","jdoe@mail.ca",
+        "address", Map.of("formatted", "{\\\"street_address\\\":\\\"4000 SEYMOUR PLACE\\\",\\\"country\\\":\\\"CA\\\",\\\"locality\\\":\\\"VICTORIA\\\",\\\"region\\\":\\\"BC\\\",\\\"postal_code\\\":\\\"V8Z 1C8\\\"}" ),
+        "birthdate", "1986-11-12",
+        "given_name", "Jhon",
+        "family_name", "Doe"
+    );
+
+    return switch (idpName) {
+      case "bceidbusiness" -> bceid;
+      case "bcsc" -> bcsc;
+      default -> idir;
+    };
+
+  }
 }
