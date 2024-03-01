@@ -39,6 +39,10 @@ spring:
 management:
   enable-native-support: true
   endpoint:
+    metrics:
+      enabled: false
+    prometheus:
+      enabled: true
     health:
       show-details: always
   endpoints:
@@ -47,10 +51,14 @@ management:
         prometheus: metrics
       base-path: /
       exposure:
-        include: health,info,metrics,otlp,tracing
+        include: health,info,metrics,otlp,tracing,httptrace,prometheus
   httpexchanges:
     recording:
       include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
+  metrics:
+    export:
+      prometheus:
+        enabled: true
   tracing:
     enabled: false
     baggage:
