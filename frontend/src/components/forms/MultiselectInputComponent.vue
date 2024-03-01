@@ -145,6 +145,7 @@ watch(cdsMultiSelect, async (value) => {
           :helper-text="tip"
           :invalid="error ? true : false"
           :invalid-text="error"
+          aria-live="polite"
           filterable
           @cds-multi-select-selected="selectItems"
           @blur="(event: any) => validateInput(event.target.value)"

@@ -205,6 +205,7 @@ const safeHelperText = computed(() => props.tip || " ");
         filterable
         :invalid="error ? true : false"
         :invalid-text="error"
+        aria-live="polite"
         @cds-combo-box-selected="selectAutocompleteItem"
         v-on:input="onTyping"
         v-on:blur="(event: any) => validateInput(event.srcElement._filterInputValue)"
