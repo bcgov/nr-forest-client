@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
@@ -34,7 +33,7 @@ public class ForestClientConfiguration {
   @NestedConfigurationProperty
   private AddressCompleteConfiguration addressComplete;
   @NestedConfigurationProperty
-  private CognitoConfiguration cognito;
+  private SecurityConfiguration security;
 
   private Duration submissionLimit;
 
@@ -124,43 +123,27 @@ public class ForestClientConfiguration {
   }
 
   /**
-   * The AWS Cognito configuration.
+   * The Security / Authentication configuration.
    */
   @Data
   @Builder
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class CognitoConfiguration {
+  public static class SecurityConfiguration {
 
     private String region;
-    private String clientId;
     private String userPool;
-    private String domain;
-    private String url;
-    private String refreshUrl;
     private String environment;
-    private String redirectUri;
-    private String logoutUri;
-    private String cookieDomain;
+    private List<NameSecretDto> serviceAccounts;
 
-    /**
-     * Gets the cognito URL.
-     *
-     * @return A string representing the cognito URL.
-     */
-    public String getUrl() {
-      if (StringUtils.isNotBlank(this.url)) {
-        return this.url;
-      }
-      return String.format("https://%s.auth.%s.amazoncognito.com", domain, region);
-    }
-
-    public String getRefreshUrl() {
-      if (StringUtils.isNotBlank(refreshUrl)) {
-        return refreshUrl;
-      }
+    public String getDomainUrl(){
       return String.format("https://cognito-idp.%s.amazonaws.com/", region);
     }
-    
+
+    public String getJwksUrl() {
+      return String.format("%s%s/.well-known/jwks.json", getDomainUrl(), userPool);
+    }
   }
+
+  public record NameSecretDto(String name, String secret) {}
 }

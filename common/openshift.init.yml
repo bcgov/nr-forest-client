@@ -89,6 +89,10 @@ parameters:
   - name: CHES_MAIL_COPY
     description: Email address to copy all CHES emails to
     required: true
+  - name: PROCESSOR_SERVICE_ACCOUNT_SECRET
+    description: Password for the Processor service.
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
 objects:
   - apiVersion: v1
     kind: Secret
@@ -121,6 +125,8 @@ objects:
       cognito-redirect-uri: ${COGNITO_REDIRECT_URI}
       cognito-logout-uri: ${COGNITO_LOGOUT_URI}
       ches-mail-copy: ${CHES_MAIL_COPY}
+      processor-service-account-secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
+      processor-service-account-name: processor-service-account
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:

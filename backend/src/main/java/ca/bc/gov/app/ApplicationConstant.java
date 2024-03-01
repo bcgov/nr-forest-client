@@ -95,10 +95,11 @@ public final class ApplicationConstant {
   
   public static final String SUBMISSION_TYPE = "submissionType";
   public static final String SUBMISSION_ID = "submissionId";
-  public static final String REFRESH_TOKEN = "refreshToken";
-  public static final String ID_TOKEN = "idToken";
-  public static final String ACCESS_TOKEN = "accessToken";
   public static final List<String> AVAILABLE_CLIENT_TYPES = List.of("A", "I", "S", "SP", "RSP",
       "USP", "BC", "GP","C");
+  public static final String ROLE_BCEIDBUSINESS_USER = "BCEIDBUSINESS_USER";
+  public static final String ROLE_BCSC_USER = "BCSC_USER";
+  public static final String ROLE_IDIR_USER = "IDIR_USER";
+  public static final String ROLE_SERVICE_USER = "S2S_USER";
 }
 

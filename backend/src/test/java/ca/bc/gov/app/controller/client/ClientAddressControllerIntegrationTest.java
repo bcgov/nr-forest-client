@@ -5,8 +5,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import ca.bc.gov.app.AddressTestConstants;
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -44,7 +47,10 @@ class ClientAddressControllerIntegrationTest  extends AbstractTestContainerInteg
   public void reset() {
     wireMockExtension.resetAll();
 
-    client = client.mutate()
+    client = client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCSC_USER))
+        .mutate()
         .responseTimeout(Duration.ofSeconds(10))
         .build();
   }

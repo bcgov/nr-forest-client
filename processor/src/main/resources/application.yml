@@ -91,6 +91,9 @@ ca:
           uri: ${BCREGISTRY_URI:https://bcregistry-sandbox.apigee.net}
           apiKey: ${BCREGISTRY_KEY:123456}
           accountId: ${BCREGISTRY_ACCOUNT:123456}
+        security:
+          service-account-name: ${PROCESSOR_SERVICE_ACCOUNT_NAME}
+          service-account-secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
 
 
 logging:

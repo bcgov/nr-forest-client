@@ -10,6 +10,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockOAuth2Login;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
@@ -46,6 +50,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.BodyContentSpec;
 import org.springframework.web.util.UriBuilder;
@@ -129,11 +134,14 @@ class ClientSubmissionControllerIntegrationTest
   @Order(1)
   void shouldSubmitRegisteredBusinessData() {
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        )
         .post()
         .uri("/api/clients/submissions")
-        .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .body(Mono.just(REGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
@@ -147,11 +155,14 @@ class ClientSubmissionControllerIntegrationTest
   @Order(4)
   void shouldSubmitUnregisteredBusinessData() {
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        )
         .post()
         .uri("/api/clients/submissions")
-        .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
@@ -167,11 +178,14 @@ class ClientSubmissionControllerIntegrationTest
   void shouldFailValidationSubmit(
       @AggregateWith(ClientSubmissionAggregator.class) ClientSubmissionDto clientSubmissionDto) {
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        )
         .post()
         .uri("/api/clients/submissions")
-        .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .body(Mono.just(clientSubmissionDto), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isBadRequest()
@@ -203,11 +217,18 @@ class ClientSubmissionControllerIntegrationTest
 
     BodyContentSpec expectedBody =
         client
+            .mutateWith(csrf())
+            .mutateWith(mockUser().roles(ApplicationConstant.ROLE_IDIR_USER))
+            .mutateWith(
+                mockJwt()
+                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                    .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_IDIR_USER))
+            )
             .get()
             .uri(uri)
             .header(ApplicationConstant.USERID_HEADER, "testUserId")
             .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-            .header(ApplicationConstant.USERNAME_HEADER, "Test User")
+            .header(ApplicationConstant.USERNAME_HEADER, "Jhon Doe")
             .exchange()
             .expectStatus().isOk()
             .expectBody()
@@ -222,7 +243,7 @@ class ClientSubmissionControllerIntegrationTest
           .jsonPath("$.[0].requestType").isEqualTo("Submission pending processing")
           .jsonPath("$.[0].status").isEqualTo("New")
           .jsonPath("$.[0].clientType").isEqualTo("Registered sole proprietorship")
-          .jsonPath("$.[0].user").isEqualTo("Test User");
+          .jsonPath("$.[0].user").isEqualTo("Jhon Doe");
     }
   }
 
@@ -232,13 +253,19 @@ class ClientSubmissionControllerIntegrationTest
   void shouldGetSubmissionDetails() {
 
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_IDIR_USER))
+        )
         .get()
         .uri("/api/clients/submissions/1")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
         .jsonPath("$.submissionId").isEqualTo(1)
-        .jsonPath("$.updateUser").isEqualTo("Test User")
+        .jsonPath("$.updateUser").isEqualTo("Jhon Doe")
         .jsonPath("$.submissionType").isEqualTo("Submission pending processing");
   }
 
@@ -248,11 +275,14 @@ class ClientSubmissionControllerIntegrationTest
   void shouldApproveOrReject() {
 
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_IDIR_USER))
+        )
         .post()
         .uri("/api/clients/submissions/1")
-        .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .body(Mono.just(new SubmissionApproveRejectDto(true, List.of(), null)),
             SubmissionApproveRejectDto.class)
         .exchange()
@@ -266,11 +296,14 @@ class ClientSubmissionControllerIntegrationTest
   @Order(7)
   void shouldSubmitBrokenUnregisteredBusinessData() {
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        )
         .post()
         .uri("/api/clients/submissions")
-        .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_BROKEN_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isBadRequest()
@@ -285,11 +318,14 @@ class ClientSubmissionControllerIntegrationTest
   @Order(8)
   void shouldSubmitMultipleContacts() {
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        )
         .post()
         .uri("/api/clients/submissions")
-        .header(ApplicationConstant.USERID_HEADER, "jamesbaxter")
-        .header(ApplicationConstant.USERMAIL_HEADER, "jamesbaxter@mail.ca")
-        .header(ApplicationConstant.USERNAME_HEADER, "James Baxter")
         .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_MULTI_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
@@ -318,7 +354,7 @@ class ClientSubmissionControllerIntegrationTest
                 .hasFieldOrPropertyWithValue("lastName", "Bond")
                 .hasFieldOrPropertyWithValue("emailAddress", "bond_james_bond@007.com")
                 .hasFieldOrPropertyWithValue("businessPhoneNumber","9876543210")
-                .hasFieldOrPropertyWithValue("userId", "jamesbaxter")
+                .hasFieldOrPropertyWithValue("userId", "BCEIDBUSINESS\\jdoe")
                 .hasFieldOrPropertyWithValue("contactTypeCode","LP")
         )
         .verifyComplete();
@@ -329,11 +365,14 @@ class ClientSubmissionControllerIntegrationTest
   @Order(9)
   void shouldNotApproveRejectAgain(){
     client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_IDIR_USER))
+        )
         .post()
         .uri("/api/clients/submissions/1")
-        .header(ApplicationConstant.USERID_HEADER, "testUserId")
-        .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-        .header(ApplicationConstant.USERNAME_HEADER, "Test User")
         .body(Mono.just(new SubmissionApproveRejectDto(true, List.of(), null)),
             SubmissionApproveRejectDto.class)
         .exchange()
