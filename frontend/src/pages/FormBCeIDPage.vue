@@ -59,7 +59,6 @@ const progressIndicatorBus = useEventBus<ProgressNotification>(
 
 const router = useRouter();
 const { setScrollPoint, safeSetFocusedComponent } = useFocus();
-const submitterInformation = ForestClientUserSession.user;
 const instance = getCurrentInstance();
 const session = instance?.appContext.config.globalProperties.$session;
 
