@@ -384,7 +384,7 @@ watch(cdsProgressStepArray, async (array) => {
     // wait for the DOM updates to complete
     await nextTick();
 
-    for (const step of cdsProgressStepArray.value) {
+    for (const step of array) {
       const div = step.shadowRoot?.querySelector("div");
       if (div) {
         // Make the step unfocusable.
