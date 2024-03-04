@@ -15,6 +15,7 @@ FROM caddy:2.7.6-alpine
 # Copy static files and config
 COPY --from=build /app/dist /srv
 COPY Caddyfile /etc/caddy/Caddyfile
+COPY robots.txt /srv/robots.txt
 
 # Packages and caddy format
 RUN apk add --no-cache ca-certificates && \
