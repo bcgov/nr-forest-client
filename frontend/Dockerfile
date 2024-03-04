@@ -16,8 +16,6 @@ FROM caddy:2.7.6-alpine
 COPY --from=build /app/dist /srv
 COPY Caddyfile /etc/caddy/Caddyfile
 
-ENV RANDOM_NONCE=0
-
 # Packages and caddy format
 RUN apk add --no-cache ca-certificates && \
     caddy fmt --overwrite /etc/caddy/Caddyfile 

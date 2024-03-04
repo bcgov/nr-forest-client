@@ -155,7 +155,7 @@ objects:
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
                 - name: BACKEND_URL
-                  value: https://${NAME}-${URL_ZONE}-backend.${DOMAIN}                
+                  value: https://${NAME}-${URL_ZONE}-backend.${DOMAIN}
                 - name: COGNITO_REGION
                   value: ${COGNITO_REGION}
               imagePullPolicy: Always
