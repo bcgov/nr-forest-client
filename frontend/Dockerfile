@@ -26,6 +26,10 @@ RUN apk add --no-cache ca-certificates && \
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3000/
 
+USER root
+RUN chown caddy:caddy /srv/index.html && \
+    chmod 644 /srv/index.html
+
 # Use the entrypoint script
 USER 1001
 ENTRYPOINT ["/entrypoint.sh"]
