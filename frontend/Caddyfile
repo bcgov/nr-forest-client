@@ -8,7 +8,7 @@
 
 :3000 {
 
-	header Content-Security-Policy "default-src 'self'; script-src 'self' {$BACKEND_URL} 'nonce-{$RANDOM_NONCE}'; img-src 'self'; connect-src 'self' {$BACKEND_URL};"
+	header Content-Security-Policy "default-src 'self'; script-src 'self' {$BACKEND_URL} 'nonce-sha256-78ZXazjC54Vyx/bLgKdM8JyK8U1O4A8TfYVLwFADf5o='; img-src 'self'; connect-src 'self' {$BACKEND_URL} https://cognito-idp.{$COGNITO_REGION}.amazonaws.com;"
 	
 	root * /srv
 

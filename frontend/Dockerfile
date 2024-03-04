@@ -20,8 +20,7 @@ ENV RANDOM_NONCE=0
 
 # Packages and caddy format
 RUN apk add --no-cache ca-certificates && \
-    caddy fmt --overwrite /etc/caddy/Caddyfile && \
-    sed -i "s/{NONCE}/$RANDOM_NONCE/g" /srv/index.html
+    caddy fmt --overwrite /etc/caddy/Caddyfile 
 
 # Port, health check and non-root user
 EXPOSE 3000
