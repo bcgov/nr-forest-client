@@ -6,6 +6,7 @@
   }
 }
 
+header Content-Security-Policy "default-src 'self'; script-src 'self' {$BACKEND_URL}; img-src 'self';"
 :3000
 root * /srv
 respond /config 200 {

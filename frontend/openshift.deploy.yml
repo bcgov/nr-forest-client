@@ -154,6 +154,8 @@ objects:
               env:
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
+                - name: BACKEND_URL
+                  value: https://${NAME}-${URL_ZONE}-backend.${DOMAIN}
               imagePullPolicy: Always
               name: ${NAME}
               volumeMounts:
