@@ -15,21 +15,15 @@ FROM caddy:2.7.6-alpine
 # Copy static files and config
 COPY --from=build /app/dist /srv
 COPY Caddyfile /etc/caddy/Caddyfile
-COPY entrypoint.sh /entrypoint.sh
+
+ENV RANDOM_NONCE=0
 
 # Packages and caddy format
 RUN apk add --no-cache ca-certificates && \
     caddy fmt --overwrite /etc/caddy/Caddyfile && \
-    chmod +x /entrypoint.sh
+    sed -i "s/{NONCE}/$RANDOM_NONCE/g" /srv/index.html
 
 # Port, health check and non-root user
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3000/
-
-USER root
-RUN chown caddy:caddy /srv/index.html && \
-    chmod 644 /srv/index.html
-
-# Use the entrypoint script
 USER 1001
-ENTRYPOINT ["/entrypoint.sh"]
