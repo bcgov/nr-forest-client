@@ -15,12 +15,17 @@ FROM caddy:2.7.6-alpine
 # Copy static files and config
 COPY --from=build /app/dist /srv
 COPY Caddyfile /etc/caddy/Caddyfile
+COPY entrypoint.sh /entrypoint.sh
 
 # Packages and caddy format
 RUN apk add --no-cache ca-certificates && \
-    caddy fmt --overwrite /etc/caddy/Caddyfile
+    caddy fmt --overwrite /etc/caddy/Caddyfile && \
+    chmod +x /entrypoint.sh
 
 # Port, health check and non-root user
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3000/
+
+# Use the entrypoint script
 USER 1001
+ENTRYPOINT ["/entrypoint.sh"]

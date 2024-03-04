@@ -8,7 +8,7 @@
 
 :3000 {
 
-	header Content-Security-Policy "default-src 'self'; script-src 'self' {$BACKEND_URL}; img-src 'self';"
+	header Content-Security-Policy "default-src 'self'; script-src 'self' {$BACKEND_URL} 'nonce-{$RANDOM_NONCE}'; img-src 'self'; connect-src 'self' {$BACKEND_URL};"
 	
 	root * /srv
 

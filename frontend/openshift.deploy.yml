@@ -74,6 +74,10 @@ parameters:
   - name: COGNITO_LOGOUT_URI
     description: Cognito redirect url once logged out
     required: true
+  - name: RANDOM_NONCE
+    description: Generates a random nonce value for the application
+    from: "[a-zA-Z0-9]{16}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{6}"
+    generate: expression
 objects:
 objects:
   - kind: ImageStream
@@ -156,6 +160,8 @@ objects:
                   value: ${LOG_LEVEL}
                 - name: BACKEND_URL
                   value: https://${NAME}-${URL_ZONE}-backend.${DOMAIN}
+                - name: RANDOM_NONCE
+                  value: ${RANDOM_NONCE}
               imagePullPolicy: Always
               name: ${NAME}
               volumeMounts:
