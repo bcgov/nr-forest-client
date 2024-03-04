@@ -6,33 +6,37 @@
   }
 }
 
-header Content-Security-Policy "default-src 'self'; script-src 'self' {$BACKEND_URL}; img-src 'self';"
-:3000
-root * /srv
-respond /config 200 {
-	body `{"APP_TITLE":{$VITE_APP_TITLE}}`
-	close
-}
+:3000 {
 
-file_server
+	header Content-Security-Policy "default-src 'self'; script-src 'self' {$BACKEND_URL}; img-src 'self';"
+	
+	root * /srv
 
-@www_host {
-	host www.{$HOST_ROUTE}
-}
-redir @www_host http://{$HOST_ROUTE}{path}
+	respond /config 200 {
+		body `{"APP_TITLE":{$VITE_APP_TITLE}}`
+		close
+	}
 
-@unspecified_path {
-	not path_regexp ^\/0.0.0.0
-}
-handle @unspecified_path {
-	try_files {path} {path}/ /?_url={uri}
-}
+	file_server
 
-encode {
-	gzip 7
-}
+	@www_host {
+		host www.{$HOST_ROUTE}
+	}
+	redir @www_host http://{$HOST_ROUTE}{path}
 
-log {
-	output stdout
-	level {$LOG_LEVEL}
+	@unspecified_path {
+		not path_regexp ^\/0.0.0.0
+	}
+	handle @unspecified_path {
+		try_files {path} {path}/ /?_url={uri}
+	}
+
+	encode {
+		gzip 7
+	}
+
+	log {
+		output stdout
+		level {$LOG_LEVEL}
+	}
 }
