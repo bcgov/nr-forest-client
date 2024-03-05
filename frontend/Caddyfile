@@ -8,7 +8,7 @@
 
 :3000 {
 
-	header Content-Security-Policy "default-src 'self'; script-src 'self' {$BACKEND_URL} 'sha256-78ZXazjC54Vyx/bLgKdM8JyK8U1O4A8TfYVLwFADf5o=' 'sha256-Qs6++yhvyp3S1k2F02oXxvTs1oQRWRgd1/4EUgvgWlc='; img-src 'self'; connect-src 'self' {$BACKEND_URL} https://cognito-idp.{$COGNITO_REGION}.amazonaws.com; frame-ancestors 'none';"
+	header Content-Security-Policy "default-src 'self'; script-src 'self' 'strict-dynamic' 'nonce-rAnd0m123' {$BACKEND_URL} 'sha256-78ZXazjC54Vyx/bLgKdM8JyK8U1O4A8TfYVLwFADf5o=' 'sha256-Qs6++yhvyp3S1k2F02oXxvTs1oQRWRgd1/4EUgvgWlc='; img-src 'self'; connect-src 'self' {$BACKEND_URL} https://cognito-idp.{$COGNITO_REGION}.amazonaws.com; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; require-trusted-types-for 'script';"
 	header Permissions-Policy "geolocation=(), microphone=(), camera=(), speaker=(), usb=(), bluetooth=(), payment=(), interest-cohort=()"
 	header Strict-Transport-Security "max-age=2592000; includeSubDomains;"
 	header Cache-Control "public, max-age=31536000"
