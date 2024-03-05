@@ -8,7 +8,7 @@
 
 :3000 {
 
-	header Content-Security-Policy "default-src 'self'; script-src 'self' 'strict-dynamic' 'nonce-rAnd0m123' {$BACKEND_URL} {$FRONTEND_URL} 'sha256-78ZXazjC54Vyx/bLgKdM8JyK8U1O4A8TfYVLwFADf5o=' 'sha256-Qs6++yhvyp3S1k2F02oXxvTs1oQRWRgd1/4EUgvgWlc=' 'sha256-a1be32b87ddb35acde245bdaeb389118111ac51bf5f53068daee561e1f99b325' 'sha256-c92a6461c1246d5869f97a5a266dca60b648153514fbd4f332c4740d995e543a'; img-src 'self'; connect-src 'self' {$BACKEND_URL} {$FRONTEND_URL} https://cognito-idp.{$COGNITO_REGION}.amazonaws.com; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; require-trusted-types-for 'script';"
+	header Content-Security-Policy "default-src 'self'; script-src 'self' 'strict-dynamic' 'nonce-a1be32b87ddb35acde245bdaeb389118111ac51bf5f53068daee561e1f99b325' 'nonce-c92a6461c1246d5869f97a5a266dca60b648153514fbd4f332c4740d995e543a' {$BACKEND_URL} {$FRONTEND_URL} 'sha256-78ZXazjC54Vyx/bLgKdM8JyK8U1O4A8TfYVLwFADf5o=' 'sha256-Qs6++yhvyp3S1k2F02oXxvTs1oQRWRgd1/4EUgvgWlc='; img-src 'self'; connect-src 'self' {$BACKEND_URL} {$FRONTEND_URL} https://cognito-idp.{$COGNITO_REGION}.amazonaws.com; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; require-trusted-types-for 'script';"
 	header Permissions-Policy "geolocation=(), microphone=(), camera=(), speaker=(), usb=(), bluetooth=(), payment=(), interest-cohort=()"
 	header Strict-Transport-Security "max-age=2592000; includeSubDomains;"
 	header Cache-Control "public, max-age=31536000"
