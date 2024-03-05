@@ -24,23 +24,7 @@ jobs:
         id: calculate
         run: |
           echo "url_zone=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
-
-      - uses: actions/checkout@v4
-
-      - name: Pull request size and stability labels
-        uses: actions/labeler@v5
-        continue-on-error: true
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-
-      - name: Conventional Label
-        uses: bcoe/conventional-release-labels@v1
-        continue-on-error: true
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ignored_types: '["chore","pr"]'
-          type_labels: '{"feat": "feature", "fix": "fix", "bug": "fix", "doc": "documentation", "ci": "ci", "chore": "chore", "breaking": "breaking", "BREAKING CHANGE": "breaking"}'
-
+      
       - name: Checkout branch
         uses: actions/checkout@v4
         with:
