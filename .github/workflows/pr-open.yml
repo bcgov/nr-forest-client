@@ -354,13 +354,3 @@ jobs:
           cmd_options: "-a"
           issue_title: "ZAP PR #${{ github.event.number }}: ${{ matrix.name }}"
           target: "https://${{ env.PREFIX }}-${{ matrix.name }}.${{ env.DOMAIN }}"
-      - name: Test Observatory
-        uses: simonireilly/observatory-github-action@v0.1.3
-        id: observatory
-        with:
-          web_host: "https://${{ env.PREFIX }}-${{ matrix.name }}.${{ env.DOMAIN }}"
-  
-      - name: Create commit comment
-        uses: peter-evans/commit-comment@v1
-        with:
-          body: "# ${{ matrix.name }} ${{ steps.observatory.outputs.observatory-report }}"
