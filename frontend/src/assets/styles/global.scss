@@ -1077,11 +1077,11 @@ cds-modal:is(#reject-modal, #approve-modal) cds-modal-footer-button::part(button
 }
 
 .cds--modal-close-btn {
-  margin-right: 0.25rem;
+  margin-right: 1rem;
 }
 
 .cds--modal-submit-btn {
-  margin-left: 0.25rem;
+  margin-left: 0rem;
 }
 
 cds-modal {
