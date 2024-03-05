@@ -23,7 +23,7 @@ public class ForestExchangeCustomizer implements Customizer<AuthorizeExchangeSpe
   public void customize(AuthorizeExchangeSpec authorize) {
     authorize
         // Metrics and health endpoints are open to all
-        .pathMatchers("/metrics/**", "/health/**","/").permitAll()
+        .pathMatchers("/metrics/**", "/health/**").permitAll()
 
         // Only service users can access the email endpoint
         .pathMatchers("/api/ches/email")
