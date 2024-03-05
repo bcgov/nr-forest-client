@@ -38,35 +38,35 @@ if (query.ref && query.ref === "individual") {
     <div class="spacing"></div>
   
     <div class="form-footer-group-buttons">
-    <cds-button
-      kind="primary"
-      iconLayout=""
-      class="landing-button"
-      @click.prevent="ForestClientUserSession.logIn('idir')"
-    >
-      <span>Log in with IDIR</span>
-      <login16 slot="icon" />
-    </cds-button>
-    <cds-button
-      v-if="$features.BCSC_LOGIN"
-      kind="primary"
-      iconLayout=""
-      class="landing-button"
-      @click.prevent="ForestClientUserSession.logIn('bcsc')"
-    >
-      <span>Log in with BC Services Card</span>
-      <login16 slot="icon" />
-    </cds-button>
-    <cds-button
-      v-if="$features.BCEID_LOGIN"
-      kind="primary"
-      iconLayout=""
-      class="landing-button"
-      @click.prevent="ForestClientUserSession.logIn('bceidbusiness')"
-    >
-      <span>Log in with BCeID</span>
-      <login16 slot="icon" />
-    </cds-button>
+      <cds-button
+        kind="primary"
+        iconLayout=""
+        class="landing-button"
+        @click.prevent="ForestClientUserSession.logIn('idir')"
+      >
+        <span>Log in with IDIR</span>
+        <login16 slot="icon" />
+      </cds-button>
+      <cds-button
+        v-if="$features.BCSC_LOGIN"
+        kind="primary"
+        iconLayout=""
+        class="landing-button"
+        @click.prevent="ForestClientUserSession.logIn('bcsc')"
+      >
+        <span>Log in with BC Services Card</span>
+        <login16 slot="icon" />
+      </cds-button>
+      <cds-button
+        v-if="$features.BCEID_LOGIN"
+        kind="primary"
+        iconLayout=""
+        class="landing-button"
+        @click.prevent="ForestClientUserSession.logIn('bceidbusiness')"
+      >
+        <span>Log in with BCeID</span>
+        <login16 slot="icon" />
+      </cds-button>
     </div>
   </div>
 

@@ -548,9 +548,8 @@ watch(cdsProgressStepArray, async (array) => {
             <span>Back</span>
           </cds-button>
 
-          <cds-tooltip>
+          <cds-tooltip v-if="!isLast && !endAndLogOut && !mailAndLogOut">
             <cds-button
-              v-if="!isLast && !endAndLogOut && !mailAndLogOut"
               id="nextBtn"
               kind="primary"
               size="lg"
