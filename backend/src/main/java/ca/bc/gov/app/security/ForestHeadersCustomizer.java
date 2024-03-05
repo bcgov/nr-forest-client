@@ -3,6 +3,7 @@ package ca.bc.gov.app.security;
 import java.time.Duration;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity.HeaderSpec;
@@ -17,6 +18,8 @@ public class ForestHeadersCustomizer implements Customizer<HeaderSpec> {
 
   @Value("${ca.bc.gov.nrs.self-uri}")
   String selfUri;
+  @Value("${ca.bc.gov.nrs.security.environment:PROD}")
+  String environment;
 
   @Override
   public void customize(HeaderSpec headerSpec) {
@@ -24,8 +27,8 @@ public class ForestHeadersCustomizer implements Customizer<HeaderSpec> {
     String policyDirectives = String.join("; ",
         "default-src 'none'",
         "connect-src 'self' " + selfUri,
-        "script-src 'strict-dynamic' 'unsafe-inline' 'nonce-" + UUID.randomUUID()
-        + "' http: https:",
+        "script-src 'strict-dynamic' 'nonce-" + UUID.randomUUID()
+        + "' " + ( "local".equalsIgnoreCase(environment) ? "http: " : StringUtils.EMPTY) + "https:",
         "object-src 'none'",
         "base-uri 'none'",
         "frame-ancestors 'none'",
