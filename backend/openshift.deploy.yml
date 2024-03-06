@@ -231,20 +231,3 @@ objects:
           targetPort: 8080
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
-  - kind: Route
-    apiVersion: route.openshift.io/v1
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    spec:
-      host: ${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
-      port:
-        targetPort: 8080-tcp
-      to:
-        kind: Service
-        name: ${NAME}-${ZONE}-${COMPONENT}
-        weight: 100
-      tls:
-        termination: edge
-        insecureEdgeTerminationPolicy: Redirect
