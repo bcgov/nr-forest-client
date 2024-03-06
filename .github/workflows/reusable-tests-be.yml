@@ -9,7 +9,7 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
-      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.1
         name: Backend Coverage
         with:
           commands: |
@@ -27,7 +27,7 @@ jobs:
           sonar_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
           triggers: ('backend/')
 
-      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.1
         name: Legacy Coverage
         with:
           commands: |
@@ -45,7 +45,7 @@ jobs:
           sonar_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
           triggers: ('legacy/')
 
-      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.1
         name: Processor Coverage
         with:
           commands: |
