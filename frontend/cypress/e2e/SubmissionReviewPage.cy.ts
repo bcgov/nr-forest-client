@@ -22,7 +22,7 @@ describe("Submission Review Page", () => {
     //Some simple checks to make sure we are on the list page
     cy.contains("Submission");
 
-    cy.get("h3").should("exist").should("contain", "Submissions");
+    cy.get("h1").should("exist").should("contain", "Submissions");
 
     cy.get(".body-compact-01")
       .should("exist")
@@ -67,7 +67,7 @@ describe("Submission Review Page", () => {
         //Some simple checks to make sure we are on the list page
         cy.contains("Submission");
 
-        cy.get("h3").should("exist").should("contain", "Submissions");
+        cy.get("h1").should("exist").should("contain", "Submissions");
 
         cy.get(".body-compact-01")
           .should("exist")
@@ -298,7 +298,7 @@ describe("Submission Review Page", () => {
     //Some simple checks to make sure we are on the list page
     cy.contains("Submission");
 
-    cy.get("h3").should("exist").should("contain", "Submissions");
+    cy.get("h1").should("exist").should("contain", "Submissions");
 
     cy.get(".body-compact-01")
       .should("exist")

@@ -166,7 +166,7 @@ describe("ReviewWizardStep.vue", () => {
       });
       const contactsSection = wrapper
         .findAll(".grouping-05")
-        .find((value) => value.find("h5").text() === "Contacts");
+        .find((value) => value.find("h3").text() === "Contacts");
 
       expect(contactsSection.text()).toMatch(locationName);
     });
@@ -222,7 +222,7 @@ describe("ReviewWizardStep.vue", () => {
       });
       const contactsSection = wrapper
         .findAll(".grouping-05")
-        .find((value) => value.find("h5").text() === "Contacts");
+        .find((value) => value.find("h3").text() === "Contacts");
 
       expect(contactsSection.text()).not.toMatch(locationName);
     });
