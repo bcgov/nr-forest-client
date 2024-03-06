@@ -448,7 +448,15 @@ div#app {
   color: var(--light-theme-text-text-secondary, #606062);
 }
 
-.heading-07,
+/*
+Note: numbers in heading tags h1-h6 do not match the number in the matching class.
+Class names come from our design definition.
+Tags were matched to class names according to the level they are USUALLY applied in the pages as
+designed.
+Class names should be useful when the semantic of a specific tag level wouldn't make sense.
+*/
+
+h5, .heading-07,
 cds-accordion-item.grouping-05-internal::part(title) {
   color: var(--light-theme-text-text-primary, #131315);
   /* Fixed heading styles/heading-07 */
@@ -460,7 +468,7 @@ cds-accordion-item.grouping-05-internal::part(title) {
   letter-spacing: 0.01rem;
 }
 
-h6 {
+h4, .heading-06 {
   color: var(--light-theme-text-text-primary, #131315) !important;
 
   /* Fixed heading styles/heading-06 */
@@ -471,7 +479,7 @@ h6 {
   line-height: 1.5rem;
 }
 
-h5 {
+h3, .heading-05 {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-05 */
@@ -482,7 +490,7 @@ h5 {
   line-height: 1.75rem;
 }
 
-h4 {
+h2, .heading-04 {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-04 */
@@ -493,7 +501,7 @@ h4 {
   line-height: 2.25rem;
 }
 
-h3 {
+h1, .heading-03 {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-03 */
@@ -504,7 +512,7 @@ h3 {
   line-height: 2.5rem;
 }
 
-h4.fluid {
+h2.fluid, .fluid-heading-04 {
   align-self: stretch;
   color: var(--light-theme-text-text-primary, #131315);
 
@@ -1465,7 +1473,7 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     align-items: flex-start;
   }
 
-  h4.fluid {
+  h2.fluid, .fluid-heading-04 {
     /* Fluid styles/SM/fluid-heading-04 */
     font-size: 2rem;
     line-height: 2.5rem;
@@ -1580,7 +1588,7 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     align-items: flex-start;
   }
 
-  h4.fluid {
+  h2.fluid, .fluid-heading-04 {
     /* Fluid styles/MED/fluid-heading-04 */
     font-size: 2.25rem;
     line-height: 2.75rem;
@@ -1650,7 +1658,7 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     column-gap: 4.0625rem;
   }
 
-  h4.fluid {
+  h2.fluid, .fluid-heading-04 {
     /* Fluid styles/MED/fluid-heading-04 */
     font-size: 2.25rem;
     line-height: 2.75rem;
@@ -1706,7 +1714,7 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     column-gap: 3.3125rem;
   }
 
-  h4.fluid {
+  h2.fluid, .fluid-heading-04 {
     /* Fluid styles/XLG/fluid-heading-04 */
     font-size: 3rem;
     line-height: 56px;

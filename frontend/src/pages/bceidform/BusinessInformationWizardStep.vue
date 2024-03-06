@@ -295,11 +295,11 @@ const updateDistrict = (value: CodeNameType | undefined) => {
 </script>
 
 <template>
-  <h4 data-scroll="focus-0">
+  <h2 data-scroll="focus-0">
     <div data-scroll="step-title" class="header-offset"></div>
     <!-- This is not the title of the step, but it's the first section. -->
     Natural resource district
-  </h4>
+  </h2>
   <p class="body-02">
     Select the district your application should go to. If you don’t know the district
     <a
@@ -328,9 +328,9 @@ const updateDistrict = (value: CodeNameType | undefined) => {
 
   <hr class="divider" />
 
-  <h4 data-scroll="focus-0">
+  <h2 data-scroll="focus-0">
     {{ title }}
-  </h4>
+  </h2>
 
   <div class="frame-01">
     <radio-input-component
