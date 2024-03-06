@@ -163,6 +163,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
 
       - name: Backup database before update
+        continue-on-error: true
         run: |
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
@@ -348,6 +349,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
 
       - name: Backup database before update
+        continue-on-error: true
         run: |
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}

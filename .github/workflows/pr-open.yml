@@ -196,6 +196,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
 
       - name: Backup database before update
+        continue-on-error: true
         run: |
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
