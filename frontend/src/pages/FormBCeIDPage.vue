@@ -402,10 +402,10 @@ watch(cdsProgressStepArray, async (array) => {
 <template>
   <div class="form-header">
     <div class="form-header-title">
-      <h3>
+      <h1>
         <div data-scroll="top" class="header-offset"></div>
         New client application
-      </h3>
+      </h1>
     </div>
     <cds-progress-indicator space-equally :vertical="isSmallScreen">
       <cds-progress-step 
@@ -435,7 +435,7 @@ watch(cdsProgressStepArray, async (array) => {
 
     <div v-if="currentTab == 0" class="form-steps-01">
       <div class="form-steps-01-title">
-        <h4 data-scroll="scroll-0">Before you begin</h4>
+        <h2 data-scroll="scroll-0">Before you begin</h2>
         <ol type="1" class="bulleted-list body-compact-01">
           <li>
             A registered business must be in good standing with BC
@@ -463,13 +463,13 @@ watch(cdsProgressStepArray, async (array) => {
 
     <div v-if="currentTab == 1" class="form-steps-02">
       <div class="form-steps-section">
-        <h4 data-scroll="scroll-1">
+        <h2 data-scroll="scroll-1">
           <div data-scroll="step-title" class="header-offset"></div>
           {{ progressData[1].title}}
-        </h4>
+        </h2>
         
         <div class="form-steps-section-01">
-          <h5>This is the primary address where you will receive mail.</h5>
+          <h3>This is the primary address where you will receive mail.</h3>
         </div>
       
         <address-wizard-step
@@ -482,13 +482,13 @@ watch(cdsProgressStepArray, async (array) => {
 
     <div v-if="currentTab == 2" class="form-steps-03">
       <div class="form-steps-section">
-        <h4 data-scroll="scroll-2">
+        <h2 data-scroll="scroll-2">
           <div data-scroll="step-title" class="header-offset"></div>
           {{ progressData[2].title}}
-        </h4>
+        </h2>
         
         <div class="form-steps-section-01">
-          <h5>Add authorized people to the account</h5>
+          <h3>Add authorized people to the account</h3>
             <p class="body-02 light-theme-text-text-primary">
               Review your name and email address. They’re from your BCeID.
             </p>
@@ -506,10 +506,10 @@ watch(cdsProgressStepArray, async (array) => {
     <div v-if="currentTab == 3" class="form-steps-04">
 
       <div class="form-steps-section form-steps-section-04">
-        <h4 data-scroll="scroll-3">
+        <h2 data-scroll="scroll-3">
           <div data-scroll="step-title" class="header-offset"></div>
           {{ progressData[3].title}}
-        </h4>
+        </h2>
         <span class="body-02">
           Review the content and make any changes by using the "Edit" buttons in each section below.
         </span>

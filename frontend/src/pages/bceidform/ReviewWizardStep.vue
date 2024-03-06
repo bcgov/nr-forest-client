@@ -62,13 +62,13 @@ onMounted(() => {
 
 <template>
   <div class="grouping-05">
-    <h5>Business information</h5>
+    <h3>Business information</h3>
     <div class="grouping-22">
       <div class="grouping-01">
-        <h6 class="review-icon-title">
+        <h4 class="review-icon-title">
           <Enterprise20 />
           {{ formData.businessInformation.businessName }}
-        </h6>
+        </h4>
         <p class="body-compact-01 grouping-22-item" id="clientTypeId">
           {{ clientType.text }}
         </p>
@@ -89,15 +89,15 @@ onMounted(() => {
     </div>
   </div>
   <div class="grouping-05">
-    <h5>Address</h5>
+    <h3>Address</h3>
     <div v-for="(address, index) in formData.location.addresses" 
         :key="address.locationName" 
         class="grouping-07">
       <hr class="divider" v-if="index > 0" />
-      <h6 class="review-icon-title">
+      <h4 class="review-icon-title">
         <LocationStar20 v-if="index === 0" />
         <Location20 v-else />{{ address.locationName }}
-      </h6>
+      </h4>
       <div class="grouping-23">
         <span class="body-compact-01">{{ address.streetAddress }}</span>
         <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
@@ -113,15 +113,15 @@ onMounted(() => {
     </div>
   </div>
   <div class="grouping-05">
-    <h5>Contacts</h5>
+    <h3>Contacts</h3>
     <div v-for="(contact, index) in formData.location.contacts" 
         :key="contact.email" 
         class="grouping-07">
       <hr class="divider" 
           v-if="index > 0" />
-      <h6 class="review-icon-title">
+      <h4 class="review-icon-title">
         <User20 />{{ contact.firstName }} {{ contact.lastName }}
-      </h6>
+      </h4>
       <div class="grouping-23">
         <span class="body-compact-01" v-if="$features.BCEID_MULTI_ADDRESS">
           {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}

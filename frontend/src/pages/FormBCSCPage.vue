@@ -385,9 +385,9 @@ const updateDistrict = (value: CodeNameType | undefined) => {
 <template>
   <div class="form-header">
     <div class="form-header-title">
-      <h3 data-scroll="top">
+      <h1 data-scroll="top">
         New client application
-      </h3>
+      </h1>
     </div>
     <div class="hide-when-less-than-two-children"><!--
       This div is necessary to avoid the div.header-offset below from interfering in the flex flow.
@@ -401,9 +401,9 @@ const updateDistrict = (value: CodeNameType | undefined) => {
   </div>
     
   <div class="form-steps-section">
-    <h4 data-scroll="scroll-0">
+    <h2 data-scroll="scroll-0">
       Personal information
-    </h4>
+    </h2>
     <p class="body-compact-01">
       Review the information below. It’s from your BC Services card. We use it to know who we're giving a number to and for communicating with clients. 
     </p>
@@ -459,7 +459,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
 
     <hr class="divider" />
 
-    <h4 data-scroll="focus-0">Natural resource district</h4>
+    <h2 data-scroll="focus-0">Natural resource district</h2>
     <p class="body-02">
       Select the district your application should go to. If you don’t know the district
       <a
@@ -488,9 +488,9 @@ const updateDistrict = (value: CodeNameType | undefined) => {
 
     <hr class="divider" />
 
-    <h4 data-scroll="scroll-0">
+    <h2 data-scroll="scroll-0">
       Contact information
-    </h4>
+    </h2>
     <p class="body-compact-01">
       We need your phone number to communicate with you.
     </p>
@@ -520,7 +520,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
         <hr />
 
         <div class="grouping-09" :data-scroll="`additional-contact-${index + 1}`">
-          <h5>Additional contact</h5>
+          <h3>Additional contact</h3>
         </div>
 
         <contact-group-component

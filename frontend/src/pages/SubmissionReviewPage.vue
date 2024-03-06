@@ -304,11 +304,11 @@ const renderListItem = (label, clientNumbers) => {
           
         </cds-breadcrumb>
 
-        <h3 class="submission-details--title">
+        <h1 class="submission-details--title">
           <span>
             {{ toTitleCase(data.business.organizationName) }}
           </span>
-        </h3>
+        </h1>
         <p class="body-02 light-theme-text-text-secondary" data-testid="subtitle" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
         <p class="body-02 light-theme-text-text-secondary" data-testid="subtitle" v-else>Check and manage this submission for a new client number</p>
       </div>
@@ -428,7 +428,7 @@ const renderListItem = (label, clientNumbers) => {
       <div class="grouping-14">
         <div class="grouping-05-short">
           <div>
-            <h6 class="mg-tl-2">Client summary</h6>
+            <h2 class="mg-tl-2 heading-06">Client summary</h2>
             <div class="grouping-10">
               
               <read-only-component label="Name">
