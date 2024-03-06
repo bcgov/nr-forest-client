@@ -166,7 +166,7 @@ const adminEmail = "forhvap.cliadmin@gov.bc.ca";
 
     <cds-header-panel :id="myProfilePanelId" v-if="$route.meta.profile" ref="myProfilePanel">
       <div class="grouping-16" id="panel-title">
-        <h5>My profile</h5>
+        <h3>My profile</h3>
         <cds-button kind="ghost" size="sm" @click.prevent="closePanel" class="close-panel-button">
           <Close16 slot="icon" />
         </cds-button>

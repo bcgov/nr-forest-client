@@ -166,7 +166,7 @@ onMounted(() => safeSetFocusedComponent("addr_0", 800));
       <div v-for="(address, index) in otherAddresses">
         <hr />
         <div class="grouping-09">
-          <h5>Additional address</h5>
+          <h3>Additional address</h3>
         </div>
         <address-group-component
           :key="addressesIdMap.get(address)"

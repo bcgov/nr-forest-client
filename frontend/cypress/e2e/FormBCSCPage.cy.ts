@@ -78,7 +78,7 @@ describe("BCSC Form", () => {
     cy.get('[data-test="wizard-submit-button"]')
     .click();
 
-    cy.get('h4.fluid').should('contain', 'Application submitted!');
+    cy.get("h1").should('contain', 'Application submitted!');
   });
 
   it("should add a new contact", () => {
@@ -155,7 +155,7 @@ describe("BCSC Form", () => {
     cy.get('[data-test="wizard-submit-button"]')
     .click();
 
-    cy.get('h4.fluid').should('contain', 'Application submitted!');
+    cy.get("h1").should('contain', 'Application submitted!');
 
   });
 
@@ -239,7 +239,7 @@ describe("BCSC Form", () => {
     cy.get('[data-test="wizard-submit-button"]')
     .click();
 
-    cy.get('h4.fluid').should('contain', 'Application submitted!');
+    cy.get("h1").should('contain', 'Application submitted!');
   });
 
   describe("when a contact which is not the last one gets deleted", () => {
