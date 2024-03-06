@@ -112,7 +112,7 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=TEST
             -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
-            -p COGNITO_LOGOUT_URI=${{ secrets.COGNITO_LOGOUT_URI }}
+            -p COGNITO_LOGOUT_URI='${{ secrets.COGNITO_LOGOUT_URI }}'
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
       - name: Conventional Changelog Update
@@ -163,6 +163,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
 
       - name: Backup database before update
+        continue-on-error: true
         run: |
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
@@ -319,7 +320,7 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=PROD
             -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
-            -p COGNITO_LOGOUT_URI=${{ secrets.COGNITO_LOGOUT_URI }}
+            -p COGNITO_LOGOUT_URI='${{ secrets.COGNITO_LOGOUT_URI }}'
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
   prod-deploy:
@@ -348,6 +349,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
 
       - name: Backup database before update
+        continue-on-error: true
         run: |
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
