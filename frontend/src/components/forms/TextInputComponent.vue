@@ -24,6 +24,7 @@ const props = withDefaults(
     required?: boolean;
     requiredLabel?: boolean;
     type?: TextInputType;
+    /** Display numeric virtual keyboard. Note: do not use this when type is tel. */
     numeric?: boolean;
   }>(),
   {
