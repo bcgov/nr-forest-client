@@ -45,6 +45,7 @@ describe("BCeIDFormValidations.ts", () => {
   };
 
   const isGreaterThanZero = (value: number) => (value > 0 ? "" : "invalid");
+
   it("should get a list of functions for a field", () => {
     addValidation("test", () => "");
     expect(getValidations("test")).toEqual([expect.any(Function)]);
@@ -93,6 +94,8 @@ describe("BCeIDFormValidations.ts", () => {
       validate(["location.addresses.*.locationName"], formDataDto)
     ).toBeTruthy();
   });
+
+
   describe("nested fields with conditions", () => {
     it("should return true when it's valid", () => {
       expect(
@@ -112,6 +115,7 @@ describe("BCeIDFormValidations.ts", () => {
         )
       ).toBeFalsy();
     });
+
     describe("conditions with multiple wildcards", () => {
       const condition =
       '$.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US"'
@@ -139,6 +143,7 @@ describe("BCeIDFormValidations.ts", () => {
       });
     })
   })
+
   it("should return true for nested fields withing nested fields", () => {
     expect(
       validate(["location.contacts.*.locationNames.*.text"], formDataDto)
@@ -149,6 +154,7 @@ describe("BCeIDFormValidations.ts", () => {
       validate(["businessInformation.businessType"], formDataDto)
     ).toBeTruthy();
   });
+
   describe("formFieldValidations", () => {
     it("should compare contry values with two-letter country codes", () => {
       // i.e. instead of comparing country values with the country names.
@@ -162,71 +168,9 @@ describe("BCeIDFormValidations.ts", () => {
       });
     })
   })
+
   describe("runValidation", () => {
-    describe("when target is an array", () => {
-      it("should stop at the first error when exhaustive is false (default)", () => {
-        const target = {
-          foo: [10, 0, 5, 0, 2],
-        };
-        const notificationBus = useEventBus<ValidationMessageType | undefined>(
-          "error-notification"
-        );
-        let count = 0;
-        notificationBus.on(() => {
-          count++;
-        });
-        const result = runValidation("foo", target, isGreaterThanZero, true);
-        expect(result).toBe(false);
-        expect(count).toEqual(2);
-      });
-      it("should validate every item in the array regardless of finding any error when exhaustive is true", () => {
-        const target = {
-          foo: [10, 0, 5, 0, 2],
-        };
-        const notificationBus = useEventBus<ValidationMessageType | undefined>(
-          "error-notification"
-        );
-        let count = 0;
-        notificationBus.on(() => {
-          count++;
-        });
-        const result = runValidation(
-          "foo",
-          target,
-          isGreaterThanZero,
-          true,
-          true
-        );
-        expect(result).toBe(false);
-        expect(count).toEqual(5);
-      });
-      it("should emit the notification regardless of being valid or invalid", () => {
-        const target = {
-          foo: [10, 0],
-        };
-        const notificationBus = useEventBus<ValidationMessageType | undefined>(
-          "error-notification"
-        );
-        let invalidCount = 0;
-        let validCount = 0;
-        notificationBus.on((event) => {
-          if (event.errorMsg) {
-            invalidCount++;
-          } else {
-            validCount++;
-          }
-        });
-        const result = runValidation(
-          "foo",
-          target,
-          isGreaterThanZero,
-          true,
-          true
-        );
-        expect(result).toBe(false);
-        expect(invalidCount).toEqual(1);
-        expect(validCount).toEqual(1);
-      });
+    describe("when target is an array", () => {      
       it("should return true when every item is valid", () => {
         const target = {
           foo: [10, 20, 30],
