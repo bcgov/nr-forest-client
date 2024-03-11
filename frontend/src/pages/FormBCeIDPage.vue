@@ -376,9 +376,9 @@ const formattedDistrictsList = computed(() =>
   })),
 );
 
-const cdsProgressStepArray = ref<InstanceType<typeof CDSProgressStep>[] | null>(null);
+const cdsProgressStepRefArray = ref<InstanceType<typeof CDSProgressStep>[] | null>(null);
 
-watch(cdsProgressStepArray, async (array) => {
+watch(cdsProgressStepRefArray, async (array) => {
   if (array) {
     // wait for the DOM updates to complete
     await nextTick();
@@ -408,9 +408,9 @@ watch(cdsProgressStepArray, async (array) => {
       </h1>
     </div>
     <cds-progress-indicator space-equally :vertical="isSmallScreen">
-      <cds-progress-step 
+      <cds-progress-step
         v-for="item in progressData"
-        ref="cdsProgressStepArray"
+        ref="cdsProgressStepRefArray"
         :key="item.step"
         :label="item.title"
         :secondary-label="item.subtitle"
