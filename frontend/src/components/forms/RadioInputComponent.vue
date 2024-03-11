@@ -87,14 +87,14 @@ watch(cdsRadioButtonGroup, async (value) => {
   }
 });
 
-const cdsRadioButtonArray = ref<InstanceType<typeof CDSRadioButton>[] | null>(null);
+const cdsRadioButtonArrayRef = ref<InstanceType<typeof CDSRadioButton>[] | null>(null);
 
-watch(cdsRadioButtonArray, async (array) => {
-  if (array) {
+watch([cdsRadioButtonArrayRef, () => props.required], async (cdsRadioButtonArray) => {
+  if (cdsRadioButtonArray) {
     // wait for the DOM updates to complete
     await nextTick();
 
-    for (const radio of cdsRadioButtonArray.value) {
+    for (const radio of cdsRadioButtonArrayRef.value) {
       const label = radio.shadowRoot?.querySelector("label");
       if (label) {
         // Fixes the association as it's wrong in the component.
@@ -132,7 +132,7 @@ watch(cdsRadioButtonArray, async (array) => {
         v-shadow="2"
       >
         <cds-radio-button
-          ref="cdsRadioButtonArray"
+          ref="cdsRadioButtonArrayRef"
           v-shadow="1"
           :id="id + 'rb' + option.value"
           v-for="option in modelValue"
