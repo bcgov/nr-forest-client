@@ -106,10 +106,8 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [database, frontend, common, legacy, processor, backend]
+        package: [backend, common, database, frontend, legacy, processor]
     steps:
-      - uses: actions/checkout@v4
-
       - uses: bcgov-nr/action-builder-ghcr@v2.0.2
         name: Build (${{ matrix.package }})
         with:
@@ -235,7 +233,6 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
-            -p URL=${{ needs.pr-validation.outputs.url }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -271,7 +268,6 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ github.event.number }}
-            -p URL=${{ needs.pr-validation.outputs.url }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
   cypress-run:

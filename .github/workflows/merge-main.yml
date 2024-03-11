@@ -141,7 +141,7 @@ jobs:
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
       ZONE: test
-      URL: forestclient-tst.nrs.gov.bc.ca
+      FRONTEND_URL: forestclient-tst.nrs.gov.bc.ca
     environment: test
     runs-on: ubuntu-22.04
     steps:
@@ -196,7 +196,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
-            -p URL=${{ env.URL }}
+            -p FRONTEND_URL=${{ env.FRONTEND_URL }}
 
       - name: Dev data replacement
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -220,7 +220,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
-            -p URL=${{ env.URL }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -325,7 +324,7 @@ jobs:
       PREV: test
       ZONE: prod
       DOMAIN: apps.silver.devops.gov.bc.ca
-      URL: forestclient.nrs.gov.bc.ca
+      FRONTEND_URL: forestclient.nrs.gov.bc.ca
     environment: prod
     runs-on: ubuntu-22.04
     steps:
@@ -380,7 +379,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
-            -p URL=${{ env.URL }}
+            -p FRONTEND_URL=${{ env.FRONTEND_URL }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -394,7 +393,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
-            -p URL=${{ env.ZONE }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
