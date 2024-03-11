@@ -45,7 +45,7 @@ public class SecurityConfiguration {
   @Bean
   SecurityWebFilterChain springSecurityFilterChain(
       ServerHttpSecurity http,
-      ForestHeadersCustomizer headersCustomizer
+      ForestHeadersCustomizer headersCustomizer,
       CorsCustomizer corsSpecCustomizer,
       ApiAuthorizationCustomizer apiAuthorizationCustomizer,
       Oauth2Customizer oauth2SpecCustomizer
