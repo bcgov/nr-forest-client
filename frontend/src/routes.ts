@@ -188,6 +188,23 @@ const routes = [
     headersStyle: "headers",
     sideMenu: false,
     profile: false,
+  }, 
+  {
+    path: "/notfound",
+    name: "notfoundstatus",
+    component: NotFoundPage,
+    props: true,
+    meta: {
+      format: "full",
+      hideHeader: true,
+      requireAuth: false,
+      showLoggedIn: true,
+      visibleTo: ["idir", "bceidbusiness", "bcsc"],
+    },
+    style: "content",
+    headersStyle: "headers",
+    sideMenu: false,
+    profile: false,
   },
   {
     path: "/:pathMatch(.*)*",
@@ -225,45 +242,51 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  await ForestClientUserSession.loadUser();
-  const user = ForestClientUserSession.loadDetails();
 
-  if (to.query.fd_to) {
-    targetPathStorage.value = to.query.fd_to as string;
-  }
+  if(to.name === "not-found") {
+    next({ name: "notfoundstatus" });    
+  }else{
+  
+    await ForestClientUserSession.loadUser();
+    const user = ForestClientUserSession.loadDetails();
 
-  // Page requires auth
-  if (to.meta.requireAuth) {
-    // User is logged in
-    if (user) {
-      // If user can see this page, continue, otherwise go to specific page or error
-      if (to.meta.visibleTo.includes(user.provider)) {
-        // If there is a target path, redirect to it and clear the storage
-        if (targetPathStorage.value) {
-          next({ path: targetPathStorage.value });
-          targetPathStorage.value = "";
+    if (to.query.fd_to) {
+      targetPathStorage.value = to.query.fd_to as string;
+    }
+
+    // Page requires auth
+    if (to.meta.requireAuth) {
+      // User is logged in
+      if (user) {
+        // If user can see this page, continue, otherwise go to specific page or error
+        if (to.meta.visibleTo.includes(user.provider)) {
+          // If there is a target path, redirect to it and clear the storage
+          if (targetPathStorage.value) {
+            next({ path: targetPathStorage.value });
+            targetPathStorage.value = "";
+          } else {
+            // Otherwise, continue to the page
+            next();
+          }
         } else {
-          // Otherwise, continue to the page
-          next();
+          // If user is not allowed to see this page, redirect to specific page or error
+          next({ name: to.meta.redirectTo?.[user.provider] || "error" });
         }
       } else {
-        // If user is not allowed to see this page, redirect to specific page or error
-        next({ name: to.meta.redirectTo?.[user.provider] || "error" });
+        // User is not logged in, redirect to home for login
+        next({ name: "home", query: { fd_to: to.path } });
       }
+      // Page does not require auth
     } else {
-      // User is not logged in, redirect to home for login
-      next({ name: "home", query: { fd_to: to.path } });
-    }
-    // Page does not require auth
-  } else {
-    if (user && !to.meta.showLoggedIn) {
-      // If user is logged in and the page is not for logged in users, redirect to specific page or error
-      next({
-        name: to.meta.redirectTo?.[user?.provider || "error"] ?? "error",
-      });
-    } else {
-      // Otherwise, continue to the page
-      next();
+      if (user && !to.meta.showLoggedIn) {
+        // If user is logged in and the page is not for logged in users, redirect to specific page or error
+        next({
+          name: to.meta.redirectTo?.[user?.provider || "error"] ?? "error",
+        });
+      } else {
+        // Otherwise, continue to the page
+        next();
+      }
     }
   }
 });
