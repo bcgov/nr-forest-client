@@ -25,9 +25,7 @@ jobs:
   codeql:
     name: Semantic Code Analysis
     runs-on: ubuntu-22.04
-    needs:
-      - tests-java
-      - tests-frontend
+    needs: [tests-java, tests-frontend]
     permissions:
       actions: read
       contents: read
@@ -70,8 +68,7 @@ jobs:
 
   test-init:
     name: TEST Init
-    needs:
-      - codeql
+    needs: [codeql]
     env:
       ZONE: test
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -140,11 +137,11 @@ jobs:
 
   test-deploy:
     name: TEST Deployment
-    needs:
-      - test-init
+    needs: [test-init]
     env:
-      ZONE: test
       DOMAIN: apps.silver.devops.gov.bc.ca
+      ZONE: test
+      URL: forestclient-tst.nrs.gov.bc.ca
     environment: test
     runs-on: ubuntu-22.04
     steps:
@@ -199,7 +196,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
-            -p URL_ZONE=${{ env.ZONE }}
+            -p URL=${{ env.URL }}
 
       - name: Dev data replacement
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -223,7 +220,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
-            -p URL_ZONE=${{ env.ZONE }}
+            -p URL=${{ env.URL }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -238,7 +235,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.ZONE }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
-            -p URL_ZONE=${{ env.ZONE }}
+            -p URL=${{ env.URL }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
@@ -259,13 +256,12 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ env.ZONE }}
-            -p URL_ZONE=${{ env.ZONE }}
+            -p URL=${{ env.URL }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
   image-promotions:
     name: Promote images to PROD
-    needs:
-      - test-deploy
+    needs: [test-deploy]
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -280,8 +276,7 @@ jobs:
 
   prod-init:
     name: PROD Init
-    needs:
-      - image-promotions
+    needs: [image-promotions]
     env:
       ZONE: prod
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -325,12 +320,12 @@ jobs:
 
   prod-deploy:
     name: PROD Deployment
-    needs:
-      - prod-init
+    needs: [prod-init]
     env:
       PREV: test
       ZONE: prod
       DOMAIN: apps.silver.devops.gov.bc.ca
+      URL: forestclient.nrs.gov.bc.ca
     environment: prod
     runs-on: ubuntu-22.04
     steps:
@@ -385,7 +380,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
-            -p URL_ZONE=${{ env.ZONE }}
+            -p URL=${{ env.URL }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -399,7 +394,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
-            -p URL_ZONE=${{ env.ZONE }}
+            -p URL=${{ env.ZONE }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -414,7 +409,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
-            -p URL_ZONE=${{ env.ZONE }}
+            -p URL=${{ env.URL }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
@@ -435,5 +430,5 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ env.PREV }}
-            -p URL_ZONE=${{ env.ZONE }}
+            -p URL=${{ env.URL }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
