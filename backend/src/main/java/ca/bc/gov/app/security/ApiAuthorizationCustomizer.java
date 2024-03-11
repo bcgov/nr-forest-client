@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * It implements the Customizer interface and overrides the customize method to set the authorization rules.
  */
 @Component
-public class ForestExchangeCustomizer implements Customizer<AuthorizeExchangeSpec> {
+public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeSpec> {
 
   /**
    * This method customizes the AuthorizeExchangeSpec by setting the authorization rules for different API endpoints.

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @RequiredArgsConstructor
 @Component
-public class ForestCorsCustomizer implements Customizer<CorsSpec> {
+public class CorsCustomizer implements Customizer<CorsSpec> {
 
   /**
    * The configuration object that contains the settings for the CORS configuration.
