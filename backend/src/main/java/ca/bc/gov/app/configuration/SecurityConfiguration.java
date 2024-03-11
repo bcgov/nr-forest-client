@@ -1,9 +1,9 @@
 package ca.bc.gov.app.configuration;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.security.ForestCorsCustomizer;
+import ca.bc.gov.app.security.CorsCustomizer;
 import ca.bc.gov.app.security.ApiAuthorizationCustomizer;
-import ca.bc.gov.app.security.ForestOauth2Customizer;
+import ca.bc.gov.app.security.Oauth2Customizer;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,9 +44,9 @@ public class SecurityConfiguration {
   @Bean
   SecurityWebFilterChain springSecurityFilterChain(
       ServerHttpSecurity http,
-      ForestCorsCustomizer corsSpecCustomizer,
+      CorsCustomizer corsSpecCustomizer,
       ApiAuthorizationCustomizer apiAuthorizationCustomizer,
-      ForestOauth2Customizer oauth2SpecCustomizer
+      Oauth2Customizer oauth2SpecCustomizer
   ) {
     http
         .authorizeExchange(apiAuthorizationCustomizer)

@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
  * allows the extraction of granted authorities from the JWT.
  */
 @Component
-public class ForestOauth2Customizer implements Customizer<OAuth2ResourceServerSpec> {
+public class Oauth2Customizer implements Customizer<OAuth2ResourceServerSpec> {
 
   /**
    * This method customizes the OAuth2ResourceServerSpec by setting the JWT authentication
