@@ -44,14 +44,14 @@ const mask = "#".repeat(placeholder.length);
 
 const ariaLabel = `${props.parentTitle} ${datePartName}`;
 
-const cdsTextInput = ref<InstanceType<typeof CDSTextInput> | null>(null);
+const cdsTextInputRef = ref<InstanceType<typeof CDSTextInput> | null>(null);
 
-watch(cdsTextInput, async (value) => {
-  if (value) {
+watch(cdsTextInputRef, async (cdsTextInput) => {
+  if (cdsTextInput) {
     // wait for the DOM updates to complete
     await nextTick();
 
-    const input = value.shadowRoot?.querySelector("input");
+    const input = cdsTextInput.shadowRoot?.querySelector("input");
     if (input) {
       // display numeric keyboard on mobile devices
       input.inputMode = "numeric";
@@ -64,7 +64,7 @@ watch(cdsTextInput, async (value) => {
   <div class="input-group">
     <cds-text-input
       v-if="enabled"
-      ref="cdsTextInput"
+      ref="cdsTextInputRef"
       :id="id"
       :required="required"
       :label="capitalizedDatePart"

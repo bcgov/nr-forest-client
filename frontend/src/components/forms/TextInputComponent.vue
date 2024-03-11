@@ -123,14 +123,14 @@ const selectValue = (event: any) => {
   isUserEvent.value = true
 };
 
-const cdsTextInput = ref<InstanceType<typeof CDSTextInput> | null>(null);
+const cdsTextInputRef = ref<InstanceType<typeof CDSTextInput> | null>(null);
 
-watch([cdsTextInput, () => props.numeric], async ([cdsTextInputValue]) => {
-  if (cdsTextInputValue) {
+watch([cdsTextInputRef, () => props.numeric], async ([cdsTextInput]) => {
+  if (cdsTextInput) {
     // wait for the DOM updates to complete
     await nextTick();
 
-    const input = cdsTextInputValue.shadowRoot?.querySelector("input");
+    const input = cdsTextInput.shadowRoot?.querySelector("input");
     if (input) {
       // display either a numeric or an alphanumeric (default) keyboard on mobile devices
       input.inputMode = props.numeric ? "numeric" : "text";
@@ -144,7 +144,7 @@ watch([cdsTextInput, () => props.numeric], async ([cdsTextInputValue]) => {
     <div class="input-group">
       <cds-text-input
         v-if="enabled"
-        ref="cdsTextInput"
+        ref="cdsTextInputRef"
         :id="id"
         :required="required"
         :label="label"
