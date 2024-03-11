@@ -113,6 +113,7 @@ objects:
                     --exclude-table=nrfc.country_code \
                     --exclude-table=nrfc.contact_type_code \
                     --exclude-table=nrfc.business_type_code \
+                    --exclude-table=nrfc.district_code \
                     --file=${BACKUP_DIR}/backup_$(date +%Y-%m-%d).sql \
                     &&
                     find "${BACKUP_DIR}" -type f -mtime +$NUM_BACKUPS -exec rm -f {} \; &&
