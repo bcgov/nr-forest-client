@@ -9,7 +9,6 @@ import { useFocus } from "@/composables/useFocus";
 // Types
 import type { CodeNameType, BusinessSearchResult } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
-import type { TextInputType} from "@/components/types"
 // Validators
 import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
@@ -166,12 +165,12 @@ const postalCodePlaceholder = computed(() => {
   }
 });
 
-const postalCodeInputType = computed<TextInputType>(() => {
+const postalCodeNumeric = computed<boolean>(() => {
   switch (selectedValue.country.value) {
     case "CA":
-      return "text";
+      return false;
     default:
-      return "tel";
+      return true;
   }
 });
 
@@ -353,7 +352,7 @@ watch([detailsData], () => {
     <text-input-component
       :id="'postalCode_' + id"
       :label="postalCodeNaming"
-      :type="postalCodeInputType"
+      :numeric="postalCodeNumeric"
       required
       required-label
       placeholder=""
