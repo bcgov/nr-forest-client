@@ -160,6 +160,8 @@ objects:
                   value: https://${NAME}-${URL_ZONE}-frontend.${DOMAIN}
                 - name: COGNITO_REGION
                   value: ${COGNITO_REGION}
+                - name: COGNITO_DOMAIN
+                  value: ${COGNITO_DOMAIN}
               imagePullPolicy: Always
               name: ${NAME}
               volumeMounts:
