@@ -610,7 +610,6 @@ export const validate = (
   });
 };
 
-// TODO: fix the test errors related to this
 // This function will run the validators and return the errors
 export const runValidation = (
   key: string,
@@ -623,6 +622,7 @@ export const runValidation = (
   const [fieldKey, fieldCondition] = key.includes("(")
     ? key.replace(")", "").split("(")
     : [key, "true"];
+    
   // We then load the field value
   const fieldValue = getFieldValue(fieldKey, target);
   const fieldEvaluation = evaluateCondition(target, fieldCondition.replace(targetGlobalRegex,""));
@@ -633,7 +633,7 @@ export const runValidation = (
     return true;
   }
 
-  const validateValue = () => {
+  const validateValue = () : string | (string | string[])[] => {
     if (Array.isArray(fieldValue)) {
       return fieldValue.map((item: any) => {
         // And sometimes we can end up with another array inside, that's life
@@ -651,15 +651,66 @@ export const runValidation = (
 
   const validationResponse = validateValue();
 
-  if(validationResponse){    
-    if (notify) {
-      // Note: also notifies when valid - errorMsg will be empty.
-      notificationBus.emit({ fieldId:fieldKey, errorMsg: validationResponse }, fieldValue);
-    }
-    return false;
+  
+  if (notify) {
+    // Note: also notifies when valid - errorMsg will be empty.
+    const validationResponseMessages : string[] = [];    
+    (Array.isArray(validationResponse) ? validationResponse.flat() : [validationResponse])
+      .forEach((validationResponseMessage) => validationResponseMessages.push(validationResponseMessage))
+
+      getFirstErrorMessage(validationResponseMessages,exhaustive).forEach((validationResponseMessage) => {      
+      notificationBus.emit({ fieldName: key, fieldId: fieldKey, errorMsg: validationResponseMessage }, fieldValue);
+    })
+
+    
   }
-  return true;
+
+  // If the validation response is not empty we return false
+  return isValidResponse(validationResponse);
 };
+
+const isValidResponse = (validationResponse: string | (string | string[])[]): boolean => {
+  if (typeof validationResponse === 'string') {
+      // Case 1: If it's a string and empty, return true
+      return validationResponse.trim() === '';
+  } else if (Array.isArray(validationResponse)) {
+      // Case 2: If it's an empty array, return true
+      if (validationResponse.length === 0) {
+          return true;
+      }
+
+      // Check if it's an array of empty arrays
+      if (validationResponse.every(val => Array.isArray(val) && val.length === 0)) {
+          return true;
+      }
+
+      // Check if it's an array of empty strings
+      if (validationResponse.every(val => typeof val === 'string' && val.trim() === '')) {
+          return true;
+      }
+
+      // Otherwise, it's not one of the valid cases, so return false
+      return false;
+  } else {
+      // If it's neither a string nor an array, it's an invalid response
+      return false;
+  }
+}
+
+const getFirstErrorMessage = (errors: string[],includeAll: boolean): string[] => {
+
+  if(includeAll)
+  return errors;
+
+  const result: string[] = [];
+  for (const error of errors) {
+      result.push(error);
+      if (error.trim() !== '') {
+          break;
+      }
+  }
+  return result;
+}
 
 export const isNullOrUndefinedOrBlank = (
   input: string | null | undefined
