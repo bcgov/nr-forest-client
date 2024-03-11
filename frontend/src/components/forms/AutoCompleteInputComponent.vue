@@ -170,12 +170,12 @@ We need the mock one (with no suffix) when the component mounts with a pre-fille
 */
 const getComboBoxItemValue = (item: CodeNameType) => item.name + (item.code ? nameSuffix : "");
 
-watch(cdsComboBoxRef, async (value) => {
-  if (value) {
+watch([cdsComboBoxRef, () => props.required, () => props.label], async ([cdsComboBox]) => {
+  if (cdsComboBox) {
     // wait for the DOM updates to complete
     await nextTick();
 
-    const input = value.shadowRoot?.querySelector("input");
+    const input = cdsComboBox.shadowRoot?.querySelector("input");
     if (input) {
       // Propagate attributes to the input
       input.required = props.required;
