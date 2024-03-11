@@ -2,6 +2,7 @@
 import { ref, watch, nextTick } from "vue";
 // Carbon
 import '@carbon/web-components/es/components/text-input/index';
+import type { CDSTextInput } from "@carbon/web-components";
 // Types
 import { DatePart } from "./common";
 
@@ -42,18 +43,32 @@ const placeholder = placeholders[props.datePart];
 const mask = "#".repeat(placeholder.length);
 
 const ariaLabel = `${props.parentTitle} ${datePartName}`;
+
+const cdsTextInputRef = ref<InstanceType<typeof CDSTextInput> | null>(null);
+
+watch(cdsTextInputRef, async (cdsTextInput) => {
+  if (cdsTextInput) {
+    // wait for the DOM updates to complete
+    await nextTick();
+
+    const input = cdsTextInput.shadowRoot?.querySelector("input");
+    if (input) {
+      // display numeric keyboard on mobile devices
+      input.inputMode = "numeric";
+    }
+  }
+});
 </script>
 
 <template>
   <div class="input-group">
     <cds-text-input
       v-if="enabled"
-      ref="cdsTextInput"
+      ref="cdsTextInputRef"
       :id="id"
       :required="required"
       :label="capitalizedDatePart"
       :aria-label="ariaLabel"
-      type="tel"
       :placeholder="placeholder"
       :value="selectedValue"
       :disabled="!enabled"

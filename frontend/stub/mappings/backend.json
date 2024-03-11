@@ -107,7 +107,7 @@
     {
       "name": "Province Codes",
       "request": {
-        "urlPattern": "/api/countries/(.*)/provinces?page=0&size=250",
+        "urlPattern": "/api/countries/([A-Z]+)/provinces\\?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -132,7 +132,7 @@
     {
       "name": "Get Country by CountryCode",
       "request": {
-        "urlPattern": "/api/countries/(.*)",
+        "urlPattern": "/api/countries/([A-Z]+)",
         "method": "GET"
       },
       "response": {

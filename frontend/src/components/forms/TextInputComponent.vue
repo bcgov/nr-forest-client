@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, nextTick } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/text-input/index";
+import type { CDSTextInput } from "@carbon/web-components";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
@@ -23,6 +24,9 @@ const props = withDefaults(
     required?: boolean;
     requiredLabel?: boolean;
     type?: TextInputType;
+
+    /** Display numeric virtual keyboard. Note: do not use this when type is tel. */
+    numeric?: boolean;
   }>(),
   {
     type: "text",
@@ -119,6 +123,20 @@ const selectValue = (event: any) => {
   isUserEvent.value = true
 };
 
+const cdsTextInputRef = ref<InstanceType<typeof CDSTextInput> | null>(null);
+
+watch([cdsTextInputRef, () => props.numeric], async ([cdsTextInput]) => {
+  if (cdsTextInput) {
+    // wait for the DOM updates to complete
+    await nextTick();
+
+    const input = cdsTextInput.shadowRoot?.querySelector("input");
+    if (input) {
+      // display either a numeric or an alphanumeric (default) keyboard on mobile devices
+      input.inputMode = props.numeric ? "numeric" : "text";
+    }
+  }
+});
 </script>
 
 <template>
@@ -126,6 +144,7 @@ const selectValue = (event: any) => {
     <div class="input-group">
       <cds-text-input
         v-if="enabled"
+        ref="cdsTextInputRef"
         :id="id"
         :required="required"
         :label="label"
