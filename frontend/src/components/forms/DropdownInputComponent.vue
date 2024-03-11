@@ -145,22 +145,25 @@ watch(
 revalidateBus.on(() => validateInput(selectedValue.value));
 
 // This is an array due to the v-for attribute.
-const cdsComboBoxRefArray = ref<InstanceType<typeof CDSComboBox>[] | null>(null);
+const cdsComboBoxArrayRef = ref<InstanceType<typeof CDSComboBox>[] | null>(null);
 
-watch(cdsComboBoxRefArray, async (array) => {
-  if (array) {
-    // wait for the DOM updates to complete
-    await nextTick();
+watch(
+  [cdsComboBoxArrayRef, () => props.required, () => props.label],
+  async ([cdsComboBoxArray]) => {
+    if (cdsComboBoxArray) {
+      // wait for the DOM updates to complete
+      await nextTick();
 
-    const combo = array[0];
-    const input = combo?.shadowRoot?.querySelector("input");
-    if (input) {
-      // Propagate attributes to the input
-      input.required = props.required;
-      input.ariaLabel = props.label;
+      const combo = cdsComboBoxArray[0];
+      const input = combo?.shadowRoot?.querySelector("input");
+      if (input) {
+        // Propagate attributes to the input
+        input.required = props.required;
+        input.ariaLabel = props.label;
+      }
     }
-  }
-});
+  },
+);
 
 // For some reason, if helper-text is empty, invalid-text message doesn't work.
 const safeHelperText = computed(() => props.tip || " ");
@@ -171,7 +174,7 @@ const safeHelperText = computed(() => props.tip || " ");
     <div class="input-group">
       <cds-combo-box
         v-for="time in comboBoxMountTime"
-        ref="cdsComboBoxRefArray"
+        ref="cdsComboBoxArrayRef"
         :key="time"
         :id="id"
         :title-text="label"

@@ -113,14 +113,14 @@ watch(
 
 revalidateBus.on(() => validateInput(selectedValue.value));
 
-const cdsMultiSelect = ref<InstanceType<typeof CDSMultiSelect> | null>(null);
+const cdsMultiSelectRef = ref<InstanceType<typeof CDSMultiSelect> | null>(null);
 
-watch(cdsMultiSelect, async (value) => {
-  if (value) {
+watch([cdsMultiSelectRef, () => props.required], async ([cdsMultiSelect]) => {
+  if (cdsMultiSelect) {
     // wait for the DOM updates to complete
     await nextTick();
 
-    const triggerDiv = value.shadowRoot?.querySelector("div[role='button']");
+    const triggerDiv = cdsMultiSelect.shadowRoot?.querySelector("div[role='button']");
     if (triggerDiv) {
       // Properly indicate as required.
       triggerDiv.ariaRequired = props.required ? "true" : "false";
@@ -134,7 +134,7 @@ watch(cdsMultiSelect, async (value) => {
     <div class="frame-02">
       <div class="input-group">
         <cds-multi-select
-          ref="cdsMultiSelect"
+          ref="cdsMultiSelectRef"
           :id="id"
           :value="selectedValue"
           :label="selectedValue"
