@@ -80,7 +80,7 @@ jobs:
 
   pr-greeting:
     name: PR Greeting
-    needs: pr-validation
+    needs: [pr-validation]
     runs-on: ubuntu-22.04
     permissions:
       pull-requests: write
@@ -101,27 +101,12 @@ jobs:
   builds:
     name: Builds
     runs-on: ubuntu-22.04
-    needs:
-      - pr-validation
+    needs: [pr-validation]
     permissions:
       packages: write
     strategy:
       matrix:
         package: [database, frontend, common, legacy, processor, backend]
-        include:
-          - package: database
-            triggers: ('database/')
-          - package: common
-            triggers: ('common/')
-          - package: frontend
-            triggers: ('frontend/')
-          - package: legacy
-            triggers: ('legacy/')
-          - package: processor
-            triggers: ('processor/')
-          - package: backend
-            triggers: ('backend/')
-
     steps:
       - uses: actions/checkout@v4
 
@@ -132,7 +117,7 @@ jobs:
           tag: ${{ github.event.number }}
           tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
-          triggers: ${{ matrix.triggers }}
+          triggers: ('${{ matrix.package }}/')
           build_args: |
             APP_VERSION=${{needs.pr-validation.outputs.version}}-${{ github.event.number }}
 
@@ -140,8 +125,6 @@ jobs:
     name: Deploy Application
     needs: [builds, pr-validation]
     environment: dev
-    env:
-      ZONE: dev
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -196,7 +179,8 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
           # Run a backup before deploying a new version
-          oc create job --from=cronjob/${{ github.event.repository.name }}-${{ github.event.number }}-database-backup ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup-$(date +%Y%m%d%H%M%S)
+          oc create job --from=cronjob/${{ github.event.repository.name }}-${{ github.event.number }}-database-backup \
+            ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup-$(date +%Y%m%d%H%M%S)
 
       - name: Deploy Database
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -264,7 +248,7 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
-            -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
+            -p VITE_NODE_ENV=openshift-dev
             -p URL=${{ needs.pr-validation.outputs.url }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
@@ -293,9 +277,7 @@ jobs:
   cypress-run:
     name: "User flow test"
     runs-on: ubuntu-22.04
-    needs:
-      - deploy
-      - pr-validation
+    needs: [deploy, pr-validation]
     environment: dev
     steps:
       - name: Checkout
