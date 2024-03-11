@@ -9,13 +9,16 @@ concurrency:
   group: pr-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  DOMAIN: apps.silver.devops.gov.bc.ca
+
 jobs:
   pr-validation:
     name: Pull Request Validation
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.changelog.outputs.version }}
-      url_zone: ${{ steps.calculate.outputs.url_zone }}
+      url: ${{ steps.calculate.outputs.url }}
     permissions:
       contents: read
       pull-requests: write
@@ -23,7 +26,7 @@ jobs:
       - name: Calculate the deployment number
         id: calculate
         run: |
-          echo "url_zone=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
+          echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v4
 
@@ -78,10 +81,6 @@ jobs:
   pr-greeting:
     name: PR Greeting
     needs: pr-validation
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      URL_ZONE: ${{ needs.pr-validation.outputs.url_zone }}
-      PREFIX: ${{ github.event.repository.name }}-${{ needs.pr-validation.outputs.url_zone }}
     runs-on: ubuntu-22.04
     permissions:
       pull-requests: write
@@ -94,7 +93,7 @@ jobs:
             ---
             Thanks for the PR!
 
-            Any successful deployments (not always required) will be available [here](https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/)
+            Any successful deployments (not always required) will be available [here](https://${{ needs.pr-validation.outputs.url }}/)
 
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
@@ -139,13 +138,9 @@ jobs:
 
   deploy:
     name: Deploy Application
-    needs:
-      - builds
-      - pr-validation
+    needs: [builds, pr-validation]
     environment: dev
     env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-${{ needs.pr-validation.outputs.url_zone }}
       ZONE: dev
     runs-on: ubuntu-22.04
     steps:
@@ -179,8 +174,8 @@ jobs:
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=DEV
-            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
-            -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}'
+            -p COGNITO_REDIRECT_URI=https://${{ needs.pr-validation.outputs.url }}/dashboard
+            -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ needs.pr-validation.outputs.url }}'
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
       - name: Deploy Database Backup
@@ -232,7 +227,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
-            -p URL_ZONE=${{ needs.pr-validation.outputs.url_zone }}
+            -p URL=${{ needs.pr-validation.outputs.url }}
 
       - name: Dev data replacement
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -256,7 +251,7 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
-            -p URL_ZONE=${{ needs.pr-validation.outputs.url_zone }}
+            -p URL=${{ needs.pr-validation.outputs.url }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -270,15 +265,15 @@ jobs:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
-            -p URL_ZONE=${{ needs.pr-validation.outputs.url_zone }}
+            -p URL=${{ needs.pr-validation.outputs.url }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=DEV
-            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
-            -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}'
+            -p COGNITO_REDIRECT_URI=https://${{ needs.pr-validation.outputs.url }}/dashboard
+            -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ needs.pr-validation.outputs.url }}'
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -292,7 +287,7 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ github.event.number }}
-            -p URL_ZONE=${{ needs.pr-validation.outputs.url_zone }}
+            -p URL=${{ needs.pr-validation.outputs.url }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
   cypress-run:
@@ -302,9 +297,6 @@ jobs:
       - deploy
       - pr-validation
     environment: dev
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-${{ needs.pr-validation.outputs.url_zone }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -319,7 +311,7 @@ jobs:
         with:
           working-directory: cypress
         env:
-          CYPRESS_baseUrl: https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+          CYPRESS_baseUrl: https://${{ needs.pr-validation.outputs.url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish Cypress Results

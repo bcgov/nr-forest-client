@@ -47,8 +47,8 @@ parameters:
   - name: LOG_LEVEL
     description: Caddy log level (debug, info, warn, error, panic, fatal)
     value: "info"
-  - name: URL_ZONE
-    description: Zone to use for URL
+  - name: URL
+    description: Deployment URL
     required: true
   - name: GREEN_DOMAIN
     description: Green domain
