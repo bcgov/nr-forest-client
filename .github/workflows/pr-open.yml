@@ -18,6 +18,8 @@ jobs:
       url_zone: ${{ steps.calculate.outputs.url_zone }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: refs/heads/${{ github.event.repository.default_branch }}
 
       # steps.semver.outputs.tag => needs.vars.outputs.semver
       - name: Conventional Changelog Update
@@ -31,6 +33,8 @@ jobs:
           # skip-commit: 'true'
           # skip-on-empty: 'false'
           # skip-version-file: 'true'
+
+      - uses: actions/checkout@v4
 
       - name: Calculate the deployment number
         id: calculate
