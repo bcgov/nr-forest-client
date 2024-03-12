@@ -1,5 +1,11 @@
 apiVersion: template.openshift.io/v1
 kind: Template
+metadata:
+  name: ${NAME}
+  annotations:
+    description: "Nr-Old-Growth"
+    tags: "nrfc"
+    iconClass: icon-js
 labels:
   app: ${NAME}-${ZONE}
   app.kubernetes.io/part-of: ${NAME}-${ZONE}
