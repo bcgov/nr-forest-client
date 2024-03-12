@@ -9,17 +9,86 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  vars:
+    name: Variables
+    runs-on: ubuntu-22.04
+    outputs:
+      url_zone: ${{ steps.calculate.outputs.url_zone }}
+    steps:
+      - name: Calculate the deployment number
+        id: calculate
+        run: echo "url_zone=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
+
   validate:
     name: Validate PR
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@v0.4.0
+    needs: [vars]
+    env:
+      URL: ${{ github.event.repository.name }}-${{ needs.vars.outputs.url_zone }}-frontend.apps.silver.devops.gov.bc.ca
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@v0.5.0
     with:
       markdown_links: |
-        - [Frontend](https://${{ github.event.repository.name }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca)
-        - [Backend](https://${{ github.event.repository.name }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca/api)
+        Any successful deployments (not always required) will be available [here](https://${{ env.URL }}/)
+
+  changelog:
+    name: Pull Request Validation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pull request size and stability labels
+        uses: actions/labeler@v5
+        continue-on-error: true
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Conventional Label
+        uses: bcoe/conventional-release-labels@v1
+        continue-on-error: true
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ignored_types: '["chore","pr"]'
+          type_labels: '{"feat": "feature", "fix": "fix", "bug": "fix", "doc": "documentation", "ci": "ci", "chore": "chore", "breaking": "breaking", "BREAKING CHANGE": "breaking"}'
+
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: refs/heads/${{ github.head_ref }}
+
+      - name: Conventional Changelog Update
+        id: changelog
+        continue-on-error: true
+        uses: TriPSs/conventional-changelog-action@v5
+        with:
+          github-token: ${{ github.token }}
+          output-file: "CHANGELOG.md"
+          skip-version-file: "true"
+          skip-commit: "true"
+          git-push: "false"
+          git-branch: refs/heads/${{ github.head_ref }}
+
+      - name: Checkout pr
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Comment PR
+        continue-on-error: true
+        uses: thollander/actions-comment-pull-request@v2
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        with:
+          message: |
+            # Current changelog
+
+            ${{ steps.changelog.outputs.clean_changelog }}
+          comment_tag: "# Current changelog"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   results:
     name: Validate Results
-    needs: [validate]
+    needs: [changelog, validate]
     runs-on: ubuntu-22.04
     steps:
       - run: echo "Workflow completed successfully!"
