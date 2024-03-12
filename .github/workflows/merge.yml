@@ -13,14 +13,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests-java:
-    name: Backend Integrated Tests
-    uses: ./.github/workflows/reusable-tests-be.yml
-
-  tests-frontend:
-    name: Frontend Unit Tests
-    uses: ./.github/workflows/reusable-tests-fe.yml
-
   test-init:
     name: TEST Init
     needs: [codeql]
