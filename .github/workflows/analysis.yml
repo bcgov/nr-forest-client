@@ -1,10 +1,12 @@
-name: Unit Tests and Analysis
+name: Analysis
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
   push:
     branches: [main]
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
+  schedule:
+    - cron: "0 11 * * 0" # 3 AM PST = 12 PM UDT, runs sundays
   workflow_dispatch:
 
 concurrency:
@@ -22,6 +24,13 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     uses: ./.github/workflows/reusable-tests-fe.yml
 
-  trivy:
-    name: Repository Report
+  repo-reports:
+    name: Repository Reports
     uses: ./.github/workflows/reusable-tests-repo.yml
+
+  results:
+    name: Analysis Results
+    needs: [tests-java, tests-frontend, repo-reports]
+    runs-on: ubuntu-22.04
+    steps:
+      - run: echo "Workflow completed successfully!"

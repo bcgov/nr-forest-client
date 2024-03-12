@@ -128,6 +128,11 @@ b {
 }
 
 .heading-buttons cds-button[kind="ghost"]::part(button) {
+  // dark theme
+  --cds-focus: var(--dark-theme-focus-focus);
+  --cds-background-hover: var(--dark-theme-background-background-hover);
+  --cds-background-active: var(--dark-theme-background-background-active);
+
   color: var(--light-theme-text-text-on-color);
 }
 

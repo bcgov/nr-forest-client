@@ -1,9 +1,8 @@
-name: Merge to Main
+name: Merge
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths-ignore:
       - ".github/ISSUE_TEMPLATE/*"
       - "**.md"
@@ -14,64 +13,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests-java:
-    name: Backend Integrated Tests
-    uses: ./.github/workflows/reusable-tests-be.yml
-
-  tests-frontend:
-    name: Frontend Unit Tests
-    uses: ./.github/workflows/reusable-tests-fe.yml
-
-  codeql:
-    name: Semantic Code Analysis
+  vars:
+    name: Set Variables
+    outputs:
+      pr: ${{ steps.pr.outputs.pr }}
     runs-on: ubuntu-22.04
-    needs:
-      - tests-java
-      - tests-frontend
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
+    timeout-minutes: 1
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # Get PR number for squash merges to main
+      - name: PR Number
+        id: pr
+        uses: bcgov-nr/action-get-pr@v0.0.1
 
-      - name: Initialize
-        uses: github/codeql-action/init@v3
+  images-test:
+    name: Promote images to PROD
+    needs: [vars]
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [backend, common, database, frontend, legacy, processor]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v4
         with:
-          languages: javascript,java
-
-      # Autobuild failed for Java, so building manually
-      - name: Set up JDK 17 and Caching maven dependencies
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "17"
-          cache: "maven"
-
-      - name: Build Backend
-        run: |
-          cd backend
-          ./mvnw clean package
-
-      - name: Build Legacy
-        run: |
-          cd legacy
-          ./mvnw clean package
-
-      - name: Build Frontend
-        run: |
-          cd frontend
-          npm ci
-          npm run build
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: ${{ needs.vars.outputs.pr}}
+          tags: test
 
   test-init:
     name: TEST Init
-    needs:
-      - codeql
+    needs: [images-test]
     env:
       ZONE: test
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -140,8 +111,7 @@ jobs:
 
   test-deploy:
     name: TEST Deployment
-    needs:
-      - test-init
+    needs: [test-init]
     env:
       ZONE: test
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -262,10 +232,9 @@ jobs:
             -p URL_ZONE=${{ env.ZONE }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
-  image-promotions:
+  images-prod:
     name: Promote images to PROD
-    needs:
-      - test-deploy
+    needs: [test-deploy]
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -280,8 +249,7 @@ jobs:
 
   prod-init:
     name: PROD Init
-    needs:
-      - image-promotions
+    needs: [images-prod]
     env:
       ZONE: prod
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -325,8 +293,7 @@ jobs:
 
   prod-deploy:
     name: PROD Deployment
-    needs:
-      - prod-init
+    needs: [prod-init]
     env:
       PREV: test
       ZONE: prod
