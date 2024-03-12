@@ -44,33 +44,3 @@ jobs:
           name: cypress-screenshots
           path: frontend/cypress/screenshots
           retention-days: 7
-
-      - name: Frontend Unit Coverage
-        uses: romeovs/lcov-reporter-action@v0.3.1
-        continue-on-error: true
-        if: github.event_name == 'pull_request'
-        with:
-          title: Frontend unit Test Coverage
-          delete-old-comments: true
-          github-token: ${{ github.token }}
-          lcov-file: ./frontend/reports/unit/lcov.info
-
-      - name: Frontend Component Coverage
-        uses: romeovs/lcov-reporter-action@v0.3.1
-        continue-on-error: true
-        if: github.event_name == 'pull_request'
-        with:
-          title: Frontend component Test Coverage
-          delete-old-comments: true
-          github-token: ${{ github.token }}
-          lcov-file: ./frontend/reports/component/lcov.info
-
-      - name: Frontend E2E Coverage
-        uses: romeovs/lcov-reporter-action@v0.3.1
-        continue-on-error: true
-        if: github.event_name == 'pull_request'
-        with:
-          title: Frontend e2e Test Coverage
-          delete-old-comments: true
-          github-token: ${{ github.token }}
-          lcov-file: ./frontend/reports/e2e/lcov.info
