@@ -1,6 +1,7 @@
 package ca.bc.gov.app.configuration;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.security.ForestHeadersCustomizer;
 import ca.bc.gov.app.security.CorsCustomizer;
 import ca.bc.gov.app.security.ApiAuthorizationCustomizer;
 import ca.bc.gov.app.security.Oauth2Customizer;
@@ -37,18 +38,20 @@ public class SecurityConfiguration {
    * @param http                 The ServerHttpSecurity object to be customized.
    * @param corsSpecCustomizer   The customizer for the CORS settings.
    * @param apiAuthorizationCustomizer   The customizer for the authorization rules.
-   * @param csrfSpecCustomizer   The customizer for the CSRF settings.
    * @param oauth2SpecCustomizer The customizer for the OAuth2 resource server settings.
+   * @param headersCustomizer    The customizer for the headers settings.
    * @return The configured SecurityWebFilterChain.
    */
   @Bean
   SecurityWebFilterChain springSecurityFilterChain(
       ServerHttpSecurity http,
+      ForestHeadersCustomizer headersCustomizer,
       CorsCustomizer corsSpecCustomizer,
       ApiAuthorizationCustomizer apiAuthorizationCustomizer,
       Oauth2Customizer oauth2SpecCustomizer
   ) {
     http
+        .headers(headersCustomizer)
         .authorizeExchange(apiAuthorizationCustomizer)
         .oauth2ResourceServer(oauth2SpecCustomizer)
         .cors(corsSpecCustomizer)
