@@ -1,7 +1,7 @@
 # Build static files
 FROM node:alpine3.16 AS build
 
-ARG APP_VERSION=0.0.0
+ARG APP_VERSION=0.0.1
 
 WORKDIR /app
 COPY . .
