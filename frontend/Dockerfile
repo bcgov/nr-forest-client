@@ -5,9 +5,10 @@ ARG APP_VERSION=0.0.1
 
 WORKDIR /app
 COPY . .
-RUN npm ci && \
-    npm version ${APP_VERSION} --no-git-tag-version && \
-    npm run build
+RUN npm ci
+RUN npm version ${APP_VERSION} --no-git-tag-version
+RUN npm run build
+
 
 # Caddy
 FROM caddy:2.7.6-alpine
