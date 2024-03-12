@@ -1,9 +1,8 @@
-name: Merge to Main
+name: Merge
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths-ignore:
       - ".github/ISSUE_TEMPLATE/*"
       - "**.md"
@@ -25,9 +24,7 @@ jobs:
   codeql:
     name: Semantic Code Analysis
     runs-on: ubuntu-22.04
-    needs:
-      - tests-java
-      - tests-frontend
+    needs: [tests-java, tests-frontend]
     permissions:
       actions: read
       contents: read
@@ -70,8 +67,7 @@ jobs:
 
   test-init:
     name: TEST Init
-    needs:
-      - codeql
+    needs: [codeql]
     env:
       ZONE: test
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -140,8 +136,7 @@ jobs:
 
   test-deploy:
     name: TEST Deployment
-    needs:
-      - test-init
+    needs: [test-init]
     env:
       ZONE: test
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -264,8 +259,7 @@ jobs:
 
   image-promotions:
     name: Promote images to PROD
-    needs:
-      - test-deploy
+    needs: [test-deploy]
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -280,8 +274,7 @@ jobs:
 
   prod-init:
     name: PROD Init
-    needs:
-      - image-promotions
+    needs: [image-promotions]
     env:
       ZONE: prod
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -325,8 +318,7 @@ jobs:
 
   prod-deploy:
     name: PROD Deployment
-    needs:
-      - prod-init
+    needs: [prod-init]
     env:
       PREV: test
       ZONE: prod
