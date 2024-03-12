@@ -27,7 +27,7 @@ jobs:
         id: semver
         with:
           github-token: ${{ secrets.github_token }}
-          # git-branch: refs/heads/${{ github.event.repository.default_branch }}
+          git-branch: refs/heads/${{ github.event.repository.default_branch }}
           git-push: "false"
           skip-commit: "true"
           skip-on-empty: "false"
