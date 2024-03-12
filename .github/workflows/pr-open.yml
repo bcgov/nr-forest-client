@@ -18,6 +18,8 @@ jobs:
       url_zone: ${{ steps.calculate.outputs.url_zone }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       # steps.semver.outputs.tag => needs.vars.outputs.semver
       - name: Conventional Changelog Update
