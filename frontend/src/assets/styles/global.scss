@@ -231,6 +231,7 @@ cds-combo-box::part(trigger-button) {
 
 cds-combo-box::part(input) {
   outline: none;
+  padding-inline-end: 1rem;
 }
 
 cds-combo-box:where(:active, :focus)::part(cds--combo-box) {
