@@ -94,6 +94,7 @@ ca:
     gov:
       nrs:
         submissionLimit: ${SUBMISSION_LIMIT:7D}
+        self-uri: ${SELF_URI:http://localhost:8080}
         ches:
           uri: ${CHES_API_URL:http://127.0.0.1:10010/chess/uri}
           tokenUrl: ${CHES_TOKEN_URL:http://127.0.0.1:10010/token/uri}
