@@ -101,7 +101,7 @@ objects:
     data:
       config.js: |
         window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${ZONE}-backend.${DOMAIN}');
-        window.localStorage.setItem('VITE_FRONTEND_URL', 'https://${FRONTEND_URL}');
+        window.localStorage.setItem('VITE_FRONTEND_URL', 'https://${URL}');
         window.localStorage.setItem('VITE_NODE_ENV', '${VITE_NODE_ENV}');
         window.localStorage.setItem('VITE_GREEN_DOMAIN', '${GREEN_DOMAIN}');        
         window.localStorage.setItem('VITE_AWS_COGNITO_REGION','${COGNITO_REGION}');
@@ -208,7 +208,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${FRONTEND_URL}
+      host: ${URL}
       port:
         targetPort: 3000-tcp
       to:

@@ -95,30 +95,31 @@ jobs:
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
-  builds:
-    name: Builds
-    runs-on: ubuntu-22.04
-    needs: [pr-validation]
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        package: [backend, common, database, frontend, legacy, processor]
-    steps:
-      - uses: bcgov-nr/action-builder-ghcr@v2.0.2
-        name: Build (${{ matrix.package }})
-        with:
-          package: ${{ matrix.package }}
-          tag: ${{ github.event.number }}
-          tag_fallback: test
-          token: ${{ secrets.GITHUB_TOKEN }}
-          triggers: ('${{ matrix.package }}/')
-          build_args: |
-            APP_VERSION=${{needs.pr-validation.outputs.version}}-${{ github.event.number }}
+  # builds:
+  #   name: Builds
+  #   runs-on: ubuntu-22.04
+  #   needs: [pr-validation]
+  #   permissions:
+  #     packages: write
+  #   strategy:
+  #     matrix:
+  #       package: [backend, common, database, frontend, legacy, processor]
+  #   steps:
+  #     - uses: bcgov-nr/action-builder-ghcr@v2.0.2
+  #       name: Build (${{ matrix.package }})
+  #       with:
+  #         package: ${{ matrix.package }}
+  #         tag: ${{ github.event.number }}
+  #         tag_fallback: test
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         triggers: ('${{ matrix.package }}/')
+  #         build_args: |
+  #           APP_VERSION=${{needs.pr-validation.outputs.version}}-${{ github.event.number }}
 
   deploy:
     name: Deploy Application
-    needs: [builds, pr-validation]
+    # needs: [builds, pr-validation]
+    needs: [pr-validation]
     environment: dev
     runs-on: ubuntu-22.04
     steps:
