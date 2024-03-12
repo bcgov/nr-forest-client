@@ -24,6 +24,13 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     uses: ./.github/workflows/reusable-tests-fe.yml
 
-  trivy:
-    name: Repository Report
+  repo-reports:
+    name: Repository Reports
     uses: ./.github/workflows/reusable-tests-repo.yml
+
+  results:
+    name: Analysis Results
+    needs: [tests-java, tests-frontend, repo-reports]
+    runs-on: ubuntu-22.04
+    steps:
+      - run: echo "Workflow completed successfully!"
