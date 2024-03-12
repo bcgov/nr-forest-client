@@ -41,7 +41,7 @@ jobs:
           tag_fallback: test
           triggers: ('${{ matrix.package }}/')
           build_args: |
-            APP_VERSION="0.0.${{ github.event.number }}"
+            APP_VERSION="0.0.1-${{ github.event.number }}"
 
   deploy:
     name: Deploy Application
