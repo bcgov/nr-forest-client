@@ -202,7 +202,6 @@ jobs:
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=DEV
-            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
             -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}'
 
       - name: Deploy Processor

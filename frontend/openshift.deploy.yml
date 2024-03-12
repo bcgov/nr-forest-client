@@ -68,9 +68,6 @@ parameters:
   - name: COGNITO_ENVIRONMENT
     description: Cognito environment
     required: true
-  - name: COGNITO_REDIRECT_URI
-    description: Cognito redirect url once logged in
-    required: true
   - name: COGNITO_LOGOUT_URI
     description: Cognito redirect url once logged out
     required: true

@@ -212,7 +212,6 @@ jobs:
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=TEST
-            -p COGNITO_REDIRECT_URI=https://${{ env.ENV }}/dashboard
             -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
 
       - name: Deploy Processor
@@ -248,6 +247,7 @@ jobs:
     name: PROD Init
     needs: [images-prod]
     env:
+      URL: forestclient.nrs.gov.bc.ca
       ZONE: prod
     environment: prod
     runs-on: ubuntu-22.04
@@ -282,7 +282,7 @@ jobs:
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=PROD
-            -p COGNITO_REDIRECT_URI=https://forestclient.nrs.gov.bc.ca/dashboard
+            -p COGNITO_REDIRECT_URI=https://${{ env.URL }}/dashboard
             -p COGNITO_LOGOUT_URI='https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
@@ -382,7 +382,6 @@ jobs:
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=PROD
-            -p COGNITO_REDIRECT_URI=https://forestclient.nrs.gov.bc.ca/dashboard
             -p COGNITO_LOGOUT_URI='https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
 
       - name: Deploy Processor
