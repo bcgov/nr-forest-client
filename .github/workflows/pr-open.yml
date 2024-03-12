@@ -21,16 +21,16 @@ jobs:
 
       # steps.semver.outputs.tag => needs.vars.outputs.semver
       - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@v4
+        uses: TriPSs/conventional-changelog-action@v5.2.1
         id: semver
         with:
           github-token: ${{ github.token }}
-          git-branch: refs/heads/${{ github.event.repository.default_branch }}
-          # git-branch: refs/heads/${{ github.head_ref }}
-          git-push: 'false'
-          skip-commit: 'true'
-          skip-on-empty: 'false'
-          skip-version-file: 'true'
+          # git-branch: refs/heads/${{ github.event.repository.default_branch }}
+          # # git-branch: refs/heads/${{ github.head_ref }}
+          # git-push: 'false'
+          # skip-commit: 'true'
+          # skip-on-empty: 'false'
+          # skip-version-file: 'true'
 
       - name: Calculate the deployment number
         id: calculate
