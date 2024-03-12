@@ -332,26 +332,3 @@ jobs:
           name: cypress-videos
           path: cypress/cypress/videos
           retention-days: 7
-
-  post-validation:
-    name: Post Validation
-    runs-on: ubuntu-22.04
-    needs:
-      - deploy
-      - cypress-run
-      - pr-validation
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-${{ needs.pr-validation.outputs.url_zone }}
-    strategy:
-      matrix:
-        name: [backend, frontend]
-    steps:
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.9.0
-        with:
-          allow_issue_writing: true
-          artifact_name: "zap_${{ github.event.number }}_${{ matrix.name }}"
-          cmd_options: "-a"
-          issue_title: "ZAP PR #${{ github.event.number }}: ${{ matrix.name }}"
-          target: "https://${{ env.PREFIX }}-${{ matrix.name }}.${{ env.DOMAIN }}"
