@@ -203,6 +203,7 @@ const logoutAndRedirect = () => {
       :id="'phoneNumber_' + id"
       label="Phone number"
       type="tel"
+      :autocomplete="id === 0 ? 'tel' : undefined"
       placeholder="( ) ___-____"
       mask="(###) ###-####"
       v-model="selectedValue.phoneNumber"

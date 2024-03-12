@@ -24,6 +24,7 @@ const props = withDefaults(
     required?: boolean;
     requiredLabel?: boolean;
     type?: TextInputType;
+    autocomplete?: string;
 
     /** Display numeric virtual keyboard. Note: do not use this when type is tel. */
     numeric?: boolean;
@@ -146,6 +147,7 @@ watch([cdsTextInputRef, () => props.numeric], async ([cdsTextInput]) => {
         v-if="enabled"
         ref="cdsTextInputRef"
         :id="id"
+        :autocomplete="autocomplete"
         :required="required"
         :label="label"
         :aria-label="label"

@@ -21,6 +21,7 @@ const props = defineProps<{
   errorMessage?: string;
   required?: boolean;
   requiredLabel?: boolean;
+  autocomplete?: string;
 }>();
 
 //Events we emit during component lifecycle
