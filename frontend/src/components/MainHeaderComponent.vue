@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, watchEffect, getCurrentInstance, watch, nextTick } from "vue";
+import { ref, watchEffect, getCurrentInstance } from "vue";
 import { openMailtoLink, getObfuscatedEmail } from "@/services/ForestClientService";
 
 // Carbon
 import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/ui-shell/index";
-import type { CDSHeaderPanel, CDSHeaderName } from "@carbon/web-components";
+import type { CDSHeaderPanel } from "@carbon/web-components";
 import type CDSHeaderGlobalAction from "@carbon/web-components/es/components/ui-shell/header-global-action";
 
 // Composables
@@ -94,23 +94,7 @@ const onClickLogout = () => {
   }
 }
 
-const adminEmail = "forhvap.cliadmin@gov.bc.ca";
-
-const cdsHeaderNameRef = ref<InstanceType<typeof CDSHeaderName> | null>(null);
-
-watch(cdsHeaderNameRef, async (cdsHeaderName) => {
-  if (cdsHeaderName) {
-    // wait for the DOM updates to complete
-    await nextTick();
-
-    const a = cdsHeaderName.shadowRoot?.querySelector("a");
-    if (a) {
-      // skip the anchor tag since it doesn't lead anywhere.
-      a.tabIndex = -1;
-      a.role = "generic";
-    }
-  }
-});
+const adminEmail = "forhvap.cliadmin@gov.bc.ca"; 
 </script>
 
 <template>
@@ -139,7 +123,7 @@ watch(cdsHeaderNameRef, async (cdsHeaderName) => {
       <logo />
     </a>
     
-    <cds-header-name ref="cdsHeaderNameRef" href="javascript:void 0">
+    <cds-header-name href="javascript:void 0">
       <span class="heading-compact-02" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
       <span class="heading-compact-02" v-else>Client Management System</span>
       <span class="heading-compact-02" v-if="env !== 'Prod' && !isSmallScreen">Env. {{ env }} - Rel. {{appVersion}}</span>
