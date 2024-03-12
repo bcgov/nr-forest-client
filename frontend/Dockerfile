@@ -6,6 +6,7 @@ ARG APP_VERSION=0.0.1
 WORKDIR /app
 COPY . .
 RUN npm ci
+RUN npm version ${APP_VERSION} --no-git-tag-version
 RUN npm run build
 
 
