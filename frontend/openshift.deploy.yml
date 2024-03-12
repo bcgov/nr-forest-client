@@ -213,7 +213,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${FRONTEND_URL}
+      host: ${URL}
       port:
         targetPort: 3000-tcp
       to:

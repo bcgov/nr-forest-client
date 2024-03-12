@@ -167,7 +167,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
-            -p FRONTEND_URL=https://${{ env.URL }}
+            -p FRONTEND_URL=${{ env.URL }}
 
       - name: Dev data replacement
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -346,7 +346,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
-            -p FRONTEND_URL=https://${{ env.URLs }}
+            -p FRONTEND_URL=${{ env.URL }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
