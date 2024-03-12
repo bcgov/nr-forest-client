@@ -13,9 +13,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  vars:
+    name: Set Variables
+    outputs:
+      pr: ${{ steps.pr.outputs.pr }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 1
+    steps:
+      # Get PR number for squash merges to main
+      - name: PR Number
+        id: pr
+        uses: bcgov-nr/action-get-pr@v0.0.1
+
+  images-test:
+    name: Promote images to PROD
+    needs: [vars]
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [backend, common, database, frontend, legacy, processor]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v4
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: ${{ needs.vars.outputs.pr}}
+          tags: test
+
   test-init:
     name: TEST Init
-    needs: [codeql]
+    needs: [images-test]
     env:
       ZONE: test
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -205,7 +232,7 @@ jobs:
             -p URL_ZONE=${{ env.ZONE }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
-  image-promotions:
+  images-prod:
     name: Promote images to PROD
     needs: [test-deploy]
     runs-on: ubuntu-22.04
@@ -222,7 +249,7 @@ jobs:
 
   prod-init:
     name: PROD Init
-    needs: [image-promotions]
+    needs: [images-prod]
     env:
       ZONE: prod
       DOMAIN: apps.silver.devops.gov.bc.ca
