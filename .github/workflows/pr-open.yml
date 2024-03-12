@@ -24,7 +24,8 @@ jobs:
         uses: TriPSs/conventional-changelog-action@v4
         id: semver
         with:
-          git-branch: refs/heads/${{ github.event.repository.default_branch }}
+          github-token: ${{ secrets.github_token }}
+          # git-branch: refs/heads/${{ github.event.repository.default_branch }}
           git-push: "false"
           skip-commit: "true"
           skip-on-empty: "false"
