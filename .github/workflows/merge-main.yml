@@ -234,7 +234,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.ZONE }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
-            -p URL=${{ env.URL }}
+            -p URL=${{ env.FRONTEND_URL }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
@@ -255,7 +255,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ env.ZONE }}
-            -p URL=${{ env.URL }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
   image-promotions:
@@ -407,7 +406,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
-            -p URL=${{ env.URL }}
+            -p URL=${{ env.FRONTEND_URL }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
@@ -428,5 +427,4 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ env.PREV }}
-            -p URL=${{ env.URL }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
