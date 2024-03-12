@@ -15,13 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       semver: ${{ steps.semver.outputs.tag }}
-      url_zone: ${{ steps.calculate.outputs.url_zone }}
+      url: ${{ steps.calculate.outputs.url }}
     steps:
+      # steps.semver.outputs.tag => needs.vars.outputs.semver
       - uses: actions/checkout@v4
         with:
           ref: refs/heads/${{ github.event.repository.default_branch }}
-
-      # steps.semver.outputs.tag => needs.vars.outputs.semver
       - name: Conventional Changelog Update
         uses: TriPSs/conventional-changelog-action@v5.2.1
         id: semver
@@ -32,16 +31,15 @@ jobs:
           skip-on-empty: 'false'
           skip-version-file: 'true'
 
-      - uses: actions/checkout@v4
-
+      # steps.calculate.outputs.url => needs.vars.outputs.url
       - name: Calculate the deployment number
         id: calculate
         run: |
-          echo "url_zone=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
+          echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
 
       - run: |
-          echo "semver=${{ steps.semver.outputs.tag}}"
-          echo "url_zone=${{ steps.calculate.outputs.url_zone}}"
+          echo "semver=${{ steps.semver.outputs.tag }}"
+          echo "url=${{ steps.calculate.outputs.url }}"
 
   builds:
     name: Builds
@@ -71,7 +69,7 @@ jobs:
     environment: dev
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-${{ needs.vars.outputs.url_zone }}
+      PREFIX: ${{ needs.vars.outputs.url }}
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -160,7 +158,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
-            -p URL_ZONE=${{ needs.vars.outputs.url_zone }}
+            -p FRONTEND_URL=${{ needs.vars.outputs.url }}
 
       - name: Dev data replacement
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -184,7 +182,6 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
-            -p URL_ZONE=${{ needs.vars.outputs.url_zone }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -198,7 +195,7 @@ jobs:
             -p ZONE=${{ github.event.number }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
             -p VITE_NODE_ENV=openshift-dev
-            -p URL_ZONE=${{ needs.vars.outputs.url_zone }}
+            -p URL=${{ needs.vars.outputs.url }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
@@ -220,7 +217,6 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }}
             -p PROMOTE=${{ github.repository }}/processor:${{ github.event.number }}
-            -p URL_ZONE=${{ needs.vars.outputs.url_zone }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
   cypress-run:
@@ -229,8 +225,7 @@ jobs:
     needs: [deploy, vars]
     environment: dev
     env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-${{ needs.vars.outputs.url_zone }}
+      URL: ${{ needs.vars.outputs.url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -245,7 +240,7 @@ jobs:
         with:
           working-directory: cypress
         env:
-          CYPRESS_baseUrl: https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+          CYPRESS_baseUrl: https://${{ env.URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish Cypress Results

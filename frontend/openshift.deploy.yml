@@ -47,8 +47,8 @@ parameters:
   - name: LOG_LEVEL
     description: Caddy log level (debug, info, warn, error, panic, fatal)
     value: "info"
-  - name: URL_ZONE
-    description: Zone to use for URL
+  - name: URL
+    description: Frontend URL
     required: true
   - name: GREEN_DOMAIN
     description: Green domain
@@ -100,8 +100,8 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
       config.js: |
-        window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${URL_ZONE}-backend.${DOMAIN}');
-        window.localStorage.setItem('VITE_FRONTEND_URL', 'https://${NAME}-${URL_ZONE}-frontend.${DOMAIN}');
+        window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${ZONE}-backend.${DOMAIN}');
+        window.localStorage.setItem('VITE_FRONTEND_URL', 'https://${URL}');
         window.localStorage.setItem('VITE_NODE_ENV', '${VITE_NODE_ENV}');
         window.localStorage.setItem('VITE_GREEN_DOMAIN', '${GREEN_DOMAIN}');        
         window.localStorage.setItem('VITE_AWS_COGNITO_REGION','${COGNITO_REGION}');
@@ -216,7 +216,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
+      host: ${FRONTEND_URL}
       port:
         targetPort: 3000-tcp
       to:
