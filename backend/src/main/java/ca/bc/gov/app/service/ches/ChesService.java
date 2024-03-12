@@ -226,7 +226,7 @@ public class ChesService {
                     request.emailTo()
                 )
             )
-            .doOnNext(request -> log.info("Sending email using CHES {}", request))
+            .doOnNext(request -> log.info("Sending email using CHES to {} with subject {}", requestContent.emailTo(), subject))
             .flatMap(request ->
                 getToken()
                     .flatMap(token ->
