@@ -166,7 +166,7 @@ jobs:
   cypress-run:
     name: "User flow test"
     runs-on: ubuntu-22.04
-    needs: [deploy, vars]
+    needs: [deploy]
     environment: dev
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
