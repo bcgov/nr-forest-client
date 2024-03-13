@@ -77,6 +77,16 @@ parameters:
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     name: PVC_SIZE
     value: 256Mi
+  - name: IDX_PVC_SIZE
+    description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Database Volume Capacity
+    required: true
+    value: 256Mi
+  - name: IDX_BKP_PVC_SIZE
+    description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Database Backup Volume Capacity
+    required: true
+    value: 256Mi
   - name: CRON_MINUTES
     description: Random number, 0-60, for scheduling cronjobs
     from: "[0-5]{1}[0-9]{1}"
@@ -221,3 +231,29 @@ objects:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
       sessionAffinity: None
       type: ClusterIP
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${ZONE}-index
+      labels:
+        app: ${NAME}-${ZONE}
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${IDX_PVC_SIZE}
+      storageClassName: netapp-file-standard
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${ZONE}-index-backup
+      labels:
+        app: ${NAME}-${ZONE}
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${IDX_BKP_PVC_SIZE}
+      storageClassName: netapp-file-standard

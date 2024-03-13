@@ -97,7 +97,6 @@ jobs:
             -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
-            -p DB_PASSWORD=$(echo ${{github.ref}}${{github.event.number}}|md5sum|cut -d' ' -f1)
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}

@@ -50,16 +50,6 @@ parameters:
   - name: ADDRESS_COMPLETE_KEY
     description: Canada Post API key
     required: true
-  - name: IDX_PVC_SIZE
-    description: Volume space available for data, e.g. 512Mi, 2Gi.
-    displayName: Database Volume Capacity
-    required: true
-    value: 256Mi
-  - name: IDX_BKP_PVC_SIZE
-    description: Volume space available for data, e.g. 512Mi, 2Gi.
-    displayName: Database Backup Volume Capacity
-    required: true
-    value: 256Mi
   - name: COGNITO_REGION
     description: Cognito region information
     required: true
@@ -146,29 +136,3 @@ objects:
             - podSelector: {}
       policyTypes:
         - Ingress
-  - kind: PersistentVolumeClaim
-    apiVersion: v1
-    metadata:
-      name: ${NAME}-${ZONE}-index
-      labels:
-        app: ${NAME}-${ZONE}
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: ${IDX_PVC_SIZE}
-      storageClassName: netapp-file-standard
-  - kind: PersistentVolumeClaim
-    apiVersion: v1
-    metadata:
-      name: ${NAME}-${ZONE}-index-backup
-      labels:
-        app: ${NAME}-${ZONE}
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: ${IDX_BKP_PVC_SIZE}
-      storageClassName: netapp-file-standard
