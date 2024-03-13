@@ -44,12 +44,11 @@ parameters:
   - name: COGNITO_REGION
     description: Cognito region to be used
     required: true
-  - name: COGNITO_COOKIE_DOMAIN
-    description: Cognito cookie domain to be used
-    required: true
-    default: gov.bc.ca
   - name: URL_ZONE
     description: Zone to use for URL
+    required: true
+  - name: FRONTEND_URL
+    description: Frontend URL
     required: true
 objects:
   - kind: ImageStream
@@ -106,7 +105,7 @@ objects:
               name: ${NAME}
               env:
                 - name: FRONTEND_URL
-                  value: https://${NAME}-${URL_ZONE}-frontend.${DOMAIN}
+                  value: https://${FRONTEND_URL}
                 - name: LEGACY_URL
                   value: http://${NAME}-${ZONE}-legacy/api
                 - name: SELF_URI
@@ -175,10 +174,7 @@ objects:
                       name: ${NAME}-${ZONE}
                       key: cognito-environment
                 - name: COGNITO_REGION
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: cognito-region
+                  value: ${COGNITO_REGION}
                 - name: PROCESSOR_SERVICE_ACCOUNT_NAME
                   valueFrom:
                       secretKeyRef:

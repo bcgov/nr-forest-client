@@ -77,13 +77,8 @@ jobs:
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
             -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
-            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=TEST
-            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
-            -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
       - name: Conventional Changelog Update
@@ -168,7 +163,6 @@ jobs:
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1/email'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
-            -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
             -p URL_ZONE=${{ env.ZONE }}
 
       - name: Dev data replacement
@@ -214,8 +208,8 @@ jobs:
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=TEST
-            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
-            -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
+            -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
+            -p FRONTEND_URL='https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}' # change for vanity url later
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -282,13 +276,8 @@ jobs:
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
             -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
-            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=PROD
-            -p COGNITO_REDIRECT_URI=https://forestclient.nrs.gov.bc.ca/dashboard
-            -p COGNITO_LOGOUT_URI='https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
   prod-deploy:
@@ -351,7 +340,6 @@ jobs:
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1/email'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
-            -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
             -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Legacy
@@ -387,8 +375,8 @@ jobs:
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=PROD
-            -p COGNITO_REDIRECT_URI=https://forestclient.nrs.gov.bc.ca/dashboard
-            -p COGNITO_LOGOUT_URI='https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
+            -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
+            -p FRONTEND_URL='https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}' # change for vanity url later
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
