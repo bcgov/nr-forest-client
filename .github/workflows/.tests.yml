@@ -136,14 +136,3 @@ jobs:
           summary: Pull Request Tests for Backend
           detailed_summary: true
           job_name: Backend Tests
-
-      - name: Add coverage to PR
-        id: jacoco
-        continue-on-error: true
-        if: github.event_name == 'pull_request'
-        uses: madrapps/jacoco-report@v1.6
-        with:
-          paths: (backend|legacy|processor)/target/coverage-reports/merged-test-report/jacoco.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 75
-          min-coverage-changed-files: 75
