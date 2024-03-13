@@ -111,7 +111,8 @@ jobs:
     name: TEST Deployment
     needs: [test-init]
     env:
-      URL: forestclient-tst.nrs.gov.bc.ca
+      # URL: forestclient-tst.nrs.gov.bc.ca
+      URL: nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca
       ZONE: test
     environment: test
     runs-on: ubuntu-22.04
@@ -246,7 +247,8 @@ jobs:
     name: PROD Init
     needs: [images-prod]
     env:
-      URL: forestclient.nrs.gov.bc.ca
+      # URL: forestclient.nrs.gov.bc.ca
+      URL: nr-forest-client-prod-frontend.apps.silver.devops.gov.bc.ca
       ZONE: prod
     environment: prod
     runs-on: ubuntu-22.04
