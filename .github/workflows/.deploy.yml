@@ -24,7 +24,7 @@ on:
         default: 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ github.event.repository.name }}-${{ inputs.url_zone }}-frontend.apps.silver.devops.gov.bc.ca'
         required: false
         type: string
-      target_from:
+      target:
         description: PR number, test or prod
         default: ${{ github.event.number }}
         required: false
