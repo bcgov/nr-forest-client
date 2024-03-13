@@ -41,31 +41,32 @@ jobs:
           echo "semver=${{ steps.semver.outputs.tag }}"
           echo "url=${{ steps.calculate.outputs.url }}"
 
-  builds:
-    name: Builds
-    runs-on: ubuntu-22.04
-    needs: [vars]
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        package: [backend, common, database, frontend, legacy, processor]
-    steps:
-      - uses: actions/checkout@v4
+  # builds:
+  #   name: Builds
+  #   runs-on: ubuntu-22.04
+  #   needs: [vars]
+  #   permissions:
+  #     packages: write
+  #   strategy:
+  #     matrix:
+  #       package: [backend, common, database, frontend, legacy, processor]
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - uses: bcgov-nr/action-builder-ghcr@v2.0.2
-        name: Build (${{ matrix.package }})
-        with:
-          package: ${{ matrix.package }}
-          tag: ${{ github.event.number }}
-          tag_fallback: test
-          triggers: ('${{ matrix.package }}/')
-          build_args: |
-            APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
+  #     - uses: bcgov-nr/action-builder-ghcr@v2.0.2
+  #       name: Build (${{ matrix.package }})
+  #       with:
+  #         package: ${{ matrix.package }}
+  #         tag: ${{ github.event.number }}
+  #         tag_fallback: test
+  #         triggers: ('${{ matrix.package }}/')
+  #         build_args: |
+  #           APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
 
   deploy:
     name: Deploy Application
-    needs: [builds, vars]
+    # needs: [builds, vars]
+    needs: [vars]
     environment: dev
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -82,6 +83,28 @@ jobs:
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: true
+          parameters:
+            -p ZONE=${{ github.event.number }}
+            -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
+
+      - name: Backup database before update
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+
+          # Run a backup before deploying a new version
+          oc create job --from=cronjob/${{ github.event.repository.name }}-${{ github.event.number }}-database-backup \
+            ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup-$(date +%Y%m%d%H%M%S)
+
+      - name: Deploy Database
+        uses: bcgov-nr/action-deployer-openshift@v2.1.0
+        with:
+          file: database/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
           parameters:
             -p ZONE=${{ github.event.number }}
             -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
@@ -105,28 +128,6 @@ jobs:
             -p COGNITO_ENVIRONMENT=DEV
             -p COGNITO_REDIRECT_URI=https://${{ github.event.repository.name }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca/dashboard
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
-
-      - name: Backup database before update
-        continue-on-error: true
-        run: |
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
-
-          # Run a backup before deploying a new version
-          oc create job --from=cronjob/${{ github.event.repository.name }}-${{ github.event.number }}-database-backup \
-            ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup-$(date +%Y%m%d%H%M%S)
-
-      - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: database/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          parameters:
-            -p ZONE=${{ github.event.number }}
-            -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
 
       - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
