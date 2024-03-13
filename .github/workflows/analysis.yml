@@ -75,7 +75,7 @@ jobs:
 
   results:
     name: Analysis Results
-    needs: [tests-java, tests-frontend, codeql, trivy]
+    needs: [tests, codeql, trivy]
     runs-on: ubuntu-22.04
     steps:
       - run: echo "Workflow completed successfully!"
