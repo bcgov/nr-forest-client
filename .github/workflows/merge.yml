@@ -164,7 +164,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p URL_ZONE=${{ env.ZONE }}
-            -p FRONTEND_URL='https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}' # change for vanity url later
+            -p FRONTEND_URL='${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}' # change for vanity url later
 
       - name: Dev data replacement
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -210,7 +210,7 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=TEST
             -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
-            -p FRONTEND_URL='https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}' # change for vanity url later
+            -p FRONTEND_URL='${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}' # change for vanity url later
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -342,7 +342,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p URL_ZONE=${{ env.ZONE }}
-            -p FRONTEND_URL='https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}' # change for vanity url later
+            -p FRONTEND_URL='${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}' # change for vanity url later
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -378,7 +378,7 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=PROD
             -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
-            -p FRONTEND_URL='https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}' # change for vanity url later
+            -p FRONTEND_URL='${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}' # change for vanity url later
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
