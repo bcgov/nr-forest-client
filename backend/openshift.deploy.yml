@@ -44,9 +44,6 @@ parameters:
   - name: COGNITO_REGION
     description: Cognito region to be used
     required: true
-  - name: URL_ZONE
-    description: Zone to use for URL
-    required: true
   - name: FRONTEND_URL
     description: Frontend URL
     required: true
@@ -109,7 +106,7 @@ objects:
                 - name: LEGACY_URL
                   value: http://${NAME}-${ZONE}-legacy/api
                 - name: SELF_URI
-                  value: https://${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
+                  value: https://${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
                 - name: CHES_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
@@ -234,7 +231,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
+      host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
         targetPort: 8080-tcp
       to:
