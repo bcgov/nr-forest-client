@@ -110,7 +110,7 @@ objects:
                 - name: LEGACY_URL
                   value: http://${NAME}-${ZONE}-legacy/api
                 - name: SELF_URI
-                  value: https://${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
+                  value: https://${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
                 - name: CHES_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
