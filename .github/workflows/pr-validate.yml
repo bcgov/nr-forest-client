@@ -13,11 +13,11 @@ jobs:
     name: Variables
     runs-on: ubuntu-22.04
     outputs:
-      url_zone: ${{ steps.calculate.outputs.url_zone }}
+      url: ${{ steps.calculate.outputs.url }}
     steps:
       - name: Calculate the deployment number
         id: calculate
-        run: echo "url_zone=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
+        run: echo "url=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
 
   validate:
     name: Validate PR
@@ -25,7 +25,7 @@ jobs:
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@v0.4.0
     with:
       markdown_links: |
-        Any successful deployments (not always required) will be available [here](https://${{ github.event.repository.name }}-${{ needs.vars.outputs.url_zone }}-frontend.apps.silver.devops.gov.bc.ca/)
+        Any successful deployments (not always required) will be available [here](https://${{ github.event.repository.name }}-${{ needs.vars.outputs.url }}-frontend.apps.silver.devops.gov.bc.ca/)
 
   changelog:
     name: Pull Request Validation

@@ -32,9 +32,6 @@ parameters:
     value: 300Mi
   - name: MEMORY_LIMIT
     value: 400Mi
-  - name: URL_ZONE
-    description: Zone to use for URL
-    required: true
   - name: BCREGISTRY_URI
     description: Bc Registry API address
     required: true
