@@ -4,19 +4,19 @@ on:
   workflow_call:
     inputs:
       ### Required
-      target:
-        description: PR number, test or prod
-        required: target
+      environment:
+        description: Environment name; omit for PRs
+        required: true
         type: string
-        default: ${{ github.event.number }}
       url_zone:
         description: URL zone
         required: true
         type: string
 
       ### Typical / recommended
-      environment:
-        description: Environment name; omit for PRs
+      target:
+        description: PR number, test or prod
+        default: ${{ github.event.number }}
         required: false
         type: string
 
