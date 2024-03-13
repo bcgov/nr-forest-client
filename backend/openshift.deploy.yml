@@ -238,7 +238,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${FRONTEND_URL}
+      host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
         targetPort: 8080-tcp
       to:
