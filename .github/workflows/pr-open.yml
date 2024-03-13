@@ -70,6 +70,5 @@ jobs:
     uses: ./.github/workflows/.deploy.yml
     with:
       environment: dev
-      target_from: ${{ github.event.number }}
-      target_to: ${{ github.event.number }}
+      target: ${{ github.event.number }}
       url_zone: ${{ needs.vars.outputs.url_zone }}
