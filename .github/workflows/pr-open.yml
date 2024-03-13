@@ -69,7 +69,6 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
-      cognito_redirect_uri: 'https://${{ github.event.repository.name }}-${{ needs.vars.outputs.semver }}-frontend.apps.silver.devops.gov.bc.ca/dashboard'
       environment: dev
       target: ${{ github.event.number }}
-      url_zone: ${{ needs.vars.outputs.url_zone }}
+      url: ${{ needs.vars.outputs.url }}

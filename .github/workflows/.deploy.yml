@@ -8,8 +8,8 @@ on:
         description: Environment name; omit for PRs
         required: true
         type: string
-      url_zone:
-        description: URL zone
+      url:
+        description: Frontend URL
         required: true
         type: string
 
@@ -21,12 +21,7 @@ on:
         type: string
       cognito_logout_uri:
         description: Cognito logout URI
-        default: 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ github.event.repository.name }}-${{ inputs.url_zone }}-frontend.apps.silver.devops.gov.bc.ca'
-        required: false
-        type: string
-      cognito_redirect_uri:
-        description: Cognito redirect URI
-        default: 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ github.event.repository.name }}-${{ inputs.url_zone }}-frontend.apps.silver.devops.gov.bc.ca'
+        default: 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ inputs.url }}'
         required: false
         type: string
       target:
@@ -91,7 +86,7 @@ jobs:
             -p COGNITO_DOMAIN='${{ secrets.COGNITO_DOMAIN }}'
             -p COGNITO_ENVIRONMENT='${{ inputs.cognito_environment }}'
             -p COGNITO_LOGOUT_URI='${{ inputs.cognito_logout_uri }}'
-            -p COGNITO_REDIRECT_URI='${{ inputs.cognito_redirect_uri }}'
+            -p COGNITO_REDIRECT_URI='${{ inputs.url }}/dashboard'
             -p COGNITO_USER_POOL='${{ secrets.COGNITO_USER_POOL }}'
             -p DB_PASSWORD='${{ secrets.DB_PASSWORD || github.event.number }}'
             -p ORACLEDB_DATABASE='${{ secrets.ORACLEDB_DATABASE }}'
