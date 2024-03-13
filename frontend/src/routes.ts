@@ -14,12 +14,14 @@ import UserLoadingPage from "@/pages/UserLoadingPage.vue";
 import LandingPage from "@/pages/LandingPage.vue";
 import ErrorPage from "@/pages/ErrorPage.vue";
 import NotFoundPage from "@/pages/NotFoundPage.vue";
+import LogoutPage from "@/pages/LogoutPage.vue";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
 import { nodeEnv } from "@/CoreConstants";
 
 const CONFIRMATION_ROUTE_NAME = "confirmation";
 const targetPathStorage = useLocalStorage("targetPath", "");
+const userProviderInfo = useLocalStorage("userProviderInfo", "");
 
 const routes = [
   {
@@ -207,6 +209,23 @@ const routes = [
     profile: false,
   },
   {
+    path: "/logout",
+    name: "logout",
+    component: LogoutPage,
+    props: true,
+    meta: {
+      format: "full",
+      hideHeader: true,
+      requireAuth: false,
+      showLoggedIn: false,
+      visibleTo: [],
+    },
+    style: "content",
+    headersStyle: "headers",
+    sideMenu: false,
+    profile: false,
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "not-found",
     component: NotFoundPage,
@@ -258,6 +277,10 @@ router.beforeEach(async (to, from, next) => {
     if (to.meta.requireAuth) {
       // User is logged in
       if (user) {
+
+        // Save user provider info for logout
+        userProviderInfo.value = user.provider;
+
         // If user can see this page, continue, otherwise go to specific page or error
         if (to.meta.visibleTo.includes(user.provider)) {
           // If there is a target path, redirect to it and clear the storage

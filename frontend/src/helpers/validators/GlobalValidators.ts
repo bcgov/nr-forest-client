@@ -529,26 +529,10 @@ const evaluateCondition = (item: any, condition: string): boolean => {
   if (condition === 'true') {
       return true;
   }
-
-  if(condition === 'location.addresses[0].country.value === "US"'){
-  console.log("condition: ", condition)
-  console.log("item: ", item)
-  }
-
+  
   const conditionParsed = parseAggregatorCondition(condition);
   const condition1 = evaluateEntry(item, parseEqualityCondition(conditionParsed.value1));
-  const condition2 = evaluateEntry(item, parseEqualityCondition(conditionParsed.value2));
-
-  if(condition === 'location.addresses[0].country.value === "US"')
- { 
-  console.log("conditionParsed: ", conditionParsed)
-  console.log("condition1: ", condition1)
-  console.log("condition2: ", condition2)
-  console.log("evaluateLogicalCondition: ", evaluateLogicalCondition({ value1: `${condition1}`, operator: conditionParsed.operator, value2: `${condition2}`}))
-}
-
-
-
+  const condition2 = evaluateEntry(item, parseEqualityCondition(conditionParsed.value2));  
   return evaluateLogicalCondition({ value1: `${condition1}`, operator: conditionParsed.operator, value2: `${condition2}`});
 }
 
