@@ -37,9 +37,6 @@ parameters:
   - name: CERT_PVC_SIZE
     description: The amount of storage the cert PVC should have
     value: 25Mi
-  - name: URL_ZONE
-    description: Zone to use for URL
-    required: true
 objects:  
   - apiVersion: v1
     kind: ImageStream
