@@ -42,8 +42,9 @@ parameters:
     description: Bc Registry API address
     required: true
   - name: COGNITO_REGION
-    description: Cognito region to be used
-    required: true
+    description: Cognito region information
+    required: false
+    value: ca-central-1
   - name: COGNITO_COOKIE_DOMAIN
     description: Cognito cookie domain to be used
     required: true

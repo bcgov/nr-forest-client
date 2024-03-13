@@ -39,7 +39,7 @@ jobs:
           VITE_NODE_ENV: test
           VITE_COVERAGE: true
           VITE_PORT: 3000
-          VITE_AWS_COGNITO_REGION: ${{ secrets.COGNITO_REGION }}
+          VITE_AWS_COGNITO_REGION: ca-central-1
           VITE_AWS_COGNITO_POOL_ID: ${{ secrets.COGNITO_USER_POOL }}
           VITE_AWS_COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
           VITE_AWS_COGNITO_DOMAIN: ${{ secrets.COGNITO_DOMAIN }}
