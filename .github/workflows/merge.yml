@@ -45,7 +45,8 @@ jobs:
     needs: [images-test]
     env:
       ZONE: test
-      URL: forestclient-tst.nrs.gov.bc.ca
+      # URL: forestclient-tst.nrs.gov.bc.ca
+      URL: nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca
       BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
       VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
     environment: test
@@ -292,8 +293,9 @@ jobs:
     env:
       PREV: test
       ZONE: prod
-      URL: forestclient.nrs.gov.bc.ca
-    environment: prod
+      # URL: forestclient.nrs.gov.bc.ca
+      URL: nr-forest-client-prod-frontend.apps.silver.devops.gov.bc.ca
+      environment: prod
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
