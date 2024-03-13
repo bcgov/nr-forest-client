@@ -153,7 +153,7 @@ objects:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: FRONTEND_URL
-                  value: https://${NAME}-${URL_ZONE}-frontend.${DOMAIN}
+                  value: https://${URL}
                 - name: COGNITO_REGION
                   value: ${COGNITO_REGION}
                 - name: COGNITO_DOMAIN

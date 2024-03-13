@@ -113,7 +113,7 @@ jobs:
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1/email'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
-            -p URL_ZONE=${{ inputs.url_zone }}
+            -p URL=${{ inputs.url }}
 
       - name: Dev data replacement
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -137,7 +137,7 @@ jobs:
           parameters:
             -p ZONE=${{ inputs.target }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ inputs.target }}
-            -p URL_ZONE=${{ inputs.url_zone }}
+            -p URL=${{ inputs.url }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -151,7 +151,7 @@ jobs:
             -p ZONE=${{ inputs.target }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ inputs.target }}
             -p VITE_NODE_ENV=${{ inputs.vite_node_env }}
-            -p URL_ZONE=${{ inputs.url_zone }}
+            -p URL=${{ inputs.url }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
@@ -172,7 +172,7 @@ jobs:
           parameters:
             -p ZONE=${{ inputs.target }}
             -p PROMOTE=${{ github.repository }}/processor:${{ inputs.target }}
-            -p URL_ZONE=${{ inputs.url_zone }}
+            -p URL=${{ inputs.url }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
   cypress-run:
@@ -182,7 +182,7 @@ jobs:
     environment: dev
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-${{ inputs.url_zone }}
+      PREFIX: ${{ inputs.url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -197,7 +197,7 @@ jobs:
         with:
           working-directory: cypress
         env:
-          CYPRESS_baseUrl: https://${{ github.event.repository.name }}-${{ inputs.url_zone }}-frontend.apps.silver.devops.gov.bc.ca
+          CYPRESS_baseUrl: https://${{ inputs.url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish Cypress Results
