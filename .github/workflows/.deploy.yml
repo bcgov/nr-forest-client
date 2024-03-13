@@ -101,7 +101,7 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=${{ inputs.cognito_environment }}
             -p COGNITO_LOGOUT_URI=${{ inputs.cognito_logout_uri }}
-            -p COGNITO_REDIRECT_URI=${{ inputs.cognito_redirect_uri }}
+            -p COGNITO_REDIRECT_URI='${{ inputs.cognito_redirect_uri }}'
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
 
