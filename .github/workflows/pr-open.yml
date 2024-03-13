@@ -69,6 +69,7 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
+      cognito_redirect_uri: 'https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard'
       environment: dev
       target: ${{ github.event.number }}
       url_zone: ${{ needs.vars.outputs.url_zone }}
