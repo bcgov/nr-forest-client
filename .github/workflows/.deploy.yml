@@ -14,9 +14,24 @@ on:
         type: string
 
       ### Typical / recommended
-      target:
+      cognito_environment:
+        description: Cognito environment
+        default: DEV
+        required: false
+        type: string
+      cognito_logout_uri:
+        description: Cognito logout URI
+        default: 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ github.event.repository.name }}-${{ inputs.url_zone }}-frontend.apps.silver.devops.gov.bc.ca'
+        required: false
+        type: string
+      target_from:
         description: PR number, test or prod
         default: ${{ github.event.number }}
+        required: false
+        type: string
+      vite_node_env:
+        description: Vite node environment
+        default: openshift-dev
         required: false
         type: string
 
@@ -61,6 +76,7 @@ jobs:
           parameters:
             -p ZONE=${{ inputs.target }}
             -p PROMOTE=${{ github.repository }}/database:${{ inputs.target }}
+            -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
@@ -78,10 +94,10 @@ jobs:
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
-            -p COGNITO_ENVIRONMENT=DEV
-            -p COGNITO_REDIRECT_URI=https://${{ github.event.repository.name }}-${{ inputs.url_zone }}-frontend.apps.silver.devops.gov.bc.ca/dashboard
-            -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ github.event.repository.name }}-${{ inputs.url_zone }}-frontend.apps.silver.devops.gov.bc.ca'
+            -p COGNITO_ENVIRONMENT=${{ inputs.cognito_environment }}
+            -p COGNITO_LOGOUT_URI=${{ inputs.cognito_logout_uri }}
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
+
 
       - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -98,8 +114,6 @@ jobs:
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1/email'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
-            -p COGNITO_REGION=ca-central-1
-            -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
             -p URL_ZONE=${{ inputs.url_zone }}
 
       - name: Dev data replacement
@@ -137,16 +151,16 @@ jobs:
           parameters:
             -p ZONE=${{ inputs.target }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ inputs.target }}
-            -p VITE_NODE_ENV=openshift-dev
+            -p VITE_NODE_ENV=${{ inputs.vite_node_env }}
             -p URL_ZONE=${{ inputs.url_zone }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
-            -p COGNITO_ENVIRONMENT=DEV
-            -p COGNITO_REDIRECT_URI=https://${{ github.event.repository.name }}-${{ inputs.url_zone }}-frontend.apps.silver.devops.gov.bc.ca/dashboard
-            -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ github.event.repository.name }}-${{ inputs.url_zone }}-frontend.apps.silver.devops.gov.bc.ca'
+            -p COGNITO_ENVIRONMENT=${{ inputs.cognito_environment }}
+            -p COGNITO_REDIRECT_URI=${{ inputs.cognito_logout_uri }}
+            -p COGNITO_LOGOUT_URI==${{ inputs.cognito_logout_uri }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v2.1.0

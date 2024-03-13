@@ -42,7 +42,6 @@ jobs:
 
   release:
     name: TEST Init
-<<<<<<< HEAD
     needs: [images-test]
     env:
       ZONE: test
@@ -50,13 +49,10 @@ jobs:
       URL: nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca
       BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
       VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
-=======
->>>>>>> 7c88de3 (Remove init from main merge)
     environment: test
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-<<<<<<< HEAD
       - name: Deploys
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
@@ -88,8 +84,6 @@ jobs:
             -p COGNITO_ENVIRONMENT=TEST
             -p COGNITO_REDIRECT_URI=https://${{ env.URL }}/dashboard
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
-=======
->>>>>>> 7c88de3 (Remove init from main merge)
 
       - name: Conventional Changelog Update
         uses: TriPSs/conventional-changelog-action@v5
@@ -242,10 +236,6 @@ jobs:
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=TEST
-<<<<<<< HEAD
-=======
-            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.apps.silver.devops.gov.bc.ca/dashboard
->>>>>>> 7c88de3 (Remove init from main merge)
             -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
 
       - name: Deploy Processor
@@ -277,7 +267,6 @@ jobs:
           target: test
           tags: prod
 
-<<<<<<< HEAD
   prod-init:
     name: PROD Init
     needs: [images-prod]
@@ -322,21 +311,14 @@ jobs:
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
   prod-deploy:
-=======
-\  prod-deploy:
->>>>>>> 7c88de3 (Remove init from main merge)
     name: PROD Deployment
     needs: [images-prod]
     env:
       PREV: test
       ZONE: prod
-<<<<<<< HEAD
       # URL: forestclient.nrs.gov.bc.ca
       URL: nr-forest-client-prod-frontend.apps.silver.devops.gov.bc.ca
       environment: prod
-=======
-    environment: prod
->>>>>>> 7c88de3 (Remove init from main merge)
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4

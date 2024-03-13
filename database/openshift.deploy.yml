@@ -139,7 +139,8 @@ parameters:
     required: true
   - name: COGNITO_REGION
     description: Cognito region information
-    required: true
+    required: false
+    value: ca-central-1
   - name: COGNITO_CLIENT_ID
     description: Cognito client id
     required: true
