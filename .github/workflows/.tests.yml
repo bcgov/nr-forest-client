@@ -1,4 +1,4 @@
-name: Reusable Unit Tests and Analysis
+name: Tests
 
 on:
   workflow_call:
@@ -45,7 +45,7 @@ jobs:
           path: frontend/cypress/screenshots
           retention-days: 7
 
-  tests-java:
+  tests-backend:
     name: Backend Tests
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
@@ -68,6 +68,11 @@ jobs:
           sonar_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
           triggers: ('backend/')
 
+  tests-legacy:
+    name: Legacy Tests
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: ubuntu-22.04
+    steps:
       - uses: bcgov-nr/action-test-and-analyse-java@v1.0.1
         name: Legacy Coverage
         with:
