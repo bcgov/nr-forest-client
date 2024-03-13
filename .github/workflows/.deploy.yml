@@ -81,29 +81,28 @@ jobs:
           parameters:
             -p ZONE=${{ inputs.target }}
             -p PROMOTE=${{ github.repository }}/database:${{ inputs.target }}
-            -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
-            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
-            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
-            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
-            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
-            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
-            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
-            -p BCREGISTRY_KEY=${{ secrets.BCREGISTRY_KEY }}
-            -p BCREGISTRY_ACCOUNT=${{ secrets.BCREGISTRY_ACCOUNT }}
-            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
-            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
-            -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
-            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
-            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
-            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
-            -p COGNITO_ENVIRONMENT=${{ inputs.cognito_environment }}
-            -p COGNITO_LOGOUT_URI=${{ inputs.cognito_logout_uri }}
+            -p ADDRESS_COMPLETE_KEY='${{ secrets.ADDRESS_COMPLETE_KEY }}'
+            -p BCREGISTRY_ACCOUNT='${{ secrets.BCREGISTRY_ACCOUNT }}'
+            -p BCREGISTRY_KEY='${{ secrets.BCREGISTRY_KEY }}'
+            -p CHES_CLIENT_ID='${{ secrets.CHES_CLIENT_ID }}'
+            -p CHES_CLIENT_SECRET='${{ secrets.CHES_CLIENT_SECRET }}'
+            -p CHES_MAIL_COPY='${{ secrets.CHES_MAIL_COPY }}'
+            -p COGNITO_CLIENT_ID='${{ secrets.COGNITO_CLIENT_ID }}'
+            -p COGNITO_DOMAIN='${{ secrets.COGNITO_DOMAIN }}'
+            -p COGNITO_ENVIRONMENT='${{ inputs.cognito_environment }}'
+            -p COGNITO_LOGOUT_URI='${{ inputs.cognito_logout_uri }}'
             -p COGNITO_REDIRECT_URI='${{ inputs.cognito_redirect_uri }}'
-            -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
-
+            -p COGNITO_REGION='${{ secrets.COGNITO_REGION }}'
+            -p COGNITO_USER_POOL='${{ secrets.COGNITO_USER_POOL }}'
+            -p DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
+            -p ORACLEDB_DATABASE='${{ secrets.ORACLEDB_DATABASE }}'
+            -p ORACLEDB_HOST='${{ secrets.ORACLEDB_HOST }}'
+            -p ORACLEDB_PASSWORD='${{ secrets.ORACLEDB_PASSWORD }}'
+            -p ORACLEDB_PASSWORD_W='${{ secrets.ORACLEDB_PASSWORD_W }}'
+            -p ORACLEDB_SERVICENAME='${{ secrets.ORACLEDB_SERVICENAME }}'
+            -p ORACLEDB_SECRET='${{ secrets.ORACLEDB_SECRET }}'
+            -p ORACLEDB_USER='${{ secrets.ORACLEDB_USERNAME }}'
+            -p ORACLEDB_USER_W='${{ secrets.ORACLEDB_USERNAME_W }}'
 
       - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
