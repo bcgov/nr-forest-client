@@ -37,11 +37,12 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.component }}
-          target: ${{ needs.vars.outputs.pr}}
+          target: ${{ needs.vars.outputs.pr }}
           tags: test
 
-  test-init:
+  release:
     name: TEST Init
+<<<<<<< HEAD
     needs: [images-test]
     env:
       ZONE: test
@@ -49,10 +50,13 @@ jobs:
       URL: nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca
       BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
       VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
+=======
+>>>>>>> 7c88de3 (Remove init from main merge)
     environment: test
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+<<<<<<< HEAD
       - name: Deploys
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
@@ -84,6 +88,8 @@ jobs:
             -p COGNITO_ENVIRONMENT=TEST
             -p COGNITO_REDIRECT_URI=https://${{ env.URL }}/dashboard
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
+=======
+>>>>>>> 7c88de3 (Remove init from main merge)
 
       - name: Conventional Changelog Update
         uses: TriPSs/conventional-changelog-action@v5
@@ -110,7 +116,7 @@ jobs:
 
   test-deploy:
     name: TEST Deployment
-    needs: [test-init]
+    needs: [images-test]
     env:
       # URL: forestclient-tst.nrs.gov.bc.ca
       URL: nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca
@@ -138,7 +144,8 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
           # Run a backup before deploying a new version
-          oc create job --from=cronjob/${{ github.event.repository.name }}-${{ env.ZONE }}-database-backup ${{ github.event.repository.name }}-${{ env.ZONE }}-database-backup-$(date +%Y%m%d%H%M%S)
+          oc create job --from=cronjob/${{ github.event.repository.name }}-${{ env.ZONE }}-database-backup \
+            ${{ github.event.repository.name }}-${{ env.ZONE }}-database-backup-$(date +%Y%m%d%H%M%S)
 
       - name: Deploy Database
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -151,6 +158,28 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
+            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
+            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
+            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
+            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
+            -p BCREGISTRY_KEY='${{ secrets.BCREGISTRY_KEY }}'
+            -p BCREGISTRY_ACCOUNT='${{ secrets.BCREGISTRY_ACCOUNT }}'
+            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
+            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
+            -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
+            -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
+            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
+            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
+            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
+            -p COGNITO_ENVIRONMENT=TEST
+            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.apps.silver.devops.gov.bc.ca/dashboard
+            -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
+            -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
       - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -213,6 +242,10 @@ jobs:
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=TEST
+<<<<<<< HEAD
+=======
+            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.apps.silver.devops.gov.bc.ca/dashboard
+>>>>>>> 7c88de3 (Remove init from main merge)
             -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
 
       - name: Deploy Processor
@@ -244,6 +277,7 @@ jobs:
           target: test
           tags: prod
 
+<<<<<<< HEAD
   prod-init:
     name: PROD Init
     needs: [images-prod]
@@ -288,14 +322,21 @@ jobs:
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
   prod-deploy:
+=======
+\  prod-deploy:
+>>>>>>> 7c88de3 (Remove init from main merge)
     name: PROD Deployment
-    needs: [prod-init]
+    needs: [images-prod]
     env:
       PREV: test
       ZONE: prod
+<<<<<<< HEAD
       # URL: forestclient.nrs.gov.bc.ca
       URL: nr-forest-client-prod-frontend.apps.silver.devops.gov.bc.ca
       environment: prod
+=======
+    environment: prod
+>>>>>>> 7c88de3 (Remove init from main merge)
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -332,6 +373,28 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
+            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
+            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
+            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
+            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
+            -p BCREGISTRY_KEY='${{ secrets.BCREGISTRY_KEY }}'
+            -p BCREGISTRY_ACCOUNT='${{ secrets.BCREGISTRY_ACCOUNT }}'
+            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
+            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
+            -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
+            -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
+            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
+            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
+            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
+            -p COGNITO_ENVIRONMENT=PROD
+            -p COGNITO_REDIRECT_URI=https://forestclient.nrs.gov.bc.ca/dashboard
+            -p COGNITO_LOGOUT_URI='https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
+            -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
       - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
