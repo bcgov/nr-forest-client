@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useLocalStorage } from "@vueuse/core";
-import { checkEnv } from "@/CoreConstants"
+import { checkEnv,frontendUrl } from "@/CoreConstants"
 
 const userProviderInfo = useLocalStorage("userProviderInfo", "");
 
@@ -11,8 +11,15 @@ const userProviderInfo = useLocalStorage("userProviderInfo", "");
  */
 const logout = (userProvider: string) => {
   const redirectUrl = checkEnv(`VITE_LOGOUT_${userProvider}_URL`.toUpperCase());
-  userProviderInfo.value = "";
-  window.location.href = redirectUrl;
+  if(redirectUrl){
+    userProviderInfo.value = "";
+    window.location.href = redirectUrl;
+  }else{
+    
+    userProviderInfo.value = "";
+    window.location.href = frontendUrl;
+  }
+  
 };
 
 logout(userProviderInfo.value)
