@@ -21,6 +21,7 @@ on:
         type: string
 
 jobs:
+  deploy:
     name: Deploy
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-22.04
