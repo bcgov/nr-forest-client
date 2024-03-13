@@ -93,7 +93,7 @@ jobs:
             -p COGNITO_LOGOUT_URI='${{ inputs.cognito_logout_uri }}'
             -p COGNITO_REDIRECT_URI='${{ inputs.cognito_redirect_uri }}'
             -p COGNITO_USER_POOL='${{ secrets.COGNITO_USER_POOL }}'
-            -p DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
+            -p DB_PASSWORD='${{ secrets.DB_PASSWORD || github.event.number }}'
             -p ORACLEDB_DATABASE='${{ secrets.ORACLEDB_DATABASE }}'
             -p ORACLEDB_HOST='${{ secrets.ORACLEDB_HOST }}'
             -p ORACLEDB_PASSWORD='${{ secrets.ORACLEDB_PASSWORD }}'
