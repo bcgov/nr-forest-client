@@ -50,8 +50,6 @@ parameters:
   - name: ADDRESS_COMPLETE_KEY
     description: Canada Post API key
     required: true
-  - name: VITE_KEYCLOAK_CLIENT_ID
-    value: ""
   - name: IDX_PVC_SIZE
     description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Database Volume Capacity
