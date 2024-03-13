@@ -42,8 +42,6 @@ parameters:
     value: ""
   - name: VITE_KEYCLOAK_URL
     value: https://loginproxy.gov.bc.ca/auth
-  - name: VITE_KEYCLOAK_CLIENT_ID
-    value: ""
   - name: LOG_LEVEL
     description: Caddy log level (debug, info, warn, error, panic, fatal)
     value: "info"
@@ -55,7 +53,8 @@ parameters:
     required: true
   - name: COGNITO_REGION
     description: Cognito region information
-    required: true
+    required: false
+    value: ca-central-1
   - name: COGNITO_CLIENT_ID
     description: Cognito client id
     required: true
