@@ -74,16 +74,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Initializing Deployment
+      - name: Deploy Database Backup
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
-          file: common/openshift.init.yml
+          file: database/openshift.backup.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: true
           parameters:
             -p ZONE=${{ github.event.number }}
+            -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
@@ -104,18 +105,6 @@ jobs:
             -p COGNITO_ENVIRONMENT=DEV
             -p COGNITO_REDIRECT_URI=https://${{ github.event.repository.name }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca/dashboard
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
-
-      - name: Deploy Database Backup
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: database/openshift.backup.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          parameters:
-            -p ZONE=${{ github.event.number }}
-            -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
 
       - name: Backup database before update
         continue-on-error: true
