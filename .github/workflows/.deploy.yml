@@ -163,7 +163,7 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=${{ inputs.cognito_environment }}
             -p COGNITO_REDIRECT_URI=${{ inputs.cognito_redirect_uri }}
-            -p COGNITO_LOGOUT_URI==${{ inputs.cognito_logout_uri }}
+            -p COGNITO_LOGOUT_URI=${{ inputs.cognito_logout_uri }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
