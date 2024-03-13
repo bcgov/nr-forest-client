@@ -47,7 +47,7 @@ parameters:
     value: ca-central-1
   - name: COGNITO_COOKIE_DOMAIN
     description: Cognito cookie domain to be used
-    required: true
+    required: false
     default: gov.bc.ca
   - name: FRONTEND_URL
     description: Frontend URL
