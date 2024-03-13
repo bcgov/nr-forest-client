@@ -41,181 +41,37 @@ jobs:
           echo "semver=${{ steps.semver.outputs.tag }}"
           echo "url=${{ steps.calculate.outputs.url }}"
 
-  builds:
-    name: Builds
-    runs-on: ubuntu-22.04
-    needs: [vars]
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        package: [backend, common, database, frontend, legacy, processor]
-    steps:
-      - uses: actions/checkout@v4
+  # builds:
+  #   name: Builds
+  #   runs-on: ubuntu-22.04
+  #   needs: [vars]
+  #   permissions:
+  #     packages: write
+  #   strategy:
+  #     matrix:
+  #       package: [backend, common, database, frontend, legacy, processor]
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - uses: bcgov-nr/action-builder-ghcr@v2.0.2
-        name: Build (${{ matrix.package }})
-        with:
-          package: ${{ matrix.package }}
-          tag: ${{ github.event.number }}
-          tag_fallback: test
-          triggers: ('${{ matrix.package }}/')
-          build_args: |
-            APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
+  #     - uses: bcgov-nr/action-builder-ghcr@v2.0.2
+  #       name: Build (${{ matrix.package }})
+  #       with:
+  #         package: ${{ matrix.package }}
+  #         tag: ${{ github.event.number }}
+  #         tag_fallback: test
+  #         triggers: ('${{ matrix.package }}/')
+  #         build_args: |
+  #           APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
 
   deploy:
-    name: Deploy Application
-    needs: [builds, vars]
-    environment: dev
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ needs.vars.outputs.url }}
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Initializing Deployment
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: common/openshift.init.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          parameters:
-            -p ZONE=${{ github.event.number }}
-            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
-            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
-            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
-            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
-            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
-            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
-            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
-            -p BCREGISTRY_KEY=${{ secrets.BCREGISTRY_KEY }}
-            -p BCREGISTRY_ACCOUNT=${{ secrets.BCREGISTRY_ACCOUNT }}
-            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
-            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
-            -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
-            -p DB_PASSWORD=$(echo ${{github.ref}}${{github.event.number}}|md5sum|cut -d' ' -f1)
-            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
-            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
-            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
-            -p COGNITO_ENVIRONMENT=DEV
-            -p COGNITO_REDIRECT_URI=https://${{ github.event.repository.name }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca/dashboard
-            -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
-
-      - name: Deploy Database Backup
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: database/openshift.backup.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          parameters:
-            -p ZONE=${{ github.event.number }}
-            -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
-
-      - name: Backup database before update
-        continue-on-error: true
-        run: |
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
-
-          # Run a backup before deploying a new version
-          oc create job --from=cronjob/${{ github.event.repository.name }}-${{ github.event.number }}-database-backup \
-            ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup-$(date +%Y%m%d%H%M%S)
-
-      - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: database/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          parameters:
-            -p ZONE=${{ github.event.number }}
-            -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
-
-      - name: Deploy Backend
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: backend/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          verification_path: health
-          parameters:
-            -p ZONE=${{ github.event.number }}
-            -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}
-            -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
-            -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1/email'
-            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
-            -p COGNITO_REGION=ca-central-1
-            -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
-            -p FRONTEND_URL=${{ needs.vars.outputs.url }}
-
-      - name: Dev data replacement
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: database/openshift.dev.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          parameters: -p ZONE=${{ github.event.number }}
-
-      - name: Deploy Legacy
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: legacy/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          verification_path: health
-          parameters:
-            -p ZONE=${{ github.event.number }}
-            -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
-
-      - name: Deploy Frontend
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: frontend/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          parameters:
-            -p ZONE=${{ github.event.number }}
-            -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
-            -p VITE_NODE_ENV=openshift-dev
-            -p URL=${{ needs.vars.outputs.url }}
-            -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
-            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
-            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
-            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
-            -p COGNITO_ENVIRONMENT=DEV
-            -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=https://${{ github.event.repository.name }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca'
-
-      - name: Deploy Processor
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: processor/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          verification_path: health
-          parameters:
-            -p ZONE=${{ github.event.number }}
-            -p PROMOTE=${{ github.repository }}/processor:${{ github.event.number }}
-            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+    name: Deploy
+    needs: [vars]
+    secrets: inherit
+    uses: ./.github/workflows/.deploy.yml
+    with:
+      environment: dev
+      target: ${{ github.event.number }}
+      url: ${{ needs.vars.outputs.url }}
 
   cypress-run:
     name: "User flow test"
