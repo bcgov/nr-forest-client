@@ -43,87 +43,87 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy Database Backup
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: database/openshift.backup.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          parameters:
-            -p ZONE=${{ inputs.target }}
-            -p PROMOTE=${{ github.repository }}/database:${{ inputs.target }}
+      # - name: Deploy Database Backup
+      #   uses: bcgov-nr/action-deployer-openshift@v2.1.0
+      #   with:
+      #     file: database/openshift.backup.yml
+      #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      #     oc_server: ${{ secrets.OC_SERVER }}
+      #     oc_token: ${{ secrets.OC_TOKEN }}
+      #     overwrite: true
+      #     parameters:
+      #       -p ZONE=${{ inputs.target }}
+      #       -p PROMOTE=${{ github.repository }}/database:${{ inputs.target }}
 
-      - name: Backup database before update
-        continue-on-error: true
-        run: |
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+      # - name: Backup database before update
+      #   continue-on-error: true
+      #   run: |
+      #     oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+      #     oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
 
-          # Run a backup before deploying a new version
-          oc create job --from=cronjob/${{ github.event.repository.name }}-${{ inputs.target }}-database-backup \
-            ${{ github.event.repository.name }}-${{ inputs.target }}-database-backup-$(date +%Y%m%d%H%M%S)
+      #     # Run a backup before deploying a new version
+      #     oc create job --from=cronjob/${{ github.event.repository.name }}-${{ inputs.target }}-database-backup \
+      #       ${{ github.event.repository.name }}-${{ inputs.target }}-database-backup-$(date +%Y%m%d%H%M%S)
 
-      - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: database/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          parameters:
-            -p ZONE=${{ inputs.target }}
-            -p PROMOTE=${{ github.repository }}/database:${{ inputs.target }}
-            -p ADDRESS_COMPLETE_KEY='${{ secrets.ADDRESS_COMPLETE_KEY }}'
-            -p BCREGISTRY_ACCOUNT='${{ secrets.BCREGISTRY_ACCOUNT }}'
-            -p BCREGISTRY_KEY='${{ secrets.BCREGISTRY_KEY }}'
-            -p CHES_CLIENT_ID='${{ secrets.CHES_CLIENT_ID }}'
-            -p CHES_CLIENT_SECRET='${{ secrets.CHES_CLIENT_SECRET }}'
-            -p CHES_MAIL_COPY='${{ secrets.CHES_MAIL_COPY }}'
-            -p COGNITO_CLIENT_ID='${{ secrets.COGNITO_CLIENT_ID }}'
-            -p COGNITO_DOMAIN='${{ secrets.COGNITO_DOMAIN }}'
-            -p COGNITO_ENVIRONMENT='${{ inputs.cognito_environment }}'
-            -p COGNITO_LOGOUT_URI='${{ inputs.cognito_logout_uri }}'
-            -p COGNITO_REDIRECT_URI='${{ inputs.url }}/dashboard'
-            -p COGNITO_USER_POOL='${{ secrets.COGNITO_USER_POOL }}'
-            -p DB_PASSWORD='${{ secrets.DB_PASSWORD || github.event.number }}'
-            -p ORACLEDB_DATABASE='${{ secrets.ORACLEDB_DATABASE }}'
-            -p ORACLEDB_HOST='${{ secrets.ORACLEDB_HOST }}'
-            -p ORACLEDB_PASSWORD='${{ secrets.ORACLEDB_PASSWORD }}'
-            -p ORACLEDB_PASSWORD_W='${{ secrets.ORACLEDB_PASSWORD_W }}'
-            -p ORACLEDB_SERVICENAME='${{ secrets.ORACLEDB_SERVICENAME }}'
-            -p ORACLEDB_SECRET='${{ secrets.ORACLEDB_SECRET }}'
-            -p ORACLEDB_USER='${{ secrets.ORACLEDB_USERNAME }}'
-            -p ORACLEDB_USER_W='${{ secrets.ORACLEDB_USERNAME_W }}'
+      # - name: Deploy Database
+      #   uses: bcgov-nr/action-deployer-openshift@v2.1.0
+      #   with:
+      #     file: database/openshift.deploy.yml
+      #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      #     oc_server: ${{ secrets.OC_SERVER }}
+      #     oc_token: ${{ secrets.OC_TOKEN }}
+      #     overwrite: false
+      #     parameters:
+      #       -p ZONE=${{ inputs.target }}
+      #       -p PROMOTE=${{ github.repository }}/database:${{ inputs.target }}
+      #       -p ADDRESS_COMPLETE_KEY='${{ secrets.ADDRESS_COMPLETE_KEY }}'
+      #       -p BCREGISTRY_ACCOUNT='${{ secrets.BCREGISTRY_ACCOUNT }}'
+      #       -p BCREGISTRY_KEY='${{ secrets.BCREGISTRY_KEY }}'
+      #       -p CHES_CLIENT_ID='${{ secrets.CHES_CLIENT_ID }}'
+      #       -p CHES_CLIENT_SECRET='${{ secrets.CHES_CLIENT_SECRET }}'
+      #       -p CHES_MAIL_COPY='${{ secrets.CHES_MAIL_COPY }}'
+      #       -p COGNITO_CLIENT_ID='${{ secrets.COGNITO_CLIENT_ID }}'
+      #       -p COGNITO_DOMAIN='${{ secrets.COGNITO_DOMAIN }}'
+      #       -p COGNITO_ENVIRONMENT='${{ inputs.cognito_environment }}'
+      #       -p COGNITO_LOGOUT_URI='${{ inputs.cognito_logout_uri }}'
+      #       -p COGNITO_REDIRECT_URI='${{ inputs.url }}/dashboard'
+      #       -p COGNITO_USER_POOL='${{ secrets.COGNITO_USER_POOL }}'
+      #       -p DB_PASSWORD='${{ secrets.DB_PASSWORD || github.event.number }}'
+      #       -p ORACLEDB_DATABASE='${{ secrets.ORACLEDB_DATABASE }}'
+      #       -p ORACLEDB_HOST='${{ secrets.ORACLEDB_HOST }}'
+      #       -p ORACLEDB_PASSWORD='${{ secrets.ORACLEDB_PASSWORD }}'
+      #       -p ORACLEDB_PASSWORD_W='${{ secrets.ORACLEDB_PASSWORD_W }}'
+      #       -p ORACLEDB_SERVICENAME='${{ secrets.ORACLEDB_SERVICENAME }}'
+      #       -p ORACLEDB_SECRET='${{ secrets.ORACLEDB_SECRET }}'
+      #       -p ORACLEDB_USER='${{ secrets.ORACLEDB_USERNAME }}'
+      #       -p ORACLEDB_USER_W='${{ secrets.ORACLEDB_USERNAME_W }}'
 
-      - name: Deploy Backend
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: backend/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          verification_path: health
-          parameters:
-            -p ZONE=${{ inputs.target }}
-            -p PROMOTE=${{ github.repository }}/backend:${{ inputs.target }}
-            -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
-            -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1/email'
-            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
-            -p FRONTEND_URL=${{ inputs.url }}
+      # - name: Deploy Backend
+      #   uses: bcgov-nr/action-deployer-openshift@v2.1.0
+      #   with:
+      #     file: backend/openshift.deploy.yml
+      #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      #     oc_server: ${{ secrets.OC_SERVER }}
+      #     oc_token: ${{ secrets.OC_TOKEN }}
+      #     overwrite: true
+      #     verification_path: health
+      #     parameters:
+      #       -p ZONE=${{ inputs.target }}
+      #       -p PROMOTE=${{ github.repository }}/backend:${{ inputs.target }}
+      #       -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
+      #       -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1/email'
+      #       -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+      #       -p FRONTEND_URL=${{ inputs.url }}
 
-      - name: Dev data replacement
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
-        with:
-          file: database/openshift.dev.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          parameters: -p ZONE=${{ inputs.target }}
+      # - name: Dev data replacement
+      #   uses: bcgov-nr/action-deployer-openshift@v2.1.0
+      #   with:
+      #     file: database/openshift.dev.yml
+      #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      #     oc_server: ${{ secrets.OC_SERVER }}
+      #     oc_token: ${{ secrets.OC_TOKEN }}
+      #     overwrite: true
+      #     parameters: -p ZONE=${{ inputs.target }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -137,7 +137,6 @@ jobs:
           parameters:
             -p ZONE=${{ inputs.target }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ inputs.target }}
-            -p URL=${{ inputs.url }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -172,7 +171,6 @@ jobs:
           parameters:
             -p ZONE=${{ inputs.target }}
             -p PROMOTE=${{ github.repository }}/processor:${{ inputs.target }}
-            -p URL=${{ inputs.url }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
   cypress-run:
