@@ -37,7 +37,7 @@ public class SubmissionMatchDetailEntityBeforeConvert
    *
    * @param entity The entity that is about to be saved in the database.
    * @param table The table where the entity will be saved.
-   * @return The entity with the converted matchers field.
+   * @return A publisher that emits an entity with the converted matchers field.
    */
   @Override
   public Publisher<SubmissionMatchDetailEntity> onBeforeConvert(
@@ -53,7 +53,7 @@ public class SubmissionMatchDetailEntityBeforeConvert
    *
    * @param entity The entity that was retrieved from the database.
    * @param table The table where the entity was retrieved from.
-   * @return The entity with the converted matchingField field.
+   * @return A publisher that emits an entity with the converted matchingField field.
    */
   @Override
   public Publisher<SubmissionMatchDetailEntity> onAfterConvert(
