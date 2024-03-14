@@ -52,12 +52,12 @@ class ClientSubmissionMailServiceTest {
     wireMockExtension
         .stubFor(
             post("/ches/email")
-            .withBasicAuth("uat","thisisasupersecret")
-            .willReturn(jsonResponse(
-                    "Transaction ID: " + UUID.randomUUID(),
-                    200
+                .withBasicAuth("uat", "thisisasupersecret")
+                .willReturn(jsonResponse(
+                        "Transaction ID: " + UUID.randomUUID(),
+                        200
+                    )
                 )
-            )
         );
   }
 
@@ -78,7 +78,7 @@ class ClientSubmissionMailServiceTest {
                 .verify(
                     postRequestedFor(urlEqualTo("/ches/email"))
                         .withHeader("Content-Type", containing(MediaType.APPLICATION_JSON_VALUE))
-                        .withBasicAuth(new BasicCredentials("uat","thisisasupersecret"))
+                        .withBasicAuth(new BasicCredentials("uat", "thisisasupersecret"))
                         .withRequestBody(equalToJson(TestConstants.EMAIL_REQUEST_JSON)
                         )
                 )
@@ -103,7 +103,7 @@ class ClientSubmissionMailServiceTest {
                   1,
                   postRequestedFor(urlEqualTo("/ches/email"))
                       .withHeader("Content-Type", containing(MediaType.APPLICATION_JSON_VALUE))
-                      .withBasicAuth(new BasicCredentials("uat","thisisasupersecret"))
+                      .withBasicAuth(new BasicCredentials("uat", "thisisasupersecret"))
                       .withRequestBody(equalToJson(TestConstants.EMAIL_REQUEST_JSON)
                       )
               );

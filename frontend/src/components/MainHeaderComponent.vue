@@ -99,7 +99,7 @@ const adminEmail = "forhvap.cliadmin@gov.bc.ca";
 
 <template>
 
-  <cds-header aria-label="Client Management System">
+  <cds-header aria-label="Forests Client Management System">
 
     <cds-header-menu-button
       v-if="$session?.user?.provider === 'idir'"
@@ -123,9 +123,9 @@ const adminEmail = "forhvap.cliadmin@gov.bc.ca";
       <logo />
     </a>
     
-    <cds-header-name href="javascript:void 0">
+    <cds-header-name @click.prevent>
       <span class="heading-compact-02" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
-      <span class="heading-compact-02" v-else>Client Management System</span>
+      <span class="heading-compact-02" v-else>Forests Client Management System</span>
       <span class="heading-compact-02" v-if="env !== 'Prod' && !isSmallScreen">Env. {{ env }} - Rel. {{appVersion}}</span>
     </cds-header-name>
     

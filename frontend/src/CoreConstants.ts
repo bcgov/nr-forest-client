@@ -28,7 +28,7 @@ export const awsconfig  = {
           domain: `${cognitoDomain}.auth.${cognitoRegion}.amazoncognito.com`,
           scopes: ["openid","profile","email"],
           redirectSignIn: [`${frontendUrl}/dashboard`],
-          redirectSignOut: [`${cognitoLogoutChainUrl}`],
+          redirectSignOut: [`${frontendUrl}/logout`],
           responseType: "code",
         },
         username: 'true'

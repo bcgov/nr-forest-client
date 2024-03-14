@@ -1,9 +1,8 @@
-name: Merge to Main
+name: Merge
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths-ignore:
       - ".github/ISSUE_TEMPLATE/*"
       - "**.md"
@@ -14,70 +13,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests-java:
-    name: Backend Integrated Tests
-    uses: ./.github/workflows/reusable-tests-be.yml
-
-  tests-frontend:
-    name: Frontend Unit Tests
-    uses: ./.github/workflows/reusable-tests-fe.yml
-
-  codeql:
-    name: Semantic Code Analysis
+  vars:
+    name: Set Variables
+    outputs:
+      pr: ${{ steps.pr.outputs.pr }}
     runs-on: ubuntu-22.04
-    needs:
-      - tests-java
-      - tests-frontend
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
+    timeout-minutes: 1
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # Get PR number for squash merges to main
+      - name: PR Number
+        id: pr
+        uses: bcgov-nr/action-get-pr@v0.0.1
 
-      - name: Initialize
-        uses: github/codeql-action/init@v3
+  images-test:
+    name: Promote images to PROD
+    needs: [vars]
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [backend, common, database, frontend, legacy, processor]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v4
         with:
-          languages: javascript,java
-
-      # Autobuild failed for Java, so building manually
-      - name: Set up JDK 17 and Caching maven dependencies
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "17"
-          cache: "maven"
-
-      - name: Build Backend
-        run: |
-          cd backend
-          ./mvnw clean package
-
-      - name: Build Legacy
-        run: |
-          cd legacy
-          ./mvnw clean package
-
-      - name: Build Frontend
-        run: |
-          cd frontend
-          npm ci
-          npm run build
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: ${{ needs.vars.outputs.pr}}
+          tags: test
 
   test-init:
     name: TEST Init
-    needs:
-      - codeql
+    needs: [images-test]
     env:
       ZONE: test
-      DOMAIN: apps.silver.devops.gov.bc.ca
+      # URL: forestclient-tst.nrs.gov.bc.ca
+      URL: nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca
       BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
       VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-test
     environment: test
     runs-on: ubuntu-22.04
     steps:
@@ -106,13 +77,8 @@ jobs:
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
             -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
-            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=TEST
-            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
-            -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
       - name: Conventional Changelog Update
@@ -140,11 +106,11 @@ jobs:
 
   test-deploy:
     name: TEST Deployment
-    needs:
-      - test-init
+    needs: [test-init]
     env:
+      # URL: forestclient-tst.nrs.gov.bc.ca
+      URL: nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca
       ZONE: test
-      DOMAIN: apps.silver.devops.gov.bc.ca
     environment: test
     runs-on: ubuntu-22.04
     steps:
@@ -198,8 +164,7 @@ jobs:
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1/email'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
-            -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
-            -p URL_ZONE=${{ env.ZONE }}
+            -p FRONTEND_URL=${{ env.URL }}
 
       - name: Dev data replacement
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -223,7 +188,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
-            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -238,14 +202,14 @@ jobs:
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.ZONE }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
-            -p URL_ZONE=${{ env.ZONE }}
+            -p URL=${{ env.URL }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=TEST
-            -p COGNITO_REDIRECT_URI=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/dashboard
-            -p COGNITO_LOGOUT_URI='https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
+            -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
+            -p FRONTEND_URL=${{ env.URL }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -259,13 +223,11 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ env.ZONE }}
-            -p URL_ZONE=${{ env.ZONE }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
-  image-promotions:
+  images-prod:
     name: Promote images to PROD
-    needs:
-      - test-deploy
+    needs: [test-deploy]
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -280,12 +242,11 @@ jobs:
 
   prod-init:
     name: PROD Init
-    needs:
-      - image-promotions
+    needs: [images-prod]
     env:
+      # URL: forestclient.nrs.gov.bc.ca
+      URL: nr-forest-client-prod-frontend.apps.silver.devops.gov.bc.ca
       ZONE: prod
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-prod
     environment: prod
     runs-on: ubuntu-22.04
     steps:
@@ -314,24 +275,19 @@ jobs:
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
             -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
-            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=PROD
-            -p COGNITO_REDIRECT_URI=https://forestclient.nrs.gov.bc.ca/dashboard
-            -p COGNITO_LOGOUT_URI='https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
   prod-deploy:
     name: PROD Deployment
-    needs:
-      - prod-init
+    needs: [prod-init]
     env:
       PREV: test
       ZONE: prod
-      DOMAIN: apps.silver.devops.gov.bc.ca
-    environment: prod
+      # URL: forestclient.nrs.gov.bc.ca
+      URL: nr-forest-client-prod-frontend.apps.silver.devops.gov.bc.ca
+      environment: prod
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -352,7 +308,8 @@ jobs:
         continue-on-error: true
         run: |
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+
           # Run a backup before deploying a new version
           oc create job --from=cronjob/${{ github.event.repository.name }}-${{ env.ZONE }}-database-backup ${{ github.event.repository.name }}-${{ env.ZONE }}-database-backup-$(date +%Y%m%d%H%M%S)
 
@@ -384,8 +341,7 @@ jobs:
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1/email'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
-            -p COGNITO_COOKIE_DOMAIN=gov.bc.ca
-            -p URL_ZONE=${{ env.ZONE }}
+            -p FRONTEND_URL=${{ env.URL }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -399,7 +355,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
-            -p URL_ZONE=${{ env.ZONE }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -414,14 +369,14 @@ jobs:
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
-            -p URL_ZONE=${{ env.ZONE }}
+            -p URL=${{ env.URL }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=PROD
-            -p COGNITO_REDIRECT_URI=https://forestclient.nrs.gov.bc.ca/dashboard
-            -p COGNITO_LOGOUT_URI='https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=${{ secrets.COGNITO_LOGOUT_URI }}'
+            -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
+            -p FRONTEND_URL=${{ env.URL }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
@@ -435,5 +390,4 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/processor:${{ env.PREV }}
-            -p URL_ZONE=${{ env.ZONE }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'

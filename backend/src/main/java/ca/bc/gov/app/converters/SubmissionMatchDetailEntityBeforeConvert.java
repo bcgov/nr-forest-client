@@ -17,6 +17,10 @@ import org.springframework.data.relational.core.sql.SqlIdentifier;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+/**
+ * This class is responsible for converting SubmissionMatchDetailEntity before and after it is saved in the database.
+ * It implements BeforeConvertCallback and AfterConvertCallback interfaces.
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -24,8 +28,17 @@ public class SubmissionMatchDetailEntityBeforeConvert
     implements BeforeConvertCallback<SubmissionMatchDetailEntity>,
     AfterConvertCallback<SubmissionMatchDetailEntity> {
 
+  // ObjectMapper provides functionality for reading and writing JSON
   private final ObjectMapper mapper;
 
+  /**
+   * This method is called before the entity is saved in the database.
+   * It converts the matchers field of the entity to a JSON string.
+   *
+   * @param entity The entity that is about to be saved in the database.
+   * @param table The table where the entity will be saved.
+   * @return A publisher that emits an entity with the converted matchers field.
+   */
   @Override
   public Publisher<SubmissionMatchDetailEntity> onBeforeConvert(
       @NonNull SubmissionMatchDetailEntity entity,
@@ -34,6 +47,14 @@ public class SubmissionMatchDetailEntityBeforeConvert
     return Mono.justOrEmpty(entity.withMatchingField(convertTo(entity)));
   }
 
+  /**
+   * This method is called after the entity is retrieved from the database.
+   * It converts the matchingField field of the entity from a JSON string to a Map.
+   *
+   * @param entity The entity that was retrieved from the database.
+   * @param table The table where the entity was retrieved from.
+   * @return A publisher that emits an entity with the converted matchingField field.
+   */
   @Override
   public Publisher<SubmissionMatchDetailEntity> onAfterConvert(
       @NonNull SubmissionMatchDetailEntity entity,
@@ -41,6 +62,12 @@ public class SubmissionMatchDetailEntityBeforeConvert
     return Mono.justOrEmpty(entity.withMatchers(convertFrom(entity)));
   }
 
+  /**
+   * This method converts the matchers field of the entity to a JSON string.
+   *
+   * @param entity The entity whose matchers field will be converted.
+   * @return The JSON string representation of the matchers field.
+   */
   private Json convertTo(SubmissionMatchDetailEntity entity) {
     return Json
         .of(
@@ -59,6 +86,12 @@ public class SubmissionMatchDetailEntityBeforeConvert
 
   }
 
+  /**
+   * This method converts the matchingField field of the entity from a JSON string to a Map.
+   *
+   * @param entity The entity whose matchingField field will be converted.
+   * @return The Map representation of the matchingField field.
+   */
   @SuppressWarnings("unchecked")
   private Map<String, Object> convertFrom(SubmissionMatchDetailEntity entity) {
     return Optional
@@ -76,5 +109,5 @@ public class SubmissionMatchDetailEntityBeforeConvert
             .map(value -> (Map<String, Object>) value)
             .orElse(Map.of());
   }
-  
+
 }

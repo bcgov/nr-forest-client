@@ -47,8 +47,8 @@ parameters:
   - name: LOG_LEVEL
     description: Caddy log level (debug, info, warn, error, panic, fatal)
     value: "info"
-  - name: URL_ZONE
-    description: Zone to use for URL
+  - name: URL
+    description: Frontend URL
     required: true
   - name: GREEN_DOMAIN
     description: Green domain
@@ -67,12 +67,11 @@ parameters:
     required: true
   - name: COGNITO_ENVIRONMENT
     description: Cognito environment
+    required: true  
+  - name: LANDING_URL
     required: true
-  - name: COGNITO_REDIRECT_URI
-    description: Cognito redirect url once logged in
-    required: true
-  - name: COGNITO_LOGOUT_URI
-    description: Cognito redirect url once logged out
+  - name: FRONTEND_URL
+    description: Frontend URL
     required: true
 objects:
 objects:
@@ -100,16 +99,18 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     data:
       config.js: |
-        window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${URL_ZONE}-backend.${DOMAIN}');
-        window.localStorage.setItem('VITE_FRONTEND_URL', 'https://${NAME}-${URL_ZONE}-frontend.${DOMAIN}');
+        window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${ZONE}-backend.${DOMAIN}');
+        window.localStorage.setItem('VITE_FRONTEND_URL', 'https://${URL}');
         window.localStorage.setItem('VITE_NODE_ENV', '${VITE_NODE_ENV}');
         window.localStorage.setItem('VITE_GREEN_DOMAIN', '${GREEN_DOMAIN}');        
         window.localStorage.setItem('VITE_AWS_COGNITO_REGION','${COGNITO_REGION}');
         window.localStorage.setItem('VITE_AWS_COGNITO_POOL_ID','${COGNITO_USER_POOL}');
         window.localStorage.setItem('VITE_AWS_COGNITO_CLIENT_ID','${COGNITO_CLIENT_ID}');
         window.localStorage.setItem('VITE_AWS_COGNITO_DOMAIN','${COGNITO_DOMAIN}');
-        window.localStorage.setItem('VITE_AWS_COGNITO_LOGOUT_CHAIN_URL','${COGNITO_LOGOUT_URI}');
         window.localStorage.setItem('VITE_AWS_COGNITO_ENVIRONMENT','${COGNITO_ENVIRONMENT}');
+        window.localStorage.setItem('VITE_LOGOUT_BCSC_URL','${LANDING_URL}');
+        window.localStorage.setItem('VITE_LOGOUT_BCEIDBUSINESS_URL','${LANDING_URL}');
+        window.localStorage.setItem('VITE_LOGOUT_IDIR_URL','https://${URL}');
   - kind: DeploymentConfig
     apiVersion: v1    
     metadata:
@@ -154,6 +155,14 @@ objects:
               env:
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
+                - name: BACKEND_URL
+                  value: https://${NAME}-${ZONE}-backend.${DOMAIN}
+                - name: FRONTEND_URL
+                  value: https://${FRONTEND_URL}
+                - name: COGNITO_REGION
+                  value: ${COGNITO_REGION}
+                - name: COGNITO_DOMAIN
+                  value: ${COGNITO_DOMAIN}
               imagePullPolicy: Always
               name: ${NAME}
               volumeMounts:
@@ -208,7 +217,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${NAME}-${URL_ZONE}-${COMPONENT}.${DOMAIN}
+      host: ${URL}
       port:
         targetPort: 3000-tcp
       to:

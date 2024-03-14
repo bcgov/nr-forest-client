@@ -215,8 +215,7 @@ watch([detailsData], () => {
     ];
     formData.value.location.addresses = exportAddress(
       forestClientDetails.addresses
-    );
-    console.log(forestClientDetails.goodStanding === null ? false : (forestClientDetails.goodStanding ? false : true),forestClientDetails.goodStanding === null ? null : (forestClientDetails.goodStanding ? "Y" : "N"));
+    );    
     formData.value.businessInformation.goodStandingInd =
       forestClientDetails.goodStanding === null ? null : (forestClientDetails.goodStanding ? "Y" : "N");
     toggleErrorMessages(forestClientDetails.goodStanding === null ? false : (forestClientDetails.goodStanding ? false : true), null);

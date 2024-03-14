@@ -169,7 +169,6 @@ const submit = (approved: boolean) => {
 
   watch(response, (response) => {
     if (response.status) {
-      console.log(response);
       router.push({ name: "internal" });
       const toastNotification: ModalNotification = {
         kind: "Success",
@@ -413,7 +412,7 @@ const renderListItem = (label, clientNumbers) => {
             <span v-if="matchingData.length === 1">record was</span> 
             <span v-else>records were</span> 
             found. 
-            Review their information in the Client Management System to determine if this submission should be approved or rejected:
+            Review their information in the Forests Client Management System to determine if this submission should be approved or rejected:
           </p>
           <ul class="bulleted-list-disc body-compact-01">
             <!-- The content here is sanitized using vue-3-sanitize, and it is safe. -->

@@ -1,8 +1,10 @@
 package ca.bc.gov.app.configuration;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.security.CorsCustomizer;
 import ca.bc.gov.app.security.ApiAuthorizationCustomizer;
+import ca.bc.gov.app.security.CorsCustomizer;
+import ca.bc.gov.app.security.CsrfCustomizer;
+import ca.bc.gov.app.security.HeadersCustomizer;
 import ca.bc.gov.app.security.Oauth2Customizer;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.config.web.server.ServerHttpSecurity.CsrfSpec;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
@@ -28,34 +29,37 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SecurityConfiguration {
 
-  /**
-   * This method configures the SecurityWebFilterChain, which is the main security filter for the
-   * application. It customizes the ServerHttpSecurity object by setting the authorization rules,
-   * OAuth2 resource server settings, CORS settings, CSRF settings, and HTTP Basic settings. It then
-   * builds the ServerHttpSecurity object into a SecurityWebFilterChain and returns it.
-   *
-   * @param http                 The ServerHttpSecurity object to be customized.
-   * @param corsSpecCustomizer   The customizer for the CORS settings.
-   * @param apiAuthorizationCustomizer   The customizer for the authorization rules.
-   * @param csrfSpecCustomizer   The customizer for the CSRF settings.
-   * @param oauth2SpecCustomizer The customizer for the OAuth2 resource server settings.
-   * @return The configured SecurityWebFilterChain.
-   */
-  @Bean
-  SecurityWebFilterChain springSecurityFilterChain(
-      ServerHttpSecurity http,
-      CorsCustomizer corsSpecCustomizer,
-      ApiAuthorizationCustomizer apiAuthorizationCustomizer,
-      Oauth2Customizer oauth2SpecCustomizer
-  ) {
-    http
-        .authorizeExchange(apiAuthorizationCustomizer)
-        .oauth2ResourceServer(oauth2SpecCustomizer)
-        .cors(corsSpecCustomizer)
-        .csrf(CsrfSpec::disable)
-        .httpBasic(Customizer.withDefaults());
-    return http.build();
-  }
+/**
+ * This method is a Spring Bean that configures the Spring Security filter chain.
+ * The filter chain is a mechanism that Spring Security uses to apply security features to HTTP requests.
+ *
+ * @param http The ServerHttpSecurity instance that is used to build the security filter chain.
+ * @param headersCustomizer A customizer for the HTTP headers security settings.
+ * @param corsSpecCustomizer A customizer for the Cross-Origin Resource Sharing (CORS) security settings.
+ * @param apiAuthorizationCustomizer A customizer for the API authorization security settings.
+ * @param oauth2SpecCustomizer A customizer for the OAuth2 resource server security settings.
+ * @param csrfSpecCustomizer A customizer for the Cross-Site Request Forgery (CSRF) security settings.
+ *
+ * @return The configured SecurityWebFilterChain.
+ */
+@Bean
+SecurityWebFilterChain springSecurityFilterChain(
+    ServerHttpSecurity http,
+    HeadersCustomizer headersCustomizer,
+    CorsCustomizer corsSpecCustomizer,
+    ApiAuthorizationCustomizer apiAuthorizationCustomizer,
+    Oauth2Customizer oauth2SpecCustomizer,
+    CsrfCustomizer csrfSpecCustomizer
+) {
+  http
+      .headers(headersCustomizer)
+      .authorizeExchange(apiAuthorizationCustomizer)
+      .oauth2ResourceServer(oauth2SpecCustomizer)
+      .cors(corsSpecCustomizer)
+      .csrf(csrfSpecCustomizer)
+      .httpBasic(Customizer.withDefaults());
+  return http.build();
+}
 
   /**
    * This method creates a ReactiveJwtDecoder bean. The ReactiveJwtDecoder is used to decode JWTs in

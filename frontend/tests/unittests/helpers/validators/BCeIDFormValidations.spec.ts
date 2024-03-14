@@ -44,7 +44,7 @@ describe("BCeIDFormValidations.ts", () => {
     },
   };
 
-  const isGreaterThanZero = (value: number) => (value > 0 ? "" : "invalid");
+  const isGreaterThanZero = (value: string) => (parseInt(value) > 0 ? "" : "invalid");
   it("should get a list of functions for a field", () => {
     addValidation("test", () => "");
     expect(getValidations("test")).toEqual([expect.any(Function)]);
