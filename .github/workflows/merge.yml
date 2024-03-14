@@ -45,8 +45,7 @@ jobs:
     needs: [images-test]
     env:
       ZONE: test
-      # URL: forestclient-tst.nrs.gov.bc.ca
-      URL: nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca
+      URL: forestclient-tst.nrs.gov.bc.ca
       BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
       VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
     environment: test
@@ -108,8 +107,7 @@ jobs:
     name: TEST Deployment
     needs: [test-init]
     env:
-      # URL: forestclient-tst.nrs.gov.bc.ca
-      URL: nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca
+      URL: forestclient-tst.nrs.gov.bc.ca
       ZONE: test
     environment: test
     runs-on: ubuntu-22.04
@@ -244,8 +242,7 @@ jobs:
     name: PROD Init
     needs: [images-prod]
     env:
-      # URL: forestclient.nrs.gov.bc.ca
-      URL: nr-forest-client-prod-frontend.apps.silver.devops.gov.bc.ca
+      URL: forestclient.nrs.gov.bc.ca
       ZONE: prod
     environment: prod
     runs-on: ubuntu-22.04
@@ -285,8 +282,7 @@ jobs:
     env:
       PREV: test
       ZONE: prod
-      # URL: forestclient.nrs.gov.bc.ca
-      URL: nr-forest-client-prod-frontend.apps.silver.devops.gov.bc.ca
+      URL: forestclient.nrs.gov.bc.ca
       environment: prod
     runs-on: ubuntu-22.04
     steps:
