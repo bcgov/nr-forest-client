@@ -35,7 +35,8 @@ public class ClientSubmissionMailService {
                     .cookie("XSRF-TOKEN", csrfToken)
                     .body(Mono.just(mailMessage), EmailRequestDto.class)
                     .exchangeToMono(clientResponse -> clientResponse.bodyToMono(String.class))
-                    .doOnNext(source -> log.info("Email sent to {} {}", mailMessage.email(), source))
+                    .doOnNext(
+                        source -> log.info("Email sent to {} {}", mailMessage.email(), source))
                     .doOnError(
                         throwable -> log.error("Error sending email to {}", mailMessage.email(),
                             throwable))
@@ -49,14 +50,12 @@ public class ClientSubmissionMailService {
         .exchangeToMono(clientResponse ->
             Mono.justOrEmpty(
                 Optional
-                    .ofNullable(
-                        clientResponse
-                            .cookies()
-                            .getFirst("XSRF-TOKEN")
-                    )
+                    .of(clientResponse.cookies())
+                    .map(httpCookies -> httpCookies.getFirst("XSRF-TOKEN"))
             )
-                .map(HttpCookie::getValue)
-        );
+        )
+        .map(HttpCookie::getValue)
+        .defaultIfEmpty(StringUtils.EMPTY);
   }
 
 }
