@@ -16,7 +16,7 @@ describe("General Form", () => {
 
   it("should render the component", () => {
     cy.visit("/");
-    cy.get("#landing-title").should("contain", "Client Management System");
+    cy.get("#landing-title").should("contain", "Forest Client Management System");
 
     cy.get("#landing-subtitle").should(
       "contain",
