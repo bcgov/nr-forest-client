@@ -53,7 +53,7 @@
     "@carbon/web-components": "^2.3.0",
     "@vueuse/core": "^10.2.0",
     "aws-amplify": "^6.0.17",
-    "axios": "^1.6.0",
+    "axios": "^1.6.7",
     "date-fns": "^3.0.0",
     "dotenv": "^16.0.0",
     "vue": "^3.2.47",
@@ -105,6 +105,9 @@
     "vue-svg-loader": "^0.16.0",
     "vue-tsc": "^1.8.1",
     "wiremock": "^3.0.0"
+  },
+  "overrides": {
+    "follow-redirects@<1.15.6": "1.15.6"
   },
   "nyc": {
     "check-coverage": true,
