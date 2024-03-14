@@ -31,7 +31,7 @@ if (query.ref && query.ref === "individual") {
       alt="Government of British Columbia Logo" 
       />
 
-    <h1 id="landing-title" class="landing-title">Client Management System</h1>
+    <h1 id="landing-title" class="landing-title">Forest Client Management System</h1>
     
     <h2 id="landing-subtitle" class="landing-subtitle">Create and manage client accounts</h2>
   
