@@ -7,7 +7,7 @@ describe("Submission Review Page", () => {
     cy.visit("/");
     cy.wait(500);
 
-    cy.get("#landing-title").should("contain", "Client Management System");
+    cy.get("#landing-title").should("contain", "Forest Client Management System");
 
     cy.get("#landing-subtitle").should(
       "contain",
@@ -105,7 +105,7 @@ describe("Submission Review Page", () => {
             .should("exist")
             .should(
               "contain",
-              "Review their information in the Client Management System to determine if this submission should be approved or rejected:"
+              "Review their information in the Forest Client Management System to determine if this submission should be approved or rejected:"
             )
             .should(
               "contain",
@@ -118,7 +118,7 @@ describe("Submission Review Page", () => {
             .should("exist")
             .should(
               "contain",
-              "Review their information in the Client Management System to determine if this submission should be approved or rejected:"
+              "Review their information in the Forest Client Management System to determine if this submission should be approved or rejected:"
             )
             .should(
               "contain",
@@ -131,7 +131,7 @@ describe("Submission Review Page", () => {
             .should("exist")
             .should(
               "contain",
-              "Review their information in the Client Management System to determine if this submission should be approved or rejected:"
+              "Review their information in the Forest Client Management System to determine if this submission should be approved or rejected:"
             )
             .should(
               "contain",

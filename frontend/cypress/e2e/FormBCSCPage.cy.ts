@@ -28,7 +28,7 @@ describe("BCSC Form", () => {
     cy.visit("/");
     cy.wait(500);
 
-    cy.get("#landing-title").should("contain", "Client Management System");
+    cy.get("#landing-title").should("contain", "Forest Client Management System");
 
     cy.get("#landing-subtitle").should(
       "contain",
