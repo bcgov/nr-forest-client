@@ -123,7 +123,7 @@ describe("MainHeaderComponent.vue", () => {
           await nextTick();
 
           expect(wrapper.html()).toBeTruthy();
-          expect(wrapper.html()).toContain("Forest Client Management System");
+          expect(wrapper.html()).toContain("Forests Client Management System");
 
           const panelAction = wrapper.find("[data-testid='panel-action']");
 
