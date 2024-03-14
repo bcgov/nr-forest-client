@@ -3,7 +3,7 @@
  */
 import { createRouter, createWebHistory } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
-import { Hub } from 'aws-amplify/utils';
+import { Hub } from "aws-amplify/utils";
 
 import SubmissionList from "@/pages/SubmissionListPage.vue";
 import SubmissionReview from "@/pages/SubmissionReviewPage.vue";
@@ -14,12 +14,14 @@ import UserLoadingPage from "@/pages/UserLoadingPage.vue";
 import LandingPage from "@/pages/LandingPage.vue";
 import ErrorPage from "@/pages/ErrorPage.vue";
 import NotFoundPage from "@/pages/NotFoundPage.vue";
+import LogoutPage from "@/pages/LogoutPage.vue";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
 import { nodeEnv } from "@/CoreConstants";
 
 const CONFIRMATION_ROUTE_NAME = "confirmation";
 const targetPathStorage = useLocalStorage("targetPath", "");
+const userProviderInfo = useLocalStorage("userProviderInfo", "");
 
 const routes = [
   {
@@ -188,7 +190,7 @@ const routes = [
     headersStyle: "headers",
     sideMenu: false,
     profile: false,
-  }, 
+  },
   {
     path: "/notfound",
     name: "notfoundstatus",
@@ -200,6 +202,23 @@ const routes = [
       requireAuth: false,
       showLoggedIn: true,
       visibleTo: ["idir", "bceidbusiness", "bcsc"],
+    },
+    style: "content",
+    headersStyle: "headers",
+    sideMenu: false,
+    profile: false,
+  },
+  {
+    path: "/logout",
+    name: "logout",
+    component: LogoutPage,
+    props: true,
+    meta: {
+      format: "full",
+      hideHeader: true,
+      requireAuth: false,
+      showLoggedIn: false,
+      visibleTo: [],
     },
     style: "content",
     headersStyle: "headers",
@@ -225,16 +244,6 @@ const routes = [
   },
 ];
 
-if (nodeEnv === "openshift-dev") {
-  const names = ["form", "confirmation"];
-
-  routes.forEach((route) => {
-    if (names.includes(route.name as string)) {
-      route.meta?.visibleTo.push("idir");
-    }
-  });
-}
-
 const router = createRouter({
   history: createWebHistory(),
   routes,
@@ -242,11 +251,9 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-
-  if(to.name === "not-found") {
-    next({ name: "notfoundstatus" });    
-  }else{
-  
+  if (to.name === "not-found") {
+    next({ name: "notfoundstatus" });
+  } else {
     await ForestClientUserSession.loadUser();
     const user = ForestClientUserSession.loadDetails();
 
@@ -258,6 +265,9 @@ router.beforeEach(async (to, from, next) => {
     if (to.meta.requireAuth) {
       // User is logged in
       if (user) {
+        // Save user provider info for logout
+        userProviderInfo.value = user.provider;
+
         // If user can see this page, continue, otherwise go to specific page or error
         if (to.meta.visibleTo.includes(user.provider)) {
           // If there is a target path, redirect to it and clear the storage
@@ -291,12 +301,11 @@ router.beforeEach(async (to, from, next) => {
   }
 });
 
-
 Hub.listen("auth", async ({ payload }) => {
   switch (payload.event) {
-    case "signInWithRedirect":      
+    case "signInWithRedirect":
       await ForestClientUserSession.loadUser();
-      break;    
+      break;
   }
 });
 

@@ -322,7 +322,6 @@ const submit = () => {
 
   if (checkStepValidity(currentTab.value)) {
     submitBtnDisabled.value = false;
-    console.log(toRef(formData).value);
     fecthSubmit();
   } else {
     submitBtnDisabled.value = true;

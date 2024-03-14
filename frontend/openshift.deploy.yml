@@ -67,9 +67,11 @@ parameters:
     required: true
   - name: COGNITO_ENVIRONMENT
     description: Cognito environment
+    required: true  
+  - name: LANDING_URL
     required: true
-  - name: COGNITO_LOGOUT_URI
-    description: Cognito redirect url once logged out
+  - name: FRONTEND_URL
+    description: Frontend URL
     required: true
 objects:
 objects:
@@ -105,8 +107,10 @@ objects:
         window.localStorage.setItem('VITE_AWS_COGNITO_POOL_ID','${COGNITO_USER_POOL}');
         window.localStorage.setItem('VITE_AWS_COGNITO_CLIENT_ID','${COGNITO_CLIENT_ID}');
         window.localStorage.setItem('VITE_AWS_COGNITO_DOMAIN','${COGNITO_DOMAIN}');
-        window.localStorage.setItem('VITE_AWS_COGNITO_LOGOUT_CHAIN_URL','${COGNITO_LOGOUT_URI}');
         window.localStorage.setItem('VITE_AWS_COGNITO_ENVIRONMENT','${COGNITO_ENVIRONMENT}');
+        window.localStorage.setItem('VITE_LOGOUT_BCSC_URL','${LANDING_URL}');
+        window.localStorage.setItem('VITE_LOGOUT_BCEIDBUSINESS_URL','${LANDING_URL}');
+        window.localStorage.setItem('VITE_LOGOUT_IDIR_URL','https://${URL}');
   - kind: DeploymentConfig
     apiVersion: v1    
     metadata:
@@ -154,7 +158,7 @@ objects:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: FRONTEND_URL
-                  value: https://${NAME}-${URL_ZONE}-frontend.${DOMAIN}
+                  value: https://${FRONTEND_URL}
                 - name: COGNITO_REGION
                   value: ${COGNITO_REGION}
                 - name: COGNITO_DOMAIN

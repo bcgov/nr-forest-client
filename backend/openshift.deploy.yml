@@ -44,10 +44,6 @@ parameters:
   - name: COGNITO_REGION
     description: Cognito region to be used
     required: true
-  - name: COGNITO_COOKIE_DOMAIN
-    description: Cognito cookie domain to be used
-    required: true
-    default: gov.bc.ca
   - name: FRONTEND_URL
     description: Frontend URL
     required: true
@@ -175,10 +171,7 @@ objects:
                       name: ${NAME}-${ZONE}
                       key: cognito-environment
                 - name: COGNITO_REGION
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: cognito-region
+                  value: ${COGNITO_REGION}
                 - name: PROCESSOR_SERVICE_ACCOUNT_NAME
                   valueFrom:
                       secretKeyRef:
