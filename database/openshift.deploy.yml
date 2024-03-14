@@ -77,6 +77,16 @@ parameters:
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     name: PVC_SIZE
     value: 256Mi
+  - name: IDX_PVC_SIZE
+    description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Database Volume Capacity
+    required: true
+    value: 256Mi
+  - name: IDX_BKP_PVC_SIZE
+    description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Database Backup Volume Capacity
+    required: true
+    value: 256Mi
   - name: CRON_MINUTES
     description: Random number, 0-60, for scheduling cronjobs
     from: "[0-5]{1}[0-9]{1}"
@@ -84,6 +94,78 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     required: true
+  - name: DB_PASSWORD
+    description: Password for the PostgreSQL connection user.
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+  - name: ORACLEDB_USER
+    description: Oracle database user name
+    required: true
+  - name: ORACLEDB_PASSWORD
+    description: Oracle database password
+    required: true
+  - name: ORACLEDB_USER_W
+    description: Oracle database user name with write permission
+    required: true
+  - name: ORACLEDB_PASSWORD_W
+    description: Oracle database password with write permission
+    required: true
+  - name: ORACLEDB_DATABASE
+    description: Oracle database database name
+    required: true
+  - name: ORACLEDB_HOST
+    description: Oracle database host
+    required: true
+  - name: ORACLEDB_SERVICENAME
+    description: Oracle database service name
+    required: true
+  - name: ORACLEDB_SECRET
+    description: Oracle database keystore secret/password
+    required: true
+  - name: BCREGISTRY_KEY
+    description: BC Registry key
+    required: true
+  - name: BCREGISTRY_ACCOUNT
+    description: BC Registry account Id
+    required: true
+  - name: CHES_CLIENT_ID
+    description: CHES service client id
+    required: true
+  - name: CHES_CLIENT_SECRET
+    description: CHES service client secret
+    required: true
+  - name: ADDRESS_COMPLETE_KEY
+    description: Canada Post API key
+    required: true
+  - name: COGNITO_REGION
+    description: Cognito region information
+    required: false
+    value: ca-central-1
+  - name: COGNITO_CLIENT_ID
+    description: Cognito client id
+    required: true
+  - name: COGNITO_USER_POOL
+    description: Cognito user pool id
+    required: true
+  - name: COGNITO_DOMAIN
+    description: Cognito domain
+    required: true
+  - name: COGNITO_ENVIRONMENT
+    description: Cognito environment
+    required: true
+  - name: COGNITO_REDIRECT_URI
+    description: Cognito redirect url once logged in
+    required: true
+  - name: COGNITO_LOGOUT_URI
+    description: Cognito redirect url once logged out
+    required: true
+  - name: CHES_MAIL_COPY
+    description: Email address to copy all CHES emails to
+    required: true
+  - name: PROCESSOR_SERVICE_ACCOUNT_SECRET
+    description: Password for the Processor service.
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
 objects:
   - kind: PersistentVolumeClaim
     apiVersion: v1
@@ -221,3 +303,90 @@ objects:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
       sessionAffinity: None
       type: ClusterIP
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${ZONE}-index
+      labels:
+        app: ${NAME}-${ZONE}
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${IDX_PVC_SIZE}
+      storageClassName: netapp-file-standard
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${ZONE}-index-backup
+      labels:
+        app: ${NAME}-${ZONE}
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${IDX_BKP_PVC_SIZE}
+      storageClassName: netapp-file-standard
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-from-openshift-ingress
+      labels:
+        template: openshift-test
+    spec:
+      podSelector: {}
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  network.openshift.io/policy-group: ingress
+      policyTypes:
+        - Ingress
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-same-namespace
+      labels:
+        template: quickstart-network-security-policy
+    spec:
+      podSelector: {}
+      ingress:
+        - from:
+            - podSelector: {}
+      policyTypes:
+        - Ingress
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ${NAME}-${ZONE}
+      labels:
+        app: ${NAME}-${ZONE}
+    stringData:
+      database-name: ${NAME}
+      database-password: ${DB_PASSWORD}
+      database-user: ${NAME}  
+      oracle-user: ${ORACLEDB_USER}
+      oracle-password: ${ORACLEDB_PASSWORD}
+      oracle-user-write: ${ORACLEDB_USER_W}
+      oracle-password-write: ${ORACLEDB_PASSWORD_W}
+      oracle-database: ${ORACLEDB_DATABASE}
+      oracle-host: ${ORACLEDB_HOST}
+      oracle-service: ${ORACLEDB_SERVICENAME}
+      oracle-secret: ${ORACLEDB_SECRET}  
+      ches-client-id: ${CHES_CLIENT_ID}
+      ches-client-secret: ${CHES_CLIENT_SECRET}
+      bcregistry-key: ${BCREGISTRY_KEY}
+      bcregistry-account: ${BCREGISTRY_ACCOUNT}
+      address-complete-key: ${ADDRESS_COMPLETE_KEY}
+      cognito-region: ${COGNITO_REGION}
+      cognito-client-id: ${COGNITO_CLIENT_ID}
+      cognito-user-pool: ${COGNITO_USER_POOL}
+      cognito-domain: ${COGNITO_DOMAIN}
+      cognito-environment: ${COGNITO_ENVIRONMENT}
+      cognito-redirect-uri: ${COGNITO_REDIRECT_URI}
+      cognito-logout-uri: ${COGNITO_LOGOUT_URI}
+      ches-mail-copy: ${CHES_MAIL_COPY}
+      processor-service-account-secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
+      processor-service-account-name: processor-service-account
