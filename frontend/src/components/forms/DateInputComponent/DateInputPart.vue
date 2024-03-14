@@ -15,6 +15,7 @@ const props = defineProps<{
   enabled?: boolean;
   invalid: boolean;
   required?: boolean;
+  autocomplete?: string;
 }>();
 
 const emit = defineEmits<{
@@ -66,6 +67,7 @@ watch(cdsTextInputRef, async (cdsTextInput) => {
       v-if="enabled"
       ref="cdsTextInputRef"
       :id="id"
+      :autocomplete="autocomplete"
       :required="required"
       :label="capitalizedDatePart"
       :aria-label="ariaLabel"

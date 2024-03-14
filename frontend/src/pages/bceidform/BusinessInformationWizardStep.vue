@@ -362,7 +362,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
       <AutoCompleteInputComponent
         v-if="selectedOption === BusinessTypeEnum.R"
         id="business"
-        label="BC registered business name"
+        autocomplete="organization"
         required
         required-label
         tip="Start typing to search for your BC registered business name"
@@ -508,6 +508,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
       <date-input-component
         id="birthdate"
         title="Date of birth"
+        :autocomplete="['bday-year', 'bday-month', 'bday-day']"
         v-model="formData.businessInformation.birthdate"
         :enabled="true"
         :validations="[...getValidations('businessInformation.birthdate')]"

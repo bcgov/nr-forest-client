@@ -498,6 +498,8 @@ const updateDistrict = (value: CodeNameType | undefined) => {
       <text-input-component
         id="phoneNumberId"
         label="Phone number"
+        type="tel"
+        autocomplete="tel"
         placeholder="( ) ___-____"
         :enabled="true"
         v-model="formData.location.contacts[0].phoneNumber"

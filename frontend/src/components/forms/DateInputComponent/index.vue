@@ -44,6 +44,7 @@ const props = withDefaults(
     requiredLabel?: boolean;
     required?: boolean;
     autoMoveFocus?: boolean;
+    autocomplete?: [string, string, string];
   }>(),
   {
     yearValidations: () => [],
@@ -443,6 +444,7 @@ const datePartComponentRefs = {
         @blur="(event: any) => onBlurYear(event.target.value)"
         @input="selectYear"
         :required="required"
+        :autocomplete="autocomplete && autocomplete[0]"
       />
       <date-input-part
         :ref="datePartComponentRefs[DatePart.month]"
@@ -455,6 +457,7 @@ const datePartComponentRefs = {
         @blur="(event: any) => onBlurMonth(event.target.value)"
         @input="selectMonth"
         :required="required"
+        :autocomplete="autocomplete && autocomplete[1]"
       />
       <date-input-part
         :ref="datePartComponentRefs[DatePart.day]"
@@ -467,6 +470,7 @@ const datePartComponentRefs = {
         @blur="(event: any) => onBlurDay(event.target.value)"
         @input="selectDay"
         :required="required"
+        :autocomplete="autocomplete && autocomplete[2]"
       />
     </div>
     <div class="cds--form-requirement field-error">{{ error }}</div>

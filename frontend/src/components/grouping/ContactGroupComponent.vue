@@ -152,6 +152,7 @@ const logoutAndRedirect = () => {
         :id="'firstName_' + id"
         label="First name"
         placeholder=""
+        autocomplete="off"
         v-model="selectedValue.firstName"
         :validations="[
           ...getValidations('location.contacts.*.firstName'),
@@ -169,6 +170,7 @@ const logoutAndRedirect = () => {
         :id="'lastName_' + id"
         label="Last name"
         placeholder=""
+        autocomplete="off"
         v-model="selectedValue.lastName"
         :validations="[
           ...getValidations('location.contacts.*.lastName'),
@@ -186,6 +188,7 @@ const logoutAndRedirect = () => {
         :id="'email_' + id"
         label="Email address"
         placeholder=""
+        autocomplete="off"
         v-model="selectedValue.email"
         :validations="[
           ...getValidations('location.contacts.*.email'),
@@ -203,6 +206,7 @@ const logoutAndRedirect = () => {
       :id="'phoneNumber_' + id"
       label="Phone number"
       type="tel"
+      :autocomplete="id === 0 ? 'section-contact-0 tel' : 'off'"
       placeholder="( ) ___-____"
       mask="(###) ###-####"
       v-model="selectedValue.phoneNumber"
