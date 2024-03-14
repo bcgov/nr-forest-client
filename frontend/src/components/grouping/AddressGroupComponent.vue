@@ -239,6 +239,11 @@ watch([detailsData], () => {
     setTimeout(() => (addressControl.value = false), 200);
   }
 });
+
+/**
+ * Adds a named group to the fields. Specially useful when BCEID_MULTI_ADDRESS is enabled.
+ */
+const section = (index: number, purpose: string) => `section-address-${index} ${purpose}`;
 </script>
 
 <template>
@@ -272,7 +277,7 @@ watch([detailsData], () => {
       <AutoCompleteInputComponent
         :id="'addr_' + id"
         label="Street address or PO box"
-        :autocomplete="id === 0 ? 'address-line1' : 'off'"
+        :autocomplete="section(id, 'address-line1')"
         required
         required-label
         placeholder=""
@@ -295,7 +300,7 @@ watch([detailsData], () => {
     <text-input-component
       :id="'city_' + id"
       label="City"
-      :autocomplete="id === 0 ? 'address-level2' : 'off'"
+      :autocomplete="section(id, 'address-level2')"
       required
       required-label
       placeholder=""
@@ -322,7 +327,7 @@ watch([detailsData], () => {
       <dropdown-input-component
         :id="'province_' + id"
         :label="provinceNaming"
-        :autocomplete="id === 0 ? 'address-level1' : 'off'"
+        :autocomplete="section(id, 'address-level1')"
         required
         required-label
         :initial-value="selectedValue.province.text"
@@ -339,7 +344,7 @@ watch([detailsData], () => {
     <dropdown-input-component
       :id="'country_' + id"
       label="Country"
-      :autocomplete="id === 0 ? 'country-name' : 'off'"
+      :autocomplete="section(id, 'country-name')"
       required
       required-label
       :initial-value="selectedValue.country.text"
@@ -356,7 +361,7 @@ watch([detailsData], () => {
     <text-input-component
       :id="'postalCode_' + id"
       :label="postalCodeNaming"
-      :autocomplete="id === 0 ? 'postal-code' : 'off'"
+      :autocomplete="section(id, 'postal-code')"
       :numeric="postalCodeNumeric"
       required
       required-label
