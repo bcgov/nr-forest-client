@@ -272,6 +272,7 @@ watch([detailsData], () => {
       <AutoCompleteInputComponent
         :id="'addr_' + id"
         label="Street address or PO box"
+        :autocomplete="id === 0 ? 'address-line1' : 'off'"
         required
         required-label
         placeholder=""
@@ -294,6 +295,7 @@ watch([detailsData], () => {
     <text-input-component
       :id="'city_' + id"
       label="City"
+      :autocomplete="id === 0 ? 'address-level2' : 'off'"
       required
       required-label
       placeholder=""
@@ -320,6 +322,7 @@ watch([detailsData], () => {
       <dropdown-input-component
         :id="'province_' + id"
         :label="provinceNaming"
+        :autocomplete="id === 0 ? 'address-level1' : 'off'"
         required
         required-label
         :initial-value="selectedValue.province.text"
@@ -336,6 +339,7 @@ watch([detailsData], () => {
     <dropdown-input-component
       :id="'country_' + id"
       label="Country"
+      :autocomplete="id === 0 ? 'country-name' : 'off'"
       required
       required-label
       :initial-value="selectedValue.country.text"
@@ -352,6 +356,7 @@ watch([detailsData], () => {
     <text-input-component
       :id="'postalCode_' + id"
       :label="postalCodeNaming"
+      :autocomplete="id === 0 ? 'postal-code' : 'off'"
       :numeric="postalCodeNumeric"
       required
       required-label

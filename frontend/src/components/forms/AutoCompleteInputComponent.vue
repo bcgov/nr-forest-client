@@ -24,6 +24,7 @@ const props = withDefaults(defineProps<{
     showLoadingAfterTime?: number;
     required?: boolean;
     requiredLabel?: boolean;
+    autocomplete?: string;
   }>(),
   {
     showLoadingAfterTime: 2000,
@@ -194,6 +195,7 @@ const safeHelperText = computed(() => props.tip || " ");
       <cds-combo-box
         ref="cdsComboBoxRef"
         :id="id"
+        :autocomplete="autocomplete"
         :title-text="label"
         :aria-label="label"
         :clear-selection-label="`Clear ${label}`"

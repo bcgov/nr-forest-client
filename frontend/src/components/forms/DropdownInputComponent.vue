@@ -178,6 +178,7 @@ const safeHelperText = computed(() => props.tip || " ");
         ref="cdsComboBoxArrayRef"
         :key="time"
         :id="id"
+        :autocomplete="autocomplete"
         :title-text="label"
         :aria-label="label"
         :clear-selection-label="`Clear ${label}`"

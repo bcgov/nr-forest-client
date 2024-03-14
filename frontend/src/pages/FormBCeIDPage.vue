@@ -432,75 +432,72 @@ watch(cdsProgressStepArray, async (array) => {
   </div>
 
   <div class="form-steps">
-
-    <form>
-      <div v-if="currentTab == 0" class="form-steps-01">
-        <div class="form-steps-01-title">
-          <h2 data-scroll="scroll-0">Before you begin</h2>
-          <ol type="1" class="bulleted-list body-compact-01">
-            <li>A registered business must be in good standing with BC Registries</li>
-            <li>
-              You must be able to receive email at
-              <b>{{ submitterContact.email }}</b>
-            </li>
-          </ol>
-        </div>
-
-        <hr class="divider" />
-
-        <div class="form-steps-section">
-          <business-information-wizard-step
-            v-model:data="formData"
-            :active="currentTab == 0"
-            :title="progressData[0].title"
-            :districts-list="formattedDistrictsList"
-            @valid="validateStep"
-          />
-        </div>
+    <div v-if="currentTab == 0" class="form-steps-01">
+      <div class="form-steps-01-title">
+        <h2 data-scroll="scroll-0">Before you begin</h2>
+        <ol type="1" class="bulleted-list body-compact-01">
+          <li>A registered business must be in good standing with BC Registries</li>
+          <li>
+            You must be able to receive email at
+            <b>{{ submitterContact.email }}</b>
+          </li>
+        </ol>
       </div>
 
-      <div v-if="currentTab == 1" class="form-steps-02">
-        <div class="form-steps-section">
-          <h2 data-scroll="scroll-1">
-            <div data-scroll="step-title" class="header-offset"></div>
-            {{ progressData[1].title }}
-          </h2>
+      <hr class="divider" />
 
-          <div class="form-steps-section-01">
-            <h3>This is the primary address where you will receive mail.</h3>
-          </div>
-
-          <address-wizard-step
-            v-model:data="formData"
-            :active="currentTab == 1"
-            @valid="validateStep"
-          />
-        </div>
+      <div class="form-steps-section">
+        <business-information-wizard-step
+          v-model:data="formData"
+          :active="currentTab == 0"
+          :title="progressData[0].title"
+          :districts-list="formattedDistrictsList"
+          @valid="validateStep"
+        />
       </div>
+    </div>
 
-      <div v-if="currentTab == 2" class="form-steps-03">
-        <div class="form-steps-section">
-          <h2 data-scroll="scroll-2">
-            <div data-scroll="step-title" class="header-offset"></div>
-            {{ progressData[2].title }}
-          </h2>
+    <div v-if="currentTab == 1" class="form-steps-02">
+      <div class="form-steps-section">
+        <h2 data-scroll="scroll-1">
+          <div data-scroll="step-title" class="header-offset"></div>
+          {{ progressData[1].title }}
+        </h2>
 
-          <div class="form-steps-section-01">
-            <h3>Add authorized people to the account</h3>
-            <p class="body-02 light-theme-text-text-primary">
-              Review your name and email address. They’re from your BCeID.
-            </p>
-          </div>
-
-          <contact-wizard-step
-            v-model:data="formData"
-            :active="currentTab == 2"
-            @valid="validateStep"
-            ref="contactWizardRef"
-          />
+        <div class="form-steps-section-01">
+          <h3>This is the primary address where you will receive mail.</h3>
         </div>
+
+        <address-wizard-step
+          v-model:data="formData"
+          :active="currentTab == 1"
+          @valid="validateStep"
+        />
       </div>
-    </form>
+    </div>
+
+    <div v-if="currentTab == 2" class="form-steps-03">
+      <div class="form-steps-section">
+        <h2 data-scroll="scroll-2">
+          <div data-scroll="step-title" class="header-offset"></div>
+          {{ progressData[2].title }}
+        </h2>
+
+        <div class="form-steps-section-01">
+          <h3>Add authorized people to the account</h3>
+          <p class="body-02 light-theme-text-text-primary">
+            Review your name and email address. They’re from your BCeID.
+          </p>
+        </div>
+
+        <contact-wizard-step
+          v-model:data="formData"
+          :active="currentTab == 2"
+          @valid="validateStep"
+          ref="contactWizardRef"
+        />
+      </div>
+    </div>
 
     <div v-if="currentTab == 3" class="form-steps-04">
 
