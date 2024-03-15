@@ -434,7 +434,7 @@ const datePartComponentRefs = {
   :deep([id$="Year"]),
   :deep([id$="Month"]),
   :deep([id$="Day"]) {
-    width: 5.3125rem;
+    width: 5rem;
   }
 }
 </style>
