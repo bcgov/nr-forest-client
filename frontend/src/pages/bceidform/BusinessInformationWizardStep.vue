@@ -64,6 +64,7 @@ const validation = reactive<Record<string, boolean>>({
   business: !!formData.value.businessInformation.businessName,
   birthdate: true, // temporary value
   district: false,
+  individual: false,
 });
 
 const checkValid = () =>
@@ -109,6 +110,7 @@ const showNonPersonSPError = ref<boolean>(false);
 const showUnsupportedClientTypeError = ref<boolean>(false);
 const showDetailsLoading = ref<boolean>(false);
 const detailsData = ref(null);
+const soleProprietorOwner = ref<string>("");
 
 const toggleErrorMessages = (
   goodStanding: boolean | null = null,
@@ -199,7 +201,26 @@ watch([autoCompleteResult], () => {
       () => (showDetailsLoading.value = detailsLoading.value)
     );
   }
+
+  if(!showBirthDate.value) {
+    validation.individual = true;
+  }
 });
+
+/**
+ * Checks if an individual exists for provided last name.
+ * @param {string} lastName - The last name to check.
+ */
+const checkForIndividualValid = (lastName: string) =>{
+  const { error:validationError } = useFetch(`/api/clients/individual/${ForestClientUserSession.user?.userId.split('\\').pop()}?lastName=${lastName}`);
+    watch([validationError], () => {
+      if (validationError.value.response?.status === 409) {   
+        validation.business = false;     
+        toggleErrorMessages(null, true, null);
+        generalErrorBus.emit(validationError.value.response?.data ?? "")
+      }  
+    });
+}
 
 watch([detailsData], () => {
   if (detailsData.value) {
@@ -222,6 +243,23 @@ watch([detailsData], () => {
     validation.business = forestClientDetails.goodStanding;
 
     emit("update:data", formData.value);
+
+    if (forestClientDetails.contacts.length > 0) {
+      soleProprietorOwner.value = forestClientDetails.contacts[0].lastName;
+    }
+  }
+});
+
+/**
+ * Computed property that allows checks if the birthdate is valid and should be shown.
+ *
+ * @returns {boolean} - Returns true if the birthdate is valid and birthdate should be shown, otherwise returns false.
+ */
+const individualCheck = computed(() => {return showBirthDate.value && validation.birthdate})
+
+watch(individualCheck, (value) => {
+  if (value) {
+    checkForIndividualValid(soleProprietorOwner.value ?? ForestClientUserSession.user?.lastName);
   }
 });
 
@@ -242,15 +280,7 @@ watch([selectedOption], () => {
     formData.value.businessInformation.goodStandingInd = "Y";
     emit("update:data", formData.value);
 
-
-    const { error:validationError } = useFetch(`/api/clients/individual/${ForestClientUserSession.user?.userId.split('\\').pop()}?lastName=${ForestClientUserSession.user?.lastName}`);
-    watch([validationError], () => {
-      if (validationError.value.response?.status === 409) {   
-        validation.business = false;     
-        toggleErrorMessages(null, true, null);
-        generalErrorBus.emit(validationError.value.response?.data ?? "")
-      }  
-    });
+   
   } else {
     // Registered business
     formData.value.businessInformation.businessName = "";
@@ -291,6 +321,11 @@ const updateDistrict = (value: CodeNameType | undefined) => {
     formData.value.businessInformation.district = value.code;
   }
 };
+
+
+
+
+
 </script>
 
 <template>
