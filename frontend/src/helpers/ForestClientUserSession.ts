@@ -7,13 +7,16 @@ class ForestClientUserSession implements SessionProperties {
   public user: Submitter | undefined;
   public token: string | undefined;
 
-  logIn = (provider: string): void => {
+  logIn = (provider: string): void => {    
     signInWithRedirect({ provider: { custom: `${cognitoEnvironment}-${provider}`.toUpperCase() } });
   };
 
   logOut = (): void => {
     this.user = undefined;
     signOut();
+    if(nodeEnv === "test"){
+      window.location.href = "/";
+    }
   };
 
   isLoggedIn = (): boolean => {
@@ -46,11 +49,11 @@ class ForestClientUserSession implements SessionProperties {
           streetAddress: toTitleCase(streetAddress.street_address),
           city: toTitleCase(streetAddress.locality),
           country: {
-            value: streetAddress.country, //TODO: double check this
+            value: streetAddress.country,
             text: ""
           },
           province: {
-            value: streetAddress.region, //TODO: double check this
+            value: streetAddress.region,
             text: ""
           },
           postalCode: streetAddress.postal_code
