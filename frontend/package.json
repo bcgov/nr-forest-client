@@ -24,7 +24,7 @@
   "scripts": {
     "start": "vite --host --port 3000",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "start-server-and-test stub http://127.0.0.1:8080/ 'vite --host --port 3000'",
+    "preview": "cross-env VITE_NODE_ENV=test start-server-and-test stub http://127.0.0.1:8080/ 'vite --host --port 3000'",
     "typecheck": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --fix --ignore-path .gitignore",
     "stub": "wiremock --enable-stub-cors --port 8080 --https-port 8081 --preserve-host-header --root-dir ./stub --verbose --global-response-templating",
@@ -75,6 +75,7 @@
     "@vue/eslint-config-typescript": "^12.0.0",
     "@vue/test-utils": "^2.4.0",
     "@vue/tsconfig": "^0.5.0",
+    "cross-env": "^7.0.3",
     "cypress": "^13.6.2",
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
