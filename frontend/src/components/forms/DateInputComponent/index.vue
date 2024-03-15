@@ -428,6 +428,15 @@ const datePartComponentRefs = {
 :deep(cds-text-input::part(svg)) {
   right: 1rem;
 }
+
+/* Small (up to 671px) */
+@media screen and (max-width: 671px) {
+  :deep([id$="Year"]),
+  :deep([id$="Month"]),
+  :deep([id$="Day"]) {
+    width: 5.3125rem;
+  }
+}
 </style>
 
 <template>
