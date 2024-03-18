@@ -1,104 +1,34 @@
 {
-  "mappings": [
+  "mappings": [   
     {
-      "name": "Login IDIR",
+      "name": "OAuth2 Authorize for IDIR",
       "request": {
-        "urlPath": "/login",
+        "urlPath": "/oauth2/authorize",
         "method": "GET",
         "queryParameters": {
-          "code": {
-            "equalTo": "idir"
-          }
-        }
-      },
-      "response": {
-        "status": 302,
-        "transformers": [
-          "response-template"
-        ],
-        "headers": {
-          "Location": "http://{{request.host}}:3000/dashboard",
-          "Set-Cookie": [
-            "idToken=eyJhbGciOiJIUzI1NiJ9.eyJwcmVmZXJyZWRfdXNlcm5hbWUiOiJiNWVjZGIwOTRkZmI0MTQ5YTZhODQ0NWEwMWE5NmJmMEBpZGlyIiwiY3VzdG9tOmlkcF91c2VyX2lkIjoiQjVFQ0RCMDk0REZCNDE0OUE2QTg0NDVBMDFBOTZCRjAiLCJjdXN0b206aWRwX3VzZXJuYW1lIjoiSlJZQU4iLCJjdXN0b206aWRwX2Rpc3BsYXlfbmFtZSI6IlJ5YW4sIEphY2sgQ0lBOklOIiwiZW1haWwiOiJqYWNrLnJ5YW5AZ292LmJjLmNhIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjdXN0b206aWRwX25hbWUiOiJpZGlyIiwiZ2l2ZW5fbmFtZSI6IkphY2siLCJuYW1lIjoiSmFjayBSeWFuIiwiZmFtaWx5X25hbWUiOiJSeWFuIn0.J7UgluYBloUkw29_ubfRFSNYLW4rw0SdMjFI5uunoUE; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Login BCeID",
-      "request": {
-        "urlPath": "/login",
-        "method": "GET",
-        "queryParameters": {
-          "code": {
-            "equalTo": "bceidbusiness"
-          }
-        }
-      },
-      "response": {
-        "status": 302,
-        "transformers": [
-          "response-template"
-        ],
-        "headers": {
-          "Location": "http://{{request.host}}:3000/dashboard",
-          "Set-Cookie": [
-            "idToken=eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiYmNlaWRidXNpbmVzcyIsImN1c3RvbTppZHBfYnVzaW5lc3NfaWQiOiJhdXRvbWF0aW9uaW5jIiwiY3VzdG9tOmlkcF9kaXNwbGF5X25hbWUiOiJVYXQgVGVzdCIsImdpdmVuX25hbWUiOiJVYXQiLCJmYW1pbHlfbmFtZSI6IlRlc3QiLCJlbWFpbCI6InVhdHRlc3RAZ292LmJjLmNhIiwiaWRwX2J1c2luZXNzX25hbWUiOiJBdXRvbWF0aW9uIEluYyJ9.j8ok8GDYT2n2WMJJNAj0BcC5PRwJzGSkLKLZkOjyHtQ; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Login BCSC",
-      "request": {
-        "urlPath": "/login",
-        "method": "GET",
-        "queryParameters": {
-          "code": {
-            "equalTo": "bcsc"
-          }
-        }
-      },
-      "response": {
-        "status": 302,
-        "transformers": [
-          "response-template"
-        ],
-        "headers": {
-          "Location": "http://{{request.host}}:3000/dashboard",
-          "Set-Cookie": [
-            "idToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTJmNGY4Ny01NTk0LTRlMDAtYmY2NC00MzllMGEwZWYyMGYiLCJjdXN0b206Z2l2ZW5fbmFtZXMiOiJKYW1lcyBIb3JzZSIsImJpcnRoZGF0ZSI6IjE5ODYtMTEtMTIiLCJnZW5kZXIiOiJ1bmtub3duIiwiY3VzdG9tOmlkcF91c2VyX2lkIjoiTkE1VENQR01JR1VGVkNTUzZTQU8zVElEQk1BSFhMM0YiLCJjdXN0b206aWRwX2Rpc3BsYXlfbmFtZSI6IkphbWVzIEJheHRlciIsImVtYWlsIjoiamJheHRlckBnb3YuYmMuY2EiLCJhZGRyZXNzIjp7ImZvcm1hdHRlZCI6IntcInN0cmVldF9hZGRyZXNzXCI6XCI0MDAwIFNFWU1PVVIgUExBQ0VcIixcImNvdW50cnlcIjpcIkNBXCIsXCJsb2NhbGl0eVwiOlwiVklDVE9SSUFcIixcInJlZ2lvblwiOlwiQkNcIixcInBvc3RhbF9jb2RlXCI6XCJWOFogMUM4XCJ9In0sImN1c3RvbTppZHBfbmFtZSI6ImNhLmJjLmdvdi5mbG5yLmZhbS5kZXYiLCJnaXZlbl9uYW1lIjoiSmFtZXMiLCJmYW1pbHlfbmFtZSI6IkJheHRlciJ9.rXDv6wj04mS0QwqoHg1EHpxXGdwAdxzYzIi7DaQENIY; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Logout",
-      "request": {
-        "urlPath": "/logout",
-        "method": "GET"
-      },
-      "response": {
-        "status": 302,
-        "transformers": [
-          "response-template"
-        ],
-        "headers": {
-          "Location": "http://{{request.host}}:3000/",
-          "Set-Cookie": [
-            "idToken=; sameSite=Lax; path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; domain={{request.host}}"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Callback",
-      "request": {
-        "urlPath": "/callback",
-        "method": "GET",
-        "queryParameters": {
-          "code": {
+          "redirect_uri": {
+            "equalTo": "http://localhost:3000/dashboard"
+          },
+          "response_type": {
+            "equalTo": "code"
+          },
+          "client_id": {
             "matches": "(.*)"
+          },
+          "identity_provider": {
+            "equalTo": "DEV-IDIR"
+          },
+          "scope": {
+            "equalTo": "openid profile email"
+          },
+          "state": {
+            "matches": "(.*)"
+          },
+          "code_challenge": {
+            "matches": "(.*)"
+          },
+          "code_challenge_method": {
+            "equalTo": "S256"
           }
         }
       },
@@ -108,7 +38,103 @@
           "response-template"
         ],
         "headers": {
-          "Location": "http://{{request.host}}:3000/"
+          "Location": "http://{{request.host}}:3000/dashboard",
+          "Set-Cookie": [
+            "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.LastAuthUser=abc123; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}",            
+            "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.abc123.idToken=eyJhbGciOiJIUzI1NiJ9.eyJwcmVmZXJyZWRfdXNlcm5hbWUiOiJiNWVjZGIwOTRkZmI0MTQ5YTZhODQ0NWEwMWE5NmJmMEBpZGlyIiwiY3VzdG9tOmlkcF91c2VyX2lkIjoiQjVFQ0RCMDk0REZCNDE0OUE2QTg0NDVBMDFBOTZCRjAiLCJjdXN0b206aWRwX3VzZXJuYW1lIjoiSlJZQU4iLCJjdXN0b206aWRwX2Rpc3BsYXlfbmFtZSI6IlJ5YW4sIEphY2sgQ0lBOklOIiwiZW1haWwiOiJqYWNrLnJ5YW5AZ292LmJjLmNhIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjdXN0b206aWRwX25hbWUiOiJpZGlyIiwiZ2l2ZW5fbmFtZSI6IkphY2siLCJuYW1lIjoiSmFjayBSeWFuIiwiZmFtaWx5X25hbWUiOiJSeWFuIn0.J7UgluYBloUkw29_ubfRFSNYLW4rw0SdMjFI5uunoUE; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "OAuth2 Authorize for BCEID",
+      "request": {
+        "urlPath": "/oauth2/authorize",
+        "method": "GET",
+        "queryParameters": {
+          "redirect_uri": {
+            "equalTo": "http://localhost:3000/dashboard"
+          },
+          "response_type": {
+            "equalTo": "code"
+          },
+          "client_id": {
+            "matches": "(.*)"
+          },
+          "identity_provider": {
+            "equalTo": "DEV-BCEIDBUSINESS"
+          },
+          "scope": {
+            "equalTo": "openid profile email"
+          },
+          "state": {
+            "matches": "(.*)"
+          },
+          "code_challenge": {
+            "matches": "(.*)"
+          },
+          "code_challenge_method": {
+            "equalTo": "S256"
+          }
+        }
+      },
+      "response": {
+        "status": 302,
+        "transformers": [
+          "response-template"
+        ],
+        "headers": {
+          "Location": "http://{{request.host}}:3000/dashboard",
+          "Set-Cookie": [
+            "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.LastAuthUser=abc123; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}",
+            "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.abc123.idToken=eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiYmNlaWRidXNpbmVzcyIsImN1c3RvbTppZHBfYnVzaW5lc3NfaWQiOiJhdXRvbWF0aW9uaW5jIiwiY3VzdG9tOmlkcF9kaXNwbGF5X25hbWUiOiJVYXQgVGVzdCIsImdpdmVuX25hbWUiOiJVYXQiLCJmYW1pbHlfbmFtZSI6IlRlc3QiLCJlbWFpbCI6InVhdHRlc3RAZ292LmJjLmNhIiwiaWRwX2J1c2luZXNzX25hbWUiOiJBdXRvbWF0aW9uIEluYyJ9.j8ok8GDYT2n2WMJJNAj0BcC5PRwJzGSkLKLZkOjyHtQ; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "OAuth2 Authorize for BCSC",
+      "request": {
+        "urlPath": "/oauth2/authorize",
+        "method": "GET",
+        "queryParameters": {
+          "redirect_uri": {
+            "equalTo": "http://localhost:3000/dashboard"
+          },
+          "response_type": {
+            "equalTo": "code"
+          },
+          "client_id": {
+            "matches": "(.*)"
+          },
+          "identity_provider": {
+            "equalTo": "DEV-BCSC"
+          },
+          "scope": {
+            "equalTo": "openid profile email"
+          },
+          "state": {
+            "matches": "(.*)"
+          },
+          "code_challenge": {
+            "matches": "(.*)"
+          },
+          "code_challenge_method": {
+            "equalTo": "S256"
+          }
+        }
+      },
+      "response": {
+        "status": 302,
+        "transformers": [
+          "response-template"
+        ],
+        "headers": {
+          "Location": "http://{{request.host}}:3000/dashboard",
+          "Set-Cookie": [
+            "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.LastAuthUser=abc123; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}",            
+            "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.abc123.idToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTJmNGY4Ny01NTk0LTRlMDAtYmY2NC00MzllMGEwZWYyMGYiLCJjdXN0b206Z2l2ZW5fbmFtZXMiOiJKYW1lcyBIb3JzZSIsImJpcnRoZGF0ZSI6IjE5ODYtMTEtMTIiLCJnZW5kZXIiOiJ1bmtub3duIiwiY3VzdG9tOmlkcF91c2VyX2lkIjoiTkE1VENQR01JR1VGVkNTUzZTQU8zVElEQk1BSFhMM0YiLCJjdXN0b206aWRwX2Rpc3BsYXlfbmFtZSI6IkphbWVzIEJheHRlciIsImVtYWlsIjoiamJheHRlckBnb3YuYmMuY2EiLCJhZGRyZXNzIjp7ImZvcm1hdHRlZCI6IntcInN0cmVldF9hZGRyZXNzXCI6XCI0MDAwIFNFWU1PVVIgUExBQ0VcIixcImNvdW50cnlcIjpcIkNBXCIsXCJsb2NhbGl0eVwiOlwiVklDVE9SSUFcIixcInJlZ2lvblwiOlwiQkNcIixcInBvc3RhbF9jb2RlXCI6XCJWOFogMUM4XCJ9In0sImN1c3RvbTppZHBfbmFtZSI6ImNhLmJjLmdvdi5mbG5yLmZhbS5kZXYiLCJnaXZlbl9uYW1lIjoiSmFtZXMiLCJmYW1pbHlfbmFtZSI6IkJheHRlciJ9.rXDv6wj04mS0QwqoHg1EHpxXGdwAdxzYzIi7DaQENIY; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
+          ]
         }
       }
     }
