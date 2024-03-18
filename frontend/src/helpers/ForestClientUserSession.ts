@@ -1,20 +1,27 @@
 import type { SessionProperties, Submitter } from "@/dto/CommonTypesDto";
 import { toTitleCase } from "@/services/ForestClientService";
-import { fetchAuthSession, signInWithRedirect, signOut } from "aws-amplify/auth";
+import {
+  fetchAuthSession,
+  signInWithRedirect,
+  signOut,
+} from "aws-amplify/auth";
 import { cognitoEnvironment, nodeEnv, cognitoClientId } from "@/CoreConstants";
 
 class ForestClientUserSession implements SessionProperties {
   public user: Submitter | undefined;
   public token: string | undefined;
 
-  logIn = (provider: string): void => {    
-    signInWithRedirect({ provider: { custom: `${cognitoEnvironment}-${provider}`.toUpperCase() } });
+  logIn = (provider: string): void => {
+    signInWithRedirect({
+      provider: { custom: `${cognitoEnvironment}-${provider}`.toUpperCase() },
+    });
   };
 
   logOut = (): void => {
     this.user = undefined;
     signOut();
-    if(nodeEnv === "test"){
+
+    if (nodeEnv === "test") {
       window.location.href = "/";
     }
   };
@@ -23,14 +30,14 @@ class ForestClientUserSession implements SessionProperties {
     return this.loadDetails() !== undefined;
   };
 
-  loadDetails = (): Submitter | undefined => {    
+  loadDetails = (): Submitter | undefined => {
     return this.user;
   };
 
   loadUser = async (): Promise<void> => {
     const { idToken } = await this.loadUserToken();
     if (idToken) {
-      const parsedUser: any = idToken.payload;  
+      const parsedUser: any = idToken.payload;
       const address = parsedUser["address"];
       const streetAddress = address !== undefined ? JSON.parse(address.formatted) : {};
 
@@ -50,22 +57,22 @@ class ForestClientUserSession implements SessionProperties {
           city: toTitleCase(streetAddress.locality),
           country: {
             value: streetAddress.country,
-            text: ""
+            text: "",
           },
           province: {
             value: streetAddress.region,
-            text: ""
+            text: "",
           },
-          postalCode: streetAddress.postal_code
+          postalCode: streetAddress.postal_code,
         },
         email: parsedUser.email,
         ...this.processName(parsedUser, parsedUser["custom:idp_name"]),
       };
-    }else{
+    } else {
       this.user = undefined;
     }
   };
-  
+
   private processName = (
     payload: any,
     provider: string
@@ -106,22 +113,23 @@ class ForestClientUserSession implements SessionProperties {
   };
 
   private loadUserToken = async (): Promise<any> => {
-
-    if(nodeEnv !== "test"){
+    if (nodeEnv !== "test") {
       const cognitoTokens = (await fetchAuthSession()).tokens ?? {};
       this.setUserTokenFromCookie();
       return Promise.resolve(cognitoTokens);
-    }else {
+    } else {
       // This is for test only
       this.setUserTokenFromCookie();
-      if(this.token){       
-        const jwtBody = this.token ? JSON.parse(atob(this.token.split(".")[1])) : null;
-        return Promise.resolve({ idToken: { payload:jwtBody } });
-      }else{
+      if (this.token) {
+        const jwtBody = this.token
+          ? JSON.parse(atob(this.token.split(".")[1]))
+          : null;
+        return Promise.resolve({ idToken: { payload: jwtBody } });
+      } else {
         return Promise.resolve({ idToken: null });
       }
     }
-  }
+  };
 
   private getCookie = (name: string): string => {
     const cookie = document.cookie
@@ -132,15 +140,17 @@ class ForestClientUserSession implements SessionProperties {
 
   private setUserTokenFromCookie = (): void => {
     const baseCookieName = `CognitoIdentityServiceProvider.${cognitoClientId}`;
-    const userId = encodeURIComponent(this.getCookie(`${baseCookieName}.LastAuthUser`));
-    if(userId){
+    const userId = encodeURIComponent(
+      this.getCookie(`${baseCookieName}.LastAuthUser`)
+    );
+    if (userId) {
       const idTokenCookieName = `${baseCookieName}.${userId}.idToken`;
       const idToken = this.getCookie(idTokenCookieName);
-      this.token = idToken;        
-    }else{
+      this.token = idToken;
+    } else {
       this.token = undefined;
     }
-  }
+  };
 }
 
 export default new ForestClientUserSession();
