@@ -20,6 +20,7 @@ class ForestClientUserSession implements SessionProperties {
   logOut = (): void => {
     this.user = undefined;
     signOut();
+
     if (nodeEnv === "test") {
       window.location.href = "/";
     }

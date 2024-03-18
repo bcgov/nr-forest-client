@@ -25,7 +25,11 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
 // Importing session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
-import { getEnumKeyByEnumValue, openMailtoLink, getObfuscatedEmail } from "@/services/ForestClientService";
+import {
+  getEnumKeyByEnumValue,
+  openMailtoLink,
+  getObfuscatedEmail,
+} from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
@@ -64,6 +68,7 @@ const validation = reactive<Record<string, boolean>>({
   business: !!formData.value.businessInformation.businessName,
   birthdate: true, // temporary value
   district: false,
+  individual: false,
 });
 
 const checkValid = () =>
@@ -92,14 +97,17 @@ const showBirthDate = computed(
   () =>
     validation.business &&
     (selectedOption.value === BusinessTypeEnum.U ||
-      formData.value.businessInformation.clientType === ClientTypeEnum[ClientTypeEnum.RSP]),
+      formData.value.businessInformation.clientType ===
+        ClientTypeEnum[ClientTypeEnum.RSP])
 );
 
 // validation.birthdate initialization
-validation.birthdate = !showBirthDate.value || !!formData.value.businessInformation.businessName;
+validation.birthdate =
+  !showBirthDate.value || !!formData.value.businessInformation.businessName;
 
 const autoCompleteUrl = computed(
-  () => `/api/clients/name/${formData.value.businessInformation.businessName || ""}`
+  () =>
+    `/api/clients/name/${formData.value.businessInformation.businessName || ""}`
 );
 
 const showAutoCompleteInfo = ref<boolean>(false);
@@ -109,12 +117,13 @@ const showNonPersonSPError = ref<boolean>(false);
 const showUnsupportedClientTypeError = ref<boolean>(false);
 const showDetailsLoading = ref<boolean>(false);
 const detailsData = ref(null);
+const soleProprietorOwner = ref<string>("");
 
 const toggleErrorMessages = (
   goodStanding: boolean | null = null,
   duplicated: boolean | null = null,
   nonPersonSP: boolean | null = null,
-  unsupportedClientType: boolean | null = null,
+  unsupportedClientType: boolean | null = null
 ) => {
   showGoodStandingError.value = goodStanding ?? false;
   showDuplicatedError.value = duplicated ?? false;
@@ -123,7 +132,12 @@ const toggleErrorMessages = (
 
   if (goodStanding || duplicated || nonPersonSP || unsupportedClientType) {
     progressIndicatorBus.emit({ kind: "disabled", value: true });
-    exitBus.emit({ goodStanding, duplicated, nonPersonSP, unsupportedClientType });
+    exitBus.emit({
+      goodStanding,
+      duplicated,
+      nonPersonSP,
+      unsupportedClientType,
+    });
   } else {
     progressIndicatorBus.emit({ kind: "disabled", value: false });
     exitBus.emit({
@@ -162,7 +176,7 @@ watch([autoCompleteResult], () => {
     const { error, loading: detailsLoading } = useFetchTo(
       `/api/clients/${autoCompleteResult.value.code}`,
       detailsData,
-      {},
+      {}
     );
 
     showDetailsLoading.value = true;
@@ -180,7 +194,7 @@ watch([autoCompleteResult], () => {
         receivedClientType.value = null;
         useFetchTo(
           `/api/codes/clientTypes/${formData.value.businessInformation.clientType}`,
-          receivedClientType,
+          receivedClientType
         );
         return;
       }
@@ -199,29 +213,82 @@ watch([autoCompleteResult], () => {
       () => (showDetailsLoading.value = detailsLoading.value)
     );
   }
+
+  if (!showBirthDate.value) {
+    validation.individual = true;
+  }
 });
+
+/**
+ * Checks if an individual exists for provided last name.
+ * @param {string} lastName - The last name to check.
+ */
+const checkForIndividualValid = (lastName: string) => {
+  const { error: validationError } = useFetch(
+    `/api/clients/individual/${ForestClientUserSession.user?.userId
+      .split("\\")
+      .pop()}?lastName=${lastName}`
+  );
+  watch([validationError], () => {
+    if (validationError.value.response?.status === 409) {
+      validation.business = false;
+      toggleErrorMessages(null, true, null);
+      generalErrorBus.emit(validationError.value.response?.data ?? "");
+    }
+  });
+};
 
 watch([detailsData], () => {
   if (detailsData.value) {
     const forestClientDetails: ForestClientDetailsDto = detailsData.value;
+    
     if (!features.BCEID_MULTI_ADDRESS) {
       forestClientDetails?.contacts?.forEach((contact) => {
         contact.locationNames = [{ ...defaultLocation }];
       });
     }
+
     formData.value.location.contacts = [
       formData.value.location.contacts[0],
       ...forestClientDetails.contacts,
     ];
+
     formData.value.location.addresses = exportAddress(
       forestClientDetails.addresses
-    );    
+    );
+
     formData.value.businessInformation.goodStandingInd =
-      forestClientDetails.goodStanding === null ? null : (forestClientDetails.goodStanding ? "Y" : "N");
-    toggleErrorMessages(forestClientDetails.goodStanding === null ? false : (forestClientDetails.goodStanding ? false : true), null);
+      (forestClientDetails.goodStanding ?? false) ? "Y" : "N";
+
+    toggleErrorMessages(
+      (forestClientDetails.goodStanding ?? false) ? false : true,
+      null
+    );
+
     validation.business = forestClientDetails.goodStanding;
 
     emit("update:data", formData.value);
+
+    if (forestClientDetails.contacts.length > 0) {
+      soleProprietorOwner.value = forestClientDetails.contacts[0].lastName;
+    }
+  }
+});
+
+/**
+ * Computed property that allows checks if the birthdate is valid and should be shown.
+ *
+ * @returns {boolean} - Returns true if the birthdate is valid and birthdate should be shown, otherwise returns false.
+ */
+const individualCheck = computed(() => {
+  return showBirthDate.value && validation.birthdate;
+});
+
+watch(individualCheck, (value) => {
+  if (value) {
+    checkForIndividualValid(
+      soleProprietorOwner.value ?? ForestClientUserSession.user?.lastName
+    );
   }
 });
 
@@ -232,8 +299,14 @@ watch([selectedOption], () => {
   if (selectedOption.value === BusinessTypeEnum.U) {
     const fromName = `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`;
 
-    formData.value.businessInformation.businessType = getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U);
-    formData.value.businessInformation.clientType = getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.USP);
+    formData.value.businessInformation.businessType = getEnumKeyByEnumValue(
+      BusinessTypeEnum,
+      BusinessTypeEnum.U
+    );
+    formData.value.businessInformation.clientType = getEnumKeyByEnumValue(
+      ClientTypeEnum,
+      ClientTypeEnum.USP
+    );
     formData.value.businessInformation.businessName = ForestClientUserSession
       .user?.businessName
       ? ForestClientUserSession.user?.businessName
@@ -241,16 +314,6 @@ watch([selectedOption], () => {
     validation.business = true;
     formData.value.businessInformation.goodStandingInd = "Y";
     emit("update:data", formData.value);
-
-
-    const { error:validationError } = useFetch(`/api/clients/individual/${ForestClientUserSession.user?.userId.split('\\').pop()}?lastName=${ForestClientUserSession.user?.lastName}`);
-    watch([validationError], () => {
-      if (validationError.value.response?.status === 409) {   
-        validation.business = false;     
-        toggleErrorMessages(null, true, null);
-        generalErrorBus.emit(validationError.value.response?.data ?? "")
-      }  
-    });
   } else {
     // Registered business
     formData.value.businessInformation.businessName = "";
@@ -263,7 +326,7 @@ watch(
   () => formData.value.businessInformation.businessName,
   () => {
     toggleErrorMessages();
-  },
+  }
 );
 
 watch(showBirthDate, (value) => {
@@ -282,8 +345,8 @@ const bcRegistryEmail = "BCRegistries@gov.bc.ca";
 
 const districtInitialValue = computed(() =>
   props.districtsList.find(
-    (district) => district.code === formData.value.businessInformation.district,
-  ),
+    (district) => district.code === formData.value.businessInformation.district
+  )
 );
 
 const updateDistrict = (value: CodeNameType | undefined) => {
