@@ -218,11 +218,11 @@ class ClientSubmissionControllerIntegrationTest
     BodyContentSpec expectedBody =
         client
             .mutateWith(csrf())
-            .mutateWith(mockUser().roles(ApplicationConstant.ROLE_IDIR_USER))
+            .mutateWith(mockUser().roles(ApplicationConstant.ROLE_EDITOR))
             .mutateWith(
                 mockJwt()
                     .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
-                    .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_IDIR_USER))
+                    .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_EDITOR))
             )
             .get()
             .uri(uri)
@@ -257,7 +257,7 @@ class ClientSubmissionControllerIntegrationTest
         .mutateWith(
             mockJwt()
                     .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_IDIR_USER))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_EDITOR))
         )
         .get()
         .uri("/api/clients/submissions/1")
@@ -279,7 +279,7 @@ class ClientSubmissionControllerIntegrationTest
         .mutateWith(
             mockJwt()
                     .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_IDIR_USER))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_EDITOR))
         )
         .post()
         .uri("/api/clients/submissions/1")
@@ -369,7 +369,7 @@ class ClientSubmissionControllerIntegrationTest
         .mutateWith(
             mockJwt()
                     .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_IDIR_USER))
+                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_EDITOR))
         )
         .post()
         .uri("/api/clients/submissions/1")
