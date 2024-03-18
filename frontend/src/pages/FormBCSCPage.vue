@@ -399,7 +399,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
     </div>
   </div>
     
-  <div class="form-steps-section">
+  <div class="form-steps-section" role="form">
     <h2 data-scroll="scroll-0">
       Personal information
     </h2>
