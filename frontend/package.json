@@ -1,7 +1,7 @@
 {
   "name": "forest-client-frontend",
   "version": "0.0.1",
-  "description": "Frontend for forest client project",
+  "description": "Frontend for Forests Client Management System project",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bcgov/nr-forest-client.git"
