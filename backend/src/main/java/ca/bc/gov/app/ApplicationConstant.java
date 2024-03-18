@@ -102,7 +102,7 @@ public final class ApplicationConstant {
   public static final String ROLE_IDIR_USER = "IDIR_USER";
   public static final String ROLE_SERVICE_USER = "S2S_USER";
 
-  public static final String ROLE_EDITOR = "EDITOR";
+  public static final String ROLE_EDITOR = "CLIENT_EDITOR";
 
 }
 
