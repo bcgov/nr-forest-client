@@ -101,5 +101,8 @@ public final class ApplicationConstant {
   public static final String ROLE_BCSC_USER = "BCSC_USER";
   public static final String ROLE_IDIR_USER = "IDIR_USER";
   public static final String ROLE_SERVICE_USER = "S2S_USER";
+
+  public static final String ROLE_EDITOR = "CLIENT_EDITOR";
+
 }
 
