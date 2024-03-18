@@ -431,7 +431,7 @@ watch(cdsProgressStepArray, async (array) => {
     </div>
   </div>
 
-  <div class="form-steps">
+  <div class="form-steps" role="form">
     <div v-if="currentTab == 0" class="form-steps-01">
       <div class="form-steps-01-title">
         <h2 data-scroll="scroll-0">Before you begin</h2>
