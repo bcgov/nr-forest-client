@@ -46,8 +46,6 @@ jobs:
     env:
       ZONE: test
       URL: forestclient-tst.nrs.gov.bc.ca
-      BROKER_URL: https://nr-broker.apps.silver.devops.gov.bc.ca
-      VAULT_ADDR: https://vault-iit.apps.silver.devops.gov.bc.ca
     environment: test
     runs-on: ubuntu-22.04
     steps:
