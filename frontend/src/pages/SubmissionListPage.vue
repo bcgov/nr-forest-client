@@ -25,7 +25,6 @@ import Approved16 from "@carbon/icons-vue/es/task--complete/16";
 import Review16 from "@carbon/icons-vue/es/data--view--alt/16";
 
 
-
 const router = useRouter();
 
 // Reference for the skelleton table
