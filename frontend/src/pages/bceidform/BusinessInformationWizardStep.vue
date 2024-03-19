@@ -224,16 +224,23 @@ watch([autoCompleteResult], () => {
  * @param {string} lastName - The last name to check.
  */
 const checkForIndividualValid = (lastName: string) => {
-  const { error: validationError } = useFetch(
+  const { error: validationError, response: individualResponse } = useFetch(
     `/api/clients/individual/${ForestClientUserSession.user?.userId
       .split("\\")
       .pop()}?lastName=${lastName}`
   );
-  watch([validationError], () => {
-    if (validationError.value.response?.status === 409) {
+  watch(validationError, (watchValue) => {
+    if (watchValue.response?.status === 409) {
       validation.business = false;
       toggleErrorMessages(null, true, null);
-      generalErrorBus.emit(validationError.value.response?.data ?? "");
+      generalErrorBus.emit(watchValue.response?.data ?? "");
+    }else{
+      validation.individual = true;
+    }
+  });
+  watch(individualResponse, (watchValue) => {
+    if(watchValue.status === 200){
+      validation.individual = true;
     }
   });
 };
@@ -287,7 +294,7 @@ const individualCheck = computed(() => {
 watch(individualCheck, (value) => {
   if (value) {
     checkForIndividualValid(
-      soleProprietorOwner.value ?? ForestClientUserSession.user?.lastName
+      soleProprietorOwner.value || ForestClientUserSession.user?.lastName
     );
   }
 });

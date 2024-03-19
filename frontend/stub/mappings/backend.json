@@ -564,6 +564,21 @@
       "response": {
         "status": 200
       }
+    },
+    {
+      "name": "No Individual Match for BCeID",
+      "request": {
+        "urlPath": "/api/clients/individual/uattest",
+        "method": "GET",
+        "queryParameters": {
+          "lastName": {
+            "equalTo": "Uat"
+          }
+        }
+      },
+      "response": {
+        "status": 200
+      }
     }
   ]
 }
