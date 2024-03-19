@@ -229,11 +229,11 @@ const checkForIndividualValid = (lastName: string) => {
       .split("\\")
       .pop()}?lastName=${lastName}`
   );
-  watch([validationError], () => {
-    if (validationError.value.response?.status === 409) {
+  watch(validationError, (watchValue) => {
+    if (watchValue.response?.status === 409) {
       validation.business = false;
       toggleErrorMessages(null, true, null);
-      generalErrorBus.emit(validationError.value.response?.data ?? "");
+      generalErrorBus.emit(watchValue.response?.data ?? "");
     }else{
       validation.individual = true;
     }
