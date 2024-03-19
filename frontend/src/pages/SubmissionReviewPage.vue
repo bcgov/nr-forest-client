@@ -290,6 +290,8 @@ const renderListItem = (label, clientNumbers) => {
     finalLabel
   );
 };
+
+const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
 </script>
 
 <template>
@@ -303,13 +305,15 @@ const renderListItem = (label, clientNumbers) => {
           
         </cds-breadcrumb>
 
-        <h1 class="submission-details--title">
+        <h1 class="submission-details--title" v-if="userhasAuthority">
           <span>
             {{ toTitleCase(data.business.organizationName) }}
           </span>
         </h1>
+        <div v-if="userhasAuthority">
         <p class="body-02 light-theme-text-text-secondary" data-testid="subtitle" v-if="data.submissionType === 'Auto approved client'">Check this new client data</p>
         <p class="body-02 light-theme-text-text-secondary" data-testid="subtitle" v-else>Check and manage this submission for a new client number</p>
+        </div>
       </div>
       
       <div class="hide-when-less-than-two-children"><!--
@@ -317,7 +321,7 @@ const renderListItem = (label, clientNumbers) => {
       -->
         <div data-scroll="top-notification" class="header-offset"></div>
         <cds-actionable-notification
-          v-if="networkErrorMsg !== ''"
+          v-if="networkErrorMsg !== '' && userhasAuthority"
           v-shadow="true"
           low-contrast="true"
           hide-close-button="true"
@@ -331,7 +335,7 @@ const renderListItem = (label, clientNumbers) => {
         </cds-actionable-notification>
 
         <cds-actionable-notification
-          v-if="reviewConflictError"
+          v-if="reviewConflictError && userhasAuthority"
           v-shadow="true"
           low-contrast="true"
           hide-close-button="true"
@@ -346,7 +350,7 @@ const renderListItem = (label, clientNumbers) => {
       </div>
 
       <cds-actionable-notification
-        v-if="data.submissionType === 'Auto approved client'"
+        v-if="data.submissionType === 'Auto approved client' && userhasAuthority"
         v-shadow="true"
         low-contrast="true"
         hide-close-button="true"
@@ -363,7 +367,7 @@ const renderListItem = (label, clientNumbers) => {
       </cds-actionable-notification>
 
       <cds-inline-notification
-        v-if="data.submissionType === 'Review new client' && data.submissionStatus === 'Approved'"
+        v-if="data.submissionType === 'Review new client' && data.submissionStatus === 'Approved' && userhasAuthority"
         v-shadow="true"
         low-contrast="true"
         hide-close-button="true"
@@ -378,7 +382,8 @@ const renderListItem = (label, clientNumbers) => {
         v-if="
           data.submissionType === 'Review new client' &&
           data.matchers.goodStanding === 'Value not found' &&
-          data.submissionStatus !== 'Approved'
+          data.submissionStatus !== 'Approved' &&
+          userhasAuthority
         "
         v-shadow="true"
         low-contrast="true"
@@ -398,7 +403,12 @@ const renderListItem = (label, clientNumbers) => {
       </cds-actionable-notification>
 
       <cds-actionable-notification
-          v-if="data.submissionType === 'Review new client' && matchingData.length > 0 && data.submissionStatus !== 'Approved'"
+          v-if="
+          data.submissionType === 'Review new client' && 
+          matchingData.length > 0 && 
+          data.submissionStatus !== 'Approved' &&
+          userhasAuthority
+          "
           v-shadow="true"
           low-contrast="true"
           hide-close-button="true"
@@ -424,7 +434,21 @@ const renderListItem = (label, clientNumbers) => {
         </div>    
       </cds-actionable-notification>
 
-      <div class="grouping-14">
+      <cds-actionable-notification
+          v-if="!userhasAuthority"
+          v-shadow="true"
+          low-contrast="true"
+          hide-close-button="true"
+          open="true"
+          kind="error"
+          title="You are not authorized to access this page"
+        >
+          <div>
+          Please email FORHVAP.CLIADMIN@gov.bc.ca for help
+          </div>
+        </cds-actionable-notification>
+
+      <div class="grouping-14" v-if="userhasAuthority">
         <div class="grouping-05-short">
           <div>
             <h2 class="mg-tl-2 heading-06">Client summary</h2>

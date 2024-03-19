@@ -10,6 +10,7 @@ import { cognitoEnvironment, nodeEnv, cognitoClientId } from "@/CoreConstants";
 class ForestClientUserSession implements SessionProperties {
   public user: Submitter | undefined;
   public token: string | undefined;
+  public authorities: string[] = [];
 
   logIn = (provider: string): void => {
     signInWithRedirect({
@@ -19,6 +20,8 @@ class ForestClientUserSession implements SessionProperties {
 
   logOut = (): void => {
     this.user = undefined;
+    this.token = undefined;
+    this.authorities = [];
     signOut();
 
     if (nodeEnv === "test") {
@@ -68,6 +71,17 @@ class ForestClientUserSession implements SessionProperties {
         email: parsedUser.email,
         ...this.processName(parsedUser, parsedUser["custom:idp_name"]),
       };
+      this.authorities.push(`${provider}_USER`.toUpperCase());
+      
+      if(parsedUser["cognito:groups"]){
+        const groups : string[] | undefined = parsedUser["cognito:groups"];                
+        console.log(groups, typeof groups)
+        if (parsedUser["cognito:groups"]) {
+          const groups: string[] | undefined = parsedUser["cognito:groups"];        
+          groups?.forEach((group) => this.authorities.push(group));
+        }
+        
+    }
     } else {
       this.user = undefined;
     }

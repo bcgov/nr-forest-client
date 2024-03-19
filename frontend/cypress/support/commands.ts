@@ -78,6 +78,8 @@ Cypress.Commands.add(
 
     const userId = generateRandomHex(32);
 
+    const roles = provider === "idir" ? ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"] : ["USER"];
+
     const jwtBody = {
       "custom:idp_display_name": name,
       "custom:idp_name": provider,
@@ -85,6 +87,7 @@ Cypress.Commands.add(
       email,
       firstName: "UAT",
       lastName: "Test",
+      "cognito:groups": roles,
       ...extra,
     };
 

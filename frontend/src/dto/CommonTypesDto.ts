@@ -99,6 +99,7 @@ export interface ModalNotification {
 export interface SessionProperties {
   user: Submitter | undefined;
   token: string | undefined;
+  authorities: string[];
   logIn: (provider: string) => void;
   logOut: () => void;
   isLoggedIn: () => boolean;
