@@ -65,7 +65,13 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.ROLE_BCSC_USER,
             ApplicationConstant.ROLE_SERVICE_USER
         )
-        // Only Editors users can get details and approve/reject submissions
+        // Only Editors and Admin can approve/reject submissions
+        .pathMatchers(HttpMethod.POST,"/api/clients/submissions/{id:[0-9]+}")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN
+        )
+        // Only Editors, Viewers and Admin users can get details
         .pathMatchers("/api/clients/submissions/{id:[0-9]+}")
         .hasAnyRole(
             ApplicationConstant.ROLE_EDITOR
@@ -78,7 +84,9 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
         )
         .pathMatchers(HttpMethod.GET, "/api/clients/submissions/**")
         .hasAnyRole(
-            ApplicationConstant.ROLE_EDITOR
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN
         )
         // All BCSC, BCEID, and IDIR users can access the client APIs
         .pathMatchers("/api/clients/**")

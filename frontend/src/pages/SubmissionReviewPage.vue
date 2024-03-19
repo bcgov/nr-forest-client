@@ -292,6 +292,11 @@ const renderListItem = (label, clientNumbers) => {
 };
 
 const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
+const isNotEditor = !ForestClientUserSession.authorities.includes('CLIENT_EDITOR') && !ForestClientUserSession.authorities.includes('CLIENT_ADMIN');
+
+if(isNotEditor){
+  submitDisabled.value = true;
+}
 </script>
 
 <template>
@@ -447,6 +452,21 @@ const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some
           Please email FORHVAP.CLIADMIN@gov.bc.ca for help
           </div>
         </cds-actionable-notification>
+
+        <cds-actionable-notification
+        v-if="isNotEditor"
+        v-shadow="true"
+        low-contrast="true"
+        hide-close-button="true"
+        open="true"
+        kind="warning"
+        title="You are not authorized to modify client information"      
+        >    
+        <div>
+          <p>To change your role please contact Client Admin through email FORHVAP.CLIADMIN@gov.bc.ca for help
+          </p>
+        </div>
+      </cds-actionable-notification>
 
       <div class="grouping-14" v-if="userhasAuthority">
         <div class="grouping-05-short">
