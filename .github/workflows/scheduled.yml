@@ -22,7 +22,7 @@ jobs:
           - name: backend
             target: https://nr-forest-client-test-backend.apps.silver.devops.gov.bc.ca
           - name: frontend
-            target: https://nr-forest-client-test-frontend.apps.silver.devops.gov.bc.ca
+            target: https://forestclient-tst.nrs.gov.bc.ca
     steps:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.9.0
