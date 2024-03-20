@@ -454,7 +454,7 @@ if(isNotEditor){
         </cds-actionable-notification>
 
         <cds-actionable-notification
-        v-if="isNotEditor"
+        v-if="isNotEditor && userhasAuthority"
         v-shadow="true"
         low-contrast="true"
         hide-close-button="true"

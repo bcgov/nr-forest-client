@@ -28,42 +28,48 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
         // Only service users can access the email endpoint
         .pathMatchers("/api/ches/email")
         .hasAnyRole(
-            ApplicationConstant.ROLE_SERVICE_USER
+            ApplicationConstant.USERTYPE_SERVICE_USER
         )
         // Only BCEID business users and BCSC users can access the duplicate endpoint
         .pathMatchers("/api/ches/duplicate")
         .hasAnyRole(
-            ApplicationConstant.ROLE_BCEIDBUSINESS_USER,
-            ApplicationConstant.ROLE_BCSC_USER
+            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+            ApplicationConstant.USERTYPE_BCSC_USER
         )
         // Only BCEID business users and BCSC users can access the addresses endpoint
         .pathMatchers("/api/addresses/**")
         .hasAnyRole(
-            ApplicationConstant.ROLE_BCEIDBUSINESS_USER,
-            ApplicationConstant.ROLE_BCSC_USER
+            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+            ApplicationConstant.USERTYPE_BCSC_USER
         )
         // IDIR users, BCEID business users, and BCSC users can access the codes endpoint
         .pathMatchers("/api/codes/**")
         .hasAnyRole(
-            ApplicationConstant.ROLE_IDIR_USER,
-            ApplicationConstant.ROLE_BCEIDBUSINESS_USER,
-            ApplicationConstant.ROLE_BCSC_USER
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+            ApplicationConstant.USERTYPE_BCSC_USER
         )
         // IDIR users, BCEID business users, BCSC users, and service users can access the districts endpoint
         .pathMatchers("/api/districts/**")
         .hasAnyRole(
-            ApplicationConstant.ROLE_IDIR_USER,
-            ApplicationConstant.ROLE_BCEIDBUSINESS_USER,
-            ApplicationConstant.ROLE_BCSC_USER,
-            ApplicationConstant.ROLE_SERVICE_USER
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+            ApplicationConstant.USERTYPE_BCSC_USER,
+            ApplicationConstant.USERTYPE_SERVICE_USER
         )
         // IDIR users, BCEID business users, BCSC users, and service users can access the countries endpoint
         .pathMatchers("/api/countries/**")
         .hasAnyRole(
-            ApplicationConstant.ROLE_IDIR_USER,
-            ApplicationConstant.ROLE_BCEIDBUSINESS_USER,
-            ApplicationConstant.ROLE_BCSC_USER,
-            ApplicationConstant.ROLE_SERVICE_USER
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+            ApplicationConstant.USERTYPE_BCSC_USER,
+            ApplicationConstant.USERTYPE_SERVICE_USER
         )
         // Only Editors and Admin can approve/reject submissions
         .pathMatchers(HttpMethod.POST,"/api/clients/submissions/{id:[0-9]+}")
@@ -81,8 +87,8 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
         // Only Editors users can access the list of submissions, and other users can create submissions
         .pathMatchers(HttpMethod.POST, "/api/clients/submissions/**")
         .hasAnyRole(
-            ApplicationConstant.ROLE_BCEIDBUSINESS_USER,
-            ApplicationConstant.ROLE_BCSC_USER
+            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+            ApplicationConstant.USERTYPE_BCSC_USER
         )
         .pathMatchers(HttpMethod.GET, "/api/clients/submissions/**")
         .hasAnyRole(
@@ -93,9 +99,11 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
         // All BCSC, BCEID, and IDIR users can access the client APIs
         .pathMatchers("/api/clients/**")
         .hasAnyRole(
-            ApplicationConstant.ROLE_BCEIDBUSINESS_USER,
-            ApplicationConstant.ROLE_BCSC_USER,
-            ApplicationConstant.ROLE_IDIR_USER
+            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+            ApplicationConstant.USERTYPE_BCSC_USER,
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN
         )
         // All other exchanges are denied by default
         .anyExchange().denyAll();

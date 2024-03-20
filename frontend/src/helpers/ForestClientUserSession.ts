@@ -11,6 +11,7 @@ class ForestClientUserSession implements SessionProperties {
   public user: Submitter | undefined;
   public token: string | undefined;
   public authorities: string[] = [];
+  sessionRefreshIntervalId: any;
 
   logIn = (provider: string): void => {
     signInWithRedirect({
@@ -22,6 +23,10 @@ class ForestClientUserSession implements SessionProperties {
     this.user = undefined;
     this.token = undefined;
     this.authorities = [];
+
+    if (this.sessionRefreshIntervalId)
+      clearInterval(this.sessionRefreshIntervalId);
+
     signOut();
 
     if (nodeEnv === "test") {
@@ -79,17 +84,20 @@ class ForestClientUserSession implements SessionProperties {
       this.authorities.push(`${provider}_USER`.toUpperCase());
 
       if (parsedUser["cognito:groups"]) {
-        const groups: string[] | undefined = parsedUser["cognito:groups"];
-        console.log(groups, typeof groups);
         if (parsedUser["cognito:groups"]) {
           const groups: string[] | undefined = parsedUser["cognito:groups"];
           groups?.forEach((group) => this.authorities.push(group));
         }
       }
+      if (!this.sessionRefreshIntervalId){
+        this.sessionRefreshIntervalId = setInterval(() => this.loadUser(), 5 * 60 * 1000);
+      }
     } else {
       this.user = undefined;
     }
   };
+
+
 
   private processName = (
     payload: any,

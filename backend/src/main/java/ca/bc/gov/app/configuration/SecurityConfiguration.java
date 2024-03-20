@@ -95,7 +95,7 @@ SecurityWebFilterChain springSecurityFilterChain(
                     serviceAccount.name(),
                     String.format("{noop}%s", serviceAccount.secret()),
                     List.of(
-                        new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_SERVICE_USER))
+                        new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.USERTYPE_SERVICE_USER))
                 )
             )
             .map(UserDetails.class::cast)
