@@ -24,7 +24,7 @@ class ForestClientUserSession implements SessionProperties {
     this.token = undefined;
     this.authorities = [];
 
-    if(this.sessionRefreshIntervalId)
+    if (this.sessionRefreshIntervalId)
       clearInterval(this.sessionRefreshIntervalId);
 
     signOut();
