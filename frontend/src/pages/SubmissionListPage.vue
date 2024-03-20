@@ -12,14 +12,18 @@ import "@carbon/web-components/es/components/tooltip/index";
 // Composables
 import { useFetchTo } from "@/composables/useFetch";
 import { useRouter } from "vue-router";
+import { useEventBus } from "@vueuse/core";
 // Types
 import type { SubmissionList } from "@/dto/CommonTypesDto";
 import { formatDistanceToNow, format } from "date-fns";
+import { toTitleCase } from "@/services/ForestClientService";
+// Session
+import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // @ts-ignore
 import Approved16 from "@carbon/icons-vue/es/task--complete/16";
 // @ts-ignore
 import Review16 from "@carbon/icons-vue/es/data--view--alt/16";
-import { toTitleCase } from "@/services/ForestClientService";
+
 
 const router = useRouter();
 
@@ -108,11 +112,13 @@ onMounted(() => {
   disableSkelleton();
   watch(skeletonReference, disableSkelleton);
 });
+
+const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
 </script>
 
 <template>
   <div id="screen" class="submission-list">
-    <div id="title">
+    <div id="title" v-if="userhasAuthority">
       <div>
         <div class="form-header-title mg-sd-25">
           <h1>Submissions</h1>
@@ -121,7 +127,7 @@ onMounted(() => {
       </div>
     </div>
     
-    <div id="datatable">
+    <div id="datatable" v-if="userhasAuthority">
       <cds-table use-zebra-styles v-if="!loading">
         <cds-table-head>
           <cds-table-header-row>
@@ -159,7 +165,8 @@ onMounted(() => {
       :headers="['Client name', 'Client type', 'District', 'Submitted on', 'Submission status']"
       />
     </div>
-    <div class="paginator" v-if="totalItems">
+
+    <div class="paginator" v-if="totalItems && userhasAuthority">
       <cds-pagination
           items-per-page-text="Submissions per page"        
           :page-size="pageSize" 
@@ -173,6 +180,20 @@ onMounted(() => {
             <cds-select-item :value="50">50</cds-select-item>
       </cds-pagination>
     </div>
+
+    <cds-actionable-notification
+          v-if="!userhasAuthority"
+          v-shadow="true"
+          low-contrast="true"
+          hide-close-button="true"
+          open="true"
+          kind="error"
+          title="You are not authorized to access this page"
+        >
+          <div>
+          Please email FORHVAP.CLIADMIN@gov.bc.ca for help
+          </div>
+        </cds-actionable-notification>
   </div>
 
 </template>

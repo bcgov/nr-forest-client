@@ -10,6 +10,7 @@ import { cognitoEnvironment, nodeEnv, cognitoClientId } from "@/CoreConstants";
 class ForestClientUserSession implements SessionProperties {
   public user: Submitter | undefined;
   public token: string | undefined;
+  public authorities: string[] = [];
 
   logIn = (provider: string): void => {
     signInWithRedirect({
@@ -19,6 +20,8 @@ class ForestClientUserSession implements SessionProperties {
 
   logOut = (): void => {
     this.user = undefined;
+    this.token = undefined;
+    this.authorities = [];
     signOut();
 
     if (nodeEnv === "test") {
@@ -39,16 +42,21 @@ class ForestClientUserSession implements SessionProperties {
     if (idToken) {
       const parsedUser: any = idToken.payload;
       const address = parsedUser["address"];
-      const streetAddress = address !== undefined ? JSON.parse(address.formatted) : {};
+      const streetAddress =
+        address !== undefined ? JSON.parse(address.formatted) : {};
 
-      const provider =parsedUser["custom:idp_name"].startsWith("ca.bc.gov.flnr.fam.")
+      const provider = parsedUser["custom:idp_name"].startsWith(
+        "ca.bc.gov.flnr.fam."
+      )
         ? "bcsc"
         : parsedUser["custom:idp_name"];
 
       this.user = {
         name: toTitleCase(parsedUser["custom:idp_display_name"]),
         provider: provider,
-        userId: `${provider}\\${parsedUser["custom:idp_username"] ?? parsedUser["custom:idp_user_id"]}`,
+        userId: `${provider}\\${
+          parsedUser["custom:idp_username"] ?? parsedUser["custom:idp_user_id"]
+        }`,
         businessId: parsedUser["custom:idp_business_id"] ?? "",
         birthdate: parsedUser["birthdate"],
         address: {
@@ -68,6 +76,16 @@ class ForestClientUserSession implements SessionProperties {
         email: parsedUser.email,
         ...this.processName(parsedUser, parsedUser["custom:idp_name"]),
       };
+      this.authorities.push(`${provider}_USER`.toUpperCase());
+
+      if (parsedUser["cognito:groups"]) {
+        const groups: string[] | undefined = parsedUser["cognito:groups"];
+        console.log(groups, typeof groups);
+        if (parsedUser["cognito:groups"]) {
+          const groups: string[] | undefined = parsedUser["cognito:groups"];
+          groups?.forEach((group) => this.authorities.push(group));
+        }
+      }
     } else {
       this.user = undefined;
     }
