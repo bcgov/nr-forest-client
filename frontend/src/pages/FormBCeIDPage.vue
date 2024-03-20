@@ -407,7 +407,10 @@ watch(cdsProgressStepArray, async (array) => {
         New client application
       </h1>
     </div>
-    <cds-progress-indicator space-equally :vertical="isSmallScreen">
+    <div class="sr-only" role="status">
+      Current step: {{ progressData[currentTab].title }}. Step {{ currentTab + 1 }} of {{ progressData.length }}.
+    </div>
+    <cds-progress-indicator space-equally :vertical="isSmallScreen" aria-label="Form steps">
       <cds-progress-step 
         v-for="item in progressData"
         ref="cdsProgressStepArray"
@@ -418,6 +421,7 @@ watch(cdsProgressStepArray, async (array) => {
         :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"          
         :disabled="item.disabled"
         v-shadow="3"
+        :aria-current="item.step === currentTab ? 'step' : 'false'"
       />
     </cds-progress-indicator>
     <div class="hide-when-less-than-two-children"><!--
