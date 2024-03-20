@@ -74,7 +74,9 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
         // Only Editors, Viewers and Admin users can get details
         .pathMatchers("/api/clients/submissions/{id:[0-9]+}")
         .hasAnyRole(
-            ApplicationConstant.ROLE_EDITOR
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN
         )
         // Only Editors users can access the list of submissions, and other users can create submissions
         .pathMatchers(HttpMethod.POST, "/api/clients/submissions/**")
