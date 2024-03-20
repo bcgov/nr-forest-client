@@ -10,7 +10,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
-import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockOAuth2Login;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import ca.bc.gov.app.ApplicationConstant;
@@ -93,7 +92,7 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
   void shouldSubmitRegisteredBusinessData() {
     client
         .mutateWith(csrf())
-        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_SERVICE_USER))
+        .mutateWith(mockUser().roles(ApplicationConstant.USERTYPE_SERVICE_USER))
         .post()
         .uri("/api/ches/email")
         .body(Mono.just(EMAIL_REQUEST), EmailRequestDto.class)
@@ -120,7 +119,7 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
   void shouldRejectForbidden() {
     client
         .mutateWith(csrf())
-        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+        .mutateWith(mockUser().roles(ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         .post()
         .uri("/api/ches/email")
         .body(Mono.just(EMAIL_REQUEST), EmailRequestDto.class)
@@ -164,7 +163,7 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
         .mutateWith(
             mockJwt()
                 .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_BCEIDBUSINESS_USER))
+                .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .post()
         .uri("/api/ches/duplicate")

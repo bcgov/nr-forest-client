@@ -49,7 +49,7 @@ class ClientAddressControllerIntegrationTest  extends AbstractTestContainerInteg
 
     client = client
         .mutateWith(csrf())
-        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_BCSC_USER))
+        .mutateWith(mockUser().roles(ApplicationConstant.USERTYPE_BCSC_USER))
         .mutate()
         .responseTimeout(Duration.ofSeconds(10))
         .build();
