@@ -94,6 +94,7 @@ public final class ApplicationConstant {
       order by sl.submission_location_id""";
   
   public static final String SUBMISSION_TYPE = "submissionType";
+  public static final String SUBMISSION_STATUS = "submissionStatus";
   public static final String SUBMISSION_ID = "submissionId";
   public static final List<String> AVAILABLE_CLIENT_TYPES = List.of("A", "I", "S", "SP", "RSP",
       "USP", "BC", "GP","C");
