@@ -45,14 +45,18 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
         // IDIR users, BCEID business users, and BCSC users can access the codes endpoint
         .pathMatchers("/api/codes/**")
         .hasAnyRole(
-            ApplicationConstant.ROLE_IDIR_USER,
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
             ApplicationConstant.ROLE_BCEIDBUSINESS_USER,
             ApplicationConstant.ROLE_BCSC_USER
         )
         // IDIR users, BCEID business users, BCSC users, and service users can access the districts endpoint
         .pathMatchers("/api/districts/**")
         .hasAnyRole(
-            ApplicationConstant.ROLE_IDIR_USER,
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
             ApplicationConstant.ROLE_BCEIDBUSINESS_USER,
             ApplicationConstant.ROLE_BCSC_USER,
             ApplicationConstant.ROLE_SERVICE_USER
@@ -60,7 +64,9 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
         // IDIR users, BCEID business users, BCSC users, and service users can access the countries endpoint
         .pathMatchers("/api/countries/**")
         .hasAnyRole(
-            ApplicationConstant.ROLE_IDIR_USER,
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
             ApplicationConstant.ROLE_BCEIDBUSINESS_USER,
             ApplicationConstant.ROLE_BCSC_USER,
             ApplicationConstant.ROLE_SERVICE_USER
@@ -95,7 +101,9 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
         .hasAnyRole(
             ApplicationConstant.ROLE_BCEIDBUSINESS_USER,
             ApplicationConstant.ROLE_BCSC_USER,
-            ApplicationConstant.ROLE_IDIR_USER
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN
         )
         // All other exchanges are denied by default
         .anyExchange().denyAll();
