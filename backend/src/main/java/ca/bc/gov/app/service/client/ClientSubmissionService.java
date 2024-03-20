@@ -461,9 +461,9 @@ public class ClientSubmissionService {
 
     //If no user provided query found, then use the default one
     if (userQuery.isEmpty()) {
-      //List all submission of type SPP, or submissions of type AAC and RNC that were updated in the last 24 hours
+      //List all submission of status N, or submissions of type AAC and RNC that were updated in the last X time
       userQuery = QueryPredicates
-          .orEqualTo(new String[]{"SPP"}, ApplicationConstant.SUBMISSION_TYPE)
+          .orEqualTo(new String[]{"N"}, ApplicationConstant.SUBMISSION_STATUS)
           .or(
               QueryPredicates
                   .isAfter(
