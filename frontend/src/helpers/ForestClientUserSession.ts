@@ -89,7 +89,7 @@ class ForestClientUserSession implements SessionProperties {
           groups?.forEach((group) => this.authorities.push(group));
         }
       }
-      if(!this.sessionRefreshIntervalId){
+      if (!this.sessionRefreshIntervalId){
         this.sessionRefreshIntervalId = setInterval(() => this.loadUser(), 5 * 60 * 1000);
       }
     } else {
