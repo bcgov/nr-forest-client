@@ -267,10 +267,20 @@ const goToStep = (index: number, skipCheck: boolean = false) => {
   revalidateBus.emit();
 };
 
+
+/*
+We do not auto focus the first step in the first rendering to prevent skipping form instructions.
+The differenct might only be noticeable when using a screen reader.
+*/
+const autoFocusFirstStep = ref(false);
+
 const onNext = () => {
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
+      // allow the first step to be auto focused in case the user returns to it later.
+      autoFocusFirstStep.value = true;
+
       currentTab.value++;
       progressData[currentTab.value - 1].kind = "complete";
       progressData[currentTab.value].kind = "current";
@@ -438,7 +448,7 @@ watch(cdsProgressStepArray, async (array) => {
   <div class="form-steps" role="form">
     <div v-if="currentTab == 0" class="form-steps-01">
       <div class="form-steps-01-title">
-        <h2 data-scroll="scroll-0">Before you begin</h2>
+        <h2>Before you begin</h2>
         <ol type="1" class="bulleted-list body-compact-01">
           <li>A registered business must be in good standing with BC Registries</li>
           <li>
@@ -457,13 +467,14 @@ watch(cdsProgressStepArray, async (array) => {
           :title="progressData[0].title"
           :districts-list="formattedDistrictsList"
           @valid="validateStep"
+          :auto-focus="autoFocusFirstStep"
         />
       </div>
     </div>
 
     <div v-if="currentTab == 1" class="form-steps-02">
       <div class="form-steps-section">
-        <h2 data-scroll="scroll-1">
+        <h2 data-scroll="scroll-1" data-focus="focus-1" tabindex="-1">
           <div data-scroll="step-title" class="header-offset"></div>
           {{ progressData[1].title }}
         </h2>
@@ -482,7 +493,7 @@ watch(cdsProgressStepArray, async (array) => {
 
     <div v-if="currentTab == 2" class="form-steps-03">
       <div class="form-steps-section">
-        <h2 data-scroll="scroll-2">
+        <h2 data-scroll="scroll-2" data-focus="focus-2" tabindex="-1">
           <div data-scroll="step-title" class="header-offset"></div>
           {{ progressData[2].title }}
         </h2>
@@ -506,7 +517,7 @@ watch(cdsProgressStepArray, async (array) => {
     <div v-if="currentTab == 3" class="form-steps-04">
 
       <div class="form-steps-section form-steps-section-04">
-        <h2 data-scroll="scroll-3">
+        <h2 data-scroll="scroll-3" data-focus="focus-3" tabindex="-1">
           <div data-scroll="step-title" class="header-offset"></div>
           {{ progressData[3].title}}
         </h2>

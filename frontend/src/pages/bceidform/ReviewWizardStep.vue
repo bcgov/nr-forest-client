@@ -4,6 +4,7 @@ import { watch, ref, onMounted, computed } from "vue";
 import "@carbon/web-components/es/components/button/index";
 // Composables
 import { useEventBus } from "@vueuse/core";
+import { useFocus } from "@/composables/useFocus";
 // Types
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
 // @ts-ignore
@@ -55,8 +56,11 @@ const clientType = computed(() => {
 //We emit valid here because there is nothing else to be done here apart from showing information
 emit("valid", true);
 
+const { setFocusedComponent } = useFocus();
+
 onMounted(() => {
   revalidateBus.emit();
+  setFocusedComponent("focus-3", 0);
 });
 </script>
 

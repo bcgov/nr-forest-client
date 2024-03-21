@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { reactive, watch, computed, ref, onMounted } from "vue";
+import { reactive, watch, computed, ref } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
 // Composables
 import { useEventBus } from "@vueuse/core";
 import { useFetchTo } from "@/composables/useFetch";
-import { useFocus } from "@/composables/useFocus";
 // Types
 import type { CodeNameType, BusinessSearchResult } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
@@ -32,7 +31,6 @@ const emit = defineEmits<{
 }>();
 
 const generalErrorBus = useEventBus<string>("general-error-notification");
-const { safeSetFocusedComponent } = useFocus();
 
 const noValidation = (value: string) => "";
 

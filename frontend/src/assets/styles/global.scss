@@ -1368,6 +1368,16 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   visibility: hidden;
 }
 
+// Taken from https://webaim.org/techniques/css/invisiblecontent/
+.sr-only {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
   .content-landing {

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { watch, computed, ref, reactive, getCurrentInstance } from "vue";
+import { watch, computed, ref, reactive, getCurrentInstance, onMounted } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/inline-loading/index";
 import "@carbon/web-components/es/components/notification/index";
 // Importing composables
 import { useEventBus } from "@vueuse/core";
 import { useFetch, useFetchTo } from "@/composables/useFetch";
+import { useFocus } from "@/composables/useFocus";
 // Importing types
 import {
   BusinessSearchResult,
@@ -37,6 +38,7 @@ const props = defineProps<{
   active: boolean;
   title: string;
   districtsList: Array<CodeNameType>;
+  autoFocus?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -361,10 +363,17 @@ const updateDistrict = (value: CodeNameType | undefined) => {
     formData.value.businessInformation.district = value.code;
   }
 };
+
+const { setFocusedComponent } = useFocus();
+onMounted(() => {
+  if (props.autoFocus) {
+    setFocusedComponent("focus-0", 0);
+  }
+});
 </script>
 
 <template>
-  <h2 data-scroll="focus-0">
+  <h2 data-focus="focus-0" tabindex="-1">
     <div data-scroll="step-title" class="header-offset"></div>
     <!-- This is not the title of the step, but it's the first section. -->
     Natural resource district
@@ -397,7 +406,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
 
   <hr class="divider" />
 
-  <h2 data-scroll="focus-0">
+  <h2>
     {{ title }}
   </h2>
 

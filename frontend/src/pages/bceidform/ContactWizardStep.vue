@@ -29,7 +29,7 @@ const emit = defineEmits<{
 //Defining the event bus to send notifications up
 const bus = useEventBus<ModalNotification>("modal-notification");
 
-const { safeSetFocusedComponent } = useFocus();
+const { setFocusedComponent } = useFocus();
 
 //Set the prop as a ref, and then emit when it changes
 const formData = reactive<FormDataDto>(props.data);
@@ -155,7 +155,7 @@ const handleRemove = (index: number) => {
   });
 };
 
-onMounted(() => safeSetFocusedComponent("phoneNumber_0", 800));
+onMounted(() => setFocusedComponent("focus-2", 0));
 
 defineExpose({
   addContact,
