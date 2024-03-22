@@ -367,7 +367,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
 const { setFocusedComponent } = useFocus();
 onMounted(() => {
   if (props.autoFocus) {
-    setFocusedComponent("district", 0);
+    setFocusedComponent("focus-0", 0);
   }
 });
 </script>

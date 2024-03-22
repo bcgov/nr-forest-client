@@ -147,7 +147,7 @@ const handleRemove = (index: number) => {
   });
 };
 
-onMounted(() => setFocusedComponent("addr_0", 0));
+onMounted(() => setFocusedComponent("focus-1", 0));
 </script>
 
 <template>

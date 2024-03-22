@@ -155,7 +155,7 @@ const handleRemove = (index: number) => {
   });
 };
 
-onMounted(() => setFocusedComponent("phoneNumber_0", 0));
+onMounted(() => setFocusedComponent("focus-2", 0));
 
 defineExpose({
   addContact,
