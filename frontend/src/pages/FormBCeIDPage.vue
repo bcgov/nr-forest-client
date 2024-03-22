@@ -410,7 +410,7 @@ watch(cdsProgressStepArray, async (array) => {
 </script>
 
 <template>
-  <div class="form-header">
+  <div class="form-header" role="header">
     <div class="form-header-title">
       <h1>
         <div data-scroll="top" class="header-offset"></div>
@@ -445,7 +445,7 @@ watch(cdsProgressStepArray, async (array) => {
     </div>
   </div>
 
-  <div class="form-steps" role="form">
+  <div class="form-steps" role="main">
     <div v-if="currentTab == 0" class="form-steps-01">
       <div class="form-steps-01-title">
         <h2>Before you begin</h2>
@@ -539,7 +539,7 @@ watch(cdsProgressStepArray, async (array) => {
     <hr v-if="currentTab < 3" class="divider"/>
   </div>
 
-  <div class="form-footer">
+  <div class="form-footer" role="footer">
     <div class="form-footer-group">
       <div class="form-footer-group-next">
 

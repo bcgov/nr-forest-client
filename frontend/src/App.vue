@@ -62,7 +62,7 @@ toastBus.on(openToast)
     <main-header-component v-if="!$route.meta.hideHeader"></main-header-component>
   </div>
   <div :class="$route.meta.format">
-    <div :class="$route.meta.style" role="main" aria-live="polite">
+    <div :class="$route.meta.style" aria-live="polite">
       <router-view></router-view>
     </div>
   </div>

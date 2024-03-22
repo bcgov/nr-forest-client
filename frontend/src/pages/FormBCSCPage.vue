@@ -382,7 +382,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
 </script>
 
 <template>
-  <div class="form-header">
+  <div class="form-header" role="header">
     <div class="form-header-title">
       <h1 data-scroll="top">
         New client application
@@ -399,7 +399,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
     </div>
   </div>
     
-  <div class="form-steps-section" role="form">
+  <div class="form-steps-section" role="main">
     <h2 data-scroll="scroll-0">
       Personal information
     </h2>
