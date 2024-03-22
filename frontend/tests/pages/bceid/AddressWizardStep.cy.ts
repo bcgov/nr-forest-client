@@ -56,6 +56,8 @@ describe("<AddressWizardStep />", () => {
       const addAddress = (addressId: number, name: string) => {
         cy.contains("Add another address").should("be.visible").click();
 
+        cy.focused().should("contain.text", "Additional address");
+
         cy.get(`#name_${addressId}`)
           .should("be.visible")
           .shadow()
