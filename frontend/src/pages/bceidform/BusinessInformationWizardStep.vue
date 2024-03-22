@@ -441,6 +441,7 @@ onMounted(() => {
       <AutoCompleteInputComponent
         v-if="selectedOption === BusinessTypeEnum.R"
         id="business"
+        label="BC registered business name"
         autocomplete="organization"
         required
         required-label
