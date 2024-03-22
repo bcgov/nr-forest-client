@@ -26,7 +26,7 @@ const emit = defineEmits<{
 //Defining the event bus to send notifications up
 const bus = useEventBus<ModalNotification>("modal-notification");
 
-const { setFocusedComponent } = useFocus();
+const { setFocusedComponent, setScrollPoint } = useFocus();
 
 //Set the prop as a ref, and then emit when it changes
 const formData = reactive<FormDataDto>(props.data);
@@ -85,7 +85,8 @@ const addAddress = () => {
   const address = formData.location.addresses[newLength - 1];
   addressesIdMap.set(address, getNewAddressId());
   const focusIndex = newLength - 1;
-  safeSetFocusedComponent(`name_${focusIndex}`);
+  setScrollPoint(`address-${focusIndex}-heading`);
+  setFocusedComponent(`address-${focusIndex}-heading`);
   return newLength;
 };
 
@@ -162,11 +163,14 @@ onMounted(() => setFocusedComponent("focus-1", 0));
   />
 
   <template v-if="$features.BCEID_MULTI_ADDRESS">
-    <div class="frame-01" v-if="otherAddresses.length > 0">
+    <div class="frame-01" v-if="otherAddresses.length > 0" aria-live="off">
       <div v-for="(address, index) in otherAddresses">
         <hr />
         <div class="grouping-09">
-          <h3>Additional address</h3>
+          <h3 :data-focus="`address-${index + 1}-heading`" tabindex="-1">
+            <div :data-scroll="`address-${index + 1}-heading`" class="header-offset"></div>
+            Additional address
+          </h3>
         </div>
         <address-group-component
           :key="addressesIdMap.get(address)"
