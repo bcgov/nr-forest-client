@@ -99,7 +99,7 @@ public class ClientSubmissionService {
     return getClientTypes()
         .flatMapMany(clientTypes ->
             loadSubmissions(page, size, requestStatus, submittedAt)
-                .flatMap(submissionPair ->
+                .flatMapSequential(submissionPair ->
                     loadSubmissionDetail(clientType, name, submissionPair.getRight())
                         .flatMap(submissionDetail ->
                             getDistrictFullDescByCode(submissionDetail.getDistrictCode())
