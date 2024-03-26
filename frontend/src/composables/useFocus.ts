@@ -145,7 +145,11 @@ export const useFocus = (): {
     execute(
       componentName,
       'data-scroll',
-      (element) => element.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+      (element) => {
+        if (element?.scrollIntoView) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      },
       time,
       callback,
     )

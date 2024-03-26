@@ -16,7 +16,7 @@ const SVG = useSvg(badgePictogram);
 </script>
 
 <template>
-  <div class="frame-03">
+  <div class="frame-03" role="status">
     <SVG alt="Badge pictogram" class="submission-badge" role="presentation"></SVG>
     <div class="form-header form-header-application-submitted">
       <h1 class="fluid-heading-04">Application submitted!</h1>

@@ -29,7 +29,7 @@ const emit = defineEmits<{
 //Defining the event bus to send notifications up
 const bus = useEventBus<ModalNotification>("modal-notification");
 
-const { safeSetFocusedComponent } = useFocus();
+const { setFocusedComponent, setScrollPoint } = useFocus();
 
 //Set the prop as a ref, and then emit when it changes
 const formData = reactive<FormDataDto>(props.data);
@@ -95,7 +95,8 @@ const addContact = (autoFocus = true) => {
   contactsIdMap.set(contact, getNewContactId());
   if (autoFocus) {
     const focusIndex = newLength - 1;
-    safeSetFocusedComponent(`firstName_${focusIndex}`);
+    setScrollPoint(`contact-${focusIndex}-heading`);
+    setFocusedComponent(`contact-${focusIndex}-heading`);
   }
   return newLength;
 };
@@ -155,7 +156,7 @@ const handleRemove = (index: number) => {
   });
 };
 
-onMounted(() => safeSetFocusedComponent("phoneNumber_0", 800));
+onMounted(() => setFocusedComponent("focus-2", 0));
 
 defineExpose({
   addContact,
@@ -176,27 +177,30 @@ defineExpose({
     @valid="updateValidState(0, $event)"
   />
 
-  <div class="frame-01" v-if="otherContacts.length > 0">
+  <div class="frame-01" v-if="otherContacts.length > 0" aria-live="off">
 
-    <div  v-for="(contact, index) in otherContacts">
+    <div v-for="(contact, index) in otherContacts">
       <hr />
       <div class="grouping-09" :data-scroll="`additional-contact-${index + 1}`">
-      <h3>Additional contact</h3>
-    </div>
-    <contact-group-component
-      :key="contactsIdMap.get(contact)"
-      :id="contactsIdMap.get(contact)"
-      v-bind:modelValue="contact"
-      required-label
-      :roleList="roleList"
-      :addressList="addresses"
-      :validations="[uniqueValues.add]"
-      :enabled="true"
-      :revalidate="revalidate"
-      @update:model-value="updateContact($event, index + 1)"
-      @valid="updateValidState(index + 1, $event)"
-      @remove="handleRemove(index + 1)"
-    />
+        <h3 :data-focus="`contact-${index + 1}-heading`" tabindex="-1">
+          <div :data-scroll="`contact-${index + 1}-heading`" class="header-offset"></div>
+          Additional contact
+        </h3>
+      </div>
+      <contact-group-component
+        :key="contactsIdMap.get(contact)"
+        :id="contactsIdMap.get(contact)"
+        v-bind:modelValue="contact"
+        required-label
+        :roleList="roleList"
+        :addressList="addresses"
+        :validations="[uniqueValues.add]"
+        :enabled="true"
+        :revalidate="revalidate"
+        @update:model-value="updateContact($event, index + 1)"
+        @valid="updateValidState(index + 1, $event)"
+        @remove="handleRemove(index + 1)"
+      />
     </div>
   </div>
 
