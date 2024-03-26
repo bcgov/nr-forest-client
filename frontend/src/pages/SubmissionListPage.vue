@@ -58,8 +58,6 @@ watch(
   () => {
     const totalCount = parseInt(response.value.headers["x-total-count"] || "0");
     totalItems.value = totalCount;
-
-    tableData.value.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
   }
 );
 
