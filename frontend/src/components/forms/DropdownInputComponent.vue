@@ -145,11 +145,13 @@ watch(
 
 revalidateBus.on(() => validateInput(selectedValue.value));
 
+const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
+
 // This is an array due to the v-for attribute.
 const cdsComboBoxArrayRef = ref<InstanceType<typeof CDSComboBox>[] | null>(null);
 
 watch(
-  [cdsComboBoxArrayRef, () => props.required, () => props.label],
+  [cdsComboBoxArrayRef, () => props.required, () => props.label, ariaInvalidString],
   async ([cdsComboBoxArray]) => {
     if (cdsComboBoxArray) {
       // wait for the DOM updates to complete
@@ -157,10 +159,24 @@ watch(
 
       const combo = cdsComboBoxArray[0];
       const input = combo?.shadowRoot?.querySelector("input");
+
+      const helperTextId = "helper-text";
+      const helperText = combo.shadowRoot?.querySelector("[name='helper-text']");
+      if (helperText) {
+        helperText.id = helperTextId;
+        if (ariaInvalidString.value === "true") {
+          helperText.role = "alert";
+        } else {
+          helperText.role = "none";
+        }
+      }
+
       if (input) {
         // Propagate attributes to the input
         input.required = props.required;
         input.ariaLabel = props.label;
+        input.ariaInvalid = ariaInvalidString.value;
+        input.setAttribute("aria-describedby", helperTextId);
       }
     }
   },
@@ -189,8 +205,8 @@ const safeHelperText = computed(() => props.tip || " ");
         :label="placeholder"
         :value="selectedValue"
         :invalid="error ? true : false"
+        :aria-invalid="ariaInvalidString"
         :invalidText="error"
-        aria-live="polite"
         @cds-combo-box-selected="selectItem"
         @blur="(event: any) => validateInput(event.target.value)"
         :data-focus="id"
