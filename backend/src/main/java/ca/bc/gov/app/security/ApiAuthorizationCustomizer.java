@@ -21,91 +21,106 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
    */
   @Override
   public void customize(AuthorizeExchangeSpec authorize) {
-    authorize
-        // Metrics and health endpoints are open to all
-        .pathMatchers("/metrics/**", "/health/**").permitAll()
+    // Begin authorization rules configuration
+authorize
 
-        // Only service users can access the email endpoint
-        .pathMatchers("/api/ches/email")
-        .hasAnyRole(
-            ApplicationConstant.USERTYPE_SERVICE_USER
-        )
-        // Only BCEID business users and BCSC users can access the duplicate endpoint
-        .pathMatchers("/api/ches/duplicate")
-        .hasAnyRole(
-            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
-            ApplicationConstant.USERTYPE_BCSC_USER
-        )
-        // Only BCEID business users and BCSC users can access the addresses endpoint
-        .pathMatchers("/api/addresses/**")
-        .hasAnyRole(
-            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
-            ApplicationConstant.USERTYPE_BCSC_USER
-        )
-        // IDIR users, BCEID business users, and BCSC users can access the codes endpoint
-        .pathMatchers("/api/codes/**")
-        .hasAnyRole(
-            ApplicationConstant.ROLE_VIEWER,
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN,
-            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
-            ApplicationConstant.USERTYPE_BCSC_USER
-        )
-        // IDIR users, BCEID business users, BCSC users, and service users can access the districts endpoint
-        .pathMatchers("/api/districts/**")
-        .hasAnyRole(
-            ApplicationConstant.ROLE_VIEWER,
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN,
-            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
-            ApplicationConstant.USERTYPE_BCSC_USER,
-            ApplicationConstant.USERTYPE_SERVICE_USER
-        )
-        // IDIR users, BCEID business users, BCSC users, and service users can access the countries endpoint
-        .pathMatchers("/api/countries/**")
-        .hasAnyRole(
-            ApplicationConstant.ROLE_VIEWER,
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN,
-            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
-            ApplicationConstant.USERTYPE_BCSC_USER,
-            ApplicationConstant.USERTYPE_SERVICE_USER
-        )
-        // Only Editors and Admin can approve/reject submissions
-        .pathMatchers(HttpMethod.POST,"/api/clients/submissions/{id:[0-9]+}")
-        .hasAnyRole(
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN
-        )
-        // Only Editors, Viewers and Admin users can get details
-        .pathMatchers("/api/clients/submissions/{id:[0-9]+}")
-        .hasAnyRole(
-            ApplicationConstant.ROLE_VIEWER,
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN
-        )
-        // Only Editors users can access the list of submissions, and other users can create submissions
-        .pathMatchers(HttpMethod.POST, "/api/clients/submissions/**")
-        .hasAnyRole(
-            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
-            ApplicationConstant.USERTYPE_BCSC_USER
-        )
-        .pathMatchers(HttpMethod.GET, "/api/clients/submissions/**")
-        .hasAnyRole(
-            ApplicationConstant.ROLE_VIEWER,
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN
-        )
-        // All BCSC, BCEID, and IDIR users can access the client APIs
-        .pathMatchers("/api/clients/**")
-        .hasAnyRole(
-            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
-            ApplicationConstant.USERTYPE_BCSC_USER,
-            ApplicationConstant.ROLE_VIEWER,
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN
-        )
-        // All other exchanges are denied by default
-        .anyExchange().denyAll();
+    // Allow all access to metrics and health endpoints
+    .pathMatchers("/metrics/**", "/health/**").permitAll()
+
+    // Only service users can access the email endpoint
+    .pathMatchers("/api/ches/email")
+    .hasAnyRole(
+        ApplicationConstant.USERTYPE_SERVICE_USER
+    )
+
+    // Only BCeIdBusiness and BCSC users can access the duplicate endpoint
+    .pathMatchers("/api/ches/duplicate")
+    .hasAnyRole(
+        ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+        ApplicationConstant.USERTYPE_BCSC_USER
+    )
+
+    // Only BCeIdBusiness and BCSC users can access the addresses endpoint
+    .pathMatchers("/api/addresses/**")
+    .hasAnyRole(
+        ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+        ApplicationConstant.USERTYPE_BCSC_USER
+    )
+
+    // Viewer, editor, admin, BCeIdBusiness and BCSC users can access the codes endpoint
+    .pathMatchers("/api/codes/**")
+    .hasAnyRole(
+        ApplicationConstant.ROLE_VIEWER,
+        ApplicationConstant.ROLE_EDITOR,
+        ApplicationConstant.ROLE_ADMIN,
+        ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+        ApplicationConstant.USERTYPE_BCSC_USER
+    )
+
+    // Viewer, editor, admin, BCeIdBusiness, BCSC and service users can access the districts endpoint
+    .pathMatchers("/api/districts/**")
+    .hasAnyRole(
+        ApplicationConstant.ROLE_VIEWER,
+        ApplicationConstant.ROLE_EDITOR,
+        ApplicationConstant.ROLE_ADMIN,
+        ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+        ApplicationConstant.USERTYPE_BCSC_USER,
+        ApplicationConstant.USERTYPE_SERVICE_USER
+    )
+
+    // Viewer, editor, admin, BCeIdBusiness, BCSC and service users can access the countries endpoint
+    .pathMatchers("/api/countries/**")
+    .hasAnyRole(
+        ApplicationConstant.ROLE_VIEWER,
+        ApplicationConstant.ROLE_EDITOR,
+        ApplicationConstant.ROLE_ADMIN,
+        ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+        ApplicationConstant.USERTYPE_BCSC_USER,
+        ApplicationConstant.USERTYPE_SERVICE_USER
+    )
+
+    // Only editor and admin can POST to the clients submissions endpoint with a specific id
+    .pathMatchers(HttpMethod.POST,"/api/clients/submissions/{id:[0-9]+}")
+    .hasAnyRole(
+        ApplicationConstant.ROLE_EDITOR,
+        ApplicationConstant.ROLE_ADMIN
+    )
+
+    // Viewer, editor and admin can access the clients submissions endpoint with a specific id
+    .pathMatchers("/api/clients/submissions/{id:[0-9]+}")
+    .hasAnyRole(
+        ApplicationConstant.ROLE_VIEWER,
+        ApplicationConstant.ROLE_EDITOR,
+        ApplicationConstant.ROLE_ADMIN
+    )
+
+    // Only BCeIdBusiness and BCSC users can POST to the clients submissions endpoint
+    .pathMatchers(HttpMethod.POST, "/api/clients/submissions/**")
+    .hasAnyRole(
+        ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+        ApplicationConstant.USERTYPE_BCSC_USER
+    )
+
+    // Viewer, editor and admin can GET from the clients submissions endpoint
+    .pathMatchers(HttpMethod.GET, "/api/clients/submissions/**")
+    .hasAnyRole(
+        ApplicationConstant.ROLE_VIEWER,
+        ApplicationConstant.ROLE_EDITOR,
+        ApplicationConstant.ROLE_ADMIN
+    )
+
+    // BCeIdBusiness, BCSC, viewer, editor and admin users can access the clients endpoint
+    .pathMatchers("/api/clients/**")
+    .hasAnyRole(
+        ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+        ApplicationConstant.USERTYPE_BCSC_USER,
+        ApplicationConstant.ROLE_VIEWER,
+        ApplicationConstant.ROLE_EDITOR,
+        ApplicationConstant.ROLE_ADMIN
+    )
+
+    // Deny all other requests
+    .anyExchange().denyAll();
+
   }
 }
