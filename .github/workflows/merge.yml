@@ -258,8 +258,8 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
-            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
-            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
+            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME }}
+            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
             -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
