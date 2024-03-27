@@ -297,6 +297,8 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
+            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME }}
+            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD }}
 
       - name: Backup database before update
         continue-on-error: true
