@@ -42,6 +42,11 @@ class ForestClientUserSession implements SessionProperties {
     return this.user;
   };
 
+  /**
+   * Loads the user information from the user token and updates the user object.
+   * If the user token is not available, sets the user object to undefined.
+   * @returns A Promise that resolves to void.
+   */
   loadUser = async (): Promise<void> => {
     const { idToken } = await this.loadUserToken();
     if (idToken) {
@@ -81,16 +86,22 @@ class ForestClientUserSession implements SessionProperties {
         email: parsedUser.email,
         ...this.processName(parsedUser, parsedUser["custom:idp_name"]),
       };
+      // add the user type to the authorities
       this.authorities.push(`${provider}_USER`.toUpperCase());
 
+      // add the groups to the authorities
       if (parsedUser["cognito:groups"]) {
         if (parsedUser["cognito:groups"]) {
           const groups: string[] | undefined = parsedUser["cognito:groups"];
           groups?.forEach((group) => this.authorities.push(group));
         }
       }
+
+      // get the token expiration time, minus 10% to refresh the token before it expires      
+      const timeDifference = ((idToken.payload.exp * 1000) - Date.now()) * 0.9;
+      // if the refresh interval is not set, set it
       if (!this.sessionRefreshIntervalId){
-        this.sessionRefreshIntervalId = setInterval(() => this.loadUser(), 5 * 60 * 1000);
+        this.sessionRefreshIntervalId = setInterval(() => this.loadUser(), timeDifference);
       }
     } else {
       this.user = undefined;
