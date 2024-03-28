@@ -231,12 +231,17 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
       annotations:
-        haproxy.router.openshift.io/rate-limit-capacity: "50"
-        haproxy.router.openshift.io/rate-limit-period: "30s"
-        haproxy.router.openshift.io/rate-limit-burst: "25"
-        haproxy.router.openshift.io/rate-limit-include-headers: "true"
-        haproxy.router.openshift.io/rate-limit-status-code: "429"
-        haproxy.router.openshift.io/rate-limit-granularity: "sourceIP"
+        haproxy.:
+          router:
+            openshift:
+              io/rate-limit-connections: "true"
+              io/rate-limit-connections.rate-http: "50"
+              io/rate-limit-capacity: "50"
+              io/rate-limit-period: "30s"
+              io/rate-limit-burst: "25"
+              io/rate-limit-include-headers: "true"
+              io/rate-limit-status-code: "429"
+              io/rate-limit-granularity: "sourceIP"
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
