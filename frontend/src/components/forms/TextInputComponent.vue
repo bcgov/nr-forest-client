@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick, computed } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/text-input/index";
 import type { CDSTextInput } from "@carbon/web-components";
@@ -124,20 +124,53 @@ const selectValue = (event: any) => {
   isUserEvent.value = true
 };
 
+const originalDescribedBy = ref<string>();
+
+const isFocused = ref(false);
+
+const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
+
 const cdsTextInputRef = ref<InstanceType<typeof CDSTextInput> | null>(null);
 
-watch([cdsTextInputRef, () => props.numeric], async ([cdsTextInput]) => {
-  if (cdsTextInput) {
-    // wait for the DOM updates to complete
-    await nextTick();
+watch(
+  [cdsTextInputRef, () => props.numeric, isFocused, ariaInvalidString],
+  async ([cdsTextInput]) => {
+    if (cdsTextInput) {
+      // wait for the DOM updates to complete
+      await nextTick();
 
-    const input = cdsTextInput.shadowRoot?.querySelector("input");
-    if (input) {
-      // display either a numeric or an alphanumeric (default) keyboard on mobile devices
-      input.inputMode = props.numeric ? "numeric" : "text";
+      const invalidTextId = "invalid-text";
+      const invalidText = cdsTextInput.shadowRoot?.querySelector("[name='invalid-text']");
+      if (invalidText) {
+        invalidText.id = invalidTextId;
+
+        // For some reason the role needs to be dynamically changed to "alert" to announce.
+        if (isFocused.value) {
+          invalidText.role = "generic";
+        } else {
+          invalidText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+        }
+      }
+
+      const input = cdsTextInput.shadowRoot?.querySelector("input");
+      if (input) {
+        // display either a numeric or an alphanumeric (default) keyboard on mobile devices
+        input.inputMode = props.numeric ? "numeric" : "text";
+        input.ariaInvalid = ariaInvalidString.value;
+
+        if (!originalDescribedBy.value) {
+          originalDescribedBy.value = input.getAttribute("aria-describedby");
+        }
+
+        // Use the helper text as a field description
+        input.setAttribute(
+          "aria-describedby",
+          ariaInvalidString.value === "true" ? invalidTextId : originalDescribedBy.value,
+        );
+      }
     }
-  }
-});
+  },
+);
 </script>
 
 <template>
@@ -161,7 +194,13 @@ watch([cdsTextInputRef, () => props.numeric], async ([cdsTextInput]) => {
         :invalid-text="error"
         aria-live="polite"
         v-masked="mask"
-        @blur="(event:any) => validateInput(event.target.value)"
+        @focus="isFocused = true"
+        @blur="
+          (event: any) => {
+            isFocused = false;
+            validateInput(event.target.value);
+          }
+        "
         @input="selectValue"
         :data-focus="id"
         :data-scroll="id"
