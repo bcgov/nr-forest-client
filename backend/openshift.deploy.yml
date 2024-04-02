@@ -232,8 +232,8 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
       annotations:
         haproxy.router.openshift.io/rate-limit-connections: "true"
-        haproxy.router.openshift.io/rate-limit-connections.rate-http: "8"
-        haproxy.router.openshift.io/rate-limit-connections.rate-tcp: "4"
+        haproxy.router.openshift.io/rate-limit-connections.rate-http: "12"
+        haproxy.router.openshift.io/rate-limit-connections.rate-tcp: "6"
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
