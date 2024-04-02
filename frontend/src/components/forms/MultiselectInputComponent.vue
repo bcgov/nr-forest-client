@@ -113,20 +113,44 @@ watch(
 
 revalidateBus.on(() => validateInput(selectedValue.value));
 
+const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
+
+const isFocused = ref(false);
+
 const cdsMultiSelectRef = ref<InstanceType<typeof CDSMultiSelect> | null>(null);
 
-watch([cdsMultiSelectRef, () => props.required], async ([cdsMultiSelect]) => {
-  if (cdsMultiSelect) {
-    // wait for the DOM updates to complete
-    await nextTick();
+watch(
+  [cdsMultiSelectRef, () => props.required, isFocused, ariaInvalidString],
+  async ([cdsMultiSelect]) => {
+    if (cdsMultiSelect) {
+      // wait for the DOM updates to complete
+      await nextTick();
 
-    const triggerDiv = cdsMultiSelect.shadowRoot?.querySelector("div[role='button']");
-    if (triggerDiv) {
-      // Properly indicate as required.
-      triggerDiv.ariaRequired = props.required ? "true" : "false";
+      const helperTextId = "helper-text";
+      const helperText = cdsMultiSelect.shadowRoot?.querySelector("[name='helper-text']");
+      if (helperText) {
+        helperText.id = helperTextId;
+
+        // For some reason the role needs to be dynamically changed to "alert" to announce.
+        if (isFocused.value) {
+          helperText.role = "generic";
+        } else {
+          helperText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+        }
+      }
+
+      const triggerDiv = cdsMultiSelect.shadowRoot?.querySelector("div[role='button']");
+      if (triggerDiv) {
+        // Properly indicate as required.
+        triggerDiv.ariaRequired = props.required ? "true" : "false";
+        triggerDiv.ariaInvalid = ariaInvalidString.value;
+
+        // Use the helper text as a field description
+        triggerDiv.setAttribute("aria-describedby", helperTextId);
+      }
     }
-  }
-});
+  },
+);
 </script>
 
 <template>
@@ -144,11 +168,18 @@ watch([cdsMultiSelectRef, () => props.required], async ([cdsMultiSelect]) => {
           :data-required-label="requiredLabel"
           :helper-text="tip"
           :invalid="error ? true : false"
+          :aria-invalid="ariaInvalidString"
           :invalid-text="error"
           aria-live="polite"
           filterable
           @cds-multi-select-selected="selectItems"
-          @blur="(event: any) => validateInput(event.target.value)"
+          @focus="isFocused = true"
+          @blur="
+            (event: any) => {
+              isFocused = false;
+              validateInput(event.target.value);
+            }
+          "
           :data-focus="id"
           :data-scroll="id"
         >
