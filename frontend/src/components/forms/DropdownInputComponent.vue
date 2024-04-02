@@ -164,6 +164,8 @@ watch(
       const helperText = combo.shadowRoot?.querySelector("[name='helper-text']");
       if (helperText) {
         helperText.id = helperTextId;
+
+        // For some reason the role needs to be dynamically changed to alert to announce.
         helperText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
       }
 
@@ -173,7 +175,7 @@ watch(
         input.ariaLabel = props.label;
         input.ariaInvalid = ariaInvalidString.value;
 
-        // Set the helper text as a description
+        // Use the helper text as a field description
         input.setAttribute("aria-describedby", helperTextId);
       }
     }
