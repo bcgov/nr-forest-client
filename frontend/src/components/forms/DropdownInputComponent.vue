@@ -164,11 +164,7 @@ watch(
       const helperText = combo.shadowRoot?.querySelector("[name='helper-text']");
       if (helperText) {
         helperText.id = helperTextId;
-        if (ariaInvalidString.value === "true") {
-          helperText.role = "alert";
-        } else {
-          helperText.role = "none";
-        }
+        helperText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
       }
 
       if (input) {
@@ -176,6 +172,8 @@ watch(
         input.required = props.required;
         input.ariaLabel = props.label;
         input.ariaInvalid = ariaInvalidString.value;
+
+        // Set the helper text as a description
         input.setAttribute("aria-describedby", helperTextId);
       }
     }
