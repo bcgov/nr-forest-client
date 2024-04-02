@@ -172,9 +172,10 @@ We need the mock one (with no suffix) when the component mounts with a pre-fille
 const getComboBoxItemValue = (item: CodeNameType) => item.name + (item.code ? nameSuffix : "");
 
 const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
+const isFocused = ref(false);
 
 watch(
-  [cdsComboBoxRef, () => props.required, () => props.label, ariaInvalidString],
+  [cdsComboBoxRef, () => props.required, () => props.label, isFocused, ariaInvalidString],
   async ([cdsComboBox]) => {
     if (cdsComboBox) {
       // wait for the DOM updates to complete
@@ -185,8 +186,12 @@ watch(
       if (helperText) {
         helperText.id = helperTextId;
 
-        // For some reason the role needs to be dynamically changed to alert to announce.
-        helperText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+        // For some reason the role needs to be dynamically changed to "alert" to announce.
+        if (isFocused.value) {
+          helperText.role = "generic";
+        } else {
+          helperText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+        }
       }
 
       const input = cdsComboBox.shadowRoot?.querySelector("input");
@@ -228,7 +233,13 @@ const safeHelperText = computed(() => props.tip || " ");
         :invalid-text="error"
         @cds-combo-box-selected="selectAutocompleteItem"
         v-on:input="onTyping"
-        v-on:blur="(event: any) => validateInput(event.srcElement._filterInputValue)"
+        @focus="isFocused = true"
+        @blur="
+          (event: any) => {
+            isFocused = false;
+            validateInput(event.srcElement._filterInputValue);
+          }
+        "
         :data-focus="id"
         :data-scroll="id"
         :data-id="'input-' + id"

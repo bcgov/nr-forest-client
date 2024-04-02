@@ -147,11 +147,13 @@ revalidateBus.on(() => validateInput(selectedValue.value));
 
 const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
 
+const isFocused = ref(false);
+
 // This is an array due to the v-for attribute.
 const cdsComboBoxArrayRef = ref<InstanceType<typeof CDSComboBox>[] | null>(null);
 
 watch(
-  [cdsComboBoxArrayRef, () => props.required, () => props.label, ariaInvalidString],
+  [cdsComboBoxArrayRef, () => props.required, () => props.label, isFocused, ariaInvalidString],
   async ([cdsComboBoxArray]) => {
     if (cdsComboBoxArray) {
       // wait for the DOM updates to complete
@@ -165,8 +167,12 @@ watch(
       if (helperText) {
         helperText.id = helperTextId;
 
-        // For some reason the role needs to be dynamically changed to alert to announce.
-        helperText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+        // For some reason the role needs to be dynamically changed to "alert" to announce.
+        if (isFocused.value) {
+          helperText.role = "generic";
+        } else {
+          helperText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+        }
       }
 
       if (input) {
@@ -208,7 +214,13 @@ const safeHelperText = computed(() => props.tip || " ");
         :aria-invalid="ariaInvalidString"
         :invalidText="error"
         @cds-combo-box-selected="selectItem"
-        @blur="(event: any) => validateInput(event.target.value)"
+        @focus="isFocused = true"
+        @blur="
+          (event: any) => {
+            isFocused = false;
+            validateInput(event.target.value);
+          }
+        "
         :data-focus="id"
         :data-scroll="id"
         v-shadow="3"
