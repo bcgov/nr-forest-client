@@ -145,11 +145,15 @@ watch(
 
 revalidateBus.on(() => validateInput(selectedValue.value));
 
+const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
+
+const isFocused = ref(false);
+
 // This is an array due to the v-for attribute.
 const cdsComboBoxArrayRef = ref<InstanceType<typeof CDSComboBox>[] | null>(null);
 
 watch(
-  [cdsComboBoxArrayRef, () => props.required, () => props.label],
+  [cdsComboBoxArrayRef, () => props.required, () => props.label, isFocused, ariaInvalidString],
   async ([cdsComboBoxArray]) => {
     if (cdsComboBoxArray) {
       // wait for the DOM updates to complete
@@ -157,10 +161,28 @@ watch(
 
       const combo = cdsComboBoxArray[0];
       const input = combo?.shadowRoot?.querySelector("input");
+
+      const helperTextId = "helper-text";
+      const helperText = combo.shadowRoot?.querySelector("[name='helper-text']");
+      if (helperText) {
+        helperText.id = helperTextId;
+
+        // For some reason the role needs to be dynamically changed to "alert" to announce.
+        if (isFocused.value) {
+          helperText.role = "generic";
+        } else {
+          helperText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+        }
+      }
+
       if (input) {
         // Propagate attributes to the input
         input.required = props.required;
         input.ariaLabel = props.label;
+        input.ariaInvalid = ariaInvalidString.value;
+
+        // Use the helper text as a field description
+        input.setAttribute("aria-describedby", helperTextId);
       }
     }
   },
@@ -189,10 +211,16 @@ const safeHelperText = computed(() => props.tip || " ");
         :label="placeholder"
         :value="selectedValue"
         :invalid="error ? true : false"
+        :aria-invalid="ariaInvalidString"
         :invalidText="error"
-        aria-live="polite"
         @cds-combo-box-selected="selectItem"
-        @blur="(event: any) => validateInput(event.target.value)"
+        @focus="isFocused = true"
+        @blur="
+          (event: any) => {
+            isFocused = false;
+            validateInput(event.target.value);
+          }
+        "
         :data-focus="id"
         :data-scroll="id"
         v-shadow="3"
