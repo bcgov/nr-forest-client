@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick, computed } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/radio-button/index";
 import type { CDSRadioButtonGroup, CDSRadioButton } from "@carbon/web-components";
@@ -72,17 +72,47 @@ const updateSelectedValue = (event: any) =>
   (selectedValue.value = event.detail.value);
 revalidateBus.on(() => validateInput());
 
-const cdsRadioButtonGroup = ref<InstanceType<typeof CDSRadioButtonGroup> | null>(null);
+const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
 
-watch(cdsRadioButtonGroup, async (value) => {
-  if (value) {
+const isFocused = ref(false);
+
+const cdsRadioButtonGroupRef = ref<InstanceType<typeof CDSRadioButtonGroup> | null>(null);
+
+watch([cdsRadioButtonGroupRef, isFocused, ariaInvalidString], async ([cdsRadioButtonGroup]) => {
+  if (cdsRadioButtonGroup) {
     // wait for the DOM updates to complete
     await nextTick();
 
-    const fieldset = value.shadowRoot?.querySelector("fieldset");
+    const helperTextId = "helper-text";
+    const helperText = cdsRadioButtonGroup.shadowRoot?.querySelector(".cds--form__helper-text");
+    if (helperText) {
+      helperText.id = helperTextId;
+    }
+
+    const invalidTextId = "invalid-text";
+    const invalidText = cdsRadioButtonGroup.shadowRoot?.querySelector(".cds--form-requirement");
+    if (invalidText) {
+      invalidText.id = invalidTextId;
+
+      // For some reason the role needs to be dynamically changed to "alert" to announce.
+      if (isFocused.value) {
+        invalidText.role = "generic";
+      } else {
+        invalidText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+      }
+    }
+
+    const fieldset = cdsRadioButtonGroup.shadowRoot?.querySelector("fieldset");
     if (fieldset) {
       fieldset.role = "radiogroup";
       fieldset.setAttribute("aria-label", props.label);
+      fieldset.ariaInvalid = ariaInvalidString.value;
+
+      // Use the helper text as a field description
+      fieldset.setAttribute(
+        "aria-describedby",
+        ariaInvalidString.value === "true" ? invalidTextId : helperTextId,
+      );
     }
   }
 });
@@ -108,13 +138,16 @@ watch([cdsRadioButtonArrayRef, () => props.required], async (cdsRadioButtonArray
     }
   }
 });
+
+// For this component, the Screen Reader s=is more responsive to alerts with aria-live set.
+const ariaLive = "polite";
 </script>
 
 <template>
   <div class="grouping-01">
     <div class="input-group">
       <cds-radio-button-group
-        ref="cdsRadioButtonGroup"
+        ref="cdsRadioButtonGroupRef"
         :id="id + 'rb'"
         :name="id + 'rb'"
         :legend-text="label"
@@ -124,8 +157,9 @@ watch([cdsRadioButtonArrayRef, () => props.required], async (cdsRadioButtonArray
         :helper-text="tip"
         v-model="selectedValue"
         :invalid="error ? true : false"
+        :aria-invalid="ariaInvalidString"
         :invalid-text="error"
-        aria-live="polite"
+        :aria-live="ariaLive"
         @cds-radio-button-group-changed="updateSelectedValue"
         :data-focus="id"
         :data-scroll="id"
@@ -141,6 +175,8 @@ watch([cdsRadioButtonArrayRef, () => props.required], async (cdsRadioButtonArray
           :value="option.value"
           role="radio"
           :aria-checked="selectedValue === option.value"
+          @focus="isFocused = true"
+          @blur="isFocused = false"
         />
       </cds-radio-button-group>
     </div>
