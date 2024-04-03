@@ -170,7 +170,6 @@ watch(
           :invalid="error ? true : false"
           :aria-invalid="ariaInvalidString"
           :invalid-text="error"
-          aria-live="polite"
           filterable
           @cds-multi-select-selected="selectItems"
           @focus="isFocused = true"
