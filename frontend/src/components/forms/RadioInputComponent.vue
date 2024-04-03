@@ -139,7 +139,7 @@ watch([cdsRadioButtonArrayRef, () => props.required], async (cdsRadioButtonArray
   }
 });
 
-// For this component, the Screen Reader s=is more responsive to alerts with aria-live set.
+// For the radio-button component the Screen Reader has proved more responsive to alerts with aria-live set.
 const ariaLive = "polite";
 </script>
 
