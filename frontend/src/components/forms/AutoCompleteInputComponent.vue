@@ -171,19 +171,42 @@ We need the mock one (with no suffix) when the component mounts with a pre-fille
 */
 const getComboBoxItemValue = (item: CodeNameType) => item.name + (item.code ? nameSuffix : "");
 
-watch([cdsComboBoxRef, () => props.required, () => props.label], async ([cdsComboBox]) => {
-  if (cdsComboBox) {
-    // wait for the DOM updates to complete
-    await nextTick();
+const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
+const isFocused = ref(false);
 
-    const input = cdsComboBox.shadowRoot?.querySelector("input");
-    if (input) {
-      // Propagate attributes to the input
-      input.required = props.required;
-      input.ariaLabel = props.label;
+watch(
+  [cdsComboBoxRef, () => props.required, () => props.label, isFocused, ariaInvalidString],
+  async ([cdsComboBox]) => {
+    if (cdsComboBox) {
+      // wait for the DOM updates to complete
+      await nextTick();
+
+      const helperTextId = "helper-text";
+      const helperText = cdsComboBox.shadowRoot?.querySelector("[name='helper-text']");
+      if (helperText) {
+        helperText.id = helperTextId;
+
+        // For some reason the role needs to be dynamically changed to "alert" to announce.
+        if (isFocused.value) {
+          helperText.role = "generic";
+        } else {
+          helperText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+        }
+      }
+
+      const input = cdsComboBox.shadowRoot?.querySelector("input");
+      if (input) {
+        // Propagate attributes to the input
+        input.required = props.required;
+        input.ariaLabel = props.label;
+        input.ariaInvalid = ariaInvalidString.value;
+
+        // Use the helper text as a field description
+        input.setAttribute("aria-describedby", helperTextId);
+      }
     }
-  }
-});
+  },
+);
 
 // For some reason, if helper-text is empty, invalid-text message doesn't work.
 const safeHelperText = computed(() => props.tip || " ");
@@ -206,11 +229,17 @@ const safeHelperText = computed(() => props.tip || " ");
         :value="inputValue"
         filterable
         :invalid="error ? true : false"
+        :aria-invalid="ariaInvalidString"
         :invalid-text="error"
-        aria-live="polite"
         @cds-combo-box-selected="selectAutocompleteItem"
         v-on:input="onTyping"
-        v-on:blur="(event: any) => validateInput(event.srcElement._filterInputValue)"
+        @focus="isFocused = true"
+        @blur="
+          (event: any) => {
+            isFocused = false;
+            validateInput(event.srcElement._filterInputValue);
+          }
+        "
         :data-focus="id"
         :data-scroll="id"
         :data-id="'input-' + id"

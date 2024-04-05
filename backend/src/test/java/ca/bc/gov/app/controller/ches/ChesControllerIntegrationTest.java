@@ -66,7 +66,7 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
 
     chesStub
         .stubFor(
-            post("/chess/uri")
+            post("/chess/uri/mail")
                 .willReturn(
                     ok(TestConstants.CHES_SUCCESS_MESSAGE)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)

@@ -17,7 +17,7 @@ import {
 
 // Step 1: Business Information
 formFieldValidations["businessInformation.businessName"] = [
-  isNotEmpty("Business Name cannot be empty"),
+  isNotEmpty("Business name cannot be empty"),
 ];
 
 formFieldValidations["businessInformation.birthdate"] = [
