@@ -23,6 +23,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @With
 public class CountryCodeEntity extends ExpirableBaseEntity {
+  
   @Id
   @Column("country_code")
   @NotNull
@@ -35,7 +36,7 @@ public class CountryCodeEntity extends ExpirableBaseEntity {
 
   public CountryCodeEntity(
       @NotNull @Size(min = 2, max = 2) String countryCode,
-      @NotNull String description) {
+      String description) {
     this.countryCode = countryCode;
     this.description = description;
   }

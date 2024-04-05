@@ -16,80 +16,105 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
 @With
-@Table(name = "FOREST_CLIENT", schema = ORACLE_ATTRIBUTE_SCHEMA)
+@Table(name = "forest_client", schema = ORACLE_ATTRIBUTE_SCHEMA)
 public class ForestClientEntity {
 
   @Id
-  @Column("CLIENT_NUMBER")
+  @Column("client_number")
+  @Size(min = 1, max = 8)
   private String clientNumber;
   
-  @Column("CLIENT_NAME")
+  @Column("client_name")
+  @NotNull
+  @Size(min = 1, max = 60)
   private String clientName;
   
-  @Column("LEGAL_FIRST_NAME")
+  @Column("legal_first_name")
   private String legalFirstName;
   
-  @Column("LEGAL_MIDDLE_NAME")
+  @Column("legal_middle_name")
   private String legalMiddleName;
   
-  @Column("CLIENT_STATUS_CODE")
+  @Column("client_status_code")
+  @NotNull
+  @Size(min = 1, max = 3)
   private String clientStatusCode;
   
-  @Column("CLIENT_TYPE_CODE")
+  @Column("client_type_code")
+  @NotNull
+  @Size(min = 1, max = 1)
   private String clientTypeCode;
   
-  @Column("BIRTHDATE")
+  @Column("birthdate")
   private LocalDateTime birthdate;
   
-  @Column("CLIENT_ID_TYPE_CODE")
+  @Column("client_id_type_code")
+  @Size(min = 1, max = 4)
   private String clientIdTypeCode;
   
-  @Column("CLIENT_IDENTIFICATION ")
+  @Column("client_identification")
+  @Size(min = 1, max = 40)
   private String clientIdentification;
   
-  @Column("REGISTRY_COMPANY_TYPE_CODE")
+  @Column("registry_company_type_code")
+  @Size(min = 1, max = 4)
   private String registryCompanyTypeCode;
   
-  @Column("CORP_REGN_NMBR")
+  @Column("corp_regn_nmbr")
+  @Size(min = 1, max = 9)
   private String corpRegnNmbr;
   
-  @Column("CLIENT_ACRONYM")
+  @Column("client_acronym")
+  @Size(min = 1, max = 8)
   private String clientAcronym;
   
-  @Column("WCB_FIRM_NUMBER")
+  @Column("wcb_firm_number")
+  @Size(min = 1, max = 6)
   private String wcbFirmNumber;
   
-  @Column("OCG_SUPPLIER_NMBR")
+  @Column("ocg_supplier_nmbr")
+  @Size(min = 1, max = 10)
   private String ocgSupplierNmbr;
   
-  @Column("CLIENT_COMMENT")
+  @Column("client_comment")
+  @Size(min = 1, max = 4000)
   private String clientComment;
   
-  @Column("ADD_TIMESTAMP")
+  @Column("add_timestamp")
   private LocalDateTime createdAt;
   
-  @Column("ADD_USERID")
+  @Column("add_userid")
+  @NotNull
+  @Size(min = 1, max = 30)
   private String createdBy;
   
-  @Column("UPDATE_TIMESTAMP")
+  @Column("update_timestamp")
+  @NotNull
   private LocalDateTime updatedAt;
   
-  @Column("UPDATE_USERID")
+  @Column("update_userid")
+  @NotNull
+  @Size(min = 1, max = 30)
   private String updatedBy;
   
-  @Column("UPDATE_ORG_UNIT")
+  @Column("update_org_unit")
+  @NotNull
   private Long updatedByUnit;
   
-  @Column("ADD_ORG_UNIT")
+  @Column("add_org_unit")
+  @NotNull
   private Long createdByUnit;
   
-  @Column("REVISION_COUNT")
+  @Column("revision_count")
+  @NotNull
   private Long revision;
 
   @Transient

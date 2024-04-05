@@ -11,26 +11,34 @@ import lombok.With;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
 @With
-@Table(name = "CLIENT_STATUS_CODE", schema = ORACLE_ATTRIBUTE_SCHEMA)
+@Table(name = "client_status_code", schema = ORACLE_ATTRIBUTE_SCHEMA)
 public class ClientStatusCodeEntity {
 
   @Id
-  @Column("CLIENT_STATUS_CODE")
+  @Column("client_status_code")
+  @NotNull
+  @Size(min = 1, max = 3)
   private String clientStatusCode;
 
-  @Column("DESCRIPTION")
+  @Column("description")
+  @NotNull
+  @Size(min = 1, max = 120)
   private String description;
 
-  @Column("EFFECTIVE_DATE")
+  @Column("effective_date")
+  @NotNull
   private LocalDate effectiveDate;
 
-  @Column("EXPIRY_DATE")
+  @Column("expiry_date")
+  @NotNull
   private LocalDate expiryDate;
 
 }

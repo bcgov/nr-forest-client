@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.relational.core.mapping.Column;
+import jakarta.validation.constraints.NotNull;
 
 @SuperBuilder
 @Data
@@ -21,8 +22,10 @@ public abstract class BaseEntity {
   protected LocalDateTime updatedAt;
 
   @Column("create_user")
+  @NotNull
   protected String createdBy;
 
   @Column("update_user")
   protected String updatedBy;
+  
 }

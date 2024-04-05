@@ -12,11 +12,11 @@ import org.springframework.data.relational.core.mapping.Column;
 @AllArgsConstructor
 @With
 @Builder
-public class ForestClientLocationEntityKey {
+public class ForestClientLocationEntityId {
 
-  @Column("CLIENT_NUMBER")
+  @Column("client_number")
   private String clientNumber;
 
-  @Column("CLIENT_LOCN_CODE")
+  @Column("client_locn_code")
   private String clientLocnCode;
 }

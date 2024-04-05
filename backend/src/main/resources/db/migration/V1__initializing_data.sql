@@ -187,8 +187,8 @@ comment on column nrfc.district_code.update_user is 'The user or proxy account t
 
 create table if not exists nrfc.submission(
     submission_id             	integer 		not null,
-    submission_status_code		  varchar(5)      null,
-    submission_type_code		    varchar(5)      null,
+    submission_status_code		varchar(5)      null,
+    submission_type_code		varchar(5)      null,
     submission_date             timestamp       null,
     update_timestamp            timestamp       default current_timestamp,
     create_user                 varchar(60)     not null,
@@ -217,7 +217,7 @@ create table if not exists nrfc.submission_detail (
     client_type_code        varchar(5)    	not null,
     good_standing_ind       varchar(1)      null,
     birthdate               date            null,
-    district_code           varchar(100)    null,
+    district_code           varchar(5)    null,
 	constraint submission_detail_id_pk primary key (submission_detail_id),
 	constraint submission_id_fk foreign key (submission_id) references nrfc.submission(submission_id),
     constraint submission_detail_business_type_code_fk foreign key (business_type_code) references nrfc.business_type_code(business_type_code),

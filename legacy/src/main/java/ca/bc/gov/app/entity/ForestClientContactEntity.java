@@ -1,6 +1,10 @@
 package ca.bc.gov.app.entity;
 
+import static ca.bc.gov.app.ApplicationConstants.ORACLE_ATTRIBUTE_SCHEMA;
+
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,40 +19,77 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @Builder
 @With
-@Table(name = "CLIENT_CONTACT", schema = "THE")
+@Table(name = "client_contact", schema = ORACLE_ATTRIBUTE_SCHEMA)
 public class ForestClientContactEntity {
 
   @Id
-  @Column("CLIENT_CONTACT_ID")
-  private String clientContactId;
-  @Column("CLIENT_NUMBER")
+  @Column("client_contact_id")
+  private Long clientContactId;
+  
+  @Column("client_number")
+  @NotNull
+  @Size(min = 1, max = 8)
   private String clientNumber;
-  @Column("CLIENT_LOCN_CODE")
+  
+  @Column("client_locn_code")
+  @NotNull
+  @Size(min = 1, max = 2)
   private String clientLocnCode;
-  @Column("BUS_CONTACT_CODE")
+  
+  @Column("bus_contact_code")
+  @NotNull
+  @Size(min = 1, max = 3)
   private String contactCode;
-  @Column("CONTACT_NAME")
+  
+  @Column("contact_name")
+  @NotNull
+  @Size(min = 1, max = 120)
   private String contactName;
-  @Column("BUSINESS_PHONE")
+  
+  @Column("business_phone")
+  @Size(min = 1, max = 10)
   private String businessPhone;
-  @Column("CELL_PHONE")
+  
+  @Column("cell_phone")
+  @Size(min = 1, max = 10)
   private String cellPhone;
-  @Column("FAX_NUMBER")
+  
+  @Column("fax_number")
+  @Size(min = 1, max = 10)
   private String faxNumber;
-  @Column("EMAIL_ADDRESS")
+  
+  @Column("email_address")
+  @Size(min = 1, max = 128)
   private String emailAddress;
-  @Column("ADD_TIMESTAMP")
+  
+  @Column("add_timestamp")
+  @NotNull
   private LocalDateTime createdAt;
-  @Column("ADD_USERID")
+  
+  @Column("add_userid")
+  @NotNull
+  @Size(min = 1, max = 30)
   private String createdBy;
-  @Column("UPDATE_TIMESTAMP")
+  
+  @Column("update_timestamp")
+  @NotNull
   private LocalDateTime updatedAt;
-  @Column("UPDATE_USERID")
+  
+  @Column("update_userid")
+  @NotNull
+  @Size(min = 1, max = 30)
   private String updatedBy;
-  @Column("UPDATE_ORG_UNIT")
+  
+  @Column("update_org_unit")
+  @NotNull
   private Long updatedByUnit;
-  @Column("ADD_ORG_UNIT")
+  
+  @Column("add_org_unit")
+  @NotNull
   private Long createdByUnit;
-  @Column("REVISION_COUNT")
+  
+  @Column("revision_count")
+  @NotNull
   private Long revision;
+  
 }

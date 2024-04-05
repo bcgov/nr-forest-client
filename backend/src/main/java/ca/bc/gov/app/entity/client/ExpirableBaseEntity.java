@@ -1,6 +1,7 @@
 package ca.bc.gov.app.entity.client;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,9 @@ import org.springframework.data.relational.core.mapping.Column;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class ExpirableBaseEntity extends BaseEntity {
+  
   @NotNull
+  @Size(min = 5, max = 100)
   protected String description;
 
   @Column("create_timestamp")
@@ -31,4 +34,5 @@ public abstract class ExpirableBaseEntity extends BaseEntity {
   @NotNull
   @Column("expiry_date")
   protected LocalDate expiredAt;
+  
 }

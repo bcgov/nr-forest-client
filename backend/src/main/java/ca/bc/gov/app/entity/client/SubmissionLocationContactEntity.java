@@ -1,6 +1,7 @@
 package ca.bc.gov.app.entity.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,8 +19,11 @@ import org.springframework.data.relational.core.mapping.Table;
 public class SubmissionLocationContactEntity {
 
   @Column("submission_contact_id")
+  @NotNull
   private Integer submissionContactId;
 
   @Column("submission_location_id")
+  @NotNull
   private Integer submissionLocationId;
+  
 }

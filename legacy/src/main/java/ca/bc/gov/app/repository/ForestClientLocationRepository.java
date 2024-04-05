@@ -1,7 +1,7 @@
 package ca.bc.gov.app.repository;
 
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
-import ca.bc.gov.app.entity.ForestClientLocationEntityKey;
+import ca.bc.gov.app.entity.ForestClientLocationEntityId;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
@@ -9,7 +9,7 @@ import reactor.core.publisher.Flux;
 
 @Repository
 public interface ForestClientLocationRepository
-    extends ReactiveCrudRepository<ForestClientLocationEntity, ForestClientLocationEntityKey> {
+    extends ReactiveCrudRepository<ForestClientLocationEntity, ForestClientLocationEntityId> {
 
   @Query("""
       select *

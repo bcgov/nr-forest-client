@@ -1,5 +1,6 @@
 package ca.bc.gov.app.entity;
 
+import static ca.bc.gov.app.ApplicationConstants.ORACLE_ATTRIBUTE_SCHEMA;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -16,89 +17,89 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @Builder
 @With
-@Table(name = "CLIENT_LOCATION", schema = "THE")
+@Table(name = "client_location", schema = ORACLE_ATTRIBUTE_SCHEMA)
 public class ForestClientLocationEntity {
 
   @Id
-  @Column("CLIENT_NUMBER")
+  @Column("client_number")
   private String clientNumber;
   
-  @Column("CLIENT_LOCN_CODE")
+  @Column("client_locn_code")
   private String clientLocnCode;
   
-  @Column("CLIENT_LOCN_NAME")
+  @Column("client_locn_name")
   private String clientLocnName;
   
-  @Column("HDBS_COMPANY_CODE")
+  @Column("hdbs_company_code")
   private String hdbsCompanyCode;
   
-  @Column("ADDRESS_1")
+  @Column("address_1")
   private String addressOne;
   
-  @Column("ADDRESS_2")
+  @Column("address_2")
   private String addressTwo;
   
-  @Column("ADDRESS_3")
+  @Column("address_3")
   private String addressThree;
   
-  @Column("CITY")
+  @Column("city")
   private String city;
   
-  @Column("PROVINCE")
+  @Column("province")
   private String province;
   
-  @Column("POSTAL_CODE")
+  @Column("postal_code")
   private String postalCode;
   
-  @Column("COUNTRY")
+  @Column("country")
   private String country;
   
-  @Column("BUSINESS_PHONE")
+  @Column("business_phone")
   private String businessPhone;
   
-  @Column("HOME_PHONE")
+  @Column("home_phone")
   private String homePhone;
   
-  @Column("CELL_PHONE")
+  @Column("cell_phone")
   private String cellPhone;
   
-  @Column("FAX_NUMBER")
+  @Column("fax_number")
   private String faxNumber;
   
-  @Column("EMAIL_ADDRESS")
+  @Column("email_address")
   private String emailAddress;
   
-  @Column("LOCN_EXPIRED_IND ")
+  @Column("locn_expired_ind ")
   private String locnExpiredInd;
   
-  @Column("RETURNED_MAIL_DATE")
+  @Column("returned_mail_date")
   private LocalDate returnedMailDate;
   
-  @Column("TRUST_LOCATION_IND")
+  @Column("trust_location_ind")
   private String trustLocationInd;
   
-  @Column("CLI_LOCN_COMMENT ")
+  @Column("cli_locn_comment")
   private String cliLocnComment;
   
-  @Column("ADD_TIMESTAMP")
+  @Column("add_timestamp")
   private LocalDateTime createdAt;
   
-  @Column("ADD_USERID")
+  @Column("add_userid")
   private String createdBy;
   
-  @Column("UPDATE_TIMESTAMP")
+  @Column("update_timestamp")
   private LocalDateTime updatedAt;
   
-  @Column("UPDATE_USERID")
+  @Column("update_userid")
   private String updatedBy;
   
-  @Column("UPDATE_ORG_UNIT")
+  @Column("update_org_unit")
   private Long updatedByUnit;
   
-  @Column("ADD_ORG_UNIT")
+  @Column("add_org_unit")
   private Long createdByUnit;
   
-  @Column("REVISION_COUNT")
+  @Column("revision_count")
   private Long revision;
 
 }
