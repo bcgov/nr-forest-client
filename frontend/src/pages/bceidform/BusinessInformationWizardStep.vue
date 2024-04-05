@@ -319,6 +319,9 @@ watch([individualCheck, selectedOption, soleProprietorOwner], ([individualCheckV
 watch([selectedOption], () => {
   toggleErrorMessages();
 
+  // reset soleProprietorOwner
+  soleProprietorOwner.value = "";
+
   // Unregistered Proprietorship
   if (selectedOption.value === BusinessTypeEnum.U) {
     const fromName = `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`;
