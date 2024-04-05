@@ -73,7 +73,7 @@ describe('<BusinessInformationWizardStep />', () => {
     }).as("checkIndividualUser");
 
     cy.intercept("GET", "/api/clients/individual/mockUserId?lastName=Else", {
-      statusCode: 404,
+      statusCode: 200,
       delay: 10,
     }).as("checkIndividualElse");
   });
