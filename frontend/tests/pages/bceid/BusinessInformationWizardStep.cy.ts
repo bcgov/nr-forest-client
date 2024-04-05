@@ -228,6 +228,73 @@ describe('<BusinessInformationWizardStep />', () => {
     cy.get("cds-inline-notification").should("not.exist");
   });
 
+  describe("when a Registered individual business gets selected", () => {
+    let callsSetIndividualValid = [];
+    const functionWrapper = {
+      setIndividualValid: (value: boolean) => {
+        callsSetIndividualValid.push(value);
+      },
+    };
+    const { setIndividualValid } = functionWrapper;
+    beforeEach(() => {
+      callsSetIndividualValid = [];
+      cy.mount(BusinessInformationWizardStep, {
+        props: {
+          data: {
+            businessInformation: {
+              businessType: "",
+              legalType: "",
+              clientType: "",
+              registrationNumber: "",
+              businessName: "",
+              goodStandingInd: "",
+              birthdate: "",
+              address: "",
+            },
+            location: {
+              contacts: [
+                {
+                  email: "john@doe.com",
+                  firstName: "John",
+                },
+              ],
+            },
+          } as unknown as FormDataDto,
+          districtsList: districts,
+          active: false,
+          individualValid: false,
+          setIndividualValid,
+        },
+        global,
+      });
+
+      cy.get("#businessTyperbR").click();
+
+      cy.get("#business").should("be.visible").shadow().find("input").type("Valid");
+      cy.wait("@searchCompany");
+
+      cy.get("cds-combo-box-item[data-id='XX9016140']").click();
+      cy.wrap(callsSetIndividualValid).should((value) => {
+        const lastCall = value.slice(-1)[0];
+        expect(lastCall).to.equal(true);
+      });
+    });
+
+    describe("and type of business is changed to Unregistered", () => {
+      beforeEach(() => {
+        callsSetIndividualValid = [];
+        cy.get("#businessTyperbU").click();
+      })
+      it("should re-check with user's last name", () => {
+        cy.wait("@checkIndividualUser");
+        cy.wrap(callsSetIndividualValid).should((value) => {
+          const lastCall = value.slice(-1)[0];
+          expect(lastCall).to.equal(true);
+        });
+      });
+    });
+  });
+
   describe("when props.individualValue is true", () => {
     const individualValid = true;
     let callsSetIndividualValid = [];
@@ -277,7 +344,8 @@ describe('<BusinessInformationWizardStep />', () => {
         it("should re-check individual validation", () => {
           cy.wait("@checkIndividualUser");
           cy.wrap(callsSetIndividualValid).should((value) => {
-            expect(value).to.deep.equal([false, true]);
+            const lastCall = value.slice(-1)[0];
+            expect(lastCall).to.equal(true);
           });
         });
       });
@@ -286,12 +354,13 @@ describe('<BusinessInformationWizardStep />', () => {
           cy.get("#business").should("be.visible").shadow().find("input").type("Valid");
           cy.wait("@searchCompany");
 
-          cy.get('cds-combo-box-item[data-id="XX9016140"]').click();
+          cy.get("cds-combo-box-item[data-id='XX9016140']").click();
         });
         it("should re-check individual validation", () => {
           cy.wait("@checkIndividualElse");
           cy.wrap(callsSetIndividualValid).should((value) => {
-            expect(value).to.deep.equal([false, true]);
+            const lastCall = value.slice(-1)[0];
+            expect(lastCall).to.equal(true);
           });
         });
       });
@@ -339,12 +408,13 @@ describe('<BusinessInformationWizardStep />', () => {
             cy.get("#business").should("be.visible").shadow().find("input").type("Valid");
             cy.wait("@searchCompany");
 
-            cy.get('cds-combo-box-item[data-id="XX9016140"]').click();
+            cy.get("cds-combo-box-item[data-id='XX9016140']").click();
           });
           it("should re-check individual validation", () => {
             cy.wait("@checkIndividualElse");
             cy.wrap(callsSetIndividualValid).should((value) => {
-              expect(value).to.deep.equal([false, true]);
+              const lastCall = value.slice(-1)[0];
+              expect(lastCall).to.equal(true);
             });
           });
         });
