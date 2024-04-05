@@ -24,8 +24,6 @@ import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // Importing helper functions
 import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
-// Importing session
-import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import {
   getEnumKeyByEnumValue,
   openMailtoLink,
@@ -39,6 +37,8 @@ const props = defineProps<{
   title: string;
   districtsList: Array<CodeNameType>;
   autoFocus?: boolean;
+  individualValid?: boolean;
+  setIndividualValid?: (valid: boolean) => void;
 }>();
 
 const emit = defineEmits<{
@@ -48,6 +48,7 @@ const emit = defineEmits<{
 
 const instance = getCurrentInstance();
 const features = instance.appContext.config.globalProperties.$features;
+const ForestClientUserSession = instance.appContext.config.globalProperties.$session;
 
 //Defining the event bus to send notifications up
 const progressIndicatorBus = useEventBus<ProgressNotification>(
@@ -70,7 +71,7 @@ const validation = reactive<Record<string, boolean>>({
   business: !!formData.value.businessInformation.businessName,
   birthdate: true, // temporary value
   district: false,
-  individual: false,
+  individual: props.individualValid, // occasionally pre-filled value
 });
 
 const checkValid = () =>
@@ -231,6 +232,10 @@ const checkForIndividualValid = (lastName: string) => {
       .split("\\")
       .pop()}?lastName=${lastName}`
   );
+
+  // reset validation
+  validation.individual = false;
+
   watch(validationError, (watchValue) => {
     if (watchValue.response?.status === 409) {
       validation.business = false;
@@ -246,6 +251,13 @@ const checkForIndividualValid = (lastName: string) => {
     }
   });
 };
+
+watch(
+  () => validation.individual,
+  () => {
+    props.setIndividualValid?.(validation.individual);
+  },
+);
 
 watch([detailsData], () => {
   if (detailsData.value) {
@@ -278,6 +290,9 @@ watch([detailsData], () => {
 
     emit("update:data", formData.value);
 
+    // reset soleProprietorOwner
+    soleProprietorOwner.value = "";
+
     if (forestClientDetails.contacts.length > 0) {
       soleProprietorOwner.value = forestClientDetails.contacts[0].lastName;
     }
@@ -290,11 +305,11 @@ watch([detailsData], () => {
  * @returns {boolean} - Returns true if the birthdate is valid and birthdate should be shown, otherwise returns false.
  */
 const individualCheck = computed(() => {
-  return showBirthDate.value && validation.birthdate;
+  return showBirthDate.value;
 });
 
-watch(individualCheck, (value) => {
-  if (value) {
+watch([individualCheck, selectedOption, soleProprietorOwner], ([individualCheckValue]) => {
+  if (individualCheckValue) {
     checkForIndividualValid(
       soleProprietorOwner.value || ForestClientUserSession.user?.lastName
     );
