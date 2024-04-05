@@ -119,7 +119,6 @@ describe('<BusinessInformationWizardStep />', () => {
             goodStandingInd: "",
             birthdate: "",
             address: "",
-            district: "DMH",
           },
           location: {
             contacts: [
