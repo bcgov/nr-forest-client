@@ -1,7 +1,6 @@
 package ca.bc.gov.app.repository;
 
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.data.repository.reactive.ReactiveSortingRepository;
@@ -25,4 +24,5 @@ public interface ClientDoingBusinessAsRepository extends
   Flux<ClientDoingBusinessAsEntity> matchBy(String companyName);
 
   Flux<ClientDoingBusinessAsEntity> findByDoingBusinessAsName(String doingBusinessAsName);
+  
 }

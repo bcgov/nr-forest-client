@@ -19,4 +19,5 @@ public class ForestClientLocationEntityId {
 
   @Column("client_locn_code")
   private String clientLocnCode;
+  
 }
