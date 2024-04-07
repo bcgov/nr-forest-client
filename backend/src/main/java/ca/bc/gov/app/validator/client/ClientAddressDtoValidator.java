@@ -125,9 +125,9 @@ public class ClientAddressDtoValidator implements Validator {
   private void handlePostalCodeLengthAndFormat(String postalCode, String country,
       String postalCodeField, Errors errors) {
     if ("CA".equalsIgnoreCase(country)) {
-      // For CA, postal code should be up to 7 characters
+      // For CA, postal code should be up to 6 characters
       if (StringUtils.length(postalCode) > 6) {
-        errors.rejectValue(postalCodeField, "has more than 7 characters");
+        errors.rejectValue(postalCodeField, "has more than 6 characters");
       }
       // CA postal code format is A9A9A9
       if (!CA_POSTAL_CODE_FORMAT.matcher(postalCode).matches()) {
