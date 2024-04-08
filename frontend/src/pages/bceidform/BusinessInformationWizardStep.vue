@@ -37,8 +37,8 @@ const props = defineProps<{
   title: string;
   districtsList: Array<CodeNameType>;
   autoFocus?: boolean;
-  individualValid?: boolean;
-  setIndividualValid?: (valid: boolean) => void;
+  individualValidInd?: boolean;
+  setIndividualValidInd?: (valid: boolean) => void;
 }>();
 
 const emit = defineEmits<{
@@ -71,7 +71,7 @@ const validation = reactive<Record<string, boolean>>({
   business: !!formData.value.businessInformation.businessName,
   birthdate: true, // temporary value
   district: false,
-  individual: props.individualValid, // occasionally pre-filled value
+  individual: props.individualValidInd, // occasionally pre-filled value
 });
 
 const checkValid = () =>
@@ -255,7 +255,7 @@ const checkForIndividualValid = (lastName: string) => {
 watch(
   () => validation.individual,
   () => {
-    props.setIndividualValid?.(validation.individual);
+    props.setIndividualValidInd?.(validation.individual);
   },
 );
 

@@ -228,15 +228,15 @@ describe('<BusinessInformationWizardStep />', () => {
   });
 
   describe("when a Registered individual business gets selected", () => {
-    let callsSetIndividualValid = [];
+    let callsSetIndividualValidInd = [];
     const functionWrapper = {
-      setIndividualValid: (value: boolean) => {
-        callsSetIndividualValid.push(value);
+      setIndividualValidInd: (value: boolean) => {
+        callsSetIndividualValidInd.push(value);
       },
     };
-    const { setIndividualValid } = functionWrapper;
+    const { setIndividualValidInd } = functionWrapper;
     beforeEach(() => {
-      callsSetIndividualValid = [];
+      callsSetIndividualValidInd = [];
       cy.mount(BusinessInformationWizardStep, {
         props: {
           data: {
@@ -261,8 +261,8 @@ describe('<BusinessInformationWizardStep />', () => {
           } as unknown as FormDataDto,
           districtsList: districts,
           active: false,
-          individualValid: false,
-          setIndividualValid,
+          individualValidInd: false,
+          setIndividualValidInd,
         },
         global,
       });
@@ -273,7 +273,7 @@ describe('<BusinessInformationWizardStep />', () => {
       cy.wait("@searchCompany");
 
       cy.get("cds-combo-box-item[data-id='XX9016140']").click();
-      cy.wrap(callsSetIndividualValid).should((value) => {
+      cy.wrap(callsSetIndividualValidInd).should((value) => {
         const lastCall = value.slice(-1)[0];
         expect(lastCall).to.equal(true);
       });
@@ -281,12 +281,12 @@ describe('<BusinessInformationWizardStep />', () => {
 
     describe("and type of business is changed to Unregistered", () => {
       beforeEach(() => {
-        callsSetIndividualValid = [];
+        callsSetIndividualValidInd = [];
         cy.get("#businessTyperbU").click();
       })
       it("should re-check with user's last name", () => {
         cy.wait("@checkIndividualUser");
-        cy.wrap(callsSetIndividualValid).should((value) => {
+        cy.wrap(callsSetIndividualValidInd).should((value) => {
           const lastCall = value.slice(-1)[0];
           expect(lastCall).to.equal(true);
         });
@@ -295,17 +295,17 @@ describe('<BusinessInformationWizardStep />', () => {
   });
 
   describe("when props.individualValue is true", () => {
-    const individualValid = true;
-    let callsSetIndividualValid = [];
+    const individualValidInd = true;
+    let callsSetIndividualValidInd = [];
     const functionWrapper = {
-      setIndividualValid: (value: boolean) => {
-        callsSetIndividualValid.push(value);
+      setIndividualValidInd: (value: boolean) => {
+        callsSetIndividualValidInd.push(value);
       },
     };
-    const { setIndividualValid } = functionWrapper;
+    const { setIndividualValidInd } = functionWrapper;
     describe("and type of business is Registered", () => {
       beforeEach(() => {
-        callsSetIndividualValid = [];
+        callsSetIndividualValidInd = [];
         cy.mount(BusinessInformationWizardStep, {
           props: {
             data: {
@@ -330,8 +330,8 @@ describe('<BusinessInformationWizardStep />', () => {
             } as unknown as FormDataDto,
             districtsList: districts,
             active: false,
-            individualValid,
-            setIndividualValid,
+            individualValidInd,
+            setIndividualValidInd,
           },
           global,
         });
@@ -342,7 +342,7 @@ describe('<BusinessInformationWizardStep />', () => {
         })
         it("should re-check individual validation", () => {
           cy.wait("@checkIndividualUser");
-          cy.wrap(callsSetIndividualValid).should((value) => {
+          cy.wrap(callsSetIndividualValidInd).should((value) => {
             const lastCall = value.slice(-1)[0];
             expect(lastCall).to.equal(true);
           });
@@ -357,7 +357,7 @@ describe('<BusinessInformationWizardStep />', () => {
         });
         it("should re-check individual validation", () => {
           cy.wait("@checkIndividualElse");
-          cy.wrap(callsSetIndividualValid).should((value) => {
+          cy.wrap(callsSetIndividualValidInd).should((value) => {
             const lastCall = value.slice(-1)[0];
             expect(lastCall).to.equal(true);
           });
@@ -367,7 +367,7 @@ describe('<BusinessInformationWizardStep />', () => {
 
     describe("and type of business is Unregistered", () => {
       beforeEach(() => {
-        callsSetIndividualValid = [];
+        callsSetIndividualValidInd = [];
         cy.mount(BusinessInformationWizardStep, {
           props: {
             data: {
@@ -392,8 +392,8 @@ describe('<BusinessInformationWizardStep />', () => {
             } as unknown as FormDataDto,
             districtsList: districts,
             active: false,
-            individualValid,
-            setIndividualValid,
+            individualValidInd,
+            setIndividualValidInd,
           },
           global,
         });
@@ -411,7 +411,7 @@ describe('<BusinessInformationWizardStep />', () => {
           });
           it("should re-check individual validation", () => {
             cy.wait("@checkIndividualElse");
-            cy.wrap(callsSetIndividualValid).should((value) => {
+            cy.wrap(callsSetIndividualValidInd).should((value) => {
               const lastCall = value.slice(-1)[0];
               expect(lastCall).to.equal(true);
             });
