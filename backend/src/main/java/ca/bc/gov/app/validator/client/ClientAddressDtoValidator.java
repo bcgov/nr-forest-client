@@ -1,7 +1,9 @@
 package ca.bc.gov.app.validator.client;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.entity.client.CountryCodeEntity;
 import ca.bc.gov.app.entity.client.ProvinceCodeEntity;
+import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.validation.Validator;
 public class ClientAddressDtoValidator implements Validator {
 
   private final ProvinceCodeRepository provinceCodeRepository;
+  private final CountryCodeRepository countryCodeRepository;
 
   private static final Pattern CA_POSTAL_CODE_FORMAT = Pattern.compile("[A-Z]\\d[A-Z]\\d[A-Z]\\d");
   private static final Pattern US_ZIP_CODE_FORMAT = Pattern.compile("^\\d{5}(?:-\\d{4})?$");
@@ -44,13 +47,23 @@ public class ClientAddressDtoValidator implements Validator {
     validateProvince(address, country, errors);
   }
 
+  @SneakyThrows
   private String validateCountry(ClientAddressDto address, Errors errors) {
     String country = address.country().value();
-
+    String countryField = "country";
+    
     if (StringUtils.isBlank(country)) {
-      String countryField = "country";
       errors.rejectValue(countryField, "You must select a country from the list.");
       return StringUtils.EMPTY;
+    }
+    else {
+      CountryCodeEntity countryCodeEntity = countryCodeRepository
+          .findByCountryCode(country).toFuture().get();
+      
+      if (countryCodeEntity == null) {
+        errors.rejectValue(countryField, "country is invalid");
+        return StringUtils.EMPTY;
+      }
     }
 
     return country;
