@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -91,11 +90,12 @@ public class ChesService {
     emailVariables.put("frontend", configuration.getFrontend().getUrl());
 
     final Map<String,Object> variables = new HashMap<>(emailVariables);
-
+    String strippedSubject = subject.replaceFirst("^\\[\\w+\\]\\s*", "");
+    
     String processedSubject =
         configuration.getSecurity().getEnvironment().equalsIgnoreCase("prod")
             ? subject
-            : String.format("[%s] %s", configuration.getSecurity().getEnvironment(), subject);
+            : String.format("[%s] %s", configuration.getSecurity().getEnvironment(), strippedSubject);
 
     log.info("Sending email to {} with subject {}", emailAddress, processedSubject);
 
