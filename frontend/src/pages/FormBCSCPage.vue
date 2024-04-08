@@ -61,7 +61,15 @@ const figmaFormatter = new Intl.DateTimeFormat("en-US", {
   day: "numeric",
 });
 
-const birthdate = new Date(submitterInformation?.birthdate ?? "");
+const birthdateStr = submitterInformation?.birthdate ?? "";
+let birthdate;
+
+if (birthdateStr) {
+    const [year, month, day] = birthdateStr.split('-').map(Number);
+    birthdate = new Date(year, month - 1, day);
+} else {
+    birthdate = null;
+}
 
 const figmaFormattedDate = figmaFormatter.format(birthdate);
 
