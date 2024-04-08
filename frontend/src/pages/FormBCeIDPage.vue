@@ -407,6 +407,11 @@ watch(cdsProgressStepArray, async (array) => {
     }
   }
 });
+
+const individualValidInd = ref(false);
+const setIndividualValidInd = (valid: boolean) => {
+  individualValidInd.value = valid;
+};
 </script>
 
 <template>
@@ -468,6 +473,8 @@ watch(cdsProgressStepArray, async (array) => {
           :districts-list="formattedDistrictsList"
           @valid="validateStep"
           :auto-focus="autoFocusFirstStep"
+          :individual-valid-ind="individualValidInd"
+          :set-individual-valid-ind="setIndividualValidInd"
         />
       </div>
     </div>
