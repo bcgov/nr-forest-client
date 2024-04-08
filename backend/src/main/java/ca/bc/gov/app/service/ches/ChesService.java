@@ -232,7 +232,7 @@ public class ChesService {
                     .flatMap(token ->
                         chesApi
                             .post()
-                            .uri(configuration.getChes().getUri())
+                            .uri("/mail")
                             .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                             .body(Mono.just(request), ChesMailRequest.class)

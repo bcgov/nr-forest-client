@@ -149,7 +149,7 @@ jobs:
             -p ZONE=${{ github.event.number }}
             -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
-            -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1/email'
+            -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
             -p COGNITO_REGION=ca-central-1
             -p FRONTEND_URL=${{ needs.vars.outputs.url }}
