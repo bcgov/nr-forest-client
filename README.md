@@ -2,8 +2,8 @@
 
 <!-- [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_nr-quickstart-typescript&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bcgov_nr-quickstart-typescript) -->
 
-[![Merge to Main](https://github.com/bcgov/nr-forest-client/actions/workflows/merge-main.yml/badge.svg)](https://github.com/bcgov/nr-forest-client/actions/workflows/merge-main.yml)
-[![Unit Tests and Analysis](https://github.com/bcgov/nr-forest-client/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/bcgov/nr-forest-client/actions/workflows/unit-tests.yml)
+[![Merge to Main](https://github.com/bcgov/nr-forest-client/actions/workflows/merge.yml/badge.svg)](https://github.com/bcgov/nr-forest-client/actions/workflows/merge.yml)
+[![Unit Tests and Analysis](https://github.com/bcgov/nr-forest-client/actions/workflows/analysis.yml/badge.svg)](https://github.com/bcgov/nr-forest-client/actions/workflows/analysis.yml)
 
 [![Issues](https://img.shields.io/github/issues/bcgov/nr-forest-client)](/../../issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/bcgov/nr-forest-client)](/../../pulls)
