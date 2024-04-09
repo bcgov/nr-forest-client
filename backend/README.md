@@ -93,7 +93,6 @@ ca:
 
 ```
 
-
 ## Configuring IntelliJ Code Style
 
 You will find a copy of the [google code style](docs/google_checks.xml) inside our [docs](docs) folder.
@@ -146,4 +145,3 @@ like `java -jar lombok-X.Y.Z.jar`.
 
 A screen will pop up, listing all the possible IDEs, select yours and install/update it. Once it's done, 
 restart eclipse.
-
