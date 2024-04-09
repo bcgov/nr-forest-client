@@ -1,9 +1,9 @@
 package ca.bc.gov.app.validator.client;
 
-import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
 import static ca.bc.gov.app.util.ClientValidationUtils.validateEmail;
 import static ca.bc.gov.app.util.ClientValidationUtils.validatePhoneNumber;
-
+import java.util.Arrays;
+import java.util.regex.Pattern;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.entity.client.ContactTypeCodeEntity;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
@@ -12,7 +12,6 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Component
@@ -20,6 +19,10 @@ import org.springframework.validation.Validator;
 public class ClientContactDtoValidator implements Validator {
 
   private final ContactTypeCodeRepository typeCodeRepository;
+  
+  private static final Pattern namePattern = Pattern.compile("^[\\w\\s-]+$");
+  private static final String FIRST_NAME_FIELD = "firstName";
+  private static final String LAST_NAME_FIELD = "lastName";
 
   @Override
   public boolean supports(Class<?> clazz) {
@@ -29,13 +32,9 @@ public class ClientContactDtoValidator implements Validator {
   @Override
   public void validate(Object target, Errors errors) {
 
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName",
-        fieldIsMissingErrorMessage("firstName"));
-
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName",
-        fieldIsMissingErrorMessage("lastName"));
-
     ClientContactDto contact = (ClientContactDto) target;
+    
+    validateContactNames(errors, contact);
 
     validateContactType(contact, errors);
 
@@ -44,13 +43,31 @@ public class ClientContactDtoValidator implements Validator {
 
     validateEmail(contact.email(), "email", errors);
   }
+  
+  private void validateContactNames(Errors errors, ClientContactDto contact) {
+    Arrays.asList(FIRST_NAME_FIELD, LAST_NAME_FIELD).forEach(field -> {
+      String fieldValue = switch (field) {
+        case FIRST_NAME_FIELD -> contact.firstName();
+        case LAST_NAME_FIELD -> contact.lastName();
+        default -> "";
+      };
+      String fieldName = field.equals(FIRST_NAME_FIELD) ? "first name" : "last name";
+
+      if (StringUtils.isBlank(fieldValue)) {
+        errors.rejectValue(field, String.format("All contacts must have a %s.", fieldName));
+      }
+      else if (!namePattern.matcher(fieldValue).matches()) {
+        errors.rejectValue(field, String.format("%s has an invalid character.", fieldValue));
+      }
+    });
+  }
 
   @SneakyThrows
   private void validateContactType(ClientContactDto contact, Errors errors) {
 	String contactTypeField = "contactType";
 	
     if (contact.contactType() == null || StringUtils.isBlank(contact.contactType().value())) {
-      errors.rejectValue(contactTypeField, "You must select a role.");
+      errors.rejectValue(contactTypeField, "All contacts must select a role.");
       return;
     }
 
