@@ -15,7 +15,7 @@ public class ChesEmailResendJob {
   private final EmailLogRepository emailLogRepository;
   private final ChesService chesService;
 
-  @Scheduled(cron = "*/5 * * * * *")
+  @Scheduled(cron = "*/3 * * * * *")
   public void startResendJob() {
     emailLogRepository
         .findByEmailSentInd("N")
