@@ -122,6 +122,9 @@ watch([response], () => {
 });
 
 watch([error], () => {
+  // reset the button to allow a new submission attempt
+  submitBtnDisabled.value = false;
+
   const validationErrors: ValidationMessageType[] = error.value.response?.data ?? 
     [] as ValidationMessageType[];
 
@@ -326,7 +329,7 @@ const processAndLogOut = () => {
   session?.logOut();
 };
 
-let submitBtnDisabled = ref(false);
+const submitBtnDisabled = ref(false);
 
 const submit = () => {
   errorBus.emit([]);
