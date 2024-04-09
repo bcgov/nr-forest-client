@@ -1,6 +1,20 @@
+import type { StaticResponse } from "../../node_modules/cypress/types/net-stubbing";
+
 /* eslint-disable no-undef */
 describe("BCSC Form", () => {
+  const defaultSubmitResponse = {
+    statusCode: 201,
+    headers: {
+      location: "http://localhost:8080/api/clients/submissions/1",
+      "x-sub-id": "123456",
+    },
+    delay: 150,
+  };
+  let submitResponse: StaticResponse = structuredClone(defaultSubmitResponse);
+
   beforeEach(() => {
+    submitResponse = structuredClone(defaultSubmitResponse);
+
     cy.intercept("GET", "/api/districts?page=0&size=250", {
       fixture: "districts.json",
     }).as("getDistricts");
@@ -17,12 +31,8 @@ describe("BCSC Form", () => {
       fixture: "countryCodeCA.json",
     }).as("getCanadaByCode");
 
-    cy.intercept("POST", "/api/clients/submissions", {
-      statusCode: 201,
-      headers: {
-        location: "http://localhost:8080/api/clients/submissions/1",
-        "x-sub-id": "123456",
-      },
+    cy.intercept("POST", "/api/clients/submissions", (req) => {
+      req.reply(submitResponse);
     }).as("submitForm");
 
     cy.visit("/");
@@ -79,6 +89,46 @@ describe("BCSC Form", () => {
     .click();
 
     cy.get("h1").should('contain', 'Application submitted!');
+  });
+
+  it("should disable the Submit button after it's clicked", () => {
+    cy.get("#district").find("[part='trigger-button']").click();
+
+    cy.get("#district")
+      .find("cds-combo-box-item[data-id='DCC']")
+      .click()
+      .should("have.value", "DCC - Cariboo-Chilcotin Natural Resource District");
+
+    cy.get("#phoneNumberId").shadow().find("input").type("2503008326");
+
+    cy.get("[data-test='wizard-submit-button']").click();
+
+    cy.get("[data-test='wizard-submit-button']").shadow().find("button").should("be.disabled");
+  });
+
+  describe("when submission fails", () => {
+    beforeEach(() => {
+      submitResponse.statusCode = 400;
+      submitResponse.body = [];
+    });
+    it("should disable the Submit button after clicked, then re-enable it after the failure", () => {
+      cy.get("#district").find("[part='trigger-button']").click();
+
+      cy.get("#district")
+        .find("cds-combo-box-item[data-id='DCC']")
+        .click()
+        .should("have.value", "DCC - Cariboo-Chilcotin Natural Resource District");
+
+      cy.get("#phoneNumberId").shadow().find("input").type("4004004000");
+
+      cy.get("[data-test='wizard-submit-button']").click();
+
+      cy.get("[data-test='wizard-submit-button']").shadow().find("button").should("be.disabled");
+
+      cy.wait("@submitForm");
+
+      cy.get("[data-test='wizard-submit-button']").shadow().find("button").should("be.enabled");
+    });
   });
 
   it("should add a new contact", () => {

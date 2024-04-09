@@ -15,6 +15,7 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryOfficesDto;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
+import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.observability.micrometer.Micrometer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -34,9 +36,14 @@ import reactor.core.publisher.Mono;
 public class BcRegistryService {
 
   private final WebClient bcRegistryApi;
+  private final ObservationRegistry registry;
 
-  public BcRegistryService(@Qualifier("bcRegistryApi") WebClient bcRegistryApi) {
+  public BcRegistryService(
+      @Qualifier("bcRegistryApi") WebClient bcRegistryApi,
+      ObservationRegistry registry
+  ) {
     this.bcRegistryApi = bcRegistryApi;
+    this.registry = registry;
   }
 
 
@@ -79,6 +86,9 @@ public class BcRegistryService {
                 exception -> Mono.error(new InvalidAccessTokenException())
             )
             .bodyToMono(BcRegistryFacetResponseDto.class)
+            .name("request.bcregistry")
+            .tag("kind", "facet")
+            .tap(Micrometer.observation(registry))
             .map(BcRegistryFacetResponseDto::searchResults)
             .flatMapIterable(BcRegistryFacetSearchResultsDto::results)
             .filter(entry -> entry.status().equalsIgnoreCase("active"))
@@ -131,6 +141,9 @@ public class BcRegistryService {
 
             )
             .bodyToMono(BcRegistryDocumentRequestResponseDto.class)
+            .name("request.bcregistry")
+            .tag("kind", "docreq")
+            .tap(Micrometer.observation(registry))
             .flatMapIterable(BcRegistryDocumentRequestResponseDto::documents)
             .map(BcRegistryDocumentRequestDocumentDto::documentKey)
             .doOnNext(documentKey -> log.info("Loading document {} for identifier {}", documentKey,
@@ -206,6 +219,9 @@ public class BcRegistryService {
                 exception -> Mono.error(new InvalidAccessTokenException())
             )
             .bodyToMono(BcRegistryDocumentDto.class)
+            .name("request.bcregistry")
+            .tag("kind", "docget")
+            .tap(Micrometer.observation(registry))
             .doOnNext(
                 document -> log.info("Document loaded for {} {} as {}", identifier, documentKey,
                     document));
