@@ -66,7 +66,7 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
 
     chesStub
         .stubFor(
-            post("/chess/uri")
+            post("/chess/uri/email")
                 .willReturn(
                     ok(TestConstants.CHES_SUCCESS_MESSAGE)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -132,7 +132,7 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
   void shouldSendEmail() {
     chesStub
         .stubFor(
-            post("/chess/uri")
+            post("/chess/uri/email")
                 .willReturn(
                     ok(TestConstants.CHES_SUCCESS_MESSAGE)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
