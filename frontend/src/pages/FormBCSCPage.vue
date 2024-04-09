@@ -329,7 +329,7 @@ const router = useRouter();
 const {
   response,
   error,
-  fetch: fecthSubmit,
+  fetch: fetchSubmit,
 } = usePost("/api/clients/submissions", toRef(formData).value, {
   skip: true,
 });
@@ -343,7 +343,7 @@ const submit = () => {
 
     // button Submit is disabled to prevent multiple clicks.
     submitBtnDisabled.value = true;
-    fecthSubmit();
+    fetchSubmit();
   } else {
     validInd.value = false;
   }
