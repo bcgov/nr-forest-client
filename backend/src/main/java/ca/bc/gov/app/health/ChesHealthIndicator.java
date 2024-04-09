@@ -1,7 +1,7 @@
 package ca.bc.gov.app.health;
 
-import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.ches.CommonExposureJwtDto;
+import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.annotation.Observed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.observability.micrometer.Micrometer;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -20,16 +21,18 @@ import reactor.core.publisher.Mono;
 public class ChesHealthIndicator implements HealthIndicator {
 
   private final WebClient chesApi;
-
   private final WebClient authApi;
+  private final ObservationRegistry registry;
   private Health apiHealth = Health.unknown().build();
 
   public ChesHealthIndicator(
       @Qualifier("chesApi") WebClient chesApi,
-      @Qualifier("authApi") WebClient authApi
+      @Qualifier("authApi") WebClient authApi,
+      ObservationRegistry registry
   ) {
     this.chesApi = chesApi;
     this.authApi = authApi;
+    this.registry = registry;
   }
 
   @Override
@@ -49,6 +52,9 @@ public class ChesHealthIndicator implements HealthIndicator {
                   }
                 })
         )
+        .name("request.ches")
+        .tag("kind", "health")
+        .tap(Micrometer.observation(registry))
         .doOnNext(health -> log.info("CHES API health: {}", health))
         .subscribe(
             health -> apiHealth = health,
@@ -66,6 +72,9 @@ public class ChesHealthIndicator implements HealthIndicator {
             .body(BodyInserters.fromFormData("grant_type", "client_credentials"))
             .retrieve()
             .bodyToMono(CommonExposureJwtDto.class)
+            .name("request.ches")
+            .tag("kind", "token")
+            .tap(Micrometer.observation(registry))
             .map(CommonExposureJwtDto::accessToken);
   }
 }
