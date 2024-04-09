@@ -146,3 +146,4 @@ like `java -jar lombok-X.Y.Z.jar`.
 
 A screen will pop up, listing all the possible IDEs, select yours and install/update it. Once it's done, 
 restart eclipse.
+

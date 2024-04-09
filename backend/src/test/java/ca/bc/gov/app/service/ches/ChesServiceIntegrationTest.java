@@ -64,7 +64,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
     mockOAuthSuccess();
 
     wireMockExtension
-        .stubFor(post("/chess/uri/mail").willReturn(unauthorized()));
+        .stubFor(post("/chess/uri/email").willReturn(unauthorized()));
 
     service
         .sendEmail(new ChesRequestDto(List.of("jhon@mail.ca"), "simple body"), "Test")
@@ -79,7 +79,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
     mockOAuthSuccess();
 
     wireMockExtension
-        .stubFor(post("/chess/uri/mail").willReturn(forbidden()));
+        .stubFor(post("/chess/uri/email").willReturn(forbidden()));
 
     service
         .sendEmail(new ChesRequestDto(List.of("jhon@mail.ca"), "simple body"), "Test")
@@ -99,7 +99,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
     wireMockExtension
         .stubFor(
-            post("/chess/uri/mail")
+            post("/chess/uri/email")
                 .willReturn(
                     ok(TestConstants.CHES_SUCCESS_MESSAGE)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -121,7 +121,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
     wireMockExtension
         .stubFor(
-            post("/chess/uri/mail")
+            post("/chess/uri/email")
                 .willReturn(
                     status(422)
                         .withBody(TestConstants.CHES_422_MESSAGE)
@@ -144,7 +144,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
     wireMockExtension
         .stubFor(
-            post("/chess/uri/mail")
+            post("/chess/uri/email")
                 .willReturn(
                     status(400)
                         .withBody(TestConstants.CHES_400_MESSAGE)
@@ -167,7 +167,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
     wireMockExtension
         .stubFor(
-            post("/chess/uri/mail")
+            post("/chess/uri/email")
                 .willReturn(
                     status(500)
                         .withBody(TestConstants.CHES_500_MESSAGE)
@@ -191,7 +191,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
     wireMockExtension
         .stubFor(
-            post("/chess/uri/mail")
+            post("/chess/uri/email")
                 .willReturn(
                     ok(TestConstants.CHES_SUCCESS_MESSAGE)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
