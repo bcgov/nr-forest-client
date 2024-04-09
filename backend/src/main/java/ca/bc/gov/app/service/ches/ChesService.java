@@ -95,19 +95,19 @@ public class ChesService {
 
     if (emailVariables == null) {
       emailVariables = new HashMap<>();
-    }
-    else {
+    } else {
       emailVariables = new HashMap<>(emailVariables);
     }
     emailVariables.put("frontend", configuration.getFrontend().getUrl());
 
-    final Map<String,Object> variables = new HashMap<>(emailVariables);
+    final Map<String, Object> variables = new HashMap<>(emailVariables);
     String strippedSubject = subject.replaceFirst("^\\[\\w+\\]\\s*", "");
-    
+
     String processedSubject =
         configuration.getSecurity().getEnvironment().equalsIgnoreCase("prod")
             ? subject
-            : String.format("[%s] %s", configuration.getSecurity().getEnvironment(), strippedSubject);
+            : String.format("[%s] %s", configuration.getSecurity().getEnvironment(),
+                strippedSubject);
 
     log.info("Sending email to {} with subject {}", emailAddress, processedSubject);
 
@@ -219,8 +219,6 @@ public class ChesService {
       return Mono.error(new InvalidRequestObjectException("no request body was provided"));
     }
 
-    String url = Math.random() > 0.5 ? "/email" : "/email/validate";
-
     return
         Mono
             .just(requestContent)
@@ -240,13 +238,14 @@ public class ChesService {
                     request.emailTo()
                 )
             )
-            .doOnNext(request -> log.info("Sending email using CHES to {} with subject {} {}", requestContent.emailTo(), subject,url))
+            .doOnNext(request -> log.info("Sending email using CHES to {} with subject {}",
+                requestContent.emailTo(), subject))
             .flatMap(request ->
                 getToken()
                     .flatMap(token ->
                         chesApi
                             .post()
-                            .uri( url)
+                            .uri("/email")
                             .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                             .body(Mono.just(request), ChesMailRequest.class)
