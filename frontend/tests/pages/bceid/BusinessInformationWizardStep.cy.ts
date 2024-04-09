@@ -1,6 +1,25 @@
 import BusinessInformationWizardStep from "@/pages/bceidform/BusinessInformationWizardStep.vue";
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
-import districts from "../../../cypress/fixtures/districts.json"
+import districts from "../../../cypress/fixtures/districts.json";
+
+const user = {
+  userId: "bceid\\mockUserId",
+  firstName: "John",
+  lastName: "Doe",
+};
+
+const global = {
+  config: {
+    globalProperties: {
+      $session: {
+        user,
+      },
+      $features: {
+        BCEID_MULTI_ADDRESS: false,
+      },
+    },
+  },
+};
 
 describe('<BusinessInformationWizardStep />', () => {
 
@@ -19,6 +38,27 @@ describe('<BusinessInformationWizardStep />', () => {
       body: "Unable to process request. This sole proprietor is not owner by a person",
     });
 
+    cy.intercept("GET", "/api/clients/SP2", {
+      statusCode: 200,
+      body: "Unable to process request. This sole proprietor is not owner by a person",
+    });
+
+    cy.intercept("GET", "/api/clients/XX9016140", {
+      statusCode: 200,
+      body: {
+        name: "Anyone",
+        id: "XX9016140",
+        goodStanding: true,
+        addresses: [{}],
+        contacts: [
+          {
+            lastName: "Else",
+          },
+        ],
+      },
+      delay: 10,
+    });
+
     cy.intercept("GET", "/api/codes/clientTypes/C", {
       statusCode: 200,
       body: {
@@ -26,6 +66,16 @@ describe('<BusinessInformationWizardStep />', () => {
         name: "Corporation",
       },
     }).as("getClientType");
+
+    cy.intercept("GET", "/api/clients/individual/mockUserId?lastName=Doe", {
+      statusCode: 200,
+      delay: 10,
+    }).as("checkIndividualUser");
+
+    cy.intercept("GET", "/api/clients/individual/mockUserId?lastName=Else", {
+      statusCode: 200,
+      delay: 10,
+    }).as("checkIndividualElse");
   });
 
   it('renders the BusinessInformationWizardStep component and interacts with elements', () => {
@@ -46,6 +96,7 @@ describe('<BusinessInformationWizardStep />', () => {
         districtsList: districts,
         active: false,
       },
+      global,
     });
 
     cy.get('#businessTyperbR').click();
@@ -67,7 +118,7 @@ describe('<BusinessInformationWizardStep />', () => {
             businessName: "",
             goodStandingInd: "",
             birthdate: "",
-            address: ""
+            address: "",
           },
           location: {
             contacts: [
@@ -81,6 +132,7 @@ describe('<BusinessInformationWizardStep />', () => {
         districtsList: districts,
         active: false,
       },
+      global,
     });
 
     cy.get("#businessTyperbR").click();
@@ -130,6 +182,7 @@ describe('<BusinessInformationWizardStep />', () => {
         districtsList: districts,
         active: false,
       },
+      global,
     });
 
     cy.get("#businessTyperbR").click();
@@ -172,5 +225,199 @@ describe('<BusinessInformationWizardStep />', () => {
       .click();
 
     cy.get("cds-inline-notification").should("not.exist");
+  });
+
+  describe("when a Registered individual business gets selected", () => {
+    let callsSetIndividualValidInd = [];
+    const functionWrapper = {
+      setIndividualValidInd: (value: boolean) => {
+        callsSetIndividualValidInd.push(value);
+      },
+    };
+    const { setIndividualValidInd } = functionWrapper;
+    beforeEach(() => {
+      callsSetIndividualValidInd = [];
+      cy.mount(BusinessInformationWizardStep, {
+        props: {
+          data: {
+            businessInformation: {
+              businessType: "",
+              legalType: "",
+              clientType: "",
+              registrationNumber: "",
+              businessName: "",
+              goodStandingInd: "",
+              birthdate: "",
+              address: "",
+            },
+            location: {
+              contacts: [
+                {
+                  email: "john@doe.com",
+                  firstName: "John",
+                },
+              ],
+            },
+          } as unknown as FormDataDto,
+          districtsList: districts,
+          active: false,
+          individualValidInd: false,
+          setIndividualValidInd,
+        },
+        global,
+      });
+
+      cy.get("#businessTyperbR").click();
+
+      cy.get("#business").should("be.visible").shadow().find("input").type("Valid");
+      cy.wait("@searchCompany");
+
+      cy.get("cds-combo-box-item[data-id='XX9016140']").click();
+      cy.wrap(callsSetIndividualValidInd).should((value) => {
+        const lastCall = value.slice(-1)[0];
+        expect(lastCall).to.equal(true);
+      });
+    });
+
+    describe("and type of business is changed to Unregistered", () => {
+      beforeEach(() => {
+        callsSetIndividualValidInd = [];
+        cy.get("#businessTyperbU").click();
+      })
+      it("should re-check with user's last name", () => {
+        cy.wait("@checkIndividualUser");
+        cy.wrap(callsSetIndividualValidInd).should((value) => {
+          const lastCall = value.slice(-1)[0];
+          expect(lastCall).to.equal(true);
+        });
+      });
+    });
+  });
+
+  describe("when props.individualValue is true", () => {
+    const individualValidInd = true;
+    let callsSetIndividualValidInd = [];
+    const functionWrapper = {
+      setIndividualValidInd: (value: boolean) => {
+        callsSetIndividualValidInd.push(value);
+      },
+    };
+    const { setIndividualValidInd } = functionWrapper;
+    describe("and type of business is Registered", () => {
+      beforeEach(() => {
+        callsSetIndividualValidInd = [];
+        cy.mount(BusinessInformationWizardStep, {
+          props: {
+            data: {
+              businessInformation: {
+                businessType: "R",
+                legalType: "",
+                clientType: "RSP",
+                registrationNumber: "",
+                businessName: "abc",
+                goodStandingInd: "",
+                birthdate: "2000-01-01",
+                address: "",
+              },
+              location: {
+                contacts: [
+                  {
+                    email: "john@doe.com",
+                    firstName: "John",
+                  },
+                ],
+              },
+            } as unknown as FormDataDto,
+            districtsList: districts,
+            active: false,
+            individualValidInd,
+            setIndividualValidInd,
+          },
+          global,
+        });
+      });
+      describe("and type of business is changed to Unregistered", () => {
+        beforeEach(() => {
+          cy.get("#businessTyperbU").click();
+        })
+        it("should re-check individual validation", () => {
+          cy.wait("@checkIndividualUser");
+          cy.wrap(callsSetIndividualValidInd).should((value) => {
+            const lastCall = value.slice(-1)[0];
+            expect(lastCall).to.equal(true);
+          });
+        });
+      });
+      describe("and a different individual business gets selected", () => {
+        beforeEach(() => {
+          cy.get("#business").should("be.visible").shadow().find("input").type("Valid");
+          cy.wait("@searchCompany");
+
+          cy.get("cds-combo-box-item[data-id='XX9016140']").click();
+        });
+        it("should re-check individual validation", () => {
+          cy.wait("@checkIndividualElse");
+          cy.wrap(callsSetIndividualValidInd).should((value) => {
+            const lastCall = value.slice(-1)[0];
+            expect(lastCall).to.equal(true);
+          });
+        });
+      });
+    });
+
+    describe("and type of business is Unregistered", () => {
+      beforeEach(() => {
+        callsSetIndividualValidInd = [];
+        cy.mount(BusinessInformationWizardStep, {
+          props: {
+            data: {
+              businessInformation: {
+                businessType: "U",
+                legalType: "",
+                clientType: "USP",
+                registrationNumber: "",
+                businessName: "abc",
+                goodStandingInd: "",
+                birthdate: "2000-01-01",
+                address: "",
+              },
+              location: {
+                contacts: [
+                  {
+                    email: "john@doe.com",
+                    firstName: "John",
+                  },
+                ],
+              },
+            } as unknown as FormDataDto,
+            districtsList: districts,
+            active: false,
+            individualValidInd,
+            setIndividualValidInd,
+          },
+          global,
+        });
+      });
+      describe("and type of business is changed to Registered", () => {
+        beforeEach(() => {
+          cy.get("#businessTyperbR").click();
+        });
+        describe("and an indivual business gets selected", () => {
+          beforeEach(() => {
+            cy.get("#business").should("be.visible").shadow().find("input").type("Valid");
+            cy.wait("@searchCompany");
+
+            cy.get("cds-combo-box-item[data-id='XX9016140']").click();
+          });
+          it("should re-check individual validation", () => {
+            cy.wait("@checkIndividualElse");
+            cy.wrap(callsSetIndividualValidInd).should((value) => {
+              const lastCall = value.slice(-1)[0];
+              expect(lastCall).to.equal(true);
+            });
+          });
+        });
+      });
+    });
   });
 });
