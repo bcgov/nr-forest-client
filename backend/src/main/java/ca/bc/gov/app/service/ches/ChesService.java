@@ -21,6 +21,9 @@ import ca.bc.gov.app.repository.client.EmailLogRepository;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.annotation.Observed;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -43,6 +46,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.observability.micrometer.Micrometer;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -53,25 +57,33 @@ public class ChesService {
   public static final String FAILED_TO_SEND_EMAIL = "Failed to send email: {}";
   private final ForestClientConfiguration configuration;
   private final WebClient chesApi;
-
   private final WebClient authApi;
   private final Configuration freeMarkerConfiguration;
-
   private final EmailLogRepository emailLogRepository;
+  private final Counter emailCounterSuccess;
+  private final Counter emailCounterFailure;
+  private final ObservationRegistry registry;
 
   public ChesService(
       ForestClientConfiguration configuration,
       @Qualifier("chesApi") WebClient chesApi,
       @Qualifier("authApi") WebClient authApi,
-      EmailLogRepository emailLogRepository
+      EmailLogRepository emailLogRepository,
+      MeterRegistry meterRegistry,
+      ObservationRegistry registry
   ) {
     this.configuration = configuration;
     this.chesApi = chesApi;
     this.authApi = authApi;
+    this.registry = registry;
     this.freeMarkerConfiguration = new Configuration(Configuration.VERSION_2_3_31);
     this.emailLogRepository = emailLogRepository;
     freeMarkerConfiguration.setClassForTemplateLoading(this.getClass(), "/templates");
     freeMarkerConfiguration.setDefaultEncoding("UTF-8");
+
+    this.emailCounterSuccess = meterRegistry.counter("service.ches", "status", "success");
+    this.emailCounterFailure = meterRegistry.counter("service.ches", "status", "failure");
+
   }
 
   public Mono<String> sendEmail(String templateName,
@@ -83,19 +95,19 @@ public class ChesService {
 
     if (emailVariables == null) {
       emailVariables = new HashMap<>();
-    }
-    else {
+    } else {
       emailVariables = new HashMap<>(emailVariables);
     }
     emailVariables.put("frontend", configuration.getFrontend().getUrl());
 
-    final Map<String,Object> variables = new HashMap<>(emailVariables);
+    final Map<String, Object> variables = new HashMap<>(emailVariables);
     String strippedSubject = subject.replaceFirst("^\\[\\w+\\]\\s*", "");
-    
+
     String processedSubject =
         configuration.getSecurity().getEnvironment().equalsIgnoreCase("prod")
             ? subject
-            : String.format("[%s] %s", configuration.getSecurity().getEnvironment(), strippedSubject);
+            : String.format("[%s] %s", configuration.getSecurity().getEnvironment(),
+                strippedSubject);
 
     log.info("Sending email to {} with subject {}", emailAddress, processedSubject);
 
@@ -226,7 +238,8 @@ public class ChesService {
                     request.emailTo()
                 )
             )
-            .doOnNext(request -> log.info("Sending email using CHES to {} with subject {}", requestContent.emailTo(), subject))
+            .doOnNext(request -> log.info("Sending email using CHES to {} with subject {}",
+                requestContent.emailTo(), subject))
             .flatMap(request ->
                 getToken()
                     .flatMap(token ->
@@ -247,8 +260,17 @@ public class ChesService {
                                 get422ErrorMessage())
                             .onStatus(HttpStatusCode::isError, get500ErrorMessage())
                             .bodyToMono(ChesMailResponse.class)
-                            .doOnNext(response -> log.info("Email sent successfully"))
-                            .doOnError(error -> log.error("Failed to send email", error))
+                            .name("request.ches")
+                            .tag("kind", "email")
+                            .tap(Micrometer.observation(registry))
+                            .doOnNext(response -> {
+                              log.info("Email sent successfully");
+                              emailCounterSuccess.increment();
+                            })
+                            .doOnError(error -> {
+                              log.error("Failed to send email", error);
+                              emailCounterFailure.increment();
+                            })
                     )
             )
             .map(response -> response.txId().toString())
@@ -335,6 +357,9 @@ public class ChesService {
             .onStatus(httpStatusCode -> httpStatusCode.value() == 422, get422ErrorMessage())
             .onStatus(HttpStatusCode::isError, get500ErrorMessage())
             .bodyToMono(CommonExposureJwtDto.class)
+            .name("request.ches")
+            .tag("kind", "token")
+            .tap(Micrometer.observation(registry))
             .map(CommonExposureJwtDto::accessToken)
             .doOnNext(token -> log.info("Successfully retrieved access token"));
   }

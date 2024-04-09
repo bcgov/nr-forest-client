@@ -8,6 +8,7 @@ import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.exception.AddressLookupException;
+import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.observability.micrometer.Micrometer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -28,12 +30,16 @@ public class ClientAddressService {
 
   private final ForestClientConfiguration.AddressCompleteConfiguration configuration;
   private final WebClient addressCompleteApi;
+  private final ObservationRegistry registry;
 
   public ClientAddressService(
       ForestClientConfiguration configuration,
-      @Qualifier("addressCompleteApi") WebClient addressCompleteApi) {
+      @Qualifier("addressCompleteApi") WebClient addressCompleteApi,
+      ObservationRegistry registry
+  ) {
     this.configuration = configuration.getAddressComplete();
     this.addressCompleteApi = addressCompleteApi;
+    this.registry = registry;
   }
 
   public Flux<CodeNameDto> findPossibleAddresses(
@@ -53,6 +59,9 @@ public class ClientAddressService {
             )
             .retrieve()
             .bodyToMono(AddressCompleteFindListDto.class)
+            .name("request.canadapost")
+            .tag("kind", "search")
+            .tap(Micrometer.observation(registry))
             .map(AddressCompleteFindListDto::items)
             .flatMap(addresses -> {
               try {
@@ -83,6 +92,9 @@ public class ClientAddressService {
                           .build(Map.of()))
                   .retrieve()
                   .bodyToMono(AddressCompleteFindListDto.class)
+                  .name("request.canadapost")
+                  .tag("kind", "lastid")
+                  .tap(Micrometer.observation(registry))
                   .map(AddressCompleteFindListDto::items)
                   .flatMap(lastIdAddresses -> {
 
@@ -119,6 +131,9 @@ public class ClientAddressService {
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .bodyToMono(AddressCompleteRetrieveListDto.class)
+            .name("request.canadapost")
+            .tag("kind", "get")
+            .tap(Micrometer.observation(registry))
             .map(AddressCompleteRetrieveListDto::items)
             .flatMap(addresses -> {
               try {
