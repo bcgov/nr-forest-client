@@ -21,6 +21,8 @@ import ca.bc.gov.app.repository.client.EmailLogRepository;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.annotation.Observed;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -53,25 +55,33 @@ public class ChesService {
   public static final String FAILED_TO_SEND_EMAIL = "Failed to send email: {}";
   private final ForestClientConfiguration configuration;
   private final WebClient chesApi;
-
   private final WebClient authApi;
   private final Configuration freeMarkerConfiguration;
-
   private final EmailLogRepository emailLogRepository;
+  private final MeterRegistry meterRegistry;
+  private final Counter emailCounterSuccess;
+  private final Counter emailCounterFailure;
+
 
   public ChesService(
       ForestClientConfiguration configuration,
       @Qualifier("chesApi") WebClient chesApi,
       @Qualifier("authApi") WebClient authApi,
-      EmailLogRepository emailLogRepository
+      EmailLogRepository emailLogRepository,
+      MeterRegistry meterRegistry
   ) {
     this.configuration = configuration;
     this.chesApi = chesApi;
     this.authApi = authApi;
+    this.meterRegistry = meterRegistry;
     this.freeMarkerConfiguration = new Configuration(Configuration.VERSION_2_3_31);
     this.emailLogRepository = emailLogRepository;
     freeMarkerConfiguration.setClassForTemplateLoading(this.getClass(), "/templates");
     freeMarkerConfiguration.setDefaultEncoding("UTF-8");
+
+    this.emailCounterSuccess = meterRegistry.counter("service.ches.email.sent", "status", "success");
+    this.emailCounterFailure = meterRegistry.counter("service.ches.email.sent", "status", "failure");
+
   }
 
   public Mono<String> sendEmail(String templateName,
@@ -247,8 +257,14 @@ public class ChesService {
                                 get422ErrorMessage())
                             .onStatus(HttpStatusCode::isError, get500ErrorMessage())
                             .bodyToMono(ChesMailResponse.class)
-                            .doOnNext(response -> log.info("Email sent successfully"))
-                            .doOnError(error -> log.error("Failed to send email", error))
+                            .doOnNext(response -> {
+                              log.info("Email sent successfully");
+                              emailCounterSuccess.increment();
+                            })
+                            .doOnError(error -> {
+                              log.error("Failed to send email", error);
+                              emailCounterFailure.increment();
+                            })
                     )
             )
             .map(response -> response.txId().toString())
