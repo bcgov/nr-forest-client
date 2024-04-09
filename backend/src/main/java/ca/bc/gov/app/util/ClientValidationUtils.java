@@ -15,7 +15,8 @@ public class ClientValidationUtils {
 
   private static final String EMAIL_REGEX = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$";
   private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
-
+  public static final Pattern US7ASCII_PATTERN = Pattern.compile("^[\\x00-\\x7F]+$");
+  
   public static void validateEmail(String email, String field, Errors errors) {
     if (StringUtils.isBlank(email)) {
       errors.rejectValue(field, "You must enter an email address");

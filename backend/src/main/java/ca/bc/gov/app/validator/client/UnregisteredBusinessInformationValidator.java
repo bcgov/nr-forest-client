@@ -1,6 +1,7 @@
 package ca.bc.gov.app.validator.client;
 
 import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
+import static ca.bc.gov.app.util.ClientValidationUtils.US7ASCII_PATTERN;
 
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.validation.Validator;
 @Component
 @RequiredArgsConstructor
 public class UnregisteredBusinessInformationValidator implements Validator {
+  
   @Override
   public boolean supports(Class<?> clazz) {
     return ClientBusinessInformationDto.class.equals(clazz);
@@ -29,6 +31,10 @@ public class UnregisteredBusinessInformationValidator implements Validator {
     String businessName = (String) errors.getFieldValue(businessNameField);
     if (businessName != null && !businessName.matches(".*\\s+.*")) {
       errors.rejectValue(businessNameField, "Business name must be composed of first and last name");
+    }
+    
+    if (!US7ASCII_PATTERN.matcher(businessName).matches()) {
+      errors.rejectValue(businessNameField, String.format("%s has an invalid character.", businessName));
     }
     errors.popNestedPath();
   }

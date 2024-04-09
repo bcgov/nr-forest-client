@@ -20,7 +20,7 @@ public class ClientContactDtoValidator implements Validator {
 
   private final ContactTypeCodeRepository typeCodeRepository;
   
-  private static final Pattern namePattern = Pattern.compile("^[\\w\\s-]+$");
+  private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9\\s'-]+$");
   private static final String FIRST_NAME_FIELD = "firstName";
   private static final String LAST_NAME_FIELD = "lastName";
 
@@ -56,7 +56,7 @@ public class ClientContactDtoValidator implements Validator {
       if (StringUtils.isBlank(fieldValue)) {
         errors.rejectValue(field, String.format("All contacts must have a %s.", fieldName));
       }
-      else if (!namePattern.matcher(fieldValue).matches()) {
+      else if (!NAME_PATTERN.matcher(fieldValue).matches()) {
         errors.rejectValue(field, String.format("%s has an invalid character.", fieldValue));
       }
     });
@@ -80,7 +80,6 @@ public class ClientContactDtoValidator implements Validator {
                + contact.contactType().text()
                + " is invalid");
     }
-
   }
 
 }
