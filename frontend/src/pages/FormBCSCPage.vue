@@ -228,7 +228,7 @@ const emit = defineEmits<{
 watch([validation], () => {
   const valid = checkValid();
   emit("valid", valid);
-  submitBtnDisabled.value = !valid;
+  validInd.value = valid;
 });
 emit("valid", false);
 
@@ -279,6 +279,16 @@ const progressData = reactive([
 ]);
 
 const submitBtnDisabled = ref(true);
+const validInd = ref(false);
+
+/*
+submitBtnDisabled always updates when validInd updates.
+However we can change the value of submitBtnDisabled only, without triggering any change on
+validInd, which is useful to prevent multiple clicks.
+*/
+watch(validInd, (value) => {
+  submitBtnDisabled.value = !value;
+});
 
 const errorBus = useEventBus<ValidationMessageType[]>(
   "submission-error-notification"
@@ -319,7 +329,7 @@ const router = useRouter();
 const {
   response,
   error,
-  fetch: fecthSubmit,
+  fetch: fetchSubmit,
 } = usePost("/api/clients/submissions", toRef(formData).value, {
   skip: true,
 });
@@ -329,10 +339,13 @@ const submit = () => {
   notificationBus.emit(undefined);
 
   if (checkStepValidity(currentTab.value)) {
-    submitBtnDisabled.value = false;
-    fecthSubmit();
-  } else {
+    validInd.value = true;
+
+    // button Submit is disabled to prevent multiple clicks.
     submitBtnDisabled.value = true;
+    fetchSubmit();
+  } else {
+    validInd.value = false;
   }
 };
 
@@ -343,6 +356,9 @@ watch([response], () => {
 });
 
 watch([error], () => {
+  // reset the button to allow a new submission attempt
+  submitBtnDisabled.value = !validInd.value;
+
   const validationErrors: ValidationMessageType[] =
     error.value.response?.data ?? ([] as ValidationMessageType[]);
 
@@ -572,7 +588,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
     <hr class="divider" />
 
     <div class="form-footer-group-next">
-      <span class="body-compact-01" v-if="submitBtnDisabled">
+      <span class="body-compact-01" v-if="!validInd">
         All fields must be filled in correctly to enable the “Submit application” button below.
       </span>
       <cds-tooltip>
@@ -586,7 +602,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
           <span>Submit application</span>
           <Check16 slot="icon" />
         </cds-button>
-        <cds-tooltip-content v-if="!isTouchScreen" v-show="submitBtnDisabled">
+        <cds-tooltip-content v-if="!isTouchScreen" v-show="!validInd">
           All fields must be filled in correctly.
         </cds-tooltip-content>
       </cds-tooltip>

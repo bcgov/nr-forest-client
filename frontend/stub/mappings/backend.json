@@ -197,7 +197,8 @@
         "headers": {
           "Location": "/api/clients/123456",
           "x-sub-id": "123456"
-        }
+        },
+        "fixedDelayMilliseconds": 750
       }
     },
     {
@@ -216,7 +217,8 @@
       },
       "response": {
         "status": 400,
-        "bodyFileName": "response-submission-fault.json"
+        "bodyFileName": "response-submission-fault.json",
+        "fixedDelayMilliseconds": 750
       }
     },
     {
@@ -234,7 +236,8 @@
         ]
       },
       "response": {
-        "status": 202
+        "status": 202,
+        "fixedDelayMilliseconds": 750
       }
     },
     {
@@ -253,7 +256,8 @@
       },
       "response": {
         "status": 400,
-        "body": "[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]"
+        "body": "[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]",
+        "fixedDelayMilliseconds": 750
       }
     },
     {
@@ -277,7 +281,33 @@
         ]
       },
       "response": {
-        "status": 201
+        "status": 201,
+        "fixedDelayMilliseconds": 750
+      }
+    },
+    {
+      "name": "Submission for Unregistered clientType I",
+      "request": {
+        "url": "/api/clients/submissions",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessType",
+              "contains": "U"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "contains": "I"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 201,
+        "fixedDelayMilliseconds": 750
       }
     },
     {
@@ -520,6 +550,7 @@
     },
     {
       "name": "Individual Match for BCSC",
+      "priority": 5,
       "request": {
         "urlPath": "/api/clients/individual/NA5TCPGMIGUFVCSS6SAO3TIDBMAHXL3F",
         "method": "GET",
@@ -535,6 +566,21 @@
       }
     },
     {
+      "name": "No Individual Match for BCSC",
+      "request": {
+        "urlPath": "/api/clients/individual/NA5TCPGMIGUFVCSS6SAO3TIDBMAHXL3F",
+        "method": "GET",
+        "queryParameters": {
+          "lastName": {
+            "equalTo": "Baxter"
+          }
+        }
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
       "name": "No Individual Match for IDIR",
       "request": {
         "urlPath": "/api/clients/individual/JRYAN",
@@ -546,8 +592,7 @@
         }
       },
       "response": {
-        "status": 409,
-        "body": "Client already exists with the client number 00000002"
+        "status": 200
       }
     },
     {
