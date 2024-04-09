@@ -356,6 +356,9 @@ watch([response], () => {
 });
 
 watch([error], () => {
+  // reset the button to allow a new submission attempt
+  submitBtnDisabled.value = !validInd.value;
+
   const validationErrors: ValidationMessageType[] =
     error.value.response?.data ?? ([] as ValidationMessageType[]);
 
