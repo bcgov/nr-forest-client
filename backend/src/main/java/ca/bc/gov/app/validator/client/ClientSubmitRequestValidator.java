@@ -114,48 +114,11 @@ public class ClientSubmitRequestValidator implements Validator {
     String dobFieldName = "birthdate";
     if (birthdate == null) {
       errors.rejectValue(dobFieldName, fieldIsMissingErrorMessage("Birthdate"));
-    } 
-    else if (!isValidBirthdate(birthdate)) {
-      errors.rejectValue(dobFieldName, "Date of birth is invalid");
-    }
-    else {
+    } else {
       LocalDate minAgeDate = LocalDate.now().minusYears(19);
       if (birthdate.isAfter(minAgeDate)) {
         errors.rejectValue(dobFieldName, "Sole proprietorship must be at least 19 years old");
       }
-    }
-  }
-  
-  private boolean isValidBirthdate(LocalDate birthdate) {
-    int year = birthdate.getYear();
-    int month = birthdate.getMonthValue();
-    int day = birthdate.getDayOfMonth();
-
-    if (month < 1 || month > 12) {
-      return false;
-    }
-
-    // Check day validity based on month (considering leap year)
-    int maxDays = getMaxDaysInMonth(month, year);
-    if (day < 1 || day > maxDays) {
-      return false;
-    }
-
-    return true;
-  }
-  
-  private int getMaxDaysInMonth(int month, int year) {
-    switch (month) {
-      case 2:
-        // Check for leap year
-        return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0 ? 29 : 28;
-      case 4:
-      case 6:
-      case 9:
-      case 11:
-        return 30;
-      default:
-        return 31;
     }
   }
 
