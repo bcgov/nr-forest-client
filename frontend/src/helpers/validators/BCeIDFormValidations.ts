@@ -90,14 +90,14 @@ formFieldValidations["location.contacts.*.contactType.text"] = [
   isNotEmpty("You must select a role."),
 ];
 formFieldValidations["location.contacts.*.firstName"] = [
-  isMinSize("Enter a name")(1),
-  isMaxSize("Enter a name")(25),
-  isNoSpecialCharacters("Enter a name"),
+  isMinSize("Please enter the first name")(1),
+  isMaxSize("The first name must be at most 25-characters")(25),
+  isNoSpecialCharacters("The first name cannot contain special characters"),
 ];
 formFieldValidations["location.contacts.*.lastName"] = [
-  isMinSize("Enter a name")(1),
-  isMaxSize("Enter a name")(25),
-  isNoSpecialCharacters("Enter a name"),
+  isMinSize("Please enter the last name")(1),
+  isMaxSize("The last name must be at most 25-characters")(25),
+  isNoSpecialCharacters("The last name cannot contain special characters"),
 ];
 formFieldValidations["location.contacts.*.email"] = [
   isEmail("Please provide a valid email address"),

@@ -242,6 +242,11 @@ const checkStepValidity = (stepNumber: number): boolean => {
     }
   });
 
+  if (!progressData[stepNumber].valid) {
+    // Stop here so the error messages don't get cleared.
+    return false;
+  }
+
   if (
     !progressData[stepNumber].extraValidations.every((validation: any) =>
       runValidation(

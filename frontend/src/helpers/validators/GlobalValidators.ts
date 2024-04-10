@@ -562,35 +562,56 @@ export const validate = (
 
     // We split the field key and the condition if it has one
     const [fieldKey, fieldCondition] = key.includes("(")
-    ? key.replace(")", "").split("(")
-    : [key, "true"];
-    
+      ? key.replace(")", "").split("(")
+      : [key, "true"];
+
     const fieldValue = getFieldValue(fieldKey, target);
-    const fieldEvaluation = evaluateCondition(target, fieldCondition.replace(targetGlobalRegex,""));
-    
+    const fieldEvaluation = evaluateCondition(
+      target,
+      fieldCondition.replace(targetGlobalRegex, ""),
+    );
+
     // We skip if we evaluate and the result is false
     // Meaning we should not validate this field using this set of validations
-    if(!fieldEvaluation){
+    if (!fieldEvaluation) {
       return true;
     }
-    
+
+    const validateNotifyFactory =
+      (
+        validation: (value: string) => string,
+        notify: boolean,
+        eventOptions: Omit<ValidationMessageType, "errorMsg">,
+      ) =>
+      (value: string) => {
+        const validationResponse = validation(value);
+        if (notify && validationResponse) {
+          errorBus.emit([{ ...eventOptions, errorMsg: validationResponse }]);
+        }
+        return validationResponse === "";
+      };
+
     // For every validator we run it and check if the result is empty
-    return validations.every((validation: (value: string) => string) => {
-      // If the field value is an array we run the validation for every item in the array
-      if (Array.isArray(fieldValue)) {
-        return fieldValue.every((item: any) => {
-          // And sometimes we can end up with another array inside, that's life
-          if (Array.isArray(item)) {
-            if (item.length === 0) item.push("");
-            return item.every((subItem: any) => validation(subItem) === "");
-          }
-          // If it is not an array here, just validate it
-          return validation(item) === "";
-        });
-      }else{
-        return validation(fieldValue) === "";
-      }
-    });
+    return validations
+      .map((validation) =>
+        validateNotifyFactory(validation, notify, { fieldName: key, fieldId: fieldKey }),
+      )
+      .every((validateNotify: (value: string) => boolean) => {
+        // If the field value is an array we run the validation for every item in the array
+        if (Array.isArray(fieldValue)) {
+          return fieldValue.every((item: any) => {
+            // And sometimes we can end up with another array inside, that's life
+            if (Array.isArray(item)) {
+              if (item.length === 0) item.push("");
+              return item.every((subItem: any) => validateNotify(subItem));
+            }
+            // If it is not an array here, just validate it
+            return validateNotify(item);
+          });
+        } else {
+          return validateNotify(fieldValue);
+        }
+      });
   });
 };
 

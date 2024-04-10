@@ -107,7 +107,7 @@ const goToStep = (step: number) => {
     </cds-inline-notification>
 
     <cds-inline-notification
-      v-if="globalErrorMessage?.fieldId === 'missing.contact.assigned'"
+      v-else-if="globalErrorMessage?.fieldId === 'missing.contact.assigned'"
       v-shadow="true"
       low-contrast="true"
       hide-close-button="true"
@@ -118,7 +118,7 @@ const goToStep = (step: number) => {
     </cds-inline-notification>
 
     <cds-actionable-notification
-      v-if="globalErrorMessage?.fieldId === 'missing.section.assigned'"
+      v-else-if="globalErrorMessage?.fieldId === 'missing.section.assigned'"
       v-shadow="true"
       low-contrast="true"
       hide-close-button="true"
@@ -135,7 +135,7 @@ const goToStep = (step: number) => {
     </cds-actionable-notification>
 
     <cds-actionable-notification
-      v-if="globalErrorMessage?.fieldId === 'server.validation.error'"
+      v-else-if="globalErrorMessage?.fieldId === 'server.validation.error'"
       v-shadow="true"
       low-contrast="true"
       hide-close-button="true"
@@ -150,7 +150,7 @@ const goToStep = (step: number) => {
     </cds-actionable-notification>
 
     <cds-actionable-notification
-      v-if="globalErrorMessage?.fieldId === 'internal.server.error'"
+      v-else-if="globalErrorMessage?.fieldId === 'internal.server.error'"
       v-shadow="true"
       low-contrast="true"
       hide-close-button="true"
@@ -161,6 +161,20 @@ const goToStep = (step: number) => {
       <div>
         We're working to fix a problem with our network. Please try re-submitting your application later.
       </div>    
+    </cds-actionable-notification>
+
+    <cds-actionable-notification
+      v-else-if="globalErrorMessage?.errorMsg"
+      v-shadow="true"
+      low-contrast="true"
+      hide-close-button="true"
+      open="true"
+      kind="error"
+      title="You can't go to the next step before fixing the following issues:"
+    >
+      <div>
+        {{ globalErrorMessage.errorMsg }}
+      </div>
     </cds-actionable-notification>
 
     <cds-inline-notification
