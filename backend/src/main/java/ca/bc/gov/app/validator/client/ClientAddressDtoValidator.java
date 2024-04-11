@@ -5,6 +5,7 @@ import ca.bc.gov.app.entity.client.CountryCodeEntity;
 import ca.bc.gov.app.entity.client.ProvinceCodeEntity;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
+import static ca.bc.gov.app.util.ClientValidationUtils.US7ASCII_PATTERN;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -31,20 +32,46 @@ public class ClientAddressDtoValidator implements Validator {
 
   @Override
   public void validate(Object target, Errors errors) {
-
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "streetAddress",
-        "You must enter a street address or PO box number");
-
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "city",
-        "You must enter the name of a city or town.");
-
+    
     ClientAddressDto address = (ClientAddressDto) target;
+    
+    if (isValidAddress(address, errors)) {
+      String country = validateCountry(address, errors);
+      validatePostalCode(address, country, errors);
+      validateProvince(address, country, errors);
+      validateCity(address, errors);
+    }
+    
+  }
+  
+  private boolean isValidAddress(ClientAddressDto address, Errors errors) {
+    boolean isValidAddress = false;
+    
+    String fieldName = "streetAddress";
+    String fieldValue = address.streetAddress();
+    
+    if (StringUtils.isBlank(fieldValue)) {
+      errors.rejectValue(fieldName, "You must enter a street address or PO box number.");
+    }
+    else if (!US7ASCII_PATTERN.matcher(fieldValue).matches()) {
+      errors.rejectValue(fieldName, String.format("%s has an invalid character.", fieldValue));
+    }
+    else {
+      isValidAddress = true;
+    }
+    return isValidAddress;
+  }
 
-    String country = validateCountry(address, errors);
-
-    validatePostalCode(address, country, errors);
-
-    validateProvince(address, country, errors);
+  private void validateCity(ClientAddressDto address, Errors errors) {
+    String fieldName = "city";
+    String fieldValue = address.city();
+    
+    if (StringUtils.isBlank(fieldValue)) {
+      errors.rejectValue(fieldName, "You must enter the name of a city or town.");
+    }
+    else if (!US7ASCII_PATTERN.matcher(fieldValue).matches()) {
+      errors.rejectValue(fieldName, String.format("%s has an invalid character.", fieldValue));
+    }
   }
 
   @SneakyThrows

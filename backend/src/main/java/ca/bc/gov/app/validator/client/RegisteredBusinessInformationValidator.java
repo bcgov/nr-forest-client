@@ -52,14 +52,14 @@ public class RegisteredBusinessInformationValidator implements Validator {
 
   private void validateBusinessName(Errors errors, 
                                     ClientBusinessInformationDto businessInformation) {
-    String businessNameField = "businessName";
-    String businessNameValue = businessInformation.businessName();
+    String fieldName = "businessName";
+    String fieldValue = businessInformation.businessName();
     
-    if (StringUtils.isBlank(businessNameValue)) {
-      errors.rejectValue(businessNameField, "You must select your B.C. registered business name from the list.");
+    if (StringUtils.isBlank(fieldValue)) {
+      errors.rejectValue(fieldName, "You must select your B.C. registered business name from the list.");
     }
-    else if (!US7ASCII_PATTERN.matcher(businessNameValue).matches()) {
-      errors.rejectValue(businessNameField, String.format("%s has an invalid character.", businessNameValue));
+    else if (!US7ASCII_PATTERN.matcher(fieldValue).matches()) {
+      errors.rejectValue(fieldName, String.format("%s has an invalid character.", fieldValue));
     }
   }
 
