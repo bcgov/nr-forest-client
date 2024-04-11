@@ -243,7 +243,7 @@ const checkStepValidity = (stepNumber: number): boolean => {
   });
 
   if (!progressData[stepNumber].valid) {
-    // Stop here so the error messages don't get cleared.
+    // Stop here so the step basic validation messages don't get cleared.
     return false;
   }
 
