@@ -14,7 +14,7 @@ const e164Regex: RegExp = /^((\+?[1-9]\d{1,14})|(\(\d{3}\) \d{3}-\d{4}))$/;
 const canadianPostalCodeRegex: RegExp = /^(([A-Z]\d){3})$/i;
 const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/;
 const nameRegex: RegExp = /^[a-zA-Z0-9\s'-]+$/;
-const ascii: RegExp = /^[\x20-\x77]+$/;
+const ascii: RegExp = /^[\x20-\x7e]+$/;
 
 const notificationBus = useEventBus<ValidationMessageType | undefined>(
   "error-notification"
@@ -268,7 +268,7 @@ export const isNoSpecialCharacters =
 
 export const hasOnlyNamingCharacters =
   (
-    field: string,
+    field: string = "field",
     message: string = `The ${field} should be composed of only the following characters: A-Z, a-z, 0-9, space, apostrophe or hyphen`,
   ) =>
   (value: string): string => {
