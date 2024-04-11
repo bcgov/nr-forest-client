@@ -30,7 +30,7 @@ public class SubmissionLocationEntity {
 
   @Column("street_address")
   @NotNull
-  @Size(min = 3, max = 50)
+  @Size(min = 3, max = 40)
   private String streetAddress;
 
   @Column("country_code")

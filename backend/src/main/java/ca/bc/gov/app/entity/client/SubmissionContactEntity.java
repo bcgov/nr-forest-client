@@ -34,11 +34,11 @@ public class SubmissionContactEntity {
   private String contactTypeCode;
 
   @Column("first_name")
-  @Size(min = 1, max = 100)
+  @Size(min = 1, max = 30)
   private String firstName;
 
   @Column("last_name")
-  @Size(min = 1, max = 100)
+  @Size(min = 1, max = 30)
   private String lastName;
 
   @Column("business_phone_number")
