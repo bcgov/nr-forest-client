@@ -38,9 +38,11 @@ public class ForestClientEntity {
   private String clientName;
   
   @Column("legal_first_name")
+  @Size(min = 1, max = 30)
   private String legalFirstName;
   
   @Column("legal_middle_name")
+  @Size(min = 1, max = 30)
   private String legalMiddleName;
   
   @Column("client_status_code")
