@@ -31,7 +31,6 @@ public class ClientValidationUtils {
   }
 
   public static void validatePhoneNumber(String phoneNumber, String field, Errors errors) {
-
     if (StringUtils.isBlank(phoneNumber)) {
       errors.rejectValue(field, "The phone number must be a 10-digit number");
       return;
