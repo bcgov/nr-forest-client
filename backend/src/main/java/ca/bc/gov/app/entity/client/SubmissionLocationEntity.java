@@ -55,7 +55,7 @@ public class SubmissionLocationEntity {
 
   @Column("location_name")
   @NotNull
-  @Size(min = 2, max = 20)
+  @Size(min = 2, max = 40)
   private String name;
   
 }
