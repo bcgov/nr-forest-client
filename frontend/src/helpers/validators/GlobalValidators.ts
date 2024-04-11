@@ -9,10 +9,12 @@ import type { ValidationMessageType } from "@/dto/CommonTypesDto";
 // Defines the used regular expressions
 // @sonar-ignore-next-line
 const emailRegex: RegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-const specialCharacters: RegExp = /^[a-zA-Z0-9\sÀ-ÖØ-öø-ÿ]+$/;
+const specialCharacters: RegExp = /^[a-zA-Z0-9\s]+$/;
 const e164Regex: RegExp = /^((\+?[1-9]\d{1,14})|(\(\d{3}\) \d{3}-\d{4}))$/;
 const canadianPostalCodeRegex: RegExp = /^(([A-Z]\d){3})$/i;
 const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/;
+const nameRegex: RegExp = /^[a-zA-Z0-9\s'-]+$/;
+const ascii: RegExp = /^[\x20-\x77]+$/;
 
 const notificationBus = useEventBus<ValidationMessageType | undefined>(
   "error-notification"
@@ -261,6 +263,23 @@ export const isNoSpecialCharacters =
   (message: string = "No special characters allowed") =>
   (value: string): string => {
     if (specialCharacters.test(value)) return "";
+    return message;
+  };
+
+export const hasOnlyNamingCharacters =
+  (
+    field: string,
+    message: string = `The ${field} should be composed of only the following characters: A-Z, a-z, 0-9, space, apostrophe or hyphen`,
+  ) =>
+  (value: string): string => {
+    if (nameRegex.test(value)) return "";
+    return message;
+  };
+
+export const isAscii =
+  (message: string = "This field must be composed of only ASCII characters") =>
+  (value: string): string => {
+    if (ascii.test(value)) return "";
     return message;
   };
 

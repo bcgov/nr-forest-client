@@ -13,12 +13,14 @@ import {
   isMinimumYearsAgo,
   isDateInThePast,
   isGreaterThan,
-  matchesRegex,
+  hasOnlyNamingCharacters,
+  isAscii,
 } from "@/helpers/validators/GlobalValidators";
 
 // Step 1: Business Information
 formFieldValidations["businessInformation.businessName"] = [
   isNotEmpty("Business name cannot be empty"),
+  isAscii("Business name must be composed of only ASCII characters"),
 ];
 
 formFieldValidations["businessInformation.birthdate"] = [
@@ -62,6 +64,7 @@ formFieldValidations["location.addresses.*.streetAddress"] = [
   isNotEmpty("Please provide a valid address or PO Box"),
   isMinSize("The address must be between 5 and 50 characters")(5),
   isMaxSize("The address must be between 5 and 50 characters")(50),
+  isAscii("The address must be composed of only ASCII characters"),
 ];
 formFieldValidations[
   'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'
@@ -91,20 +94,15 @@ formFieldValidations["location.contacts.*.contactType.text"] = [
   isNotEmpty("You must select a role."),
 ];
 
-const personalNameRegex: RegExp = /^[a-zA-Z0-9\s'-]+$/;
-
-const createPersonalNameMessage = (field: string) =>
-  `The ${field} should be composed of only the following characters: A-Z, a-z, 0-9, space, apostrophe or hyphen`;
-
 formFieldValidations["location.contacts.*.firstName"] = [
   isMinSize("Please enter the first name")(1),
   isMaxSize("The first name must be at most 25-characters")(25),
-  matchesRegex(personalNameRegex, createPersonalNameMessage("first name")),
+  hasOnlyNamingCharacters("first name"),
 ];
 formFieldValidations["location.contacts.*.lastName"] = [
   isMinSize("Please enter the last name")(1),
   isMaxSize("The last name must be at most 25-characters")(25),
-  matchesRegex(personalNameRegex, createPersonalNameMessage("last name")),
+  hasOnlyNamingCharacters("last name"),
 ];
 formFieldValidations["location.contacts.*.email"] = [
   isEmail("Please provide a valid email address"),
