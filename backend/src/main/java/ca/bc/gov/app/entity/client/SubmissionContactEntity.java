@@ -43,7 +43,7 @@ public class SubmissionContactEntity {
 
   @Column("business_phone_number")
   @NotNull
-  @Size(min = 5, max = 20)
+  @Size(min = 5, max = 14)
   private String businessPhoneNumber;
 
   @Column("email_address")

@@ -289,7 +289,7 @@ create table if not exists nrfc.submission_contact (
     contact_type_code          varchar(2)       not null,
     first_name                 varchar(30)      null,
     last_name                  varchar(30)      null,
-    business_phone_number      varchar(20)      not null,
+    business_phone_number      varchar(14)      not null,
     email_address              varchar(100)     not null,
     idp_user_id                varchar(50)      null,
     constraint submission_contact_id_pk primary key (submission_contact_id),
