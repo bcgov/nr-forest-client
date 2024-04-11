@@ -8,7 +8,9 @@ import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
+import ca.bc.gov.app.entity.client.DistrictCodeEntity;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
+import ca.bc.gov.app.repository.client.DistrictCodeRepository;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -27,6 +29,7 @@ public class ClientSubmitRequestValidator implements Validator {
   private final UnregisteredBusinessInformationValidator unregisteredBusinessInformationValidator;
   private final ClientLocationDtoValidator locationDtoValidator;
   private final ClientTypeCodeRepository clientTypeCodeRepository;
+  private final DistrictCodeRepository districtCodeRepository;
 
   @Override
   public boolean supports(Class<?> clazz) {
@@ -80,7 +83,17 @@ public class ClientSubmitRequestValidator implements Validator {
       errors.popNestedPath();
       return;
     }
+    else {
+      DistrictCodeEntity districtCodeEntity = districtCodeRepository
+          .findByCode(businessInformation.district()).toFuture().get();
 
+      if (districtCodeEntity == null) {
+        errors.rejectValue("district", "district is invalid");
+        errors.popNestedPath();
+        return;
+      }
+    }
+    
     if (ApplicationConstant.REG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientTypeCode)
         || ApplicationConstant.UNREG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientTypeCode)
         || ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientTypeCode)

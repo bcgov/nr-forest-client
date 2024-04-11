@@ -102,6 +102,10 @@ public class RegisteredBusinessInformationValidator implements Validator {
           fieldIsMissingErrorMessage(registrationNumberField));
       return;
     }
+    else if (StringUtils.length(registrationNumber) > 13) {
+      errors.rejectValue(registrationNumber, "has more than 13 characters");
+      return;
+    }
 
     if (legalType == null) {
       return;
