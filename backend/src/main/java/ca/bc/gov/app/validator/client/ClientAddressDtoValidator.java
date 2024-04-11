@@ -55,6 +55,9 @@ public class ClientAddressDtoValidator implements Validator {
     else if (!US7ASCII_PATTERN.matcher(fieldValue).matches()) {
       errors.rejectValue(fieldName, String.format("%s has an invalid character.", fieldValue));
     }
+    else if (StringUtils.length(fieldValue) > 40) {
+      errors.rejectValue(fieldName, "This field has a 40 character limit.");
+    }
     else {
       isValidAddress = true;
     }
@@ -70,6 +73,9 @@ public class ClientAddressDtoValidator implements Validator {
     }
     else if (!US7ASCII_PATTERN.matcher(fieldValue).matches()) {
       errors.rejectValue(fieldName, String.format("%s has an invalid character.", fieldValue));
+    }
+    else if (StringUtils.length(fieldValue) > 30) {
+      errors.rejectValue(fieldName, "This field has a 30 character limit.");
     }
   }
 

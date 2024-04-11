@@ -61,6 +61,9 @@ public class RegisteredBusinessInformationValidator implements Validator {
     else if (!US7ASCII_PATTERN.matcher(fieldValue).matches()) {
       errors.rejectValue(fieldName, String.format("%s has an invalid character.", fieldValue));
     }
+    else if (StringUtils.length(fieldValue) > 60) {
+      errors.rejectValue(fieldName, "This field has a 60 character limit.");
+    }
   }
 
   private LegalTypeEnum isValidLegalType(String legalType, Errors errors) {
