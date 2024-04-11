@@ -213,7 +213,7 @@ create table if not exists nrfc.submission_detail (
     client_number           varchar(8)      null,
     business_type_code		varchar(1)    	not null,
     incorporation_number	varchar(50)    	null,
-    organization_name       varchar(100)    null,
+    organization_name       varchar(60)     null,
     client_type_code        varchar(5)    	not null,
     good_standing_ind       varchar(1)      null,
     birthdate               date            null,
