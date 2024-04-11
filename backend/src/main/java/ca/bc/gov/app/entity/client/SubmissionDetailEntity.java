@@ -34,7 +34,7 @@ public class SubmissionDetailEntity {
   private String clientNumber;
 
   @Column("incorporation_number")
-  @Size(min = 1, max = 50)
+  @Size(min = 1, max = 13)
   private String registrationNumber;
 
   @Column("organization_name")
