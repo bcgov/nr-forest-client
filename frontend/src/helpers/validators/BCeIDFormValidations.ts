@@ -13,6 +13,7 @@ import {
   isMinimumYearsAgo,
   isDateInThePast,
   isGreaterThan,
+  matchesRegex,
 } from "@/helpers/validators/GlobalValidators";
 
 // Step 1: Business Information
@@ -89,15 +90,21 @@ formFieldValidations["location.contacts.*.locationNames"] = [
 formFieldValidations["location.contacts.*.contactType.text"] = [
   isNotEmpty("You must select a role."),
 ];
+
+const personalNameRegex: RegExp = /^[a-zA-Z0-9\s'-]+$/;
+
+const createPersonalNameMessage = (field: string) =>
+  `The ${field} should be composed of only the following characters: A-Z, a-z, 0-9, space, apostrophe or hyphen`;
+
 formFieldValidations["location.contacts.*.firstName"] = [
   isMinSize("Please enter the first name")(1),
   isMaxSize("The first name must be at most 25-characters")(25),
-  isNoSpecialCharacters("The first name cannot contain special characters"),
+  matchesRegex(personalNameRegex, createPersonalNameMessage("first name")),
 ];
 formFieldValidations["location.contacts.*.lastName"] = [
   isMinSize("Please enter the last name")(1),
   isMaxSize("The last name must be at most 25-characters")(25),
-  isNoSpecialCharacters("The last name cannot contain special characters"),
+  matchesRegex(personalNameRegex, createPersonalNameMessage("last name")),
 ];
 formFieldValidations["location.contacts.*.email"] = [
   isEmail("Please provide a valid email address"),

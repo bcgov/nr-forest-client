@@ -264,6 +264,13 @@ export const isNoSpecialCharacters =
     return message;
   };
 
+export const matchesRegex =
+  (regex: RegExp, message: string = `Value does not match regular expression ${regex}`) =>
+  (value: string): string => {
+    if (regex.test(value)) return "";
+    return message;
+  };
+
 export const isContainedIn =
   (values: Ref<string[]>, message = "No value selected") =>
   (value: string): string => {
