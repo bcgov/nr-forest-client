@@ -3,6 +3,7 @@ package ca.bc.gov.app.validator.client;
 import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
 import static ca.bc.gov.app.util.ClientValidationUtils.getClientType;
 import static ca.bc.gov.app.util.ClientValidationUtils.isValidEnum;
+import static ca.bc.gov.app.util.ClientValidationUtils.US7ASCII_PATTERN;
 
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientTypeEnum;
@@ -13,7 +14,6 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -34,11 +34,9 @@ public class RegisteredBusinessInformationValidator implements Validator {
 
     errors.pushNestedPath("businessInformation");
 
-    String businessNameField = "businessName";
-    ValidationUtils.rejectIfEmpty(errors, businessNameField,
-        "You must select your B.C. registered business name from the list.");
-
     ClientBusinessInformationDto businessInformation = (ClientBusinessInformationDto) target;
+    
+    validateBusinessName(errors, businessInformation);
     
     LegalTypeEnum legalType = isValidLegalType(businessInformation.legalType(), errors);
 
@@ -50,6 +48,22 @@ public class RegisteredBusinessInformationValidator implements Validator {
         errors);
 
     errors.popNestedPath();
+  }
+
+  private void validateBusinessName(Errors errors, 
+                                    ClientBusinessInformationDto businessInformation) {
+    String fieldName = "businessName";
+    String fieldValue = businessInformation.businessName();
+    
+    if (StringUtils.isBlank(fieldValue)) {
+      errors.rejectValue(fieldName, "You must select your B.C. registered business name from the list.");
+    }
+    else if (!US7ASCII_PATTERN.matcher(fieldValue).matches()) {
+      errors.rejectValue(fieldName, String.format("%s has an invalid character.", fieldValue));
+    }
+    else if (StringUtils.length(fieldValue) > 60) {
+      errors.rejectValue(fieldName, "This field has a 60 character limit.");
+    }
   }
 
   private LegalTypeEnum isValidLegalType(String legalType, Errors errors) {
@@ -89,6 +103,10 @@ public class RegisteredBusinessInformationValidator implements Validator {
       errors.rejectValue(
           registrationNumberField,
           fieldIsMissingErrorMessage(registrationNumberField));
+      return;
+    }
+    else if (StringUtils.length(registrationNumber) > 13) {
+      errors.rejectValue(registrationNumber, "has more than 13 characters");
       return;
     }
 

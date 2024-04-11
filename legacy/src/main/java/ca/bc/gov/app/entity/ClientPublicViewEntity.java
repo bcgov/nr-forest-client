@@ -16,26 +16,26 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @Builder
 @With
-@Table(name = "V_CLIENT_PUBLIC", schema = ORACLE_ATTRIBUTE_SCHEMA)
+@Table(name = "v_client_public", schema = ORACLE_ATTRIBUTE_SCHEMA)
 public class ClientPublicViewEntity {
 
   @Id
-  @Column("CLIENT_NUMBER")
+  @Column("client_number")
   private String clientNumber;
 
-  @Column("CLIENT_NAME")
+  @Column("client_name")
   private String clientName;
 
-  @Column("LEGAL_FIRST_NAME")
+  @Column("legal_first_name")
   private String legalFirstName;
 
-  @Column("LEGAL_MIDDLE_NAME")
+  @Column("legal_middle_name")
   private String legalMiddleName;
 
-  @Column("CLIENT_STATUS_CODE")
+  @Column("client_status_code")
   private String clientStatusCode;
 
-  @Column("CLIENT_TYPE_CODE")
+  @Column("client_type_code")
   private String clientTypeCode;
 
 }

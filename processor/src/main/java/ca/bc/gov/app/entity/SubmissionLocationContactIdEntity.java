@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 import org.springframework.data.relational.core.mapping.Column;
 
-
 @Data
 @Builder
 @NoArgsConstructor
