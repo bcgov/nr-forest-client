@@ -3,6 +3,7 @@ package ca.bc.gov.app.entity.client;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,16 +25,20 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @With
 public class SubmissionEntity extends BaseEntity {
+  
   @Id
   @Column("submission_id")
   private Integer submissionId;
 
   @Column("submission_status_code")
+  @Size(min = 1, max = 5)
   private SubmissionStatusEnum submissionStatus;
 
   @Column("submission_type_code")
+  @Size(min = 3, max = 5)
   private SubmissionTypeCodeEnum submissionType;
 
   @Column("submission_date")
   private LocalDateTime submissionDate;
+  
 }

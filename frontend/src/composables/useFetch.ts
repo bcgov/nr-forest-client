@@ -70,6 +70,12 @@ export const useFetchTo = (
           errorMsg: "",
         });
       }
+      else if (error.value.code === "ERR_BAD_REQUEST") {
+        notificationBus.emit({
+          fieldId: "bad.request.error",
+          errorMsg: "",
+        });
+      }
     } finally {
       loading.value = false;
     }
@@ -123,6 +129,12 @@ export const usePost = (url: string, body: any, config: any = {}) => {
       ) {
         notificationBus.emit({
           fieldId: "internal.server.error",
+          errorMsg: "",
+        });
+      }
+      else if (error.value.code === "ERR_BAD_REQUEST") {
+        notificationBus.emit({
+          fieldId: "bad.request.error",
           errorMsg: "",
         });
       }

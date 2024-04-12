@@ -177,6 +177,34 @@ const goToStep = (step: number) => {
       </div>
     </cds-actionable-notification>
 
+    <cds-actionable-notification
+      v-else-if="globalErrorMessage?.fieldId === 'bad.request.error'"
+      v-shadow="true"
+      low-contrast="true"
+      hide-close-button="true"
+      open="true"
+      kind="error"
+      title="Something went wrong:"      
+    >    
+      <div>
+        There seems to be a problem with the information you entered. Please double-check and try again.
+      </div>    
+    </cds-actionable-notification>
+
+    <cds-actionable-notification
+      v-else-if="globalErrorMessage?.errorMsg"
+      v-shadow="true"
+      low-contrast="true"
+      hide-close-button="true"
+      open="true"
+      kind="error"
+      title="You can't go to the next step before fixing the following issues:"
+    >
+      <div>
+        {{ globalErrorMessage.errorMsg }}
+      </div>
+    </cds-actionable-notification>
+
     <cds-inline-notification
       v-for="item in nonAssociatedAddressList"
       :key="item"

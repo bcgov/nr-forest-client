@@ -14,7 +14,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-
 @Table(name = "client_type_code", schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -27,11 +26,13 @@ public class ClientTypeCodeEntity extends ExpirableBaseEntity {
 
   @Id
   @Column("client_type_code")
+  @NotNull
+  @Size(min = 1, max = 5)
   private String code;
 
   public ClientTypeCodeEntity(
-      @NotNull @Size(min = 1, max = 4) String code,
-      @NotNull String description) {
+      String code,
+      String description) {
     this.code = code;
     this.description = description;
   }

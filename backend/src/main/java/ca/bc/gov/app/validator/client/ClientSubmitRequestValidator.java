@@ -8,7 +8,9 @@ import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
+import ca.bc.gov.app.entity.client.DistrictCodeEntity;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
+import ca.bc.gov.app.repository.client.DistrictCodeRepository;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -27,6 +29,7 @@ public class ClientSubmitRequestValidator implements Validator {
   private final UnregisteredBusinessInformationValidator unregisteredBusinessInformationValidator;
   private final ClientLocationDtoValidator locationDtoValidator;
   private final ClientTypeCodeRepository clientTypeCodeRepository;
+  private final DistrictCodeRepository districtCodeRepository;
 
   @Override
   public boolean supports(Class<?> clazz) {
@@ -80,7 +83,17 @@ public class ClientSubmitRequestValidator implements Validator {
       errors.popNestedPath();
       return;
     }
+    else {
+      DistrictCodeEntity districtCodeEntity = districtCodeRepository
+          .findByCode(businessInformation.district()).toFuture().get();
 
+      if (districtCodeEntity == null) {
+        errors.rejectValue("district", "district is invalid");
+        errors.popNestedPath();
+        return;
+      }
+    }
+    
     if (ApplicationConstant.REG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientTypeCode)
         || ApplicationConstant.UNREG_SOLE_PROPRIETORSHIP_CLIENT_TYPE_CODE.equals(clientTypeCode)
         || ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientTypeCode)
@@ -114,11 +127,48 @@ public class ClientSubmitRequestValidator implements Validator {
     String dobFieldName = "birthdate";
     if (birthdate == null) {
       errors.rejectValue(dobFieldName, fieldIsMissingErrorMessage("Birthdate"));
-    } else {
+    } 
+    else if (!isValidBirthdate(birthdate)) {
+      errors.rejectValue(dobFieldName, "Date of birth is invalid");
+    }
+    else {
       LocalDate minAgeDate = LocalDate.now().minusYears(19);
       if (birthdate.isAfter(minAgeDate)) {
         errors.rejectValue(dobFieldName, "Sole proprietorship must be at least 19 years old");
       }
+    }
+  }
+  
+  private boolean isValidBirthdate(LocalDate birthdate) {
+    int year = birthdate.getYear();
+    int month = birthdate.getMonthValue();
+    int day = birthdate.getDayOfMonth();
+
+    if (month < 1 || month > 12) {
+      return false;
+    }
+
+    // Check day validity based on month (considering leap year)
+    int maxDays = getMaxDaysInMonth(month, year);
+    if (day < 1 || day > maxDays) {
+      return false;
+    }
+
+    return true;
+  }
+  
+  private int getMaxDaysInMonth(int month, int year) {
+    switch (month) {
+      case 2:
+        // Check for leap year
+        return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0 ? 29 : 28;
+      case 4:
+      case 6:
+      case 9:
+      case 11:
+        return 30;
+      default:
+        return 31;
     }
   }
 

@@ -116,14 +116,14 @@ public class ClientContactService {
             );
   }
 
-  private Mono<String> getNextContactId() {
+  private Mono<Long> getNextContactId() {
     return entityTemplate
-        .getDatabaseClient()
-        .sql("SELECT THE.client_contact_seq.NEXTVAL FROM dual")
-        .fetch()
-        .first()
-        .map(row -> row.get("NEXTVAL"))
-        .map(String::valueOf);
+            .getDatabaseClient()
+            .sql("SELECT THE.client_contact_seq.NEXTVAL FROM dual")
+            .fetch()
+            .first()
+            .map(row -> row.get("NEXTVAL"))
+            .map(value -> Long.valueOf(value.toString()));
   }
 
 }

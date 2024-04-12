@@ -3,6 +3,8 @@ package ca.bc.gov.app.entity;
 import static ca.bc.gov.app.ApplicationConstants.ORACLE_ATTRIBUTE_SCHEMA;
 
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,29 +19,52 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @Builder
 @With
-@Table(name = "CLIENT_DOING_BUSINESS_AS", schema = ORACLE_ATTRIBUTE_SCHEMA)
+@Table(name = "client_doing_business_as", schema = ORACLE_ATTRIBUTE_SCHEMA)
 public class ClientDoingBusinessAsEntity {
 
   @Id
-  @Column("CLIENT_DBA_ID")
+  @Column("client_dba_id")
   private Integer id;
-  @Column("CLIENT_NUMBER")
+  
+  @Column("client_number")
+  @NotNull
+  @Size(min = 1, max = 8)
   private String clientNumber;
-  @Column("DOING_BUSINESS_AS_NAME")
+  
+  @Column("doing_business_as_name")
+  @NotNull
+  @Size(min = 1, max = 120)
   private String doingBusinessAsName;
-  @Column("ADD_TIMESTAMP")
+  
+  @Column("add_timestamp")
+  @NotNull
   private LocalDateTime createdAt;
-  @Column("ADD_USERID")
+  
+  @Column("add_userid")
+  @NotNull
+  @Size(min = 1, max = 30)
   private String createdBy;
-  @Column("UPDATE_TIMESTAMP")
+  
+  @Column("update_timestamp")
+  @NotNull
   private LocalDateTime updatedAt;
-  @Column("UPDATE_USERID")
+  
+  @Column("update_userid")
+  @NotNull
+  @Size(min = 1, max = 30)
   private String updatedBy;
-  @Column("UPDATE_ORG_UNIT")
+  
+  @Column("update_org_unit")
+  @NotNull
+  @Size(min = 1, max = 30)
   private Long updatedByUnit;
-  @Column("ADD_ORG_UNIT")
+  
+  @Column("add_org_unit")
+  @NotNull
   private Long createdByUnit;
-  @Column("REVISION_COUNT")
+  
+  @Column("revision_count")
+  @NotNull
   private Long revision;
 
 }

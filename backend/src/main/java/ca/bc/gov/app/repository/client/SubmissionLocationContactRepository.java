@@ -13,4 +13,5 @@ public interface SubmissionLocationContactRepository extends
   Flux<SubmissionLocationContactEntity> findBySubmissionContactId(Integer id);
 
   Flux<SubmissionLocationContactEntity> findBySubmissionLocationId(Integer id);
+  
 }

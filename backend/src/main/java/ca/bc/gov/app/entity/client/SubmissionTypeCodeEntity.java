@@ -23,10 +23,11 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @With
 public class SubmissionTypeCodeEntity extends ExpirableBaseEntity {
+  
   @Id
   @Column("submission_type_code")
   @NotNull
-  @Size(min = 2, max = 2)
+  @Size(min = 3, max = 5)
   private String submissionCode;
 
 }
