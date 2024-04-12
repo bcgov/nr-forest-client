@@ -241,7 +241,7 @@ const checkForIndividualValid = (lastName: string) => {
       validation.business = false;
       toggleErrorMessages(null, true, null);
       generalErrorBus.emit(watchValue.response?.data ?? "");
-    }else{
+    } else if (watchValue.response?.status === 404) {
       validation.individual = true;
     }
   });

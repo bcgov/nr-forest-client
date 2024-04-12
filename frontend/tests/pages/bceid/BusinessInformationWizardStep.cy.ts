@@ -21,9 +21,13 @@ const global = {
   },
 };
 
+let individualStatusCode: number;
+
 describe('<BusinessInformationWizardStep />', () => {
 
   beforeEach(() => {
+    individualStatusCode = 200;
+
     cy.intercept("/api/clients/name/*", {
       fixture: "business.json",
     }).as("searchCompany");
@@ -67,14 +71,18 @@ describe('<BusinessInformationWizardStep />', () => {
       },
     }).as("getClientType");
 
-    cy.intercept("GET", "/api/clients/individual/mockUserId?lastName=Doe", {
-      statusCode: 200,
-      delay: 10,
+    cy.intercept("GET", "/api/clients/individual/mockUserId?lastName=Doe", (req) => {
+      req.reply({
+        statusCode: individualStatusCode,
+        delay: 10,
+      });
     }).as("checkIndividualUser");
 
-    cy.intercept("GET", "/api/clients/individual/mockUserId?lastName=Else", {
-      statusCode: 200,
-      delay: 10,
+    cy.intercept("GET", "/api/clients/individual/mockUserId?lastName=Else", (req) => {
+      req.reply({
+        statusCode: individualStatusCode,
+        delay: 10,
+      });
     }).as("checkIndividualElse");
   });
 
@@ -225,6 +233,81 @@ describe('<BusinessInformationWizardStep />', () => {
       .click();
 
     cy.get("cds-inline-notification").should("not.exist");
+  });
+
+  describe("individual validation", () => {
+    let callsSetIndividualValidInd = [];
+    const individualValidWrapper = {
+      individualValidInd: false,
+    };
+    const functionWrapper = {
+      setIndividualValidInd: (value: boolean) => {
+        individualValidWrapper.individualValidInd = value;
+        callsSetIndividualValidInd.push(value);
+      },
+    };
+    const { setIndividualValidInd } = functionWrapper;
+    beforeEach(() => {
+      individualValidWrapper.individualValidInd = false;
+      callsSetIndividualValidInd = [];
+
+      cy.mount(BusinessInformationWizardStep, {
+        props: {
+          data: {
+            businessInformation: {
+              businessType: "",
+              legalType: "",
+              clientType: "",
+              registrationNumber: "",
+              businessName: "",
+              goodStandingInd: "",
+              birthdate: "",
+              address: "",
+            },
+            location: {
+              contacts: [
+                {
+                  email: "john@doe.com",
+                  firstName: "John",
+                },
+              ],
+            },
+          } as unknown as FormDataDto,
+          districtsList: districts,
+          active: false,
+          individualValidInd: individualValidWrapper.individualValidInd,
+          setIndividualValidInd,
+        },
+        global,
+      });
+    });
+    interface Scenario {
+      statusCode: number;
+      valid: boolean;
+    };
+    const scenarios: Scenario[] = [
+      { statusCode: 200, valid: true },
+      { statusCode: 404, valid: true },
+      { statusCode: 409, valid: false },
+      { statusCode: 400, valid: false },
+      { statusCode: 403, valid: false },
+      { statusCode: 500, valid: false },
+      { statusCode: 503, valid: false },
+    ];
+    scenarios.forEach((scenario) => {
+      describe(`when response is ${scenario.statusCode}`, () => {
+        beforeEach(() => {
+          individualStatusCode = scenario.statusCode;
+        });
+        it(`should set valid to: ${scenario.valid}`, () => {
+          cy.get("#businessTyperbU").click();
+          cy.wait("@checkIndividualUser");
+          cy.wrap(individualValidWrapper).should(({ individualValidInd }) => {
+            expect(individualValidInd).to.equal(scenario.valid);
+          });
+        })
+      });
+    });
   });
 
   describe("when a Registered individual business gets selected", () => {
