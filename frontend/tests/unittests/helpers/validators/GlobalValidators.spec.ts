@@ -13,6 +13,8 @@ import {
   isNoSpecialCharacters,
   isContainedIn,
   isNot,
+  hasOnlyNamingCharacters,
+  isAscii,
 } from '@/helpers/validators/GlobalValidators'
 
 describe('GlobalValidators', () => {
@@ -254,4 +256,27 @@ describe('GlobalValidators', () => {
   it('should return an error message when value is equal to the other value', () => {
     expect(isNot('a')('a')).toBe('Value is not allowed')
   })
+  it("should return an error when value has any non-\"naming-like\" characters", () => {
+    const result = hasOnlyNamingCharacters()("T!m");
+    expect(result).toEqual(expect.any(String));
+    expect(result).not.toBe("");
+  });
+  it("should return an error when value has any accented characters", () => {
+    const result = hasOnlyNamingCharacters()("Tóm");
+    expect(result).toEqual(expect.any(String));
+    expect(result).not.toBe("");
+  });
+  it("should return empty when value has only \"naming-like\" characters", () => {
+    const result = hasOnlyNamingCharacters()("Tom-d'John Paul");
+    expect(result).toBe("");
+  });
+  it("should return an error when value has any non-ASCII characters", () => {
+    const result = isAscii()("Aço");
+    expect(result).toEqual(expect.any(String));
+    expect(result).not.toBe("");
+  });
+  it("should return empty when value has only ASCII characters", () => {
+    const result = isAscii()("AZaz09 '!@#$%_-+()/\\");
+    expect(result).toBe("");
+  });
 })

@@ -13,11 +13,18 @@ import {
   isMinimumYearsAgo,
   isDateInThePast,
   isGreaterThan,
+  hasOnlyNamingCharacters,
+  isAscii,
 } from "@/helpers/validators/GlobalValidators";
+
+const isMaxSizeMsg = (fieldName: string, maxSize: number) =>
+  isMaxSize(`The ${fieldName} has a ${maxSize} character limit`)(maxSize);
 
 // Step 1: Business Information
 formFieldValidations["businessInformation.businessName"] = [
   isNotEmpty("Business name cannot be empty"),
+  isMaxSizeMsg("business name", 60),
+  isAscii("business name"),
 ];
 
 formFieldValidations["businessInformation.birthdate"] = [
@@ -37,13 +44,13 @@ formFieldValidations["businessInformation.district.text"] = [
 formFieldValidations["location.addresses.*.locationName"] = [
   isNotEmpty("You must provide a name for this location"),
   isMinSize(
-    "The location name must be between 3 and 50 characters and cannot contain special characters"
+    "The location name must be between 3 and 40 characters and cannot contain special characters"
   )(3),
   isMaxSize(
-    "The location name must be between 3 and 50 characters and cannot contain special characters"
-  )(50),
+    "The location name must be between 3 and 40 characters and cannot contain special characters"
+  )(40),
   isNoSpecialCharacters(
-    "The location name must be between 3 and 50 characters and cannot contain special characters"
+    "The location name must be between 3 and 40 characters and cannot contain special characters"
   ),
 ];
 formFieldValidations["location.addresses.*.country.text"] = [
@@ -54,13 +61,15 @@ formFieldValidations["location.addresses.*.province.text"] = [
 ];
 formFieldValidations["location.addresses.*.city"] = [
   isNotEmpty("You must provide a city"),
-  isMinSize("The city name must be between 3 and 50 characters")(3),
-  isMaxSize("The city name must be between 3 and 50 characters")(50),
+  isMinSize("The city name must be between 3 and 30 characters")(3),
+  isMaxSize("The city name must be between 3 and 30 characters")(30),
+  hasOnlyNamingCharacters("city name"),
 ];
 formFieldValidations["location.addresses.*.streetAddress"] = [
   isNotEmpty("Please provide a valid address or PO Box"),
-  isMinSize("The address must be between 5 and 50 characters")(5),
-  isMaxSize("The address must be between 5 and 50 characters")(50),
+  isMinSize("The address must be between 5 and 40 characters")(5),
+  isMaxSize("The address must be between 5 and 40 characters")(40),
+  isAscii("address"),
 ];
 formFieldValidations[
   'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'
@@ -89,25 +98,26 @@ formFieldValidations["location.contacts.*.locationNames"] = [
 formFieldValidations["location.contacts.*.contactType.text"] = [
   isNotEmpty("You must select a role."),
 ];
+
 formFieldValidations["location.contacts.*.firstName"] = [
-  isMinSize("Enter a name")(1),
-  isMaxSize("Enter a name")(25),
-  isNoSpecialCharacters("Enter a name"),
+  isMinSize("Please enter the first name")(1),
+  isMaxSizeMsg("first name", 30),
+  hasOnlyNamingCharacters("first name"),
 ];
 formFieldValidations["location.contacts.*.lastName"] = [
-  isMinSize("Enter a name")(1),
-  isMaxSize("Enter a name")(25),
-  isNoSpecialCharacters("Enter a name"),
+  isMinSize("Please enter the last name")(1),
+  isMaxSizeMsg("last name", 30),
+  hasOnlyNamingCharacters("last name"),
 ];
 formFieldValidations["location.contacts.*.email"] = [
   isEmail("Please provide a valid email address"),
   isMinSize("Please provide a valid email address")(6),
-  isMaxSize("Please provide a valid email address")(50),
+  isMaxSizeMsg("email address", 100),
 ];
 formFieldValidations["location.contacts.*.phoneNumber"] = [
   isPhoneNumber("Please provide a valid phone number"),
-  isMaxSize("Please provide a valid phone number")(15),
   isMinSize("Please provide a valid phone number")(10),
+  isMaxSizeMsg("phone number", 14),
 ];
 
 export const addValidation = (

@@ -9,10 +9,12 @@ import type { ValidationMessageType } from "@/dto/CommonTypesDto";
 // Defines the used regular expressions
 // @sonar-ignore-next-line
 const emailRegex: RegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-const specialCharacters: RegExp = /^[a-zA-Z0-9\sÀ-ÖØ-öø-ÿ]+$/;
+const specialCharacters: RegExp = /^[a-zA-Z0-9\s]+$/;
 const e164Regex: RegExp = /^((\+?[1-9]\d{1,14})|(\(\d{3}\) \d{3}-\d{4}))$/;
 const canadianPostalCodeRegex: RegExp = /^(([A-Z]\d){3})$/i;
 const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/;
+const nameRegex: RegExp = /^[a-zA-Z0-9\s'-]+$/;
+const ascii: RegExp = /^[\x20-\x7e]+$/;
 
 const notificationBus = useEventBus<ValidationMessageType | undefined>(
   "error-notification"
@@ -261,6 +263,26 @@ export const isNoSpecialCharacters =
   (message: string = "No special characters allowed") =>
   (value: string): string => {
     if (specialCharacters.test(value)) return "";
+    return message;
+  };
+
+export const hasOnlyNamingCharacters =
+  (
+    field: string = "field",
+    message: string = `The ${field} can only contain: A-Z, a-z, 0-9, space, apostrophe or hyphen`,
+  ) =>
+  (value: string): string => {
+    if (nameRegex.test(value)) return "";
+    return message;
+  };
+
+export const isAscii =
+  (
+    field: string = "field",
+    message: string = `The ${field} can only contain: A-Z, a-z, 0-9, space or common symbols`,
+  ) =>
+  (value: string): string => {
+    if (ascii.test(value)) return "";
     return message;
   };
 
@@ -562,35 +584,56 @@ export const validate = (
 
     // We split the field key and the condition if it has one
     const [fieldKey, fieldCondition] = key.includes("(")
-    ? key.replace(")", "").split("(")
-    : [key, "true"];
-    
+      ? key.replace(")", "").split("(")
+      : [key, "true"];
+
     const fieldValue = getFieldValue(fieldKey, target);
-    const fieldEvaluation = evaluateCondition(target, fieldCondition.replace(targetGlobalRegex,""));
-    
+    const fieldEvaluation = evaluateCondition(
+      target,
+      fieldCondition.replace(targetGlobalRegex, ""),
+    );
+
     // We skip if we evaluate and the result is false
     // Meaning we should not validate this field using this set of validations
-    if(!fieldEvaluation){
+    if (!fieldEvaluation) {
       return true;
     }
-    
+
+    const validateNotifyFactory =
+      (
+        validation: (value: string) => string,
+        notify: boolean,
+        eventOptions: Omit<ValidationMessageType, "errorMsg">,
+      ) =>
+      (value: string) => {
+        const validationResponse = validation(value);
+        if (notify && validationResponse) {
+          errorBus.emit([{ ...eventOptions, errorMsg: validationResponse }]);
+        }
+        return validationResponse === "";
+      };
+
     // For every validator we run it and check if the result is empty
-    return validations.every((validation: (value: string) => string) => {
-      // If the field value is an array we run the validation for every item in the array
-      if (Array.isArray(fieldValue)) {
-        return fieldValue.every((item: any) => {
-          // And sometimes we can end up with another array inside, that's life
-          if (Array.isArray(item)) {
-            if (item.length === 0) item.push("");
-            return item.every((subItem: any) => validation(subItem) === "");
-          }
-          // If it is not an array here, just validate it
-          return validation(item) === "";
-        });
-      }else{
-        return validation(fieldValue) === "";
-      }
-    });
+    return validations
+      .map((validation) =>
+        validateNotifyFactory(validation, notify, { fieldName: key, fieldId: fieldKey }),
+      )
+      .every((validateNotify: (value: string) => boolean) => {
+        // If the field value is an array we run the validation for every item in the array
+        if (Array.isArray(fieldValue)) {
+          return fieldValue.every((item: any) => {
+            // And sometimes we can end up with another array inside, that's life
+            if (Array.isArray(item)) {
+              if (item.length === 0) item.push("");
+              return item.every((subItem: any) => validateNotify(subItem));
+            }
+            // If it is not an array here, just validate it
+            return validateNotify(item);
+          });
+        } else {
+          return validateNotify(fieldValue);
+        }
+      });
   });
 };
 
