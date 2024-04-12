@@ -269,7 +269,7 @@ export const isNoSpecialCharacters =
 export const hasOnlyNamingCharacters =
   (
     field: string = "field",
-    message: string = `The ${field} should be composed of only the following characters: A-Z, a-z, 0-9, space, apostrophe or hyphen`,
+    message: string = `The ${field} can only contain: A-Z, a-z, 0-9, space, apostrophe or hyphen`,
   ) =>
   (value: string): string => {
     if (nameRegex.test(value)) return "";
@@ -277,7 +277,10 @@ export const hasOnlyNamingCharacters =
   };
 
 export const isAscii =
-  (message: string = "This field must be composed of only ASCII characters") =>
+  (
+    field: string = "field",
+    message: string = `The ${field} can only contain: A-Z, a-z, 0-9, space or common symbols`,
+  ) =>
   (value: string): string => {
     if (ascii.test(value)) return "";
     return message;
