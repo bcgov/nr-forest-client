@@ -395,8 +395,9 @@ watch([validationError], () => {
       fieldId: "server.validation.error",
       fieldName: '',
       errorMsg: validationError.value.response?.data ?? "",
-    })
-  } else {
+    });
+  } else if (validationError.value.response?.status !== 404) {
+    updateValidState(-1, false); //-1 to define the error as global
     handleValidationError();
   }
 });
