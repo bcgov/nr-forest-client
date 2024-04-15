@@ -187,7 +187,7 @@ const adminEmail = "forhvap.cliadmin@gov.bc.ca";
         <div class="grouping-21" id="panel-content--links">
           <cds-side-nav-items>
             <cds-side-nav-link title="Options" class="unbolded side-nav-link--non-link" />
-            <cds-side-nav-link href="#" title="Sign Out" @click.prevent="logoutModalActive = true">            
+            <cds-side-nav-link href="#" title="Logout" @click.prevent="logoutModalActive = true">            
               <SignOut16 slot="title-icon" />
             </cds-side-nav-link>
           </cds-side-nav-items>
