@@ -22,6 +22,24 @@ export const useFetch = (url: string | Ref, config: any = {}) => {
   return { ...info, data };
 };
 
+const handleErrorDefault = (error: any) => {
+  if (
+    error.code === "ERR_BAD_RESPONSE" ||
+    error.code === "ERR_NETWORK"
+  ) {
+    notificationBus.emit({
+      fieldId: "internal.server.error",
+      errorMsg: "",
+    });
+  }
+  else if (error.code === "ERR_BAD_REQUEST") {
+    notificationBus.emit({
+      fieldId: "bad.request.error",
+      errorMsg: "",
+    });
+  }
+};
+
 /**
  * Fetch data from external resource and store it into the data parameter
  * @param url resource URI
@@ -61,21 +79,10 @@ export const useFetchTo = (
       data.value = result.data;
     } catch (ex) {
       error.value = ex;
-      if (
-        error.value.code === "ERR_BAD_RESPONSE" ||
-        error.value.code === "ERR_NETWORK"
-      ) {
-        notificationBus.emit({
-          fieldId: "internal.server.error",
-          errorMsg: "",
-        });
+      if (config.skipDefaultErrorHandling) {
+        return;
       }
-      else if (error.value.code === "ERR_BAD_REQUEST") {
-        notificationBus.emit({
-          fieldId: "bad.request.error",
-          errorMsg: "",
-        });
-      }
+      handleErrorDefault(ex);
     } finally {
       loading.value = false;
     }
@@ -83,7 +90,14 @@ export const useFetchTo = (
 
   !config.skip && fetch();
 
-  return { response, error, data, loading, fetch };
+  return {
+    response,
+    error,
+    data,
+    loading,
+    fetch,
+    handleErrorDefault: () => handleErrorDefault(error.value),
+  };
 };
 
 /**
@@ -123,26 +137,22 @@ export const usePost = (url: string, body: any, config: any = {}) => {
       responseBody.value = result.data;
     } catch (ex: any) {
       error.value = ex;
-      if (
-        error.value.code === "ERR_BAD_RESPONSE" ||
-        error.value.code === "ERR_NETWORK"
-      ) {
-        notificationBus.emit({
-          fieldId: "internal.server.error",
-          errorMsg: "",
-        });
+      if (config.skipDefaultErrorHandling) {
+        return;
       }
-      else if (error.value.code === "ERR_BAD_REQUEST") {
-        notificationBus.emit({
-          fieldId: "bad.request.error",
-          errorMsg: "",
-        });
-      }
+      handleErrorDefault(ex);
     } finally {
       loading.value = false;
     }
   };
   !config.skip && fetch();
 
-  return { response, error, responseBody, loading, fetch };
+  return {
+    response,
+    error,
+    responseBody,
+    loading,
+    fetch,
+    handleErrorDefault: () => handleErrorDefault(error.value),
+  };
 };

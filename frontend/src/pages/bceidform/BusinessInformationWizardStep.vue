@@ -54,9 +54,7 @@ const ForestClientUserSession = instance.appContext.config.globalProperties.$ses
 const progressIndicatorBus = useEventBus<ProgressNotification>(
   "progress-indicator-bus"
 );
-const exitBus =
-  useEventBus<Record<string, boolean | null>>("exit-notification");
-const generalErrorBus = useEventBus<string>("general-error-notification");
+const exitBus = useEventBus<Record<string, boolean | null>>("exit-notification");
 
 //Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data);
@@ -176,11 +174,13 @@ watch([autoCompleteResult], () => {
     emit("update:data", formData.value);
 
     //Also, we will load the backend data to fill all the other information as well
-    const { error, loading: detailsLoading } = useFetchTo(
-      `/api/clients/${autoCompleteResult.value.code}`,
-      detailsData,
-      {}
-    );
+    const {
+      error,
+      loading: detailsLoading,
+      handleErrorDefault,
+    } = useFetchTo(`/api/clients/${autoCompleteResult.value.code}`, detailsData, {
+      skipDefaultErrorHandling: true,
+    });
 
     showDetailsLoading.value = true;
     watch(error, () => {
@@ -207,8 +207,7 @@ watch([autoCompleteResult], () => {
         emit("update:data", formData.value);
         return;
       }
-      // @ts-ignore
-      generalErrorBus.emit(error.value.response?.data.message);
+      handleErrorDefault();
     });
 
     watch(
@@ -227,10 +226,15 @@ watch([autoCompleteResult], () => {
  * @param {string} lastName - The last name to check.
  */
 const checkForIndividualValid = (lastName: string) => {
-  const { error: validationError, response: individualResponse } = useFetch(
+  const {
+    error: validationError,
+    response: individualResponse,
+    handleErrorDefault,
+  } = useFetch(
     `/api/clients/individual/${ForestClientUserSession.user?.userId
       .split("\\")
-      .pop()}?lastName=${lastName}`
+      .pop()}?lastName=${lastName}`,
+    { skipDefaultErrorHandling: true },
   );
 
   // reset validation
@@ -240,13 +244,14 @@ const checkForIndividualValid = (lastName: string) => {
     if (watchValue.response?.status === 409) {
       validation.business = false;
       toggleErrorMessages(null, true, null);
-      generalErrorBus.emit(watchValue.response?.data ?? "");
     } else if (watchValue.response?.status === 404) {
       validation.individual = true;
+    } else {
+      handleErrorDefault();
     }
   });
   watch(individualResponse, (watchValue) => {
-    if(watchValue.status === 200){
+    if (watchValue.status === 200) {
       validation.individual = true;
     }
   });

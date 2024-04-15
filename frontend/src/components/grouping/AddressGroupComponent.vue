@@ -30,8 +30,6 @@ const emit = defineEmits<{
   (e: "remove", value: number): void;
 }>();
 
-const generalErrorBus = useEventBus<string>("general-error-notification");
-
 const noValidation = (value: string) => "";
 
 //We set it as a separated ref due to props not being updatable
@@ -211,8 +209,6 @@ watch([autoCompleteResult], () => {
     );
 
     watch([error], () => {
-      // @ts-ignore
-      generalErrorBus.emit(error.response?.data.message);
       postalCodeShowHint.value = true;
     });
 

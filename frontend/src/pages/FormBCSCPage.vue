@@ -335,6 +335,7 @@ const {
   response,
   error,
   fetch: fetchSubmit,
+  handleErrorDefault,
 } = usePost("/api/clients/submissions", toRef(formData).value, {
   skip: true,
 });
@@ -364,20 +365,29 @@ watch([error], () => {
   // reset the button to allow a new submission attempt
   submitBtnDisabled.value = !validInd.value;
 
-  const validationErrors: ValidationMessageType[] =
-    error.value.response?.data ?? ([] as ValidationMessageType[]);
+  if (Array.isArray(error.value.response?.data)) {
+    const validationErrors: ValidationMessageType[] = error.value.response?.data;
 
-  validationErrors.forEach((errorItem: ValidationMessageType) =>
-    notificationBus.emit({
-      fieldId: "server.validation.error",
-      fieldName: convertFieldNameToSentence(errorItem.fieldId),
-      errorMsg: errorItem.errorMsg,
-    })
-  );
+    validationErrors.forEach((errorItem: ValidationMessageType) =>
+      notificationBus.emit({
+        fieldId: "server.validation.error",
+        fieldName: convertFieldNameToSentence(errorItem.fieldId),
+        errorMsg: errorItem.errorMsg,
+      }),
+    );
+  } else {
+    handleErrorDefault();
+  }
+
   setScrollPoint("top-notification");
 });
 
-const { error:validationError } = useFetch(`/api/clients/individual/${ForestClientUserSession.user?.userId.split('\\').pop()}?lastName=${ForestClientUserSession.user?.lastName}`);
+const { error: validationError, handleErrorDefault: handleValidationError } = useFetch(
+  `/api/clients/individual/${ForestClientUserSession.user?.userId
+    .split("\\")
+    .pop()}?lastName=${ForestClientUserSession.user?.lastName}`,
+  { skipDefaultErrorHandling: true },
+);
 watch([validationError], () => {
   if (validationError.value.response?.status === 409) {
     updateValidState(-1, false); //-1 to define the error as global
@@ -386,7 +396,9 @@ watch([validationError], () => {
       fieldName: '',
       errorMsg: validationError.value.response?.data ?? "",
     })
-  }  
+  } else {
+    handleValidationError();
+  }
 });
 
 const districtsList = ref([]);
