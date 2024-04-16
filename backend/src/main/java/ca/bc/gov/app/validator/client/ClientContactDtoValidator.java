@@ -59,6 +59,9 @@ public class ClientContactDtoValidator implements Validator {
       else if (!NAME_PATTERN.matcher(fieldValue).matches()) {
         errors.rejectValue(field, String.format("%s has an invalid character.", fieldValue));
       }
+      else if (StringUtils.length(fieldValue) > 30) {
+        errors.rejectValue(field, "This field has a 30 character limit.");
+      }
     });
   }
 
