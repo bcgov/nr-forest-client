@@ -112,6 +112,9 @@ watch(
     inputValue.value = props.modelValue;
     if (!isUserEvent.value && cdsComboBoxRef.value) {
       cdsComboBoxRef.value._filterInputValue = props.modelValue || "";
+
+      // Validate the SELECTED value immediately.
+      validateInput(props.modelValue);
     }
     isUserEvent.value = false;
   },

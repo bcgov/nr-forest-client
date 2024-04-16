@@ -1,0 +1,15 @@
+{
+  "streetAddress": "866 Liénard St",
+  "country": {
+      "value": "CA",
+      "text": "Canada"
+  },
+  "province": {
+      "value": "QC",
+      "text": "Quebec"
+  },
+  "city": "Québec",
+  "postalCode": "G1V 2W5",
+  "index": 0,
+  "locationName": null
+}
