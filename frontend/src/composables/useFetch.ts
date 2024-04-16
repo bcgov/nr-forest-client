@@ -19,7 +19,7 @@ export const useFetch = (url: string | Ref, config: any = {}) => {
   const data: any = ref(config.initialData || {});
   const info = useFetchTo(url, data, config);
 
-  return { ...info, data };
+  return info;
 };
 
 const handleErrorDefault = (error: any) => {
@@ -82,7 +82,7 @@ export const useFetchTo = (
       if (config.skipDefaultErrorHandling) {
         return;
       }
-      handleErrorDefault(ex);
+      thisObj.handleErrorDefault();
     } finally {
       loading.value = false;
     }
@@ -90,7 +90,7 @@ export const useFetchTo = (
 
   !config.skip && fetch();
 
-  return {
+  const thisObj = {
     response,
     error,
     data,
@@ -98,6 +98,8 @@ export const useFetchTo = (
     fetch,
     handleErrorDefault: () => handleErrorDefault(error.value),
   };
+
+  return thisObj;
 };
 
 /**
@@ -140,14 +142,14 @@ export const usePost = (url: string, body: any, config: any = {}) => {
       if (config.skipDefaultErrorHandling) {
         return;
       }
-      handleErrorDefault(ex);
+      thisObj.handleErrorDefault();
     } finally {
       loading.value = false;
     }
   };
   !config.skip && fetch();
 
-  return {
+  const thisObj = {
     response,
     error,
     responseBody,
@@ -155,4 +157,6 @@ export const usePost = (url: string, body: any, config: any = {}) => {
     fetch,
     handleErrorDefault: () => handleErrorDefault(error.value),
   };
+
+  return thisObj;
 };
