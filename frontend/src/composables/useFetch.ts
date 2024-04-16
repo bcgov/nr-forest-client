@@ -82,7 +82,7 @@ export const useFetchTo = (
       if (config.skipDefaultErrorHandling) {
         return;
       }
-      thisObj.handleErrorDefault();
+      apiDataHandler.handleErrorDefault();
     } finally {
       loading.value = false;
     }
@@ -90,7 +90,7 @@ export const useFetchTo = (
 
   !config.skip && fetch();
 
-  const thisObj = {
+  const apiDataHandler = {
     response,
     error,
     data,
@@ -99,7 +99,7 @@ export const useFetchTo = (
     handleErrorDefault: () => handleErrorDefault(error.value),
   };
 
-  return thisObj;
+  return apiDataHandler;
 };
 
 /**
@@ -142,14 +142,14 @@ export const usePost = (url: string, body: any, config: any = {}) => {
       if (config.skipDefaultErrorHandling) {
         return;
       }
-      thisObj.handleErrorDefault();
+      apiDataHandler.handleErrorDefault();
     } finally {
       loading.value = false;
     }
   };
   !config.skip && fetch();
 
-  const thisObj = {
+  const apiDataHandler = {
     response,
     error,
     responseBody,
@@ -158,5 +158,5 @@ export const usePost = (url: string, body: any, config: any = {}) => {
     handleErrorDefault: () => handleErrorDefault(error.value),
   };
 
-  return thisObj;
+  return apiDataHandler;
 };
