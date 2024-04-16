@@ -22,6 +22,10 @@ public class ClientValidationUtils {
       errors.rejectValue(field, "You must enter an email address");
       return;
     }
+    else if (StringUtils.length(email) > 100) {
+      errors.rejectValue(field, "This field has a 100 character limit.");
+      return;
+    }
 
     Matcher emailMatcher = EMAIL_PATTERN.matcher(email);
     if (!emailMatcher.matches()) {
