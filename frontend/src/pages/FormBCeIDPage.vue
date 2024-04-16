@@ -107,13 +107,15 @@ const associatedLocations = computed(() =>
     )
 );
 
-const { response, error, fetch: post } = usePost(
-  "/api/clients/submissions",
-  toRef(formData).value,
-  {
-    skip: true,
-  }
-);
+const {
+  response,
+  error,
+  fetch: post,
+  handleErrorDefault,
+} = usePost("/api/clients/submissions", toRef(formData).value, {
+  skip: true,
+  skipDefaultErrorHandling: true,
+});
 
 watch([response], () => {
   if (response.value.status === 201) {
@@ -125,16 +127,20 @@ watch([error], () => {
   // reset the button to allow a new submission attempt
   submitBtnDisabled.value = false;
 
-  const validationErrors: ValidationMessageType[] = error.value.response?.data ?? 
-    [] as ValidationMessageType[];
+  if (Array.isArray(error.value.response?.data)) {
+    const validationErrors: ValidationMessageType[] = error.value.response?.data;
 
-  validationErrors.forEach((errorItem: ValidationMessageType) =>
-    notificationBus.emit({
-      fieldId: "server.validation.error",
-      fieldName: convertFieldNameToSentence(errorItem.fieldId),
-      errorMsg: errorItem.errorMsg,
-    })
-  );
+    validationErrors.forEach((errorItem: ValidationMessageType) =>
+      notificationBus.emit({
+        fieldId: "server.validation.error",
+        fieldName: convertFieldNameToSentence(errorItem.fieldId),
+        errorMsg: errorItem.errorMsg,
+      }),
+    );
+  } else {
+    handleErrorDefault();
+  }
+
   setScrollPoint("top-notification");
 });
 
