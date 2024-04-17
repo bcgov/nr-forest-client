@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, reactive } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/ui-shell/index";
 import "@carbon/web-components/es/components/breadcrumb/index";
@@ -33,6 +33,7 @@ import Check16 from "@carbon/icons-vue/es/checkmark/16";
 // @ts-ignore
 import Error16 from "@carbon/icons-vue/es/error--outline/16";
 import { convertFieldNameToSentence, toTitleCase } from "@/services/ForestClientService";
+import { getValidations } from "@/helpers/validators/SubmissionReviewValidations";
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 
@@ -115,11 +116,9 @@ const showClientNumberField = computed(() => {
 });
 
 const rejectYesDisabled = computed(() => {
-  if (selectedRejectReasons.value && selectedRejectReasons.value.length > 0) {
-    if (showClientNumberField.value) return !rejectReasonMessage.value;
-    return !selectedRejectReasons.value.some(
-      (reason: CodeNameType) => reason.code === "goodstanding"
-    );
+  if (rejectValidation.reasons) {
+    if (showClientNumberField.value) return !rejectValidation.message;
+    return false;
   }
   return true;
 });
@@ -297,6 +296,11 @@ const isNotEditor = !ForestClientUserSession.authorities.includes('CLIENT_EDITOR
 if(isNotEditor){
   submitDisabled.value = true;
 }
+
+const rejectValidation = reactive<Record<string, boolean>>({
+  reasons: false,
+  message: false,
+});
 </script>
 
 <template>
@@ -706,9 +710,10 @@ if(isNotEditor){
             tip="Choose one or more reasons"
             initial-value=""
             :model-value="rejectReasons"
-            :selectedValues="[]"
-            :validations="[]"
-            @update:selected-value="event => selectedRejectReasons = event"        
+            :validations="[...getValidations('reasons')]"
+            @update:selected-value="event => selectedRejectReasons = event"
+            @empty="rejectValidation.reasons = !$event"
+            @error="rejectValidation.reasons = !$event"
           />
           <text-input-component
             :class="{invisible: !showClientNumberField}"
@@ -716,9 +721,12 @@ if(isNotEditor){
             label="Matching client number"
             placeholder=""
             v-model="rejectReasonMessage"
-            :validations="[]"
+            numeric
+            :validations="[...getValidations('message')]"
             :required="showClientNumberField"
             :enabled="true"
+            @empty="rejectValidation.message = !$event"
+            @error="rejectValidation.message = !$event"
           />
         </cds-modal-body>
 
