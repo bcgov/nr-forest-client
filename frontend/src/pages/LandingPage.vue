@@ -79,7 +79,7 @@ if (query.ref && query.ref === "individual") {
   <div class="login-content">
     <img
       :src="landingImagePath"
-      alt="Small green seedling on the dirt and watered"
+      alt="Small green seedling on dirt and water"
     />
   </div>
 </template>
