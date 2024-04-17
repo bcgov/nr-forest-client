@@ -710,6 +710,7 @@ const rejectValidation = reactive<Record<string, boolean>>({
             tip="Choose one or more reasons"
             initial-value=""
             :model-value="rejectReasons"
+            :selectedValues="[]"
             :validations="[...getValidations('reasons')]"
             @update:selected-value="event => selectedRejectReasons = event"
             @empty="rejectValidation.reasons = !$event"
