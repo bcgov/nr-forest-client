@@ -442,7 +442,8 @@ public class TestConstants {
                       )
                   )
               )
-          )
+          ),
+          "ABC123"
       );
 
   public static final ClientSubmissionDto UNREGISTERED_BUSINESS_SUBMISSION_DTO =
@@ -484,7 +485,8 @@ public class TestConstants {
                       )
                   )
               )
-          )
+          ),
+          "ABC123"
       );
 
   public static final ClientSubmissionDto UNREGISTERED_BUSINESS_SUBMISSION_MULTI_DTO =
@@ -540,7 +542,8 @@ public class TestConstants {
                       )
                   )
               )
-          )
+          ),
+          "ABC123"
       );
 
   public static final ClientSubmissionDto UNREGISTERED_BUSINESS_SUBMISSION_BROKEN_DTO =
@@ -582,7 +585,8 @@ public class TestConstants {
                       )
                   )
               )
-          )
+          ),
+          "ABC123"
       );
 
   public static final EmailRequestDto EMAIL_REQUEST =

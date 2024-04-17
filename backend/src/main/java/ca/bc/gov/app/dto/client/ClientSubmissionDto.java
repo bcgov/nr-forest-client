@@ -4,7 +4,8 @@ import java.util.Map;
 
 public record ClientSubmissionDto(
     ClientBusinessInformationDto businessInformation,
-    ClientLocationDto location) {
+    ClientLocationDto location,
+    String userId) {
   /**
    * Returns a map containing the description of the client's business information.
    *
