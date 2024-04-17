@@ -14,16 +14,21 @@ import login16 from "@carbon/icons-vue/es/login/16";
 // extract the querystring parameters from the URL
 const router = useRouter();
 const { query } = router.currentRoute.value;
+
+let hideIdirBtnInd = false;
+
 // check if a querystring parameter called ref exists and if it has a value of external
 if (query.ref && query.ref === "external") {
   ForestClientUserSession.logIn('bceidbusiness');
+  hideIdirBtnInd = true;
 }
 if (query.ref && query.ref === "individual") {
   ForestClientUserSession.logIn('bcsc');
+  hideIdirBtnInd = true;
 }
 </script>
 
-<template>  
+<template>
   <div class="login-content">
 
     <img 
@@ -32,12 +37,12 @@ if (query.ref && query.ref === "individual") {
       />
 
     <h1 id="landing-title" class="landing-title">Forests Client Management System</h1>
-    
+
     <h2 id="landing-subtitle" class="landing-subtitle">Create and manage client accounts</h2>
   
     <div class="spacing"></div>
   
-    <div class="form-footer-group-buttons">
+    <div class="form-footer-group-buttons" v-if="!hideIdirBtnInd">
       <cds-button
         kind="primary"
         iconLayout=""
@@ -68,6 +73,7 @@ if (query.ref && query.ref === "individual") {
         <login16 slot="icon" />
       </cds-button>
     </div>
+    <div v-else>Redirecting...</div>
   </div>
 
   <div class="login-content">
