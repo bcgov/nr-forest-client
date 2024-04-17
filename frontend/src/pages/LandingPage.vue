@@ -15,16 +15,16 @@ import login16 from "@carbon/icons-vue/es/login/16";
 const router = useRouter();
 const { query } = router.currentRoute.value;
 
-let isRedirecting = false;
+let hideIdirBtnInd = false;
 
 // check if a querystring parameter called ref exists and if it has a value of external
 if (query.ref && query.ref === "external") {
   ForestClientUserSession.logIn('bceidbusiness');
-  isRedirecting = true;
+  hideIdirBtnInd = true;
 }
 if (query.ref && query.ref === "individual") {
   ForestClientUserSession.logIn('bcsc');
-  isRedirecting = true;
+  hideIdirBtnInd = true;
 }
 </script>
 
@@ -42,7 +42,7 @@ if (query.ref && query.ref === "individual") {
   
     <div class="spacing"></div>
   
-    <div class="form-footer-group-buttons" v-if="!isRedirecting">
+    <div class="form-footer-group-buttons" v-if="!hideIdirBtnInd">
       <cds-button
         kind="primary"
         iconLayout=""
