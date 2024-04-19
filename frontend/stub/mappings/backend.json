@@ -577,7 +577,7 @@
         }
       },
       "response": {
-        "status": 405
+        "status": 200
       }
     },
     {
