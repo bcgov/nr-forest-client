@@ -266,6 +266,7 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
       :min-length="3"
       :init-value="[]"
       :init-fetch="false"
+      :disabled="!selectedValue.streetAddress"
       #="{ content, loading, error }"
     >
       <AutoCompleteInputComponent

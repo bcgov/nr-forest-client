@@ -3,7 +3,7 @@
     {
       "name": "Autocomplete BC Registry",
       "request": {
-        "urlPattern": "/api/clients/name/(.*)",
+        "urlPattern": "/api/clients/name/(.+)",
         "method": "GET"
       },
       "response": {
@@ -323,7 +323,7 @@
             "equalTo": "10"
           },
           "searchTerm": {
-            "matches": ".*"
+            "matches": ".+"
           }
         }
       },
@@ -577,7 +577,7 @@
         }
       },
       "response": {
-        "status": 200
+        "status": 405
       }
     },
     {
