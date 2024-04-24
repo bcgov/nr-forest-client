@@ -37,13 +37,13 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 public class ClientSubmissionController extends
-    AbstractController<ClientSubmissionDto, 
-    ClientSubmitRequestValidator> {
+    AbstractController<ClientSubmissionDto,
+        ClientSubmitRequestValidator> {
 
   private final ClientSubmissionService clientService;
 
   public ClientSubmissionController(
-      ClientSubmissionService clientService, 
+      ClientSubmissionService clientService,
       ClientSubmitRequestValidator validator) {
     super(ClientSubmissionDto.class, validator);
     this.clientService = clientService;
@@ -105,23 +105,20 @@ public class ClientSubmissionController extends
       ServerHttpResponse serverResponse,
       JwtAuthenticationToken principal
   ) {
-    
-    ClientSubmissionDto requestWithUserId = new ClientSubmissionDto(
-        request.businessInformation(),
-        request.location(),
-        JwtPrincipalUtil.getUserId(principal)
-    );
-    
-    return Mono.just(request)
+
+    return Mono.just(
+            new ClientSubmissionDto(
+                request.businessInformation(),
+                request.location(),
+                JwtPrincipalUtil.getUserId(principal)
+            )
+        )
         .switchIfEmpty(
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
         )
         .doOnNext(sub -> log.info("Submitting request: {}", sub))
-        .flatMap(sub -> {
-          log.info("\nInside flatMap, calling validateReactive");
-          return validateReactive(requestWithUserId);
-        })
-        .doOnNext(sub -> validate(requestWithUserId))
+        .doOnNext(this::validate)
+        .flatMap(this::validateReactive)
         .doOnNext(sub -> log.info("Request is valid: {}", sub))
         .doOnError(e -> log.error("Request is invalid: {}", e.getMessage()))
         .flatMap(submissionDto -> clientService.submit(
