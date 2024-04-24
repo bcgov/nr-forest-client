@@ -360,7 +360,7 @@ public class ClientService {
             .error(new ClientAlreadyExistException(legacy.clientNumber()))
         );
   }
-
+  
   private Function<BcRegistryDocumentDto, Mono<ClientDetailsDto>> buildDetails() {
     return document ->
         buildAddress(

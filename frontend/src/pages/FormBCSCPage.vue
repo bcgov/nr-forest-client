@@ -615,7 +615,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
           kind="primary"
           size="lg"
           v-on:click="submit"
-          :disabled="submitBtnDisabled"
+
         >
           <span>Submit application</span>
           <Check16 slot="icon" />

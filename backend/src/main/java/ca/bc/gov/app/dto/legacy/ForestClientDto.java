@@ -21,7 +21,7 @@ public record ForestClientDto(
     String ocgSupplierNmbr,
     String clientComment
 ) {
-
+  
   public String legalName() {
     if (StringUtils.defaultString(clientTypeCode).equalsIgnoreCase("I")) {
       return
