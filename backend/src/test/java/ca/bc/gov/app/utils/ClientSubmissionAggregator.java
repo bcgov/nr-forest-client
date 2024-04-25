@@ -22,6 +22,7 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     return new ClientSubmissionDto(
         createBusinessInformation(accessor),
         createLocation(accessor),
+        null,
         null
     );
   }

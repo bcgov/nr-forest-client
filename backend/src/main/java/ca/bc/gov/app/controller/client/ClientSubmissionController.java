@@ -105,20 +105,21 @@ public class ClientSubmissionController extends
       ServerHttpResponse serverResponse,
       JwtAuthenticationToken principal
   ) {
-
+    
     return Mono.just(
             new ClientSubmissionDto(
                 request.businessInformation(),
                 request.location(),
-                JwtPrincipalUtil.getUserId(principal)
+                JwtPrincipalUtil.getUserId(principal).replaceFirst("^BCSC\\\\", ""),
+                JwtPrincipalUtil.getLastName(principal)
             )
         )
         .switchIfEmpty(
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
         )
         .doOnNext(sub -> log.info("Submitting request: {}", sub))
-        .doOnNext(this::validate)
         .flatMap(this::validateReactive)
+        .doOnNext(this::validate)
         .doOnNext(sub -> log.info("Request is valid: {}", sub))
         .doOnError(e -> log.error("Request is invalid: {}", e.getMessage()))
         .flatMap(submissionDto -> clientService.submit(

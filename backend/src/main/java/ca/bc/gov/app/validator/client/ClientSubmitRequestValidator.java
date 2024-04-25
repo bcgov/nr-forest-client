@@ -14,6 +14,8 @@ import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.DistrictCodeRepository;
 import ca.bc.gov.app.service.client.ClientService;
 import java.time.LocalDate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -56,34 +58,41 @@ public class ClientSubmitRequestValidator implements ReactiveValidator {
   
   @Override
   public Mono<Errors> validateReactive(Object target, Errors errors) {
-
-    ClientSubmissionDto request = (ClientSubmissionDto) target;
-    String userId = request.userId();
-
-    log.info("\nStart validateReactive");
-    
-    return clientService
-            .findByIndividual(userId, "MARTINEZ")
-            .doOnNext( x -> log.info("\nTesting.... "))
-            .doOnError(error -> {
-              if (error instanceof ClientAlreadyExistException) {
-                log.info("Client with userId {} and lastName {} already exists.", userId, "MARTINEZ");
-              } 
-              else {
-                log.error("Error while checking client existence for userId {} and lastName {}: {}", 
-                          userId,
-                          "MARTINEZ", 
-                          error.getMessage());
-              }
-            })
-            .flatMap(result -> {
-              log.info("Client with userId {} and lastName {} does not exist.", userId, "MARTINEZ");
-              return Mono.just(errors);
-            })
-            .onErrorResume(error -> {
-              log.error("Error occurred: {}", error.getMessage());
-              return Mono.error(error);
-            });
+      
+      ClientSubmissionDto request = (ClientSubmissionDto) target;
+      String clientTypeCode = request.businessInformation().clientType();
+      String userId = request.userId();
+      return Mono.just(errors);
+      /*if (ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientTypeCode)) {
+          
+          return clientService
+              .findByIndividual(userId, "MARTINEZ")
+              .then(Mono.just(errors))
+              .onErrorResume(error -> {
+                  if (error instanceof ClientAlreadyExistException) {
+                      String errorMessage = error.getMessage();
+                      String clientNumberRegex = ".*client number (\\d+).*";
+                      Matcher matcher = Pattern.compile(clientNumberRegex).matcher(errorMessage);
+                      String clientNumber = null;
+                      if (matcher.find()) {
+                          clientNumber = matcher.group(1);
+                      }
+                      log.info("\n" + clientNumber);
+                      errors.pushNestedPath("businessInformation");
+                      errors.rejectValue("", "Client already exists with the client number");
+                      errors.popNestedPath();
+                      return Mono.just(errors);
+                  } else {
+                      log.error("\nError while checking client existence for userId {} and lastName {}: {}", 
+                                userId,
+                                "MARTINEZ", 
+                                error.getMessage());
+                      return Mono.error(error);
+                  }
+              });
+      } else {
+          return Mono.just(errors);
+      }*/
   }
 
   @SneakyThrows
@@ -100,6 +109,23 @@ public class ClientSubmitRequestValidator implements ReactiveValidator {
       return;
     }
     errors.pushNestedPath(businessInformationField);
+    
+    clientService.findByUserIdAndLastName(userId, "5")
+    .subscribe(
+        result -> {
+            System.out.println("Received result: " + result);
+            // Handle the result here
+        },
+        error -> {
+            System.err.println("An error occurred: " + error.getMessage());
+            // Handle the error here
+        },
+        () -> {
+            System.out.println("Completed");
+            // Handle completion here if necessary
+        }
+    );
+
     
     //TODO: Remove this code
     if (1 == 1) {

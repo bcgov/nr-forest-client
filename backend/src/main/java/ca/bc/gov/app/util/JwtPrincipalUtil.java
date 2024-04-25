@@ -111,6 +111,19 @@ public class JwtPrincipalUtil {
   }
 
   /**
+   * Retrieves the last name from the given JwtAuthenticationToken principal. The last name is
+   * extracted from the token attributes under the key "family_name". If the last
+   * name is blank, an empty string is returned.
+   *
+   * @param principal JwtAuthenticationToken object from which the last name is to be extracted.
+   * @return The last name or an empty string if the last name is blank.
+   */
+  public static String getLastName(JwtAuthenticationToken principal) {
+    Map<String, String> names = processName(principal);
+    return names.get("lastName");
+  }
+  
+  /**
    * Retrieves the first name from the given JwtAuthenticationToken principal. The first name is
    * extracted from the token attributes under the key "given_name". If the first name is blank, the
    * display name is extracted and split. If the display name is blank, an empty string is returned.

@@ -349,7 +349,6 @@ public class ClientService {
             .then();
   }
 
-
   public Mono<Void> findByIndividual(String userId, String lastName) {
     return legacyService
         .searchIdAndLastName(userId, lastName)
@@ -359,6 +358,14 @@ public class ClientService {
         .flatMap(legacy -> Mono
             .error(new ClientAlreadyExistException(legacy.clientNumber()))
         );
+  }
+  
+  public Mono<String> findByUserIdAndLastName(String userId, String lastName) {
+    return legacyService
+        .searchIdAndLastName(userId, lastName)
+        .doOnNext(legacy -> log.info("Found legacy entry for {} {}", userId, lastName))
+        .next()
+        .map(ForestClientDto::clientNumber);
   }
   
   private Function<BcRegistryDocumentDto, Mono<ClientDetailsDto>> buildDetails() {
