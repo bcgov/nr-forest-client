@@ -12,6 +12,7 @@ import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // @ts-ignore
 import Delete16 from "@carbon/icons-vue/es/trash-can/16";
+import { getContactDescription } from "@/services/ForestClientService";
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -263,6 +264,10 @@ const logoutAndRedirect = () => {
       <cds-button
         v-if="id > 0"
         :id="'deleteContact_' + id"
+        :danger-descriptor="`Delete contact &quot;${getContactDescription(
+          selectedValue,
+          id,
+        )}&quot;`"
         kind="danger--tertiary"
         @click.prevent="emit('remove', id)"
       >
@@ -275,17 +280,19 @@ const logoutAndRedirect = () => {
   <cds-modal
     v-if="id === 0"
     id="logout-and-redirect-modal"
+    aria-labelledby="logout-and-redirect-modal-heading"
+    aria-describedby="logout-and-redirect-modal-body"
     size="md"
     :open="changePersonalInfoModalActive"
     @cds-modal-closed="changePersonalInfoModalActive = false"
   >
     <cds-modal-header>
       <cds-modal-close-button></cds-modal-close-button>
-      <cds-modal-heading>
+      <cds-modal-heading id="logout-and-redirect-modal-heading">
         You will be automatically logged out and redirected to BCeID
       </cds-modal-heading>
     </cds-modal-header>
-    <cds-modal-body>
+    <cds-modal-body id="logout-and-redirect-modal-body">
       <p>Update your personal information at BCeID and then log back into this application.</p>
       <br />
       <p>Your data will not be saved.</p>
