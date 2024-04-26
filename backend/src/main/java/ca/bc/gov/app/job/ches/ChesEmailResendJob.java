@@ -27,7 +27,7 @@ public class ChesEmailResendJob {
     emailRetryCounter = meterRegistry.counter("service.ches", "status", "retry");
   }
 
-  //@Scheduled(cron = "*/3 * * * * *")
+  //@Scheduled(cron = "* */3 * * * *")
   public void startResendJob() {
 
     log.info("Starting email resend job");

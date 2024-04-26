@@ -58,41 +58,34 @@ public class ClientSubmitRequestValidator implements ReactiveValidator {
   
   @Override
   public Mono<Errors> validateReactive(Object target, Errors errors) {
-      
-      ClientSubmissionDto request = (ClientSubmissionDto) target;
-      String clientTypeCode = request.businessInformation().clientType();
-      String userId = request.userId();
+
+    ClientSubmissionDto request = (ClientSubmissionDto) target;
+    String clientTypeCode = request.businessInformation().clientType();
+    String userId = request.userId();
+    String lastName = request.userLastName();
+
+    if (ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientTypeCode)) {
+
+      return clientService
+          .findByUserIdAndLastName(userId, lastName)
+          .flatMap(clientNumber -> {
+            errors.pushNestedPath("businessInformation");
+            errors.rejectValue("", "Client already exists with the client number " + clientNumber);
+            errors.popNestedPath();
+            return Mono.just(errors);
+          })
+          .onErrorResume(error -> {
+            if (error instanceof ClientAlreadyExistException) {
+              log.error("Error while checking client existence for userId {} and lastName {}: {}",
+                  userId,
+                  lastName,
+                  error.getMessage());
+            }
+            return Mono.error(error);
+          });
+    } else {
       return Mono.just(errors);
-      /*if (ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientTypeCode)) {
-          
-          return clientService
-              .findByIndividual(userId, "MARTINEZ")
-              .then(Mono.just(errors))
-              .onErrorResume(error -> {
-                  if (error instanceof ClientAlreadyExistException) {
-                      String errorMessage = error.getMessage();
-                      String clientNumberRegex = ".*client number (\\d+).*";
-                      Matcher matcher = Pattern.compile(clientNumberRegex).matcher(errorMessage);
-                      String clientNumber = null;
-                      if (matcher.find()) {
-                          clientNumber = matcher.group(1);
-                      }
-                      log.info("\n" + clientNumber);
-                      errors.pushNestedPath("businessInformation");
-                      errors.rejectValue("", "Client already exists with the client number");
-                      errors.popNestedPath();
-                      return Mono.just(errors);
-                  } else {
-                      log.error("\nError while checking client existence for userId {} and lastName {}: {}", 
-                                userId,
-                                "MARTINEZ", 
-                                error.getMessage());
-                      return Mono.error(error);
-                  }
-              });
-      } else {
-          return Mono.just(errors);
-      }*/
+    }
   }
 
   @SneakyThrows
@@ -109,30 +102,6 @@ public class ClientSubmitRequestValidator implements ReactiveValidator {
       return;
     }
     errors.pushNestedPath(businessInformationField);
-    
-    clientService.findByUserIdAndLastName(userId, "5")
-    .subscribe(
-        result -> {
-            System.out.println("Received result: " + result);
-            // Handle the result here
-        },
-        error -> {
-            System.err.println("An error occurred: " + error.getMessage());
-            // Handle the error here
-        },
-        () -> {
-            System.out.println("Completed");
-            // Handle completion here if necessary
-        }
-    );
-
-    
-    //TODO: Remove this code
-    if (1 == 1) {
-      errors.rejectValue("businessType", "Test");
-      errors.popNestedPath();
-      return;
-    }
     
     String businessType = businessInformation.businessType();
     if (StringUtils.isAllBlank(businessType)) {
