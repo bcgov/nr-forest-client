@@ -120,7 +120,7 @@
     <dependency>
       <groupId>org.dhatim</groupId>
       <artifactId>fastexcel</artifactId>
-      <version>0.16.4</version>
+      <version>0.17.0</version>
     </dependency>
 
     <dependency>
