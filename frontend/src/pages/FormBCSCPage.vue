@@ -628,17 +628,19 @@ const updateDistrict = (value: CodeNameType | undefined) => {
 
     <cds-modal
       id="address-change-bc-modal"
+      aria-labelledby="address-change-bc-modal-heading"
+      aria-describedby="address-change-bc-modal-body"
       size="md"
       :open="changePersonalInfoModalActive"
       @cds-modal-closed="changePersonalInfoModalActive = false"
     >
       <cds-modal-header>
         <cds-modal-close-button></cds-modal-close-button>
-        <cds-modal-heading>
+        <cds-modal-heading id="address-change-bc-modal-heading">
           Change your personal information and logout
         </cds-modal-heading>
       </cds-modal-header>
-      <cds-modal-body>
+      <cds-modal-body id="address-change-bc-modal-body">
         <p>
           Visit
           <a

@@ -9,6 +9,7 @@ const props = defineProps<{
   minLength: number;
   initValue: object;
   initFetch?: boolean;
+  disabled?: boolean;
 }>();
 
 // Set the initial value to the content
@@ -37,29 +38,26 @@ const calculateStringDifference = (
 };
 
 // If initial fetch is required, fetch
-if (props.initFetch) {
+if (!props.disabled && props.initFetch) {
   fetch().then(() => {
     content.value = response.value;
   });
 }
 
 // Watch for changes in the url, and if the difference is greater than the min length, fetch
-watch(
-  () => props.url,
-  () => {
-    if (calculateStringDifference(initialUrlValue, props.url) >= props.minLength) {
-      const curRequestTime = Date.now();
-      
-      fetch().then(() => {
-        // Discard the response from old request when a newer one was already responded.
-        if (curRequestTime >= lastUpdateRequestTime.value) {
-          content.value = response.value;
-          lastUpdateRequestTime.value = curRequestTime;
-        }
-      });
-    }
-  },
-);
+watch([() => props.url, () => props.disabled], () => {
+  if (!props.disabled && calculateStringDifference(initialUrlValue, props.url) >= props.minLength) {
+    const curRequestTime = Date.now();
+
+    fetch().then(() => {
+      // Discard the response from old request when a newer one was already responded.
+      if (curRequestTime >= lastUpdateRequestTime.value) {
+        content.value = response.value;
+        lastUpdateRequestTime.value = curRequestTime;
+      }
+    });
+  }
+});
 </script>
 <template>
   <slot :content="content" :loading="loading" :error="error"></slot>

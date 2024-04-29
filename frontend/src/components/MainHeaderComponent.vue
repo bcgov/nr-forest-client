@@ -230,17 +230,19 @@ const adminEmail = "forhvap.cliadmin@gov.bc.ca";
 
   <cds-modal
     id="help-modal"
+    aria-labelledby="help-modal-heading"
+    aria-describedby="help-modal-body"
     size="sm"
     :open="helpModalActive"
     @cds-modal-closed="helpModalActive = false"
   >
     <cds-modal-header>
       <cds-modal-close-button></cds-modal-close-button>
-      <cds-modal-heading>
+      <cds-modal-heading id="help-modal-heading">
         Help with application
       </cds-modal-heading>
     </cds-modal-header>
-    <cds-modal-body>
+    <cds-modal-body id="help-modal-body">
       <p>
         Can’t proceed with your application? Let us know by emailing your issue to 
         <button class="link-button" @click="openMailtoLink(adminEmail)" aria-label="Contact Admin via Email">
@@ -252,17 +254,19 @@ const adminEmail = "forhvap.cliadmin@gov.bc.ca";
 
   <cds-modal
     id="logout-modal"
+    aria-labelledby="logout-modal-heading"
+    aria-describedby="logout-modal-body"
     size="sm"
     :open="logoutModalActive"
     @cds-modal-closed="logoutModalActive = false"
   >
     <cds-modal-header>
       <cds-modal-close-button></cds-modal-close-button>
-      <cds-modal-heading>
+      <cds-modal-heading id="logout-modal-heading">
         Are you sure you want to logout? Your data will not be saved.
       </cds-modal-heading>
     </cds-modal-header>
-    <cds-modal-body><p></p></cds-modal-body>
+    <cds-modal-body id="logout-modal-body"><p></p></cds-modal-body>
 
     <cds-modal-footer>
       <cds-modal-footer-button 
