@@ -71,13 +71,14 @@ toastBus.on(openToast)
     
     <cds-modal
       id="modal-global"
+      aria-labelledby="modal-global-heading"
       size="sm"
       :open="modalContent.active"
       @cds-modal-closed="closeModal"
     >
       <cds-modal-header>
         <cds-modal-close-button></cds-modal-close-button>
-        <cds-modal-heading
+        <cds-modal-heading id="modal-global-heading"
           >Are you sure you want to delete "{{ modalContent.name }}" additional
           {{ modalContent.kind }}?
         </cds-modal-heading>
@@ -85,22 +86,23 @@ toastBus.on(openToast)
       
 
       <cds-modal-footer>
-          <cds-modal-footer-button 
-            kind="secondary"
-            data-modal-close
-            class="cds--modal-close-btn">
-            Cancel
-          </cds-modal-footer-button>
-          
-          <cds-modal-footer-button 
-            kind="danger"
-            class="cds--modal-submit-btn"
-            v-on:click="deleteContentModal">
-            Delete
-            <Delete16 slot="icon" />
-          </cds-modal-footer-button>
+        <cds-modal-footer-button
+          kind="secondary"
+          data-modal-close
+          class="cds--modal-close-btn">
+          Cancel
+        </cds-modal-footer-button>
 
-        </cds-modal-footer>
+        <cds-modal-footer-button
+          kind="danger"
+          class="cds--modal-submit-btn"
+          v-on:click="deleteContentModal"
+          :danger-descriptor="`Delete &quot;${modalContent.name}&quot;`"
+        >
+          Delete
+          <Delete16 slot="icon" />
+        </cds-modal-footer-button>
+      </cds-modal-footer>
     </cds-modal>
   </div>
 

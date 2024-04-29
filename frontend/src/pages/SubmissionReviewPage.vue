@@ -655,7 +655,9 @@ const rejectValidation = reactive<Record<string, boolean>>({
       </div>
 
       <cds-modal 
-        id="approve-modal" 
+        id="approve-modal"
+        aria-labelledby="approve-modal-heading"
+        aria-describedby="approve-modal-body"
         size="sm"
         :open="approveModal" 
         @cds-modal-closed="approveModal = !approveModal"
@@ -663,10 +665,10 @@ const rejectValidation = reactive<Record<string, boolean>>({
         
         <cds-modal-header>
           <cds-modal-close-button></cds-modal-close-button>
-          <cds-modal-heading>Approve submission</cds-modal-heading>
+          <cds-modal-heading id="approve-modal-heading">Approve submission</cds-modal-heading>
         </cds-modal-header>
         
-        <cds-modal-body>
+        <cds-modal-body id="approve-modal-body">
           <p class="body-compact-01">A new client number will be created and an email will be sent to the submitter.</p>
         </cds-modal-body>
 
@@ -689,8 +691,10 @@ const rejectValidation = reactive<Record<string, boolean>>({
 
       </cds-modal>
 
-      <cds-modal 
+      <cds-modal
         id="reject-modal"
+        aria-labelledby="reject-modal-heading"
+        aria-describedby="reject-modal-body"
         size="sm" 
         :open="rejectModal" 
         @cds-modal-closed="rejectModal = !rejectModal"
@@ -698,10 +702,10 @@ const rejectValidation = reactive<Record<string, boolean>>({
 
         <cds-modal-header>
           <cds-modal-close-button></cds-modal-close-button>
-          <cds-modal-heading>Reject submission</cds-modal-heading>
+          <cds-modal-heading id="reject-modal-heading">Reject submission</cds-modal-heading>
         </cds-modal-header>
 
-        <cds-modal-body class="grouping-12">
+        <cds-modal-body id="reject-modal-body" class="grouping-12">
           <p class="body-compact-01">This submission will be rejected and the submitter will receive an email notification. Please choose the reason below:</p>
           <multiselect-input-component
             id="reject_reason_id"
