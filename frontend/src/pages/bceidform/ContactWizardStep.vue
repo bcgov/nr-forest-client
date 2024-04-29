@@ -11,12 +11,10 @@ import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 import { emptyContact, locationName as defaultLocation } from "@/dto/ApplyClientNumberDto";
 import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";
 // Validators
-import {
-  isUniqueDescriptive,
-  isNullOrUndefinedOrBlank,
-} from "@/helpers/validators/GlobalValidators";
+import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 // @ts-ignore
 import Add16 from "@carbon/icons-vue/es/add/16";
+import { getContactDescription } from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{ data: FormDataDto; active: boolean }>();
@@ -141,11 +139,7 @@ watch([validation], () => emit("valid", checkValid()));
 emit("valid", false);
 
 const handleRemove = (index: number) => {
-  const selectedContact = !isNullOrUndefinedOrBlank(
-    formData.location.contacts[index].firstName
-  )
-    ? `${formData.location.contacts[index].firstName} ${formData.location.contacts[index].lastName}`
-    : "Contact #" + index;
+  const selectedContact = getContactDescription(formData.location.contacts[index], index);
   bus.emit({
     name: selectedContact,
     toastTitle: "Success",
