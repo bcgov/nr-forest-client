@@ -50,7 +50,7 @@
     <junit-platform.version>1.9.1</junit-platform.version>
 
     <oci.revision>${project.version}</oci.revision>
-    <poi.version>5.2.3</poi.version>
+    <mapstruct.version>1.5.5.Fina</mapstruct.version>
   </properties>
 
   <dependencies>
@@ -110,17 +110,12 @@
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>
-      <version>1.5.5.Final</version>
+      <version>${mapstruct.version}l</version>
     </dependency>
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct-processor</artifactId>
-      <version>1.5.5.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>org.dhatim</groupId>
-      <artifactId>fastexcel</artifactId>
-      <version>0.16.4</version>
+      <version>${mapstruct.version}l</version>
     </dependency>
 
     <dependency>
