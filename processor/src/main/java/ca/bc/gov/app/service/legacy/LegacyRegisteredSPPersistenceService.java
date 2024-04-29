@@ -78,6 +78,8 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     .withClientComment(
                         String.join(" ",
                             getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME),
+                            "of BCeID Business",
+                            message.getInfoParameter("businessName",String.class),
                             "submitted the",
                             "sole proprietor registered on BC Registry with number",
                             submissionDetail.getRegistrationNumber(),
