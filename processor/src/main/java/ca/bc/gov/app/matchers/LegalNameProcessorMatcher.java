@@ -27,7 +27,7 @@ public class LegalNameProcessorMatcher implements ProcessorMatcher {
 
   @Override
   public boolean enabled(SubmissionInformationDto submission) {
-    return List.of("I", "USP", "RSP").contains(submission.clientType());
+    return true;
   }
 
   @Override
