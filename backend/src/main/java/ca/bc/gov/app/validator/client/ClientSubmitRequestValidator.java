@@ -116,11 +116,22 @@ public class ClientSubmitRequestValidator implements ReactiveValidator {
     }
 
     String clientTypeCode = businessInformation.clientType();
-
+    ClientTypeCodeEntity clientTypeCodeEntity = null;
+    
     if (StringUtils.isBlank(clientTypeCode)) {
       errors.rejectValue("clientType", "Client does not have a type");
       errors.popNestedPath();
       return;
+    }
+    else {
+      clientTypeCodeEntity = clientTypeCodeRepository
+          .findByCode(businessInformation.clientType()).toFuture().get();
+
+      if (clientTypeCodeEntity == null) {
+        errors.rejectValue("clientType", "Client type is invalid");
+        errors.popNestedPath();
+        return;
+      }
     }
 
     if (StringUtils.isBlank(businessInformation.district())) {
@@ -147,11 +158,6 @@ public class ClientSubmitRequestValidator implements ReactiveValidator {
     }
     
     if (!ApplicationConstant.AVAILABLE_CLIENT_TYPES.contains(clientTypeCode)) {
-      ClientTypeCodeEntity clientTypeCodeEntity = clientTypeCodeRepository
-          .findByCode(clientTypeCode)
-          .toFuture()
-          .get();
-      
       errors.rejectValue("clientType",
           String.format("'%s' is not supported at the moment", clientTypeCodeEntity.getDescription()));
     }
