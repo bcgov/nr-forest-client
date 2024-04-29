@@ -63,6 +63,29 @@ describe("DataFetcher", () => {
     expect(wrapper.find("div").text()).toBe("slot content is Loaded");
   });
 
+  it("should not render slot with fetched data on init if disabled", async () => {
+    vi.spyOn(fetcher, "useFetchTo").mockImplementation(mockedFetchTo);
+
+    const wrapper = mount(DataFetcher, {
+      props: {
+        url: "/api/data",
+        minLength: 1,
+        initValue: { name: "test" },
+        initFetch: true,
+        disabled: true,
+      },
+      slots: {
+        default: "<div>slot content is {{ content.name }}</div>",
+      },
+    });
+
+    await nextTick();
+
+    // still the same
+    expect(wrapper.html()).toBe("<div>slot content is test</div>");
+    expect(wrapper.find("div").text()).toBe("slot content is test");
+  });
+
   it("should render slot with fetched data on url change", async () => {
     vi.spyOn(fetcher, "useFetchTo").mockImplementation(mockedFetchTo);
 
@@ -81,6 +104,62 @@ describe("DataFetcher", () => {
     expect(wrapper.find("div").text()).toBe("slot content is test");
 
     await wrapper.setProps({ url: "/api/data/changed" });
+
+    await nextTick();
+
+    expect(wrapper.html()).toBe("<div>slot content is Loaded</div>");
+    expect(wrapper.find("div").text()).toBe("slot content is Loaded");
+  });
+
+  it("should not update the rendered slot if disabled", async () => {
+    vi.spyOn(fetcher, "useFetchTo").mockImplementation(mockedFetchTo);
+
+    const wrapper = mount(DataFetcher, {
+      props: {
+        url: "/api/data",
+        minLength: 1,
+        initValue: { name: "test" },
+        disabled: true,
+      },
+      slots: {
+        default: "<div>slot content is {{ content.name }}</div>",
+      },
+    });
+
+    expect(wrapper.html()).toBe("<div>slot content is test</div>");
+    expect(wrapper.find("div").text()).toBe("slot content is test");
+
+    await wrapper.setProps({ url: "/api/data/changed" });
+
+    await nextTick();
+
+    // still the same
+    expect(wrapper.html()).toBe("<div>slot content is test</div>");
+    expect(wrapper.find("div").text()).toBe("slot content is test");
+  });
+
+  it("should render slot with fetched data on enabled", async () => {
+    vi.spyOn(fetcher, "useFetchTo").mockImplementation(mockedFetchTo);
+
+    const wrapper = mount(DataFetcher, {
+      props: {
+        url: "/api/data",
+        minLength: 1,
+        initValue: { name: "test" },
+        disabled: true,
+      },
+      slots: {
+        default: "<div>slot content is {{ content.name }}</div>",
+      },
+    });
+
+    expect(wrapper.html()).toBe("<div>slot content is test</div>");
+    expect(wrapper.find("div").text()).toBe("slot content is test");
+
+    await wrapper.setProps({
+      disabled: false,
+      url: "/api/data/changed",
+    });
 
     await nextTick();
 
