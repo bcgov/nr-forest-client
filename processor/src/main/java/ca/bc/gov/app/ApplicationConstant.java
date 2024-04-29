@@ -16,27 +16,22 @@ public final class ApplicationConstant {
   public static final String SUBMISSION_ID = "submission-id";
   public static final String SUBMISSION_STATUS = "submission-status";
   public static final String SUBMISSION_CLIENTID = "submission-clientid";
-
   public static final String SUBMISSION_TYPE = "submission-type-code";
   public static final String SUBMISSION_NAME = "submission-name";
-
   public static final String CREATED_BY = "createdBy";
   public static final String UPDATED_BY = "updatedBy";
   public static final String FOREST_CLIENT_NUMBER = "forestClientNumber";
   public static final String FOREST_CLIENT_NAME = "forestClientName";
   public static final String REGISTRATION_NUMBER = "registrationNumber";
   public static final String LOCATION_ID = "locationId";
-  public static final String TOTAL = "total";
-  public static final String INDEX = "index";
   public static final String PROCESSOR_USER_NAME = "idir\\ottomated";
   public static final long ORG_UNIT = 70L;
   public static final String LOCATION_CODE = "locationCode";
   public static final String CLIENT_TYPE_CODE = "CLIENT_TYPE_CODE";
   public static final String CLIENT_SUBMITTER_NAME = "client-submitter-name";
-
   public static final String MATCH_PARAM_NAME = "corporationName";
-
   public static final String MATCHING_REASON = "matching-reason";
+  public static final String MATCHING_INFO = "info";
 
   public static final BcRegistryDocumentRequestBodyDto
       BUSINESS_SUMMARY_FILING_HISTORY =

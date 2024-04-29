@@ -11,6 +11,7 @@ import type { FormDataDto, Address } from "@/dto/ApplyClientNumberDto";
 import { emptyAddress } from "@/dto/ApplyClientNumberDto";
 import type { ModalNotification } from "@/dto/CommonTypesDto";
 import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
+import { getAddressDescription } from "@/services/ForestClientService";
 
 // @ts-ignore
 import Add16 from "@carbon/icons-vue/es/add/16";
@@ -134,10 +135,7 @@ const removeAddress = (index: number) => () => {
 };
 
 const handleRemove = (index: number) => {
-  const selectedAddress =
-    formData.location.addresses[index].locationName.length !== 0
-      ? formData.location.addresses[index].locationName
-      : "Address #" + index;
+  const selectedAddress = getAddressDescription(formData.location.addresses[index], index);
   bus.emit({
     name: selectedAddress,
     toastTitle: "Success",

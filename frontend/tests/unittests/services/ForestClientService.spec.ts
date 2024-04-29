@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { addNewAddress, addNewContact } from "@/services/ForestClientService";
+import {
+  addNewAddress,
+  addNewContact,
+  getContactDescription,
+  getAddressDescription,
+} from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 
 describe("ForestClientService.ts", () => {
@@ -81,5 +86,25 @@ describe("ForestClientService.ts", () => {
         email: "",
       },
     ]);
+  });
+
+  it("returns a string containing the contact's first name and last name", () => {
+    const result = getContactDescription({ firstName: "John", lastName: "Wick" } as Contact, 7);
+    expect(result).toEqual("John Wick");
+  });
+
+  it("returns a string containing the contact's index", () => {
+    const result = getContactDescription({ firstName: "", lastName: "" } as Contact, 7);
+    expect(result).toEqual("Contact #7");
+  });
+
+  it("returns a string containing the address' locationName", () => {
+    const result = getAddressDescription({ locationName: "Nice Place" } as Address, 7);
+    expect(result).toEqual("Nice Place");
+  });
+
+  it("returns a string containing the address' index", () => {
+    const result = getAddressDescription({ locationName: "" } as Address, 7);
+    expect(result).toEqual("Address #7");
   });
 });
