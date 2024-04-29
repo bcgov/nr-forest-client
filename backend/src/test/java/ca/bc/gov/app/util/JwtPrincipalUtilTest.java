@@ -69,10 +69,29 @@ class JwtPrincipalUtilTest {
   }
 
   @Test
+  @DisplayName("get businessName returns businessName when businessName is not blank")
+  void getBusinessName_returnsBusinessName_whenBusinessNameIsNotBlank() {
+    JwtAuthenticationToken principal = createJwtAuthenticationTokenWithAttributes(
+        Map.of("custom:idp_business_name", "The Business Name"));
+    String expected = "The Business Name";
+    String actual = JwtPrincipalUtil.getBusinessId(principal);
+    assertEquals(expected, actual);
+  }
+
+  @Test
   @DisplayName("get userId returns userId prefixed with provider when userId is not blank")
   void getBusinessId_returnsEmptyString_whenBusinessIdIsBlank() {
     JwtAuthenticationToken principal = createJwtAuthenticationTokenWithAttributes(
         Map.of("custom:idp_business_id", ""));
+    String expected = "";
+    String actual = JwtPrincipalUtil.getBusinessId(principal);
+    assertEquals(expected, actual);
+  }
+  @Test
+  @DisplayName("get userId returns userId prefixed with provider when userId is not blank")
+  void getBusinessName_returnsEmptyString_whenBusinessNameIsBlank() {
+    JwtAuthenticationToken principal = createJwtAuthenticationTokenWithAttributes(
+        Map.of("custom:idp_business_name", ""));
     String expected = "";
     String actual = JwtPrincipalUtil.getBusinessId(principal);
     assertEquals(expected, actual);
