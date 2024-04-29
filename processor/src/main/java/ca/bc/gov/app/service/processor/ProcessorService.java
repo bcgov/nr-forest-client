@@ -87,6 +87,7 @@ public class ProcessorService {
                 Map.of(ApplicationConstant.SUBMISSION_ID, submission)
             )
         )
+        .flatMap(autoProcessingService::loadMatchingInfo)
         .doOnNext(submission -> log.info("Loaded submission for processing {}", submission))
         //Process the submission by loading some information
         .flatMap(submissionProcessingService::processSubmission)
