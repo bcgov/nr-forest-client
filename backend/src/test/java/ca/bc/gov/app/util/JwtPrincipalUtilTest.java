@@ -74,7 +74,7 @@ class JwtPrincipalUtilTest {
     JwtAuthenticationToken principal = createJwtAuthenticationTokenWithAttributes(
         Map.of("custom:idp_business_name", "The Business Name"));
     String expected = "The Business Name";
-    String actual = JwtPrincipalUtil.getBusinessId(principal);
+    String actual = JwtPrincipalUtil.getBusinessName(principal);
     assertEquals(expected, actual);
   }
 
@@ -93,7 +93,7 @@ class JwtPrincipalUtilTest {
     JwtAuthenticationToken principal = createJwtAuthenticationTokenWithAttributes(
         Map.of("custom:idp_business_name", ""));
     String expected = "";
-    String actual = JwtPrincipalUtil.getBusinessId(principal);
+    String actual = JwtPrincipalUtil.getBusinessName(principal);
     assertEquals(expected, actual);
   }
 
