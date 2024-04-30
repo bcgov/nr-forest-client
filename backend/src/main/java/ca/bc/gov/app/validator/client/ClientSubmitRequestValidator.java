@@ -60,7 +60,8 @@ public class ClientSubmitRequestValidator implements ReactiveValidator {
   public Mono<Errors> validateReactive(Object target, Errors errors) {
 
     ClientSubmissionDto request = (ClientSubmissionDto) target;
-    String clientTypeCode = request.businessInformation().clientType();
+    String clientTypeCode = request.businessInformation() == null 
+                              ? "" : request.businessInformation().clientType();
     String userId = request.userId();
     String lastName = request.userLastName();
 
