@@ -37,12 +37,14 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 public class ClientSubmissionController extends
-    AbstractController<ClientSubmissionDto, ClientSubmitRequestValidator> {
+    AbstractController<ClientSubmissionDto,
+        ClientSubmitRequestValidator> {
 
   private final ClientSubmissionService clientService;
 
   public ClientSubmissionController(
-      ClientSubmissionService clientService, ClientSubmitRequestValidator validator) {
+      ClientSubmissionService clientService,
+      ClientSubmitRequestValidator validator) {
     super(ClientSubmissionDto.class, validator);
     this.clientService = clientService;
   }
@@ -103,11 +105,20 @@ public class ClientSubmissionController extends
       ServerHttpResponse serverResponse,
       JwtAuthenticationToken principal
   ) {
-    return Mono.just(request)
+    
+    return Mono.just(
+            new ClientSubmissionDto(
+                request.businessInformation(),
+                request.location(),
+                JwtPrincipalUtil.getUserId(principal).replaceFirst("^BCSC\\\\", ""),
+                JwtPrincipalUtil.getLastName(principal)
+            )
+        )
         .switchIfEmpty(
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
         )
         .doOnNext(sub -> log.info("Submitting request: {}", sub))
+        .flatMap(this::validateReactive)
         .doOnNext(this::validate)
         .doOnNext(sub -> log.info("Request is valid: {}", sub))
         .doOnError(e -> log.error("Request is invalid: {}", e.getMessage()))

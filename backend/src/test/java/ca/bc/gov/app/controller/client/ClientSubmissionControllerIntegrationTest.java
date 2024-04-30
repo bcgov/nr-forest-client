@@ -4,7 +4,10 @@ import static ca.bc.gov.app.TestConstants.REGISTERED_BUSINESS_SUBMISSION_DTO;
 import static ca.bc.gov.app.TestConstants.UNREGISTERED_BUSINESS_SUBMISSION_BROKEN_DTO;
 import static ca.bc.gov.app.TestConstants.UNREGISTERED_BUSINESS_SUBMISSION_DTO;
 import static ca.bc.gov.app.TestConstants.UNREGISTERED_BUSINESS_SUBMISSION_MULTI_DTO;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -92,6 +95,19 @@ class ClientSubmissionControllerIntegrationTest
       .configureStaticDsl(true)
       .build();
 
+  @RegisterExtension
+  static WireMockExtension legacyStub = WireMockExtension
+      .newInstance()
+      .options(
+          wireMockConfig()
+              .port(10060)
+              .notifier(new WiremockLogNotifier())
+              .asynchronousResponseEnabled(true)
+              .stubRequestLoggingDisabled(false)
+      )
+      .configureStaticDsl(true)
+      .build();
+
   @BeforeEach
   public void init() {
     bcRegistryStub.resetAll();
@@ -121,6 +137,13 @@ class ClientSubmissionControllerIntegrationTest
                     ok(TestConstants.CHES_TOKEN_MESSAGE)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 )
+        );
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/search/idAndLastName"))
+                .withQueryParam("clientId", equalTo("BCEIDBUSINESS\\jdoe"))
+                .withQueryParam("lastName", equalTo("Doe"))
+                .willReturn(okJson(TestConstants.LEGACY_EMPTY))
         );
 
     client = client.mutate()
