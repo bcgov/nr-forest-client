@@ -2,9 +2,11 @@ package ca.bc.gov.app.util;
 
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.exception.ValidationException;
+import ca.bc.gov.app.validator.client.ReactiveValidator;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import reactor.core.publisher.Mono;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -22,6 +24,21 @@ public class ValidationUtil {
     if (errors.hasErrors()) {
       throw new ValidationException(getValidationErrors(errors));
     }
+  }
+  
+  @SuppressWarnings("unchecked")
+  public static <S, T, V extends ReactiveValidator> Mono<S> validateReactive(
+      S target,
+      Class<T> contentClass,
+      V validator
+  ) {
+    return
+        validator
+            .validateReactive(target, new BeanPropertyBindingResult(target, contentClass.getName()))
+            .filter(Errors::hasErrors)
+            .flatMap(result -> Mono.error(new ValidationException(getValidationErrors(result))))
+            .defaultIfEmpty(target)
+            .map(s -> (S) s);
   }
 
   private static List<ValidationError> getValidationErrors(Errors errors) {

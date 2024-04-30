@@ -9,27 +9,34 @@ import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
 import ca.bc.gov.app.entity.client.DistrictCodeEntity;
+import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.DistrictCodeRepository;
+import ca.bc.gov.app.service.client.ClientService;
 import java.time.LocalDate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 
 @Component
 @RequiredArgsConstructor
-public class ClientSubmitRequestValidator implements Validator {
+@Slf4j
+public class ClientSubmitRequestValidator implements ReactiveValidator {
 
   private final RegisteredBusinessInformationValidator registeredBusinessInformationValidator;
   private final UnregisteredBusinessInformationValidator unregisteredBusinessInformationValidator;
   private final ClientLocationDtoValidator locationDtoValidator;
   private final ClientTypeCodeRepository clientTypeCodeRepository;
   private final DistrictCodeRepository districtCodeRepository;
+  private final ClientService clientService;
 
   @Override
   public boolean supports(Class<?> clazz) {
@@ -40,15 +47,53 @@ public class ClientSubmitRequestValidator implements Validator {
   public void validate(Object target, Errors errors) {
 
     ClientSubmissionDto request = (ClientSubmissionDto) target;
-
-    validateBusinessInformation(request.businessInformation(), errors);
+    
+    validateBusinessInformation(
+        request.businessInformation(), 
+        request.userId(), 
+        errors);
 
     validateLocation(request.location(), errors);
+  }
+  
+  @Override
+  public Mono<Errors> validateReactive(Object target, Errors errors) {
+
+    ClientSubmissionDto request = (ClientSubmissionDto) target;
+    String clientTypeCode = request.businessInformation() == null 
+                              ? "" : request.businessInformation().clientType();
+    String userId = request.userId();
+    String lastName = request.userLastName();
+
+    if (ApplicationConstant.INDIVIDUAL_CLIENT_TYPE_CODE.equals(clientTypeCode)) {
+
+      return clientService
+          .findByUserIdAndLastName(userId, lastName)
+          .flatMap(clientNumber -> {
+            errors.pushNestedPath("businessInformation");
+            errors.rejectValue("", "Client already exists with the client number " + clientNumber);
+            errors.popNestedPath();
+            return Mono.just(errors);
+          })
+          .onErrorResume(error -> {
+            if (error instanceof ClientAlreadyExistException) {
+              log.error("Error while checking client existence for userId {} and lastName {}: {}",
+                  userId,
+                  lastName,
+                  error.getMessage());
+            }
+            return Mono.error(error);
+          });
+    } else {
+      return Mono.just(errors);
+    }
   }
 
   @SneakyThrows
   private void validateBusinessInformation(
-      ClientBusinessInformationDto businessInformation, Errors errors) {
+      ClientBusinessInformationDto businessInformation, 
+      String userId, 
+      Errors errors) {
 
     String businessInformationField = "businessInformation";
     if (businessInformation == null) {
@@ -58,24 +103,36 @@ public class ClientSubmitRequestValidator implements Validator {
       return;
     }
     errors.pushNestedPath(businessInformationField);
-
+    
     String businessType = businessInformation.businessType();
     if (StringUtils.isAllBlank(businessType)) {
       errors.rejectValue("businessType", "You must choose an option");
       errors.popNestedPath();
       return;
-    } else if (!EnumUtils.isValidEnum(BusinessTypeEnum.class, businessType)) {
+    } 
+    else if (!EnumUtils.isValidEnum(BusinessTypeEnum.class, businessType)) {
       errors.rejectValue("businessType", String.format("%s has an invalid value", "Business type"));
       errors.popNestedPath();
       return;
     }
 
     String clientTypeCode = businessInformation.clientType();
-
+    ClientTypeCodeEntity clientTypeCodeEntity = null;
+    
     if (StringUtils.isBlank(clientTypeCode)) {
       errors.rejectValue("clientType", "Client does not have a type");
       errors.popNestedPath();
       return;
+    }
+    else {
+      clientTypeCodeEntity = clientTypeCodeRepository
+          .findByCode(businessInformation.clientType()).toFuture().get();
+
+      if (clientTypeCodeEntity == null) {
+        errors.rejectValue("clientType", "Client type is invalid");
+        errors.popNestedPath();
+        return;
+      }
     }
 
     if (StringUtils.isBlank(businessInformation.district())) {
@@ -100,13 +157,8 @@ public class ClientSubmitRequestValidator implements Validator {
     ) {
       validateBirthdate(businessInformation.birthdate(), errors);
     }
-
+    
     if (!ApplicationConstant.AVAILABLE_CLIENT_TYPES.contains(clientTypeCode)) {
-      ClientTypeCodeEntity clientTypeCodeEntity = clientTypeCodeRepository
-          .findByCode(clientTypeCode)
-          .toFuture()
-          .get();
-      
       errors.rejectValue("clientType",
           String.format("'%s' is not supported at the moment", clientTypeCodeEntity.getDescription()));
     }

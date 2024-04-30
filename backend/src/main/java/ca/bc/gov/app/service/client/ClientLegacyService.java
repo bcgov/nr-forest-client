@@ -47,7 +47,7 @@ public class ClientLegacyService {
             .get()
             .uri(builder ->
                 builder
-                    .path("/search/registrationOrName")
+                    .path("/api/search/registrationOrName")
                     .queryParamIfPresent("registrationNumber",
                         Optional
                             .ofNullable(registrationNumber)
@@ -63,7 +63,7 @@ public class ClientLegacyService {
             )
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
             .doOnNext(
-                dto -> log.info("Loading Legacy data for {} {} from legacy with client number {}",
+                dto -> log.info("Found Legacy data for {} and company name {} in legacy with client number {}",
                     registrationNumber, companyName, dto.clientNumber()));
   }
 
@@ -74,21 +74,22 @@ public class ClientLegacyService {
 
     log.info("Searching for id {} and last name {} in legacy",
         id, lastName);
-
+    
     return
         legacyApi
             .get()
             .uri(builder ->
                 builder
-                    .path("/search/idAndLastName")
+                    .path("/api/search/idAndLastName")
                     .queryParam("clientId", id)
                     .queryParam("lastName", lastName)
                     .build(Map.of())
             )
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
             .doOnNext(
-                dto -> log.info("Loading Legacy data for {} {} from legacy with client number {}",
+                dto -> log.info("Found Legacy data for id {} and last name {} in legacy with client number {}",
                     id, lastName, dto.clientNumber())
             );
   }
+
 }
