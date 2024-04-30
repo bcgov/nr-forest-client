@@ -55,12 +55,10 @@ public class ChesHealthIndicator implements HealthIndicator {
         .name("request.ches")
         .tag("kind", "health")
         .tap(Micrometer.observation(registry))
-        .doOnNext(health -> log.info("CHES API health: {}", health))
         .subscribe(
             health -> apiHealth = health,
             error -> apiHealth = Health.down().withException(error).build()
         );
-    log.info("Checking CHES API health");
     return apiHealth;
   }
 
