@@ -153,7 +153,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     legacyStub
         .stubFor(
-            get(urlPathEqualTo("/search/registrationOrName"))
+            get(urlPathEqualTo("/api/search/registrationOrName"))
                 .withQueryParam("registrationNumber", equalTo("AA0000001"))
                 .withQueryParam("companyName", equalTo("SAMPLE COMPANY"))
                 .willReturn(okJson(legacyResponse))
@@ -306,7 +306,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     legacyStub
         .stubFor(
-            get(urlPathEqualTo("/search/idAndLastName"))
+            get(urlPathEqualTo("/api/search/idAndLastName"))
                 .withQueryParam("clientId", equalTo("123456"))
                 .withQueryParam("lastName", equalTo("Doe"))
                 .willReturn(okJson(TestConstants.LEGACY_OK))
@@ -333,7 +333,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     legacyStub
         .stubFor(
-            get(urlPathEqualTo("/search/idAndLastName"))
+            get(urlPathEqualTo("/api/search/idAndLastName"))
                 .withQueryParam("clientId", equalTo("123456"))
                 .withQueryParam("lastName", equalTo("Doe"))
                 .willReturn(okJson("[]"))

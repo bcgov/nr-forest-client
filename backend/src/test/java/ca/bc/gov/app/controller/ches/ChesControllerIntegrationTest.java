@@ -151,7 +151,7 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
     ///search/registrationOrName?registrationNumber=XX1234567&companyName=Example%20Inc.
     legacyStub
         .stubFor(
-            get(urlPathEqualTo("/search/registrationOrName"))
+            get(urlPathEqualTo("/api/search/registrationOrName"))
                 .withQueryParam("registrationNumber",
                     equalTo(TestConstants.EMAIL_REQUEST.registrationNumber()))
                 .withQueryParam("companyName", equalTo(TestConstants.EMAIL_REQUEST.name()))

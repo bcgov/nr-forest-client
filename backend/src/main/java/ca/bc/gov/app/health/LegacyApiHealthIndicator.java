@@ -1,9 +1,7 @@
 package ca.bc.gov.app.health;
 
-import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.annotation.Observed;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.health.Health;
@@ -16,33 +14,25 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 @Observed
-public class CanadaPostApiHealthIndicator implements HealthIndicator {
+public class LegacyApiHealthIndicator implements HealthIndicator {
 
-  private final WebClient addressCompleteApi;
-  private final ForestClientConfiguration.AddressCompleteConfiguration configuration;
+  private final WebClient legacyApi;
   private final ObservationRegistry registry;
   private Health apiHealth = Health.unknown().build();
 
-  public CanadaPostApiHealthIndicator(
-      ForestClientConfiguration configuration,
-      @Qualifier("addressCompleteApi") WebClient addressCompleteApi,
+  public LegacyApiHealthIndicator(
+      @Qualifier("legacyApi") WebClient legacyApi,
       ObservationRegistry registry
   ) {
-    this.configuration = configuration.getAddressComplete();
-    this.addressCompleteApi = addressCompleteApi;
+    this.legacyApi = legacyApi;
     this.registry = registry;
   }
 
   @Override
   public Health health() {
-    addressCompleteApi
+    legacyApi
         .get()
-        .uri(uriBuilder ->
-            uriBuilder
-                .path("/find/v2.10/json3.ws")
-                .queryParam("key", configuration.getApiKey())
-                .build(Map.of())
-        )
+        .uri("/health")
         .exchangeToMono(clientResponse -> {
           if (clientResponse.statusCode().is2xxSuccessful()) {
             return Mono.just(Health.up().build());
@@ -50,7 +40,7 @@ public class CanadaPostApiHealthIndicator implements HealthIndicator {
             return Mono.just(Health.down().build());
           }
         })
-        .name("request.canadapost")
+        .name("request.legacy")
         .tag("kind", "health")
         .tap(Micrometer.observation(registry))
         .subscribe(
