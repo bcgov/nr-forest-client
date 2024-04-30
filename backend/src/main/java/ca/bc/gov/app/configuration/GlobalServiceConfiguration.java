@@ -38,9 +38,12 @@ import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.health.HealthExchangeFilterFunction;
+import ca.bc.gov.app.health.ManualHealthIndicator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -141,12 +144,16 @@ public class GlobalServiceConfiguration {
    * @return A configured instance of WebClient for accessing the BC Registry API.
    */
   @Bean
-  public WebClient bcRegistryApi(ForestClientConfiguration configuration) {
+  public WebClient bcRegistryApi(
+      ForestClientConfiguration configuration,
+      @Qualifier("bcRegistryApiHealthIndicator") ManualHealthIndicator bcRegistryApiHealthIndicator
+  ) {
     return WebClient
         .builder()
         .baseUrl(configuration.getBcregistry().getUri())
         .defaultHeader("x-apikey", configuration.getBcregistry().getApiKey())
         .defaultHeader("Account-Id", configuration.getBcregistry().getAccountId())
+        .filter(new HealthExchangeFilterFunction(bcRegistryApiHealthIndicator))
         .build();
   }
 
@@ -182,4 +189,5 @@ public class GlobalServiceConfiguration {
   public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
     return builder.build();
   }
+
 }
