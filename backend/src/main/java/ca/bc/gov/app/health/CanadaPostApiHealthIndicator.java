@@ -53,13 +53,10 @@ public class CanadaPostApiHealthIndicator implements HealthIndicator {
         .name("request.canadapost")
         .tag("kind", "health")
         .tap(Micrometer.observation(registry))
-        .doOnNext(health -> log.info("Canada Post API health: {}", health))
         .subscribe(
             health -> apiHealth = health,
             error -> apiHealth = Health.down().withException(error).build()
         );
-    log.info("Checking Canada Post API health");
-
 
     return apiHealth;
   }
