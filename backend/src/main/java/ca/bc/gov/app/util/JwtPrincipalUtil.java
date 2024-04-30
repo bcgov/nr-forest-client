@@ -54,9 +54,9 @@ public class JwtPrincipalUtil {
         Stream
             .of(
                 principal.getTokenAttributes()
-                    .getOrDefault("custom:idp_username",StringUtils.EMPTY),
+                    .getOrDefault("custom:idp_username", StringUtils.EMPTY),
                 principal.getTokenAttributes()
-                    .getOrDefault("custom:idp_user_id",StringUtils.EMPTY)
+                    .getOrDefault("custom:idp_user_id", StringUtils.EMPTY)
             )
             .map(Object::toString)
             .filter(StringUtils::isNotBlank)
@@ -85,7 +85,24 @@ public class JwtPrincipalUtil {
    * is extracted from the token attributes under the key "custom:idp_business_name". If the
    * business name is blank, an empty string is returned.
    *
-   * @param principal JwtAuthenticationToken object from which the business name is to be extracted.
+   * @param principal JwtAuthenticationToken object from which the business name is to be
+   *                  extracted.
+   * @return The business name, or an empty string if the business name is blank.
+   */
+  public static String getBusinessName(JwtAuthenticationToken principal) {
+    return principal
+        .getTokenAttributes()
+        .getOrDefault("custom:idp_business_name", StringUtils.EMPTY)
+        .toString();
+  }
+
+  /**
+   * Retrieves the business name from the given JwtAuthenticationToken principal. The business name
+   * is extracted from the token attributes under the key "custom:idp_business_name". If the
+   * business name is blank, an empty string is returned.
+   *
+   * @param principal JwtAuthenticationToken object from which the business name is to be
+   *                  extracted.
    * @return The business name, or an empty string if the business name is blank.
    */
   public static String getEmail(JwtAuthenticationToken principal) {
@@ -126,7 +143,8 @@ public class JwtPrincipalUtil {
   /**
    * Retrieves the first name from the given JwtAuthenticationToken principal. The first name is
    * extracted from the token attributes under the key "given_name". If the first name is blank, the
-   * display name is extracted and split. If the display name is blank, an empty string is returned.
+   * display name is extracted and split. If the display name is blank, an empty string is
+   * returned.
    *
    * @param principal JwtAuthenticationToken object from which the first name is to be extracted.
    * @return The first name, or an empty string if the first name is blank.
@@ -144,14 +162,14 @@ public class JwtPrincipalUtil {
     String lastName = String.valueOf(payload.getOrDefault("family_name", StringUtils.EMPTY));
 
     // Determine if special handling for names is required
-    boolean useDisplayName = "bceidbusiness" .equals(getProvider(principal)) || (firstName.isEmpty()
-                                                                                 && lastName.isEmpty());
+    boolean useDisplayName = "bceidbusiness".equals(getProvider(principal)) || (firstName.isEmpty()
+                                                                                && lastName.isEmpty());
     if (useDisplayName) {
       String displayName = String.valueOf(payload.get("custom:idp_display_name"));
       String[] nameParts =
           displayName.contains(",") ? displayName.split(",") : displayName.split(" ");
 
-      if ("IDIR" .equals(getProvider(principal)) && nameParts.length >= 2) {
+      if ("IDIR".equals(getProvider(principal)) && nameParts.length >= 2) {
         // For IDIR, split by comma and then by space for the first name as the value will be Lastname, Firsname MIN:XX
         lastName = nameParts[0].trim();
         firstName = nameParts[1].split(" ")[0].trim();

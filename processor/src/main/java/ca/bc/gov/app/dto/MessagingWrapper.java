@@ -27,4 +27,11 @@ public record MessagingWrapper<T>(
     return (P) this.parameters.get(key);
   }
 
+  public <P> P getInfoParameter(String key,Class<P> clazz) {
+    Map<String,Object> info = getParameter("info",Map.class);
+    if(Objects.isNull(info))
+      return null;
+    return (P) info.get(key);
+  }
+
 }

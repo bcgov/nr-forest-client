@@ -122,14 +122,7 @@ public class ClientSubmissionController extends
         .doOnNext(this::validate)
         .doOnNext(sub -> log.info("Request is valid: {}", sub))
         .doOnError(e -> log.error("Request is invalid: {}", e.getMessage()))
-        .flatMap(submissionDto -> clientService.submit(
-                submissionDto,
-                JwtPrincipalUtil.getUserId(principal),
-                JwtPrincipalUtil.getEmail(principal),
-                JwtPrincipalUtil.getName(principal),
-                JwtPrincipalUtil.getBusinessId(principal)
-            )
-        )
+        .flatMap(submissionDto -> clientService.submit(submissionDto, principal))
         .doOnNext(submissionId -> log.info("Submission persisted: {}", submissionId))
         .doOnNext(submissionId ->
             serverResponse
