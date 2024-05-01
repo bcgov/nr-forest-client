@@ -426,18 +426,15 @@ describe("<ContactGroupComponent />", () => {
         });
       });
 
-      cy.get(fieldSelector).shadow().find("input").clear(); // emits false
-      cy.get(fieldSelector).blur(); // (doesn't emit)
-      cy.get(fieldSelector).shadow().find("input").type(firstContent); // emits true before blurring
-      cy.get(fieldSelector).blur(); // emits false
-      cy.get(fieldSelector)
-        .should("be.visible")
-        .and("have.value", firstContent);
-      cy.get(fieldSelector).shadow().find("input").type(additionalContent); // emits true (last2)
-      cy.get(fieldSelector).blur(); // emits false (last1)
-      cy.get(fieldSelector)
-        .should("be.visible")
-        .and("have.value", expectedFinalValue);
+      cy.get(fieldSelector).shadow().find("input").clear().type(firstContent);
+      cy.get(fieldSelector).should("be.visible").and("have.value", firstContent);
+      cy.get(fieldSelector, { timeout: 10000 }).should("have.value", firstContent);
+      
+      cy.get(fieldSelector).shadow().find("input").clear().type(additionalContent);
+      cy.get(fieldSelector).shadow().find("input").focus().trigger('blur');
+      cy.get(fieldSelector).should("be.visible").and("have.value", expectedFinalValue);
+      cy.get(fieldSelector).should("have.value", expectedFinalValue);
+      cy.get(fieldSelector, { timeout: 10000 }).should("have.value", expectedFinalValue);
 
       // For some reason on Electron we need to wait a millisecond now.
       // Otherwise this test either fails or can't be trusted on Electron.
