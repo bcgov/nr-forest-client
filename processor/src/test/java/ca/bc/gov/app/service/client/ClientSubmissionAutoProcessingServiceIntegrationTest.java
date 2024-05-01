@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -102,7 +104,13 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
   @DisplayName("reviewed")
   void shouldReviewSubmission() {
 
-    List<MatcherResult> matchers = new ArrayList<>();
+    List<MatcherResult> matchers = List.of(
+        new MatcherResult("fi", Set.of()),
+        new MatcherResult("fa", Set.of()),
+        new MatcherResult("fo", Set.of()),
+        new MatcherResult("fu", Set.of())
+
+    );
 
     MessagingWrapper<List<MatcherResult>> message = new MessagingWrapper<>(
         matchers, Map.of(ApplicationConstant.SUBMISSION_ID, 1)
@@ -146,6 +154,89 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
         .untilAsserted(() ->
             verify(submissionMatchDetailRepository, atLeastOnce()).save(
                 any(SubmissionMatchDetailEntity.class))
+        );
+  }
+
+  @Test
+  @DisplayName("reviewed with matches")
+  void shouldReviewSubmissionWithMatches() {
+
+    List<MatcherResult> matchers = List.of(
+        new MatcherResult("fi", Set.of("00000000")),
+        new MatcherResult("fa", Set.of()),
+        new MatcherResult("fo", Set.copyOf(List.of(
+            "00000001",
+            "00000002",
+            "00000003",
+            "00000001",
+            "00000002",
+            "00000003",
+            "00000001",
+            "00000002",
+            "00000003"
+        ))),
+        new MatcherResult("fu", Set.of())
+
+    );
+
+    MessagingWrapper<List<MatcherResult>> message = new MessagingWrapper<>(
+        matchers, Map.of(ApplicationConstant.SUBMISSION_ID, 1)
+    );
+
+    service
+        .reviewed(message)
+        .as(StepVerifier::create)
+        .assertNext(received ->
+            assertThat(received)
+                .isNotNull()
+                .isInstanceOf(MessagingWrapper.class)
+                .hasFieldOrPropertyWithValue("payload", 1)
+                .hasFieldOrProperty("parameters")
+                .extracting(MessagingWrapper::parameters, as(InstanceOfAssertFactories.MAP))
+                .isNotNull()
+                .isNotEmpty()
+                .containsKey("submission-id")
+                .containsKey("submission-status")
+                .containsEntry(ApplicationConstant.SUBMISSION_ID, 1)
+        )
+        .verifyComplete();
+
+    await()
+        .alias("Submission lookup")
+        .atMost(Duration.ofSeconds(2))
+        .untilAsserted(() ->
+            verify(submissionRepository, atLeastOnce()).findById(eq(1))
+        );
+
+    await()
+        .alias("Submission persistence")
+        .atMost(Duration.ofSeconds(5))
+        .untilAsserted(() ->
+            verify(submissionRepository, atLeastOnce()).save(any(SubmissionEntity.class))
+        );
+
+    await()
+        .alias("Submission matches")
+        .atMost(Duration.ofSeconds(5))
+        .untilAsserted(() ->
+            {
+              verify(submissionMatchDetailRepository, atLeastOnce()).save(
+                  any(SubmissionMatchDetailEntity.class));
+
+              submissionMatchDetailRepository
+                  .findBySubmissionId(1)
+                  .as(StepVerifier::create)
+                  .assertNext(entity ->
+                      AssertionsForInterfaceTypes.assertThat(entity.getMatchers())
+                          .isNotNull()
+                          .isNotEmpty()
+                          .containsKeys("fi", "fo")
+                          .doesNotContainKeys("fa", "fu")
+                          .containsEntry("fi", "00000000")
+                          .matches(m -> m.get("fo").toString().matches("^(?=.*00000001)(?=.*00000002)(?=.*00000003).*$"))
+                  )
+                  .verifyComplete();
+            }
         );
   }
 

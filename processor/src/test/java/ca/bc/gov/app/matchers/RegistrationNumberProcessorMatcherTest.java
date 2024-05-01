@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,33 +71,26 @@ class RegistrationNumberProcessorMatcherTest {
                 .willReturn(okJson(mockData))
         );
 
-    StepVerifier.FirstStep<MatcherResult> verifier =
-        matcher
-            .matches(dto)
-            .as(StepVerifier::create);
-
-    if (success) {
-      verifier.verifyComplete();
-    } else {
-      verifier
-          .expectNext(result)
-          .verifyComplete();
-    }
+    matcher
+        .matches(dto)
+        .as(StepVerifier::create)
+        .expectNext(result)
+        .verifyComplete();
   }
 
   private static Stream<Arguments> registrationNumber() {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto(1,null, null, "00000007", null, "C"),
+                new SubmissionInformationDto(1, null, null, "00000007", null, "C"),
                 true,
-                null,
+                new MatcherResult("registrationNumber", Set.of()),
                 "[]"
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,null, null, "00000006", null, "C"),
+                new SubmissionInformationDto(1, null, null, "00000006", null, "C"),
                 false,
-                new MatcherResult("registrationNumber", "00000006"),
+                new MatcherResult("registrationNumber", Set.of("00000006")),
                 "[{\"clientNumber\":\"00000006\"}]"
             )
         );

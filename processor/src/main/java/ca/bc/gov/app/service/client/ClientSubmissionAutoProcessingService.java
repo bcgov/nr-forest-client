@@ -44,13 +44,7 @@ public class ClientSubmissionAutoProcessingService {
             .doOnNext(entity -> entity.setStatus("Y"))
             .doOnNext(entity -> entity.setMatchers(Map.of()))
             .flatMap(submissionMatchDetailRepository::save)
-            .doOnNext(entity -> log.info(
-                    "Added matches for submission {} {}",
-                    entity.getSubmissionId(),
-                    entity.getMatchingField()
-                )
-            )
-            .thenReturn(new MessagingWrapper<>(submissionId,Map.of()));
+            .thenReturn(new MessagingWrapper<>(submissionId, Map.of()));
   }
 
   /**
@@ -70,39 +64,39 @@ public class ClientSubmissionAutoProcessingService {
    * This method is responsible for marking the submission as reviewed
    */
   public Mono<MessagingWrapper<Integer>> reviewed(MessagingWrapper<List<MatcherResult>> message) {
-    return
-        persistData(
-            (int) message.parameters().get(ApplicationConstant.SUBMISSION_ID),
-            SubmissionTypeCodeEnum.RNC
+    int submissionId = (int) message.parameters().get(ApplicationConstant.SUBMISSION_ID);
+
+    return persistData(submissionId, SubmissionTypeCodeEnum.RNC)
+        .doOnNext(id -> log.info("Request {} was put into review", id))
+        .flatMap(this::loadFirstOrNew)
+        .doOnNext(entity -> updateEntityMatchers(entity, message))
+        .flatMap(submissionMatchDetailRepository::save)
+        .doOnNext(entity -> log.info(
+                "Added matches for submission {} {}",
+                entity.getSubmissionId(),
+                entity.getMatchingField()
+            )
         )
-            .doOnNext(id -> log.info("Request {} was put into review", id))
-            .flatMap(this::loadFirstOrNew)
-            .doOnNext(entity -> entity.setMatchers(
-                    message
-                        .payload()
-                        .stream()
-                        .collect(Collectors.toMap(MatcherResult::fieldName, MatcherResult::value))
-                )
-            )
-            .flatMap(submissionMatchDetailRepository::save)
-            .doOnNext(entity -> log.info(
-                    "Added matches for submission {} {}",
-                    entity.getSubmissionId(),
-                    entity.getMatchingField()
-                )
-            )
-            .doOnNext(entity ->
-                log.info("Request {} was put into review",
-                    message.parameters().get(ApplicationConstant.SUBMISSION_ID)
-                )
-            )
-            .map(entity ->
-                new MessagingWrapper<>(
-                    entity.getSubmissionId(),
-                    message.parameters()
-                )
-                    .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.N)
-            );
+        .map(entity -> createMessagingWrapper(entity, message));
+  }
+
+  private void updateEntityMatchers(
+      SubmissionMatchDetailEntity entity,
+      MessagingWrapper<List<MatcherResult>> message
+  ) {
+    entity.setMatchers(
+        message
+            .payload()
+            .stream()
+            .filter(MatcherResult::hasMatch)
+            .collect(Collectors.toMap(MatcherResult::fieldName, MatcherResult::value))
+    );
+  }
+
+  private MessagingWrapper<Integer> createMessagingWrapper(SubmissionMatchDetailEntity entity,
+      MessagingWrapper<List<MatcherResult>> message) {
+    return new MessagingWrapper<>(entity.getSubmissionId(), message.parameters())
+        .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.N);
   }
 
   private Mono<Integer> persistData(Integer submissionId, SubmissionTypeCodeEnum typeCode) {
