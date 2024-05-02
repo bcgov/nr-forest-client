@@ -426,25 +426,18 @@ describe("<ContactGroupComponent />", () => {
         });
       });
 
-      cy.get(fieldSelector).shadow().find("input").clear().type(firstContent);
-      cy.get(fieldSelector).should("be.visible").and("have.value", firstContent);
-      cy.wait(4000).then(() => {
-        cy.get(fieldSelector).invoke('val').then((value) => {
-          console.log('Actual value:', value);
-          cy.wrap(value).should('equal', firstContent);
-        });
-      });
-      
-      cy.get(fieldSelector).shadow().find("input").clear().type(additionalContent);
-      cy.get(fieldSelector).shadow().find("input").focus().trigger('blur');
-      cy.get(fieldSelector).should("be.visible").and("have.value", expectedFinalValue);
-      cy.get(fieldSelector).should("have.value", expectedFinalValue);
-      cy.wait(4000).then(() => {
-        cy.get(fieldSelector).invoke('val').then((value) => {
-          console.log('Actual value:', value);
-          cy.wrap(value).should('equal', expectedFinalValue);
-        });
-      });
+      cy.get(fieldSelector).shadow().find("input").clear(); // emits false
+      cy.get(fieldSelector).shadow().find("input").should('be.focused').blur();
+      cy.get(fieldSelector).shadow().find("input").type(firstContent); // emits true before blurring
+      cy.get(fieldSelector).shadow().find("input").should('be.focused').blur();
+      cy.get(fieldSelector)
+        .should("be.visible")
+        .and("have.value", firstContent);
+      cy.get(fieldSelector).shadow().find("input").type(additionalContent); // emits true (last2)
+      cy.get(fieldSelector).shadow().find("input").should('be.focused').blur();
+      cy.get(fieldSelector)
+        .should("be.visible")
+        .and("have.value", expectedFinalValue);
 
       // For some reason on Electron we need to wait a millisecond now.
       // Otherwise this test either fails or can't be trusted on Electron.
