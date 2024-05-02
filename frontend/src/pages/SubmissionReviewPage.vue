@@ -277,7 +277,7 @@ const renderListItem = (label, clientNumbers) => {
 
   finalLabel += " - Client number: ";
 
-  const clients = clientNumbers.split(",");
+  const clients = [...new Set(clientNumbers.split(","))];
   finalLabel += clients
                   .map(clientNumber =>
                     '<a target="_blank" href="' + getLegacyUrl(clientNumber) +'">' +
