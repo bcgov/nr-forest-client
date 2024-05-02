@@ -173,6 +173,10 @@ cds-progress-step::part(cds--progress-label) {
   padding-right: 0.5rem;
 }
 
+cds-progress-step[vertical]::part(cds--progress-label) {
+  padding-right: 0;
+}
+
 cds-progress-step::part(cds--progress-label):hover {
   box-shadow: none;
   color: unset;
