@@ -99,6 +99,30 @@ public class ClientSubmissionAutoProcessingService {
         .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.N);
   }
 
+  /**
+ * This method is used to load matching information for a given submission.
+ * It retrieves the submission details from the repository using the submission ID from the message parameters.
+ * If matching information is found, it is added to the message parameters under the key 'MATCHING_INFO'.
+ * If no matching information is found, the original message is returned as is.
+ *
+ * @param message A MessagingWrapper object that contains the submission ID in its parameters.
+ * @return A Mono of MessagingWrapper. If matching information is found, the returned MessagingWrapper
+ *         will have the matching information added to its parameters. If no matching information is found,
+ *         the original MessagingWrapper is returned.
+ */
+public <T> Mono<MessagingWrapper<T>> loadMatchingInfo(MessagingWrapper<T> message) {
+  return
+      submissionMatchDetailRepository
+          .findBySubmissionId((int) message.parameters().get(ApplicationConstant.SUBMISSION_ID))
+          .map(entity ->
+              message.withParameter(
+                  ApplicationConstant.MATCHING_INFO,
+                  entity.getMatchers().get(ApplicationConstant.MATCHING_INFO)
+              )
+          )
+          .switchIfEmpty(Mono.just(message));
+}
+
   private Mono<Integer> persistData(Integer submissionId, SubmissionTypeCodeEnum typeCode) {
     return
         submissionRepository

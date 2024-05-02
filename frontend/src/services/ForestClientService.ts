@@ -1,5 +1,6 @@
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
 import type { CodeDescrType } from "@/dto/CommonTypesDto";
+import { isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
 
 export const addNewAddress = (addresses: Address[]): number => {
   const blankAddress: Address = {
@@ -28,6 +29,14 @@ export const addNewContact = (contacts: Contact[]): number => {
   const newContacts = contacts.push(blankContact);
   return newContacts;
 };
+
+export const getAddressDescription = (address: Address, index: number): string =>
+  address.locationName.length !== 0 ? address.locationName : "Address #" + index;
+
+export const getContactDescription = (contact: Contact, index: number): string =>
+  !isNullOrUndefinedOrBlank(contact.firstName)
+    ? `${contact.firstName} ${contact.lastName}`
+    : "Contact #" + index;
 
 export const toTitleCase = (inputString: string): string => {
   if (inputString === undefined) return "";

@@ -13,6 +13,7 @@ import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // @ts-ignore
 import Delete16 from "@carbon/icons-vue/es/trash-can/16";
+import { getAddressDescription } from "@/services/ForestClientService";
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -266,6 +267,7 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
       :min-length="3"
       :init-value="[]"
       :init-fetch="false"
+      :disabled="!selectedValue.streetAddress"
       #="{ content, loading, error }"
     >
       <AutoCompleteInputComponent
@@ -373,6 +375,10 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
       <cds-button
         v-if="id > 0"
         :id="'deleteAddress_' + id"
+        :danger-descriptor="`Delete address &quot;${getAddressDescription(
+          selectedValue,
+          id,
+        )}&quot;`"
         kind="danger--tertiary"
         @click.prevent="emit('remove', id)"
       >

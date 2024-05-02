@@ -459,6 +459,7 @@ onMounted(() => {
       :min-length="3"
       :init-value="[]"
       :init-fetch="false"
+      :disabled="!formData.businessInformation.businessName"
       #="{ content, loading, error }"
     >
       <AutoCompleteInputComponent
