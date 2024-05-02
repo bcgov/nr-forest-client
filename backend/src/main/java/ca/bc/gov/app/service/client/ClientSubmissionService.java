@@ -21,6 +21,7 @@ import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
+import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
 import ca.bc.gov.app.exception.RequestAlreadyProcessedException;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
@@ -40,6 +41,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -86,7 +88,8 @@ public class ClientSubmissionService {
       String[] submittedAt
   ) {
 
-    log.info("Searching for Page {} Size {} Type {} Status {} Client {} District {} Name {} submittedAt {}",
+    log.info(
+        "Searching for Page {} Size {} Type {} Status {} Client {} District {} Name {} submittedAt {}",
         page,
         size,
         requestStatus,
@@ -95,7 +98,7 @@ public class ClientSubmissionService {
         name,
         submittedAt
     );
-    
+
     return getClientTypes()
         .flatMapMany(clientTypes ->
             loadSubmissions(page, size, requestStatus, submittedAt)
@@ -106,7 +109,8 @@ public class ClientSubmissionService {
                                 .map(districtFullDesc ->
                                     new ClientListSubmissionDto(
                                         submissionPair.getRight().getSubmissionId(),
-                                        submissionPair.getRight().getSubmissionType().getDescription(),
+                                        submissionPair.getRight().getSubmissionType()
+                                            .getDescription(),
                                         submissionDetail.getOrganizationName(),
                                         clientTypes.getOrDefault(
                                             submissionDetail.getClientTypeCode(),
@@ -114,11 +118,15 @@ public class ClientSubmissionService {
                                         ),
                                         districtFullDesc,
                                         Optional
-                                            .ofNullable(submissionPair.getRight().getSubmissionDate())
-                                            .map(date -> date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                                            .ofNullable(
+                                                submissionPair.getRight().getSubmissionDate())
+                                            .map(date -> date.format(
+                                                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                                             .orElse(StringUtils.EMPTY),
-                                        StringUtils.defaultString(submissionPair.getRight().getUpdatedBy()),
-                                        submissionPair.getRight().getSubmissionStatus().getDescription(),
+                                        StringUtils.defaultString(
+                                            submissionPair.getRight().getUpdatedBy()),
+                                        submissionPair.getRight().getSubmissionStatus()
+                                            .getDescription(),
                                         submissionPair.getLeft()
                                     )
                                 )
@@ -129,10 +137,10 @@ public class ClientSubmissionService {
 
   private Mono<String> getDistrictFullDescByCode(String districtCode) {
     return Mono.justOrEmpty(districtCode)
-            .flatMap(districtCodeRepository::findByCode)
-            .map(districtCodeEntity -> districtCodeEntity.getCode() + " - "
-                  + districtCodeEntity.getDescription())
-            .defaultIfEmpty("");
+        .flatMap(districtCodeRepository::findByCode)
+        .map(districtCodeEntity -> districtCodeEntity.getCode() + " - "
+                                   + districtCodeEntity.getDescription())
+        .defaultIfEmpty("");
   }
 
 
@@ -203,11 +211,11 @@ public class ClientSubmissionService {
                     .thenReturn(submission.getSubmissionId())
             )
             .flatMap(submissionId -> sendEmail(
-                                      submissionId,
-                                      clientSubmissionDto,
-                                      userEmail,
-                                      userName
-                                     )
+                    submissionId,
+                    clientSubmissionDto,
+                    userEmail,
+                    userName
+                )
             );
   }
 
@@ -298,10 +306,11 @@ public class ClientSubmissionService {
         .flatMap(submissionDetailsDto ->
             submissionMatchDetailRepository
                 .findBySubmissionId(id.intValue())
+                .doOnNext(this::cleanMatchers)
                 .map(matched ->
-                    submissionDetailsDto
-                        .withApprovedTimestamp(matched.getUpdatedAt())
-                        .withMatchers(matched.getMatchers())
+                        submissionDetailsDto
+                            .withApprovedTimestamp(matched.getUpdatedAt())
+                            .withMatchers(matched.getMatchers())
                 )
                 .defaultIfEmpty(
                     submissionDetailsDto
@@ -355,6 +364,16 @@ public class ClientSubmissionService {
                     .flatMap(submissionMatchDetailRepository::save)
             )
             .then();
+  }
+
+  private void cleanMatchers(SubmissionMatchDetailEntity entity) {
+    entity.getMatchers().entrySet().forEach(entry -> {
+      if (entry.getValue() instanceof String value) {
+        String[] values = value.split(",");
+        LinkedHashSet<String> uniqueValues = new LinkedHashSet<>(Arrays.asList(values));
+        entry.setValue(String.join(",", uniqueValues));
+      }
+    });
   }
 
   private Mono<SubmissionLocationContactEntity> saveAndAssociateContact(
@@ -450,9 +469,9 @@ public class ClientSubmissionService {
   }
 
   private Flux<Pair<Long, SubmissionEntity>> loadSubmissions(
-      int page, 
+      int page,
       int size,
-      SubmissionStatusEnum[] requestStatus, 
+      SubmissionStatusEnum[] requestStatus,
       String[] submittedAt) {
 
     Criteria userQuery = SubmissionPredicates
@@ -483,7 +502,7 @@ public class ClientSubmissionService {
                   )
           );
     }
-    
+
     final Criteria finalUserQuery = userQuery;
 
     return
