@@ -395,7 +395,7 @@ describe("<AddressGroupComponent />", () => {
         checkValidFalseAgain(calls);
       });
       it('should emit "valid" with true', () => {
-        const calls = genericTest("#name_1", "12", "3");
+        const calls = genericTest("#name_1", "1234", "5");
 
         checkValidTrue(calls);
       });
@@ -425,6 +425,7 @@ describe("<AddressGroupComponent />", () => {
       });
     });
   });
+
   describe("province", () => {
     it('should update the province when changed manually', () => {
       cy.get("@addressFixture").then((address) => {
@@ -500,6 +501,7 @@ describe("<AddressGroupComponent />", () => {
           .and("have.value", "Manitoba");
       });
     });
+
     describe('when Province has been cleared by the user', () => {
       /**
        * @see FSADT1-914
@@ -607,6 +609,7 @@ describe("<AddressGroupComponent />", () => {
       });
     });
   });
+  
   describe('when the following fields are displayed as invalid: City, Province, Postal code', () => {
     it('should display them as valid once they get filled by selecting a Street address option', () => {
       cy.get("@emptyAddressFixture").then((emptyAddress) => {
@@ -624,18 +627,24 @@ describe("<AddressGroupComponent />", () => {
 
       cy.wait("@getProvinces");
 
-      cy.get("#city_0").click();
-
+      cy.get("#city_0").shadow().find("input").type("Test");
+      cy.get("#city_0").shadow().find("input").clear();
+      cy.get("#city_0").shadow().find("input").should('be.focused').blur();
+      
       cy.get("#province_0").shadow().find("#selection-button").click();
-
-      cy.get("#postalCode_0").click();
+      
+      cy.get("#postalCode_0").shadow().find("input").type("Test");
+      cy.get("#postalCode_0").shadow().find("input").clear();
+      cy.get("#postalCode_0").shadow().find("input").click();
 
       // Only to unfocus the previous field
       cy.get("#addr_0").click();
 
+      cy.wait(1000);
+
       // Fields are displayed as invalid
       cy.get("#city_0").shadow().find("input").should("have.class", "cds--text-input--invalid");
-      cy.get("#province_0").shadow().find("div[role='listbox'").should("have.class", "cds--dropdown--invalid");
+      cy.get("#province_0").shadow().find("div").should("have.class", "cds--dropdown--invalid");
       cy.get("#postalCode_0").shadow().find("input").should("have.class", "cds--text-input--invalid");
 
       const typedAddress = "2975 Jutland Rd";
@@ -653,7 +662,7 @@ describe("<AddressGroupComponent />", () => {
 
       // Fields are now displayed as valid
       cy.get("#city_0").shadow().find("input").should("not.have.class", "cds--text-input--invalid");
-      cy.get("#province_0").shadow().find("div[role='listbox'").should("not.have.class", "cds--dropdown--invalid");
+      cy.get("#province_0").shadow().find("div").should("not.have.class", "cds--dropdown--invalid");
       cy.get("#postalCode_0").shadow().find("input").should("not.have.class", "cds--text-input--invalid");
     });
   });
