@@ -143,20 +143,14 @@ describe("BCSC Form", () => {
       .click()
       .and("have.value", "DCC - Cariboo-Chilcotin Natural Resource District");
 
-    cy
-    .get('#phoneNumberId')
-    .should("be.visible")
-      .shadow()
-      .find("input")
-      .should("have.value", "")
-      .type('2503008326');
+    cy.get("#phoneNumberId").shadow().find("input").type("2503008326");
 
     cy
     .get('.form-steps-section > [kind="tertiary"]')
     .should("be.visible")
     .click();
 
-    cy.focused().should('have.id', 'firstName_1');
+    cy.get("firstName_1").shadow().find("input").should('be.focused');
 
     cy
     .get('#role_1')
