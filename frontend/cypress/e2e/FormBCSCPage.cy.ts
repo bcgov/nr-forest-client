@@ -81,9 +81,7 @@ describe("BCSC Form", () => {
       .should("have.value", "")
       .type('2503008326');
 
-      cy
-    .get('#phoneNumberId')
-    .blur();
+    cy.get("phoneNumberId").shadow().find("input").should('be.focused').blur();
 
     cy.get('[data-test="wizard-submit-button"]')
     .click();
