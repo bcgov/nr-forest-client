@@ -427,14 +427,14 @@ describe("<ContactGroupComponent />", () => {
       });
 
       cy.get(fieldSelector).shadow().find("input").clear(); // emits false
-      cy.get(fieldSelector).blur(); // (doesn't emit)
+      cy.get(fieldSelector).shadow().find("input").should('be.focused').blur();
       cy.get(fieldSelector).shadow().find("input").type(firstContent); // emits true before blurring
-      cy.get(fieldSelector).blur(); // emits false
+      cy.get(fieldSelector).shadow().find("input").should('be.focused').blur();
       cy.get(fieldSelector)
         .should("be.visible")
         .and("have.value", firstContent);
       cy.get(fieldSelector).shadow().find("input").type(additionalContent); // emits true (last2)
-      cy.get(fieldSelector).blur(); // emits false (last1)
+      cy.get(fieldSelector).shadow().find("input").should('be.focused').blur();
       cy.get(fieldSelector)
         .should("be.visible")
         .and("have.value", expectedFinalValue);
