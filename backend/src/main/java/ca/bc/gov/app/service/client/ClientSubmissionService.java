@@ -42,6 +42,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -329,10 +330,11 @@ public class ClientSubmissionService {
         .flatMap(submissionDetailsDto ->
             submissionMatchDetailRepository
                 .findBySubmissionId(id.intValue())
+                .doOnNext(this::cleanMatchers)
                 .map(matched ->
-                    submissionDetailsDto
-                        .withApprovedTimestamp(matched.getUpdatedAt())
-                        .withMatchers(matched.getMatchers())
+                        submissionDetailsDto
+                            .withApprovedTimestamp(matched.getUpdatedAt())
+                            .withMatchers(matched.getMatchers())
                 )
                 .defaultIfEmpty(
                     submissionDetailsDto
@@ -386,6 +388,16 @@ public class ClientSubmissionService {
                     .flatMap(submissionMatchDetailRepository::save)
             )
             .then();
+  }
+
+  private void cleanMatchers(SubmissionMatchDetailEntity entity) {
+    entity.getMatchers().entrySet().forEach(entry -> {
+      if (entry.getValue() instanceof String value) {
+        String[] values = value.split(",");
+        LinkedHashSet<String> uniqueValues = new LinkedHashSet<>(Arrays.asList(values));
+        entry.setValue(String.join(",", uniqueValues));
+      }
+    });
   }
 
   private Mono<SubmissionLocationContactEntity> saveAndAssociateContact(

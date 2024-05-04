@@ -11,6 +11,7 @@ import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.matchers.ProcessorMatcher;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
@@ -82,11 +83,16 @@ class LegacyLoadingServiceTest {
     }
 
     @Override
+    public String fieldName() {
+      return "test";
+    }
+
+    @Override
     public Mono<MatcherResult> matches(SubmissionInformationDto submission) {
       return Mono
           .just(submission.goodStanding())
           .filter(value -> value.equalsIgnoreCase("N"))
-          .map(value -> new MatcherResult("test", value));
+          .map(value -> new MatcherResult("test", Set.of(value)));
     }
   }
 

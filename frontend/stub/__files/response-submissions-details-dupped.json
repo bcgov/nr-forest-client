@@ -52,6 +52,6 @@
         }
     ],
     "matchers": {
-        "legalName": "0000{{randomValue length=4 type='NUMERIC'}},000{{randomValue length=5 type='NUMERIC'}}"
+        "corporationName": "0000{{randomValue length=4 type='NUMERIC'}},000{{randomValue length=5 type='NUMERIC'}},00000000,00000000"
     }
 }
