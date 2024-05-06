@@ -26,8 +26,8 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
 import {
   getEnumKeyByEnumValue,
-  openMailtoLink,
-  getObfuscatedEmail,
+  adminEmail,
+  getObfuscatedEmailLink
 } from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update
@@ -515,13 +515,8 @@ onMounted(() => {
               </li>
               <li class="body-compact-01">
                 If your name isn’t there, call BC Registry toll free at
-                <a href="tel:18775261526">1-877-526-1526</a> or email them at
-                <button id="bcRegistryEmailId" 
-                        class="link-button" 
-                        @click="openMailtoLink(bcRegistryEmail)" 
-                        aria-label="Contact BC Registry via Email">
-                  <span v-bind:innerHTML="getObfuscatedEmail(bcRegistryEmail)"></span>
-                </button>.
+                <a href="tel:18775261526">1-877-526-1526</a> or email them at 
+                <span id="bcRegistryEmailId" v-dompurify-html="getObfuscatedEmailLink(bcRegistryEmail)"></span>.
               </li>
             </ol>
           </div>
@@ -573,7 +568,8 @@ onMounted(() => {
           title="Unknown sole proprietor"
         >
           <p  class="cds--inline-notification-content">
-            We're unable to complete this application because we cannot identify the person who is the sole proprietor. Please email FORHVAP.CLIADMIN@gov.bc.ca for help.
+            We're unable to complete this application because we cannot identify the person who is the sole proprietor. 
+            Please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
           </p>
         </cds-inline-notification>
 
@@ -587,7 +583,7 @@ onMounted(() => {
         >
           <p class="cds--inline-notification-content">
             {{ receivedClientType.name }} client type is not supported. Please email
-            FORHVAP.CLIADMIN@gov.bc.ca for help.
+            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
           </p>
         </cds-inline-notification>
         
