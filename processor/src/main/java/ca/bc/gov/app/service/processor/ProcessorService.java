@@ -32,7 +32,6 @@ public class ProcessorService {
 
   @Scheduled(fixedDelay = 30000)
   public void submissionMessages() {
-    log.info("Starting submission processing");
     //Load submission
     submissionRepository
         .loadProcessingSubmissions()
@@ -70,7 +69,7 @@ public class ProcessorService {
         )
         //Build mail message and send it
         .flatMap(submissionLoadingService::buildMailMessage)
-        .doOnNext(message -> log.info("Email ready to be sent {}", message))
+        .doOnNext(message -> log.info("Post submission analysis email ready to be sent {}", message))
         .flatMap(mailService::sendMail)
         .subscribe();
   }
@@ -121,7 +120,7 @@ public class ProcessorService {
         .doOnNext(submission -> log.info("Submission post processed {}, building message", submission))
         .onErrorContinue((throwable, o) -> log.error("Error processing submission {}", o, throwable))
         .flatMap(submissionLoadingService::buildMailMessage)
-        .doOnNext(message -> log.info("Email ready to be sent {}", message))
+        .doOnNext(message -> log.info("Post process email ready to be sent {}", message))
         .flatMap(mailService::sendMail)
         .subscribe();
 
