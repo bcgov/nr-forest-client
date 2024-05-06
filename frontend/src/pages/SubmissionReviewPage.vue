@@ -34,6 +34,7 @@ import Check16 from "@carbon/icons-vue/es/checkmark/16";
 import Error16 from "@carbon/icons-vue/es/error--outline/16";
 import { convertFieldNameToSentence, toTitleCase } from "@/services/ForestClientService";
 import { getValidations } from "@/helpers/validators/SubmissionReviewValidations";
+import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 
@@ -340,7 +341,8 @@ const rejectValidation = reactive<Record<string, boolean>>({
         >    
           <div>
             We're working to fix a problem with our network. Please try approving or rejecting the submission later.
-          </div>    
+            If this error persistent, please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+          </div>
         </cds-actionable-notification>
 
         <cds-actionable-notification

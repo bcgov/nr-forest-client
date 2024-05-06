@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watchEffect, getCurrentInstance } from "vue";
-import { openMailtoLink, getObfuscatedEmail } from "@/services/ForestClientService";
+import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
 
 // Carbon
 import "@carbon/web-components/es/components/button/index";
@@ -245,9 +245,7 @@ const adminEmail = "forhvap.cliadmin@gov.bc.ca";
     <cds-modal-body id="help-modal-body">
       <p>
         Can’t proceed with your application? Let us know by emailing your issue to 
-        <button class="link-button" @click="openMailtoLink(adminEmail)" aria-label="Contact Admin via Email">
-          <span v-bind:innerHTML="getObfuscatedEmail(adminEmail)"></span>
-        </button>
+        <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span>
       </p>
     </cds-modal-body>
   </cds-modal>
