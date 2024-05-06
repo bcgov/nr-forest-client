@@ -93,8 +93,6 @@ const onClickLogout = () => {
     logoutModalActive.value = true;
   }
 }
-
-const adminEmail = "forhvap.cliadmin@gov.bc.ca"; 
 </script>
 
 <template>

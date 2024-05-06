@@ -22,6 +22,8 @@ import type {
 } from "@/dto/CommonTypesDto";
 import { formatDistanceToNow, format } from "date-fns";
 import { greenDomain } from "@/CoreConstants";
+import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
+
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // @ts-ignore
@@ -34,7 +36,6 @@ import Check16 from "@carbon/icons-vue/es/checkmark/16";
 import Error16 from "@carbon/icons-vue/es/error--outline/16";
 import { convertFieldNameToSentence, toTitleCase } from "@/services/ForestClientService";
 import { getValidations } from "@/helpers/validators/SubmissionReviewValidations";
-import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 
@@ -455,7 +456,7 @@ const rejectValidation = reactive<Record<string, boolean>>({
           title="You are not authorized to access this page"
         >
           <div>
-          Please email FORHVAP.CLIADMIN@gov.bc.ca for help
+          Please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help
           </div>
         </cds-actionable-notification>
 
@@ -469,7 +470,8 @@ const rejectValidation = reactive<Record<string, boolean>>({
         title="You are not authorized to modify client information"      
         >    
         <div>
-          <p>To change your role please contact Client Admin through email FORHVAP.CLIADMIN@gov.bc.ca for help
+          <p>To change your role please contact Client Admin through email 
+            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help
           </p>
         </div>
       </cds-actionable-notification>
