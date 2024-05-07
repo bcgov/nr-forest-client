@@ -25,6 +25,12 @@ jobs:
         with:
           sarif_file: "trivy-results.sarif"
 
+      - name: Upload Trivy scan results to S3
+        uses: actions/upload-artifact@v2
+        with:
+          name: trivy-results
+          path: trivy-results.sarif
+
   codeql:
     name: Semantic Code Analysis
     runs-on: ubuntu-22.04
