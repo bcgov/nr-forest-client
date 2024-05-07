@@ -83,6 +83,9 @@ jobs:
         working-directory: ${{ matrix.package }}
         run: mvn clean validate
 
+      - name: Owasp ${{ matrix.package }} file cleanup
+        run: sed -i '' 's/\[, {/[{/' ${{ matrix.package }}/target/dependency-check-report.sarif
+
       - name: Upload Owasp ${{ matrix.package }} scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
