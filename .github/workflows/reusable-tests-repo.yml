@@ -57,3 +57,33 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+
+  owasp-be:
+    name: Owasp Code Analysis for Backend
+    runs-on: ubuntu-22.04
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      matrix:
+        package: [backend, legacy, processor]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17 and Caching maven dependencies
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+          cache: "maven"
+
+      # Java builds
+      - name: Owasp ${{ matrix.package }}
+        working-directory: ${{ matrix.package }}
+        run: ./mvnw clean validate
+
+      - name: Upload Owasp ${{ matrix.package }} scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "${{ matrix.package }}/target/dependency-check-report.sarif"

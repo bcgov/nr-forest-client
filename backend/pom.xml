@@ -538,12 +538,14 @@
                 <version>6.1.1</version>
                 <executions>
                     <execution>
+                        <phase>validate</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
+                    <name>${project.artifactId}</name>
                     <format>ALL</format>
                     <outputDirectory>${dependency.check.report.dir}</outputDirectory>
                     <suppressionFiles>
