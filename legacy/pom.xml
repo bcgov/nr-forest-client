@@ -51,6 +51,7 @@
 
     <oci.revision>${project.version}</oci.revision>
     <mapstruct.version>1.5.5.Fina</mapstruct.version>
+    <netty.version>4.1.108.Final</netty.version>
   </properties>
 
   <dependencies>
@@ -194,6 +195,11 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
         <version>6.1.6</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http</artifactId>
+        <version>${netty.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
