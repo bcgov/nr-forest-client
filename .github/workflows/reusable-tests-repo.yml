@@ -81,7 +81,7 @@ jobs:
       # Java builds
       - name: Owasp ${{ matrix.package }}
         working-directory: ${{ matrix.package }}
-        run: ./mvnw clean validate
+        run: mvn clean validate
 
       - name: Upload Owasp ${{ matrix.package }} scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
