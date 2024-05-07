@@ -45,6 +45,7 @@
         <junit-platform.version>1.9.1</junit-platform.version>
         <netty.version>4.1.108.Final</netty.version>
         <oci.revision>${project.version}</oci.revision>
+        <nimbus-jose-jwt.version>9.37.3</nimbus-jose-jwt.version>
     </properties>
 
     <dependencies>
@@ -227,6 +228,12 @@
                 <artifactId>netty-codec-http</artifactId>
                 <version>${netty.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${nimbus-jose-jwt.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -522,6 +529,26 @@
                     <projectType>application</projectType>
                     <outputFormat>all</outputFormat>
                     <outputName>bom</outputName>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>6.1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <format>ALL</format>
+                    <outputDirectory>${dependency.check.report.dir}</outputDirectory>
+                    <suppressionFiles>
+                        <suppressionFile>${project.basedir}/docs/cve-ignore.xml</suppressionFile>
+                    </suppressionFiles>
                 </configuration>
             </plugin>
 
