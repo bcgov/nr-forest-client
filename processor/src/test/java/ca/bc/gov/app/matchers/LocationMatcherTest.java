@@ -9,15 +9,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -55,10 +53,10 @@ class LocationMatcherTest {
   @MethodSource("location")
   @DisplayName("Match or not")
   void shouldMatchOrNot(
-	SubmissionInformationDto dto,
-    boolean success,
-	MatcherResult result,
-	String mockData
+      SubmissionInformationDto dto,
+      boolean success,
+      MatcherResult result,
+      String mockData
   ) {
     wireMockExtension.resetAll();
     wireMockExtension
@@ -79,41 +77,34 @@ class LocationMatcherTest {
             )
         );
 
-    StepVerifier.FirstStep<MatcherResult> verifier =
         matcher
             .matches(dto)
-            .as(StepVerifier::create);
-
-    if (success) {
-      verifier.verifyComplete();
-    } else {
-      verifier
+            .as(StepVerifier::create)
           .expectNext(result)
           .verifyComplete();
-    }
   }
-  
+
   private static Stream<Arguments> location() {
-	  return Stream.of(
-		        Arguments.of(
-		            new SubmissionInformationDto(1, null, null, null, null, null),
-		            true,
-		            null,
-		            "[]"
-		        ),
-		        Arguments.of(
-		        	new SubmissionInformationDto(1, null, null, null, null, null),
-		            false,
-		            new MatcherResult("location", String.join(",", "00000000")),
-		            "[{\"clientNumber\":\"00000000\"}]"
-		        ),
-		        Arguments.of(
-		            new SubmissionInformationDto(1, null, null, null, null, null),
-		            false,
-		            new MatcherResult("location", String.join(",", "00000000", "00000001")),
-		            "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"
-		        )
-		    );
+    return Stream.of(
+        Arguments.of(
+            new SubmissionInformationDto(1, null, null, null, null, null),
+            true,
+            new MatcherResult("location", Set.of()),
+            "[]"
+        ),
+        Arguments.of(
+            new SubmissionInformationDto(1, null, null, null, null, null),
+            false,
+            new MatcherResult("location", Set.of("00000000")),
+            "[{\"clientNumber\":\"00000000\"}]"
+        ),
+        Arguments.of(
+            new SubmissionInformationDto(1, null, null, null, null, null),
+            false,
+            new MatcherResult("location", Set.of("00000000", "00000001")),
+            "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"
+        )
+    );
   }
 
 }

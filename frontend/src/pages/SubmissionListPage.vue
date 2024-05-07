@@ -17,6 +17,7 @@ import { useEventBus } from "@vueuse/core";
 import type { SubmissionList } from "@/dto/CommonTypesDto";
 import { formatDistanceToNow, format } from "date-fns";
 import { toTitleCase } from "@/services/ForestClientService";
+import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
 // Session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // @ts-ignore
@@ -189,7 +190,7 @@ const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some
           title="You are not authorized to access this page"
         >
           <div>
-          Please email FORHVAP.CLIADMIN@gov.bc.ca for help
+          Please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help
           </div>
         </cds-actionable-notification>
   </div>

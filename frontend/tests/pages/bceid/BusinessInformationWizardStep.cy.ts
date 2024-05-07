@@ -109,9 +109,7 @@ describe('<BusinessInformationWizardStep />', () => {
 
     cy.get('#businessTyperbR').click();
  
-    cy.get('.link-button:visible').should('have.attr', 'aria-label', 'Contact BC Registry via Email');
-    cy.get('.link-button:visible span').should('exist');
-    cy.get('.link-button:visible span').invoke('text').should('not.be.empty');
+    cy.get('#bcRegistryEmailId').should('exist');
   });
 
   it('shows "Client type not supported"', () => {

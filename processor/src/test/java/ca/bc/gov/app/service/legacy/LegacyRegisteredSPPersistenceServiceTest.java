@@ -92,7 +92,8 @@ class LegacyRegisteredSPPersistenceServiceTest {
                     ApplicationConstant.FOREST_CLIENT_NUMBER, "00000001",
                     ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
                     ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
-                    ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow"
+                    ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow",
+                    ApplicationConstant.MATCHING_INFO, Map.of("businessName", "Night Watch")
                 )
             )
         )
@@ -112,7 +113,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .hasFieldOrPropertyWithValue("corpRegnNmbr", "00184546")
               .hasFieldOrPropertyWithValue("clientComment",
                   String.join(" ",
-                      "Jhon Snow submitted the",
+                      "Jhon Snow of BCeID Business Night Watch submitted the",
                       "sole proprietor registered on BC Registry with number",
                       "FM00184546",
                       "and company name",
@@ -179,7 +180,8 @@ class LegacyRegisteredSPPersistenceServiceTest {
                     ApplicationConstant.FOREST_CLIENT_NUMBER, "00000001",
                     ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
                     ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
-                    ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow"
+                    ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow",
+                    ApplicationConstant.MATCHING_INFO, Map.of("businessName", "Night Watch")
                 )
             )
         )
@@ -199,7 +201,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .hasFieldOrPropertyWithValue("corpRegnNmbr", "00184546")
               .hasFieldOrPropertyWithValue("clientComment",
                   String.join(" ",
-                      "Jhon Snow submitted the",
+                      "Jhon Snow of BCeID Business Night Watch submitted the",
                       "sole proprietor registered on BC Registry with number",
                       "FM00184546",
                       "and company name",

@@ -8,10 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.matchers.ProcessorMatcher;
-import ca.bc.gov.app.matchers.SoleProprietorProcessorMatcher;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,45 +59,38 @@ class SoleProprietorProcessorMatcherTest {
                     okForContentType("application/json", mockData)
                         .withHeader("Content-Type", "application/json")
                 )
-
         );
 
-    StepVerifier.FirstStep<MatcherResult> verifier =
-        matcher
-            .matches(dto)
-            .as(StepVerifier::create);
+    matcher
+        .matches(dto)
+        .as(StepVerifier::create)
+        .expectNext(result)
+        .verifyComplete();
 
-    if (success) {
-      verifier.verifyComplete();
-    } else {
-      verifier
-          .expectNext(result)
-          .verifyComplete();
-    }
   }
 
   private static Stream<Arguments> legalName() {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto(1,"James Frank", LocalDate.of(2023, 4, 5), null, null,
+                new SubmissionInformationDto(1, "James Frank", LocalDate.of(2023, 4, 5), null, null,
                     "USP"),
                 true,
-                null,
+                new MatcherResult("corporationName", Set.of()),
                 "[]"
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,"Marco Polo", LocalDate.of(2023, 9, 12), null, null,
+                new SubmissionInformationDto(1, "Marco Polo", LocalDate.of(2023, 9, 12), null, null,
                     "RSP"),
                 false,
-                new MatcherResult("corporationName", String.join(",", "00000000")),
+                new MatcherResult("corporationName", Set.of("00000000")),
                 "[{\"clientNumber\":\"00000000\"}]"
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,"Lucca DeBiaggio", LocalDate.of(2023, 10, 11), null,
+                new SubmissionInformationDto(1, "Lucca DeBiaggio", LocalDate.of(2023, 10, 11), null,
                     null, "USP"),
                 false,
-                new MatcherResult("corporationName", String.join(",", "00000000", "00000001")),
+                new MatcherResult("corporationName", Set.of("00000000", "00000001")),
                 "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"
             )
         );
