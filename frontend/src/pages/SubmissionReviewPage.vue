@@ -22,6 +22,8 @@ import type {
 } from "@/dto/CommonTypesDto";
 import { formatDistanceToNow, format } from "date-fns";
 import { greenDomain } from "@/CoreConstants";
+import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
+
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // @ts-ignore
@@ -277,7 +279,7 @@ const renderListItem = (label, clientNumbers) => {
 
   finalLabel += " - Client number: ";
 
-  const clients = clientNumbers.split(",");
+  const clients = [...new Set(clientNumbers.split(","))];
   finalLabel += clients
                   .map(clientNumber =>
                     '<a target="_blank" href="' + getLegacyUrl(clientNumber) +'">' +
@@ -340,7 +342,8 @@ const rejectValidation = reactive<Record<string, boolean>>({
         >    
           <div>
             We're working to fix a problem with our network. Please try approving or rejecting the submission later.
-          </div>    
+            If this error persistent, please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+          </div>
         </cds-actionable-notification>
 
         <cds-actionable-notification
@@ -453,7 +456,7 @@ const rejectValidation = reactive<Record<string, boolean>>({
           title="You are not authorized to access this page"
         >
           <div>
-          Please email FORHVAP.CLIADMIN@gov.bc.ca for help
+          Please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help
           </div>
         </cds-actionable-notification>
 
@@ -467,7 +470,8 @@ const rejectValidation = reactive<Record<string, boolean>>({
         title="You are not authorized to modify client information"      
         >    
         <div>
-          <p>To change your role please contact Client Admin through email FORHVAP.CLIADMIN@gov.bc.ca for help
+          <p>To change your role please contact Client Admin through email 
+            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help
           </p>
         </div>
       </cds-actionable-notification>
@@ -655,7 +659,9 @@ const rejectValidation = reactive<Record<string, boolean>>({
       </div>
 
       <cds-modal 
-        id="approve-modal" 
+        id="approve-modal"
+        aria-labelledby="approve-modal-heading"
+        aria-describedby="approve-modal-body"
         size="sm"
         :open="approveModal" 
         @cds-modal-closed="approveModal = !approveModal"
@@ -663,10 +669,10 @@ const rejectValidation = reactive<Record<string, boolean>>({
         
         <cds-modal-header>
           <cds-modal-close-button></cds-modal-close-button>
-          <cds-modal-heading>Approve submission</cds-modal-heading>
+          <cds-modal-heading id="approve-modal-heading">Approve submission</cds-modal-heading>
         </cds-modal-header>
         
-        <cds-modal-body>
+        <cds-modal-body id="approve-modal-body">
           <p class="body-compact-01">A new client number will be created and an email will be sent to the submitter.</p>
         </cds-modal-body>
 
@@ -689,8 +695,10 @@ const rejectValidation = reactive<Record<string, boolean>>({
 
       </cds-modal>
 
-      <cds-modal 
+      <cds-modal
         id="reject-modal"
+        aria-labelledby="reject-modal-heading"
+        aria-describedby="reject-modal-body"
         size="sm" 
         :open="rejectModal" 
         @cds-modal-closed="rejectModal = !rejectModal"
@@ -698,10 +706,10 @@ const rejectValidation = reactive<Record<string, boolean>>({
 
         <cds-modal-header>
           <cds-modal-close-button></cds-modal-close-button>
-          <cds-modal-heading>Reject submission</cds-modal-heading>
+          <cds-modal-heading id="reject-modal-heading">Reject submission</cds-modal-heading>
         </cds-modal-header>
 
-        <cds-modal-body class="grouping-12">
+        <cds-modal-body id="reject-modal-body" class="grouping-12">
           <p class="body-compact-01">This submission will be rejected and the submitter will receive an email notification. Please choose the reason below:</p>
           <multiselect-input-component
             id="reject_reason_id"

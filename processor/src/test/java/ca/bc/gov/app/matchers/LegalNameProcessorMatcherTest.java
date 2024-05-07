@@ -8,9 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.matchers.LegalNameProcessorMatcher;
-import ca.bc.gov.app.matchers.ProcessorMatcher;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,39 +56,32 @@ class LegalNameProcessorMatcherTest {
                 .willReturn(okJson(mockData))
         );
 
-    StepVerifier.FirstStep<MatcherResult> verifier =
         matcher
             .matches(dto)
-            .as(StepVerifier::create);
-
-    if (success) {
-      verifier.verifyComplete();
-    } else {
-      verifier
+            .as(StepVerifier::create)
           .expectNext(result)
           .verifyComplete();
-    }
   }
 
   private static Stream<Arguments> legalName() {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto(1,"James", null, null, null, "C"),
+                new SubmissionInformationDto(1, "James", null, null, null, "C"),
                 true,
-                null,
+                new MatcherResult("corporationName", Set.of()),
                 "[]"
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,"Marco", null, null, null, "C"),
+                new SubmissionInformationDto(1, "Marco", null, null, null, "C"),
                 false,
-                new MatcherResult("corporationName", String.join(",", "00000000")),
+                new MatcherResult("corporationName", Set.of("00000000")),
                 "[{\"clientNumber\":\"00000000\"}]"
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,"Lucca", null, null, null, "C"),
+                new SubmissionInformationDto(1, "Lucca", null, null, null, "C"),
                 false,
-                new MatcherResult("corporationName", String.join(",", "00000000", "00000001")),
+                new MatcherResult("corporationName", Set.of("00000000", "00000001")),
                 "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"
             )
         );

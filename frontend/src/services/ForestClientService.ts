@@ -1,5 +1,6 @@
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
 import type { CodeDescrType } from "@/dto/CommonTypesDto";
+import { isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
 
 export const addNewAddress = (addresses: Address[]): number => {
   const blankAddress: Address = {
@@ -28,6 +29,14 @@ export const addNewContact = (contacts: Contact[]): number => {
   const newContacts = contacts.push(blankContact);
   return newContacts;
 };
+
+export const getAddressDescription = (address: Address, index: number): string =>
+  address.locationName.length !== 0 ? address.locationName : "Address #" + index;
+
+export const getContactDescription = (contact: Contact, index: number): string =>
+  !isNullOrUndefinedOrBlank(contact.firstName)
+    ? `${contact.firstName} ${contact.lastName}`
+    : "Contact #" + index;
 
 export const toTitleCase = (inputString: string): string => {
   if (inputString === undefined) return "";
@@ -60,17 +69,6 @@ export const getObfuscatedEmail = email => {
   return obfuscatedEmail;
 };
 
-export const getMailtoLink = email => {
-  const encodedEmail = encodeURIComponent(email);
-  return 'mailto:' + encodedEmail;
-};
-
-export const openMailtoLink = (email) => {
-  const encodedEmail = encodeURIComponent(email);
-  const mailtoLink = 'mailto:' +  encodedEmail;
-  location.assign(mailtoLink);
-}
-
 export const convertFieldNameToSentence = (input: string): string => {
   const lastPart = input.split('.').pop();
 
@@ -79,4 +77,10 @@ export const convertFieldNameToSentence = (input: string): string => {
                   .split(/\s+/);
   
   return words.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+};
+
+export const adminEmail = "forhvap.cliadmin@gov.bc.ca";
+
+export const getObfuscatedEmailLink = email => {
+  return `<a target="_blank" href="mailto:${email}">${getObfuscatedEmail(email)}</a>`;
 };

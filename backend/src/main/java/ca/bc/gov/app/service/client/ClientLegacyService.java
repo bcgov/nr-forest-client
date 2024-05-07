@@ -74,7 +74,7 @@ public class ClientLegacyService {
 
     log.info("Searching for id {} and last name {} in legacy",
         id, lastName);
-
+    
     return
         legacyApi
             .get()

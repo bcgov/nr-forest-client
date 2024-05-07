@@ -37,3 +37,28 @@ INSERT INTO nrfc.submission_matching_detail
 (submission_matching_detail_id, submission_id, matching_fields, confirmed_match_status_ind, confirmed_match_message, confirmed_match_timestamp, confirmed_match_userid, submission_matching_processed)
 VALUES(2, 2, '{}'::jsonb, 'Y', NULL, '2023-10-03 11:13:10.443', 'AUTO-PROCESSOR', true)
 ON CONFLICT (submission_matching_detail_id) DO NOTHING;
+
+UPDATE nrfc.district_code SET email_address = 'alliance@mail.ca';
+
+-- Test case data
+
+INSERT INTO nrfc.submission VALUES (365, 'N', 'SPP', '2024-04-16 15:57:57.065704', '2024-04-16 16:00:02.690147', 'BCEIDBUSINESS\\UAT', ' Martinez') ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_contact VALUES (365, 365, 'DI', 'Load', 'NRS', '(777) 777-7777', 'uattestingmail@uat.testing.lo', 'BCEIDBUSINESS\\UAT') ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_detail VALUES (365, 365, NULL, 'R', 'XX0000006', 'HYPERION CORP', 'C', 'Y', NULL, 'DCR') ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_location VALUES (365, 365, '712 Canyon View Dr', 'US', 'KS', 'Lansing', '66043-6271', 'Mailing address') ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_location_contact_xref VALUES (365, 365) ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_matching_detail VALUES (365, 365, '{}', null, null, '2024-04-16 16:00:06.678395', 'idir\\ottomated', false) ON CONFLICT DO NOTHING;
+
+INSERT INTO nrfc.submission VALUES (366, 'A', 'AAC', '2024-04-16 15:57:57.065704', '2024-04-16 16:00:02.690147', 'BCEIDBUSINESS\\UAT', ' Martinez') ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_contact VALUES (366, 366, 'DI', 'Load', 'NRS', '(777) 777-7777', 'uattestingmail@uat.testing.lo', 'BCEIDBUSINESS\\UAT') ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_detail VALUES (366, 366, NULL, 'R', 'XX0000006', 'HYPERION CORP', 'C', 'Y', NULL, 'DCR') ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_location VALUES (366, 366, '712 Canyon View Dr', 'US', 'KS', 'Lansing', '66043-6271', 'Mailing address') ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_location_contact_xref VALUES (366, 366) ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_matching_detail VALUES (366, 366, '{}', 'N', null, '2024-04-16 16:00:06.678395', 'idir\\ottomated', true) ON CONFLICT DO NOTHING;
+
+INSERT INTO nrfc.submission VALUES (367, 'R', 'RNC', '2024-04-16 15:57:57.065704', '2024-04-16 16:00:02.690147', 'BCEIDBUSINESS\\UAT', ' Martinez') ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_contact VALUES (367, 367, 'DI', 'Load', 'NRS', '(777) 777-7777', 'uattestingmail@uat.testing.lo', 'BCEIDBUSINESS\\UAT') ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_detail VALUES (367, 367, NULL, 'R', 'XX0000006', 'HYPERION CORP', 'C', 'Y', NULL, 'DCR') ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_location VALUES (367, 367, '712 Canyon View Dr', 'US', 'KS', 'Lansing', '66043-6271', 'Mailing address') ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_location_contact_xref VALUES (367, 367) ON CONFLICT DO NOTHING;
+INSERT INTO nrfc.submission_matching_detail VALUES (367, 367, '{"contact": "00000000,00000000,00000001,00000001,00000001", "registrationNumber": "00000002,00000002"}', 'N', ' already has one. The number is: tyututu. Be sure to keep it for your records.', '2024-04-16 16:00:06.678395', 'idir\\ottomated', true) ON CONFLICT DO NOTHING;

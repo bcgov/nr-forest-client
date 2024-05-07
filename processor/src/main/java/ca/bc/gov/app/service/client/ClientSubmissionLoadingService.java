@@ -41,7 +41,7 @@ public class ClientSubmissionLoadingService {
     return
         submissionDetailRepository
             .findBySubmissionId(submissionId)
-            .doOnNext(submission -> log.info("Loaded submission details {}", submission))
+            .doOnNext(submission -> log.info("Submission details loaded for id {}", submission.getSubmissionId()))
             //Grab what we need for the match part
             .map(details -> new SubmissionInformationDto(
                     submissionId,
@@ -72,7 +72,7 @@ public class ClientSubmissionLoadingService {
     return submissionDetailRepository
         .findBySubmissionId(message.payload())
         .doOnNext(
-            submission -> log.info("Loaded submission details for mail purpose {}", submission)
+            submission -> log.info("Submission details loaded for mail purpose {}", submission.getSubmissionId())
         )
         .flatMap(details ->
             contactRepository
@@ -85,17 +85,17 @@ public class ClientSubmissionLoadingService {
                                 details.getOrganizationName(),
                                 submissionContact.getUserId(),
                                 submissionContact.getFirstName(),
-                                Stream
-                                    .of(districtInfo.getLeft(),
-                                        submissionContact.getEmailAddress()
-                                    )
-                                    .filter(Objects::nonNull)
-                                    .collect(Collectors.joining(",")),
+                                getEmails(
+                                    message,
+                                    districtInfo.getLeft(),
+                                    submissionContact.getEmailAddress()
+                                ),
                                 getTemplate(message),
                                 getSubject(message, details.getOrganizationName()),
                                 getParameter(
-                                    message, 
-                                    submissionContact.getFirstName() + " " + submissionContact.getLastName(),
+                                    message,
+                                    submissionContact.getFirstName() + " "
+                                    + submissionContact.getLastName(),
                                     details.getOrganizationName(),
                                     districtInfo.getRight(),
                                     Objects.toString(details.getClientNumber(), ""),
@@ -139,6 +139,22 @@ public class ClientSubmissionLoadingService {
       case R -> "Client number application can’t go ahead";
       default -> businessName + " requires review";
     };
+  }
+
+  private String getEmails(
+      MessagingWrapper<Integer> message,
+      String districtEmails,
+      String userEmail
+  ) {
+    Stream<String> emails = switch ((SubmissionStatusEnum) message.parameters()
+        .get(ApplicationConstant.SUBMISSION_STATUS)) {
+      case A, R -> Stream.of(districtEmails, userEmail);
+      default -> Stream.of(districtEmails);
+    };
+
+    return emails
+        .filter(Objects::nonNull)
+        .collect(Collectors.joining(","));
   }
 
   private Map<String, Object> getParameter(

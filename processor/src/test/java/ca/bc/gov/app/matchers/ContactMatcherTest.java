@@ -15,6 +15,7 @@ import ca.bc.gov.app.entity.SubmissionContactEntity;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -79,41 +80,34 @@ class ContactMatcherTest {
             )
         );
 
-    StepVerifier.FirstStep<MatcherResult> verifier =
-        matcher
-            .matches(dto)
-            .as(StepVerifier::create);
-
-    if (success) {
-      verifier.verifyComplete();
-    } else {
-      verifier
-          .expectNext(result)
-          .verifyComplete();
-    }
+    matcher
+        .matches(dto)
+        .as(StepVerifier::create)
+        .expectNext(result)
+        .verifyComplete();
   }
 
-  private static Stream<Arguments> contact(){
+  private static Stream<Arguments> contact() {
     return Stream.of(
         Arguments.of(
-            new SubmissionInformationDto(1,"James Frank", LocalDate.of(1985, 10, 4), null, "Y",
+            new SubmissionInformationDto(1, "James Frank", LocalDate.of(1985, 10, 4), null, "Y",
                 "I"),
             true,
-            null,
+            new MatcherResult("contact", Set.of()),
             "[]"
         ),
         Arguments.of(
-            new SubmissionInformationDto(1,"Marco Polo", LocalDate.of(1977, 3, 22), null, "Y",
+            new SubmissionInformationDto(1, "Marco Polo", LocalDate.of(1977, 3, 22), null, "Y",
                 "I"),
             false,
-            new MatcherResult("contact", String.join(",", "00000000")),
+            new MatcherResult("contact", Set.of("00000000")),
             "[{\"clientNumber\":\"00000000\"}]"
         ),
         Arguments.of(
-            new SubmissionInformationDto(1,"Lucca DeBiaggio", LocalDate.of(1951, 12, 25), null,
+            new SubmissionInformationDto(1, "Lucca DeBiaggio", LocalDate.of(1951, 12, 25), null,
                 "Y", "I"),
             false,
-            new MatcherResult("contact", String.join(",", "00000000", "00000001")),
+            new MatcherResult("contact", Set.of("00000000", "00000001")),
             "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"
         )
     );

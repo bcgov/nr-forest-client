@@ -49,4 +49,5 @@ public record ForestClientDto(
                 StringUtils.defaultString(corpRegnNmbr)
         );
   }
+  
 }
