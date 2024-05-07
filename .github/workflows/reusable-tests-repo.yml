@@ -93,3 +93,30 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: "${{ matrix.package }}/target/dependency-check-report.sarif"
+
+  owasp-fe:
+    name: Owasp Code Analysis for Frontend
+    runs-on: ubuntu-22.04
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Owasp frontend
+        working-directory: frontend
+        run: |
+          npm install
+          npm run test:owasp
+
+      - name: Upload Owasp frontend scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "frontend/reports/owasp/dependency-check-report.sarif"
