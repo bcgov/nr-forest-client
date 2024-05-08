@@ -83,6 +83,10 @@ jobs:
           distribution: "temurin"
           java-version: "17"
           cache: "maven"
+          cache-dependency-path: |
+            backend/pom.xml
+            legacy/pom.xml
+            processor/pom.xml
 
       # Java builds
       - name: Owasp ${{ matrix.package }}
@@ -109,12 +113,21 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@v4
+        name: Checkout
 
       - uses: actions/setup-node@v4
+        name: Setup Node.js
         with:
           node-version: "18"
           cache: "npm"
           cache-dependency-path: frontend/package-lock.json
+
+      - uses: actions/cache@v4
+        name: Cache owasp db
+        id: cache
+        with:
+          path: /tmp/dependency-check-data
+          key: ${{ runner.os }}-fe-owasp
 
       - name: Owasp frontend
         working-directory: frontend
