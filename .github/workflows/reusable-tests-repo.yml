@@ -87,7 +87,7 @@ jobs:
       # Java builds
       - name: Owasp ${{ matrix.package }}
         working-directory: ${{ matrix.package }}
-        run: mvn clean validate
+        run: mvn clean validate --owasp.skip=false
 
       - name: Owasp ${{ matrix.package }} file cleanup
         run: |

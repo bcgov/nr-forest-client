@@ -38,6 +38,7 @@
     <skip.unit.tests>false</skip.unit.tests>
     <jacoco.skip>true</jacoco.skip>
     <checkstyle.skip>true</checkstyle.skip>
+    <owasp.skip>true</owasp.skip>
 
     <jacoco.output.data>${project.build.directory}/coverage-reports</jacoco.output.data>
 
@@ -510,6 +511,7 @@
           </execution>
         </executions>
         <configuration>
+          <skip>${owasp.skip}</skip>
           <name>${project.artifactId}</name>
           <format>ALL</format>
           <outputDirectory>${dependency.check.report.dir}</outputDirectory>
