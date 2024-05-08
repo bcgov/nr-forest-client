@@ -131,9 +131,9 @@ const logoutBtnKind = computed(() =>
     </a>
     
     <cds-header-name @click.prevent>
-      <span class="heading-compact-02" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
-      <span class="heading-compact-02" v-else>Forests Client Management System</span>
-      <span class="heading-compact-02" v-if="env !== 'Prod' && !isSmallScreen">Env. {{ env }} - Rel. {{appVersion}}</span>
+      <span class="heading-compact-02 responsive" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
+      <span class="heading-compact-02 responsive" v-else>Forests Client Management System</span>
+      <span class="heading-compact-02 responsive" v-if="env !== 'Prod' && !isSmallScreen">Env. {{ env }} - Rel. {{appVersion}}</span>
     </cds-header-name>
     
     <div class="heading-buttons">
