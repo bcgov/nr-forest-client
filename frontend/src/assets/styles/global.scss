@@ -1384,6 +1384,19 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
+  cds-header a.bclogotop {
+    margin-left: 1rem;
+  }
+
+  .heading-buttons {
+    margin-right: 0;
+    gap: 0;
+  }
+
+  cds-header-name::part(link) {
+    gap: 1rem;
+  }
+
   .content-landing {
     flex-direction: column;
   }
@@ -1573,6 +1586,19 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 @media screen and (min-width: 672px) and (max-width: 1055px) {
   /* Lower range width is still a mess */
 
+  cds-header a.bclogotop {
+    margin-left: 2rem;
+  }
+
+  .heading-buttons {
+    margin-right: 2rem;
+    gap: 0;
+  }
+
+  cds-header-name::part(link) {
+    gap: 1.5rem;
+  }
+
   .content-landing {
     flex-direction: column;
   }
@@ -1660,6 +1686,19 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 
 /* Large (from 1056px to 1311px) */
 @media screen and (min-width: 1056px) and (max-width: 1311px) {
+  cds-header a.bclogotop {
+    margin-left: 2rem;
+  }
+
+  .heading-buttons {
+    margin-right: 2rem;
+    gap: 1.5rem;
+  }
+
+  cds-header-name::part(link) {
+    gap: 1.5rem;
+  }
+
   .screen {
     padding: 1rem 2rem 2rem;
     align-items: center;
@@ -1720,6 +1759,19 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 
 /* X-Large (from 1312px to 1583px) */
 @media screen and (min-width: 1312px) and (max-width: 1583px) {
+  cds-header a.bclogotop {
+    margin-left: 2rem;
+  }
+
+  .heading-buttons {
+    margin-right: 2rem;
+    gap: 2rem;
+  }
+
+  cds-header-name::part(link) {
+    gap: 1.5rem;
+  }
+
   .screen {
     padding: 2.5rem 2rem;
     align-items: center;
@@ -1767,6 +1819,19 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 
 /* XX-Large (from 1584px to 1783px) */
 @media screen and (min-width: 1584px) and (max-width: 1783px) {
+  cds-header a.bclogotop {
+    margin-left: 2.5rem;
+  }
+
+  .heading-buttons {
+    margin-right: 2.5rem;
+    gap: 2.5rem;
+  }
+
+  cds-header-name::part(link) {
+    gap: 1.5rem;
+  }
+
   .screen {
     padding: 2.5rem 2rem;
     align-items: center;
