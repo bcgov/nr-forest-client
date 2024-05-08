@@ -48,7 +48,7 @@
   "dependencies": {
     "@bcgov-nr/nr-fsa-theme": "^1.1.3",
     "@bcgov/bc-sans": "^2.0.0",
-    "@carbon/icons-vue": "^10.72.1",
+    "@carbon/icons-vue": "^10.88.0",
     "@carbon/pictograms": "^12.22.0",
     "@carbon/styles": "^1.36.0",
     "@carbon/web-components": "^2.8.0",
