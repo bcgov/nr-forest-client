@@ -45,7 +45,7 @@
     "test:flush": "rm -rf reports && rm -rf .nyc_output && rm -rf coverage && rm -rf reports-merge",
     "posttest:flush": "npm run coverage",
     "pretest:owasp": "mkdir -p reports/owasp",
-    "test:owasp": "owasp-dependency-check --bin \"./node_modules/dependency-check-bin\" --scan \"package-lock.json\" --project \"forest-client-frontend\" -o \"./reports/owasp\" --suppression \"./cve-ignore.xml\" -f ALL"
+    "test:owasp": "owasp-dependency-check --bin \"./node_modules/dependency-check-bin\" --scan \"package-lock.json\" --project \"dependency-check\" -o \"./reports/owasp\" --suppression \"./cve-ignore.xml\" -f ALL"
   },
   "dependencies": {
     "@bcgov-nr/nr-fsa-theme": "^1.1.3",
