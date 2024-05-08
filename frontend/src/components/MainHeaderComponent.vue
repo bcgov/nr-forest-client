@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, getCurrentInstance } from "vue";
+import { ref, watchEffect, getCurrentInstance, computed } from "vue";
 import { openMailtoLink, getObfuscatedEmail } from "@/services/ForestClientService";
 
 // Carbon
@@ -94,11 +94,18 @@ const onClickLogout = () => {
   }
 }
 
-const adminEmail = "forhvap.cliadmin@gov.bc.ca"; 
+const adminEmail = "forhvap.cliadmin@gov.bc.ca";
+
+const headerBarButtonsSize = computed(() =>
+  isSmallScreen.value || isMediumScreen.value ? "lg" : "sm",
+);
+
+const logoutBtnKind = computed(() =>
+  isSmallScreen.value || isMediumScreen.value ? "ghost" : "tertiary",
+);
 </script>
 
 <template>
-
   <cds-header aria-label="Forests Client Management System">
 
     <cds-header-menu-button
@@ -135,7 +142,7 @@ const adminEmail = "forhvap.cliadmin@gov.bc.ca";
       id="help-btn"
       data-id="help-btn"
       kind="ghost"
-      size="sm"
+      :size="headerBarButtonsSize"
       @click.prevent="helpModalActive = true"
     >
       <span v-if="!isSmallScreen && !isMediumScreen">Help with application</span>
@@ -145,8 +152,8 @@ const adminEmail = "forhvap.cliadmin@gov.bc.ca";
     <cds-button    
       v-if="$session?.isLoggedIn() && !$route.meta.profile"
       data-id="logout-btn"
-      kind="tertiary"
-      size="sm"
+      :kind="logoutBtnKind"
+      :size="headerBarButtonsSize"
       @click.prevent="onClickLogout"
     >
       <span v-if="!isSmallScreen && !isMediumScreen">Logout</span>
