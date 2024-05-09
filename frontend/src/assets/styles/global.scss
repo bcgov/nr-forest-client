@@ -47,8 +47,8 @@
   --light-theme-text-text-on-color: #ffffff;
 
   --cds-body-02-font-size: 0.875rem;
-  --heading-compact-02-font-size: 0.875rem;
   --heading-compact-02-font-size-rem: 0.875; // This is used to perform calculations only.
+  --heading-compact-02-font-size: calc(var(--heading-compact-02-font-size-rem) * 1rem);
 
   //Buttons
   --cds-button-disabled: #c6c6c8;
@@ -1386,6 +1386,12 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
+  :root {
+    // variables with the -rem suffix should be used for calculations only.
+
+    --cds-header-name-link-gap-vw: 5;
+    --cds-header-name-link-gap: calc(var(--cds-header-name-link-gap-vw) * 1vw);
+  }
   cds-header a.bclogotop {
     margin-left: 1rem;
   }
@@ -1396,18 +1402,19 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   }
 
   cds-header-name::part(link) {
-    gap: min(1rem, 5vw);
+    gap: min(1rem, var(--cds-header-name-link-gap));
   }
 
   .heading-compact-02.responsive {
-    --max-screen-width-rem: 20; // This is the max screen width (in rem) at which the font-size will get proportionally reduced (20rem === 320px).
-    --screen-variation-size: calc(var(--heading-compact-02-font-size-rem) * 100vw / var(--max-screen-width-rem));
-    --occupied-width: 9.5rem; // Space occupied in width on the header bar by elements other than the one matched by this selector when screen width is 320px.
-    --occupied-width-rem: 9.5; // This is used to perform calculations only.
+    // variables with the -rem suffix should be used for calculations only.
+
+    --max-screen-width-rem: 16.25;
+    --max-link-gap-rem: calc(var(--max-screen-width-rem) * var(--cds-header-name-link-gap-vw) / 100);
+    --occupied-width-rem: calc(9.5 + var(--max-link-gap-rem));
+    --occupied-width: calc(var(--occupied-width-rem) * 1rem); // Space occupied in width on the header bar by elements other than the one matched by this selector when screen width is the one specified by --max-screen-width-rem.
     --free-space-variation-size: calc(var(--heading-compact-02-font-size-rem) * (100vw - var(--occupied-width)) / (var(--max-screen-width-rem) - var(--occupied-width-rem)));
-    --average-size: calc((var(--screen-variation-size) + var(--free-space-variation-size)) / 2);
     --min-size: min(var(--free-space-variation-size), calc(var(--heading-compact-02-font-size) / 10));
-    font-size: clamp(var(--min-size), var(--average-size), var(--heading-compact-02-font-size));
+    font-size: clamp(var(--min-size), var(--free-space-variation-size), var(--heading-compact-02-font-size));
   }
 
   .content-landing {
