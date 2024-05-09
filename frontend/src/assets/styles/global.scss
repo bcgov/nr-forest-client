@@ -1402,7 +1402,7 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   .heading-compact-02.responsive {
     --max-screen-width-rem: 20; // This is the max screen width (in rem) at which the font-size will get proportionally reduced (20rem === 320px).
     --screen-variation-size: calc(var(--heading-compact-02-font-size-rem) * 100vw / var(--max-screen-width-rem));
-    --occupied-width: 9.5rem; // Space occupied in width on the header bar by elements except for the one matched by this selector when screen width is 320px.
+    --occupied-width: 9.5rem; // Space occupied in width on the header bar by elements other than the one matched by this selector when screen width is 320px.
     --occupied-width-rem: 9.5; // This is used to perform calculations only.
     --free-space-variation-size: calc(var(--heading-compact-02-font-size-rem) * (100vw - var(--occupied-width)) / (var(--max-screen-width-rem) - var(--occupied-width-rem)));
     --average-size: calc((var(--screen-variation-size) + var(--free-space-variation-size)) / 2);
