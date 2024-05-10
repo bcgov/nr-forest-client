@@ -1413,7 +1413,7 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     --occupied-width-rem: 9.73;
     --occupied-width: calc(var(--occupied-width-rem) * 1rem); // Space occupied in width on the header bar by elements other than the one matched by this selector when screen width is the one specified by --max-screen-width-rem.
     --free-space-variation-size: calc(var(--heading-compact-02-font-size-rem) * (100vw - var(--cds-header-name-link-gap) - var(--occupied-width)) / (var(--max-screen-width-rem) - var(--max-link-gap-rem) - var(--occupied-width-rem)));
-    --min-size: min(var(--free-space-variation-size), calc(var(--heading-compact-02-font-size) / 10));
+    --min-size: calc(var(--heading-compact-02-font-size) / 10);
     font-size: clamp(var(--min-size), var(--free-space-variation-size), var(--heading-compact-02-font-size));
   }
 
