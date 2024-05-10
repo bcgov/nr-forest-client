@@ -1424,18 +1424,6 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     gap: min(1rem, var(--cds-header-name-link-gap));
   }
 
-  .heading-compact-02.responsive {
-    // variables with the -<unit> suffix should be used for calculations only.
-
-    --max-screen-width-rem: calc(15.625 + var(--scroll-bar-width-px) / 16); // Value below which the text would start to wrap earlier.
-    --max-link-gap-rem: calc(var(--max-screen-width-rem) * var(--cds-header-name-link-gap-vw) / 100);
-    --occupied-width-rem: calc(9.75 + var(--scroll-bar-width-px) / 16);
-    --occupied-width: calc(var(--occupied-width-rem) * 1rem); // Space occupied in width on the header bar by elements other than the one matched by this selector.
-    --free-space-variation-size: calc(var(--heading-compact-02-font-size-rem) * (100vw - var(--cds-header-name-link-gap) - var(--occupied-width)) / (var(--max-screen-width-rem) - var(--max-link-gap-rem) - var(--occupied-width-rem)));
-    --min-size: calc(var(--heading-compact-02-font-size) / 10);
-    font-size: clamp(var(--min-size), var(--free-space-variation-size), var(--heading-compact-02-font-size));
-  }
-
   .content-landing {
     flex-direction: column;
   }
