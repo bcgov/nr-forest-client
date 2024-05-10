@@ -91,7 +91,13 @@
 
   //Layout
   --header-height: 3.5rem;
-  --scroll-bar-width-px: 15; // Use px unit because it shouldn't vary with text resize.
+
+  /*
+  The expected width of the scroll bar.
+  While this might not match the real value, it should help to make a rough adjustment, at least.
+  The value is in pixels instead of rem because it shouldn't vary with text resize.
+  */
+  --scroll-bar-width-px: 15;
 }
 
 *,
