@@ -44,13 +44,7 @@ public class ClientSubmissionAutoProcessingService {
             .doOnNext(entity -> entity.setStatus("Y"))
             .doOnNext(entity -> entity.setMatchers(Map.of()))
             .flatMap(submissionMatchDetailRepository::save)
-            .doOnNext(entity -> log.info(
-                    "Added matches for submission {} {}",
-                    entity.getSubmissionId(),
-                    entity.getMatchingField()
-                )
-            )
-            .thenReturn(new MessagingWrapper<>(submissionId,Map.of()));
+            .thenReturn(new MessagingWrapper<>(submissionId, Map.of()));
   }
 
   /**
@@ -70,40 +64,64 @@ public class ClientSubmissionAutoProcessingService {
    * This method is responsible for marking the submission as reviewed
    */
   public Mono<MessagingWrapper<Integer>> reviewed(MessagingWrapper<List<MatcherResult>> message) {
-    return
-        persistData(
-            (int) message.parameters().get(ApplicationConstant.SUBMISSION_ID),
-            SubmissionTypeCodeEnum.RNC
+    int submissionId = (int) message.parameters().get(ApplicationConstant.SUBMISSION_ID);
+
+    return persistData(submissionId, SubmissionTypeCodeEnum.RNC)
+        .doOnNext(id -> log.info("Request {} was put into review", id))
+        .flatMap(this::loadFirstOrNew)
+        .doOnNext(entity -> updateEntityMatchers(entity, message))
+        .flatMap(submissionMatchDetailRepository::save)
+        .doOnNext(entity -> log.info(
+                "Added matches for submission {} {}",
+                entity.getSubmissionId(),
+                entity.getMatchingField()
+            )
         )
-            .doOnNext(id -> log.info("Request {} was put into review", id))
-            .flatMap(this::loadFirstOrNew)
-            .doOnNext(entity -> entity.setMatchers(
-                    message
-                        .payload()
-                        .stream()
-                        .collect(Collectors.toMap(MatcherResult::fieldName, MatcherResult::value))
-                )
-            )
-            .flatMap(submissionMatchDetailRepository::save)
-            .doOnNext(entity -> log.info(
-                    "Added matches for submission {} {}",
-                    entity.getSubmissionId(),
-                    entity.getMatchingField()
-                )
-            )
-            .doOnNext(entity ->
-                log.info("Request {} was put into review",
-                    message.parameters().get(ApplicationConstant.SUBMISSION_ID)
-                )
-            )
-            .map(entity ->
-                new MessagingWrapper<>(
-                    entity.getSubmissionId(),
-                    message.parameters()
-                )
-                    .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.N)
-            );
+        .map(entity -> createMessagingWrapper(entity, message));
   }
+
+  private void updateEntityMatchers(
+      SubmissionMatchDetailEntity entity,
+      MessagingWrapper<List<MatcherResult>> message
+  ) {
+    entity.setMatchers(
+        message
+            .payload()
+            .stream()
+            .filter(MatcherResult::hasMatch)
+            .collect(Collectors.toMap(MatcherResult::fieldName, MatcherResult::value))
+    );
+  }
+
+  private MessagingWrapper<Integer> createMessagingWrapper(SubmissionMatchDetailEntity entity,
+      MessagingWrapper<List<MatcherResult>> message) {
+    return new MessagingWrapper<>(entity.getSubmissionId(), message.parameters())
+        .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.N);
+  }
+
+  /**
+ * This method is used to load matching information for a given submission.
+ * It retrieves the submission details from the repository using the submission ID from the message parameters.
+ * If matching information is found, it is added to the message parameters under the key 'MATCHING_INFO'.
+ * If no matching information is found, the original message is returned as is.
+ *
+ * @param message A MessagingWrapper object that contains the submission ID in its parameters.
+ * @return A Mono of MessagingWrapper. If matching information is found, the returned MessagingWrapper
+ *         will have the matching information added to its parameters. If no matching information is found,
+ *         the original MessagingWrapper is returned.
+ */
+public <T> Mono<MessagingWrapper<T>> loadMatchingInfo(MessagingWrapper<T> message) {
+  return
+      submissionMatchDetailRepository
+          .findBySubmissionId((int) message.parameters().get(ApplicationConstant.SUBMISSION_ID))
+          .map(entity ->
+              message.withParameter(
+                  ApplicationConstant.MATCHING_INFO,
+                  entity.getMatchers().get(ApplicationConstant.MATCHING_INFO)
+              )
+          )
+          .switchIfEmpty(Mono.just(message));
+}
 
   private Mono<Integer> persistData(Integer submissionId, SubmissionTypeCodeEnum typeCode) {
     return

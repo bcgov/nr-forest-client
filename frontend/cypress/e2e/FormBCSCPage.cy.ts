@@ -73,17 +73,7 @@ describe("BCSC Form", () => {
       .click()
       .and("have.value", "DCC - Cariboo-Chilcotin Natural Resource District");
 
-    cy
-    .get('#phoneNumberId')
-    .should("be.visible")
-      .shadow()
-      .find("input")
-      .should("have.value", "")
-      .type('2503008326');
-
-      cy
-    .get('#phoneNumberId')
-    .blur();
+    cy.get("#phoneNumberId").shadow().find("input").type("2503008326");
 
     cy.get('[data-test="wizard-submit-button"]')
     .click();
@@ -145,20 +135,14 @@ describe("BCSC Form", () => {
       .click()
       .and("have.value", "DCC - Cariboo-Chilcotin Natural Resource District");
 
-    cy
-    .get('#phoneNumberId')
-    .should("be.visible")
-      .shadow()
-      .find("input")
-      .should("have.value", "")
-      .type('2503008326');
+    cy.get("#phoneNumberId").shadow().find("input").type("2503008326");
 
     cy
     .get('.form-steps-section > [kind="tertiary"]')
     .should("be.visible")
     .click();
 
-    cy.focused().should('have.id', 'firstName_1');
+    cy.get("#firstName_1").shadow().find("input").should('be.focused');
 
     cy
     .get('#role_1')
@@ -173,13 +157,7 @@ describe("BCSC Form", () => {
     .should("be.visible")
     .click();
 
-    cy
-    .get('#firstName_1')
-    .should("be.visible")
-      .shadow()
-      .find("input")
-      .should("have.value", "")
-      .type('James');
+    cy.get("#firstName_1").shadow().find("input").type("James");
 
     cy.get('#lastName_1')
     .should("be.visible")
@@ -236,7 +214,7 @@ describe("BCSC Form", () => {
     .should("be.visible")
     .click();
 
-    cy.focused().should('have.id', 'firstName_1');
+    cy.get("#firstName_1").shadow().find("input").should('be.focused');
 
     cy
     .get('#role_1')
@@ -296,15 +274,9 @@ describe("BCSC Form", () => {
     const otherContactNames = ["George", "Ringo"];
     const addContact = (contactId: number, firstName: string) => {
       cy.get('.form-steps-section > [kind="tertiary"]').should("be.visible").click();
-
-      cy.focused().should("have.id", `firstName_${contactId}`);
-
-      cy.get(`#firstName_${contactId}`)
-        .should("be.visible")
-        .shadow()
-        .find("input")
-        .should("have.value", "")
-        .type(firstName);
+      
+      cy.get(`#firstName_${contactId}`).shadow().find("input").should('be.focused')
+      cy.get(`#firstName_${contactId}`).shadow().find("input").type(firstName);
     };
     const fillContact = (contactId: number) => {
       cy.get(`#role_${contactId}`).should("be.visible").shadow().find("input").click();

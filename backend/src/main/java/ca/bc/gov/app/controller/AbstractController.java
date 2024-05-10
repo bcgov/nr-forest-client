@@ -1,20 +1,22 @@
 package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.util.ValidationUtil;
+import ca.bc.gov.app.validator.client.ReactiveValidator;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.Validator;
+import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
-@Slf4j
-public class AbstractController<T, V extends Validator> {
+public class AbstractController<T, V extends ReactiveValidator> {
 
   protected final Class<T> contentClass;
   private final V validator;
 
   protected <S> void validate(S target) {
-    ValidationUtil.validate(target,contentClass,validator);
+    ValidationUtil.validate(target, contentClass, validator);
   }
-
+  
+  protected <S> Mono<S> validateReactive(S target) {
+    return ValidationUtil.validateReactive(target, contentClass, validator);
+  }
 
 }

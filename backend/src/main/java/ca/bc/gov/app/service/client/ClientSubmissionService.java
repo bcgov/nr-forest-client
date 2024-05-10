@@ -21,6 +21,7 @@ import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
+import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
 import ca.bc.gov.app.exception.RequestAlreadyProcessedException;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
@@ -35,11 +36,13 @@ import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.service.ches.ChesService;
+import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -55,6 +58,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -86,7 +90,8 @@ public class ClientSubmissionService {
       String[] submittedAt
   ) {
 
-    log.info("Searching for Page {} Size {} Type {} Status {} Client {} District {} Name {} submittedAt {}",
+    log.info(
+        "Searching for Page {} Size {} Type {} Status {} Client {} District {} Name {} submittedAt {}",
         page,
         size,
         requestStatus,
@@ -95,7 +100,7 @@ public class ClientSubmissionService {
         name,
         submittedAt
     );
-    
+
     return getClientTypes()
         .flatMapMany(clientTypes ->
             loadSubmissions(page, size, requestStatus, submittedAt)
@@ -106,7 +111,8 @@ public class ClientSubmissionService {
                                 .map(districtFullDesc ->
                                     new ClientListSubmissionDto(
                                         submissionPair.getRight().getSubmissionId(),
-                                        submissionPair.getRight().getSubmissionType().getDescription(),
+                                        submissionPair.getRight().getSubmissionType()
+                                            .getDescription(),
                                         submissionDetail.getOrganizationName(),
                                         clientTypes.getOrDefault(
                                             submissionDetail.getClientTypeCode(),
@@ -114,11 +120,15 @@ public class ClientSubmissionService {
                                         ),
                                         districtFullDesc,
                                         Optional
-                                            .ofNullable(submissionPair.getRight().getSubmissionDate())
-                                            .map(date -> date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                                            .ofNullable(
+                                                submissionPair.getRight().getSubmissionDate())
+                                            .map(date -> date.format(
+                                                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                                             .orElse(StringUtils.EMPTY),
-                                        StringUtils.defaultString(submissionPair.getRight().getUpdatedBy()),
-                                        submissionPair.getRight().getSubmissionStatus().getDescription(),
+                                        StringUtils.defaultString(
+                                            submissionPair.getRight().getUpdatedBy()),
+                                        submissionPair.getRight().getSubmissionStatus()
+                                            .getDescription(),
                                         submissionPair.getLeft()
                                     )
                                 )
@@ -129,10 +139,10 @@ public class ClientSubmissionService {
 
   private Mono<String> getDistrictFullDescByCode(String districtCode) {
     return Mono.justOrEmpty(districtCode)
-            .flatMap(districtCodeRepository::findByCode)
-            .map(districtCodeEntity -> districtCodeEntity.getCode() + " - "
-                  + districtCodeEntity.getDescription())
-            .defaultIfEmpty("");
+        .flatMap(districtCodeRepository::findByCode)
+        .map(districtCodeEntity -> districtCodeEntity.getCode() + " - "
+                                   + districtCodeEntity.getDescription())
+        .defaultIfEmpty("");
   }
 
 
@@ -144,16 +154,14 @@ public class ClientSubmissionService {
    */
   public Mono<Integer> submit(
       ClientSubmissionDto clientSubmissionDto,
-      String userId,
-      String userEmail,
-      String userName,
-      String businessId
+      JwtAuthenticationToken principal
   ) {
 
     log.info("Submitting client submission for user {} with email {} and name {}",
-        userId,
-        userEmail,
-        userName);
+        JwtPrincipalUtil.getUserId(principal),
+        JwtPrincipalUtil.getEmail(principal),
+        JwtPrincipalUtil.getName(principal)
+    );
 
     return
         Mono
@@ -163,8 +171,8 @@ public class ClientSubmissionService {
                     .submissionStatus(SubmissionStatusEnum.N)
                     .submissionType(SubmissionTypeCodeEnum.SPP)
                     .submissionDate(LocalDateTime.now())
-                    .createdBy(userId)
-                    .updatedBy(userName)
+                    .createdBy(JwtPrincipalUtil.getUserId(principal))
+                    .updatedBy(JwtPrincipalUtil.getName(principal))
                     .build()
             )
             //Save submission to begin with
@@ -193,7 +201,7 @@ public class ClientSubmissionService {
                                     locations,
                                     contact,
                                     submission.getSubmissionId(),
-                                    userId
+                                    JwtPrincipalUtil.getUserId(principal)
                                 )
                             )
                     )
@@ -202,12 +210,36 @@ public class ClientSubmissionService {
                     //Return what we need only
                     .thenReturn(submission.getSubmissionId())
             )
+            .flatMap(submission ->
+                Mono
+                    .just(SubmissionMatchDetailEntity
+                        .builder()
+                        .submissionId(submission)
+                        .updatedAt(LocalDateTime.now())
+                        .matchers(
+                            Map.of(
+                                "info",
+                                Map.of(
+                                    "businessId", JwtPrincipalUtil.getBusinessId(principal),
+                                    "businessName", JwtPrincipalUtil.getBusinessName(principal),
+                                    "userId", JwtPrincipalUtil.getUserId(principal),
+                                    "email", JwtPrincipalUtil.getEmail(principal),
+                                    "name", JwtPrincipalUtil.getName(principal)
+                                )
+                            )
+                        )
+                        .build()
+                    )
+                    .flatMap(submissionMatchDetailRepository::save)
+                    .map(SubmissionMatchDetailEntity::getSubmissionId)
+            )
+
             .flatMap(submissionId -> sendEmail(
-                                      submissionId,
-                                      clientSubmissionDto,
-                                      userEmail,
-                                      userName
-                                     )
+                    submissionId,
+                    clientSubmissionDto,
+                    JwtPrincipalUtil.getEmail(principal),
+                    JwtPrincipalUtil.getName(principal)
+                )
             );
   }
 
@@ -298,10 +330,11 @@ public class ClientSubmissionService {
         .flatMap(submissionDetailsDto ->
             submissionMatchDetailRepository
                 .findBySubmissionId(id.intValue())
+                .doOnNext(this::cleanMatchers)
                 .map(matched ->
-                    submissionDetailsDto
-                        .withApprovedTimestamp(matched.getUpdatedAt())
-                        .withMatchers(matched.getMatchers())
+                        submissionDetailsDto
+                            .withApprovedTimestamp(matched.getUpdatedAt())
+                            .withMatchers(matched.getMatchers())
                 )
                 .defaultIfEmpty(
                     submissionDetailsDto
@@ -355,6 +388,16 @@ public class ClientSubmissionService {
                     .flatMap(submissionMatchDetailRepository::save)
             )
             .then();
+  }
+
+  private void cleanMatchers(SubmissionMatchDetailEntity entity) {
+    entity.getMatchers().entrySet().forEach(entry -> {
+      if (entry.getValue() instanceof String value) {
+        String[] values = value.split(",");
+        LinkedHashSet<String> uniqueValues = new LinkedHashSet<>(Arrays.asList(values));
+        entry.setValue(String.join(",", uniqueValues));
+      }
+    });
   }
 
   private Mono<SubmissionLocationContactEntity> saveAndAssociateContact(
@@ -450,9 +493,9 @@ public class ClientSubmissionService {
   }
 
   private Flux<Pair<Long, SubmissionEntity>> loadSubmissions(
-      int page, 
+      int page,
       int size,
-      SubmissionStatusEnum[] requestStatus, 
+      SubmissionStatusEnum[] requestStatus,
       String[] submittedAt) {
 
     Criteria userQuery = SubmissionPredicates
@@ -483,7 +526,7 @@ public class ClientSubmissionService {
                   )
           );
     }
-    
+
     final Criteria finalUserQuery = userQuery;
 
     return

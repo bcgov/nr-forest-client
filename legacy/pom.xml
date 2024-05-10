@@ -50,7 +50,8 @@
     <junit-platform.version>1.9.1</junit-platform.version>
 
     <oci.revision>${project.version}</oci.revision>
-    <poi.version>5.2.3</poi.version>
+    <mapstruct.version>1.5.5.Fina</mapstruct.version>
+    <netty.version>4.1.108.Final</netty.version>
   </properties>
 
   <dependencies>
@@ -110,17 +111,12 @@
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>
-      <version>1.5.5.Final</version>
+      <version>${mapstruct.version}l</version>
     </dependency>
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct-processor</artifactId>
-      <version>1.5.5.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>org.dhatim</groupId>
-      <artifactId>fastexcel</artifactId>
-      <version>0.16.4</version>
+      <version>${mapstruct.version}l</version>
     </dependency>
 
     <dependency>
@@ -198,7 +194,12 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
-        <version>6.1.5</version>
+        <version>6.1.6</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http</artifactId>
+        <version>${netty.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -493,6 +494,26 @@
           <projectType>application</projectType>
           <outputFormat>all</outputFormat>
           <outputName>bom</outputName>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>6.1.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <format>ALL</format>
+          <outputDirectory>${dependency.check.report.dir}</outputDirectory>
+          <suppressionFiles>
+            <suppressionFile>${project.basedir}/docs/cve-ignore.xml</suppressionFile>
+          </suppressionFiles>
         </configuration>
       </plugin>
 

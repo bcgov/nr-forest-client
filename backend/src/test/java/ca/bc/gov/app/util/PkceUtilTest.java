@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Unit Test : PkceUtil")
+@DisplayName("Unit Test | PkceUtil")
 class PkceUtilTest {
 
   @Test

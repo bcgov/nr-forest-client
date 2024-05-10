@@ -5,8 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
-import ca.bc.gov.app.matchers.GoodStandingProcessorMatcher;
-import ca.bc.gov.app.matchers.ProcessorMatcher;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -47,42 +46,35 @@ class GoodStandingProcessorMatcherTest {
       MatcherResult result
   ) {
 
-    StepVerifier.FirstStep<MatcherResult> verifier =
-        matcher
-            .matches(dto)
-            .as(StepVerifier::create);
-
-    if (success) {
-      verifier.verifyComplete();
-    } else {
-      verifier
-          .expectNext(result)
-          .verifyComplete();
-    }
+    matcher
+        .matches(dto)
+        .as(StepVerifier::create)
+        .expectNext(result)
+        .verifyComplete();
   }
 
   private static Stream<Arguments> goodStanding() {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto(1,null, null,null, StringUtils.EMPTY,null),
+                new SubmissionInformationDto(1, null, null, null, StringUtils.EMPTY, null),
                 false,
-                new MatcherResult("goodStanding", "Value not found")
+                new MatcherResult("goodStanding", Set.of("Value not found"))
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,null, null,null, null,null),
+                new SubmissionInformationDto(1, null, null, null, null, null),
                 false,
-                new MatcherResult("goodStanding", "Value not found")
+                new MatcherResult("goodStanding", Set.of("Value not found"))
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,null, null,null, "N",null),
+                new SubmissionInformationDto(1, null, null, null, "N", null),
                 false,
-                new MatcherResult("goodStanding", "Client not in good standing")
+                new MatcherResult("goodStanding", Set.of("Client not in good standing"))
             ),
             Arguments.of(
-                new SubmissionInformationDto(1,null, null,null, "Y",null),
+                new SubmissionInformationDto(1, null, null, null, "Y", null),
                 true,
-                null
+                new MatcherResult("goodStanding", Set.of())
             )
         );
   }
