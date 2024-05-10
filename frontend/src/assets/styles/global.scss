@@ -1414,6 +1414,12 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     gap: 0;
   }
 
+  .heading-buttons cds-button svg {
+    // allows icons to render at their full size.
+    block-size: auto;
+    inline-size: auto;
+  }
+
   cds-header-name::part(link) {
     gap: min(1rem, var(--cds-header-name-link-gap));
   }

@@ -18,7 +18,11 @@ import { CONFIRMATION_ROUTE_NAME } from "@/routes";
 // @ts-ignore
 import Logout16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
+import Logout20 from "@carbon/icons-vue/es/logout/20";
+// @ts-ignore
 import Help16 from "@carbon/icons-vue/es/help/16";
+// @ts-ignore
+import Help20 from "@carbon/icons-vue/es/help/20";
 // @ts-ignore
 import Avatar16 from "@carbon/icons-vue/es/user--avatar/24";
 // @ts-ignore
@@ -143,8 +147,13 @@ const logoutBtnKind = computed(() =>
       :size="headerBarButtonsSize"
       @click.prevent="helpModalActive = true"
     >
-      <span v-if="!isSmallScreen && !isMediumScreen">Help with application</span>
-      <Help16 slot="icon" />
+      <template v-if="!isSmallScreen && !isMediumScreen">
+        <span>Help with application</span>
+        <Help16 slot="icon" />
+      </template>
+      <template v-else>
+        <Help20 slot="icon" />
+      </template>
     </cds-button>
 
     <cds-button    
@@ -154,8 +163,13 @@ const logoutBtnKind = computed(() =>
       :size="headerBarButtonsSize"
       @click.prevent="onClickLogout"
     >
-      <span v-if="!isSmallScreen && !isMediumScreen">Logout</span>
-      <Logout16 slot="icon" />
+      <template v-if="!isSmallScreen && !isMediumScreen">
+        <span>Logout</span>
+        <Logout16 slot="icon" />
+      </template>
+      <template v-else>
+        <Logout20 slot="icon" />
+      </template>
     </cds-button>
     </div>
 
