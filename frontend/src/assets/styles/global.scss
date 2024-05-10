@@ -151,7 +151,7 @@ cds-button::part(button) {
 }
 
 cds-button span {
-  width: 11rem;
+  width: min(11rem, 100%);
 }
 
 .close-panel-button svg {
