@@ -1387,7 +1387,7 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
   :root {
-    // variables with the -rem suffix should be used for calculations only.
+    // variables with the -<unit> suffix should be used for calculations only.
 
     --cds-header-name-link-gap-vw: 5;
     --cds-header-name-link-gap: calc(var(--cds-header-name-link-gap-vw) * 1vw);
@@ -1406,7 +1406,7 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   }
 
   .heading-compact-02.responsive {
-    // variables with the -rem suffix should be used for calculations only.
+    // variables with the -<unit> suffix should be used for calculations only.
 
     --max-screen-width-rem: 16.25;
     --max-link-gap-rem: calc(var(--max-screen-width-rem) * var(--cds-header-name-link-gap-vw) / 100);
