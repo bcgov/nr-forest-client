@@ -100,6 +100,12 @@
   --scroll-bar-width-px: 15;
 }
 
+@media screen and (hover: none) {
+  :root {
+    --scroll-bar-width-px: 0; // The scroll bar is hidden on touch devices.
+  }
+}
+
 *,
 *::before,
 *::after {
@@ -1389,12 +1395,6 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   width: 1px;
   height: 1px;
   overflow: hidden;
-}
-
-@media screen and (hover: none) {
-  :root {
-    --scroll-bar-width-px: 0; // The scroll bar is hidden on touch devices.
-  }
 }
 
 /* Small (up to 671px) */
