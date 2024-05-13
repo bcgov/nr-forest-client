@@ -164,7 +164,7 @@ cds-button::part(button) {
 }
 
 cds-button span {
-  width: min(11rem, 100%);
+  width: 11rem;
 }
 
 .close-panel-button svg {
@@ -1525,6 +1525,10 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   }
 
   .screen cds-button {
+    width: 100%;
+  }
+
+  .screen cds-button span {
     width: 100%;
   }
 
