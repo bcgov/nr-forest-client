@@ -23,7 +23,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @With
 public class SubmissionMatchDetailEntity {
-  
+
   @Id
   @Column("submission_matching_detail_id")
   private Integer submissionMatchingId;
@@ -49,11 +49,14 @@ public class SubmissionMatchDetailEntity {
 
   @Column("submission_matching_processed")
   private boolean processed;
-  
+
+  @Column("submission_matching_processed_time")
+  private LocalDateTime processingTime;
+
   @Column("matching_fields")
   private Json matchingField;
 
   @Transient
-  private Map<String,Object> matchers;
-  
+  private Map<String, Object> matchers;
+
 }
