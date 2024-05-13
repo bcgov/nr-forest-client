@@ -1,5 +1,7 @@
 package ca.bc.gov.app.service.client;
 
+import static java.util.function.Predicate.not;
+
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.MessagingWrapper;
@@ -95,6 +97,7 @@ public class ClientSubmissionAutoProcessingService {
     return
         submissionMatchDetailRepository
             .findBySubmissionId((int) message.parameters().get(ApplicationConstant.SUBMISSION_ID))
+            .filter(not(SubmissionMatchDetailEntity::isBeingProcessed))
             //This will add the current date to the processing time to prevent concurrency
             .flatMap(entity ->
                 submissionMatchDetailRepository

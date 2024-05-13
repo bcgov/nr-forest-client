@@ -59,4 +59,8 @@ public class SubmissionMatchDetailEntity {
   @Transient
   private Map<String, Object> matchers;
 
+  public boolean isBeingProcessed(){
+    return this.processingTime != null && this.processingTime.isAfter(LocalDateTime.now().minusMinutes(2));
+  }
+
 }
