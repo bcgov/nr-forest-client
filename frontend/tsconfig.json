@@ -20,6 +20,8 @@
     },
     "composite": true,
     "moduleResolution": "node",
-    "module": "es2020"
+    "module": "es2020",
+    "target": "es2015",
+    "downlevelIteration": true
   }
 }
