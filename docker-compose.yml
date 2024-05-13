@@ -1,7 +1,3 @@
-# Compose v3 ref: https://docs.docker.com/compose/compose-file/compose-file-v3/
----
-version: "3.9"
-
 x-var:
   - &POSTGRES_USER
     postgres
