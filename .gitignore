@@ -573,3 +573,5 @@ frontend/reports/
 **/sonar-report.xml
 **/config/*.jks
 **/reports-merge/
+
+**docker-compose.override.yml
