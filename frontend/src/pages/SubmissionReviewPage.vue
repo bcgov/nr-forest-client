@@ -256,14 +256,23 @@ const matchingData = computed(() => {
   );
 });
 
-const getLegacyUrl = (duplicatedClient) => {
-  const encodedClientNumber = encodeURIComponent(duplicatedClient.trim());
-  return `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${encodedClientNumber}`;
-};
-
 const getListItemContent = ref((clientNumbers, label) => {
   return clientNumbers ? renderListItem(label, clientNumbers.trim()) : "";
 });
+
+const getLegacyUrl = (duplicatedClient, label) => {
+  const encodedClientNumber = encodeURIComponent(duplicatedClient.trim());
+  switch (label) {
+    case 'contact':
+      return `https://${greenDomain}/int/client/client06ContactListAction.do?bean.clientNumber=${encodedClientNumber}`;
+    case 'location':
+      return `https://${greenDomain}/int/client/client07LocationListAction.do?bean.clientNumber=${encodedClientNumber}`;
+    case 'corporationName':
+      return `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${encodedClientNumber}`;
+    default:
+      return `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${encodedClientNumber}`;
+  }
+};
 
 const renderListItem = (label, clientNumbers) => {
   let finalLabel = "";
@@ -279,10 +288,10 @@ const renderListItem = (label, clientNumbers) => {
 
   finalLabel += " - Client number: ";
 
-  const clients = [...new Set(clientNumbers.split(","))];
+  const clients = [...new Set<string>(clientNumbers.split(","))];
   finalLabel += clients
                   .map(clientNumber =>
-                    '<a target="_blank" href="' + getLegacyUrl(clientNumber) +'">' +
+                    '<a target="_blank" href="' + getLegacyUrl(clientNumber, label) + '">' +
                     clientNumber +
                     "</a>")
                   .join(', ');
