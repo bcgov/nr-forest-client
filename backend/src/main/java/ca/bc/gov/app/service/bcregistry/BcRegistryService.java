@@ -92,7 +92,7 @@ public class BcRegistryService {
             .map(BcRegistryFacetResponseDto::searchResults)
             .flatMapIterable(BcRegistryFacetSearchResultsDto::results)
             .filter(entry -> entry.status().equalsIgnoreCase("active"))
-            .doOnNext(content -> log.info("Found entry on BC Registry {}", content));
+            .doOnNext(content -> log.info("Found entry on BC Registry [{}] {}", content.identifier(),content.name()));
   }
 
   /**

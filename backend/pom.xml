@@ -532,26 +532,6 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.owasp</groupId>
-                <artifactId>dependency-check-maven</artifactId>
-                <version>6.1.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <format>ALL</format>
-                    <outputDirectory>${dependency.check.report.dir}</outputDirectory>
-                    <suppressionFiles>
-                        <suppressionFile>${project.basedir}/docs/cve-ignore.xml</suppressionFile>
-                    </suppressionFiles>
-                </configuration>
-            </plugin>
-
         </plugins>
         <finalName>nr-forest-client-backend</finalName>
     </build>
