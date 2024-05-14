@@ -44,6 +44,7 @@ public class LegacyLoadingService {
         .doOnNext(matcher -> log.info("Running {}", matcher.name()))
         //If matcher returns empty, all good, if not, it is a problem
         .flatMap(matcher -> matcher.matches(message))
+        .filter(MatcherResult::hasMatch)
         .doOnNext(results -> log.info("Matched a result {}", results))
         .collectList();
   }
