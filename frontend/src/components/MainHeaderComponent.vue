@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, getCurrentInstance } from "vue";
+import { ref, watchEffect, getCurrentInstance, computed } from "vue";
 import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
 
 // Carbon
@@ -18,7 +18,11 @@ import { CONFIRMATION_ROUTE_NAME } from "@/routes";
 // @ts-ignore
 import Logout16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
+import Logout20 from "@carbon/icons-vue/es/logout/20";
+// @ts-ignore
 import Help16 from "@carbon/icons-vue/es/help/16";
+// @ts-ignore
+import Help20 from "@carbon/icons-vue/es/help/20";
 // @ts-ignore
 import Avatar16 from "@carbon/icons-vue/es/user--avatar/24";
 // @ts-ignore
@@ -92,11 +96,18 @@ const onClickLogout = () => {
   } else {
     logoutModalActive.value = true;
   }
-}
+};
+
+const headerBarButtonsSize = computed(() =>
+  isSmallScreen.value || isMediumScreen.value ? "lg" : "sm",
+);
+
+const logoutBtnKind = computed(() =>
+  isSmallScreen.value || isMediumScreen.value ? "ghost" : "tertiary",
+);
 </script>
 
 <template>
-
   <cds-header aria-label="Forests Client Management System">
 
     <cds-header-menu-button
@@ -133,22 +144,32 @@ const onClickLogout = () => {
       id="help-btn"
       data-id="help-btn"
       kind="ghost"
-      size="sm"
+      :size="headerBarButtonsSize"
       @click.prevent="helpModalActive = true"
     >
-      <span v-if="!isSmallScreen && !isMediumScreen">Help with application</span>
-      <Help16 slot="icon" />
+      <template v-if="!isSmallScreen && !isMediumScreen">
+        <span>Help with application</span>
+        <Help16 slot="icon" />
+      </template>
+      <template v-else>
+        <Help20 slot="icon" />
+      </template>
     </cds-button>
 
     <cds-button    
       v-if="$session?.isLoggedIn() && !$route.meta.profile"
       data-id="logout-btn"
-      kind="tertiary"
-      size="sm"
+      :kind="logoutBtnKind"
+      :size="headerBarButtonsSize"
       @click.prevent="onClickLogout"
     >
-      <span v-if="!isSmallScreen && !isMediumScreen">Logout</span>
-      <Logout16 slot="icon" />
+      <template v-if="!isSmallScreen && !isMediumScreen">
+        <span>Logout</span>
+        <Logout16 slot="icon" />
+      </template>
+      <template v-else>
+        <Logout20 slot="icon" />
+      </template>
     </cds-button>
     </div>
 
