@@ -52,6 +52,7 @@
     <oci.revision>${project.version}</oci.revision>
     <mapstruct.version>1.5.5.Fina</mapstruct.version>
     <netty.version>4.1.109.Final</netty.version>
+    <flyway.version>10.13.0</flyway.version>
   </properties>
 
   <dependencies>
@@ -158,7 +159,6 @@
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
-      <version>9.22.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
