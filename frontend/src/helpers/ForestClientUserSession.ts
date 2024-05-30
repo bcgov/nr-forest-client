@@ -42,6 +42,10 @@ class ForestClientUserSession implements SessionProperties {
     return this.user;
   };
 
+  loadAuthorities = (): string[] => {
+    return this.authorities;
+  };
+
   /**
    * Loads the user information from the user token and updates the user object.
    * If the user token is not available, sets the user object to undefined.

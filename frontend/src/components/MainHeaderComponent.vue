@@ -13,6 +13,7 @@ import { isSmallScreen, isMediumScreen } from "@/composables/useScreenSize";
 import { useRoute } from "vue-router";
 // Types
 import { nodeEnv, appVersion } from "@/CoreConstants";
+import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // Routes
 import { CONFIRMATION_ROUTE_NAME } from "@/routes";
 // @ts-ignore
@@ -31,6 +32,8 @@ import Result16 from "@carbon/icons-vue/es/result/16";
 import SignOut16 from "@carbon/icons-vue/es/user--follow/16";
 // @ts-ignore
 import Close16 from "@carbon/icons-vue/es/close/16";
+// @ts-ignore
+import TaskAdd16 from "@carbon/icons-vue/es/task--add/16";
 
 const envPrefix = "openshift-";
 const env = ref(nodeEnv);
@@ -105,6 +108,8 @@ const headerBarButtonsSize = computed(() =>
 const logoutBtnKind = computed(() =>
   isSmallScreen.value || isMediumScreen.value ? "ghost" : "tertiary",
 );
+
+const userhasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
 </script>
 
 <template>
@@ -224,10 +229,16 @@ const logoutBtnKind = computed(() =>
 
   <cds-side-nav v-if="$route.meta.sideMenu" v-shadow=1>
     <cds-side-nav-items v-shadow=1>      
-      <cds-side-nav-link active href="/submissions" large>
+      <cds-side-nav-link active href="/submissions" large v-shadow=1 id="menu-list-submission-list">
         <span>Submissions</span>
         <Result16 slot="title-icon" />
       </cds-side-nav-link>
+
+      <cds-side-nav-link active href="/new-client-staff" large v-if="userhasAuthority" v-shadow=1 id="menu-list-staff-form">
+        <span>Create client</span>
+        <TaskAdd16 slot="title-icon" />
+      </cds-side-nav-link>
+
     </cds-side-nav-items>
 
     <cds-side-nav-items v-shadow=1 class="lower-side-nav"> 
