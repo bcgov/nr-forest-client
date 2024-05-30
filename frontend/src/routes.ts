@@ -19,7 +19,7 @@ import LogoutPage from "@/pages/LogoutPage.vue";
 
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-import { nodeEnv } from "@/CoreConstants";
+import { featureFlags } from "@/CoreConstants";
 
 const CONFIRMATION_ROUTE_NAME = "confirmation";
 const targetPathStorage = useLocalStorage("targetPath", "");
@@ -147,11 +147,13 @@ const routes = [
       redirectTo: {
         bceidbusiness: "form",
         bcsc: "form",
+        idir: "internal",
       },
       style: "content-stretched",
       headersStyle: "headers-compact",
       sideMenu: true,
       profile: true,
+      featureFlagged: "STAFF_CREATE",
     },
   },
   {
@@ -285,6 +287,13 @@ router.beforeEach(async (to, from, next) => {
       targetPathStorage.value = to.query.fd_to as string;
     }
 
+    console.log('My Flags',featureFlags,'Page flags',to.meta.featureFlagged);
+
+    // If the page requires a feature flag and the feature flag is not enabled, redirect to error page
+    if(to.meta.featureFlagged && !featureFlags[to.meta.featureFlagged]){
+      next({ name: to.meta.redirectTo?.[user.provider] || "error" });
+    }
+
     // Page requires auth
     if (to.meta.requireAuth) {
       // User is logged in
@@ -293,6 +302,7 @@ router.beforeEach(async (to, from, next) => {
         userProviderInfo.value = user.provider;
 
         // If user can see this page, continue, otherwise go to specific page or error
+        // We also check if the page requires a feature flag to be visible
         if (to.meta.visibleTo.includes(user.provider) || to.meta.visibleTo.some(visible => authorities.includes(visible))) {
           // If there is a target path, redirect to it and clear the storage
           if (targetPathStorage.value) {
@@ -348,5 +358,6 @@ declare module "vue-router" {
     headersStyle: string; // Header style class
     sideMenu: boolean; // Show/Hide the side menu
     profile: boolean; // Show/Hide the profile menu
+    featureFlagged?: string; // Name of the feature flag (if any) that controls access to this page
   }
 }

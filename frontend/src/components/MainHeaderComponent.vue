@@ -12,7 +12,7 @@ import type CDSHeaderGlobalAction from "@carbon/web-components/es/components/ui-
 import { isSmallScreen, isMediumScreen } from "@/composables/useScreenSize";
 import { useRoute } from "vue-router";
 // Types
-import { nodeEnv, appVersion } from "@/CoreConstants";
+import { nodeEnv, appVersion, featureFlags } from "@/CoreConstants";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // Routes
 import { CONFIRMATION_ROUTE_NAME } from "@/routes";
@@ -109,7 +109,7 @@ const logoutBtnKind = computed(() =>
   isSmallScreen.value || isMediumScreen.value ? "ghost" : "tertiary",
 );
 
-const userhasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
+const userhasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority)) && featureFlags.STAFF_CREATE;
 </script>
 
 <template>

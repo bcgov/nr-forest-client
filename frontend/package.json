@@ -24,7 +24,7 @@
   "scripts": {
     "start": "vite --host --port 3000",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "cross-env VITE_NODE_ENV=test start-server-and-test stub http://127.0.0.1:8080 start",
+    "preview": "cross-env VITE_NODE_ENV=test STAFF_CREATE=true start-server-and-test stub http://127.0.0.1:8080 start",
     "preview:app": "cross-env VITE_NODE_ENV=test vite --host --port 3000",
     "typecheck": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --fix --ignore-path .gitignore",
