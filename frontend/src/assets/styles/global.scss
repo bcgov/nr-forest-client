@@ -231,9 +231,9 @@ cds-radio-button-group {
   --cds-text-secondary: var(--light-theme-text-text-primary);
 }
 
-cds-radio-button-group[data-required-label="true"]::part(legend)::after {
+cds-radio-button-group[data-required-label="true"]::part(legend)::before {
   color: var(--light-theme-text-text-error, #b32001);
-  content: ' (required)';
+  content: '* ';
 }
 
 cds-radio-button:not(:last-child) {
@@ -244,9 +244,9 @@ cds-combo-box::part(title-text) {
   color: var(--light-theme-text-text-primary, #131315);
 }
 
-:is(cds-combo-box, cds-multi-select)[data-required-label="true"]::part(title-text)::after {
+:is(cds-combo-box, cds-multi-select)[data-required-label="true"]::part(title-text)::before {
   color: var(--light-theme-text-text-error, #b32001);
-  content: ' (required)';
+  content: '* ';
 }
 
 cds-combo-box::part(trigger-button) {
@@ -1069,8 +1069,8 @@ cds-text-input::part(label)::after, .cds-text-input-required-label {
   color: var(--light-theme-text-text-error, #b32001);
 }
 
-cds-text-input[data-required-label="true"]::part(label)::after {
-  content: ' (required)';
+cds-text-input[data-required-label="true"]::part(label)::before {
+  content: '* ';
 }
 
 cds-modal::part(dialog) {
