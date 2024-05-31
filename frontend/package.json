@@ -57,7 +57,7 @@
     "axios": "^1.6.7",
     "date-fns": "^3.0.0",
     "dotenv": "^16.0.0",
-    "vue": "^3.2.47",
+    "vue": "^3.4.27",
     "vue-dompurify-html": "^5.0.1",
     "vue-router": "^4.2.4",
     "vue-the-mask": "^0.11.1"
