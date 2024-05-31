@@ -1065,7 +1065,7 @@ cds-text-input::part(label) {
   padding-bottom: unset;
 }
 
-cds-text-input::part(label)::after, .cds-text-input-required-label {
+cds-text-input::part(label)::before, .cds-text-input-required-label {
   color: var(--light-theme-text-text-error, #b32001);
 }
 
