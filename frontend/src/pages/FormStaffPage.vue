@@ -9,17 +9,17 @@ import { useRouter } from "vue-router";
 import { useEventBus } from "@vueuse/core";
 import { isSmallScreen } from "@/composables/useScreenSize";
 // Types
-import type { CodeNameType } from "@/dto/CommonTypesDto";
+import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";
 
 //Defining the props and emiter to reveice the data and emit an update
-const districtsList: CodeNameType[] = [
+const clientTypesList: CodeNameType[] = [
 {
     code:'bcregisteredbusiness',
-    name:'BC Registered business'
+    name:'BC registered business'
   },
   {
     code:'firstnation',
-    name:'First nation'
+    name:'First Nation'
   },
   {
     code:'gov',
@@ -91,7 +91,7 @@ const progressData = reactive([
 ]);
 const currentTab = ref(0);
 
-const districtInitialValue = computed(() => districtsList[0]);
+const clientTypeInitialValue = computed(() => clientTypesList[0]);
 
 const updateType = (value: CodeNameType | undefined) => {
   if (value) {
@@ -150,10 +150,10 @@ const validation = reactive<Record<string, boolean>>({ });
         <dropdown-input-component
           id="clientType"
           label="Client type"
-          :initial-value="districtInitialValue?.name"
+          :initial-value="clientTypeInitialValue?.name"
           required
           required-label
-          :model-value="districtsList"
+          :model-value="clientTypesList"
           :enabled="true"
           tip=""
           :validations="[]"

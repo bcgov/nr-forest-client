@@ -602,8 +602,8 @@ onMounted(() => {
 
     <div v-if="showBirthDate">
       <p class="body-02 date-label">
+        <span class="cds-text-input-required-label">* </span>
         We need the proprietor's birthdate to confirm their identity
-        <span class="cds-text-input-required-label">(required)</span>
       </p>
       <date-input-component
         id="birthdate"

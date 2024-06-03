@@ -109,7 +109,7 @@ const logoutBtnKind = computed(() =>
   isSmallScreen.value || isMediumScreen.value ? "ghost" : "tertiary",
 );
 
-const userhasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority)) && featureFlags.STAFF_CREATE;
+const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority)) && featureFlags.STAFF_CREATE;
 </script>
 
 <template>
@@ -229,12 +229,12 @@ const userhasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
 
   <cds-side-nav v-if="$route.meta.sideMenu" v-shadow=1>
     <cds-side-nav-items v-shadow=1>      
-      <cds-side-nav-link active href="/submissions" large v-shadow=1 id="menu-list-submission-list">
+      <cds-side-nav-link active href="/submissions" large id="menu-list-submission-list">
         <span>Submissions</span>
         <Result16 slot="title-icon" />
       </cds-side-nav-link>
 
-      <cds-side-nav-link active href="/new-client-staff" large v-if="userhasAuthority" v-shadow=1 id="menu-list-staff-form">
+      <cds-side-nav-link active href="/new-client-staff" large v-if="userHasAuthority" v-shadow=1 id="menu-list-staff-form">
         <span>Create client</span>
         <TaskAdd16 slot="title-icon" />
       </cds-side-nav-link>
