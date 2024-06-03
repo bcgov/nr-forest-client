@@ -287,8 +287,6 @@ router.beforeEach(async (to, from, next) => {
       targetPathStorage.value = to.query.fd_to as string;
     }
 
-    console.log('My Flags',featureFlags,'Page flags',to.meta.featureFlagged);
-
     // If the page requires a feature flag and the feature flag is not enabled, redirect to error page
     if(to.meta.featureFlagged && !featureFlags[to.meta.featureFlagged]){
       next({ name: to.meta.redirectTo?.[user.provider] || "error" });
