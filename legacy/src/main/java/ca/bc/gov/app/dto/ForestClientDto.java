@@ -28,6 +28,7 @@ public record ForestClientDto(
     if (Objects.equals(this.clientTypeCode, "I")) {
       return Stream.of(this.legalFirstName, this.legalMiddleName, this.clientName)
           .filter(Objects::nonNull)
+          .map(String::trim)
           .collect(Collectors.joining(" "));
     } else {
       return this.clientName;

@@ -172,7 +172,7 @@ public class ClientSubmissionService {
                     .submissionType(SubmissionTypeCodeEnum.SPP)
                     .submissionDate(LocalDateTime.now())
                     .createdBy(JwtPrincipalUtil.getUserId(principal))
-                    .updatedBy(JwtPrincipalUtil.getName(principal))
+                    .updatedBy(JwtPrincipalUtil.getUserId(principal))
                     .build()
             )
             //Save submission to begin with
@@ -216,6 +216,7 @@ public class ClientSubmissionService {
                         .builder()
                         .submissionId(submission)
                         .updatedAt(LocalDateTime.now())
+                        .createdBy(JwtPrincipalUtil.getUserId(principal))
                         .matchers(
                             Map.of(
                                 "info",
@@ -368,7 +369,7 @@ public class ClientSubmissionService {
             )
             .switchIfEmpty(Mono.error(new RequestAlreadyProcessedException()))
             .map(submission -> {
-              submission.setUpdatedBy(userName);
+              submission.setUpdatedBy(userId);
               submission.setUpdatedAt(LocalDateTime.now());
               submission.setSubmissionStatus(
                   request.approved() ? SubmissionStatusEnum.A : SubmissionStatusEnum.R
@@ -383,6 +384,7 @@ public class ClientSubmissionService {
                         matched
                             .withStatus(BooleanUtils.toString(request.approved(), "Y", "N"))
                             .withUpdatedAt(LocalDateTime.now())
+                            .withCreatedBy(userId)
                             .withMatchingMessage(processRejectionReason(request))
                     )
                     .flatMap(submissionMatchDetailRepository::save)
