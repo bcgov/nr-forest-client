@@ -47,7 +47,4 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
 
   Mono<ForestClientEntity> findByClientNumber(String clientNumber);
 
-
-  Flux<ForestClientEntity> findByClientIdentificationIgnoreCaseAndClientNameIgnoreCase(String clientIdentification, String clientName);
-
 }
