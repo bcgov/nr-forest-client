@@ -29,27 +29,27 @@ import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualC
 // Defining the props and emiter to reveice the data and emit an update
 const clientTypesList: CodeNameType[] = [
   {
-    code: "bcregisteredbusiness",
+    code: "BCR",
     name: "BC registered business",
   },
   {
-    code: "firstnation",
+    code: "R",
     name: "First Nation",
   },
   {
-    code: "gov",
+    code: "G",
     name: "Government",
   },
   {
-    code: "ind",
+    code: "I",
     name: "Individual",
   },
   {
-    code: "mof",
+    code: "F",
     name: "Ministry of Forests",
   },
   {
-    code: "unregistered",
+    code: "U",
     name: "Unregistered company",
   },
 ];
@@ -116,7 +116,7 @@ const updateClientType = (value: CodeNameType | undefined) => {
     formData.value = newFormDataDto();
 
     switch (value.code) {
-      case "ind": {
+      case "I": {
         Object.assign(formData.value.businessInformation, {
           businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
           legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
@@ -199,7 +199,7 @@ const validation = reactive<Record<string, boolean>>({});
           @empty="validation.type = !$event"
         />
         <individual-client-information-wizard-step
-          v-if="clientTypeCode === 'ind'"
+          v-if="clientTypeCode === 'I'"
           :active="currentTab == 0"
           :data="formData"
         />
