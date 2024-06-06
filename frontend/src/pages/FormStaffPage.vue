@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, reactive } from "vue";
+import { ref, reactive } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/ui-shell/index";
 import "@carbon/web-components/es/components/breadcrumb/index";
@@ -8,43 +8,58 @@ import "@carbon/web-components/es/components/tooltip/index";
 import { useRouter } from "vue-router";
 import { useEventBus } from "@vueuse/core";
 import { isSmallScreen } from "@/composables/useScreenSize";
-// Types
-import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";
+import {
+  BusinessTypeEnum,
+  ClientTypeEnum,
+  LegalTypeEnum,
+  type CodeNameType,
+  type ModalNotification,
+} from "@/dto/CommonTypesDto";
+import {
+  locationName as defaultLocation,
+  emptyContact,
+  newFormDataDto,
+  type Contact,
+  type FormDataDto,
+} from "@/dto/ApplyClientNumberDto";
+import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
+// Imported Pages
+import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
 
-//Defining the props and emiter to reveice the data and emit an update
+// Defining the props and emiter to reveice the data and emit an update
 const clientTypesList: CodeNameType[] = [
-{
-    code:'bcregisteredbusiness',
-    name:'BC registered business'
+  {
+    code: "bcregisteredbusiness",
+    name: "BC registered business",
   },
   {
-    code:'firstnation',
-    name:'First Nation'
+    code: "firstnation",
+    name: "First Nation",
   },
   {
-    code:'gov',
-    name:'Government'
+    code: "gov",
+    name: "Government",
   },
   {
-    code:'ind',
-    name:'Individual'
+    code: "ind",
+    name: "Individual",
   },
   {
-    code:'mof',
-    name:'Ministry of Forests'
+    code: "mof",
+    name: "Ministry of Forests",
   },
   {
-    code:'unregistered',
-    name:'Unregistered company'
-  }
+    code: "unregistered",
+    name: "Unregistered company",
+  },
 ];
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 
-//Route related
+// Route related
 const router = useRouter();
 
-let formData = ref({ });
+const formData = ref<FormDataDto>({ ...newFormDataDto() });
 
 // Tab system
 const progressData = reactive([
@@ -91,23 +106,47 @@ const progressData = reactive([
 ]);
 const currentTab = ref(0);
 
-const clientTypeInitialValue = computed(() => clientTypesList[0]);
+const clientTypeCode = ref<string>(null);
 
-const updateType = (value: CodeNameType | undefined) => {
+const updateClientType = (value: CodeNameType | undefined) => {
   if (value) {
-    formData.value.type = value.code;
+    clientTypeCode.value = value.code;
+
+    // reset formData
+    formData.value = newFormDataDto();
+
+    switch (value.code) {
+      case "ind": {
+        Object.assign(formData.value.businessInformation, {
+          businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
+          legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
+          clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.I),
+          goodStandingInd: "Y",
+        });
+
+        // Initialize the "primary" contact - the individual him/herself
+        const applicantContact: Contact = {
+          ...emptyContact,
+          locationNames: [defaultLocation],
+          contactType: { value: "BL", text: "Billing" },
+        };
+        formData.value.location.contacts[0] = applicantContact;
+        break;
+      }
+      default:
+        break;
+    }
+  } else {
+    clientTypeCode.value = null;
   }
 };
 
-const validation = reactive<Record<string, boolean>>({ });
-
+const validation = reactive<Record<string, boolean>>({});
 </script>
 
 <template>
-  
   <div id="screen" class="submission-content">
     <div class="form-header" role="header">
-      
       <div class="form-header-title">
         <h1>
           <div data-scroll="top" class="header-offset"></div>
@@ -116,18 +155,19 @@ const validation = reactive<Record<string, boolean>>({ });
       </div>
 
       <div class="sr-only" role="status">
-        Current step: {{ progressData[currentTab].title }}. Step {{ currentTab + 1 }} of {{ progressData.length }}.
+        Current step: {{ progressData[currentTab].title }}. Step {{ currentTab + 1 }} of
+        {{ progressData.length }}.
       </div>
 
       <cds-progress-indicator space-equally :vertical="isSmallScreen" aria-label="Form steps">
-        <cds-progress-step 
+        <cds-progress-step
           v-for="item in progressData"
           ref="cdsProgressStepArray"
           :key="item.step"
           :label="item.title"
           :secondary-label="item.subtitle"
           :state="item.kind"
-          :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"          
+          :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"
           :disabled="item.disabled"
           v-shadow="3"
           :aria-current="item.step === currentTab ? 'step' : 'false'"
@@ -136,9 +176,7 @@ const validation = reactive<Record<string, boolean>>({ });
 
       <div class="hide-when-less-than-two-children">
         <div data-scroll="top-notification" class="header-offset"></div>
-        
       </div>
-
     </div>
 
     <div class="form-steps" role="main">
@@ -150,19 +188,22 @@ const validation = reactive<Record<string, boolean>>({ });
         <dropdown-input-component
           id="clientType"
           label="Client type"
-          :initial-value="clientTypeInitialValue?.name"
+          :initial-value="null"
           required
           required-label
           :model-value="clientTypesList"
           :enabled="true"
           tip=""
           :validations="[]"
-          @update:selected-value="updateType($event)"
+          @update:selected-value="updateClientType($event)"
           @empty="validation.type = !$event"
+        />
+        <individual-client-information-wizard-step
+          v-if="clientTypeCode === 'ind'"
+          :active="currentTab == 0"
+          :data="formData"
         />
       </div>
     </div>
-
   </div>
-
 </template>
