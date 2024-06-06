@@ -141,7 +141,7 @@ class ForestClientUserSession implements SessionProperties {
       if (provider === "idir" && nameParts.length >= 2) {
         // For IDIR, split by comma and then by space for the first name as the value will be Lastname, Firsname MIN:XX
         additionalInfo.lastName = nameParts[0].trim();
-        additionalInfo.firstName = nameParts[1].split(" ")[0].trim();
+        additionalInfo.firstName = nameParts[1].trim().split(" ").slice(0, -1).join(" ")
       } else if (nameParts.length >= 2) {
         // For others, assume space separates the first and last names
         additionalInfo.firstName = nameParts[0].trim();
