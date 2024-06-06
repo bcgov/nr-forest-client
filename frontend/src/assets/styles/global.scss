@@ -1069,6 +1069,16 @@ cds-text-input::part(label)::before, .cds-text-input-required-label {
   color: var(--light-theme-text-text-error, #b32001);
 }
 
+.label-with-icon .cds-text-input-label {
+  padding-bottom: 0;
+}
+
+.label-with-icon {
+  padding-bottom: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
 cds-text-input[data-required-label="true"]::part(label)::before {
   content: '* ';
 }

@@ -3,6 +3,7 @@ import { watch, computed, ref, reactive, onMounted } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/inline-loading/index";
 import "@carbon/web-components/es/components/notification/index";
+import "@carbon/web-components/es/components/tooltip/index";
 // Importing composables
 import { useEventBus } from "@vueuse/core";
 import { useFetch, useFetchTo } from "@/composables/useFetch";
@@ -12,6 +13,8 @@ import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
 // Importing validators
 import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
+// @ts-ignore
+import Information16 from "@carbon/icons-vue/es/information/16";
 
 // Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
@@ -110,10 +113,18 @@ onMounted(() => {
     />
 
     <div>
-      <p class="body-02 date-label">
-        <span class="cds-text-input-required-label">* </span>
-        We need the applicant's birthdate to confirm their identity
-      </p>
+      <div class="label-with-icon">
+        <div class="cds-text-input-label">
+          <span class="cds-text-input-required-label">* </span>
+          <span>Date of birth</span>
+        </div>
+        <cds-tooltip>
+          <Information16 />
+          <cds-tooltip-content>
+            We need the applicant's birthdate to confirm their identity
+          </cds-tooltip-content>
+        </cds-tooltip>
+      </div>
       <date-input-component
         id="birthdate"
         title="Date of birth"
