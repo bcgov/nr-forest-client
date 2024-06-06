@@ -24,6 +24,18 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * The ClientSearchService class provides methods to search for clients based on various criteria.
+ * It uses the ForestClientRepository and ClientDoingBusinessAsRepository to perform the searches.
+ * The results are mapped to ForestClientDto objects using the AbstractForestClientMapper. The class
+ * is annotated with @Service, indicating that it's a service component in the Spring framework.
+ * The
+ *
+ * @RequiredArgsConstructor annotation is used to automatically generate a constructor with required
+ * arguments. The @Slf4j annotation is used to enable the SLF4J (Simple Logging Facade for Java)
+ * logging in this class. The @Observed annotation is used to indicate that metrics are collected
+ * for this class.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -35,6 +47,18 @@ public class ClientSearchService {
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> mapper;
   private final R2dbcEntityTemplate template;
 
+  /**
+   * This method is used to find clients based on their registration number or company name. It
+   * first checks if both the registration number and company name are blank. If they are, it
+   * returns MissingRequiredParameterException. If at least one parameter is valid, it searches for
+   * company name or registration number. If no clients are found and the company name is not blank,
+   * it searches doing business as table Each retrieved client entity is then mapped to a DTO (Data
+   * Transfer Object) using the mapper.
+   *
+   * @param registrationNumber The registration number of the client to be searched for.
+   * @param companyName        The company name of the client to be searched for.
+   * @return A Flux stream of ForestClientDto objects that match the search criteria.
+   */
   public Flux<ForestClientDto> findByRegistrationNumberOrCompanyName(
       String registrationNumber,
       String companyName
@@ -72,6 +96,19 @@ public class ClientSearchService {
             .map(mapper::toDto);
   }
 
+  /**
+   * This method is used to find clients based on their first name, last name, date of birth, and
+   * identification. If any of the parameters are blank or null, returns
+   * MissingRequiredParameterException. If all parameters are valid, it queries the legalFirstName,
+   * clientName and birthdate, and if present, the clientIdentification. For each client found, it
+   * logs the client's number and name.
+   *
+   * @param firstName      The first name of the client to be searched for.
+   * @param lastName       The last name of the client to be searched for.
+   * @param dob            The date of birth of the client to be searched for.
+   * @param identification The identification of the client to be searched for. Optional.
+   * @return A Flux stream of ForestClientDto objects that match the search criteria.
+   */
   public Flux<ForestClientDto> findByIndividual(
       String firstName,
       String lastName,
@@ -90,7 +127,7 @@ public class ClientSearchService {
     Criteria queryCriteria = where("legalFirstName").is(firstName).ignoreCase(true)
         .and("clientName").is(lastName).ignoreCase(true)
         .and("birthdate").is(dob.atStartOfDay())
-        .and("clientTypeCode").is("I");
+        .and("clientTypeCode").is("I").ignoreCase(true);
 
     if (StringUtils.isNotBlank(identification)) {
       queryCriteria = queryCriteria
@@ -106,6 +143,15 @@ public class ClientSearchService {
                 dto.clientNumber(), dto.clientName()));
   }
 
+  /**
+   * This method is used to find clients based on their company name. If the parameter is blank, it
+   * returns a MissingRequiredParameterException. If the parameter is valid, it calls the matchBy
+   * that calls the JARO_WINKLER_SIMILARITY algorithm with the provided company name. Each client
+   * found is then mapped to a DTO (Data Transfer Object) using the mapper.
+   *
+   * @param companyName The company name of the client to be searched for.
+   * @return A Flux stream of ForestClientDto objects that match the search criteria.
+   */
   public Flux<ForestClientDto> matchBy(String companyName) {
     log.info("Searching for match: {}", companyName);
 
@@ -122,6 +168,16 @@ public class ClientSearchService {
                 dto.clientNumber(), dto.clientName()));
   }
 
+  /**
+   * This method is used to find clients based on their identification and last name. If any
+   * parameter is blank, it returns a MissingRequiredParameterException. If all parameters are
+   * valid, it queries where the clientIdentification and clientName match the provided parameters,
+   * ignoring case. For each client found, it logs the client's number and name.
+   *
+   * @param clientId The identification of the client to be searched for.
+   * @param lastName The last name of the client to be searched for.
+   * @return A Flux stream of ForestClientDto objects that match the search criteria.
+   */
   public Flux<ForestClientDto> findByIdAndLastName(String clientId, String lastName) {
     log.info("Searching for client: {} {}", clientId, lastName);
 
@@ -140,6 +196,17 @@ public class ClientSearchService {
         );
   }
 
+  /**
+   * This method is used to find clients based on their identification type and identification
+   * value. It checks if any of the parameters are blank. If any parameter is blank, it returns a
+   * MissingRequiredParameterException. If all parameters are valid, it queries the clientIdTypeCode
+   * and clientIdentification match the provided parameters, ignoring case. For each client found,
+   * it logs the client's number and name.
+   *
+   * @param idType         The identification type of the client to be searched for.
+   * @param identification The identification value of the client to be searched for.
+   * @return A Flux stream of ForestClientDto objects that match the search criteria.
+   */
   public Flux<ForestClientDto> findByIdentification(String idType, String identification) {
     log.info("Searching for client with id {} value {}", idType, identification);
 

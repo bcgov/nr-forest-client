@@ -6,7 +6,9 @@ import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -131,6 +133,17 @@ public class ClientMapper {
             .map(SubmissionLocationEntity::getSubmissionLocationId)
             .findFirst()
             .orElse(0);
+  }
+
+  public static Map<String,String> parseName(String displayName,String provider) {
+    String[] nameParts =
+        displayName.contains(",") ? displayName.split(",") : displayName.split(" ");
+    if ("IDIR".equalsIgnoreCase(provider) && nameParts.length >= 2) {
+      return Map.of("firstName", nameParts[1].split(" ")[0].trim(), "lastName", nameParts[0].trim());
+    } else if (nameParts.length >= 2) {
+      return Map.of("firstName", nameParts[0].trim(), "lastName", String.join(" ", Arrays.copyOfRange(nameParts, 1, nameParts.length)));
+    }
+    return Map.of("firstName", nameParts[0], "lastName", nameParts[1]);
   }
 
 }

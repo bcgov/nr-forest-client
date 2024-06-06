@@ -8,12 +8,17 @@ import org.apache.commons.lang3.StringUtils;
 public record ClientBusinessInformationDto(
     String registrationNumber, 
     String businessName,
+    String firstName,
+    String middleName,
     String businessType, 
     String clientType, 
     String goodStandingInd, 
     String legalType,
     LocalDate birthdate, 
-    String district) {
+    String district,
+    String idType,
+    String idValue
+) {
   /**
    * Returns a map containing the description of the client's business information.
    *
