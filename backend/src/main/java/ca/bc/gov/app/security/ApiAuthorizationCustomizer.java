@@ -28,6 +28,11 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
     authorize
       .pathMatchers(HttpMethod.GET, "/metrics/**", "/health/**").permitAll();
 
+    authorize
+        .pathMatchers(HttpMethod.POST,"/api/clients/matches/**").permitAll();
+    authorize
+        .pathMatchers(HttpMethod.OPTIONS,"/api/clients/matches/**").permitAll();
+
     // Only service users can POST to the email endpoint
     authorize
       .pathMatchers(HttpMethod.POST, "/api/ches/email")
