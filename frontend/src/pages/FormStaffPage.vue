@@ -179,7 +179,7 @@ const validation = reactive<Record<string, boolean>>({});
       </div>
     </div>
 
-    <div class="form-steps" role="main">
+    <div class="form-steps-staff" role="main">
       <div class="form-steps-section">
         <h2 data-focus="focus-0" tabindex="-1">
           <div data-scroll="step-title" class="header-offset"></div>

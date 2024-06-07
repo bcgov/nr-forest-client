@@ -648,13 +648,17 @@ cds-actionable-notification * {
   align-items: flex-start;
 }
 
-.form-steps {
+.form-steps, .form-steps-staff {
   flex-grow: 1;
   align-self: stretch;
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
   max-width: 50.4375rem;
+}
+
+.form-steps-staff {
+  max-width: 42.5rem;
 }
 
 .form-steps-01 {
@@ -805,6 +809,13 @@ cds-actionable-notification * {
   gap: 0.25rem;
   background: var(--others-transparent-transparent, #fff);
   background-blend-mode: multiply;
+}
+
+.form-steps-staff :is(
+  .grouping-02,
+  .grouping-03
+) {
+  width: 42.5rem;
 }
 
 .grouping-03:has(#idType) {
