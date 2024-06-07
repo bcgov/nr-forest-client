@@ -807,6 +807,15 @@ cds-actionable-notification * {
   background-blend-mode: multiply;
 }
 
+.grouping-03:has(#idType) {
+  width: 20.75rem;
+}
+
+.grouping-03:has(#issuingProvince),
+.grouping-02:has(#idNumber) {
+  width: 9.875rem;
+}
+
 .grouping-04 {
   align-self: stretch;
   display: flex;
@@ -1003,6 +1012,12 @@ cds-actionable-notification * {
 
 .grouping-divider {
   margin: 0.5rem 0;
+}
+
+.horizontal-input-grouping {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 }
 
 .label-01 {
