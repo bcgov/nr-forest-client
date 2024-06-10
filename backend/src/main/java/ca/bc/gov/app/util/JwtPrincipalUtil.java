@@ -152,6 +152,9 @@ public class JwtPrincipalUtil {
     Map<String, Object> payload = principal.getTokenAttributes();
     Map<String, String> additionalInfo = new HashMap<>();
 
+    // Extract provider name
+    String providerName = getProvider(principal);
+
     // Extract business name if exists
     additionalInfo.put("businessName",
         String.valueOf(payload.getOrDefault("custom:idp_business_name", StringUtils.EMPTY)));
