@@ -6,7 +6,7 @@ import "@carbon/web-components/es/components/notification/index";
 import "@carbon/web-components/es/components/tooltip/index";
 // Importing composables
 import { useEventBus } from "@vueuse/core";
-import { useFetch, useFetchTo } from "@/composables/useFetch";
+import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Importing types
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
@@ -53,16 +53,35 @@ const updateIdType = (value: CodeNameType | undefined) => {
   idType.value = value;
 };
 
-watch(idType, (idTypeValue) => {
-  formData.value.businessInformation.idType = idTypeValue?.code;
-});
-
 const provinceUrl = computed(() => {
   if (idType.value) {
     const countryCode = idType.value.code === "USDL" ? "US" : "CA";
     return `/api/countries/${countryCode}/provinces?page=0&size=250`;
   }
   return "";
+});
+
+const provinceList = ref<CodeNameType[]>([]);
+
+const { fetch: fetchProvinceList } = useFetchTo(provinceUrl, provinceList, {
+  skip: !provinceUrl.value,
+});
+
+watch(idType, (idTypeValue) => {
+  formData.value.businessInformation.idType = idTypeValue?.code;
+
+  // is driver's licence
+  if (["CDL", "USDL"].includes(idType.value.code)) {
+    fetchProvinceList();
+  }
+});
+
+watch(provinceList, (provinceListValue) => {
+  issuingProvince.value = null;
+  if (idType.value.code === "CDL") {
+    // default value for Issuing province when ID type is Canadian driver's licence
+    issuingProvince.value = provinceListValue.find((province) => province.code === "BC");
+  }
 });
 
 const issuingProvinceNaming = computed(() => {
@@ -201,32 +220,23 @@ onMounted(() => {
         @empty="validation.district = !$event"
       />
 
-      <data-fetcher
+      <dropdown-input-component
         v-if="['CDL', 'USDL'].includes(idType?.code)"
-        v-model:url="provinceUrl"
-        :min-length="0"
-        :init-value="[]"
-        :init-fetch="true"
-        :params="{ method: 'GET' }"
-        #="{ content }"
-      >
-        <dropdown-input-component
-          id="issuingProvince"
-          :label="issuingProvinceNaming"
-          required
-          required-label
-          :initial-value="issuingProvince?.name"
-          :model-value="content"
-          :enabled="true"
-          tip=""
-          :validations="[
-            ...getValidations('businessInformation.issuingProvince'),
-            submissionValidation('businessInformation.issuingProvince'),
-          ]"
-          @update:selected-value="updateIssuingProvince($event)"
-          @empty="validation.province = !$event"
-        />
-      </data-fetcher>
+        id="issuingProvince"
+        :label="issuingProvinceNaming"
+        required
+        required-label
+        :initial-value="issuingProvince?.name"
+        :model-value="provinceList"
+        :enabled="true"
+        tip=""
+        :validations="[
+          ...getValidations('businessInformation.issuingProvince'),
+          submissionValidation('businessInformation.issuingProvince'),
+        ]"
+        @update:selected-value="updateIssuingProvince($event)"
+        @empty="validation.province = !$event"
+      />
 
       <text-input-component
         id="idNumber"
