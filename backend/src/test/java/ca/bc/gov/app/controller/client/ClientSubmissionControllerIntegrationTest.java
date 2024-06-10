@@ -26,7 +26,7 @@ import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
-import ca.bc.gov.app.utils.ClientSubmissionAggregator;
+import ca.bc.gov.app.util.ClientSubmissionAggregator;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
 import java.time.Duration;
