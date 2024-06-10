@@ -15,7 +15,11 @@ import {
   isGreaterThan,
   hasOnlyNamingCharacters,
   isAscii,
+  isIdCharacters,
 } from "@/helpers/validators/GlobalValidators";
+
+const isMinSizeMsg = (fieldName: string, minSize: number) =>
+  isMinSize(`The ${fieldName} must contain at least ${minSize} characters`)(minSize);
 
 const isMaxSizeMsg = (fieldName: string, maxSize: number) =>
   isMaxSize(`The ${fieldName} has a ${maxSize} character limit`)(maxSize);
@@ -36,8 +40,35 @@ formFieldValidations["businessInformation.birthdate.year"] = [
   isGreaterThan(1899, "Please check the birth year"),
 ];
 
-formFieldValidations["businessInformation.district.text"] = [
-  isNotEmpty("You must select a district."),
+formFieldValidations["businessInformation.middleName"] = [
+  isMaxSizeMsg("middle name", 30),
+  hasOnlyNamingCharacters("middle name"),
+];
+
+formFieldValidations["businessInformation.idType.text"] = [
+  isNotEmpty("You must select an ID type."),
+];
+
+formFieldValidations["businessInformation.issuingProvince.text"] = [
+  isNotEmpty("You must select a value."),
+];
+
+formFieldValidations["businessInformation.idNumber"] = [
+  isNotEmpty("You must provide an ID number"),
+  isIdCharacters(),
+  isMinSizeMsg("ID number", 3),
+  isMaxSizeMsg("ID number", 20),
+];
+
+formFieldValidations["businessInformation.idNumber-BCDL"] = [
+  isMinSizeMsg("BC driver's licence", 7),
+  isMaxSizeMsg("BC driver's licence", 8),
+  isOnlyNumbers("BC driver's licence should contain only numbers"),
+];
+
+formFieldValidations["businessInformation.idNumber-CDL"] = [
+  isMinSizeMsg("ID number of the select type", 7),
+  isMaxSizeMsg("ID number of the select type", 10),
 ];
 
 // Step 2: Addresses

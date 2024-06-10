@@ -10,6 +10,7 @@ import type { ValidationMessageType } from "@/dto/CommonTypesDto";
 // @sonar-ignore-next-line
 const emailRegex: RegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 const specialCharacters: RegExp = /^[a-zA-Z0-9\s]*$/;
+const idCharacters: RegExp = /^[A-Z0-9\s]*$/;
 const e164Regex: RegExp = /^((\+?[1-9]\d{1,14})|(\(\d{3}\) \d{3}-\d{4}))$/;
 const canadianPostalCodeRegex: RegExp = /^(([A-Z]\d){3})$/i;
 const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/;
@@ -262,6 +263,13 @@ export const isNoSpecialCharacters =
   (message: string = "No special characters allowed") =>
   (value: string): string => {
     if (specialCharacters.test(value)) return "";
+    return message;
+  };
+
+export const isIdCharacters =
+  (message: string = "This field can only contain: A-Z, 0-9") =>
+  (value: string): string => {
+    if (idCharacters.test(value)) return "";
     return message;
   };
 

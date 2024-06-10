@@ -213,8 +213,8 @@ onMounted(() => {
         :enabled="true"
         tip=""
         :validations="[
-          ...getValidations('businessInformation.idType'),
-          submissionValidation('businessInformation.idType'),
+          ...getValidations('businessInformation.idType.text'),
+          submissionValidation('businessInformation.idType.text'),
         ]"
         @update:selected-value="updateIdType($event)"
         @empty="validation.district = !$event"
@@ -231,8 +231,8 @@ onMounted(() => {
         :enabled="true"
         tip=""
         :validations="[
-          ...getValidations('businessInformation.issuingProvince'),
-          submissionValidation('businessInformation.issuingProvince'),
+          ...getValidations('businessInformation.issuingProvince.text'),
+          submissionValidation('businessInformation.issuingProvince.text'),
         ]"
         @update:selected-value="updateIssuingProvince($event)"
         @empty="validation.province = !$event"
