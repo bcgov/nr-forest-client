@@ -276,6 +276,12 @@ cds-combo-box-item[data-loading="true"]::part(
   border-top: 0;
 }
 
+cds-combo-box#issuingProvince::part(menu-body) {
+  width: min-content;
+  min-width: 100%;
+  max-width: 200%;
+}
+
 .top-notification {
   margin-top: 3rem;
   display: flex;
