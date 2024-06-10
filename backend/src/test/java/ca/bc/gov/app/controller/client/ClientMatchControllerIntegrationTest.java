@@ -258,16 +258,6 @@ class ClientMatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             );
   }
 
-  private static ClientSubmissionDto getRandomData() {
-    return getIndividualDto(
-        UUID.randomUUID().toString(),
-        UUID.randomUUID().toString(),
-        LocalDate.now(),
-        UUID.randomUUID().toString(),
-        UUID.randomUUID().toString()
-    );
-  }
-
   private static ClientSubmissionDto getDtoType(String type) {
     ClientSubmissionDto dto = getDto();
     return dto.withBusinessInformation(
