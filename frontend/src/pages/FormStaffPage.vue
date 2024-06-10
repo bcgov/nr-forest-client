@@ -23,6 +23,8 @@ import {
   type FormDataDto,
 } from "@/dto/ApplyClientNumberDto";
 import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
+// Imported global validations
+import "@/helpers/validators/StaffFormValidations";
 // Imported Pages
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
 
