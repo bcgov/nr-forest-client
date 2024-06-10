@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { mask } from 'vue-the-mask'
+import { mask, tokens } from "vue-the-mask";
+
+// add custom token
+tokens.N = { pattern: /[0-9a-zA-Z]/, transform: v => v.toLocaleUpperCase() };
 
 export const masking = (shadowSelector: string) => (el: any, binding: any) => {
   if (el.shadowRoot && binding.value) {

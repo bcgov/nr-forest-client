@@ -53,22 +53,46 @@ formFieldValidations["businessInformation.issuingProvince.text"] = [
   isNotEmpty("You must select a value."),
 ];
 
+interface IdNumberValidation {
+  maxSize: number;
+  onlyNumbers?: boolean;
+}
+
+/*
+Variable defined using an IIFE to allow an easy definition of type-checkable keys.
+*/
+export const idNumberValidation = (() => {
+  const init = {
+    default: {
+      maxSize: 20,
+    },
+    BCDL: {
+      maxSize: 8,
+      onlyNumbers: true,
+    },
+    nonBCDL: {
+      maxSize: 10,
+    },
+  };
+  return init as Record<keyof typeof init, IdNumberValidation>;
+})();
+
 formFieldValidations["businessInformation.idNumber"] = [
   isNotEmpty("You must provide an ID number"),
   isIdCharacters(),
   isMinSizeMsg("ID number", 3),
-  isMaxSizeMsg("ID number", 20),
+  isMaxSizeMsg("ID number", idNumberValidation.default.maxSize),
 ];
 
 formFieldValidations["businessInformation.idNumber-BCDL"] = [
   isMinSizeMsg("BC driver's licence", 7),
-  isMaxSizeMsg("BC driver's licence", 8),
+  isMaxSizeMsg("BC driver's licence", idNumberValidation.BCDL.maxSize),
   isOnlyNumbers("BC driver's licence should contain only numbers"),
 ];
 
-formFieldValidations["businessInformation.idNumber-CDL"] = [
-  isMinSizeMsg("ID number of the select type", 7),
-  isMaxSizeMsg("ID number of the select type", 10),
+formFieldValidations["businessInformation.idNumber-nonBCDL"] = [
+  isMinSizeMsg("driver's licence", 7),
+  isMaxSizeMsg("driver's licence", idNumberValidation.nonBCDL.maxSize),
 ];
 
 // Step 2: Addresses

@@ -14,6 +14,7 @@ import type { CodeNameType } from "@/dto/CommonTypesDto";
 // Importing validators
 import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
+import { idNumberValidation } from "@/helpers/validators/StaffFormValidations";
 // @ts-ignore
 import Information16 from "@carbon/icons-vue/es/information/16";
 
@@ -68,10 +69,10 @@ const { fetch: fetchProvinceList } = useFetchTo(provinceUrl, provinceList, {
 });
 
 watch(idType, (idTypeValue) => {
-  formData.value.businessInformation.idType = idTypeValue?.code;
+  issuingProvince.value = null;
 
   // is driver's licence
-  if (["CDL", "USDL"].includes(idType.value.code)) {
+  if (["CDL", "USDL"].includes(idTypeValue?.code)) {
     fetchProvinceList();
   }
 });
@@ -93,8 +94,47 @@ const updateIssuingProvince = (value: CodeNameType | undefined) => {
   issuingProvince.value = value;
 };
 
-watch(issuingProvince, (issuingProvinceValue) => {
-  formData.value.businessInformation.issuingProvince = issuingProvinceValue?.code;
+const idNumberAdditionalValidations = ref<((value: string) => string)[]>([]);
+
+const getIdNumberMask = (type: keyof typeof idNumberValidation) => {
+  const token = idNumberValidation[type]?.onlyNumbers ? "#" : "N";
+  return token.repeat(idNumberValidation[type]?.maxSize);
+};
+
+const idNumberMask = ref(getIdNumberMask("default"));
+
+watch([idType, issuingProvince], ([idTypeValue, issuingProvinceValue]) => {
+  formData.value.businessInformation.idType = null;
+  idNumberAdditionalValidations.value = [];
+  idNumberMask.value = getIdNumberMask("default");
+
+  if (idTypeValue) {
+    if (issuingProvinceValue?.code && (idTypeValue.code === "CDL" || idTypeValue.code === "USDL")) {
+      // Driver's licences
+      if (idTypeValue?.code === "CDL") {
+        formData.value.businessInformation.idType = issuingProvinceValue.code + "DL";
+      }
+
+      if (idTypeValue?.code === "USDL") {
+        formData.value.businessInformation.idType = "US" + issuingProvinceValue.code;
+      }
+
+      if (idTypeValue?.code === "CDL" && issuingProvinceValue.code === "BC") {
+        // BC driver's licences
+        idNumberAdditionalValidations.value = getValidations("businessInformation.idNumber-BCDL");
+        idNumberMask.value = getIdNumberMask("BCDL");
+      } else {
+        // Every other driver's licences, including both Canadian or US.
+        idNumberAdditionalValidations.value = getValidations(
+          "businessInformation.idNumber-nonBCDL",
+        );
+        idNumberMask.value = getIdNumberMask("nonBCDL");
+      }
+    } else {
+      // Every other ID type
+      formData.value.businessInformation.idType = idTypeValue.code;
+    }
+  }
 });
 
 // -- Validation of the component --
@@ -244,8 +284,10 @@ onMounted(() => {
         placeholder=""
         autocomplete="off"
         v-model="formData.businessInformation.idNumber"
+        :mask="idNumberMask"
         :validations="[
           ...getValidations('businessInformation.idNumber'),
+          ...idNumberAdditionalValidations,
           submissionValidation('businessInformation.idNumber'),
         ]"
         enabled
