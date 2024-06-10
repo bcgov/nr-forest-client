@@ -5,11 +5,14 @@ import ca.bc.gov.app.dto.client.StepMatchEnum;
 import ca.bc.gov.app.service.client.matches.StepMatcher;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
+import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -20,6 +23,7 @@ import reactor.core.publisher.Mono;
 public class ClientMatchService {
 
   private final List<StepMatcher> stepMatchers;
+  private final Predicate<ClientSubmissionDto> isMatcherEnabled;
 
   /**
    * This method is responsible for matching clients based on the provided ClientSubmissionDto and
@@ -38,6 +42,10 @@ public class ClientMatchService {
       ClientSubmissionDto dto,
       int step
   ) {
+
+    if(!isMatcherEnabled.test(dto)){
+      return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, StringUtils.EMPTY));
+    }
 
     if (dto == null) {
       return Mono.error(new IllegalArgumentException("Invalid data"));
