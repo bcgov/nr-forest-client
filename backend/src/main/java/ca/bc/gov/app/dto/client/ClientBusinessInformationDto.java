@@ -3,8 +3,10 @@ package ca.bc.gov.app.dto.client;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
+import lombok.With;
 import org.apache.commons.lang3.StringUtils;
 
+@With
 public record ClientBusinessInformationDto(
     String registrationNumber, 
     String businessName,

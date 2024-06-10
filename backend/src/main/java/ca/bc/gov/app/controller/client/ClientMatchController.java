@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+/**
+ * This class is a REST controller for client matching operations.
+ * It uses the ClientMatchService to perform the matching operations.
+ */
 @RestController
 @RequestMapping(value = "/api/clients/matches", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
@@ -22,13 +26,25 @@ import reactor.core.publisher.Mono;
 @Observed
 public class ClientMatchController {
 
+  /**
+   * The ClientMatchService used to perform the matching operations.
+   */
   private final ClientMatchService matchService;
 
+  /**
+   * This method is a POST endpoint for fuzzy matching clients.
+   * It takes a ClientSubmissionDto object and a step number as input.
+   * It uses the ClientMatchService to perform the matching operation.
+   *
+   * @param dto The ClientSubmissionDto object containing the client data to be matched.
+   * @param step The step number for the matching operation.
+   * @return A Mono<Void> indicating when the matching process is complete.
+   */
   @PostMapping
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public Mono<Void> fuzzyMatchClients(
       @RequestBody ClientSubmissionDto dto,
-      @RequestHeader int step
+      @RequestHeader(name = "X-STEP") int step
   ) {
     return matchService.matchClients(dto, step);
   }

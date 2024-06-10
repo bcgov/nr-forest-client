@@ -1,11 +1,10 @@
 package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.MatchResult;
-import ca.bc.gov.app.dto.legacy.ForestClientDto;
-import ca.bc.gov.app.exception.DataMatchException;
+import ca.bc.gov.app.dto.client.StepMatchEnum;
+import ca.bc.gov.app.service.client.matches.StepMatcher;
 import io.micrometer.observation.annotation.Observed;
-import java.util.Comparator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
@@ -20,7 +19,7 @@ import reactor.core.publisher.Mono;
 @Observed
 public class ClientMatchService {
 
-  private final ClientLegacyService legacyService;
+  private final List<StepMatcher> stepMatchers;
 
   /**
    * This method is responsible for matching clients based on the provided ClientSubmissionDto and
@@ -43,20 +42,23 @@ public class ClientMatchService {
     if (dto == null) {
       return Mono.error(new IllegalArgumentException("Invalid data"));
     }
+
     if (dto.businessInformation() == null) {
       return Mono.error(new IllegalArgumentException("Invalid business information"));
     }
+
     if (StringUtils.isBlank(dto.businessInformation().clientType())) {
       return Mono.error(new IllegalArgumentException("Invalid client type"));
     }
+
     if (dto.location() == null) {
       return Mono.error(new IllegalArgumentException("Invalid location"));
     }
 
     return switch (step) {
       case 1 -> matchStep1(dto);
-      case 2 -> matchStep2(dto);
-      case 3 -> matchStep3(dto);
+      case 2 -> findAndRunMatcher(dto, StepMatchEnum.STEP2);
+      case 3 -> findAndRunMatcher(dto, StepMatchEnum.STEP3);
       default -> Mono.error(new IllegalArgumentException("Invalid step"));
     };
 
@@ -74,22 +76,22 @@ public class ClientMatchService {
 
     switch (dto.businessInformation().clientType()) {
       case "BCR" -> {
-        return Mono.error(new NotImplementedException("Client type match not implemented yet"));
+        return findAndRunMatcher(dto, StepMatchEnum.STEP1REGISTERED);
       }
       case "R" -> {
-        return Mono.error(new NotImplementedException("Client type match not implemented yet"));
+        return findAndRunMatcher(dto, StepMatchEnum.STEP1FIRSTNATION);
       }
       case "G" -> {
-        return Mono.error(new NotImplementedException("Client type match not implemented yet"));
+        return findAndRunMatcher(dto, StepMatchEnum.STEP1GOVERNMENT);
       }
       case "I" -> {
-        return matchIndividual(dto);
+        return findAndRunMatcher(dto, StepMatchEnum.STEP1INDIVIDUAL);
       }
       case "F" -> {
-        return Mono.error(new NotImplementedException("Client type match not implemented yet"));
+        return findAndRunMatcher(dto, StepMatchEnum.STEP1FORESTS);
       }
       case "U" -> {
-        return Mono.error(new NotImplementedException("Client type match not implemented yet"));
+        return findAndRunMatcher(dto, StepMatchEnum.STEP1UNREGISTERED);
       }
       default -> {
         return Mono.error(new IllegalArgumentException("Invalid client type"));
@@ -97,85 +99,26 @@ public class ClientMatchService {
     }
   }
 
-  private Mono<Void> matchIndividual(ClientSubmissionDto dto) {
-
-    // Search for individual without document id
-    Mono<MatchResult> individualFuzzyMatch =
-        //Do the search
-        legacyService
-            .searchIndividual(
-                dto.businessInformation().firstName(),
-                dto.businessInformation().businessName(),
-                dto.businessInformation().birthdate(),
-                null
-            )
-            .map(ForestClientDto::clientNumber)
-            .collectList()
-            .map(clientNumbers -> String.join(",", clientNumbers))
-            .map(clientNumbers -> new MatchResult("businessInformation.businessName", clientNumbers,
-                true));
-
-    // Search for individual with document id
-    Mono<MatchResult> individualFullMatch =
-        legacyService
-            .searchIndividual(
-                dto.businessInformation().firstName(),
-                dto.businessInformation().businessName(),
-                dto.businessInformation().birthdate(),
-                dto.businessInformation().idValue()
-            )
-            .map(ForestClientDto::clientNumber)
-            .collectList()
-            .map(clientNumbers -> String.join(",", clientNumbers))
-            .map(clientNumbers -> new MatchResult("businessInformation.businessName", clientNumbers,
-                false));
-
-    // Search for document itself
-    Mono<MatchResult> documentFullMatch =
-        legacyService.searchDocument(dto.businessInformation().idType(),
-                dto.businessInformation().idValue()
-            )
-            .map(ForestClientDto::clientNumber)
-            .collectList()
-            .map(clientNumbers -> String.join(",", clientNumbers))
-            .map(clientNumbers -> new MatchResult("businessInformation.identification",
-                clientNumbers, false));
-
-    return
-        Flux
-            .concat(
-                individualFuzzyMatch,
-                individualFullMatch,
-                documentFullMatch
-            )
-            .sort(Comparator.comparing(MatchResult::fuzzy))
-            .distinct(MatchResult::field)
-            .collectList()
-            .map(DataMatchException::new)
-            .flatMap(Mono::error);
-
-  }
-
   /**
-   * This method does the fuzzy match for the client second step, Address.
+   * This method finds and runs the appropriate matcher based on the required step. If no matcher is
+   * found, it returns a Mono error with a NotImplementedException.
    *
-   * @param dto The provided data filled by the user
-   * @return An empty map if no match found, or a map with matches (usually in form of exception)
+   * @param dto          The ClientSubmissionDto object containing the client data to be matched.
+   * @param requiredStep The required step for which to find and run the matcher.
+   * @return A Mono<Void> indicating when the matching process is complete. If no matcher is found,
+   * a Mono error is returned.
    */
-  private Mono<Void> matchStep2(ClientSubmissionDto dto) {
-    log.warn("Step 2 not implemented yet");
-    return Mono.empty();
-  }
+  private Mono<Void> findAndRunMatcher(
+      ClientSubmissionDto dto,
+      StepMatchEnum requiredStep
+  ) {
+    return Flux
+        .fromIterable(stepMatchers)
+        .filter(matcher -> requiredStep.equals(matcher.getStepMatcher()))
+        .switchIfEmpty(Mono.error(new NotImplementedException("No matcher found")))
+        .flatMap(matcher -> matcher.matchStep(dto))
+        .next();
 
-  /**
-   * This method does the fuzzy match for the client third step, Contacts.
-   *
-   * @param dto The provided data filled by the user
-   * @return An empty map if no match found, or a map with matches (usually in form of exception)
-   */
-  private Mono<Void> matchStep3(ClientSubmissionDto dto) {
-    log.warn("Step 3 not implemented yet");
-    return Mono.empty();
   }
 
 }
