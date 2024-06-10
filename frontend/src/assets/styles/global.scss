@@ -98,6 +98,7 @@
   The value is in pixels instead of rem because it shouldn't vary with text resize.
   */
   --scroll-bar-width-px: 15;
+  --scroll-bar-width: calc(1rem * var(--scroll-bar-width-px) / 16);
 }
 
 @media screen and (hover: none) {
@@ -1810,8 +1811,10 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     margin-bottom: 2rem;
   }
   .submission-content {
-    padding: 2.5rem 2rem 2.5rem 18.5rem;
-    max-width: calc(100vw - 21rem);
+    --padding-right: 2rem;
+    --padding-left: 18.5rem;
+    padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
+    max-width: calc(100vw - (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width)));
   }
 
   #datatable {
@@ -1879,8 +1882,10 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   }
 
   .submission-content {
-    padding: 2.5rem 2rem 2.5rem 18.5rem;
-    max-width: calc(100vw - 21rem);
+    --padding-right: 2rem;
+    --padding-left: 18.5rem;
+    padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
+    max-width: calc(100vw - (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width)));
   }
 }
 
@@ -1928,8 +1933,10 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   }
 
   .submission-content {
-    padding: 2.5rem 2rem 2.5rem 18.5rem;
-    max-width: calc(100vw - 21rem);
+    --padding-right: 2rem;
+    --padding-left: 18.5rem;
+    padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
+    max-width: calc(100vw - (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width)));
   }
 }
 
@@ -1963,7 +1970,9 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   }
 
   .submission-content {
-    padding: 2.5rem 2.5rem 2.5rem 18.5rem;
-    max-width: calc(100vw - 21rem);
+    --padding-right: 2.5rem;
+    --padding-left: 18.5rem;
+    padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
+    max-width: calc(100vw - (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width)));
   }
 }
