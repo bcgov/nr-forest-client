@@ -192,6 +192,9 @@ describe('GlobalValidators', () => {
       'This field must be at most 5 characters long'
     )
   })
+  it('should return empty when isMaxSize is called on an empty string', () => {
+    expect(isMaxSize('This field must be at most 5 characters long')(5)('')).toBe('')
+  })
   it('should return empty when isMinSize is called on a string with a size greater than the min size', () => {
     expect(isMinSize()(5)('123456')).toBe('')
   })
@@ -241,8 +244,8 @@ describe('GlobalValidators', () => {
       'No special characters allowed'
     )
   })
-  it('should return an error message when isNoSpecialCharacters is called on an empty string', () => {
-    expect(isNoSpecialCharacters()('')).toBe('No special characters allowed')
+  it('should return empty when isNoSpecialCharacters is called on an empty string', () => {
+    expect(isNoSpecialCharacters()('')).toBe('')
   })
   it('should return empty when content is contained in the list', () => {
     expect(isContainedIn(ref(['a', 'b']))('a')).toBe('')
@@ -277,6 +280,10 @@ describe('GlobalValidators', () => {
   });
   it("should return empty when value has only ASCII characters", () => {
     const result = isAscii()("AZaz09 '!@#$%_-+()/\\");
+    expect(result).toBe("");
+  });
+  it("should return empty when value is an empty string", () => {
+    const result = isAscii()("");
     expect(result).toBe("");
   });
 })
