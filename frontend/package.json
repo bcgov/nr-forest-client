@@ -63,11 +63,11 @@
     "vue-the-mask": "^0.11.1"
   },
   "devDependencies": {
-    "@cypress/code-coverage": "^3.10.8",
+    "@cypress/code-coverage": "^3.12.39",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@rushstack/eslint-patch": "^1.1.0",
     "@types/jsdom": "^21.1.0",
-    "@types/node": "^20.12.8",
+    "@types/node": "^20.12.11",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-vue": "^5.0.0",
@@ -91,7 +91,7 @@
     "lcov-result-merger": "^5.0.0",
     "nyc": "^15.1.0",
     "prettier": "^3.0.3",
-    "sass": "^1.66.1",
+    "sass": "^1.77.1",
     "sass-loader": "^13.0.0",
     "source-map-support": "^0.5.21",
     "start-server-and-test": "^2.0.0",
