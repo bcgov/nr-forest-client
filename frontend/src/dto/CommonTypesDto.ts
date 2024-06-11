@@ -67,6 +67,15 @@ export enum ClientTypeEnum {
   USP,
 }
 
+export enum IdTypeEnum {
+  BRTH,
+  CDL,
+  PASS,
+  CITZ,
+  FNID,
+  USDL,
+}
+
 export interface ProgressData {
   kind: string;
   title: string;

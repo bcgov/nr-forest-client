@@ -10,7 +10,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Importing types
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
-import type { CodeNameType } from "@/dto/CommonTypesDto";
+import { type CodeNameType, IdTypeEnum } from "@/dto/CommonTypesDto";
 // Importing validators
 import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
@@ -37,7 +37,11 @@ watch(
   () => emit("update:data", formData.value),
 );
 
-const idTypeList: CodeNameType[] = [
+interface IdType extends CodeNameType {
+  code: keyof typeof IdTypeEnum;
+}
+
+const idTypeList: IdType[] = [
   { code: "BRTH", name: "Canadian birth certificate" },
   { code: "CDL", name: "Canadian driver's licence" },
   { code: "PASS", name: "Canadian passport" },
@@ -45,10 +49,10 @@ const idTypeList: CodeNameType[] = [
   { code: "FNID", name: "First Nation status ID" },
   { code: "USDL", name: "US driver's licence" },
 ];
-const idType = ref<CodeNameType>();
+const idType = ref<IdType>();
 const issuingProvince = ref<CodeNameType>();
 
-const updateIdType = (value: CodeNameType | undefined) => {
+const updateIdType = (value: IdType | undefined) => {
   idType.value = value;
 };
 
@@ -254,7 +258,7 @@ onMounted(() => {
           ...getValidations('businessInformation.idType.text'),
           submissionValidation('businessInformation.idType.text'),
         ]"
-        @update:selected-value="updateIdType($event)"
+        @update:selected-value="updateIdType($event as IdType)"
         @empty="validation.district = !$event"
       />
 
