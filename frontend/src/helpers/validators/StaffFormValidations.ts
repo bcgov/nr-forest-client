@@ -86,6 +86,9 @@ export const idNumberValidation = (() => {
     PASS: {
       maxSize: 8,
     },
+    CITZ: {
+      maxSize: 8,
+    },
   };
   return init as Record<keyof typeof init, IdNumberValidation>;
 })();
@@ -121,10 +124,15 @@ Object.assign(
     "businessInformation.idNumber-BRTH": [
       isMinSizeMsg("Canadian birth certificate", 12),
       isMaxSizeMsg("Canadian birth certificate", idNumberValidation.BRTH.maxSize),
+      isOnlyNumbers("Canadian birth certificate should contain only numbers"),
     ],
 
     "businessInformation.idNumber-PASS": [
       ...isExactSizMsg("Canadian passport", idNumberValidation.PASS.maxSize),
+    ],
+
+    "businessInformation.idNumber-CITZ": [
+      ...isExactSizMsg("Canadian citizenship card", idNumberValidation.CITZ.maxSize),
     ],
   }),
 );
