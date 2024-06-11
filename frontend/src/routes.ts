@@ -9,15 +9,17 @@ import SubmissionList from "@/pages/SubmissionListPage.vue";
 import SubmissionReview from "@/pages/SubmissionReviewPage.vue";
 import BCeIDForm from "@/pages/FormBCeIDPage.vue";
 import BCSCForm from "@/pages/FormBCSCPage.vue";
+import StaffForm from "@/pages/FormStaffPage.vue";
 import FormSubmittedPage from "@/pages/FormSubmittedPage.vue";
 import UserLoadingPage from "@/pages/UserLoadingPage.vue";
 import LandingPage from "@/pages/LandingPage.vue";
 import ErrorPage from "@/pages/ErrorPage.vue";
 import NotFoundPage from "@/pages/NotFoundPage.vue";
 import LogoutPage from "@/pages/LogoutPage.vue";
+
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-import { nodeEnv } from "@/CoreConstants";
+import { featureFlags } from "@/CoreConstants";
 
 const CONFIRMATION_ROUTE_NAME = "confirmation";
 const targetPathStorage = useLocalStorage("targetPath", "");
@@ -129,6 +131,29 @@ const routes = [
       headersStyle: "headers-compact",
       sideMenu: true,
       profile: true,
+    },
+  },
+  {
+    path: "/new-client-staff",
+    name: "staff-form",
+    component: StaffForm,
+    props: true,
+    meta: {
+      format: "full",
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ["CLIENT_EDITOR","CLIENT_ADMIN"],
+      redirectTo: {
+        bceidbusiness: "form",
+        bcsc: "form",
+        idir: "internal",
+      },
+      style: "content-stretched",
+      headersStyle: "headers-compact",
+      sideMenu: true,
+      profile: true,
+      featureFlagged: "STAFF_CREATE",
     },
   },
   {
@@ -256,9 +281,15 @@ router.beforeEach(async (to, from, next) => {
   } else {
     await ForestClientUserSession.loadUser();
     const user = ForestClientUserSession.loadDetails();
+    const authorities = ForestClientUserSession.loadAuthorities();
 
     if (to.query.fd_to) {
       targetPathStorage.value = to.query.fd_to as string;
+    }
+
+    // If the page requires a feature flag and the feature flag is not enabled, redirect to error page
+    if(to.meta.featureFlagged && !featureFlags[to.meta.featureFlagged]){
+      next({ name: to.meta.redirectTo?.[user.provider] || "error" });
     }
 
     // Page requires auth
@@ -269,7 +300,8 @@ router.beforeEach(async (to, from, next) => {
         userProviderInfo.value = user.provider;
 
         // If user can see this page, continue, otherwise go to specific page or error
-        if (to.meta.visibleTo.includes(user.provider)) {
+        // We also check if the page requires a feature flag to be visible
+        if (to.meta.visibleTo.includes(user.provider) || to.meta.visibleTo.some(visible => authorities.includes(visible))) {
           // If there is a target path, redirect to it and clear the storage
           if (targetPathStorage.value) {
             next({ path: targetPathStorage.value });
@@ -324,5 +356,6 @@ declare module "vue-router" {
     headersStyle: string; // Header style class
     sideMenu: boolean; // Show/Hide the side menu
     profile: boolean; // Show/Hide the profile menu
+    featureFlagged?: string; // Name of the feature flag (if any) that controls access to this page
   }
 }

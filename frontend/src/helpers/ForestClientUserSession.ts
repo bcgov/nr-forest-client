@@ -42,6 +42,10 @@ class ForestClientUserSession implements SessionProperties {
     return this.user;
   };
 
+  loadAuthorities = (): string[] => {
+    return this.authorities;
+  };
+
   /**
    * Loads the user information from the user token and updates the user object.
    * If the user token is not available, sets the user object to undefined.
@@ -123,20 +127,25 @@ class ForestClientUserSession implements SessionProperties {
       additionalInfo.lastName = payload.family_name;
     }
 
+    if(payload["custom:idp_business_name"]){
+      additionalInfo.businessName = payload["custom:idp_business_name"];
+    }
+
     if (
       provider === "bceidbusiness" ||
       (additionalInfo.firstName === "" && additionalInfo.lastName === "")
     ) {
       const name = payload["custom:idp_display_name"];
-      const spaceIndex = name.indexOf(" ");
-      if (spaceIndex > 0) {
-        additionalInfo.lastName = this.splitAtSpace(
-          payload["custom:idp_display_name"]
-        )[0].replace(/,/g, "");
-        additionalInfo.firstName = this.splitAtSpace(
-          payload["custom:idp_display_name"]
-        )[1].replace(/,/g, "");
-        additionalInfo.businessName = payload["custom:idp_business_name"];
+      const nameParts: string[] = name.includes(",") ? name.split(",") : name.split(" ");
+
+      if (provider === "idir" && nameParts.length >= 2) {
+        // For IDIR, split by comma and then by space for the first name as the value will be Lastname, Firsname MIN:XX
+        additionalInfo.lastName = nameParts[0].trim();
+        additionalInfo.firstName = nameParts[1].trim().split(" ").slice(0, -1).join(" ")
+      } else if (nameParts.length >= 2) {
+        // For others, assume space separates the first and last names
+        additionalInfo.firstName = nameParts[0].trim();
+        additionalInfo.lastName = nameParts.slice(1).join(" ");
       }
     }
 
