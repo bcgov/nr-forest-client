@@ -37,14 +37,12 @@ watch(
   () => emit("update:data", formData.value),
 );
 
-// TODO: get this list from the back-end
 const idTypeList: CodeNameType[] = [
-  { code: "CBC", name: "Canadian birth certificate" },
+  { code: "BRTH", name: "Canadian birth certificate" },
   { code: "CDL", name: "Canadian driver's licence" },
-  { code: "CM", name: "Canadian military ID" },
-  { code: "CP", name: "Canadian passport" },
-  { code: "CCC", name: "Canadian citizenship card" },
-  { code: "FNS", name: "First Nation status ID" },
+  { code: "PASS", name: "Canadian passport" },
+  { code: "CITZ", name: "Canadian citizenship card" },
+  { code: "FNID", name: "First Nation status ID" },
   { code: "USDL", name: "US driver's licence" },
 ];
 const idType = ref<CodeNameType>();
