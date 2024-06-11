@@ -39,7 +39,7 @@ formFieldValidations["businessInformation.businessName"] = [
 
 formFieldValidations["businessInformation.birthdate"] = [
   isDateInThePast("Date of birth must be in the past"),
-  isMinimumYearsAgo(19, "You must be at least 19 years old to apply"),
+  isMinimumYearsAgo(19, "The applicant must be at least 19 years old to apply"),
 ];
 
 formFieldValidations["businessInformation.birthdate.year"] = [
