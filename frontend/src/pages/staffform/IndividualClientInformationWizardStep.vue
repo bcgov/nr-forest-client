@@ -149,6 +149,23 @@ watch([idType, issuingProvince], ([idTypeValue, issuingProvinceValue]) => {
       idNumberMask.value = getIdNumberMask(idTypeValue.code);
     }
   }
+
+  validation.idType = !!formData.value.businessInformation.idType;
+});
+
+const fullName = computed(() => {
+  const parts: string[] = [];
+  parts.push(formData.value.location.contacts[0].firstName);
+  if (formData.value.businessInformation.middleName) {
+    parts.push(formData.value.businessInformation.middleName);
+  }
+  parts.push(formData.value.location.contacts[0].lastName);
+  return parts.join(" ");
+});
+
+// set the business name as the individual's full name
+watch(fullName, (fullNameValue) => {
+  formData.value.businessInformation.businessName = fullNameValue;
 });
 
 // -- Validation of the component --
@@ -156,9 +173,9 @@ const validation = reactive<Record<string, boolean>>({
   firstName: false,
   middleName: true,
   lastName: false,
-  business: false,
   birthdate: false,
   idType: false,
+  idNumber: false,
 });
 
 const checkValid = () =>
@@ -208,7 +225,6 @@ onMounted(() => {
         submissionValidation(`businessInformation.middleName`),
       ]"
       enabled
-      @empty="validation.middleName = !$event"
       @error="validation.middleName = !$event"
     />
 
@@ -271,7 +287,6 @@ onMounted(() => {
           submissionValidation('businessInformation.idType.text'),
         ]"
         @update:selected-value="updateIdType($event as IdType)"
-        @empty="validation.district = !$event"
       />
 
       <dropdown-input-component
@@ -289,7 +304,6 @@ onMounted(() => {
           submissionValidation('businessInformation.issuingProvince.text'),
         ]"
         @update:selected-value="updateIssuingProvince($event)"
-        @empty="validation.province = !$event"
       />
 
       <text-input-component
