@@ -25,6 +25,11 @@ const isMinSizeMsg = (fieldName: string, minSize: number) =>
 const isMaxSizeMsg = (fieldName: string, maxSize: number) =>
   isMaxSize(`The ${fieldName} has a ${maxSize} character limit`)(maxSize);
 
+const isExactSizMsg = (fieldName: string, size: number) => {
+  const msg = `The ${fieldName} must contain ${size} characters`;
+  return [isMinSize(msg)(size), isMaxSize(msg)(size)];
+}
+
 // Step 1: Business Information
 formFieldValidations["businessInformation.businessName"] = [
   isNotEmpty("Business name cannot be empty"),
@@ -78,6 +83,9 @@ export const idNumberValidation = (() => {
       maxSize: 13,
       onlyNumbers: true,
     },
+    PASS: {
+      maxSize: 8,
+    },
   };
   return init as Record<keyof typeof init, IdNumberValidation>;
 })();
@@ -113,6 +121,10 @@ Object.assign(
     "businessInformation.idNumber-BRTH": [
       isMinSizeMsg("Canadian birth certificate", 12),
       isMaxSizeMsg("Canadian birth certificate", idNumberValidation.BRTH.maxSize),
+    ],
+
+    "businessInformation.idNumber-PASS": [
+      ...isExactSizMsg("Canadian passport", idNumberValidation.PASS.maxSize),
     ],
   }),
 );
