@@ -153,6 +153,9 @@ public class JwtPrincipalUtil {
     Map<String, Object> payload = principal.getTokenAttributes();
     Map<String, String> additionalInfo = new HashMap<>();
 
+    // Extract provider name
+    String providerName = getProvider(principal);
+
     // Extract business name if exists
     additionalInfo.put("businessName",
         String.valueOf(payload.getOrDefault("custom:idp_business_name", StringUtils.EMPTY)));
@@ -162,14 +165,14 @@ public class JwtPrincipalUtil {
     String lastName = String.valueOf(payload.getOrDefault("family_name", StringUtils.EMPTY));
 
     // Determine if special handling for names is required
-    boolean useDisplayName = "bceidbusiness".equals(getProvider(principal)) || (firstName.isEmpty()
+    boolean useDisplayName = "bceidbusiness".equals(providerName) || (firstName.isEmpty()
                                                                                 && lastName.isEmpty());
     if (useDisplayName) {
       String displayName = String.valueOf(payload.get("custom:idp_display_name"));
       String[] nameParts =
           displayName.contains(",") ? displayName.split(",") : displayName.split(" ");
 
-      if ("IDIR".equals(getProvider(principal)) && nameParts.length >= 2) {
+      if ("IDIR".equals(providerName) && nameParts.length >= 2) {
         // For IDIR, split by comma and then by space for the first name as the value will be Lastname, Firsname MIN:XX
         lastName = nameParts[0].trim();
         firstName = nameParts[1].split(" ")[0].trim();
