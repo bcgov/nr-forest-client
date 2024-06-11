@@ -89,6 +89,10 @@ export const idNumberValidation = (() => {
     CITZ: {
       maxSize: 8,
     },
+    FNID: {
+      maxSize: 10,
+      onlyNumbers: true,
+    },
   };
   return init as Record<keyof typeof init, IdNumberValidation>;
 })();
@@ -133,6 +137,10 @@ Object.assign(
 
     "businessInformation.idNumber-CITZ": [
       ...isExactSizMsg("Canadian citizenship card", idNumberValidation.CITZ.maxSize),
+    ],
+
+    "businessInformation.idNumber-FNID": [
+      ...isExactSizMsg("First Nation status ID", idNumberValidation.FNID.maxSize),
     ],
   }),
 );
