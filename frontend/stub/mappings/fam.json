@@ -87,7 +87,7 @@
           "Location": "http://{{request.host}}:3000/dashboard",
           "Set-Cookie": [
             "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.LastAuthUser=abc123; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}",
-            "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.abc123.idToken=eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiYmNlaWRidXNpbmVzcyIsImN1c3RvbTppZHBfYnVzaW5lc3NfaWQiOiJhdXRvbWF0aW9uaW5jIiwiY3VzdG9tOmlkcF9kaXNwbGF5X25hbWUiOiJVYXQgVGVzdCIsImdpdmVuX25hbWUiOiJVYXQiLCJmYW1pbHlfbmFtZSI6IlRlc3QiLCJlbWFpbCI6InVhdHRlc3RAZ292LmJjLmNhIiwiaWRwX2J1c2luZXNzX25hbWUiOiJBdXRvbWF0aW9uIEluYyJ9.j8ok8GDYT2n2WMJJNAj0BcC5PRwJzGSkLKLZkOjyHtQ; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
+            "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.abc123.idToken=eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b206aWRwX3VzZXJfaWQiOiJ1YXR0ZXN0IiwiY3VzdG9tOmlkcF9uYW1lIjoiYmNlaWRidXNpbmVzcyIsImN1c3RvbTppZHBfYnVzaW5lc3NfaWQiOiJhdXRvbWF0aW9uaW5jIiwiY3VzdG9tOmlkcF9kaXNwbGF5X25hbWUiOiJVYXQgVGVzdCIsImVtYWlsIjoidWF0dGVzdEBnb3YuYmMuY2EiLCJpZHBfYnVzaW5lc3NfbmFtZSI6IkF1dG9tYXRpb24gSW5jIn0.LH4CYOpezN0HACaBu9HzGg1nWLfIXr4pOpaprsVrNcQ; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
           ]
         }
       }
