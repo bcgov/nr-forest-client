@@ -14,7 +14,10 @@ import { type CodeNameType, IdTypeEnum } from "@/dto/CommonTypesDto";
 // Importing validators
 import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
-import { idNumberValidation } from "@/helpers/validators/StaffFormValidations";
+import {
+  idNumberValidation,
+  getIdNumberValidations,
+} from "@/helpers/validators/StaffFormValidations";
 // @ts-ignore
 import Information16 from "@carbon/icons-vue/es/information/16";
 
@@ -111,30 +114,39 @@ watch([idType, issuingProvince], ([idTypeValue, issuingProvinceValue]) => {
   idNumberMask.value = getIdNumberMask("default");
 
   if (idTypeValue) {
-    if (issuingProvinceValue?.code && (idTypeValue.code === "CDL" || idTypeValue.code === "USDL")) {
-      // Driver's licences
-      if (idTypeValue?.code === "CDL") {
-        formData.value.businessInformation.idType = issuingProvinceValue.code + "DL";
-      }
+    if (idTypeValue.code === "CDL" || idTypeValue.code === "USDL") {
+      if (issuingProvinceValue?.code) {
+        // Driver's licences
+        if (idTypeValue?.code === "CDL") {
+          formData.value.businessInformation.idType = issuingProvinceValue.code + "DL";
+        }
 
-      if (idTypeValue?.code === "USDL") {
-        formData.value.businessInformation.idType = "US" + issuingProvinceValue.code;
-      }
+        if (idTypeValue?.code === "USDL") {
+          formData.value.businessInformation.idType = "US" + issuingProvinceValue.code;
+        }
 
-      if (idTypeValue?.code === "CDL" && issuingProvinceValue.code === "BC") {
-        // BC driver's licences
-        idNumberAdditionalValidations.value = getValidations("businessInformation.idNumber-BCDL");
-        idNumberMask.value = getIdNumberMask("BCDL");
-      } else {
-        // Every other driver's licences, including both Canadian or US.
-        idNumberAdditionalValidations.value = getValidations(
-          "businessInformation.idNumber-nonBCDL",
-        );
-        idNumberMask.value = getIdNumberMask("nonBCDL");
+        if (idTypeValue?.code === "CDL" && issuingProvinceValue.code === "BC") {
+          // BC driver's licences
+          idNumberAdditionalValidations.value = getIdNumberValidations(
+            "businessInformation.idNumber-BCDL",
+          );
+          idNumberMask.value = getIdNumberMask("BCDL");
+        } else {
+          // Every other driver's licences, including both Canadian or US.
+          idNumberAdditionalValidations.value = getIdNumberValidations(
+            "businessInformation.idNumber-nonBCDL",
+          );
+          idNumberMask.value = getIdNumberMask("nonBCDL");
+        }
       }
     } else {
       // Every other ID type
       formData.value.businessInformation.idType = idTypeValue.code;
+
+      idNumberAdditionalValidations.value = getIdNumberValidations(
+        `businessInformation.idNumber-${idTypeValue.code}`,
+      );
+      idNumberMask.value = getIdNumberMask(idTypeValue.code);
     }
   }
 });

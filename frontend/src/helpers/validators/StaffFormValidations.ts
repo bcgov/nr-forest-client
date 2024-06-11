@@ -16,6 +16,7 @@ import {
   hasOnlyNamingCharacters,
   isAscii,
   isIdCharacters,
+  getValidations,
 } from "@/helpers/validators/GlobalValidators";
 
 const isMinSizeMsg = (fieldName: string, minSize: number) =>
@@ -73,27 +74,54 @@ export const idNumberValidation = (() => {
     nonBCDL: {
       maxSize: 10,
     },
+    BRTH: {
+      maxSize: 13,
+      onlyNumbers: true,
+    },
   };
   return init as Record<keyof typeof init, IdNumberValidation>;
 })();
 
-formFieldValidations["businessInformation.idNumber"] = [
-  isNotEmpty("You must provide an ID number"),
-  isIdCharacters(),
-  isMinSizeMsg("ID number", 3),
-  isMaxSizeMsg("ID number", idNumberValidation.default.maxSize),
-];
+type IdNumberFormFieldValidationKey =
+  `businessInformation.idNumber-${keyof typeof idNumberValidation}`;
 
-formFieldValidations["businessInformation.idNumber-BCDL"] = [
-  isMinSizeMsg("BC driver's licence", 7),
-  isMaxSizeMsg("BC driver's licence", idNumberValidation.BCDL.maxSize),
-  isOnlyNumbers("BC driver's licence should contain only numbers"),
-];
+const createIdNumberFormFieldValidations = (
+  validations: Record<IdNumberFormFieldValidationKey, ((value: string) => string)[]>,
+) => validations;
 
-formFieldValidations["businessInformation.idNumber-nonBCDL"] = [
-  isMinSizeMsg("driver's licence", 7),
-  isMaxSizeMsg("driver's licence", idNumberValidation.nonBCDL.maxSize),
-];
+Object.assign(
+  formFieldValidations,
+  createIdNumberFormFieldValidations({
+    "businessInformation.idNumber-default": [
+      isNotEmpty("You must provide an ID number"),
+      isIdCharacters(),
+      isMinSizeMsg("ID number", 3),
+      isMaxSizeMsg("ID number", idNumberValidation.default.maxSize),
+    ],
+
+    "businessInformation.idNumber-BCDL": [
+      isMinSizeMsg("BC driver's licence", 7),
+      isMaxSizeMsg("BC driver's licence", idNumberValidation.BCDL.maxSize),
+      isOnlyNumbers("BC driver's licence should contain only numbers"),
+    ],
+
+    "businessInformation.idNumber-nonBCDL": [
+      isMinSizeMsg("driver's licence", 7),
+      isMaxSizeMsg("driver's licence", idNumberValidation.nonBCDL.maxSize),
+    ],
+
+    "businessInformation.idNumber-BRTH": [
+      isMinSizeMsg("Canadian birth certificate", 12),
+      isMaxSizeMsg("Canadian birth certificate", idNumberValidation.BRTH.maxSize),
+    ],
+  }),
+);
+
+export const getIdNumberValidations = (key: IdNumberFormFieldValidationKey) => getValidations(key);
+
+// Make the default value also available at the plain field name as key.
+formFieldValidations["businessInformation.idNumber"] =
+  formFieldValidations["businessInformation.idNumber-default"];
 
 // Step 2: Addresses
 formFieldValidations["location.addresses.*.locationName"] = [
