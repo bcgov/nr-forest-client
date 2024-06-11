@@ -70,7 +70,7 @@ Variable defined using an IIFE to allow an easy definition of type-checkable key
 export const idNumberValidation = (() => {
   const init = {
     default: {
-      maxSize: 20,
+      maxSize: 40,
     },
     BCDL: {
       maxSize: 8,
