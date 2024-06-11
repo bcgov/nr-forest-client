@@ -121,6 +121,15 @@ const validateStep = (valid: boolean) => {
   }
 };
 
+const onCancel = () => {
+  router.push("/");
+};
+
+const onNext = () => {
+  // TODO
+  console.log("Next button clicked.");
+};
+
 const clientTypeCode = ref<string>(null);
 
 const updateClientType = (value: CodeNameType | undefined) => {
@@ -228,6 +237,17 @@ const validation = reactive<Record<string, boolean>>({});
             </span>
             <div class="form-footer-group-buttons">
               <cds-button
+                v-if="isFirst"
+                kind="secondary"
+                size="lg"
+                :disabled="!isFirst"
+                v-on:click="onCancel"
+                data-test="wizard-cancel-button"
+              >
+                <span>Cancel</span>
+              </cds-button>
+
+              <cds-button
                 v-if="!isFirst"
                 kind="secondary"
                 size="lg"
@@ -243,6 +263,7 @@ const validation = reactive<Record<string, boolean>>({});
                   kind="primary"
                   size="lg"
                   :disabled="progressData[currentTab].valid === false"
+                  v-on:click="onNext"
                   data-test="wizard-next-button"
                 >
                   <span>Next</span>
