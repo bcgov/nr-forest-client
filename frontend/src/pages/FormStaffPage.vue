@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/ui-shell/index";
 import "@carbon/web-components/es/components/breadcrumb/index";
@@ -7,7 +7,7 @@ import "@carbon/web-components/es/components/tooltip/index";
 // Composables
 import { useRouter } from "vue-router";
 import { useEventBus } from "@vueuse/core";
-import { isSmallScreen } from "@/composables/useScreenSize";
+import { isSmallScreen, isTouchScreen } from "@/composables/useScreenSize";
 import {
   BusinessTypeEnum,
   ClientTypeEnum,
@@ -27,6 +27,8 @@ import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
 import "@/helpers/validators/StaffFormValidations";
 // Imported Pages
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
+// @ts-ignore
+import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 
 // Defining the props and emiter to reveice the data and emit an update
 const clientTypesList: CodeNameType[] = [
@@ -107,6 +109,17 @@ const progressData = reactive([
   },
 ]);
 const currentTab = ref(0);
+
+const isLast = computed(() => currentTab.value === progressData.length - 1);
+const isFirst = computed(() => currentTab.value === 0);
+
+const validateStep = (valid: boolean) => {
+  progressData[currentTab.value].valid = valid;
+  if (valid) {
+    const nextStep = progressData.find((step: any) => step.step === currentTab.value + 1);
+    if (nextStep) nextStep.disabled = false;
+  }
+};
 
 const clientTypeCode = ref<string>(null);
 
@@ -204,7 +217,47 @@ const validation = reactive<Record<string, boolean>>({});
           v-if="clientTypeCode === 'I'"
           :active="currentTab == 0"
           :data="formData"
+          @valid="validateStep"
         />
+      </div>
+      <div class="form-footer" role="footer">
+        <div class="form-footer-group">
+          <div class="form-footer-group-next">
+            <span class="body-compact-01" v-if="!isLast && !progressData[currentTab].valid">
+              All fields must be filled out correctly to enable the "Next" button below
+            </span>
+            <div class="form-footer-group-buttons">
+              <cds-button
+                v-if="!isFirst"
+                kind="secondary"
+                size="lg"
+                :disabled="isFirst"
+                data-test="wizard-back-button"
+              >
+                <span>Back</span>
+              </cds-button>
+
+              <cds-tooltip v-if="!isLast">
+                <cds-button
+                  id="nextBtn"
+                  kind="primary"
+                  size="lg"
+                  :disabled="progressData[currentTab].valid === false"
+                  data-test="wizard-next-button"
+                >
+                  <span>Next</span>
+                  <ArrowRight16 slot="icon" />
+                </cds-button>
+                <cds-tooltip-content
+                  v-if="!isTouchScreen"
+                  v-show="progressData[currentTab].valid === false"
+                >
+                  All fields must be filled in correctly.
+                </cds-tooltip-content>
+              </cds-tooltip>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
