@@ -8,7 +8,6 @@ import {
   isMinSize,
   isOnlyNumbers,
   isNoSpecialCharacters,
-  formFieldValidations,
   isNotEmptyArray,
   isMinimumYearsAgo,
   isDateInThePast,
@@ -16,10 +15,15 @@ import {
   hasOnlyNamingCharacters,
   isAscii,
   isIdCharacters,
-  getValidations,
   isRegex,
   validateSelection,
 } from "@/helpers/validators/GlobalValidators";
+
+const fieldValidations: Record<string, ((value: any) => string)[]> = {};
+
+// This function will return all validators for the field
+export const getValidations = (key: string): ((value: any) => string)[] =>
+  fieldValidations[key] || [];
 
 const isMinSizeMsg = (fieldName: string, minSize: number) =>
   isMinSize(`The ${fieldName} must contain at least ${minSize} characters`)(minSize);
@@ -33,31 +37,31 @@ const isExactSizMsg = (fieldName: string, size: number) => {
 };
 
 // Step 1: Business Information
-formFieldValidations["businessInformation.businessName"] = [
+fieldValidations["businessInformation.businessName"] = [
   isNotEmpty("Business name cannot be empty"),
   isMaxSizeMsg("business name", 60),
   isAscii("business name"),
 ];
 
-formFieldValidations["businessInformation.birthdate"] = [
+fieldValidations["businessInformation.birthdate"] = [
   isDateInThePast("Date of birth must be in the past"),
   isMinimumYearsAgo(19, "The applicant must be at least 19 years old to apply"),
 ];
 
-formFieldValidations["businessInformation.birthdate.year"] = [
+fieldValidations["businessInformation.birthdate.year"] = [
   isGreaterThan(1899, "Please check the birth year"),
 ];
 
-formFieldValidations["businessInformation.middleName"] = [
+fieldValidations["businessInformation.middleName"] = [
   isMaxSizeMsg("middle name", 30),
   hasOnlyNamingCharacters("middle name"),
 ];
 
-formFieldValidations["businessInformation.idType.text"] = [
+fieldValidations["businessInformation.idType.text"] = [
   isNotEmpty("You must select an ID type."),
 ];
 
-formFieldValidations["businessInformation.issuingProvince.text"] = [
+fieldValidations["businessInformation.issuingProvince.text"] = [
   isNotEmpty("You must select a value."),
 ];
 
@@ -100,18 +104,18 @@ export const idNumberMaskParams = (() => {
 type IdNumberFormFieldValidationKey =
   `businessInformation.idNumber-${keyof typeof idNumberMaskParams}`;
 
-const createIdNumberFormFieldValidations = (
+const createIdNumberfieldValidations = (
   validations: Record<IdNumberFormFieldValidationKey, ((value: string) => string)[]>,
 ) => validations;
 
 // idNumber base validations - applied regardless of the ID type / province.
-formFieldValidations["businessInformation.idNumber"] = [
+fieldValidations["businessInformation.idNumber"] = [
   isNotEmpty("You must provide an ID number"),
 ];
 
 Object.assign(
-  formFieldValidations,
-  createIdNumberFormFieldValidations({
+  fieldValidations,
+  createIdNumberfieldValidations({
     "businessInformation.idNumber-BCDL": [
       isOnlyNumbers("BC driver's licence should contain only numbers"),
       isMinSizeMsg("BC driver's licence", 7),
@@ -162,7 +166,7 @@ Object.assign(
 export const getIdNumberValidations = (key: IdNumberFormFieldValidationKey) => getValidations(key);
 
 // Step 2: Addresses
-formFieldValidations["location.addresses.*.locationName"] = [
+fieldValidations["location.addresses.*.locationName"] = [
   isNotEmpty("You must provide a name for this location"),
   isMinSize(
     "The location name must be between 3 and 40 characters and cannot contain special characters"
@@ -174,31 +178,31 @@ formFieldValidations["location.addresses.*.locationName"] = [
     "The location name must be between 3 and 40 characters and cannot contain special characters"
   ),
 ];
-formFieldValidations["location.addresses.*.country.text"] = [
+fieldValidations["location.addresses.*.country.text"] = [
   isNotEmpty("You must select a country"),
 ];
-formFieldValidations["location.addresses.*.province.text"] = [
+fieldValidations["location.addresses.*.province.text"] = [
   isNotEmpty("You must select a value"),
 ];
-formFieldValidations["location.addresses.*.city"] = [
+fieldValidations["location.addresses.*.city"] = [
   isNotEmpty("You must provide a city"),
   isMinSize("The city name must be between 3 and 30 characters")(3),
   isMaxSize("The city name must be between 3 and 30 characters")(30),
   hasOnlyNamingCharacters("city name"),
 ];
-formFieldValidations["location.addresses.*.streetAddress"] = [
+fieldValidations["location.addresses.*.streetAddress"] = [
   isNotEmpty("Please provide a valid address or PO Box"),
   isMinSize("The address must be between 5 and 40 characters")(5),
   isMaxSize("The address must be between 5 and 40 characters")(40),
   isAscii("address"),
 ];
-formFieldValidations[
+fieldValidations[
   'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'
 ] = [isCanadianPostalCode];
-formFieldValidations[
+fieldValidations[
   'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")'
 ] = [isUsZipCode];
-formFieldValidations[
+fieldValidations[
   'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")'
 ] = [
   isOnlyNumbers(
@@ -213,29 +217,29 @@ formFieldValidations[
 ];
 
 // Step 3: Contacts
-formFieldValidations["location.contacts.*.locationNames"] = [
+fieldValidations["location.contacts.*.locationNames"] = [
   isNotEmptyArray("You must select at least one location"),
 ];
-formFieldValidations["location.contacts.*.contactType.text"] = [
+fieldValidations["location.contacts.*.contactType.text"] = [
   isNotEmpty("You must select a role."),
 ];
 
-formFieldValidations["location.contacts.*.firstName"] = [
+fieldValidations["location.contacts.*.firstName"] = [
   isMinSize("Please enter the first name")(1),
   isMaxSizeMsg("first name", 30),
   hasOnlyNamingCharacters("first name"),
 ];
-formFieldValidations["location.contacts.*.lastName"] = [
+fieldValidations["location.contacts.*.lastName"] = [
   isMinSize("Please enter the last name")(1),
   isMaxSizeMsg("last name", 30),
   hasOnlyNamingCharacters("last name"),
 ];
-formFieldValidations["location.contacts.*.email"] = [
+fieldValidations["location.contacts.*.email"] = [
   isEmail("Please provide a valid email address"),
   isMinSize("Please provide a valid email address")(6),
   isMaxSizeMsg("email address", 100),
 ];
-formFieldValidations["location.contacts.*.phoneNumber"] = [
+fieldValidations["location.contacts.*.phoneNumber"] = [
   isPhoneNumber("Please provide a valid phone number"),
   isMinSize("Please provide a valid phone number")(10),
   isMaxSizeMsg("phone number", 14),
@@ -245,6 +249,6 @@ export const addValidation = (
   key: string,
   validation: (value: string) => string
 ): void => {
-  if (!formFieldValidations[key]) formFieldValidations[key] = [];
-  formFieldValidations[key].push(validation);
+  if (!fieldValidations[key]) fieldValidations[key] = [];
+  fieldValidations[key].push(validation);
 };

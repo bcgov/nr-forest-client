@@ -12,7 +12,7 @@ import { useFocus } from "@/composables/useFocus";
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
 import { type CodeNameType, IdTypeEnum } from "@/dto/CommonTypesDto";
 // Importing validators
-import { getValidations } from "@/helpers/validators/GlobalValidators";
+import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 import {
   idNumberMaskParams,
