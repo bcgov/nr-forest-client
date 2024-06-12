@@ -115,6 +115,8 @@ const idNumberMask = ref<string>();
 watch([idType, issuingProvince], ([idTypeValue, issuingProvinceValue]) => {
   formData.value.businessInformation.idType = null;
   idNumberAdditionalValidations.value = [];
+
+  const oldIdNumberMask = idNumberMask.value;
   idNumberMask.value = undefined;
 
   if (idTypeValue) {
@@ -151,6 +153,17 @@ watch([idType, issuingProvince], ([idTypeValue, issuingProvinceValue]) => {
         `businessInformation.idNumber-${idTypeValue.code}`,
       );
       idNumberMask.value = getIdNumberMask(idTypeValue.code);
+    }
+
+    if (
+      (idNumberMask.value || oldIdNumberMask) &&
+      idNumberMask.value !== oldIdNumberMask &&
+      formData.value.businessInformation.idNumber
+    ) {
+      /*
+      Clear the ID number to prevent bad data hidden by the update on the mask and not revalidated.
+      */
+      formData.value.businessInformation.idNumber = "";
     }
   }
 
