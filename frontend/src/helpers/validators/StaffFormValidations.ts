@@ -28,7 +28,7 @@ const isMaxSizeMsg = (fieldName: string, maxSize: number) =>
 const isExactSizMsg = (fieldName: string, size: number) => {
   const msg = `The ${fieldName} must contain ${size} characters`;
   return [isMinSize(msg)(size), isMaxSize(msg)(size)];
-}
+};
 
 // Step 1: Business Information
 formFieldValidations["businessInformation.businessName"] = [
@@ -77,7 +77,7 @@ export const idNumberValidation = (() => {
       onlyNumbers: true,
     },
     nonBCDL: {
-      maxSize: 10,
+      maxSize: 20,
     },
     BRTH: {
       maxSize: 13,
