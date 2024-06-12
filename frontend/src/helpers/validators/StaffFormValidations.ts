@@ -93,6 +93,9 @@ export const idNumberValidation = (() => {
       maxSize: 10,
       onlyNumbers: true,
     },
+    OTHR: {
+      maxSize: 40,
+    },
   };
   return init as Record<keyof typeof init, IdNumberValidation>;
 })();
@@ -104,12 +107,16 @@ const createIdNumberFormFieldValidations = (
   validations: Record<IdNumberFormFieldValidationKey, ((value: string) => string)[]>,
 ) => validations;
 
+// idNumber base validations - applied regardless of the ID type / province.
+formFieldValidations["businessInformation.idNumber"] = [
+  isNotEmpty("You must provide an ID number"),
+  isIdCharacters(),
+];
+
 Object.assign(
   formFieldValidations,
   createIdNumberFormFieldValidations({
     "businessInformation.idNumber-default": [
-      isNotEmpty("You must provide an ID number"),
-      isIdCharacters(),
       isMinSizeMsg("ID number", 3),
       isMaxSizeMsg("ID number", idNumberValidation.default.maxSize),
     ],
@@ -142,14 +149,15 @@ Object.assign(
     "businessInformation.idNumber-FNID": [
       ...isExactSizMsg("First Nation status ID", idNumberValidation.FNID.maxSize),
     ],
+
+    "businessInformation.idNumber-OTHR": [
+      isMinSizeMsg("ID number", 3),
+      isMaxSizeMsg("ID number", idNumberValidation.OTHR.maxSize),
+    ],
   }),
 );
 
 export const getIdNumberValidations = (key: IdNumberFormFieldValidationKey) => getValidations(key);
-
-// Make the default value also available at the plain field name as key.
-formFieldValidations["businessInformation.idNumber"] =
-  formFieldValidations["businessInformation.idNumber-default"];
 
 // Step 2: Addresses
 formFieldValidations["location.addresses.*.locationName"] = [

@@ -51,6 +51,7 @@ const idTypeList: IdType[] = [
   { code: "CITZ", name: "Canadian citizenship card" },
   { code: "FNID", name: "First Nation status ID" },
   { code: "USDL", name: "US driver's licence" },
+  { code: "OTHR", name: "Other Identification"},
 ];
 const idType = ref<IdType>();
 const issuingProvince = ref<CodeNameType>();

@@ -74,6 +74,7 @@ export enum IdTypeEnum {
   CITZ,
   FNID,
   USDL,
+  OTHR,
 }
 
 export interface ProgressData {
