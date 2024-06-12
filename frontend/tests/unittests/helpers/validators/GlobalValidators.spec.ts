@@ -15,6 +15,9 @@ import {
   isNot,
   hasOnlyNamingCharacters,
   isAscii,
+  isIdCharacters,
+  isRegex,
+  validateSelection,
 } from '@/helpers/validators/GlobalValidators'
 
 describe('GlobalValidators', () => {
@@ -285,5 +288,97 @@ describe('GlobalValidators', () => {
   it("should return empty when value is an empty string", () => {
     const result = isAscii()("");
     expect(result).toBe("");
+  });
+  describe("isIdCharacters", () => {
+    it.each([
+      ["is an empty string", ""],
+      ["contains only A-Z and 0-9", "A1R4"],
+    ])("should return empty string when value %s", (_, value) => {
+      const result = isIdCharacters()(value);
+      expect(result).toBe("");
+    });
+
+    it.each([
+      ["contains a lower-case letter", "A1t2"],
+      ["contains a space", "A 12"],
+      ["contains a punctuation symbol", "A!12"],
+      ["contains an accented letter", "Á1F2"],
+      ["contains a hyphen", "A1-R4"],
+    ])("should return an error when value %s", (_, value) => {
+      const result = isIdCharacters()(value);
+      expect(result).not.toBe("");
+    });
+  });
+  describe("isRegex", () => {
+    const sampleRegex = /\d-\d/;
+    it.each([
+      ["when the regex is matched with the whole value", "1-2"],
+      ["when the regex is matched with part of the string", "s1-2e"],
+    ])("should return empty string %s", (_, value) => {
+      const result = isRegex(sampleRegex)(value);
+      expect(result).toBe("");
+    });
+
+    const nullableRegex = /.*/;
+    it.each([
+      ["even when the value is an empty string if the regex allows it", ""],
+    ])("should return empty string %s", (_, value) => {
+      const result = isRegex(nullableRegex)(value);
+      expect(result).toBe("");
+    });
+
+    it.each([
+      ["when the value is empty and doesn't match", ""],
+      ["when the value is not empty but doesn't match anyway", "12"],
+    ])("should return an error %s", (_, value) => {
+      const result = isRegex(sampleRegex)(value);
+      expect(result).not.toBe("");
+    });
+  });
+  describe("validateSelection", () => {
+    describe("when the provided selector is a function that extracts the string portion after the colon", () => {
+      const extract = (value: string) => {
+        const index = value.indexOf(":");
+        return value.substring(index);
+      };
+      describe("and there is a validation on max length as 5", () => {
+        const validator = isMaxSize()(5);
+
+        it.each([
+          ["when the extracted portion passes the validation", "prefix:1234"],
+        ])("should return an empty string %s (%s)", (_, value) => {
+          const result = validateSelection(extract)(validator)(value);
+          expect(result).toBe("");
+        });
+
+        it.each([
+          ["when the extracted portion doesn't pass the validation", "prefix:123456"],
+        ])("should return an error %s (%s)", (_, value) => {
+          const result = validateSelection(extract)(validator)(value);
+          expect(result).not.toBe("");
+        });
+      });
+    });
+  });
+  describe("when the provided selector throws an error", () => {
+    const selector = (value: string) => {
+      throw new Error;
+    };
+
+    const validator = isMaxSize()(20);
+
+    describe.each([
+      ["and a onSelectorErrorMessage was not provided", undefined, "the default selector error message"],
+      ["and a onSelectorErrorMessage was provided", "Sorry, the extraction failed!", "the provided message"]
+    ])("%s", (_, selectorMessage, explanation) => {
+      it.each([
+        ["regardless of the value", "anything"],
+      ])(`should return ${explanation}`, (_, value) => {
+        const result = validateSelection(selector, selectorMessage)(validator)(value);
+        const defaultSelectorMessage = "Value could not be validated";
+        const message = selectorMessage !== undefined ? selectorMessage : defaultSelectorMessage;
+        expect(result).toBe(message);
+      });
+    });
   });
 })
