@@ -419,6 +419,18 @@ export const isRegex =
     return message;
   };
 
+export const validateSubstringCount =
+  (substring: string) =>
+  (countValidator: (count: number) => string) =>
+  (value: string): string => {
+    let count = 0;
+    if (value) {
+      const needle = new RegExp(substring, "g");
+      count = value.match(needle).length;
+    }
+    return countValidator(count);
+  };
+
 /**
  * Allows to extract a portion of the value to be validated and apply the validation only to this portion.
  * @param selector - a function that returns the portion of the string you want to validate

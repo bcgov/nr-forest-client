@@ -149,7 +149,7 @@ Object.assign(
       isMinSizeMsg("ID number", 3),
       isMaxSizeMsg("ID number", 40),
       isRegex(
-        /.+:.+/,
+        /^[^:]+:[^:]+$/,
         'Other identification must follow the pattern: [ID Type] : [ID Value] such as "USA Passport : 12345"',
       ),
       validateSelection((value) => value.split(":")[1]?.trim())(
