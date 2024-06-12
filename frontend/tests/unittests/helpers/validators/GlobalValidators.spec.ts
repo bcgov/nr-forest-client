@@ -338,7 +338,7 @@ describe('GlobalValidators', () => {
   describe("validateSelection", () => {
     describe("when the provided selector is a function that extracts the string portion after the colon", () => {
       const extract = (value: string) => {
-        const index = value.indexOf(":");
+        const index = value.indexOf(":") + 1;
         return value.substring(index);
       };
       describe("and there is a validation on max length as 5", () => {
@@ -353,6 +353,23 @@ describe('GlobalValidators', () => {
 
         it.each([
           ["when the extracted portion doesn't pass the validation", "prefix:123456"],
+        ])("should return an error %s (%s)", (_, value) => {
+          const result = validateSelection(extract)(validator)(value);
+          expect(result).not.toBe("");
+        });
+      });
+      describe("and there is a validation on min length as 3", () => {
+        const validator = isMinSize()(3);
+
+        it.each([
+          ["when the extracted portion passes the validation", "prefix:1234"],
+        ])("should return an empty string %s (%s)", (_, value) => {
+          const result = validateSelection(extract)(validator)(value);
+          expect(result).toBe("");
+        });
+
+        it.each([
+          ["when the extracted portion doesn't pass the validation", "prefix:12"],
         ])("should return an error %s (%s)", (_, value) => {
           const result = validateSelection(extract)(validator)(value);
           expect(result).not.toBe("");

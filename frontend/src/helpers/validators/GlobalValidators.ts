@@ -431,7 +431,7 @@ export const validateSelection =
   (value: string): string => {
     try {
       const selected = selector(value);
-      return validator(selector(selected));
+      return validator(selected);
     } catch (error) {
       return selectorErrorMessage;
     }
