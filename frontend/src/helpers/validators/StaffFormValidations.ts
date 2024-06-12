@@ -98,6 +98,8 @@ const createIdNumberfieldValidations = (
 // idNumber base validations - applied regardless of the ID type / province.
 fieldValidations["businessInformation.idNumber"] = [isNotEmpty("You must provide an ID number")];
 
+const extractOtherId = (value: string) => value.split(":")[1]?.trim();
+
 Object.assign(
   fieldValidations,
   createIdNumberfieldValidations({
@@ -141,9 +143,10 @@ Object.assign(
         /^[^:]+:\s?[^\s:]+$/,
         'Other identification must follow the pattern: [ID Type] : [ID Value] such as "USA Passport : 12345"',
       ),
-      validateSelection((value) => value.split(":")[1]?.trim())(
+      validateSelection(extractOtherId)(
         isIdCharacters("The value to right of the colon can only contain: A-Z or 0-9"),
       ),
+      validateSelection(extractOtherId)(isMinSizeMsg("value to right of the colon", 3)),
     ],
   }),
 );
