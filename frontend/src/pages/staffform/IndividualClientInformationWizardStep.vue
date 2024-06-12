@@ -15,7 +15,7 @@ import { type CodeNameType, IdTypeEnum } from "@/dto/CommonTypesDto";
 import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 import {
-  idNumberValidation,
+  idNumberMaskParams,
   getIdNumberValidations,
 } from "@/helpers/validators/StaffFormValidations";
 // @ts-ignore
@@ -51,7 +51,7 @@ const idTypeList: IdType[] = [
   { code: "CITZ", name: "Canadian citizenship card" },
   { code: "FNID", name: "First Nation status ID" },
   { code: "USDL", name: "US driver's licence" },
-  { code: "OTHR", name: "Other Identification"},
+  { code: "OTHR", name: "Other Identification" },
 ];
 const idType = ref<IdType>();
 const issuingProvince = ref<CodeNameType>();
@@ -102,17 +102,20 @@ const updateIssuingProvince = (value: CodeNameType | undefined) => {
 
 const idNumberAdditionalValidations = ref<((value: string) => string)[]>([]);
 
-const getIdNumberMask = (type: keyof typeof idNumberValidation) => {
-  const token = idNumberValidation[type]?.onlyNumbers ? "#" : "N";
-  return token.repeat(idNumberValidation[type]?.maxSize);
+const getIdNumberMask = (type: keyof typeof idNumberMaskParams) => {
+  if (idNumberMaskParams[type]) {
+    const token = idNumberMaskParams[type].onlyNumbers ? "#" : "N";
+    return token.repeat(idNumberMaskParams[type].maxSize);
+  }
+  return undefined;
 };
 
-const idNumberMask = ref(getIdNumberMask("default"));
+const idNumberMask = ref<string>();
 
 watch([idType, issuingProvince], ([idTypeValue, issuingProvinceValue]) => {
   formData.value.businessInformation.idType = null;
   idNumberAdditionalValidations.value = [];
-  idNumberMask.value = getIdNumberMask("default");
+  idNumberMask.value = undefined;
 
   if (idTypeValue) {
     if (idTypeValue.code === "CDL" || idTypeValue.code === "USDL") {

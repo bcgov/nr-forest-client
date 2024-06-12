@@ -17,6 +17,7 @@ import {
   isAscii,
   isIdCharacters,
   getValidations,
+  isRegex,
 } from "@/helpers/validators/GlobalValidators";
 
 const isMinSizeMsg = (fieldName: string, minSize: number) =>
@@ -67,11 +68,8 @@ interface IdNumberValidation {
 /*
 Variable defined using an IIFE to allow an easy definition of type-checkable keys.
 */
-export const idNumberValidation = (() => {
+export const idNumberMaskParams = (() => {
   const init = {
-    default: {
-      maxSize: 40,
-    },
     BCDL: {
       maxSize: 8,
       onlyNumbers: true,
@@ -93,15 +91,13 @@ export const idNumberValidation = (() => {
       maxSize: 10,
       onlyNumbers: true,
     },
-    OTHR: {
-      maxSize: 40,
-    },
+    OTHR: undefined,
   };
-  return init as Record<keyof typeof init, IdNumberValidation>;
+  return init as Record<keyof typeof init, IdNumberValidation | undefined>;
 })();
 
 type IdNumberFormFieldValidationKey =
-  `businessInformation.idNumber-${keyof typeof idNumberValidation}`;
+  `businessInformation.idNumber-${keyof typeof idNumberMaskParams}`;
 
 const createIdNumberFormFieldValidations = (
   validations: Record<IdNumberFormFieldValidationKey, ((value: string) => string)[]>,
@@ -110,49 +106,51 @@ const createIdNumberFormFieldValidations = (
 // idNumber base validations - applied regardless of the ID type / province.
 formFieldValidations["businessInformation.idNumber"] = [
   isNotEmpty("You must provide an ID number"),
-  isIdCharacters(),
 ];
 
 Object.assign(
   formFieldValidations,
   createIdNumberFormFieldValidations({
-    "businessInformation.idNumber-default": [
-      isMinSizeMsg("ID number", 3),
-      isMaxSizeMsg("ID number", idNumberValidation.default.maxSize),
-    ],
-
     "businessInformation.idNumber-BCDL": [
-      isMinSizeMsg("BC driver's licence", 7),
-      isMaxSizeMsg("BC driver's licence", idNumberValidation.BCDL.maxSize),
       isOnlyNumbers("BC driver's licence should contain only numbers"),
+      isMinSizeMsg("BC driver's licence", 7),
+      isMaxSizeMsg("BC driver's licence", idNumberMaskParams.BCDL.maxSize),
     ],
 
     "businessInformation.idNumber-nonBCDL": [
+      isIdCharacters(),
       isMinSizeMsg("driver's licence", 7),
-      isMaxSizeMsg("driver's licence", idNumberValidation.nonBCDL.maxSize),
+      isMaxSizeMsg("driver's licence", idNumberMaskParams.nonBCDL.maxSize),
     ],
 
     "businessInformation.idNumber-BRTH": [
-      isMinSizeMsg("Canadian birth certificate", 12),
-      isMaxSizeMsg("Canadian birth certificate", idNumberValidation.BRTH.maxSize),
       isOnlyNumbers("Canadian birth certificate should contain only numbers"),
+      isMinSizeMsg("Canadian birth certificate", 12),
+      isMaxSizeMsg("Canadian birth certificate", idNumberMaskParams.BRTH.maxSize),
     ],
 
     "businessInformation.idNumber-PASS": [
-      ...isExactSizMsg("Canadian passport", idNumberValidation.PASS.maxSize),
+      isIdCharacters(),
+      ...isExactSizMsg("Canadian passport", idNumberMaskParams.PASS.maxSize),
     ],
 
     "businessInformation.idNumber-CITZ": [
-      ...isExactSizMsg("Canadian citizenship card", idNumberValidation.CITZ.maxSize),
+      isIdCharacters(),
+      ...isExactSizMsg("Canadian citizenship card", idNumberMaskParams.CITZ.maxSize),
     ],
 
     "businessInformation.idNumber-FNID": [
-      ...isExactSizMsg("First Nation status ID", idNumberValidation.FNID.maxSize),
+      isIdCharacters(),
+      ...isExactSizMsg("First Nation status ID", idNumberMaskParams.FNID.maxSize),
     ],
 
     "businessInformation.idNumber-OTHR": [
       isMinSizeMsg("ID number", 3),
-      isMaxSizeMsg("ID number", idNumberValidation.OTHR.maxSize),
+      isMaxSizeMsg("ID number", 40),
+      isRegex(
+        /.+:.+/,
+        'Other identification must follow the pattern: [ID Type] : [ID Value] such as "USA Passport : 12345"',
+      ),
     ],
   }),
 );

@@ -409,6 +409,16 @@ export const isDateInThePast = (message: string) => (value: string) => {
   return "";
 };
 
+export const isRegex =
+  (
+    regex: RegExp,
+    message: string = `This field must conform to the following regular expression: ${regex}`,
+  ) =>
+  (value: string): string => {
+    if (regex.test(value)) return "";
+    return message;
+  };
+
 /**
  * Retrieves the value of a field in an object or array based on a given path.
  * If the field is an array, it returns an array of values.
