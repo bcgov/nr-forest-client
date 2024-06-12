@@ -18,6 +18,7 @@ import {
   isIdCharacters,
   getValidations,
   isRegex,
+  validateSelection,
 } from "@/helpers/validators/GlobalValidators";
 
 const isMinSizeMsg = (fieldName: string, minSize: number) =>
@@ -150,6 +151,9 @@ Object.assign(
       isRegex(
         /.+:.+/,
         'Other identification must follow the pattern: [ID Type] : [ID Value] such as "USA Passport : 12345"',
+      ),
+      validateSelection((value) => value.split(":")[1]?.trim())(
+        isIdCharacters("The value to right of the colon can only contain: A-Z or 0-9"),
       ),
     ],
   }),

@@ -420,6 +420,17 @@ export const isRegex =
   };
 
 /**
+ * Allows to extract a portion of the value to be validated and apply the validation only to this portion.
+ * @param selector - a function that returns the portion of the string you want to validate
+ * @returns A function that accepts a validator and applies it to the portion of the string obtained by applying the selector.
+ */
+export const validateSelection =
+  (selector: (value: string) => string) =>
+  (validator: (value: string) => string) =>
+  (value: string): string =>
+    validator(selector(value));
+
+/**
  * Retrieves the value of a field in an object or array based on a given path.
  * If the field is an array, it returns an array of values.
  *
