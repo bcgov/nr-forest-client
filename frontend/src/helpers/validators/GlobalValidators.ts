@@ -10,7 +10,7 @@ import type { ValidationMessageType } from "@/dto/CommonTypesDto";
 // @sonar-ignore-next-line
 const emailRegex: RegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 const specialCharacters: RegExp = /^[a-zA-Z0-9\s]*$/;
-const idCharacters: RegExp = /^[A-Z0-9\s]*$/;
+const idCharacters: RegExp = /^[A-Z0-9]*$/;
 const e164Regex: RegExp = /^((\+?[1-9]\d{1,14})|(\(\d{3}\) \d{3}-\d{4}))$/;
 const canadianPostalCodeRegex: RegExp = /^(([A-Z]\d){3})$/i;
 const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/;
@@ -419,28 +419,23 @@ export const isRegex =
     return message;
   };
 
-export const validateSubstringCount =
-  (substring: string) =>
-  (countValidator: (count: number) => string) =>
-  (value: string): string => {
-    let count = 0;
-    if (value) {
-      const needle = new RegExp(substring, "g");
-      count = value.match(needle).length;
-    }
-    return countValidator(count);
-  };
-
 /**
  * Allows to extract a portion of the value to be validated and apply the validation only to this portion.
  * @param selector - a function that returns the portion of the string you want to validate
+ * @param selectorErrorMessage - message returned only in case of an error thrown by the selector
  * @returns A function that accepts a validator and applies it to the portion of the string obtained by applying the selector.
  */
 export const validateSelection =
-  (selector: (value: string) => string) =>
+  (selector: (value: string) => string, selectorErrorMessage = "Value could not be validated") =>
   (validator: (value: string) => string) =>
-  (value: string): string =>
-    validator(selector(value));
+  (value: string): string => {
+    try {
+      const selected = selector(value);
+      return validator(selector(selected));
+    } catch (error) {
+      return selectorErrorMessage;
+    }
+  };
 
 /**
  * Retrieves the value of a field in an object or array based on a given path.
