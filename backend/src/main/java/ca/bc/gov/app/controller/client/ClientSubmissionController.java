@@ -117,10 +117,10 @@ public class ClientSubmissionController extends
         .switchIfEmpty(
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
         )
-        .doOnNext(sub -> log.info("Submitting request: {}", sub))
+        .doOnNext(sub -> log.info("Submitting request: {}", sub.businessInformation().businessName()))
         .flatMap(this::validateReactive)
         .doOnNext(this::validate)
-        .doOnNext(sub -> log.info("Request is valid: {}", sub))
+        .doOnNext(sub -> log.info("Request is valid: {}", sub.businessInformation().businessName()))
         .doOnError(e -> log.error("Request is invalid: {}", e.getMessage()))
         .flatMap(submissionDto -> clientService.submit(submissionDto, principal))
         .doOnNext(submissionId -> log.info("Submission persisted: {}", submissionId))
