@@ -43,7 +43,7 @@ public class ClientSearchController {
   ) {
     log.info("Receiving request to search by individual {} {} {} {}", firstName, lastName, dob,
         identification);
-    return service.findByIndividual(firstName, lastName, dob, identification);
+    return service.findByIndividual(firstName, lastName, dob, identification,true);
   }
 
   @GetMapping("/match")

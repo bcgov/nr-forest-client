@@ -64,7 +64,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
   ) {
     StepVerifier.FirstStep<ForestClientDto> test =
         service
-            .findByIndividual(firstName, lastName, dob, identification)
+            .findByIndividual(firstName, lastName, dob, identification, true)
             .as(StepVerifier::create);
 
     if (StringUtils.isNotBlank(expected)) {

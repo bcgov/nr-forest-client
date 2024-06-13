@@ -44,6 +44,7 @@ public class ClientSearchService {
 
   private final ForestClientRepository forestClientRepository;
   private final ClientDoingBusinessAsRepository doingBusinessAsRepository;
+  private final ForestClientRepository clientRepository;
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> mapper;
   private final R2dbcEntityTemplate template;
 
@@ -113,7 +114,8 @@ public class ClientSearchService {
       String firstName,
       String lastName,
       LocalDate dob,
-      String identification
+      String identification,
+      boolean fuzzy
   ) {
 
     if (StringUtils.isAnyBlank(firstName, lastName) || dob == null) {
@@ -123,6 +125,19 @@ public class ClientSearchService {
 
     log.info("Searching for individual: {} {} {} {}", firstName, lastName, dob,
         StringUtils.defaultString(identification));
+
+    if (StringUtils.isBlank(identification) && fuzzy) {
+      return clientRepository
+          .findByIndividualFuzzy(
+              String.format("%s %s", firstName, lastName),
+              dob.atStartOfDay()
+          )
+          .map(mapper::toDto)
+          .doOnNext(dto -> log.info("Found individual matching {} {} {} as {} {}",
+              firstName, lastName, dob,
+              dto.clientNumber(), dto.clientName())
+          );
+    }
 
     Criteria queryCriteria = where("legalFirstName").is(firstName).ignoreCase(true)
         .and("clientName").is(lastName).ignoreCase(true)
@@ -215,7 +230,8 @@ public class ClientSearchService {
     }
 
     Criteria queryCriteria = where("clientIdTypeCode").is(idType).ignoreCase(true)
-        .and("clientIdentification").is(identification).ignoreCase(true);
+        .and("clientIdentification").is(identification).ignoreCase(true)
+        .and("clientTypeCode").is("I").ignoreCase(true);
 
     return searchClientByQuery(queryCriteria)
         .doOnNext(

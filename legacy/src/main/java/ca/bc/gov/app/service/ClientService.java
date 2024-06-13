@@ -21,6 +21,7 @@ public class ClientService {
 
   private final R2dbcEntityOperations entityTemplate;
   private final ForestClientRepository repository;
+  private final ClientSearchService searchService;
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> mapper;
 
   public Mono<String> saveAndGetIndex(ForestClientDto dto) {
@@ -77,11 +78,13 @@ public class ClientService {
             .equalsIgnoreCase("I")
     ) {
       return
-          repository
+          searchService
               .findByIndividual(
                   entity.getLegalFirstName(),
                   entity.getClientName(),
-                  entity.getBirthdate()
+                  entity.getBirthdate().toLocalDate(),
+                  null,
+                  false
               )
               .map(client -> false) // means you can't create it
               .defaultIfEmpty(true)
