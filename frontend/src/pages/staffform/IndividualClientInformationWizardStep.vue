@@ -299,10 +299,7 @@ onMounted(() => {
         :model-value="idTypeList"
         :enabled="true"
         tip=""
-        :validations="[
-          ...getValidations('businessInformation.idType.text'),
-          submissionValidation('businessInformation.idType.text'),
-        ]"
+        :validations="[...getValidations('idType.text'), submissionValidation('idType.text')]"
         @update:selected-value="updateIdType($event as IdType)"
       />
 
@@ -317,8 +314,8 @@ onMounted(() => {
         :enabled="true"
         tip=""
         :validations="[
-          ...getValidations('businessInformation.issuingProvince.text'),
-          submissionValidation('businessInformation.issuingProvince.text'),
+          ...getValidations('issuingProvince.text'),
+          submissionValidation('issuingProvince.text'),
         ]"
         @update:selected-value="updateIssuingProvince($event)"
       />

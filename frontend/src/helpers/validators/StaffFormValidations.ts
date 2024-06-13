@@ -47,10 +47,15 @@ fieldValidations["businessInformation.middleName"] = [
   hasOnlyNamingCharacters("middle name"),
 ];
 
-fieldValidations["businessInformation.idType.text"] = [isNotEmpty("You must select an ID type.")];
+// For the input field.
+fieldValidations["idType.text"] = [isNotEmpty("You must select an ID type.")];
 
-fieldValidations["businessInformation.issuingProvince.text"] = [
-  isNotEmpty("You must select a value."),
+// For the input field.
+fieldValidations["issuingProvince.text"] = [isNotEmpty("You must select a value.")];
+
+// For the form data.
+fieldValidations["businessInformation.idType"] = [
+  isNotEmpty("You must select an ID type (and related additional fields if any)."),
 ];
 
 interface IdNumberValidation {
@@ -133,7 +138,7 @@ Object.assign(
     ],
 
     "businessInformation.idNumber-FNID": [
-      isIdCharacters(),
+      isOnlyNumbers("First Nation status ID should contain only numbers"),
       ...isExactSizMsg("First Nation status ID", idNumberMaskParams.FNID.maxSize),
     ],
 
