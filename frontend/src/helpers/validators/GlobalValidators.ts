@@ -603,6 +603,8 @@ export const formFieldValidations: Record<
 export const getValidations = (key: string): ((value: string) => string)[] =>
   formFieldValidations[key] || [];
 
+const defaultGetValidations = getValidations;
+
 const arrayIndexGlobalRegex = /\.\*\./g;
 const targetGlobalRegex = /\$\./g;
 
@@ -610,8 +612,9 @@ const targetGlobalRegex = /\$\./g;
 export const validate = (
   keys: string[],
   target: any,
-  notify: boolean = false
-): boolean => {  
+  notify: boolean = false,
+  getValidations = defaultGetValidations,
+): boolean => {
   // For every received key we get the validations and run them
   return keys.every((key) => {
     // First we get all validators for that field

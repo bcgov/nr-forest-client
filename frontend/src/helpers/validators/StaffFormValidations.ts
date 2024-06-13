@@ -10,6 +10,7 @@ import {
   isRegex,
   validateSelection,
   formFieldValidations as externalFormFieldValidations,
+  validate as globalValidate,
 } from "@/helpers/validators/GlobalValidators";
 
 /*
@@ -160,4 +161,14 @@ export const getIdNumberValidations = (key: IdNumberFormFieldValidationKey) => g
 export const addValidation = (key: string, validation: (value: string) => string): void => {
   if (!fieldValidations[key]) fieldValidations[key] = [];
   fieldValidations[key].push(validation);
+};
+
+const defaultGetValidations = getValidations;
+
+export const validate = (
+  ...args: Parameters<typeof globalValidate>
+): ReturnType<typeof globalValidate> => {
+  const getValidations = args[3] || defaultGetValidations;
+  args[3] = getValidations;
+  return globalValidate.apply(this, args);
 };
