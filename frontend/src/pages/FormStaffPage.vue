@@ -24,7 +24,7 @@ import {
 } from "@/dto/ApplyClientNumberDto";
 import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
 // Imported global validations
-import "@/helpers/validators/StaffFormValidations";
+import { validate, runValidation } from "@/helpers/validators/StaffFormValidations";
 // Imported Pages
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
 // @ts-ignore
@@ -74,7 +74,11 @@ const progressData = reactive([
     disabled: false,
     valid: false,
     step: 0,
-    fields: [],
+    fields: [
+      "businessInformation.businessType",
+      "businessInformation.businessName",
+      "businessInformation.clientType",
+    ],
     extraValidations: [],
   },
   {
@@ -113,6 +117,28 @@ const currentTab = ref(0);
 const isLast = computed(() => currentTab.value === progressData.length - 1);
 const isFirst = computed(() => currentTab.value === 0);
 
+const checkStepValidity = (stepNumber: number): boolean => {
+  progressData.forEach((step: any) => {
+    if (step.step <= stepNumber) {
+      step.valid = validate(step.fields, formData.value, true);
+    }
+  });
+
+  if (!progressData[stepNumber].valid) {
+    // Stop here so the step basic validation messages don't get cleared.
+    return false;
+  }
+
+  if (
+    !progressData[stepNumber].extraValidations.every((validation: any) =>
+      runValidation(validation.field, formData.value, validation.validation, true, true),
+    )
+  )
+    return false;
+
+  return progressData[stepNumber].valid;
+};
+
 const validateStep = (valid: boolean) => {
   progressData[currentTab.value].valid = valid;
   if (valid) {
@@ -126,8 +152,21 @@ const onCancel = () => {
 };
 
 const onNext = () => {
-  // TODO
-  console.log("Next button clicked.");
+  if (currentTab.value + 1 < progressData.length) {
+    if (checkStepValidity(currentTab.value)) {
+      currentTab.value++;
+      progressData[currentTab.value - 1].kind = "complete";
+      progressData[currentTab.value].kind = "current";
+    }
+  }
+};
+
+const onBack = () => {
+  if (currentTab.value - 1 >= 0) {
+    currentTab.value--;
+    progressData[currentTab.value + 1].kind = "incomplete";
+    progressData[currentTab.value].kind = "current";
+  }
 };
 
 const clientTypeCode = ref<string>(null);
@@ -204,30 +243,32 @@ const validation = reactive<Record<string, boolean>>({});
     </div>
 
     <div class="form-steps-staff" role="main">
-      <div class="form-steps-section">
-        <h2 data-focus="focus-0" tabindex="-1">
-          <div data-scroll="step-title" class="header-offset"></div>
-          Client information
-        </h2>
-        <dropdown-input-component
-          id="clientType"
-          label="Client type"
-          :initial-value="null"
-          required
-          required-label
-          :model-value="clientTypesList"
-          :enabled="true"
-          tip=""
-          :validations="[]"
-          @update:selected-value="updateClientType($event)"
-          @empty="validation.type = !$event"
-        />
-        <individual-client-information-wizard-step
-          v-if="clientTypeCode === 'I'"
-          :active="currentTab == 0"
-          :data="formData"
-          @valid="validateStep"
-        />
+      <div v-if="currentTab == 0" class="form-steps-01">
+        <div class="form-steps-section">
+          <h2 data-focus="focus-0" tabindex="-1">
+            <div data-scroll="step-title" class="header-offset"></div>
+            Client information
+          </h2>
+          <dropdown-input-component
+            id="clientType"
+            label="Client type"
+            :initial-value="null"
+            required
+            required-label
+            :model-value="clientTypesList"
+            :enabled="true"
+            tip=""
+            :validations="[]"
+            @update:selected-value="updateClientType($event)"
+            @empty="validation.type = !$event"
+          />
+          <individual-client-information-wizard-step
+            v-if="clientTypeCode === 'I'"
+            :active="currentTab == 0"
+            :data="formData"
+            @valid="validateStep"
+          />
+        </div>
       </div>
       <div class="form-footer" role="footer">
         <div class="form-footer-group">
@@ -252,6 +293,7 @@ const validation = reactive<Record<string, boolean>>({});
                 kind="secondary"
                 size="lg"
                 :disabled="isFirst"
+                v-on:click="onBack"
                 data-test="wizard-back-button"
               >
                 <span>Back</span>

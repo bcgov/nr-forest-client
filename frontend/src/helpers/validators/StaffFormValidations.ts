@@ -11,6 +11,7 @@ import {
   validateSelection,
   formFieldValidations as externalFormFieldValidations,
   validate as globalValidate,
+  runValidation as globalRunValidation
 } from "@/helpers/validators/GlobalValidators";
 
 /*
@@ -157,7 +158,9 @@ Object.assign(
   }),
 );
 
-export const getIdNumberValidations = (key: IdNumberFormFieldValidationKey) => getValidations(key);
+export const getIdNumberValidations = (
+  key: IdNumberFormFieldValidationKey,
+): ((value: any) => string)[] => getValidations(key);
 
 // Step 2: Addresses
 
@@ -177,3 +180,5 @@ export const validate = (
   args[3] = getValidations;
   return globalValidate.apply(this, args);
 };
+
+export const runValidation = globalRunValidation;
