@@ -169,11 +169,11 @@ const onBack = () => {
   }
 };
 
-const clientTypeCode = ref<string>(null);
+const clientType = ref<CodeNameType>();
 
 const updateClientType = (value: CodeNameType | undefined) => {
   if (value) {
-    clientTypeCode.value = value.code;
+    clientType.value = value;
 
     // reset formData
     formData.value = newFormDataDto();
@@ -200,7 +200,7 @@ const updateClientType = (value: CodeNameType | undefined) => {
         break;
     }
   } else {
-    clientTypeCode.value = null;
+    clientType.value = null;
   }
 };
 
@@ -252,7 +252,7 @@ const validation = reactive<Record<string, boolean>>({});
           <dropdown-input-component
             id="clientType"
             label="Client type"
-            :initial-value="null"
+            :initial-value="clientType?.name"
             required
             required-label
             :model-value="clientTypesList"
@@ -263,7 +263,7 @@ const validation = reactive<Record<string, boolean>>({});
             @empty="validation.type = !$event"
           />
           <individual-client-information-wizard-step
-            v-if="clientTypeCode === 'I'"
+            v-if="clientType?.code === 'I'"
             :active="currentTab == 0"
             :data="formData"
             @valid="validateStep"
