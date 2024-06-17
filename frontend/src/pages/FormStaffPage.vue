@@ -28,7 +28,7 @@ import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
 import { validate, runValidation } from "@/helpers/validators/StaffFormValidations";
 // Imported Pages
 import IndividualClientInformationWizardStep, {
-  type LocalFields,
+  type IndividualVirtualFields,
 } from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
@@ -174,7 +174,7 @@ const onBack = () => {
 
 const clientType = ref<CodeNameType>();
 
-const individualFields: LocalFields = {
+const individualFields: IndividualVirtualFields = {
   idType: ref<IdType>(),
   issuingProvince: ref<CodeNameType>(),
 };
@@ -275,7 +275,7 @@ const validation = reactive<Record<string, boolean>>({});
             :active="currentTab == 0"
             :data="formData"
             @valid="validateStep"
-            :local-fields="individualFields"
+            :virtual-fields="individualFields"
           />
         </div>
       </div>

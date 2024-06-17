@@ -22,7 +22,7 @@ import {
 // @ts-ignore
 import Information16 from "@carbon/icons-vue/es/information/16";
 
-export interface LocalFields {
+export interface IndividualVirtualFields {
   idType: Ref<IdType>;
   issuingProvince: Ref<CodeNameType>;
 }
@@ -32,7 +32,7 @@ const props = defineProps<{
   data: FormDataDto;
   active: boolean;
   autoFocus?: boolean;
-  localFields: LocalFields;
+  virtualFields: IndividualVirtualFields;
 }>();
 
 const emit = defineEmits<{
@@ -57,8 +57,8 @@ const idTypeList: IdType[] = [
   { code: "OTHR", name: "Other Identification" },
 ];
 
-const idType = props.localFields.idType;
-const issuingProvince = props.localFields.issuingProvince;
+const idType = props.virtualFields.idType;
+const issuingProvince = props.virtualFields.issuingProvince;
 
 const updateIdType = (value: IdType | undefined) => {
   idType.value = value;
