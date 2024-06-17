@@ -54,7 +54,7 @@
     "@carbon/web-components": "^2.8.0",
     "@vueuse/core": "^10.2.0",
     "aws-amplify": "^6.0.27",
-    "axios": "^1.6.7",
+    "axios": "^1.7.2",
     "date-fns": "^3.0.0",
     "dotenv": "^16.0.0",
     "vue": "^3.2.47",
