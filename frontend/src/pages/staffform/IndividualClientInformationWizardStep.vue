@@ -10,7 +10,8 @@ import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Importing types
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
-import { type CodeNameType, IdTypeEnum } from "@/dto/CommonTypesDto";
+import type { CodeNameType, IdType } from "@/dto/CommonTypesDto";
+import type { Ref } from "vue";
 // Importing validators
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
@@ -21,11 +22,17 @@ import {
 // @ts-ignore
 import Information16 from "@carbon/icons-vue/es/information/16";
 
+export interface LocalFields {
+  idType: Ref<IdType>;
+  issuingProvince: Ref<CodeNameType>;
+}
+
 // Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
   data: FormDataDto;
   active: boolean;
   autoFocus?: boolean;
+  localFields: LocalFields;
 }>();
 
 const emit = defineEmits<{
@@ -40,10 +47,6 @@ watch(
   () => emit("update:data", formData.value),
 );
 
-interface IdType extends CodeNameType {
-  code: keyof typeof IdTypeEnum;
-}
-
 const idTypeList: IdType[] = [
   { code: "BRTH", name: "Canadian birth certificate" },
   { code: "CDL", name: "Canadian driver's licence" },
@@ -53,8 +56,9 @@ const idTypeList: IdType[] = [
   { code: "USDL", name: "US driver's licence" },
   { code: "OTHR", name: "Other Identification" },
 ];
-const idType = ref<IdType>();
-const issuingProvince = ref<CodeNameType>();
+
+const idType = props.localFields.idType;
+const issuingProvince = props.localFields.issuingProvince;
 
 const updateIdType = (value: IdType | undefined) => {
   idType.value = value;
@@ -84,8 +88,7 @@ watch(idType, (idTypeValue) => {
 });
 
 watch(provinceList, (provinceListValue) => {
-  issuingProvince.value = null;
-  if (idType.value.code === "CDL") {
+  if (idType.value.code === "CDL" && (!issuingProvince.value || !issuingProvince.value.code)) {
     // default value for Issuing province when ID type is Canadian driver's licence
     issuingProvince.value = provinceListValue.find((province) => province.code === "BC");
   }

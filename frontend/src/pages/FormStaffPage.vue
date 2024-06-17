@@ -13,6 +13,7 @@ import {
   ClientTypeEnum,
   LegalTypeEnum,
   type CodeNameType,
+  type IdType,
   type ModalNotification,
 } from "@/dto/CommonTypesDto";
 import {
@@ -26,7 +27,9 @@ import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
 // Imported global validations
 import { validate, runValidation } from "@/helpers/validators/StaffFormValidations";
 // Imported Pages
-import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
+import IndividualClientInformationWizardStep, {
+  type LocalFields,
+} from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 
@@ -171,6 +174,11 @@ const onBack = () => {
 
 const clientType = ref<CodeNameType>();
 
+const individualFields: LocalFields = {
+  idType: ref<IdType>(),
+  issuingProvince: ref<CodeNameType>(),
+};
+
 const updateClientType = (value: CodeNameType | undefined) => {
   if (value) {
     clientType.value = value;
@@ -267,6 +275,7 @@ const validation = reactive<Record<string, boolean>>({});
             :active="currentTab == 0"
             :data="formData"
             @valid="validateStep"
+            :local-fields="individualFields"
           />
         </div>
       </div>
