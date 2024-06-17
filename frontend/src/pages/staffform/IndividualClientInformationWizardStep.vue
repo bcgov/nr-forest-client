@@ -13,7 +13,7 @@ import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
 import type { CodeNameType, IdType } from "@/dto/CommonTypesDto";
 import type { Ref } from "vue";
 // Importing validators
-import { getValidations } from "@/helpers/validators/StaffFormValidations";
+import { getValidations, validate } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 import {
   idNumberMaskParams,
@@ -191,10 +191,14 @@ watch(fullName, (fullNameValue) => {
 // -- Validation of the component --
 const validation = reactive<Record<string, boolean>>({
   firstName: false,
-  middleName: true,
+  middleName:
+    typeof formData.value.businessInformation.middleName === "string" &&
+    validate(["businessInformation.middleName"], formData.value),
   lastName: false,
   birthdate: false,
-  idType: false,
+  idType:
+    formData.value.businessInformation.idType &&
+    validate(["businessInformation.idType"], formData.value),
   idNumber: false,
 });
 
