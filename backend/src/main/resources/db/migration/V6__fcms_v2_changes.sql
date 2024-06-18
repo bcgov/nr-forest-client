@@ -23,11 +23,11 @@ comment on column nrfc.identification_type_code.update_user is 'The user or prox
 
 
 insert into nrfc.identification_type_code (identification_type_code, description, country_code, effective_date, create_user) values ('BRTH', 'Canadian birth certificate', null, current_timestamp, 'mariamar') on conflict (identification_type_code) do nothing;
-insert into nrfc.identification_type_code (identification_type_code, description, country_code, effective_date, create_user) values ('CDDL', 'Canadian driver''s licence', 'US', current_timestamp, 'mariamar') on conflict (identification_type_code) do nothing;
+insert into nrfc.identification_type_code (identification_type_code, description, country_code, effective_date, create_user) values ('CDDL', 'Canadian driver''s licence', 'CA', current_timestamp, 'mariamar') on conflict (identification_type_code) do nothing;
 insert into nrfc.identification_type_code (identification_type_code, description, country_code, effective_date, create_user) values ('PASS', 'Canadian passport', null, current_timestamp, 'mariamar') on conflict (identification_type_code) do nothing;
 insert into nrfc.identification_type_code (identification_type_code, description, country_code, effective_date, create_user) values ('CITZ', 'Canadian citizenship card', null, current_timestamp, 'mariamar') on conflict (identification_type_code) do nothing;
 insert into nrfc.identification_type_code (identification_type_code, description, country_code, effective_date, create_user) values ('FNID', 'First Nation status card', null, current_timestamp, 'mariamar') on conflict (identification_type_code) do nothing;
-insert into nrfc.identification_type_code (identification_type_code, description, country_code, effective_date, create_user) values ('USDL', 'US driver''s licence', 'CA', current_timestamp, 'mariamar') on conflict (identification_type_code) do nothing;
+insert into nrfc.identification_type_code (identification_type_code, description, country_code, effective_date, create_user) values ('USDL', 'US driver''s licence', 'US', current_timestamp, 'mariamar') on conflict (identification_type_code) do nothing;
 
 
 -- Add columns if they don't exist
