@@ -91,7 +91,7 @@ public class ClientSubmissionService {
   ) {
 
     log.info(
-        "Searching for Page {} Size {} Type {} Status {} Client {} District {} Name {} submittedAt {}",
+        "Searching for Page {} Size {} Status {} Client {} District {} Name {} submittedAt {}",
         page,
         size,
         requestStatus,
@@ -126,7 +126,8 @@ public class ClientSubmissionService {
                                                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                                             .orElse(StringUtils.EMPTY),
                                         StringUtils.defaultString(
-                                            submissionPair.getRight().getUpdatedBy()),
+                                            removeProvider(submissionPair.getRight().getUpdatedBy())
+                                        ),
                                         submissionPair.getRight().getSubmissionStatus()
                                             .getDescription(),
                                         submissionPair.getLeft()
@@ -141,7 +142,7 @@ public class ClientSubmissionService {
     return Mono.justOrEmpty(districtCode)
         .flatMap(districtCodeRepository::findByCode)
         .map(districtCodeEntity -> districtCodeEntity.getCode() + " - "
-                                   + districtCodeEntity.getDescription())
+            + districtCodeEntity.getDescription())
         .defaultIfEmpty("");
   }
 
@@ -280,7 +281,8 @@ public class ClientSubmissionService {
                     Map.of()
                 )
             )
-            .one();
+            .one()
+            .map(dto -> dto.withUpdateUser(removeProvider(dto.updateUser())));
 
     Flux<SubmissionContactDto> contacts =
         client
@@ -333,9 +335,9 @@ public class ClientSubmissionService {
                 .findBySubmissionId(id.intValue())
                 .doOnNext(this::cleanMatchers)
                 .map(matched ->
-                        submissionDetailsDto
-                            .withApprovedTimestamp(matched.getUpdatedAt())
-                            .withMatchers(matched.getMatchers())
+                    submissionDetailsDto
+                        .withApprovedTimestamp(matched.getUpdatedAt())
+                        .withMatchers(matched.getMatchers())
                 )
                 .defaultIfEmpty(
                     submissionDetailsDto
@@ -585,6 +587,15 @@ public class ClientSubmissionService {
     }
 
     return stringBuilder.toString();
+  }
+
+  private String removeProvider(String input) {
+    String[] parts = input.split("\\\\");
+    if (parts.length > 1) {
+      return parts[1];
+    } else {
+      return input;
+    }
   }
 
 }
