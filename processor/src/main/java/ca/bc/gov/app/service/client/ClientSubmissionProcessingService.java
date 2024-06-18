@@ -58,6 +58,8 @@ public class ClientSubmissionProcessingService {
                                         matching.getMatchingMessage())
                                     .withParameter(ApplicationConstant.CLIENT_TYPE_CODE,
                                         details.getClientTypeCode())
+                                    .withParameter(ApplicationConstant.MATCHED_USER,
+                                        matching.getCreatedBy())
                             )
                     )
             );

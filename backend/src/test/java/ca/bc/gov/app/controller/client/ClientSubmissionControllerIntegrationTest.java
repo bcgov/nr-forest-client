@@ -265,7 +265,7 @@ class ClientSubmissionControllerIntegrationTest
           .jsonPath("$.[0].requestType").isEqualTo("Submission pending processing")
           .jsonPath("$.[0].status").isEqualTo("New")
           .jsonPath("$.[0].clientType").isEqualTo("Registered sole proprietorship")
-          .jsonPath("$.[0].user").isEqualTo("Jhon Doe");
+          .jsonPath("$.[0].user").isEqualTo("jdoe");
     }
   }
 
@@ -287,7 +287,7 @@ class ClientSubmissionControllerIntegrationTest
         .expectStatus().isOk()
         .expectBody()
         .jsonPath("$.submissionId").isEqualTo(1)
-        .jsonPath("$.updateUser").isEqualTo("Jhon Doe")
+        .jsonPath("$.updateUser").isEqualTo("jdoe")
         .jsonPath("$.submissionType").isEqualTo("Submission pending processing");
   }
 

@@ -224,6 +224,6 @@ public class BcRegistryService {
             .tap(Micrometer.observation(registry))
             .doOnNext(
                 document -> log.info("Document loaded for {} {} as {}", identifier, documentKey,
-                    document));
+                    document.business().legalName()));
   }
 }
