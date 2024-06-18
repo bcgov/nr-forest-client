@@ -34,12 +34,15 @@ services:
 
   legacydb:
     container_name: oracle
+    build:
+      context: legacydb
+      dockerfile: Dockerfile
     environment:
       APP_USER_PASSWORD: default
       APP_USER: THE
       ORACLE_RANDOM_PASSWORD: yes
     platform: "linux/amd64"
-    image: gvenzl/oracle-xe:21.3.0-slim-faststart
+    # image: gvenzl/oracle-xe:21.3.0-slim-faststart
     ports: [1521:1521]
     volumes: [/opt/oracle/oradata gvenzl/oracle-xe]
     healthcheck:

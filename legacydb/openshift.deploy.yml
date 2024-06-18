@@ -78,7 +78,7 @@ objects:
         spec:
           containers:
             - name: ${NAME}
-              image: docker.io/gvenzl/oracle-free:23-faststart
+              image: gvenzl/oracle-free:23-faststart
               ports:
                 - containerPort: 5432
                   protocol: TCP
