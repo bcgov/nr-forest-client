@@ -64,11 +64,11 @@ objects:
       selector:
         matchLabels:
           deployment: ${NAME}-${ZONE}-${COMPONENT}
-      # strategy:
-      #   type: Recreate
-      #   recreateParams:
-      #     timeoutSeconds: 600
-      #   activeDeadlineSeconds: 21600
+      strategy:
+        type: Recreate
+        recreateParams:
+          timeoutSeconds: 600
+        activeDeadlineSeconds: 21600
       template:
         metadata:
           name: ${NAME}-${ZONE}-${COMPONENT}
