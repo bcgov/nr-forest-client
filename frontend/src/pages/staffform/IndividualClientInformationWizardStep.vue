@@ -115,63 +115,86 @@ const getIdNumberMask = (type: keyof typeof idNumberMaskParams) => {
 
 const idNumberMask = ref<string>();
 
-watch([idType, issuingProvince], ([idTypeValue, issuingProvinceValue]) => {
-  formData.value.businessInformation.idType = null;
-  idNumberAdditionalValidations.value = [];
-
-  const oldIdNumberMask = idNumberMask.value;
-  idNumberMask.value = undefined;
-
-  if (idTypeValue) {
-    if (idTypeValue.code === "CDL" || idTypeValue.code === "USDL") {
-      if (issuingProvinceValue?.code) {
-        // Driver's licences
-        if (idTypeValue?.code === "CDL") {
-          formData.value.businessInformation.idType = issuingProvinceValue.code + "DL";
-        }
-
-        if (idTypeValue?.code === "USDL") {
-          formData.value.businessInformation.idType = "US" + issuingProvinceValue.code;
-        }
-
-        if (idTypeValue?.code === "CDL" && issuingProvinceValue.code === "BC") {
-          // BC driver's licences
-          idNumberAdditionalValidations.value = getIdNumberValidations(
-            "businessInformation.idNumber-BCDL",
-          );
-          idNumberMask.value = getIdNumberMask("BCDL");
-        } else {
-          // Every other driver's licences, including both Canadian or US.
-          idNumberAdditionalValidations.value = getIdNumberValidations(
-            "businessInformation.idNumber-nonBCDL",
-          );
-          idNumberMask.value = getIdNumberMask("nonBCDL");
-        }
-      }
-    } else {
-      // Every other ID type
-      formData.value.businessInformation.idType = idTypeValue.code;
-
-      idNumberAdditionalValidations.value = getIdNumberValidations(
-        `businessInformation.idNumber-${idTypeValue.code}`,
-      );
-      idNumberMask.value = getIdNumberMask(idTypeValue.code);
-    }
-
-    if (
-      (idNumberMask.value || oldIdNumberMask) &&
-      idNumberMask.value !== oldIdNumberMask &&
-      formData.value.businessInformation.idNumber
-    ) {
-      /*
-      Clear the ID number to prevent bad data hidden by the update on the mask and not revalidated.
-      */
-      formData.value.businessInformation.idNumber = "";
-    }
-  }
-
-  validation.idType = !!formData.value.businessInformation.idType;
+// -- Validation of the component --
+const validation = reactive<Record<string, boolean>>({
+  firstName: false,
+  middleName:
+    !formData.value.businessInformation.middleName || // since middleName is not required
+    validate(["businessInformation.middleName"], formData.value),
+  lastName: false,
+  birthdate: false,
+  idType:
+    !!formData.value.businessInformation.idType &&
+    validate(["businessInformation.idType"], formData.value),
+  idNumber: false,
 });
+
+watch(
+  [idType, issuingProvince],
+  ([idTypeValue, issuingProvinceValue]) => {
+    const oldIdType = formData.value.businessInformation.idType;
+    formData.value.businessInformation.idType = null;
+    idNumberAdditionalValidations.value = [];
+
+    const oldIdNumberMask = idNumberMask.value;
+    idNumberMask.value = undefined;
+
+    if (idTypeValue) {
+      if (idTypeValue.code === "CDL" || idTypeValue.code === "USDL") {
+        if (issuingProvinceValue?.code) {
+          // Driver's licences
+          if (idTypeValue?.code === "CDL") {
+            formData.value.businessInformation.idType = issuingProvinceValue.code + "DL";
+          }
+
+          if (idTypeValue?.code === "USDL") {
+            formData.value.businessInformation.idType = "US" + issuingProvinceValue.code;
+          }
+
+          if (idTypeValue?.code === "CDL" && issuingProvinceValue.code === "BC") {
+            // BC driver's licences
+            idNumberAdditionalValidations.value = getIdNumberValidations(
+              "businessInformation.idNumber-BCDL",
+            );
+            idNumberMask.value = getIdNumberMask("BCDL");
+          } else {
+            // Every other driver's licences, including both Canadian or US.
+            idNumberAdditionalValidations.value = getIdNumberValidations(
+              "businessInformation.idNumber-nonBCDL",
+            );
+            idNumberMask.value = getIdNumberMask("nonBCDL");
+          }
+        }
+      } else {
+        // Every other ID type
+        formData.value.businessInformation.idType = idTypeValue.code;
+
+        idNumberAdditionalValidations.value = getIdNumberValidations(
+          `businessInformation.idNumber-${idTypeValue.code}`,
+        );
+        idNumberMask.value = getIdNumberMask(idTypeValue.code);
+      }
+
+      /*
+      We need to clear the ID number when the idType gets updated, except when the input mask is
+      the same.
+      The following condition also prevents from doing it when the idType did not actually changed,
+      which could happen when rendering the component with information already filled up.
+      */
+      if (
+        oldIdType !== formData.value.businessInformation.idType &&
+        (idNumberMask.value || oldIdNumberMask) &&
+        idNumberMask.value !== oldIdNumberMask &&
+        formData.value.businessInformation.idNumber
+      ) {
+        formData.value.businessInformation.idNumber = "";
+      }
+    }
+
+    validation.idType = !!formData.value.businessInformation.idType;
+  },
+  { immediate: true },
+);
 
 const fullName = computed(() => {
   const parts: string[] = [];
@@ -186,20 +209,6 @@ const fullName = computed(() => {
 // set the business name as the individual's full name
 watch(fullName, (fullNameValue) => {
   formData.value.businessInformation.businessName = fullNameValue;
-});
-
-// -- Validation of the component --
-const validation = reactive<Record<string, boolean>>({
-  firstName: false,
-  middleName:
-    typeof formData.value.businessInformation.middleName === "string" &&
-    validate(["businessInformation.middleName"], formData.value),
-  lastName: false,
-  birthdate: false,
-  idType:
-    formData.value.businessInformation.idType &&
-    validate(["businessInformation.idType"], formData.value),
-  idNumber: false,
 });
 
 const checkValid = () =>
