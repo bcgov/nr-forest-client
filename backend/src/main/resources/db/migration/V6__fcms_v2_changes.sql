@@ -30,6 +30,7 @@ insert into nrfc.identification_type_code (identification_type_code, description
 insert into nrfc.identification_type_code (identification_type_code, description, country_code, effective_date, create_user) values ('USDL', 'US driver''s licence', 'CA', current_timestamp, 'mariamar') on conflict (identification_type_code) do nothing;
 
 
+-- Add columns if they don't exist
 alter table nrfc.submission_detail
 add column if not exists work_safe_bc_number varchar(6) null,
 add column if not exists doing_business_as varchar(120) null,
@@ -41,10 +42,31 @@ add column if not exists notes varchar(4000) null,
 add column if not exists identification_type_code varchar(4) null,
 add column if not exists client_identification varchar(40) null,
 add column if not exists country_code varchar(2) null,
-add column if not exists province_code varchar(4) null,
-add constraint identification_type_code_fk foreign key (identification_type_code) references nrfc.identification_type_code(identification_type_code),
-add constraint province_code_fk foreign key (country_code, province_code) references nrfc.province_code(country_code, province_code);
+add column if not exists province_code varchar(4) null;
 
+-- Add constraints if they don't exist
+do $$
+begin
+    if not exists (
+        select 1
+        from pg_constraint
+        where conname = 'identification_type_code_fk'
+    ) then
+        alter table nrfc.submission_detail
+        add constraint identification_type_code_fk foreign key (identification_type_code)
+        references nrfc.identification_type_code(identification_type_code);
+    end if;
+
+    if not exists (
+        select 1
+        from pg_constraint
+        where conname = 'province_code_fk'
+    ) then
+        alter table nrfc.submission_detail
+        add constraint province_code_fk foreign key (country_code, province_code)
+        references nrfc.province_code(country_code, province_code);
+    end if;
+end $$;
 comment on column nrfc.submission_detail.work_safe_bc_number is 'A Work Safe BC number of a client.';
 comment on column nrfc.submission_detail.doing_business_as is 'An alternate name that a client may be conducting business under. For example: John Smith doing business as: John''s Logging.';
 comment on column nrfc.submission_detail.client_acronym is 'A familiar alphabetic acronym to be used as an alternative to the ministry''s client number for data entry and display.';
