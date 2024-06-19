@@ -40,7 +40,7 @@ public class ClientDoingBusinessAsService {
                     .defaultIfEmpty(true) // means you can create it
                     .doOnNext(canCreate ->
                         log.info(
-                            "Can create client doing business as {} {}? {}",
+                            "Creating client doing business as {} {}? {}",
                             dto.clientNumber(),
                             dto.doingBusinessAsName(),
                             canCreate

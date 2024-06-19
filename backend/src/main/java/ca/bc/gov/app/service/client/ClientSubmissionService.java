@@ -91,7 +91,7 @@ public class ClientSubmissionService {
   ) {
 
     log.info(
-        "Searching for Page {} Size {} Type {} Status {} Client {} District {} Name {} submittedAt {}",
+        "Searching for Page {} Size {} Status {} Client {} District {} Name {} submittedAt {}",
         page,
         size,
         requestStatus,
@@ -126,7 +126,8 @@ public class ClientSubmissionService {
                                                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                                             .orElse(StringUtils.EMPTY),
                                         StringUtils.defaultString(
-                                            submissionPair.getRight().getUpdatedBy()),
+                                            removeProvider(submissionPair.getRight().getUpdatedBy())
+                                        ),
                                         submissionPair.getRight().getSubmissionStatus()
                                             .getDescription(),
                                         submissionPair.getLeft()
@@ -141,7 +142,7 @@ public class ClientSubmissionService {
     return Mono.justOrEmpty(districtCode)
         .flatMap(districtCodeRepository::findByCode)
         .map(districtCodeEntity -> districtCodeEntity.getCode() + " - "
-                                   + districtCodeEntity.getDescription())
+            + districtCodeEntity.getDescription())
         .defaultIfEmpty("");
   }
 
@@ -172,7 +173,7 @@ public class ClientSubmissionService {
                     .submissionType(SubmissionTypeCodeEnum.SPP)
                     .submissionDate(LocalDateTime.now())
                     .createdBy(JwtPrincipalUtil.getUserId(principal))
-                    .updatedBy(JwtPrincipalUtil.getName(principal))
+                    .updatedBy(JwtPrincipalUtil.getUserId(principal))
                     .build()
             )
             //Save submission to begin with
@@ -216,6 +217,7 @@ public class ClientSubmissionService {
                         .builder()
                         .submissionId(submission)
                         .updatedAt(LocalDateTime.now())
+                        .createdBy(JwtPrincipalUtil.getUserId(principal))
                         .matchers(
                             Map.of(
                                 "info",
@@ -279,7 +281,8 @@ public class ClientSubmissionService {
                     Map.of()
                 )
             )
-            .one();
+            .one()
+            .map(dto -> dto.withUpdateUser(removeProvider(dto.updateUser())));
 
     Flux<SubmissionContactDto> contacts =
         client
@@ -332,9 +335,9 @@ public class ClientSubmissionService {
                 .findBySubmissionId(id.intValue())
                 .doOnNext(this::cleanMatchers)
                 .map(matched ->
-                        submissionDetailsDto
-                            .withApprovedTimestamp(matched.getUpdatedAt())
-                            .withMatchers(matched.getMatchers())
+                    submissionDetailsDto
+                        .withApprovedTimestamp(matched.getUpdatedAt())
+                        .withMatchers(matched.getMatchers())
                 )
                 .defaultIfEmpty(
                     submissionDetailsDto
@@ -368,7 +371,7 @@ public class ClientSubmissionService {
             )
             .switchIfEmpty(Mono.error(new RequestAlreadyProcessedException()))
             .map(submission -> {
-              submission.setUpdatedBy(userName);
+              submission.setUpdatedBy(userId);
               submission.setUpdatedAt(LocalDateTime.now());
               submission.setSubmissionStatus(
                   request.approved() ? SubmissionStatusEnum.A : SubmissionStatusEnum.R
@@ -383,6 +386,7 @@ public class ClientSubmissionService {
                         matched
                             .withStatus(BooleanUtils.toString(request.approved(), "Y", "N"))
                             .withUpdatedAt(LocalDateTime.now())
+                            .withCreatedBy(userId)
                             .withMatchingMessage(processRejectionReason(request))
                     )
                     .flatMap(submissionMatchDetailRepository::save)
@@ -583,6 +587,15 @@ public class ClientSubmissionService {
     }
 
     return stringBuilder.toString();
+  }
+
+  private String removeProvider(String input) {
+    String[] parts = input.split("\\\\");
+    if (parts.length > 1) {
+      return parts[1];
+    } else {
+      return input;
+    }
   }
 
 }

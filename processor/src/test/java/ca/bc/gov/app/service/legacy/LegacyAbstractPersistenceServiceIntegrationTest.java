@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-@DisplayName("Integration Test | Legacy Persistence Service")
+@DisplayName("Integrated Test | Legacy Persistence Service")
 class LegacyAbstractPersistenceServiceIntegrationTest extends AbstractTestContainer {
 
   @Autowired
