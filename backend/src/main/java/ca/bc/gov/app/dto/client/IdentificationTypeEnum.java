@@ -6,5 +6,6 @@ public enum IdentificationTypeEnum {
   PASS,
   CITZ,
   FNID,
-  USDL
+  USDL,
+  OTHR
 }

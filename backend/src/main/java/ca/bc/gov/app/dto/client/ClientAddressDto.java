@@ -7,6 +7,8 @@ import lombok.With;
 @With
 public record ClientAddressDto(
     String streetAddress,
+    String complementaryAddressOne,
+    String complementaryAddressTwo,
     ClientValueTextDto country,
     ClientValueTextDto province,
     String city,
@@ -25,6 +27,8 @@ public record ClientAddressDto(
             Map.of(
                 "name", locationName,
                 "address", streetAddress,
+                "complementaryAddressOne", complementaryAddressOne,
+                "complementaryAddressTwo", complementaryAddressTwo,
                 "country", country.text(),
                 "province", province.text(),
                 "city", city,
