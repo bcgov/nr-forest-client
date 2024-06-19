@@ -275,6 +275,32 @@ describe("<individual-client-information-wizard-step />", () => {
     });
   });
 
+  describe("businessInformation.businessName", () => {
+    beforeEach(() => {
+      mount();
+
+      cy.get("#firstName").shadow().find("input").type("John");
+      cy.get("#lastName").shadow().find("input").type("Silver");
+    });
+    describe("when middleName is not provided", () => {
+      it("sets the businessName in the businessInformation to '<firstName> <lastName>'", () => {
+        cy.wrap(currentProps.data.businessInformation)
+          .its("businessName")
+          .should("equal", "John Silver");
+      });
+    });
+    describe("when middleName is provided", () => {
+      beforeEach(() => {
+        cy.get("#middleName").shadow().find("input").type("Michael");
+      });
+      it("sets the businessName in the businessInformation to '<firstName> <middleName> <lastName>'", () => {
+        cy.wrap(currentProps.data.businessInformation)
+          .its("businessName")
+          .should("equal", "John Michael Silver");
+      });
+    });
+  });
+
   describe("when all required fields are properly filled", () => {
     beforeEach(() => {
       mount();
