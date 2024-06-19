@@ -32,7 +32,7 @@ INSERT INTO nrfc.submission_matching_detail VALUES (365, 365, '{"contact": "0000
 
 INSERT INTO nrfc.submission VALUES (364, 'A', 'SSD', current_timestamp, current_timestamp, 'BCEIDBUSINESS\\UAT', ' BCEIDBUSINESS\\UAT') ON CONFLICT DO NOTHING;
 INSERT INTO nrfc.submission_contact VALUES (364, 364, 'DI', 'Jhon', 'Wick', '(999) 888-7766', 'jhonwick@uat.testing.lo', 'BCEIDBUSINESS\\UAT') ON CONFLICT DO NOTHING;
-INSERT INTO nrfc.submission_detail (submission_detail_id, submission_id, client_number, business_type_code, incorporation_number, organization_name, client_type_code, good_standing_ind, birthdate, district_code, work_safe_bc_number, doing_business_as, client_acronym, first_name, middle_name, last_name, notes, identification_type_code, client_identification, country_code, province_code)
+INSERT INTO nrfc.submission_detail (submission_detail_id, submission_id, client_number, business_type_code, incorporation_number, organization_name, client_type_code, good_standing_ind, birthdate, district_code, work_safe_bc_number, doing_business_as, client_acronym, first_name, middle_name, last_name, notes, identification_type_code, client_identification, identification_country_code, identification_province_code)
 VALUES (364, 364, NULL, 'U', NULL, 'ROLAND SOLDIER', 'I', 'Y', '1972-12-04', 'DCR', NULL, NULL, NULL,'ROLAND', NULL,'SOLDIER','GOOD AT SUPPORT','CDDL','9999911','CA','BC') ON CONFLICT DO NOTHING;
 INSERT INTO nrfc.submission_location VALUES (364, 364, '999 Canyon View Dr', 'US', 'CO', 'Denver', '66043-6271', 'Mailing address') ON CONFLICT DO NOTHING;
 INSERT INTO nrfc.submission_location_contact_xref VALUES (364, 364) ON CONFLICT DO NOTHING;
