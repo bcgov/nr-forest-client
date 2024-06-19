@@ -9,19 +9,24 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
 @With
-@Table(name = "MAILING_COUNTRY", schema = ORACLE_ATTRIBUTE_SCHEMA)
+@Table(name = "mailing_country", schema = ORACLE_ATTRIBUTE_SCHEMA)
 public class ForestClientMailingCountryEntity {
 
-  @Column("COUNTRY_NAME")
-  private String name;
-
-  @Column("COUNTRY_CODE")
+  @Column("country_code")
+  @Size(min = 0, max = 3)
   private String code;
+  
+  @Column("country_name")
+  @NotNull
+  @Size(min = 1, max = 50)
+  private String name;
 
 }
