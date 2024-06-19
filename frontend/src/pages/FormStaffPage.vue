@@ -174,10 +174,10 @@ const onBack = () => {
 
 const clientType = ref<CodeNameType>();
 
-const individualFields: IndividualVirtualFields = {
-  idType: ref<IdType>(),
-  issuingProvince: ref<CodeNameType>(),
-};
+const individualFields = ref<IndividualVirtualFields>({
+  idType: null,
+  issuingProvince: null,
+});
 
 const updateClientType = (value: CodeNameType | undefined) => {
   if (value) {

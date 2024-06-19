@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, computed, ref, reactive, onMounted } from "vue";
+import { watch, computed, ref, reactive, onMounted, toRef } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/inline-loading/index";
 import "@carbon/web-components/es/components/notification/index";
@@ -11,7 +11,6 @@ import { useFocus } from "@/composables/useFocus";
 // Importing types
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
 import type { CodeNameType, IdType } from "@/dto/CommonTypesDto";
-import type { Ref } from "vue";
 // Importing validators
 import { getValidations, validate } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
@@ -23,8 +22,8 @@ import {
 import Information16 from "@carbon/icons-vue/es/information/16";
 
 export interface IndividualVirtualFields {
-  idType: Ref<IdType>;
-  issuingProvince: Ref<CodeNameType>;
+  idType: IdType;
+  issuingProvince: CodeNameType;
 }
 
 // Defining the props and emiter to reveice the data and emit an update
@@ -57,8 +56,9 @@ const idTypeList: IdType[] = [
   { code: "OTHR", name: "Other Identification" },
 ];
 
-const idType = props.virtualFields.idType;
-const issuingProvince = props.virtualFields.issuingProvince;
+// Virtual fields
+const idType = toRef(props.virtualFields, "idType");
+const issuingProvince = toRef(props.virtualFields, "issuingProvince");
 
 const updateIdType = (value: IdType | undefined) => {
   idType.value = value;
