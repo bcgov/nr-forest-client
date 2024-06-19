@@ -71,7 +71,7 @@ describe("<individual-client-information-wizard-step />", () => {
         .find("[part='trigger-button']")
         .click();
 
-      cy.get("#idType").find('cds-combo-box-item[data-id="CDL"]').should("be.visible").click();
+      cy.get("#idType").find('cds-combo-box-item[data-id="CDDL"]').should("be.visible").click();
     });
     it("displays the Issuing province field with label 'Issuing province'", () => {
       cy.get("#issuingProvince").contains("Issuing province");
@@ -125,8 +125,8 @@ describe("<individual-client-information-wizard-step />", () => {
           .click();
       });
 
-      it("sets the idType in the businessInformation to 'US' + state code", () => {
-        cy.wrap(currentProps.data.businessInformation).its("idType").should("equal", "USAZ");
+      it("sets the idType in the businessInformation to state code + 'DL'", () => {
+        cy.wrap(currentProps.data.businessInformation).its("idType").should("equal", "AZDL");
       });
     });
   });
@@ -203,7 +203,7 @@ describe("<individual-client-information-wizard-step />", () => {
           isValid();
         });
       });
-      describe("when ID type is 'CDL'", () => {
+      describe("when ID type is 'CDDL'", () => {
         beforeEach(() => {
           cy.get("#idType")
             .should("be.visible")
@@ -211,7 +211,7 @@ describe("<individual-client-information-wizard-step />", () => {
             .find("[part='trigger-button']")
             .click();
 
-          cy.get("#idType").find('cds-combo-box-item[data-id="CDL"]').should("be.visible").click();
+          cy.get("#idType").find('cds-combo-box-item[data-id="CDDL"]').should("be.visible").click();
         });
         describe("and issuing province is 'BC' (default value)", () => {
           it("displays error message if the value has more than 8 digits", () => {

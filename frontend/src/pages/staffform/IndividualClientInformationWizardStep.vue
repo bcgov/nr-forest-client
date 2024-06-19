@@ -48,7 +48,7 @@ watch(
 
 const idTypeList: IdType[] = [
   { code: "BRTH", name: "Canadian birth certificate" },
-  { code: "CDL", name: "Canadian driver's licence" },
+  { code: "CDDL", name: "Canadian driver's licence" },
   { code: "PASS", name: "Canadian passport" },
   { code: "CITZ", name: "Canadian citizenship card" },
   { code: "FNID", name: "First Nation status ID" },
@@ -82,13 +82,13 @@ watch(idType, (idTypeValue) => {
   issuingProvince.value = null;
 
   // is driver's licence
-  if (["CDL", "USDL"].includes(idTypeValue?.code)) {
+  if (["CDDL", "USDL"].includes(idTypeValue?.code)) {
     fetchProvinceList();
   }
 });
 
 watch(provinceList, (provinceListValue) => {
-  if (idType.value.code === "CDL" && (!issuingProvince.value || !issuingProvince.value.code)) {
+  if (idType.value.code === "CDDL" && (!issuingProvince.value || !issuingProvince.value.code)) {
     // default value for Issuing province when ID type is Canadian driver's licence
     issuingProvince.value = provinceListValue.find((province) => province.code === "BC");
   }
@@ -140,18 +140,12 @@ watch(
     idNumberMask.value = undefined;
 
     if (idTypeValue) {
-      if (idTypeValue.code === "CDL" || idTypeValue.code === "USDL") {
+      if (idTypeValue.code === "CDDL" || idTypeValue.code === "USDL") {
         if (issuingProvinceValue?.code) {
           // Driver's licences
-          if (idTypeValue?.code === "CDL") {
-            formData.value.businessInformation.idType = issuingProvinceValue.code + "DL";
-          }
+          formData.value.businessInformation.idType = issuingProvinceValue.code + "DL";
 
-          if (idTypeValue?.code === "USDL") {
-            formData.value.businessInformation.idType = "US" + issuingProvinceValue.code;
-          }
-
-          if (idTypeValue?.code === "CDL" && issuingProvinceValue.code === "BC") {
+          if (idTypeValue?.code === "CDDL" && issuingProvinceValue.code === "BC") {
             // BC driver's licences
             idNumberAdditionalValidations.value = getIdNumberValidations(
               "businessInformation.idNumber-BCDL",
@@ -320,7 +314,7 @@ onMounted(() => {
       />
 
       <dropdown-input-component
-        v-if="['CDL', 'USDL'].includes(idType?.code)"
+        v-if="['CDDL', 'USDL'].includes(idType?.code)"
         id="issuingProvince"
         :label="issuingProvinceNaming"
         required

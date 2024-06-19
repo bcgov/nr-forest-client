@@ -69,7 +69,7 @@ export enum ClientTypeEnum {
 
 export enum IdTypeEnum {
   BRTH,
-  CDL,
+  CDDL,
   PASS,
   CITZ,
   FNID,
