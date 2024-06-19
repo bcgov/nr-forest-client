@@ -161,7 +161,7 @@ describe("<individual-client-information-wizard-step />", () => {
             .find("[part='trigger-button']")
             .click();
 
-          cy.get("#idType").find(`cds-combo-box-item[data-id="BRTH"]`).should("be.visible").click();
+          cy.get("#idType").find('cds-combo-box-item[data-id="BRTH"]').should("be.visible").click();
         });
         it("allows up to 13 digits", () => {
           cy.get("#idNumber").shadow().find("input").type(valueNumeric13);
@@ -186,7 +186,7 @@ describe("<individual-client-information-wizard-step />", () => {
             .find("[part='trigger-button']")
             .click();
 
-          cy.get("#idType").find(`cds-combo-box-item[data-id="PASS"]`).should("be.visible").click();
+          cy.get("#idType").find('cds-combo-box-item[data-id="PASS"]').should("be.visible").click();
         });
         it("displays error message if the value has more than 8 digits", () => {
           cy.get("#idNumber").shadow().find("input").type(valueNumeric13);
@@ -211,7 +211,7 @@ describe("<individual-client-information-wizard-step />", () => {
             .find("[part='trigger-button']")
             .click();
 
-          cy.get("#idType").find(`cds-combo-box-item[data-id="CDL"]`).should("be.visible").click();
+          cy.get("#idType").find('cds-combo-box-item[data-id="CDL"]').should("be.visible").click();
         });
         describe("and issuing province is 'BC' (default value)", () => {
           it("displays error message if the value has more than 8 digits", () => {
@@ -245,7 +245,7 @@ describe("<individual-client-information-wizard-step />", () => {
               .click();
 
             cy.get("#issuingProvince")
-              .find(`cds-combo-box-item[data-id="AB"]`)
+              .find('cds-combo-box-item[data-id="AB"]')
               .should("be.visible")
               .click();
           });
@@ -315,7 +315,7 @@ describe("<individual-client-information-wizard-step />", () => {
 
       cy.get("#idType").find("[part='trigger-button']").click();
 
-      cy.get("#idType").find(`cds-combo-box-item[data-id="BRTH"]`).click();
+      cy.get("#idType").find('cds-combo-box-item[data-id="BRTH"]').click();
 
       cy.get("#idNumber").shadow().find("input").type("1234567890123");
 
