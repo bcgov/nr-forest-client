@@ -21,6 +21,8 @@ public record ClientContactDto(
     String firstName,
     String lastName,
     String phoneNumber,
+    String secondaryPhoneNumber,
+    String faxNumber,
     String email,
     int index,
     List<ClientValueTextDto> locationNames
@@ -36,6 +38,8 @@ public record ClientContactDto(
                 "lastName", lastName,
                 "name", String.join(" ", firstName, lastName),
                 "phone", phoneNumber,
+                "secondaryPhoneNumber", secondaryPhoneNumber,
+                "faxNumber", faxNumber,
                 "email", email
             )
         );
