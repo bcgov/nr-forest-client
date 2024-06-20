@@ -33,7 +33,6 @@ import IndividualClientInformationWizardStep, {
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 
-// Defining the props and emiter to reveice the data and emit an update
 const clientTypesList: CodeNameType[] = [
   {
     code: "BCR",
