@@ -198,6 +198,9 @@ describe('GlobalValidators', () => {
   it('should return empty when isMaxSize is called on an empty string', () => {
     expect(isMaxSize('This field must be at most 5 characters long')(5)('')).toBe('')
   })
+  it.each([[null], [undefined]])('should return empty when isMaxSize is called on %s', (value) => {
+    expect(isMaxSize('This field must be at most 5 characters long')(5)(value)).toBe('')
+  })
   it('should return empty when isMinSize is called on a string with a size greater than the min size', () => {
     expect(isMinSize()(5)('123456')).toBe('')
   })

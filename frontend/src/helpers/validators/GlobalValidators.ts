@@ -159,7 +159,7 @@ export const isMaxSize =
   (message: string = "This field must be smaller") =>
   (maxSize: number) => {
     return (value: string): string => {
-      if (value.length <= maxSize) return "";
+      if (!value || value.length <= maxSize) return "";
       return message;
     };
   };
