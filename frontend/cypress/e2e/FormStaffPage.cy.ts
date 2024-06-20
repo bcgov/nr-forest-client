@@ -148,15 +148,19 @@ describe("Staff Form", () => {
       describe("when all the required information is filled in", () => {
         const data = {
           firstName: "John",
+          middleName: "Michael",
           lastName: "Silver",
           birthdateYear: "2001",
           birthdateMonth: "05",
           birthdateDay: "30",
-          idTypeValue: "Canadian birth certificate",
-          idNumber: "123456789012",
+          idTypeValue: "Canadian driver's licence",
+          issuingProvinceValue: "Nova Scotia",
+          idNumber: "AB34567",
         };
         beforeEach(() => {
           cy.get("#firstName").shadow().find("input").type(data.firstName);
+
+          cy.get("#middleName").shadow().find("input").type(data.middleName);
 
           cy.get("#lastName").shadow().find("input").type(data.lastName);
 
@@ -165,8 +169,12 @@ describe("Staff Form", () => {
           cy.get("#birthdateDay").shadow().find("input").type(data.birthdateDay);
 
           cy.get("#idType").find("[part='trigger-button']").click();
-
           cy.get("#idType").find(`cds-combo-box-item[data-value="${data.idTypeValue}"]`).click();
+
+          cy.get("#issuingProvince").find("[part='trigger-button']").click();
+          cy.get("#issuingProvince")
+            .find(`cds-combo-box-item[data-value="${data.issuingProvinceValue}"]`)
+            .click();
 
           cy.get("#idNumber").shadow().find("input").type(data.idNumber);
 
@@ -190,6 +198,8 @@ describe("Staff Form", () => {
             it("renders the Individual input fields with the same data", () => {
               cy.get("#firstName").shadow().find("input").should("have.value", data.firstName);
 
+              cy.get("#middleName").shadow().find("input").should("have.value", data.middleName);
+
               cy.get("#lastName").shadow().find("input").should("have.value", data.lastName);
 
               cy.get("#birthdateYear")
@@ -206,6 +216,8 @@ describe("Staff Form", () => {
                 .should("have.value", data.birthdateDay);
 
               cy.get("#idType").should("have.value", data.idTypeValue);
+
+              cy.get("#issuingProvince").should("have.value", data.issuingProvinceValue);
 
               cy.get("#idNumber").shadow().find("input").should("have.value", data.idNumber);
             });
