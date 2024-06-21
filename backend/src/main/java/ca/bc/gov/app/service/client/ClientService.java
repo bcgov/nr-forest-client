@@ -455,6 +455,8 @@ public class ClientService {
                             party.officer().firstName(),
                             party.officer().lastName(),
                             "",
+                            "",
+                            "",
                             party.officer().email(),
                             index.getAndIncrement(),
                             matchAddress(addresses, party)
