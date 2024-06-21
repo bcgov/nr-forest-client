@@ -1,4 +1,4 @@
-package ca.bc.gov.app.util;
+package ca.bc.gov.app.utils;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
@@ -46,20 +46,38 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
             ? LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(birthdateAsString))
             : null;
     String district = accessor.getString(9);
+    String workSafeBcNumber = accessor.getString(33);
+    String doingBusinessAs = accessor.getString(34);
+    String clientAcronym = accessor.getString(35);
+    String firstName = accessor.getString(36);
+    String middleName = accessor.getString(37);
+    String lastName = accessor.getString(38);
+    String submissionNotes = accessor.getString(39);
+    String identificationType = accessor.getString(40);
+    String clientIdentification = accessor.getString(41);
+    String identificationCountry = accessor.getString(42);
+    String identificationProvince = accessor.getString(43);
 
     return new ClientBusinessInformationDto(
-        registrationNumber,
-        businessName,
-        null,
-        null,
-        businessType,
-        clientType,
-        goodStanding,
-        legalType,
-        birthdate,
-        district,
-        null,
-        null);
+                registrationNumber, 
+                businessName, 
+                businessType,
+                clientType, 
+                goodStanding, 
+                legalType, 
+                birthdate,
+                district,
+                workSafeBcNumber,
+                doingBusinessAs,
+                clientAcronym,
+                firstName,
+                middleName,
+                lastName,
+                submissionNotes,
+                identificationType,
+                clientIdentification,
+                identificationCountry,
+                identificationProvince);
   }
 
   private static ClientLocationDto createLocation(ArgumentsAccessor accessor) {
@@ -92,10 +110,29 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     String province = accessor.getString(14);
     String city = accessor.getString(15);
     String postalCode = accessor.getString(16);
+    String complementaryAddressOne = accessor.getString(25);
+    String complementaryAddressTwo = accessor.getString(26);
+    String businessPhoneNumber = accessor.getString(27);
+    String secondaryPhoneNumber = accessor.getString(28);
+    String faxNumber = accessor.getString(29);
+    String emailAddress = accessor.getString(30);
+    String contactNotes = accessor.getString(31);
 
     return new ClientAddressDto(
-        streetAddress, new ClientValueTextDto(country, country),
-        new ClientValueTextDto(province, ""), city, postalCode, 0, "test");
+        streetAddress,
+        complementaryAddressOne,
+        complementaryAddressTwo,
+        new ClientValueTextDto(country, country),
+        new ClientValueTextDto(province, ""),
+        city,
+        postalCode,
+        businessPhoneNumber,
+        secondaryPhoneNumber,
+        faxNumber,
+        emailAddress,
+        contactNotes,
+        0,
+        "test");
   }
 
 }

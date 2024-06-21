@@ -408,24 +408,38 @@ public class TestConstants {
           new ClientBusinessInformationDto(
               "1234",
               "Goldfinger",
-              null,
-              null,
               "R",
               "RSP",
               "Y",
               "SP",
               LocalDate.now().minusYears(20),
               "DCC",
-              "BCDL",
-              "123456"
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
           ),
           new ClientLocationDto(
               List.of(
                   new ClientAddressDto(
                       "3570 S Las Vegas Blvd",
+                      null,
+                      null,
                       new ClientValueTextDto("US", ""),
                       new ClientValueTextDto("NV", ""),
                       "Las Vegas", "89109",
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
                       0,
                       "Billing Address"
                   )
@@ -436,6 +450,8 @@ public class TestConstants {
                       "James",
                       "Bond",
                       "9876543210",
+                      null,
+                      null,
                       "bond_james_bond@007.com",
                       0,
                       List.of(
@@ -456,24 +472,38 @@ public class TestConstants {
           new ClientBusinessInformationDto(
               "",
               "James Baxter",
-              null,
-              null,
               "U",
               "I",
               "",
               "SP",
               LocalDate.of(1975, 1, 31),
               "DCC",
-              "BCDL",
-              "123456"
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
           ),
           new ClientLocationDto(
               List.of(
                   new ClientAddressDto(
                       "3570 S Las Vegas Blvd",
+                      null,
+                      null,
                       new ClientValueTextDto("US", ""),
                       new ClientValueTextDto("NV", ""),
                       "Las Vegas", "89109",
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
                       0,
                       "Billing Address"
                   )
@@ -484,6 +514,8 @@ public class TestConstants {
                       "James",
                       "Bond",
                       "9876543210",
+                      null,
+                      null,
                       "bond_james_bond@007.com",
                       0,
                       List.of(
@@ -504,24 +536,38 @@ public class TestConstants {
           new ClientBusinessInformationDto(
               "",
               "James Baxter",
-              null,
-              null,
               "U",
               "I",
               "",
               "SP",
               LocalDate.of(1975, 1, 31),
               "DCC",
-              "BCDL",
-              "123456"
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
           ),
           new ClientLocationDto(
               List.of(
                   new ClientAddressDto(
                       "3570 S Las Vegas Blvd",
+                      null,
+                      null,
                       new ClientValueTextDto("US", ""),
                       new ClientValueTextDto("NV", ""),
                       "Las Vegas", "89109",
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
                       0,
                       "Billing Address"
                   )
@@ -532,6 +578,8 @@ public class TestConstants {
                       "James",
                       "Bond",
                       "9876543210",
+                      null,
+                      null,
                       "bond_james_bond@007.com",
                       0,
                       List.of(
@@ -546,6 +594,8 @@ public class TestConstants {
                       "James",
                       "Baxter",
                       "9826543210",
+                      null,
+                      null,
                       "jbaxter@007.com",
                       1,
                       List.of(
@@ -566,24 +616,38 @@ public class TestConstants {
           new ClientBusinessInformationDto(
               "",
               "forest1",
-              null,
-              null,
               "U",
               "I",
               "",
               "SP",
               LocalDate.of(1975, 1, 31),
               "DCC",
-              "BCDL",
-              "123456"
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
           ),
           new ClientLocationDto(
               List.of(
                   new ClientAddressDto(
                       "3570 S Las Vegas Blvd",
+                      null,
+                      null,
                       new ClientValueTextDto("US", ""),
                       new ClientValueTextDto("NV", ""),
                       "Las Vegas", "89109",
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
                       0,
                       "Billing Address"
                   )
@@ -594,6 +658,8 @@ public class TestConstants {
                       "James",
                       "Bond",
                       "9876543210",
+                      null,
+                      null,
                       "bond_james_bond@007.com",
                       0,
                       List.of(
@@ -694,36 +760,35 @@ public class TestConstants {
       }""";
 
 
-  public static Map<String, Object> getClaims(String idpName) {
+  public static Map<String,Object> getClaims(String idpName) {
 
-    Map<String, Object> idir = Map.of(
+    Map<String,Object> idir = Map.of(
         "custom:idp_user_id", UUID.randomUUID().toString(),
         "custom:idp_username", "jdoe",
         "custom:idp_name", "idir",
         "custom:idp_display_name", "Doe, Jhon UAT:EX",
-        "email", "jdoe@mail.ca"
+        "email","jdoe@mail.ca"
     );
 
-    Map<String, Object> bceid = Map.of(
+    Map<String,Object> bceid = Map.of(
         "custom:idp_user_id", UUID.randomUUID().toString(),
         "custom:idp_username", "jdoe",
         "custom:idp_name", "bceidbusiness",
         "custom:idp_display_name", "Jhon Doe",
-        "email", "jdoe@mail.ca",
+        "email","jdoe@mail.ca",
         "custom:idp_business_id", UUID.randomUUID().toString(),
         "custom:idp_business_name", "Example Inc.",
         "given_name", "Jhon",
         "family_name", "Doe"
     );
 
-    Map<String, Object> bcsc = Map.of(
+    Map<String,Object> bcsc = Map.of(
         "custom:idp_user_id", UUID.randomUUID().toString(),
         "custom:idp_username", "jdoe",
         "custom:idp_name", "idir",
         "custom:idp_display_name", "Jhon Doe",
-        "email", "jdoe@mail.ca",
-        "address", Map.of("formatted",
-            "{\\\"street_address\\\":\\\"4000 SEYMOUR PLACE\\\",\\\"country\\\":\\\"CA\\\",\\\"locality\\\":\\\"VICTORIA\\\",\\\"region\\\":\\\"BC\\\",\\\"postal_code\\\":\\\"V8Z 1C8\\\"}"),
+        "email","jdoe@mail.ca",
+        "address", Map.of("formatted", "{\\\"street_address\\\":\\\"4000 SEYMOUR PLACE\\\",\\\"country\\\":\\\"CA\\\",\\\"locality\\\":\\\"VICTORIA\\\",\\\"region\\\":\\\"BC\\\",\\\"postal_code\\\":\\\"V8Z 1C8\\\"}" ),
         "birthdate", "1986-11-12",
         "given_name", "Jhon",
         "family_name", "Doe"
