@@ -33,15 +33,47 @@ describe("validations", () => {
     });
   });
 
+  describe.each(["businessInformation.firstName"])("%s", (key) => {
+    const formDataDto = newFormDataDto();
+    const setter = (value: string) => {
+      formDataDto.businessInformation.firstName = value;
+    };
+    (<Scenario[]>[
+      ["", false],
+      ["John", true],
+      ["Name with more than 30 characters", false],
+      ["Unallowed!", false],
+      ["Unallowéd", false],
+    ]).forEach((scenario) => {
+      test(formDataDto, key, setter, scenario);
+    });
+  });
+
   describe.each(["businessInformation.middleName"])("%s", (key) => {
     const formDataDto = newFormDataDto();
     const setter = (value: string) => {
       formDataDto.businessInformation.middleName = value;
     };
     (<Scenario[]>[
-      ["", true],
+      ["", true, "not required"],
       ["Elizabeth", true],
-      ["This is more than 30 characters for sure", false],
+      ["Name with more than 30 characters", false],
+      ["Unallowed!", false],
+      ["Unallowéd", false],
+    ]).forEach((scenario) => {
+      test(formDataDto, key, setter, scenario);
+    });
+  });
+
+  describe.each(["businessInformation.lastName"])("%s", (key) => {
+    const formDataDto = newFormDataDto();
+    const setter = (value: string) => {
+      formDataDto.businessInformation.lastName = value;
+    };
+    (<Scenario[]>[
+      ["", false],
+      ["Silver", true],
+      ["Name with more than 30 characters", false],
       ["Unallowed!", false],
       ["Unallowéd", false],
     ]).forEach((scenario) => {
