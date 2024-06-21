@@ -67,7 +67,7 @@ export enum ClientTypeEnum {
   USP,
 }
 
-export enum IdTypeEnum {
+export enum IdentificationTypeEnum {
   BRTH,
   CDDL,
   PASS,
@@ -77,8 +77,8 @@ export enum IdTypeEnum {
   OTHR,
 }
 
-export interface IdType extends CodeNameType {
-  code: keyof typeof IdTypeEnum;
+export interface IdentificationType extends CodeNameType {
+  code: keyof typeof IdentificationTypeEnum;
 }
 
 export interface ProgressData {

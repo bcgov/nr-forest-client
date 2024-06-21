@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, computed, ref, reactive, onMounted, toRef } from "vue";
+import { watch, computed, ref, reactive, onMounted } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/inline-loading/index";
 import "@carbon/web-components/es/components/notification/index";
@@ -10,7 +10,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Importing types
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
-import type { CodeNameType, IdType } from "@/dto/CommonTypesDto";
+import type { CodeNameType, IdentificationType } from "@/dto/CommonTypesDto";
 // Importing validators
 import { getValidations, validate } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
@@ -21,17 +21,11 @@ import {
 // @ts-ignore
 import Information16 from "@carbon/icons-vue/es/information/16";
 
-export interface IndividualVirtualFields {
-  idType: IdType;
-  issuingProvince: CodeNameType;
-}
-
 // Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
   data: FormDataDto;
   active: boolean;
   autoFocus?: boolean;
-  virtualFields: IndividualVirtualFields;
 }>();
 
 const emit = defineEmits<{
@@ -46,7 +40,7 @@ watch(
   () => emit("update:data", formData.value),
 );
 
-const idTypeList: IdType[] = [
+const identificationTypeList: IdentificationType[] = [
   { code: "BRTH", name: "Canadian birth certificate" },
   { code: "CDDL", name: "Canadian driver's licence" },
   { code: "PASS", name: "Canadian passport" },
@@ -56,17 +50,23 @@ const idTypeList: IdType[] = [
   { code: "OTHR", name: "Other Identification" },
 ];
 
-// Virtual fields
-const idType = toRef(props.virtualFields, "idType");
-const issuingProvince = toRef(props.virtualFields, "issuingProvince");
+const identificationType = computed(() => {
+  const value = formData.value.businessInformation.identificationType;
+  return value ? identificationTypeList.find((item) => item.code === value) : undefined;
+});
 
-const updateIdType = (value: IdType | undefined) => {
-  idType.value = value;
+const identificationProvince = computed(() => {
+  const value = formData.value.businessInformation.identificationProvince;
+  return value ? provinceList.value.find((item) => item.code === value) : undefined;
+});
+
+const updateIdType = (value: IdentificationType | undefined) => {
+  formData.value.businessInformation.identificationType = value?.code;
 };
 
 const provinceUrl = computed(() => {
-  if (idType.value) {
-    const countryCode = idType.value.code === "USDL" ? "US" : "CA";
+  const countryCode = formData.value.businessInformation.identificationCountry;
+  if (countryCode) {
     return `/api/countries/${countryCode}/provinces?page=0&size=250`;
   }
   return "";
@@ -78,29 +78,36 @@ const { fetch: fetchProvinceList } = useFetchTo(provinceUrl, provinceList, {
   skip: !provinceUrl.value,
 });
 
-watch(idType, (idTypeValue) => {
-  issuingProvince.value = null;
+watch(identificationType, (value) => {
+  formData.value.businessInformation.identificationProvince = null;
 
   // is driver's licence
-  if (["CDDL", "USDL"].includes(idTypeValue?.code)) {
+  if (["CDDL", "USDL"].includes(value?.code)) {
+    // TODO: this should be removed/updated when FSADT1-1383 is done
+    formData.value.businessInformation.identificationCountry =
+      identificationType.value?.code === "USDL" ? "US" : "CA";
+
     fetchProvinceList();
   }
 });
 
-watch(provinceList, (provinceListValue) => {
-  if (idType.value.code === "CDDL" && (!issuingProvince.value || !issuingProvince.value.code)) {
+watch(provinceList, () => {
+  if (
+    identificationType.value.code === "CDDL" &&
+    (!identificationProvince.value || !identificationProvince.value.code)
+  ) {
     // default value for Issuing province when ID type is Canadian driver's licence
-    issuingProvince.value = provinceListValue.find((province) => province.code === "BC");
+    formData.value.businessInformation.identificationProvince = "BC";
   }
 });
 
 const issuingProvinceNaming = computed(() => {
-  const countryCode = idType.value?.code === "USDL" ? "US" : "CA";
+  const countryCode = formData.value.businessInformation.identificationCountry;
   return countryCode === "US" ? "Issuing state" : "Issuing province";
 });
 
 const updateIssuingProvince = (value: CodeNameType | undefined) => {
-  issuingProvince.value = value;
+  formData.value.businessInformation.identificationProvince = value?.code;
 };
 
 const idNumberAdditionalValidations = ref<((value: string) => string)[]>([]);
@@ -115,6 +122,16 @@ const getIdNumberMask = (type: keyof typeof idNumberMaskParams) => {
 
 const idNumberMask = ref<string>();
 
+const shouldDisplayProvince = computed(() =>
+  ["CDDL", "USDL"].includes(identificationType.value?.code),
+);
+
+watch(shouldDisplayProvince, (value) => {
+  if (!value) {
+    validation.identificationProvince = true;
+  }
+});
+
 // -- Validation of the component --
 const validation = reactive<Record<string, boolean>>({
   firstName: false,
@@ -123,29 +140,29 @@ const validation = reactive<Record<string, boolean>>({
     validate(["businessInformation.middleName"], formData.value),
   lastName: false,
   birthdate: false,
-  idType:
-    !!formData.value.businessInformation.idType &&
-    validate(["businessInformation.idType"], formData.value),
-  idNumber: false,
+  identificationType: false,
+  identificationProvince: !shouldDisplayProvince.value,
+  clientIdentification: false,
 });
 
+const watcherTypeAndProvinceFirstRun = ref(true);
+
 watch(
-  [idType, issuingProvince],
-  ([idTypeValue, issuingProvinceValue]) => {
-    const oldIdType = formData.value.businessInformation.idType;
-    formData.value.businessInformation.idType = null;
+  [
+    () => formData.value.businessInformation.identificationType as IdentificationType["code"],
+    () => formData.value.businessInformation.identificationProvince,
+  ],
+  ([identificationTypeCode, identificationProvinceCode]) => {
     idNumberAdditionalValidations.value = [];
 
     const oldIdNumberMask = idNumberMask.value;
     idNumberMask.value = undefined;
 
-    if (idTypeValue) {
-      if (idTypeValue.code === "CDDL" || idTypeValue.code === "USDL") {
-        if (issuingProvinceValue?.code) {
+    if (identificationTypeCode) {
+      if (identificationTypeCode === "CDDL" || identificationTypeCode === "USDL") {
+        if (identificationProvinceCode) {
           // Driver's licences
-          formData.value.businessInformation.idType = issuingProvinceValue.code + "DL";
-
-          if (idTypeValue?.code === "CDDL" && issuingProvinceValue.code === "BC") {
+          if (identificationTypeCode === "CDDL" && identificationProvinceCode === "BC") {
             // BC driver's licences
             idNumberAdditionalValidations.value = getIdNumberValidations(
               "businessInformation.idNumber-BCDL",
@@ -161,12 +178,10 @@ watch(
         }
       } else {
         // Every other ID type
-        formData.value.businessInformation.idType = idTypeValue.code;
-
         idNumberAdditionalValidations.value = getIdNumberValidations(
-          `businessInformation.idNumber-${idTypeValue.code}`,
+          `businessInformation.idNumber-${identificationTypeCode}`,
         );
-        idNumberMask.value = getIdNumberMask(idTypeValue.code);
+        idNumberMask.value = getIdNumberMask(identificationTypeCode);
       }
 
       /*
@@ -176,16 +191,16 @@ watch(
       which could happen when rendering the component with information already filled up.
       */
       if (
-        oldIdType !== formData.value.businessInformation.idType &&
+        !watcherTypeAndProvinceFirstRun.value &&
         (idNumberMask.value || oldIdNumberMask) &&
         idNumberMask.value !== oldIdNumberMask &&
-        formData.value.businessInformation.idNumber
+        formData.value.businessInformation.clientIdentification
       ) {
-        formData.value.businessInformation.idNumber = "";
+        formData.value.businessInformation.clientIdentification = "";
       }
     }
 
-    validation.idType = !!formData.value.businessInformation.idType;
+    watcherTypeAndProvinceFirstRun.value = false;
   },
   { immediate: true },
 );
@@ -252,6 +267,7 @@ onMounted(() => {
         submissionValidation(`businessInformation.middleName`),
       ]"
       enabled
+      @empty="validation.middleName = true"
       @error="validation.middleName = !$event"
     />
 
@@ -303,23 +319,24 @@ onMounted(() => {
       <dropdown-input-component
         id="idType"
         label="ID type"
-        :initial-value="idType?.name"
+        :initial-value="identificationType?.name"
         required
         required-label
-        :model-value="idTypeList"
+        :model-value="identificationTypeList"
         :enabled="true"
         tip=""
         :validations="[...getValidations('idType.text'), submissionValidation('idType.text')]"
-        @update:selected-value="updateIdType($event as IdType)"
+        @update:selected-value="updateIdType($event as IdentificationType)"
+        @empty="validation.identificationType = !$event"
       />
 
       <dropdown-input-component
-        v-if="['CDDL', 'USDL'].includes(idType?.code)"
+        v-if="shouldDisplayProvince"
         id="issuingProvince"
         :label="issuingProvinceNaming"
         required
         required-label
-        :initial-value="issuingProvince?.name"
+        :initial-value="identificationProvince?.name"
         :model-value="provinceList"
         :enabled="true"
         tip=""
@@ -328,6 +345,7 @@ onMounted(() => {
           submissionValidation('issuingProvince.text'),
         ]"
         @update:selected-value="updateIssuingProvince($event)"
+        @empty="validation.identificationProvince = !$event"
       />
 
       <text-input-component
@@ -335,7 +353,7 @@ onMounted(() => {
         label="ID number"
         placeholder=""
         autocomplete="off"
-        v-model="formData.businessInformation.idNumber"
+        v-model="formData.businessInformation.clientIdentification"
         :mask="idNumberMask"
         :validations="[
           ...getValidations('businessInformation.idNumber'),
@@ -345,8 +363,8 @@ onMounted(() => {
         enabled
         required
         required-label
-        @empty="validation.idNumber = !$event"
-        @error="validation.idNumber = !$event"
+        @empty="validation.clientIdentification = !$event"
+        @error="validation.clientIdentification = !$event"
       />
     </div>
   </div>

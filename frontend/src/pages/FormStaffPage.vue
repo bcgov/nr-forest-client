@@ -13,7 +13,6 @@ import {
   ClientTypeEnum,
   LegalTypeEnum,
   type CodeNameType,
-  type IdType,
   type ModalNotification,
 } from "@/dto/CommonTypesDto";
 import {
@@ -27,9 +26,7 @@ import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
 // Imported global validations
 import { validate, runValidation } from "@/helpers/validators/StaffFormValidations";
 // Imported Pages
-import IndividualClientInformationWizardStep, {
-  type IndividualVirtualFields,
-} from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
+import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 

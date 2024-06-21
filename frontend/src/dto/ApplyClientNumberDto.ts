@@ -29,10 +29,13 @@ export interface FormDataDto {
     goodStandingInd: string;
     birthdate: string;
     address: Address;
+    firstName?: string;
     middleName?: string;
-    idType?: string;
-    issuingProvince?: string;
-    idNumber?: string;
+    lastName?: string;
+    identificationType?: string;
+    clientIdentification?: string;
+    identificationCountry?: string;
+    identificationProvince?: string;
   };
   location: {
     addresses: Address[];
