@@ -174,7 +174,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
 
   private static Stream<Arguments> byNumberOrCompanyName() {
     return Stream.of(
-        Arguments.of("BC123456789", null, "00000011", null),
+        Arguments.of("BC123444789", null, "00000011", null),
         Arguments.of(null, "INDIAN CANADA", "00000006", null),
         Arguments.of(null, "ELARICHO", "00000005", null),
         Arguments.of("AB994455454", null, StringUtils.EMPTY, null),
