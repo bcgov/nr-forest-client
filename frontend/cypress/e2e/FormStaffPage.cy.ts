@@ -146,88 +146,121 @@ describe("Staff Form", () => {
       });
 
       describe("when all the required information is filled in", () => {
-        const data = {
+        const baseData = {
           firstName: "John",
           middleName: "Michael",
           lastName: "Silver",
           birthdateYear: "2001",
           birthdateMonth: "05",
           birthdateDay: "30",
-          identificationTypeValue: "Canadian driver's licence",
-          identificationProvinceValue: "Nova Scotia",
-          clientIdentification: "AB34567",
+          identificationTypeValue: "Canadian passport",
+          identificationProvinceValue: undefined,
+          clientIdentification: "AB345678",
         };
-        beforeEach(() => {
-          cy.get("#firstName").shadow().find("input").type(data.firstName);
-
-          cy.get("#middleName").shadow().find("input").type(data.middleName);
-
-          cy.get("#lastName").shadow().find("input").type(data.lastName);
-
-          cy.get("#birthdateYear").shadow().find("input").type(data.birthdateYear);
-          cy.get("#birthdateMonth").shadow().find("input").type(data.birthdateMonth);
-          cy.get("#birthdateDay").shadow().find("input").type(data.birthdateDay);
-
-          cy.get("#identificationType").find("[part='trigger-button']").click();
-          cy.get("#identificationType")
-            .find(`cds-combo-box-item[data-value="${data.identificationTypeValue}"]`)
-            .click();
-
-          cy.get("#identificationProvince").find("[part='trigger-button']").click();
-          cy.get("#identificationProvince")
-            .find(`cds-combo-box-item[data-value="${data.identificationProvinceValue}"]`)
-            .click();
-
-          cy.get("#clientIdentification").shadow().find("input").type(data.clientIdentification);
-
-          cy.get("#clientIdentification").shadow().find("input").blur();
-        });
-        it("enables the button Next", () => {
-          cy.get("[data-test='wizard-next-button']").shadow().find("button").should("be.enabled");
-        });
-
-        describe("and the button Next is clicked", () => {
-          beforeEach(() => {
-            cy.get("[data-test='wizard-next-button']").click();
-          });
-          it("hides the Client information section", () => {
-            cy.contains("h2", "Client information").should("not.exist");
-          });
-          describe("and the button Back is clicked", () => {
+        const scenarios = [
+          {
+            name: "and the selected ID type doesn't require Issuing province",
+            data: {
+              ...baseData,
+            },
+          },
+          {
+            name: "and the selected ID type requires Issuing province",
+            data: {
+              ...baseData,
+              identificationTypeValue: "Canadian driver's licence",
+              identificationProvinceValue: "Nova Scotia",
+            },
+          },
+        ];
+        scenarios.forEach(({ name, data }) => {
+          describe(name, () => {
             beforeEach(() => {
-              cy.get("[data-test='wizard-back-button']").click();
-            });
-            it("renders the Individual input fields with the same data", () => {
-              cy.get("#firstName").shadow().find("input").should("have.value", data.firstName);
+              cy.get("#firstName").shadow().find("input").type(data.firstName);
 
-              cy.get("#middleName").shadow().find("input").should("have.value", data.middleName);
+              cy.get("#middleName").shadow().find("input").type(data.middleName);
 
-              cy.get("#lastName").shadow().find("input").should("have.value", data.lastName);
+              cy.get("#lastName").shadow().find("input").type(data.lastName);
 
-              cy.get("#birthdateYear")
-                .shadow()
-                .find("input")
-                .should("have.value", data.birthdateYear);
-              cy.get("#birthdateMonth")
-                .shadow()
-                .find("input")
-                .should("have.value", data.birthdateMonth);
-              cy.get("#birthdateDay")
-                .shadow()
-                .find("input")
-                .should("have.value", data.birthdateDay);
+              cy.get("#birthdateYear").shadow().find("input").type(data.birthdateYear);
+              cy.get("#birthdateMonth").shadow().find("input").type(data.birthdateMonth);
+              cy.get("#birthdateDay").shadow().find("input").type(data.birthdateDay);
 
-              cy.get("#identificationType").should("have.value", data.identificationTypeValue);
+              cy.get("#identificationType").find("[part='trigger-button']").click();
+              cy.get("#identificationType")
+                .find(`cds-combo-box-item[data-value="${data.identificationTypeValue}"]`)
+                .click();
 
-              cy.get("#identificationProvince").should(
-                "have.value",
-                data.identificationProvinceValue,
-              );
+              if (data.identificationProvinceValue) {
+                cy.get("#identificationProvince").find("[part='trigger-button']").click();
+                cy.get("#identificationProvince")
+                  .find(`cds-combo-box-item[data-value="${data.identificationProvinceValue}"]`)
+                  .click();
+              }
 
               cy.get("#clientIdentification")
                 .shadow()
                 .find("input")
-                .should("have.value", data.clientIdentification);
+                .type(data.clientIdentification);
+
+              cy.get("#clientIdentification").shadow().find("input").blur();
+            });
+            it("enables the button Next", () => {
+              cy.get("[data-test='wizard-next-button']")
+                .shadow()
+                .find("button")
+                .should("be.enabled");
+            });
+
+            describe("and the button Next is clicked", () => {
+              beforeEach(() => {
+                cy.get("[data-test='wizard-next-button']").click();
+              });
+              it("hides the Client information section", () => {
+                cy.contains("h2", "Client information").should("not.exist");
+              });
+              describe("and the button Back is clicked", () => {
+                beforeEach(() => {
+                  cy.get("[data-test='wizard-back-button']").click();
+                });
+                it("renders the Individual input fields with the same data", () => {
+                  cy.get("#firstName").shadow().find("input").should("have.value", data.firstName);
+
+                  cy.get("#middleName")
+                    .shadow()
+                    .find("input")
+                    .should("have.value", data.middleName);
+
+                  cy.get("#lastName").shadow().find("input").should("have.value", data.lastName);
+
+                  cy.get("#birthdateYear")
+                    .shadow()
+                    .find("input")
+                    .should("have.value", data.birthdateYear);
+                  cy.get("#birthdateMonth")
+                    .shadow()
+                    .find("input")
+                    .should("have.value", data.birthdateMonth);
+                  cy.get("#birthdateDay")
+                    .shadow()
+                    .find("input")
+                    .should("have.value", data.birthdateDay);
+
+                  cy.get("#identificationType").should("have.value", data.identificationTypeValue);
+
+                  if (data.identificationProvinceValue) {
+                    cy.get("#identificationProvince").should(
+                      "have.value",
+                      data.identificationProvinceValue,
+                    );
+                  }
+
+                  cy.get("#clientIdentification")
+                    .shadow()
+                    .find("input")
+                    .should("have.value", data.clientIdentification);
+                });
+              });
             });
           });
         });

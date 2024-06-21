@@ -337,5 +337,33 @@ describe("<individual-client-information-wizard-step />", () => {
         });
       });
     });
+    describe("when the step is invalid due to an invalid middle name", () => {
+      beforeEach(() => {
+        cy.get("#middleName").shadow().find("input").type("é");
+
+        cy.get("#middleName").shadow().find("input").blur();
+
+        // Asserting the step is currently invalid
+        cy.get("@vueWrapper").should((vueWrapper) => {
+          const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
+
+          // The last valid event was emitted with true.
+          expect(lastValid[0]).to.equal(true);
+        });
+      });
+      describe("and the middle name gets cleared", () => {
+        beforeEach(() => {
+          cy.get("#middleName").shadow().find("input").clear();
+        });
+        it("should emit valid true even without blurring the input", () => {
+          cy.get("@vueWrapper").should((vueWrapper) => {
+            const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
+
+            // The last valid event was emitted with true.
+            expect(lastValid[0]).to.equal(true);
+          });
+        });
+      });
+    });
   });
 });
