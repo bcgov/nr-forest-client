@@ -33,25 +33,25 @@ public record ClientBusinessInformationDto(
    */
   public Map<String, Object> description() {
     Map<String, Object> descMap = new HashMap<>();
-    descMap.put("registrationNumber", StringUtils.isBlank(registrationNumber) ? "" : registrationNumber);
-    descMap.put("name", StringUtils.isBlank(businessName) ? "" : businessName);
-    descMap.put("businessType", StringUtils.isBlank(businessType) ? "" : businessType);
-    descMap.put("clientType", StringUtils.isBlank(clientType) ? "" : clientType);
-    descMap.put("goodStanding", StringUtils.isBlank(goodStandingInd) ? "" : goodStandingInd);
-    descMap.put("legalType", StringUtils.isBlank(legalType) ? "" : legalType);
+    descMap.put("registrationNumber", StringUtils.defaultString(registrationNumber));
+    descMap.put("name", StringUtils.defaultString(businessName));
+    descMap.put("businessType", StringUtils.defaultString(businessType));
+    descMap.put("clientType", StringUtils.defaultString(clientType));
+    descMap.put("goodStanding", StringUtils.defaultString(goodStandingInd));
+    descMap.put("legalType", StringUtils.defaultString(legalType));
     descMap.put("birthdate", Optional.ofNullable(birthdate).orElse(LocalDate.of(1975, 1, 31)));
-    descMap.put("district", StringUtils.isBlank(district) ? "" : district);
-    descMap.put("workSafeBcNumber", StringUtils.isBlank(workSafeBcNumber) ? "" : workSafeBcNumber);
-    descMap.put("doingBusinessAs", StringUtils.isBlank(doingBusinessAs) ? "" : doingBusinessAs);
-    descMap.put("clientAcronym", StringUtils.isBlank(clientAcronym) ? "" : clientAcronym);
-    descMap.put("firstName", StringUtils.isBlank(firstName) ? "" : firstName);
-    descMap.put("middleName", StringUtils.isBlank(middleName) ? "" : middleName);
-    descMap.put("lastName", StringUtils.isBlank(lastName) ? "" : lastName);
-    descMap.put("notes", StringUtils.isBlank(notes) ? "" : notes);
-    descMap.put("identificationType", StringUtils.isBlank(identificationType) ? "" : identificationType);
-    descMap.put("clientIdentification", StringUtils.isBlank(clientIdentification) ? "" : clientIdentification);
-    descMap.put("identificationCountry", StringUtils.isBlank(identificationCountry) ? "" : identificationCountry);
-    descMap.put("identificationProvince", StringUtils.isBlank(identificationProvince) ? "" : identificationProvince);
+    descMap.put("district", StringUtils.defaultString(district));
+    descMap.put("workSafeBcNumber", StringUtils.defaultString(workSafeBcNumber));
+    descMap.put("doingBusinessAs", StringUtils.defaultString(doingBusinessAs));
+    descMap.put("clientAcronym", StringUtils.defaultString(clientAcronym));
+    descMap.put("firstName", StringUtils.defaultString(firstName));
+    descMap.put("middleName", StringUtils.defaultString(middleName));
+    descMap.put("lastName", StringUtils.defaultString(lastName));
+    descMap.put("notes", StringUtils.defaultString(notes));
+    descMap.put("identificationType", StringUtils.defaultString(identificationType));
+    descMap.put("clientIdentification", StringUtils.defaultString(clientIdentification));
+    descMap.put("identificationCountry", StringUtils.defaultString(identificationCountry));
+    descMap.put("identificationProvince", StringUtils.defaultString(identificationProvince));
     return descMap;
   }
 }

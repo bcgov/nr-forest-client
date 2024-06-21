@@ -3,6 +3,7 @@ package ca.bc.gov.app.dto.client;
 import java.util.List;
 import java.util.Map;
 import lombok.With;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The type Client contact dto.
@@ -34,13 +35,13 @@ public record ClientContactDto(
     return
         Map.of(indexFormatted,
             Map.of(
-                "firstName", firstName,
-                "lastName", lastName,
+                "firstName", StringUtils.defaultString(firstName),
+                "lastName", StringUtils.defaultString(lastName),
                 "name", String.join(" ", firstName, lastName),
-                "phone", phoneNumber,
-                "secondaryPhoneNumber", secondaryPhoneNumber,
-                "faxNumber", faxNumber,
-                "email", email
+                "phone", StringUtils.defaultString(phoneNumber),
+                "secondaryPhoneNumber", StringUtils.defaultString(secondaryPhoneNumber),
+                "faxNumber", StringUtils.defaultString(faxNumber),
+                "email", StringUtils.defaultString(email)
             )
         );
   }
