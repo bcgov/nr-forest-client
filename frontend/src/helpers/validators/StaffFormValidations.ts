@@ -14,6 +14,9 @@ import {
   runValidation as globalRunValidation
 } from "@/helpers/validators/GlobalValidators";
 
+// Allow externalFormFieldValidations to get populated
+import "@/helpers/validators/BCeIDFormValidations";
+
 /*
 Start by grabbing the same validations we use on the external form.
 And just change / add what's different.
