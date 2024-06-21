@@ -170,11 +170,6 @@ const onBack = () => {
 
 const clientType = ref<CodeNameType>();
 
-const individualFields = ref<IndividualVirtualFields>({
-  idType: null,
-  issuingProvince: null,
-});
-
 const updateClientType = (value: CodeNameType | undefined) => {
   if (value) {
     clientType.value = value;
@@ -271,7 +266,6 @@ const validation = reactive<Record<string, boolean>>({});
             :active="currentTab == 0"
             :data="formData"
             @valid="validateStep"
-            :virtual-fields="individualFields"
           />
         </div>
       </div>

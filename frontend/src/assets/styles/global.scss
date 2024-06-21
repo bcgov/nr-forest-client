@@ -276,7 +276,7 @@ cds-combo-box-item[data-loading="true"]::part(
   border-top: 0;
 }
 
-cds-combo-box#issuingProvince::part(menu-body) {
+cds-combo-box#identificationProvince::part(menu-body) {
   width: min-content;
   min-width: 100%;
   max-width: 200%;
@@ -825,12 +825,12 @@ cds-actionable-notification * {
   width: 42.5rem;
 }
 
-.grouping-03:has(#idType) {
+.grouping-03:has(#identificationType) {
   width: 20.75rem;
 }
 
-.grouping-03:has(#issuingProvince),
-.grouping-02:has(#idNumber) {
+.grouping-03:has(#identificationProvince),
+.grouping-02:has(#clientIdentification) {
   width: 9.875rem;
 }
 

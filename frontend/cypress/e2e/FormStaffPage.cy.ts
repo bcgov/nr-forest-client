@@ -141,8 +141,8 @@ describe("Staff Form", () => {
         cy.get("#middleName").should("be.visible");
         cy.get("#lastName").should("be.visible");
         cy.get("#birthdate").should("be.visible");
-        cy.get("#idType").should("be.visible");
-        cy.get("#idNumber").should("be.visible");
+        cy.get("#identificationType").should("be.visible");
+        cy.get("#clientIdentification").should("be.visible");
       });
 
       describe("when all the required information is filled in", () => {
@@ -153,9 +153,9 @@ describe("Staff Form", () => {
           birthdateYear: "2001",
           birthdateMonth: "05",
           birthdateDay: "30",
-          idTypeValue: "Canadian driver's licence",
-          issuingProvinceValue: "Nova Scotia",
-          idNumber: "AB34567",
+          identificationTypeValue: "Canadian driver's licence",
+          identificationProvinceValue: "Nova Scotia",
+          clientIdentification: "AB34567",
         };
         beforeEach(() => {
           cy.get("#firstName").shadow().find("input").type(data.firstName);
@@ -168,17 +168,19 @@ describe("Staff Form", () => {
           cy.get("#birthdateMonth").shadow().find("input").type(data.birthdateMonth);
           cy.get("#birthdateDay").shadow().find("input").type(data.birthdateDay);
 
-          cy.get("#idType").find("[part='trigger-button']").click();
-          cy.get("#idType").find(`cds-combo-box-item[data-value="${data.idTypeValue}"]`).click();
-
-          cy.get("#issuingProvince").find("[part='trigger-button']").click();
-          cy.get("#issuingProvince")
-            .find(`cds-combo-box-item[data-value="${data.issuingProvinceValue}"]`)
+          cy.get("#identificationType").find("[part='trigger-button']").click();
+          cy.get("#identificationType")
+            .find(`cds-combo-box-item[data-value="${data.identificationTypeValue}"]`)
             .click();
 
-          cy.get("#idNumber").shadow().find("input").type(data.idNumber);
+          cy.get("#identificationProvince").find("[part='trigger-button']").click();
+          cy.get("#identificationProvince")
+            .find(`cds-combo-box-item[data-value="${data.identificationProvinceValue}"]`)
+            .click();
 
-          cy.get("#idNumber").shadow().find("input").blur();
+          cy.get("#clientIdentification").shadow().find("input").type(data.clientIdentification);
+
+          cy.get("#clientIdentification").shadow().find("input").blur();
         });
         it("enables the button Next", () => {
           cy.get("[data-test='wizard-next-button']").shadow().find("button").should("be.enabled");
@@ -215,11 +217,17 @@ describe("Staff Form", () => {
                 .find("input")
                 .should("have.value", data.birthdateDay);
 
-              cy.get("#idType").should("have.value", data.idTypeValue);
+              cy.get("#identificationType").should("have.value", data.identificationTypeValue);
 
-              cy.get("#issuingProvince").should("have.value", data.issuingProvinceValue);
+              cy.get("#identificationProvince").should(
+                "have.value",
+                data.identificationProvinceValue,
+              );
 
-              cy.get("#idNumber").shadow().find("input").should("have.value", data.idNumber);
+              cy.get("#clientIdentification")
+                .shadow()
+                .find("input")
+                .should("have.value", data.clientIdentification);
             });
           });
         });

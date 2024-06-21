@@ -15,8 +15,8 @@ import type { CodeNameType, IdentificationType } from "@/dto/CommonTypesDto";
 import { getValidations, validate } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 import {
-  idNumberMaskParams,
-  getIdNumberValidations,
+  clientIdentificationMaskParams,
+  getClientIdentificationValidations,
 } from "@/helpers/validators/StaffFormValidations";
 // @ts-ignore
 import Information16 from "@carbon/icons-vue/es/information/16";
@@ -60,7 +60,7 @@ const identificationProvince = computed(() => {
   return value ? provinceList.value.find((item) => item.code === value) : undefined;
 });
 
-const updateIdType = (value: IdentificationType | undefined) => {
+const updateIdentificationType = (value: IdentificationType | undefined) => {
   formData.value.businessInformation.identificationType = value?.code;
 };
 
@@ -101,26 +101,26 @@ watch(provinceList, () => {
   }
 });
 
-const issuingProvinceNaming = computed(() => {
+const identificationProvinceNaming = computed(() => {
   const countryCode = formData.value.businessInformation.identificationCountry;
   return countryCode === "US" ? "Issuing state" : "Issuing province";
 });
 
-const updateIssuingProvince = (value: CodeNameType | undefined) => {
+const updateIdentificationProvince = (value: CodeNameType | undefined) => {
   formData.value.businessInformation.identificationProvince = value?.code;
 };
 
-const idNumberAdditionalValidations = ref<((value: string) => string)[]>([]);
+const clientIdentificationAdditionalValidations = ref<((value: string) => string)[]>([]);
 
-const getIdNumberMask = (type: keyof typeof idNumberMaskParams) => {
-  if (idNumberMaskParams[type]) {
-    const token = idNumberMaskParams[type].onlyNumbers ? "#" : "N";
-    return token.repeat(idNumberMaskParams[type].maxSize);
+const getClientIdentificationMask = (type: keyof typeof clientIdentificationMaskParams) => {
+  if (clientIdentificationMaskParams[type]) {
+    const token = clientIdentificationMaskParams[type].onlyNumbers ? "#" : "N";
+    return token.repeat(clientIdentificationMaskParams[type].maxSize);
   }
   return undefined;
 };
 
-const idNumberMask = ref<string>();
+const clientIdentificationMask = ref<string>();
 
 const shouldDisplayProvince = computed(() =>
   ["CDDL", "USDL"].includes(identificationType.value?.code),
@@ -153,10 +153,10 @@ watch(
     () => formData.value.businessInformation.identificationProvince,
   ],
   ([identificationTypeCode, identificationProvinceCode]) => {
-    idNumberAdditionalValidations.value = [];
+    clientIdentificationAdditionalValidations.value = [];
 
-    const oldIdNumberMask = idNumberMask.value;
-    idNumberMask.value = undefined;
+    const oldClientIdentificationMask = clientIdentificationMask.value;
+    clientIdentificationMask.value = undefined;
 
     if (identificationTypeCode) {
       if (identificationTypeCode === "CDDL" || identificationTypeCode === "USDL") {
@@ -164,36 +164,36 @@ watch(
           // Driver's licences
           if (identificationTypeCode === "CDDL" && identificationProvinceCode === "BC") {
             // BC driver's licences
-            idNumberAdditionalValidations.value = getIdNumberValidations(
-              "businessInformation.idNumber-BCDL",
+            clientIdentificationAdditionalValidations.value = getClientIdentificationValidations(
+              "businessInformation.clientIdentification-BCDL",
             );
-            idNumberMask.value = getIdNumberMask("BCDL");
+            clientIdentificationMask.value = getClientIdentificationMask("BCDL");
           } else {
             // Every other driver's licences, including both Canadian or US.
-            idNumberAdditionalValidations.value = getIdNumberValidations(
-              "businessInformation.idNumber-nonBCDL",
+            clientIdentificationAdditionalValidations.value = getClientIdentificationValidations(
+              "businessInformation.clientIdentification-nonBCDL",
             );
-            idNumberMask.value = getIdNumberMask("nonBCDL");
+            clientIdentificationMask.value = getClientIdentificationMask("nonBCDL");
           }
         }
       } else {
         // Every other ID type
-        idNumberAdditionalValidations.value = getIdNumberValidations(
-          `businessInformation.idNumber-${identificationTypeCode}`,
+        clientIdentificationAdditionalValidations.value = getClientIdentificationValidations(
+          `businessInformation.clientIdentification-${identificationTypeCode}`,
         );
-        idNumberMask.value = getIdNumberMask(identificationTypeCode);
+        clientIdentificationMask.value = getClientIdentificationMask(identificationTypeCode);
       }
 
       /*
-      We need to clear the ID number when the idType gets updated, except when the input mask is
-      the same.
-      The following condition also prevents from doing it when the idType did not actually changed,
-      which could happen when rendering the component with information already filled up.
+      We need to clear the clientIdentification when the type/province gets updated, except when
+      the input mask is the same.
+      The following condition also prevents from doing it when the type/province did not actually
+      changed, which could happen when rendering the component with information already filled up.
       */
       if (
         !watcherTypeAndProvinceFirstRun.value &&
-        (idNumberMask.value || oldIdNumberMask) &&
-        idNumberMask.value !== oldIdNumberMask &&
+        (clientIdentificationMask.value || oldClientIdentificationMask) &&
+        clientIdentificationMask.value !== oldClientIdentificationMask &&
         formData.value.businessInformation.clientIdentification
       ) {
         formData.value.businessInformation.clientIdentification = "";
@@ -333,7 +333,7 @@ onMounted(() => {
 
     <div class="horizontal-input-grouping">
       <dropdown-input-component
-        id="idType"
+        id="identificationType"
         label="ID type"
         :initial-value="identificationType?.name"
         required
@@ -341,15 +341,18 @@ onMounted(() => {
         :model-value="identificationTypeList"
         :enabled="true"
         tip=""
-        :validations="[...getValidations('idType.text'), submissionValidation('idType.text')]"
-        @update:selected-value="updateIdType($event as IdentificationType)"
+        :validations="[
+          ...getValidations('identificationType.text'),
+          submissionValidation('identificationType.text'),
+        ]"
+        @update:selected-value="updateIdentificationType($event as IdentificationType)"
         @empty="validation.identificationType = !$event"
       />
 
       <dropdown-input-component
         v-if="shouldDisplayProvince"
-        id="issuingProvince"
-        :label="issuingProvinceNaming"
+        id="identificationProvince"
+        :label="identificationProvinceNaming"
         required
         required-label
         :initial-value="identificationProvince?.name"
@@ -357,24 +360,24 @@ onMounted(() => {
         :enabled="true"
         tip=""
         :validations="[
-          ...getValidations('issuingProvince.text'),
-          submissionValidation('issuingProvince.text'),
+          ...getValidations('identificationProvince.text'),
+          submissionValidation('identificationProvince.text'),
         ]"
-        @update:selected-value="updateIssuingProvince($event)"
+        @update:selected-value="updateIdentificationProvince($event)"
         @empty="validation.identificationProvince = !$event"
       />
 
       <text-input-component
-        id="idNumber"
+        id="clientIdentification"
         label="ID number"
         placeholder=""
         autocomplete="off"
         v-model="formData.businessInformation.clientIdentification"
-        :mask="idNumberMask"
+        :mask="clientIdentificationMask"
         :validations="[
-          ...getValidations('businessInformation.idNumber'),
-          ...idNumberAdditionalValidations,
-          submissionValidation('businessInformation.idNumber'),
+          ...getValidations('businessInformation.clientIdentification'),
+          ...clientIdentificationAdditionalValidations,
+          submissionValidation('businessInformation.clientIdentification'),
         ]"
         enabled
         required

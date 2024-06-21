@@ -11,7 +11,7 @@ import {
   validateSelection,
   formFieldValidations as externalFormFieldValidations,
   validate as globalValidate,
-  runValidation as globalRunValidation
+  runValidation as globalRunValidation,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -62,17 +62,17 @@ fieldValidations["businessInformation.lastName"] = [
 ];
 
 // For the input field.
-fieldValidations["idType.text"] = [isNotEmpty("You must select an ID type.")];
+fieldValidations["identificationType.text"] = [isNotEmpty("You must select an ID type.")];
 
 // For the input field.
-fieldValidations["issuingProvince.text"] = [isNotEmpty("You must select a value.")];
+fieldValidations["identificationProvince.text"] = [isNotEmpty("You must select a value.")];
 
 // For the form data.
-fieldValidations["businessInformation.idType"] = [
+fieldValidations["businessInformation.identificationType"] = [
   isNotEmpty("You must select an ID type (and related additional fields if any)."),
 ];
 
-interface IdNumberValidation {
+interface ClientIdentificationValidation {
   maxSize: number;
   onlyNumbers?: boolean;
 }
@@ -80,7 +80,7 @@ interface IdNumberValidation {
 /*
 Variable defined using an IIFE to allow an easy definition of type-checkable keys.
 */
-export const idNumberMaskParams = (() => {
+export const clientIdentificationMaskParams = (() => {
   const init = {
     BCDL: {
       maxSize: 8,
@@ -105,58 +105,60 @@ export const idNumberMaskParams = (() => {
     },
     OTHR: undefined,
   };
-  return init as Record<keyof typeof init, IdNumberValidation | undefined>;
+  return init as Record<keyof typeof init, ClientIdentificationValidation | undefined>;
 })();
 
-type IdNumberFormFieldValidationKey =
-  `businessInformation.idNumber-${keyof typeof idNumberMaskParams}`;
+type ClientIdentificationFormFieldValidationKey =
+  `businessInformation.clientIdentification-${keyof typeof clientIdentificationMaskParams}`;
 
-const createIdNumberfieldValidations = (
-  validations: Record<IdNumberFormFieldValidationKey, ((value: string) => string)[]>,
+const createClientIdentificationFieldValidations = (
+  validations: Record<ClientIdentificationFormFieldValidationKey, ((value: string) => string)[]>,
 ) => validations;
 
-// idNumber base validations - applied regardless of the ID type / province.
-fieldValidations["businessInformation.idNumber"] = [isNotEmpty("You must provide an ID number")];
+// clientIdentification base validations - applied regardless of the ID type / province.
+fieldValidations["businessInformation.clientIdentification"] = [
+  isNotEmpty("You must provide an ID number"),
+];
 
 const extractOtherId = (value: string) => value.split(":")[1]?.trim();
 
 Object.assign(
   fieldValidations,
-  createIdNumberfieldValidations({
-    "businessInformation.idNumber-BCDL": [
+  createClientIdentificationFieldValidations({
+    "businessInformation.clientIdentification-BCDL": [
       isOnlyNumbers("BC driver's licence should contain only numbers"),
       isMinSizeMsg("BC driver's licence", 7),
-      isMaxSizeMsg("BC driver's licence", idNumberMaskParams.BCDL.maxSize),
+      isMaxSizeMsg("BC driver's licence", clientIdentificationMaskParams.BCDL.maxSize),
     ],
 
-    "businessInformation.idNumber-nonBCDL": [
+    "businessInformation.clientIdentification-nonBCDL": [
       isIdCharacters(),
       isMinSizeMsg("driver's licence", 7),
-      isMaxSizeMsg("driver's licence", idNumberMaskParams.nonBCDL.maxSize),
+      isMaxSizeMsg("driver's licence", clientIdentificationMaskParams.nonBCDL.maxSize),
     ],
 
-    "businessInformation.idNumber-BRTH": [
+    "businessInformation.clientIdentification-BRTH": [
       isOnlyNumbers("Canadian birth certificate should contain only numbers"),
       isMinSizeMsg("Canadian birth certificate", 12),
-      isMaxSizeMsg("Canadian birth certificate", idNumberMaskParams.BRTH.maxSize),
+      isMaxSizeMsg("Canadian birth certificate", clientIdentificationMaskParams.BRTH.maxSize),
     ],
 
-    "businessInformation.idNumber-PASS": [
+    "businessInformation.clientIdentification-PASS": [
       isIdCharacters(),
-      ...isExactSizMsg("Canadian passport", idNumberMaskParams.PASS.maxSize),
+      ...isExactSizMsg("Canadian passport", clientIdentificationMaskParams.PASS.maxSize),
     ],
 
-    "businessInformation.idNumber-CITZ": [
+    "businessInformation.clientIdentification-CITZ": [
       isIdCharacters(),
-      ...isExactSizMsg("Canadian citizenship card", idNumberMaskParams.CITZ.maxSize),
+      ...isExactSizMsg("Canadian citizenship card", clientIdentificationMaskParams.CITZ.maxSize),
     ],
 
-    "businessInformation.idNumber-FNID": [
+    "businessInformation.clientIdentification-FNID": [
       isOnlyNumbers("First Nation status ID should contain only numbers"),
-      ...isExactSizMsg("First Nation status ID", idNumberMaskParams.FNID.maxSize),
+      ...isExactSizMsg("First Nation status ID", clientIdentificationMaskParams.FNID.maxSize),
     ],
 
-    "businessInformation.idNumber-OTHR": [
+    "businessInformation.clientIdentification-OTHR": [
       isMinSizeMsg("ID number", 3),
       isMaxSizeMsg("ID number", 40),
       isRegex(
@@ -171,8 +173,8 @@ Object.assign(
   }),
 );
 
-export const getIdNumberValidations = (
-  key: IdNumberFormFieldValidationKey,
+export const getClientIdentificationValidations = (
+  key: ClientIdentificationFormFieldValidationKey,
 ): ((value: any) => string)[] => getValidations(key);
 
 // Step 2: Addresses

@@ -49,10 +49,10 @@ describe("validations", () => {
     });
   });
 
-  describe.each(["idType.text"])("%s", (key) => {
+  describe.each(["identificationType.text"])("%s", (key) => {
     const data: any = {};
     const setter = (value: any) => {
-      data.idType = value;
+      data.identificationType = value;
     };
     (<Scenario[]>[
       [{ text: "" }, false],
@@ -63,10 +63,10 @@ describe("validations", () => {
     });
   });
 
-  describe.each(["issuingProvince.text"])("%s", (key) => {
+  describe.each(["identificationProvince.text"])("%s", (key) => {
     const data: any = {};
     const setter = (value: any) => {
-      data.issuingProvince = value;
+      data.identificationProvince = value;
     };
     (<Scenario[]>[
       [{ text: "" }, false],
@@ -77,10 +77,10 @@ describe("validations", () => {
     });
   });
 
-  describe.each(["businessInformation.idType"])("%s", (key) => {
+  describe.each(["businessInformation.identificationType"])("%s", (key) => {
     const formDataDto = newFormDataDto();
     const setter = (value: string) => {
-      formDataDto.businessInformation.idType = value;
+      formDataDto.businessInformation.identificationType = value;
     };
     (<Scenario[]>[
       ["", false],
@@ -91,10 +91,10 @@ describe("validations", () => {
     });
   });
 
-  describe.each(["businessInformation.idNumber"])("%s", (key) => {
+  describe.each(["businessInformation.clientIdentification"])("%s", (key) => {
     const formDataDto = newFormDataDto();
     const setter = (value: string) => {
-      formDataDto.businessInformation.idNumber = value;
+      formDataDto.businessInformation.clientIdentification = value;
     };
     (<Scenario[]>[
       ["", false],
@@ -105,14 +105,14 @@ describe("validations", () => {
     });
   });
 
-  describe("idNumber variations", () => {
+  describe("clientIdentification variations", () => {
     const data: any = {
       businessInformation: {},
     };
 
-    describe.each(["businessInformation.idNumber-BCDL"])("%s", (key) => {
+    describe.each(["businessInformation.clientIdentification-BCDL"])("%s", (key) => {
       const setter = (value: string) => {
-        data.businessInformation["idNumber-BCDL"] = value;
+        data.businessInformation["clientIdentification-BCDL"] = value;
       };
       (<Scenario[]>[
         ["1234ABCD", false, "contains letters"],
@@ -125,9 +125,9 @@ describe("validations", () => {
       });
     });
 
-    describe.each(["businessInformation.idNumber-nonBCDL"])("%s", (key) => {
+    describe.each(["businessInformation.clientIdentification-nonBCDL"])("%s", (key) => {
       const setter = (value: string) => {
-        data.businessInformation["idNumber-nonBCDL"] = value;
+        data.businessInformation["clientIdentification-nonBCDL"] = value;
       };
       (<Scenario[]>[
         ["1234ABC!", false, "contains special character"],
@@ -142,9 +142,9 @@ describe("validations", () => {
       });
     });
 
-    describe.each(["businessInformation.idNumber-BRTH"])("%s", (key) => {
+    describe.each(["businessInformation.clientIdentification-BRTH"])("%s", (key) => {
       const setter = (value: string) => {
-        data.businessInformation["idNumber-BRTH"] = value;
+        data.businessInformation["clientIdentification-BRTH"] = value;
       };
       (<Scenario[]>[
         ["12345678901", false, "less than 12 digits"],
@@ -157,9 +157,9 @@ describe("validations", () => {
       });
     });
 
-    describe.each(["businessInformation.idNumber-PASS"])("%s", (key) => {
+    describe.each(["businessInformation.clientIdentification-PASS"])("%s", (key) => {
       const setter = (value: string) => {
-        data.businessInformation["idNumber-PASS"] = value;
+        data.businessInformation["clientIdentification-PASS"] = value;
       };
       (<Scenario[]>[
         ["1234ABC!", false, "contains special character"],
@@ -173,9 +173,9 @@ describe("validations", () => {
       });
     });
 
-    describe.each(["businessInformation.idNumber-CITZ"])("%s", (key) => {
+    describe.each(["businessInformation.clientIdentification-CITZ"])("%s", (key) => {
       const setter = (value: string) => {
-        data.businessInformation["idNumber-CITZ"] = value;
+        data.businessInformation["clientIdentification-CITZ"] = value;
       };
       (<Scenario[]>[
         ["1234ABC!", false, "contains special character"],
@@ -189,9 +189,9 @@ describe("validations", () => {
       });
     });
 
-    describe.each(["businessInformation.idNumber-FNID"])("%s", (key) => {
+    describe.each(["businessInformation.clientIdentification-FNID"])("%s", (key) => {
       const setter = (value: string) => {
-        data.businessInformation["idNumber-FNID"] = value;
+        data.businessInformation["clientIdentification-FNID"] = value;
       };
       (<Scenario[]>[
         ["123456789", false, "less than 10 digits"],
@@ -203,9 +203,9 @@ describe("validations", () => {
       });
     });
 
-    describe.each(["businessInformation.idNumber-OTHR"])("%s", (key) => {
+    describe.each(["businessInformation.clientIdentification-OTHR"])("%s", (key) => {
       const setter = (value: string) => {
-        data.businessInformation["idNumber-OTHR"] = value;
+        data.businessInformation["clientIdentification-OTHR"] = value;
       };
       (<Scenario[]>[
         ["12345", false, "No colon"],
