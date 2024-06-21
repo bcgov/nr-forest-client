@@ -122,7 +122,7 @@ class IndividualStepMatcherTest {
   private static Stream<Arguments> matchStep() {
     return Stream.of(
         Arguments.of(
-            getDto("Jhon", "Wick", LocalDate.of(1970, 1, 1), "BCDL", "1234567"),
+            getDto("Jhon", "Wick", LocalDate.of(1970, 1, 1), "CDDL","BC", "1234567"),
             Flux.empty(),
             Flux.empty(),
             Flux.empty(),
@@ -130,7 +130,7 @@ class IndividualStepMatcherTest {
             false
         ),
         Arguments.of(
-            getDto("James", "Wick", LocalDate.of(1970, 1, 1), "ABDL", "7654321"),
+            getDto("James", "Wick", LocalDate.of(1970, 1, 1), "CDDL","AB", "7654321"),
             Flux.empty(),
             Flux.empty(),
             Flux.just(getForestClientDto("00000001")),
@@ -138,7 +138,7 @@ class IndividualStepMatcherTest {
             false
         ),
         Arguments.of(
-            getDto("Valeria", "Valid", LocalDate.of(1970, 1, 1), "YKDL", "1233210"),
+            getDto("Valeria", "Valid", LocalDate.of(1970, 1, 1), "CDDL","YK", "1233210"),
             Flux.empty(),
             Flux.just(getForestClientDto("00000002")),
             Flux.empty(),
@@ -146,7 +146,7 @@ class IndividualStepMatcherTest {
             false
         ),
         Arguments.of(
-            getDto("Papernon", "Pompadour", LocalDate.of(1970, 1, 1), "ONDL", "9994545"),
+            getDto("Papernon", "Pompadour", LocalDate.of(1970, 1, 1), "CDDL","ON", "9994545"),
             Flux.just(getForestClientDto("00000003")),
             Flux.empty(),
             Flux.empty(),
@@ -154,7 +154,7 @@ class IndividualStepMatcherTest {
             true
         ),
         Arguments.of(
-            getDto("Karls", "Enrikvinjon", LocalDate.of(1970, 1, 1), "BCDL", "3337474"),
+            getDto("Karls", "Enrikvinjon", LocalDate.of(1970, 1, 1), "CDDL","BC", "3337474"),
             Flux.just(getForestClientDto("00000004")),
             Flux.just(getForestClientDto("00000005")),
             Flux.empty(),
@@ -162,7 +162,7 @@ class IndividualStepMatcherTest {
             false
         ),
         Arguments.of(
-            getDto("Palitz", "Yelvengard", LocalDate.of(1970, 1, 1), "NLDL", "7433374"),
+            getDto("Palitz", "Yelvengard", LocalDate.of(1970, 1, 1), "USDL","AZ", "7433374"),
             Flux.just(getForestClientDto("00000006")),
             Flux.just(getForestClientDto("00000007")),
             Flux.just(getForestClientDto("00000008")),
@@ -177,22 +177,30 @@ class IndividualStepMatcherTest {
       String lastName,
       LocalDate birthdate,
       String idType,
+      String idProvince,
       String idValue
   ) {
     return new ClientSubmissionDto(
         new ClientBusinessInformationDto(
             null,
-            lastName,
-            firstName,
-            null,
+            "",
             null,
             null,
             null,
             null,
             birthdate,
             null,
+            null,
+            null,
+            null,
+            firstName,
+            null,
+            lastName,
+            null,
             idType,
-            idValue
+            idValue,
+            null,
+            idProvince
         ),
         null,
         null,

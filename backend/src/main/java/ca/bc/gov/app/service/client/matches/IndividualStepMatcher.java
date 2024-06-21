@@ -84,7 +84,7 @@ public Logger getLogger() {
                 dto.businessInformation().firstName(),
                 dto.businessInformation().businessName(),
                 dto.businessInformation().birthdate(),
-                dto.businessInformation().idValue()
+                dto.businessInformation().clientIdentification()
             )
             .doOnNext(client -> log.info("Match found for individual full match: {}",
                 client.clientNumber())
@@ -93,7 +93,7 @@ public Logger getLogger() {
     // Search for document itself
     Flux<ForestClientDto> documentFullMatch =
         legacyService.searchDocument(dto.businessInformation().idType(),
-                dto.businessInformation().idValue()
+                dto.businessInformation().clientIdentification()
             )
             .doOnNext(client -> log.info("Match found for individual document full match: {}",
                 client.clientNumber())

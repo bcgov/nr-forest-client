@@ -99,14 +99,14 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                 .withQueryParam("dob", equalTo(dto.businessInformation().birthdate().format(
                     DateTimeFormatter.ISO_DATE))
                 )
-                .withQueryParam("identification", equalTo(dto.businessInformation().idValue()))
+                .withQueryParam("identification", equalTo(dto.businessInformation().clientIdentification()))
                 .willReturn(okJson(individualFullMatch))
         );
 
     legacyStub
         .stubFor(
             get(urlPathEqualTo("/api/search/id/" + dto.businessInformation().idType() + "/"
-                + dto.businessInformation().idValue()))
+                + dto.businessInformation().clientIdentification()))
                 .willReturn(okJson(documentMatch))
         );
 
@@ -258,7 +258,8 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                 "Jhon",
                 "Wick",
                 LocalDate.of(1970, 1, 1),
-                "BCDL",
+                "CDDL",
+                "BC",
                 "1234567"
             ),
             "[]",
@@ -272,7 +273,8 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                 "James",
                 "Wick",
                 LocalDate.of(1970, 1, 1),
-                "ABDL",
+                "CDDL",
+                "AB",
                 "7654321"
             ),
             "[]",
@@ -286,7 +288,8 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                 "Valeria",
                 "Valid",
                 LocalDate.of(1970, 1, 1),
-                "YKDL",
+                "CDDL",
+                "YK",
                 "1233210"
             ),
             "[]",
@@ -300,7 +303,8 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                 "Papernon",
                 "Pompadour",
                 LocalDate.of(1970, 1, 1),
-                "ONDL",
+                "CDDL",
+                "ON",
                 "9994545"
             ),
             "[{\"clientNumber\":\"00000003\"}]",
@@ -314,7 +318,8 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                 "Karls",
                 "Enrikvinjon",
                 LocalDate.of(1970, 1, 1),
-                "BCDL",
+                "CDDL",
+                "BC",
                 "3337474"
             ),
             "[{\"clientNumber\":\"00000004\"}]",
@@ -328,7 +333,8 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                 "Palitz",
                 "Yelvengard",
                 LocalDate.of(1970, 1, 1),
-                "NLDL",
+                "USDL",
+                "AZ",
                 "7433374"
             ),
             "[{\"clientNumber\":\"00000006\"}]",
@@ -345,6 +351,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
       String lastName,
       LocalDate birthdate,
       String idType,
+      String idProvince,
       String idValue
   ) {
 
@@ -358,8 +365,9 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                     .withBusinessName(lastName)
                     .withFirstName(firstName)
                     .withBirthdate(birthdate)
-                    .withIdType(idType)
-                    .withIdValue(idValue)
+                    .withIdentificationType(idType)
+                    .withIdentificationProvince(idProvince)
+                    .withClientIdentification(idValue)
                     .withClientType("I")
             );
   }
@@ -369,6 +377,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
         UUID.randomUUID().toString(),
         UUID.randomUUID().toString(),
         LocalDate.now(),
+        UUID.randomUUID().toString(),
         UUID.randomUUID().toString(),
         UUID.randomUUID().toString()
     );
@@ -387,6 +396,13 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
   private static ClientSubmissionDto getDto() {
     return new ClientSubmissionDto(
         new ClientBusinessInformationDto(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
             null,
             null,
             null,

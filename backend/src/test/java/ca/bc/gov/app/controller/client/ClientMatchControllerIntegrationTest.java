@@ -22,7 +22,6 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -105,14 +104,14 @@ class ClientMatchControllerIntegrationTest extends AbstractTestContainerIntegrat
                 .withQueryParam("dob", equalTo(dto.businessInformation().birthdate().format(
                     DateTimeFormatter.ISO_DATE))
                 )
-                .withQueryParam("identification", equalTo(dto.businessInformation().idValue()))
+                .withQueryParam("identification", equalTo(dto.businessInformation().clientIdentification()))
                 .willReturn(okJson(individualFullMatch))
         );
 
     legacyStub
         .stubFor(
             get(urlPathEqualTo("/api/search/id/" + dto.businessInformation().idType() + "/"
-                + dto.businessInformation().idValue()))
+                + dto.businessInformation().clientIdentification()))
                 .willReturn(okJson(documentMatch))
         );
 
@@ -152,7 +151,8 @@ class ClientMatchControllerIntegrationTest extends AbstractTestContainerIntegrat
                 "Jhon",
                 "Wick",
                 LocalDate.of(1970, 1, 1),
-                "BCDL",
+                "CDDL",
+                "BC",
                 "1234567"
             ),
             "[]",
@@ -166,7 +166,8 @@ class ClientMatchControllerIntegrationTest extends AbstractTestContainerIntegrat
                 "James",
                 "Wick",
                 LocalDate.of(1970, 1, 1),
-                "ABDL",
+                "CDDL",
+                "AB",
                 "7654321"
             ),
             "[]",
@@ -180,7 +181,8 @@ class ClientMatchControllerIntegrationTest extends AbstractTestContainerIntegrat
                 "Valeria",
                 "Valid",
                 LocalDate.of(1970, 1, 1),
-                "YKDL",
+                "CDDL",
+                "YK",
                 "1233210"
             ),
             "[]",
@@ -194,7 +196,8 @@ class ClientMatchControllerIntegrationTest extends AbstractTestContainerIntegrat
                 "Papernon",
                 "Pompadour",
                 LocalDate.of(1970, 1, 1),
-                "ONDL",
+                "CDDL",
+                "ON",
                 "9994545"
             ),
             "[{\"clientNumber\":\"00000003\"}]",
@@ -208,7 +211,8 @@ class ClientMatchControllerIntegrationTest extends AbstractTestContainerIntegrat
                 "Karls",
                 "Enrikvinjon",
                 LocalDate.of(1970, 1, 1),
-                "BCDL",
+                "CDDL",
+                "BC",
                 "3337474"
             ),
             "[{\"clientNumber\":\"00000004\"}]",
@@ -222,7 +226,8 @@ class ClientMatchControllerIntegrationTest extends AbstractTestContainerIntegrat
                 "Palitz",
                 "Yelvengard",
                 LocalDate.of(1970, 1, 1),
-                "NLDL",
+                "USDL",
+                "AZ",
                 "7433374"
             ),
             "[{\"clientNumber\":\"00000006\"}]",
@@ -239,6 +244,7 @@ class ClientMatchControllerIntegrationTest extends AbstractTestContainerIntegrat
       String lastName,
       LocalDate birthdate,
       String idType,
+      String idProvince,
       String idValue
   ) {
 
@@ -252,8 +258,9 @@ class ClientMatchControllerIntegrationTest extends AbstractTestContainerIntegrat
                     .withBusinessName(lastName)
                     .withFirstName(firstName)
                     .withBirthdate(birthdate)
-                    .withIdType(idType)
-                    .withIdValue(idValue)
+                    .withIdentificationType(idType)
+                    .withIdentificationProvince(idProvince)
+                    .withClientIdentification(idValue)
                     .withClientType("I")
             );
   }
@@ -271,6 +278,13 @@ class ClientMatchControllerIntegrationTest extends AbstractTestContainerIntegrat
   private static ClientSubmissionDto getDto() {
     return new ClientSubmissionDto(
         new ClientBusinessInformationDto(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
             null,
             null,
             null,
