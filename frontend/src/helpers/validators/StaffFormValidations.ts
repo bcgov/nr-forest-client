@@ -43,9 +43,19 @@ fieldValidations["businessInformation.birthdate"] = [
   isMinimumYearsAgo(19, "The applicant must be at least 19 years old to apply"),
 ];
 
+// use the same validations as firstName in contacts
+fieldValidations["businessInformation.firstName"] = [
+  ...fieldValidations["location.contacts.*.firstName"],
+];
+
 fieldValidations["businessInformation.middleName"] = [
   isMaxSizeMsg("middle name", 30),
   hasOnlyNamingCharacters("middle name"),
+];
+
+// use the same validations as lastName in contacts
+fieldValidations["businessInformation.lastName"] = [
+  ...fieldValidations["location.contacts.*.lastName"],
 ];
 
 // For the input field.

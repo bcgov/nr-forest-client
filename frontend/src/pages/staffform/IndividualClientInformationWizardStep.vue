@@ -205,13 +205,29 @@ watch(
   { immediate: true },
 );
 
+watch(
+  () => formData.value.businessInformation.firstName,
+  (value) => {
+    // copy the firstName into the first contact
+    formData.value.location.contacts[0].firstName = value;
+  },
+);
+
+watch(
+  () => formData.value.businessInformation.lastName,
+  (value) => {
+    // copy the lastName into the first contact
+    formData.value.location.contacts[0].lastName = value;
+  },
+);
+
 const fullName = computed(() => {
   const parts: string[] = [];
-  parts.push(formData.value.location.contacts[0].firstName);
+  parts.push(formData.value.businessInformation.firstName);
   if (formData.value.businessInformation.middleName) {
     parts.push(formData.value.businessInformation.middleName);
   }
-  parts.push(formData.value.location.contacts[0].lastName);
+  parts.push(formData.value.businessInformation.lastName);
   return parts.join(" ");
 });
 
@@ -244,10 +260,10 @@ onMounted(() => {
       label="First name"
       placeholder=""
       autocomplete="off"
-      v-model="formData.location.contacts[0].firstName"
+      v-model="formData.businessInformation.firstName"
       :validations="[
-        ...getValidations('location.contacts.*.firstName'),
-        submissionValidation(`location.contacts[0].firstName`),
+        ...getValidations('businessInformation.firstName'),
+        submissionValidation(`businessInformation.firstName`),
       ]"
       enabled
       required
@@ -276,10 +292,10 @@ onMounted(() => {
       label="Last name"
       placeholder=""
       autocomplete="off"
-      v-model="formData.location.contacts[0].lastName"
+      v-model="formData.businessInformation.lastName"
       :validations="[
-        ...getValidations('location.contacts.*.lastName'),
-        submissionValidation(`location.contacts[0].lastName`),
+        ...getValidations('businessInformation.lastName'),
+        submissionValidation(`businessInformation.lastName`),
       ]"
       enabled
       required
