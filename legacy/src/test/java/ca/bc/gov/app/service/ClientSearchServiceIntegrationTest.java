@@ -10,11 +10,13 @@ import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
+import reactor.test.StepVerifier.FirstStep;
 
 @DisplayName("Integrated Test | Client Search Service-")
 class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
@@ -36,19 +38,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
             .findByRegistrationNumberOrCompanyName(registrationNumber, companyName)
             .as(StepVerifier::create);
 
-    if (StringUtils.isNotBlank(expected)) {
-      test
-          .assertNext(dto -> {
-            assertNotNull(dto);
-            assertEquals(expected, dto.clientNumber());
-          });
-    }
-
-    if (exception != null) {
-      test.expectError(exception);
-    }
-
-    test.verifyComplete();
+    verifyTestData(expected, exception, test);
   }
 
   @DisplayName("should find individual")
@@ -67,19 +57,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
             .findByIndividual(firstName, lastName, dob, identification, true)
             .as(StepVerifier::create);
 
-    if (StringUtils.isNotBlank(expected)) {
-      test
-          .assertNext(dto -> {
-            assertNotNull(dto);
-            assertEquals(expected, dto.clientNumber());
-          });
-    }
-
-    if (exception != null) {
-      test.expectError(exception);
-    }
-
-    test.verifyComplete();
+    verifyTestData(expected, exception, test);
 
   }
 
@@ -96,19 +74,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
             .matchBy(companyName)
             .as(StepVerifier::create);
 
-    if (StringUtils.isNotBlank(expected)) {
-      test
-          .assertNext(dto -> {
-            assertNotNull(dto);
-            assertEquals(expected, dto.clientNumber());
-          });
-    }
-
-    if (exception != null) {
-      test.expectError(exception);
-    }
-
-    test.verifyComplete();
+    verifyTestData(expected, exception, test);
 
   }
 
@@ -126,19 +92,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
             .findByIdAndLastName(identification, lastName)
             .as(StepVerifier::create);
 
-    if (StringUtils.isNotBlank(expected)) {
-      test
-          .assertNext(dto -> {
-            assertNotNull(dto);
-            assertEquals(expected, dto.clientNumber());
-          });
-    }
-
-    if (exception != null) {
-      test.expectError(exception);
-    }
-
-    test.verifyComplete();
+    verifyTestData(expected, exception, test);
 
   }
 
@@ -156,6 +110,39 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
             .findByIdentification(idType, identification)
             .as(StepVerifier::create);
 
+    verifyTestData(expected, exception, test);
+
+  }
+
+  @DisplayName("should find by email on contact and location")
+  @ParameterizedTest
+  @MethodSource("byDocument")
+  void shouldfindByGeneralEmail() {
+
+  }
+
+  @DisplayName("should find by email on contact and location")
+  @Test
+  void shouldFindByAddress() {
+    StepVerifier.FirstStep<ForestClientDto> test =
+    service
+        .findByEntireAddress(
+            "510 FULTON PLAZA",
+            "FORT MCMURRAY",
+            "AB",
+            "T9J9R1",
+            "CANADA"
+        )
+        .as(StepVerifier::create);
+
+    verifyTestData("00000123", null, test);
+  }
+
+  private void verifyTestData(
+      String expected,
+      Class<RuntimeException> exception,
+      FirstStep<ForestClientDto> test
+  ) {
     if (StringUtils.isNotBlank(expected)) {
       test
           .assertNext(dto -> {
@@ -169,7 +156,6 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
     }
 
     test.verifyComplete();
-
   }
 
   private static Stream<Arguments> byNumberOrCompanyName() {

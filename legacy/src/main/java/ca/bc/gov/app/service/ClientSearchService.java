@@ -4,7 +4,9 @@ import static org.springframework.data.relational.core.query.Criteria.where;
 
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
+import ca.bc.gov.app.entity.ForestClientContactEntity;
 import ca.bc.gov.app.entity.ForestClientEntity;
+import ca.bc.gov.app.entity.ForestClientLocationEntity;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
@@ -29,12 +31,6 @@ import reactor.core.publisher.Mono;
  * It uses the ForestClientRepository and ClientDoingBusinessAsRepository to perform the searches.
  * The results are mapped to ForestClientDto objects using the AbstractForestClientMapper. The class
  * is annotated with @Service, indicating that it's a service component in the Spring framework.
- * The
- *
- * @RequiredArgsConstructor annotation is used to automatically generate a constructor with required
- * arguments. The @Slf4j annotation is used to enable the SLF4J (Simple Logging Facade for Java)
- * logging in this class. The @Observed annotation is used to indicate that metrics are collected
- * for this class.
  */
 @Service
 @RequiredArgsConstructor
@@ -45,7 +41,7 @@ public class ClientSearchService {
   private final ForestClientRepository forestClientRepository;
   private final ClientDoingBusinessAsRepository doingBusinessAsRepository;
   private final ForestClientRepository clientRepository;
-  private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> mapper;
+  private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> forestClientMapper;
   private final R2dbcEntityTemplate template;
 
   /**
@@ -94,7 +90,7 @@ public class ClientSearchService {
                             .flatMap(forestClientRepository::findByClientNumber)
                     )
             )
-            .map(mapper::toDto);
+            .map(forestClientMapper::toDto);
   }
 
   /**
@@ -132,7 +128,7 @@ public class ClientSearchService {
               String.format("%s %s", firstName, lastName),
               dob.atStartOfDay()
           )
-          .map(mapper::toDto)
+          .map(forestClientMapper::toDto)
           .doOnNext(dto -> log.info("Found individual matching {} {} {} as {} {}",
               firstName, lastName, dob,
               dto.clientNumber(), dto.clientName())
@@ -151,7 +147,8 @@ public class ClientSearchService {
           .ignoreCase(true);
     }
 
-    return searchClientByQuery(queryCriteria)
+    return searchClientByQuery(queryCriteria,ForestClientEntity.class)
+        .map(forestClientMapper::toDto)
         .doOnNext(
             dto -> log.info("Found individual matching {} {} {} {} as {} {}",
                 firstName, lastName, dob, StringUtils.defaultString(identification),
@@ -177,7 +174,7 @@ public class ClientSearchService {
     return
         forestClientRepository
             .matchBy(companyName)
-            .map(mapper::toDto)
+            .map(forestClientMapper::toDto)
             .doOnNext(dto -> log.info("Found match for {} as {} {}",
                 companyName,
                 dto.clientNumber(), dto.clientName()));
@@ -203,7 +200,8 @@ public class ClientSearchService {
     Criteria queryCriteria = where("clientIdentification").is(clientId).ignoreCase(true)
         .and("clientName").is(lastName).ignoreCase(true);
 
-    return searchClientByQuery(queryCriteria)
+    return searchClientByQuery(queryCriteria,ForestClientEntity.class)
+        .map(forestClientMapper::toDto)
         .doOnNext(
             dto -> log.info("Found client with clientId {} and lastName {} as  {} {}",
                 clientId, lastName,
@@ -233,12 +231,79 @@ public class ClientSearchService {
         .and("clientIdentification").is(identification).ignoreCase(true)
         .and("clientTypeCode").is("I").ignoreCase(true);
 
-    return searchClientByQuery(queryCriteria)
+    return searchClientByQuery(queryCriteria,ForestClientEntity.class)
+        .map(forestClientMapper::toDto)
         .doOnNext(
             dto -> log.info("Found client with clientId {} {} as  {} {}",
                 idType, identification,
                 dto.clientNumber(), dto.clientName())
         );
+  }
+
+  public Flux<ForestClientDto> findByGeneralEmail(String email) {
+
+    Criteria queryCriteria = where("emailAddress").is(email).ignoreCase(true);
+
+
+    Flux<ForestClientDto> locations = searchClientByQuery(queryCriteria,ForestClientLocationEntity.class)
+        .flatMap(entity -> searchClientByQuery(where("clientNumber").is(entity.getClientNumber()),ForestClientEntity.class))
+        .map(forestClientMapper::toDto);
+    Flux<ForestClientDto> contacts = searchClientByQuery(queryCriteria, ForestClientContactEntity.class)
+        .flatMap(entity -> searchClientByQuery(where("clientNumber").is(entity.getClientNumber()),ForestClientEntity.class))
+        .map(forestClientMapper::toDto);
+
+
+
+
+    locations
+
+
+
+
+        .switchIfEmpty(contacts)
+        .doOnNext(
+            dto -> log.info("Found client with email {} as  {} {}",
+                email,
+                dto.clientNumber(), dto.clientName())
+        );
+
+
+
+
+
+
+    return null;
+  }
+
+  public Flux<ForestClientDto> findByEntireAddress(
+      String address,
+      String city,
+      String province,
+      String postalCode,
+      String country
+  ){
+
+    Criteria queryCriteria =
+        where("city").is(city).ignoreCase(true)
+            .and("province").is(province).ignoreCase(true)
+            .and("postalCode").is(postalCode).ignoreCase(true)
+            .and("country").is(country).ignoreCase(true)
+            .and(
+                where("addressOne").is(address).ignoreCase(true)
+                    .or("addressTwo").is(address).ignoreCase(true)
+                    .or("addressThree").is(address).ignoreCase(true)
+            );
+
+    return searchClientByQuery(queryCriteria,ForestClientLocationEntity.class)
+        .flatMap(entity -> searchClientByQuery(where("clientNumber").is(entity.getClientNumber()),ForestClientEntity.class))
+        .map(forestClientMapper::toDto)
+        .doOnNext(
+            dto -> log.info("Found client with address {} as  {} {}",
+                address,
+                dto.clientNumber(), dto.clientName())
+        );
+
+
   }
 
   /**
@@ -251,10 +316,12 @@ public class ClientSearchService {
    * the client number of each retrieved client.
    *
    * @param queryCriteria The criteria used to search for clients.
-   * @return A Flux stream of ForestClientDto objects.
+   * @param entityClass The class of the entity to be retrieved.
+   * @return A Flux stream of the entityClass objects.
    */
-  private Flux<ForestClientDto> searchClientByQuery(
-      final Criteria queryCriteria
+  private <T> Flux<T> searchClientByQuery(
+      final Criteria queryCriteria,
+      final Class<T> entityClass
   ) {
     // Create a query based on the query criteria.
     Query searchQuery = Query.query(queryCriteria);
@@ -270,17 +337,10 @@ public class ClientSearchService {
                         .by(Sort.Order.asc("clientNumber"))
                         .and(Sort.by(Sort.Order.asc("clientName")))
                 ),
-            ForestClientEntity.class
+            entityClass
         )
-        // Map each client entity to a DTO and set the count of total matching clients.
-        .map(mapper::toDto)
-        .doOnNext(client -> log.info(
-                "Found client for query {} as [{}] - {}",
-                queryCriteria,
-                client.clientNumber(),
-                client.clientName()
-            )
-        );
+        .doOnNext(client -> log.info("Found client for query {}",queryCriteria));
   }
+
 
 }
