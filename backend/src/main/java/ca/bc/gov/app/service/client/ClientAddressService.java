@@ -155,10 +155,17 @@ public class ClientAddressService {
                     String.format("%s %s %s %s %s", address.line1(), address.line2(),
                         address.line3(), address.line4(), address.line5()
                     ).trim(),
+                    null,
+                    null,
                     new ClientValueTextDto(address.countryIso2(), address.countryName()),
                     new ClientValueTextDto(address.province(), address.provinceName()),
                     address.city(),
                     address.postalCode(),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
                     0,
                     null
                 )

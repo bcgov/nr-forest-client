@@ -30,12 +30,21 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       SELECT *
       FROM THE.FOREST_CLIENT
       WHERE
-      UPPER(LEGAL_FIRST_NAME) = UPPER(:firstName)
-      AND UPPER(CLIENT_NAME) = UPPER(:lastName)
-      AND BIRTHDATE = :dob
+      BIRTHDATE = :dob
       AND CLIENT_TYPE_CODE = 'I'
+      AND (
+        UTL_MATCH.JARO_WINKLER_SIMILARITY(
+          UPPER(LEGAL_FIRST_NAME) || ' ' || UPPER(LEGAL_MIDDLE_NAME) || ' ' || UPPER(CLIENT_NAME),
+          UPPER(:name)
+        ) >= 95
+        OR
+        UTL_MATCH.JARO_WINKLER_SIMILARITY(
+          UPPER(LEGAL_FIRST_NAME) || ' ' || UPPER(CLIENT_NAME),
+          UPPER(:name)
+        ) >= 95
+      )
       ORDER BY CLIENT_NUMBER""")
-  Flux<ForestClientEntity> findByIndividual(String firstName, String lastName, LocalDateTime dob);
+  Flux<ForestClientEntity> findByIndividualFuzzy(String name, LocalDateTime dob);
 
   @Query("""
       SELECT *
@@ -46,8 +55,5 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
   Flux<ForestClientEntity> matchBy(String companyName);
 
   Mono<ForestClientEntity> findByClientNumber(String clientNumber);
-
-
-  Flux<ForestClientEntity> findByClientIdentificationIgnoreCaseAndClientNameIgnoreCase(String clientIdentification, String clientName);
 
 }

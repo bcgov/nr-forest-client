@@ -418,6 +418,8 @@ public class ClientService {
             .map(addressDto ->
                 new ClientAddressDto(
                     addressDto.streetAddress(),
+                    null,
+                    null,
                     new ClientValueTextDto("", addressDto.addressCountry()),
                     new ClientValueTextDto(addressDto.addressRegion(), ""),
                     addressDto.addressCity(),
@@ -426,6 +428,11 @@ public class ClientService {
                         .map(String::trim)
                         .map(value -> value.replaceAll("\\s+", ""))
                         .orElse(StringUtils.EMPTY),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
                     index.getAndIncrement(),
                     (addressDto.addressType() != null ? addressDto.addressType() : "").concat(
                         " address").toUpperCase()
@@ -447,6 +454,8 @@ public class ClientService {
                             null,
                             party.officer().firstName(),
                             party.officer().lastName(),
+                            "",
+                            "",
                             "",
                             party.officer().email(),
                             index.getAndIncrement(),

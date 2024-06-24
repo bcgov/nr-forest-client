@@ -14,27 +14,27 @@ import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";
 //Defining the props and emiter to reveice the data and emit an update
 const clientTypesList: CodeNameType[] = [
 {
-    code:'bcregisteredbusiness',
+    code:'BCR',
     name:'BC registered business'
   },
   {
-    code:'firstnation',
+    code:'R',
     name:'First Nation'
   },
   {
-    code:'gov',
+    code:'G',
     name:'Government'
   },
   {
-    code:'ind',
+    code:'I',
     name:'Individual'
   },
   {
-    code:'mof',
+    code:'F',
     name:'Ministry of Forests'
   },
   {
-    code:'unregistered',
+    code:'U',
     name:'Unregistered company'
   }
 ];
