@@ -413,15 +413,33 @@ public class TestConstants {
               "Y",
               "SP",
               LocalDate.now().minusYears(20),
-              "DCC"
+              "DCC",
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
           ),
           new ClientLocationDto(
               List.of(
                   new ClientAddressDto(
                       "3570 S Las Vegas Blvd",
+                      null,
+                      null,
                       new ClientValueTextDto("US", ""),
                       new ClientValueTextDto("NV", ""),
                       "Las Vegas", "89109",
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
                       0,
                       "Billing Address"
                   )
@@ -432,6 +450,8 @@ public class TestConstants {
                       "James",
                       "Bond",
                       "9876543210",
+                      null,
+                      null,
                       "bond_james_bond@007.com",
                       0,
                       List.of(
@@ -457,15 +477,33 @@ public class TestConstants {
               "",
               "SP",
               LocalDate.of(1975, 1, 31),
-              "DCC"
+              "DCC",
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
           ),
           new ClientLocationDto(
               List.of(
                   new ClientAddressDto(
                       "3570 S Las Vegas Blvd",
+                      null,
+                      null,
                       new ClientValueTextDto("US", ""),
                       new ClientValueTextDto("NV", ""),
                       "Las Vegas", "89109",
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
                       0,
                       "Billing Address"
                   )
@@ -476,6 +514,8 @@ public class TestConstants {
                       "James",
                       "Bond",
                       "9876543210",
+                      null,
+                      null,
                       "bond_james_bond@007.com",
                       0,
                       List.of(
@@ -501,15 +541,33 @@ public class TestConstants {
               "",
               "SP",
               LocalDate.of(1975, 1, 31),
-              "DCC"
+              "DCC",
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
           ),
           new ClientLocationDto(
               List.of(
                   new ClientAddressDto(
                       "3570 S Las Vegas Blvd",
+                      null,
+                      null,
                       new ClientValueTextDto("US", ""),
                       new ClientValueTextDto("NV", ""),
                       "Las Vegas", "89109",
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
                       0,
                       "Billing Address"
                   )
@@ -520,6 +578,8 @@ public class TestConstants {
                       "James",
                       "Bond",
                       "9876543210",
+                      null,
+                      null,
                       "bond_james_bond@007.com",
                       0,
                       List.of(
@@ -534,6 +594,8 @@ public class TestConstants {
                       "James",
                       "Baxter",
                       "9826543210",
+                      null,
+                      null,
                       "jbaxter@007.com",
                       1,
                       List.of(
@@ -559,15 +621,33 @@ public class TestConstants {
               "",
               "SP",
               LocalDate.of(1975, 1, 31),
-              "DCC"
+              "DCC",
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
           ),
           new ClientLocationDto(
               List.of(
                   new ClientAddressDto(
                       "3570 S Las Vegas Blvd",
+                      null,
+                      null,
                       new ClientValueTextDto("US", ""),
                       new ClientValueTextDto("NV", ""),
                       "Las Vegas", "89109",
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
                       0,
                       "Billing Address"
                   )
@@ -578,6 +658,8 @@ public class TestConstants {
                       "James",
                       "Bond",
                       "9876543210",
+                      null,
+                      null,
                       "bond_james_bond@007.com",
                       0,
                       List.of(

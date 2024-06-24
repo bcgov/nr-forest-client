@@ -18,11 +18,4 @@ public class TestConfiguration {
         .configureClient()
         .build();
   }
-
- /* @Bean
-  public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
-    http.authorizeExchange().anyExchange().permitAll();
-    return http.build();
-  }*/
-
 }

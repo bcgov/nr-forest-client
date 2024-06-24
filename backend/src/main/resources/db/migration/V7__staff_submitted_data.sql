@@ -1,0 +1,1 @@
+INSERT INTO nrfc.submission_type_code (submission_type_code, description, effective_date, create_user) VALUES('SSD', 'Staff submitted data', current_timestamp, 'paulocruz') on conflict (submission_type_code) do nothing;

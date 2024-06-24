@@ -13,7 +13,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @ExtendWith({SpringExtension.class})
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration
 public abstract class AbstractTestContainer {
 
@@ -34,7 +34,9 @@ public abstract class AbstractTestContainer {
     registry
         .add(
             "ca.bc.gov.nrs.postgres.database",
-            postgres::getDatabaseName
+            () -> postgres
+                .getDatabaseName()
+                .concat("?TC_INITSCRIPT=file:../backend/src/test/resources/init_pg.sql")
         );
 
     registry

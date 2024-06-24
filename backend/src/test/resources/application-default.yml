@@ -33,6 +33,9 @@ ca:
         frontend:
           url: http://localhost:1234
 
+features:
+  staff:
+    match: true
 
 logging:
   level:

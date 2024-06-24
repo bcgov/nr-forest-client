@@ -21,12 +21,10 @@ public class ClientService {
 
   private final R2dbcEntityOperations entityTemplate;
   private final ForestClientRepository repository;
+  private final ClientSearchService searchService;
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> mapper;
 
   public Mono<String> saveAndGetIndex(ForestClientDto dto) {
-
-    log.info("Saving forest client {}", dto);
-
     return
         Mono
             .just(dto)
@@ -35,8 +33,7 @@ public class ClientService {
             )
             .doOnNext(forestClientDto ->
                 log.info(
-                    "Saving forest client {} {}",
-                    forestClientDto.clientNumber(),
+                    "Saving forest client {}",
                     forestClientDto.name()
                 )
             )
@@ -62,6 +59,9 @@ public class ClientService {
                             dto.clientNumber()
                         )
                     )
+                    .doOnNext(
+                        clientNumber -> log.info("Client with number {} already exists", clientNumber)
+                    )
             );
   }
 
@@ -69,7 +69,7 @@ public class ClientService {
       ForestClientEntity entity
   ) {
 
-    log.info("Locating forest client {}", entity);
+    log.info("Searching forest client {}", entity.getName());
 
     if (
         entity
@@ -77,15 +77,18 @@ public class ClientService {
             .equalsIgnoreCase("I")
     ) {
       return
-          repository
+          searchService
               .findByIndividual(
                   entity.getLegalFirstName(),
                   entity.getClientName(),
-                  entity.getBirthdate()
+                  entity.getBirthdate().toLocalDate(),
+                  null,
+                  false
               )
               .map(client -> false) // means you can't create it
               .defaultIfEmpty(true)
-              .doOnNext(tag -> log.info("No individual client found {}", tag))
+              .doOnNext(
+                  tag -> log.info("Individual {} forest client missing? {}", entity.getName(), tag))
               .last();
     }
 
@@ -101,8 +104,14 @@ public class ClientService {
             )
             .map(client -> false) // means you can't create it
             .defaultIfEmpty(true)
-            .doOnNext(tag -> log.info("No client with type {} found {}", entity
-                .getClientTypeCode(), tag))
+            .doOnNext(tag ->
+                log.info(
+                    "Forest client {} with type {} missing? {}",
+                    entity.getName(),
+                    entity.getClientTypeCode(),
+                    tag
+                )
+            )
             .last();
   }
 
@@ -124,7 +133,8 @@ public class ClientService {
                     .sql("SELECT client_number FROM max_client_nmbr")
                     .map((row, rowMetadata) -> row.get("client_number", String.class))
                     .first()
-            );
+            )
+            .doOnNext(clientNumber -> log.info("Next client number is {}", clientNumber));
   }
 
 }

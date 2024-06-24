@@ -2,6 +2,7 @@ package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.controller.AbstractController;
+import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.submissions.SubmissionApproveRejectDto;
@@ -15,6 +16,7 @@ import ca.bc.gov.app.validator.client.ClientSubmitRequestValidator;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -117,10 +119,17 @@ public class ClientSubmissionController extends
         .switchIfEmpty(
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
         )
-        .doOnNext(sub -> log.info("Submitting request: {}", sub))
+        .doOnNext(sub -> log.info("Submitting request: {}",
+            Optional
+                .ofNullable(
+                    sub.businessInformation()
+                )
+                .map(ClientBusinessInformationDto::businessName)
+                .orElse("No Business Name")
+            ))
         .flatMap(this::validateReactive)
         .doOnNext(this::validate)
-        .doOnNext(sub -> log.info("Request is valid: {}", sub))
+        .doOnNext(sub -> log.info("Request is valid: {}", sub.businessInformation().businessName()))
         .doOnError(e -> log.error("Request is invalid: {}", e.getMessage()))
         .flatMap(submissionDto -> clientService.submit(submissionDto, principal))
         .doOnNext(submissionId -> log.info("Submission persisted: {}", submissionId))
