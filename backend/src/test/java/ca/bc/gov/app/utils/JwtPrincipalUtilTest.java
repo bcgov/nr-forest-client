@@ -1,4 +1,4 @@
-package ca.bc.gov.app.util;
+package ca.bc.gov.app.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import ca.bc.gov.app.util.JwtPrincipalUtil;
 
 @DisplayName("Unit Test | JwtPrincipalUtil")
 class JwtPrincipalUtilTest {
