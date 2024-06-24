@@ -1,6 +1,5 @@
 package ca.bc.gov.app.extensions;
 
-import java.util.UUID;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,10 +18,7 @@ public abstract class AbstractTestContainerIntegrationTest {
   static final OracleContainer database;
 
   static {
-    database = new OracleContainer("gvenzl/oracle-xe:21.3.0-slim-faststart")
-        .withDatabaseName("legacyfsa")
-        .withUsername("THE")
-        .withPassword(UUID.randomUUID().toString().substring(24));
+    database = new CustomOracleContainer();
     database.start();
   }
 
