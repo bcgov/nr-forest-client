@@ -1,4 +1,4 @@
-package ca.bc.gov.app.util;
+package ca.bc.gov.app.utils;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.dto.client.ClientTypeEnum;
 import ca.bc.gov.app.dto.client.LegalTypeEnum;
+import ca.bc.gov.app.util.ClientValidationUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
