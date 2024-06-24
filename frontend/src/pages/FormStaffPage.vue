@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/ui-shell/index";
 import "@carbon/web-components/es/components/breadcrumb/index";
@@ -7,44 +7,62 @@ import "@carbon/web-components/es/components/tooltip/index";
 // Composables
 import { useRouter } from "vue-router";
 import { useEventBus } from "@vueuse/core";
-import { isSmallScreen } from "@/composables/useScreenSize";
-// Types
-import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";
+import { isSmallScreen, isTouchScreen } from "@/composables/useScreenSize";
+import {
+  BusinessTypeEnum,
+  ClientTypeEnum,
+  LegalTypeEnum,
+  type CodeNameType,
+  type ModalNotification,
+} from "@/dto/CommonTypesDto";
+import {
+  locationName as defaultLocation,
+  emptyContact,
+  newFormDataDto,
+  type Contact,
+  type FormDataDto,
+} from "@/dto/ApplyClientNumberDto";
+import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
+// Imported global validations
+import { validate, runValidation } from "@/helpers/validators/StaffFormValidations";
+// Imported Pages
+import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
+// @ts-ignore
+import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 
-//Defining the props and emiter to reveice the data and emit an update
 const clientTypesList: CodeNameType[] = [
-{
-    code:'BCR',
-    name:'BC registered business'
+  {
+    code: "BCR",
+    name: "BC registered business",
   },
   {
-    code:'R',
-    name:'First Nation'
+    code: "R",
+    name: "First Nation",
   },
   {
-    code:'G',
-    name:'Government'
+    code: "G",
+    name: "Government",
   },
   {
-    code:'I',
-    name:'Individual'
+    code: "I",
+    name: "Individual",
   },
   {
-    code:'F',
-    name:'Ministry of Forests'
+    code: "F",
+    name: "Ministry of Forests",
   },
   {
-    code:'U',
-    name:'Unregistered company'
-  }
+    code: "U",
+    name: "Unregistered company",
+  },
 ];
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 
-//Route related
+// Route related
 const router = useRouter();
 
-let formData = ref({ });
+const formData = ref<FormDataDto>({ ...newFormDataDto() });
 
 // Tab system
 const progressData = reactive([
@@ -55,7 +73,11 @@ const progressData = reactive([
     disabled: false,
     valid: false,
     step: 0,
-    fields: [],
+    fields: [
+      "businessInformation.businessType",
+      "businessInformation.businessName",
+      "businessInformation.clientType",
+    ],
     extraValidations: [],
   },
   {
@@ -91,23 +113,102 @@ const progressData = reactive([
 ]);
 const currentTab = ref(0);
 
-const clientTypeInitialValue = computed(() => clientTypesList[0]);
+const isLast = computed(() => currentTab.value === progressData.length - 1);
+const isFirst = computed(() => currentTab.value === 0);
 
-const updateType = (value: CodeNameType | undefined) => {
-  if (value) {
-    formData.value.type = value.code;
+const checkStepValidity = (stepNumber: number): boolean => {
+  progressData.forEach((step: any) => {
+    if (step.step <= stepNumber) {
+      step.valid = validate(step.fields, formData.value, true);
+    }
+  });
+
+  if (!progressData[stepNumber].valid) {
+    // Stop here so the step basic validation messages don't get cleared.
+    return false;
+  }
+
+  if (
+    !progressData[stepNumber].extraValidations.every((validation: any) =>
+      runValidation(validation.field, formData.value, validation.validation, true, true),
+    )
+  )
+    return false;
+
+  return progressData[stepNumber].valid;
+};
+
+const validateStep = (valid: boolean) => {
+  progressData[currentTab.value].valid = valid;
+  if (valid) {
+    const nextStep = progressData.find((step: any) => step.step === currentTab.value + 1);
+    if (nextStep) nextStep.disabled = false;
   }
 };
 
-const validation = reactive<Record<string, boolean>>({ });
+const onCancel = () => {
+  router.push("/");
+};
 
+const onNext = () => {
+  if (currentTab.value + 1 < progressData.length) {
+    if (checkStepValidity(currentTab.value)) {
+      currentTab.value++;
+      progressData[currentTab.value - 1].kind = "complete";
+      progressData[currentTab.value].kind = "current";
+    }
+  }
+};
+
+const onBack = () => {
+  if (currentTab.value - 1 >= 0) {
+    currentTab.value--;
+    progressData[currentTab.value + 1].kind = "incomplete";
+    progressData[currentTab.value].kind = "current";
+  }
+};
+
+const clientType = ref<CodeNameType>();
+
+const updateClientType = (value: CodeNameType | undefined) => {
+  if (value) {
+    clientType.value = value;
+
+    // reset formData
+    formData.value = newFormDataDto();
+
+    switch (value.code) {
+      case "I": {
+        Object.assign(formData.value.businessInformation, {
+          businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
+          legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
+          clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.I),
+          goodStandingInd: "Y",
+        });
+
+        // Initialize the "primary" contact - the individual him/herself
+        const applicantContact: Contact = {
+          ...emptyContact,
+          locationNames: [defaultLocation],
+          contactType: { value: "BL", text: "Billing" },
+        };
+        formData.value.location.contacts[0] = applicantContact;
+        break;
+      }
+      default:
+        break;
+    }
+  } else {
+    clientType.value = null;
+  }
+};
+
+const validation = reactive<Record<string, boolean>>({});
 </script>
 
 <template>
-  
   <div id="screen" class="submission-content">
     <div class="form-header" role="header">
-      
       <div class="form-header-title">
         <h1>
           <div data-scroll="top" class="header-offset"></div>
@@ -116,18 +217,19 @@ const validation = reactive<Record<string, boolean>>({ });
       </div>
 
       <div class="sr-only" role="status">
-        Current step: {{ progressData[currentTab].title }}. Step {{ currentTab + 1 }} of {{ progressData.length }}.
+        Current step: {{ progressData[currentTab].title }}. Step {{ currentTab + 1 }} of
+        {{ progressData.length }}.
       </div>
 
       <cds-progress-indicator space-equally :vertical="isSmallScreen" aria-label="Form steps">
-        <cds-progress-step 
+        <cds-progress-step
           v-for="item in progressData"
           ref="cdsProgressStepArray"
           :key="item.step"
           :label="item.title"
           :secondary-label="item.subtitle"
           :state="item.kind"
-          :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"          
+          :class="item.step <= currentTab ? 'step-active' : 'step-inactive'"
           :disabled="item.disabled"
           v-shadow="3"
           :aria-current="item.step === currentTab ? 'step' : 'false'"
@@ -136,33 +238,89 @@ const validation = reactive<Record<string, boolean>>({ });
 
       <div class="hide-when-less-than-two-children">
         <div data-scroll="top-notification" class="header-offset"></div>
-        
-      </div>
-
-    </div>
-
-    <div class="form-steps" role="main">
-      <div class="form-steps-section">
-        <h2 data-focus="focus-0" tabindex="-1">
-          <div data-scroll="step-title" class="header-offset"></div>
-          Client information
-        </h2>
-        <dropdown-input-component
-          id="clientType"
-          label="Client type"
-          :initial-value="clientTypeInitialValue?.name"
-          required
-          required-label
-          :model-value="clientTypesList"
-          :enabled="true"
-          tip=""
-          :validations="[]"
-          @update:selected-value="updateType($event)"
-          @empty="validation.type = !$event"
-        />
       </div>
     </div>
 
+    <div class="form-steps-staff" role="main">
+      <div v-if="currentTab == 0" class="form-steps-01">
+        <div class="form-steps-section">
+          <h2 data-focus="focus-0" tabindex="-1">
+            <div data-scroll="step-title" class="header-offset"></div>
+            Client information
+          </h2>
+          <dropdown-input-component
+            id="clientType"
+            label="Client type"
+            :initial-value="clientType?.name"
+            required
+            required-label
+            :model-value="clientTypesList"
+            :enabled="true"
+            tip=""
+            :validations="[]"
+            @update:selected-value="updateClientType($event)"
+            @empty="validation.type = !$event"
+          />
+          <individual-client-information-wizard-step
+            v-if="clientType?.code === 'I'"
+            :active="currentTab == 0"
+            :data="formData"
+            @valid="validateStep"
+          />
+        </div>
+      </div>
+      <div class="form-footer" role="footer">
+        <div class="form-footer-group">
+          <div class="form-footer-group-next">
+            <span class="body-compact-01" v-if="!isLast && !progressData[currentTab].valid">
+              All fields must be filled out correctly to enable the "Next" button below
+            </span>
+            <div class="form-footer-group-buttons">
+              <cds-button
+                v-if="isFirst"
+                kind="secondary"
+                size="lg"
+                :disabled="!isFirst"
+                v-on:click="onCancel"
+                data-test="wizard-cancel-button"
+              >
+                <span>Cancel</span>
+              </cds-button>
+
+              <cds-button
+                v-if="!isFirst"
+                kind="secondary"
+                size="lg"
+                :disabled="isFirst"
+                v-on:click="onBack"
+                data-test="wizard-back-button"
+              >
+                <span>Back</span>
+              </cds-button>
+
+              <cds-tooltip v-if="!isLast">
+                <cds-button
+                  id="nextBtn"
+                  kind="primary"
+                  size="lg"
+                  :disabled="progressData[currentTab].valid === false"
+                  v-on:click="onNext"
+                  data-test="wizard-next-button"
+                >
+                  <span>Next</span>
+                  <ArrowRight16 slot="icon" />
+                </cds-button>
+                <cds-tooltip-content
+                  v-if="!isTouchScreen"
+                  v-show="progressData[currentTab].valid === false"
+                >
+                  All fields must be filled in correctly.
+                </cds-tooltip-content>
+              </cds-tooltip>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
 </template>

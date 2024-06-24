@@ -67,6 +67,20 @@ export enum ClientTypeEnum {
   USP,
 }
 
+export enum IdentificationTypeEnum {
+  BRTH,
+  CDDL,
+  PASS,
+  CITZ,
+  FNID,
+  USDL,
+  OTHR,
+}
+
+export interface IdentificationType extends CodeNameType {
+  code: keyof typeof IdentificationTypeEnum;
+}
+
 export interface ProgressData {
   kind: string;
   title: string;

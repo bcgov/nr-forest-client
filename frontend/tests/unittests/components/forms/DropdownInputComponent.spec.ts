@@ -192,6 +192,29 @@ describe("DropdownInputComponent", () => {
     expect(wrapper.emitted("error")![0][0]).toBe(undefined);
   });
 
+  it.each([[""], [undefined], [null]])(
+    "should clear the selected value when initialValue changes to a falsy value (%s)",
+    async (value) => {
+      const wrapper = mount(DropdownInputComponent, {
+        props: {
+          id: "test",
+          label: "test",
+          tip: "",
+          modelValue: [
+            { code: "A", name: "Value A" },
+            { code: "B", name: "Value B" },
+          ],
+          initialValue: "Value A",
+          validations,
+        },
+      });
+
+      await wrapper.setProps({ initialValue: value });
+
+      expect(wrapper.get("#test").element.value).toEqual("");
+    },
+  );
+
   it("should validate and emit no error if required", async () => {
     const wrapper = mount(DropdownInputComponent, {
       props: {

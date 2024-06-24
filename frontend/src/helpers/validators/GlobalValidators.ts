@@ -9,12 +9,13 @@ import type { ValidationMessageType } from "@/dto/CommonTypesDto";
 // Defines the used regular expressions
 // @sonar-ignore-next-line
 const emailRegex: RegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-const specialCharacters: RegExp = /^[a-zA-Z0-9\s]+$/;
+const specialCharacters: RegExp = /^[a-zA-Z0-9\s]*$/;
+const idCharacters: RegExp = /^[A-Z0-9]*$/;
 const e164Regex: RegExp = /^((\+?[1-9]\d{1,14})|(\(\d{3}\) \d{3}-\d{4}))$/;
 const canadianPostalCodeRegex: RegExp = /^(([A-Z]\d){3})$/i;
 const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/;
-const nameRegex: RegExp = /^[a-zA-Z0-9\s'-]+$/;
-const ascii: RegExp = /^[\x20-\x7e]+$/;
+const nameRegex: RegExp = /^[a-zA-Z0-9\s'-]*$/;
+const ascii: RegExp = /^[\x20-\x7e]*$/;
 
 const notificationBus = useEventBus<ValidationMessageType | undefined>(
   "error-notification"
@@ -158,8 +159,7 @@ export const isMaxSize =
   (message: string = "This field must be smaller") =>
   (maxSize: number) => {
     return (value: string): string => {
-      if (isNotEmpty(message)(value) === "" && value.length <= maxSize)
-        return "";
+      if (!value || value.length <= maxSize) return "";
       return message;
     };
   };
@@ -263,6 +263,13 @@ export const isNoSpecialCharacters =
   (message: string = "No special characters allowed") =>
   (value: string): string => {
     if (specialCharacters.test(value)) return "";
+    return message;
+  };
+
+export const isIdCharacters =
+  (message: string = "This field can only contain: A-Z or 0-9") =>
+  (value: string): string => {
+    if (idCharacters.test(value)) return "";
     return message;
   };
 
@@ -401,6 +408,34 @@ export const isDateInThePast = (message: string) => (value: string) => {
   }
   return "";
 };
+
+export const isRegex =
+  (
+    regex: RegExp,
+    message: string = `This field must conform to the following regular expression: ${regex}`,
+  ) =>
+  (value: string): string => {
+    if (regex.test(value)) return "";
+    return message;
+  };
+
+/**
+ * Allows to extract a portion of the value to be validated and apply the validation only to this portion.
+ * @param selector - a function that returns the portion of the string you want to validate
+ * @param selectorErrorMessage - message returned only in case of an error thrown by the selector
+ * @returns A function that accepts a validator and applies it to the portion of the string obtained by applying the selector.
+ */
+export const validateSelection =
+  (selector: (value: string) => string, selectorErrorMessage = "Value could not be validated") =>
+  (validator: (value: string) => string) =>
+  (value: string): string => {
+    try {
+      const selected = selector(value);
+      return validator(selected);
+    } catch (error) {
+      return selectorErrorMessage;
+    }
+  };
 
 /**
  * Retrieves the value of a field in an object or array based on a given path.
@@ -568,6 +603,8 @@ export const formFieldValidations: Record<
 export const getValidations = (key: string): ((value: string) => string)[] =>
   formFieldValidations[key] || [];
 
+const defaultGetValidations = getValidations;
+
 const arrayIndexGlobalRegex = /\.\*\./g;
 const targetGlobalRegex = /\$\./g;
 
@@ -575,8 +612,9 @@ const targetGlobalRegex = /\$\./g;
 export const validate = (
   keys: string[],
   target: any,
-  notify: boolean = false
-): boolean => {  
+  notify: boolean = false,
+  getValidations = defaultGetValidations,
+): boolean => {
   // For every received key we get the validations and run them
   return keys.every((key) => {
     // First we get all validators for that field
