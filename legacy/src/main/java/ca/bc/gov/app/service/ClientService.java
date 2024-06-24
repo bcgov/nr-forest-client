@@ -3,7 +3,6 @@ package ca.bc.gov.app.service;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
-import ca.bc.gov.app.repository.ForestClientRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +19,6 @@ import reactor.core.publisher.Mono;
 public class ClientService {
 
   private final R2dbcEntityOperations entityTemplate;
-  private final ForestClientRepository repository;
-  private final ClientSearchService searchService;
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> mapper;
 
   public Mono<String> saveAndGetIndex(ForestClientDto dto) {
@@ -38,7 +35,6 @@ public class ClientService {
                 )
             )
             .map(mapper::toEntity)
-            .filterWhen(this::locateClient)
             .flatMap(entity -> getNextClientNumber().map(entity::withClientNumber))
             .flatMap(entity -> entityTemplate
                 .insert(ForestClientEntity.class)
@@ -64,57 +60,7 @@ public class ClientService {
                     )
             );
   }
-
-  private Mono<Boolean> locateClient(
-      ForestClientEntity entity
-  ) {
-
-    log.info("Searching forest client {}", entity.getName());
-
-    if (
-        entity
-            .getClientTypeCode()
-            .equalsIgnoreCase("I")
-    ) {
-      return
-          searchService
-              .findByIndividual(
-                  entity.getLegalFirstName(),
-                  entity.getClientName(),
-                  entity.getBirthdate().toLocalDate(),
-                  null,
-                  false
-              )
-              .map(client -> false) // means you can't create it
-              .defaultIfEmpty(true)
-              .doOnNext(
-                  tag -> log.info("Individual {} forest client missing? {}", entity.getName(), tag))
-              .last();
-    }
-
-    return
-        repository
-            .findClientByIncorporationOrName(
-                entity.getClientName().toUpperCase(),
-                String.join(
-                    StringUtils.EMPTY,
-                    entity.getRegistryCompanyTypeCode().toUpperCase(),
-                    entity.getCorpRegnNmbr()
-                )
-            )
-            .map(client -> false) // means you can't create it
-            .defaultIfEmpty(true)
-            .doOnNext(tag ->
-                log.info(
-                    "Forest client {} with type {} missing? {}",
-                    entity.getName(),
-                    entity.getClientTypeCode(),
-                    tag
-                )
-            )
-            .last();
-  }
-
+  
   private Mono<String> getNextClientNumber() {
     return
         entityTemplate
