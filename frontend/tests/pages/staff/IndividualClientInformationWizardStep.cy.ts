@@ -78,6 +78,25 @@ describe("<individual-client-information-wizard-step />", () => {
     it("displays the Issuing province field with option 'British Columbia' selected by default", () => {
       cy.get("#identificationProvince").should("be.visible").and("have.value", "British Columbia");
     });
+
+    describe('and ID type is changed to "US driver\'s licence"', () => {
+      beforeEach(() => {
+        cy.get("#identificationType")
+          .should("be.visible")
+          .and("have.value", "Canadian driver's licence") // initial value
+          .find("[part='trigger-button']")
+          .click();
+
+        cy.get("#identificationType")
+          .find('cds-combo-box-item[data-id="USDL"]')
+          .should("be.visible")
+          .and("have.value", "US driver's licence") // new value
+          .click();
+      });
+      it("should clear the value on identificationProvince", () => {
+        cy.get("#identificationProvince").should("be.visible").and("have.value", "");
+      });
+    });
   });
 
   describe('when ID type is "US driver\'s licence"', () => {
@@ -293,7 +312,7 @@ describe("<individual-client-information-wizard-step />", () => {
     });
   });
 
-  describe("when all required fields are properly filled", () => {
+  describe("when all required fields are properly filled in", () => {
     beforeEach(() => {
       mount();
 
@@ -318,11 +337,11 @@ describe("<individual-client-information-wizard-step />", () => {
       cy.get("@vueWrapper").should((vueWrapper) => {
         const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
 
-        // The last valid event was emitted with true.
+        // Last event (in)"valid" emitted
         expect(lastValid[0]).to.equal(true);
       });
     });
-    describe("when the middle name is also filled", () => {
+    describe("when the middle name is also filled in", () => {
       beforeEach(() => {
         cy.get("#middleName").shadow().find("input").type("Michael");
 
@@ -333,7 +352,7 @@ describe("<individual-client-information-wizard-step />", () => {
         cy.get("@vueWrapper").should((vueWrapper) => {
           const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
 
-          // The last valid event was emitted with true.
+          // Last event (in)"valid" emitted
           expect(lastValid[0]).to.equal(true);
         });
 
@@ -345,7 +364,7 @@ describe("<individual-client-information-wizard-step />", () => {
         cy.get("@vueWrapper").should((vueWrapper) => {
           const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
 
-          // The last valid event was emitted with true.
+          // Last event (in)"valid" emitted
           expect(lastValid[0]).to.equal(true);
         });
       });
@@ -361,7 +380,7 @@ describe("<individual-client-information-wizard-step />", () => {
         cy.get("@vueWrapper").should((vueWrapper) => {
           const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
 
-          // The last valid event was emitted with false.
+          // Last event (in)"valid" emitted
           expect(lastValid[0]).to.equal(false);
         });
       });
@@ -373,8 +392,75 @@ describe("<individual-client-information-wizard-step />", () => {
           cy.get("@vueWrapper").should((vueWrapper) => {
             const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
 
-            // The last valid event was emitted with true.
+            // Last event (in)"valid" emitted
             expect(lastValid[0]).to.equal(true);
+          });
+        });
+      });
+    });
+
+    describe('when ID type is "Canadian driver\'s licence"', () => {
+      beforeEach(() => {
+        cy.get("#identificationType").should("be.visible").find("[part='trigger-button']").click();
+
+        cy.get("#identificationType")
+          .find('cds-combo-box-item[data-id="CDDL"]')
+          .should("be.visible")
+          .click();
+      });
+
+      describe("and the Issuing province gets cleared", () => {
+        beforeEach(() => {
+          cy.get("#identificationProvince")
+            .should("be.visible")
+            .and("have.value", "British Columbia")
+            .find("#selection-button") // The X clear button
+            .click();
+        });
+
+        it("should emit valid false", () => {
+          cy.get("@vueWrapper").should((vueWrapper) => {
+            const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
+
+            // Last event (in)"valid" emitted
+            expect(lastValid[0]).to.equal(false);
+          });
+        });
+
+        describe("and the ID type gets changed to one that does not display the Issuing province/state", () => {
+          beforeEach(() => {
+            cy.get("#identificationType")
+              .should("be.visible")
+              .and("have.value", "Canadian driver's licence") // initial value
+              .find("[part='trigger-button']")
+              .click();
+
+            cy.get("#identificationType")
+              .find('cds-combo-box-item[data-id="PASS"]')
+              .and("have.value", "Canadian passport") // new value
+              .should("be.visible")
+              .click();
+          });
+          describe("and the ID number is properly filled in", () => {
+            beforeEach(() => {
+              cy.get("#clientIdentification").shadow().find("input").type("12345678");
+
+              cy.get("#clientIdentification").shadow().find("input").blur();
+              cy.wait(1);
+            });
+            it("should emit valid true", () => {
+              /*
+              This test makes sure the impact of clearing the province (and thus making the
+              province field invalid) does not matter anymore after we get to a situation where the
+              province field is not used.
+              */
+              cy.get("@vueWrapper").should((vueWrapper) => {
+                const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
+
+                // Last event (in)"valid" emitted
+                expect(lastValid[0]).to.equal(true);
+              });
+            });
           });
         });
       });
