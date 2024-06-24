@@ -1,5 +1,6 @@
 package ca.bc.gov.app.controller;
 
+import ca.bc.gov.app.exception.DataMatchException;
 import ca.bc.gov.app.exception.ValidationException;
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
@@ -116,6 +117,13 @@ private Mono<ServerResponse> renderErrorResponse(
         .header("Reason", validationException.getReason())
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromValue(validationException.getErrors()));
+  }
+
+  if(exception instanceof DataMatchException matchException){
+    return ServerResponse
+        .status(matchException.getStatusCode())
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(matchException.getMatches()));
   }
 
   // Get the error message

@@ -1,0 +1,221 @@
+{
+  "mappings": [
+    {
+      "name": "Submission Match Stub",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST"        
+      },
+      "response": {
+        "status": 204,
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for Individuals: Fuzzy Name",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "I"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.firstName",
+              "equalTo": "Jhonny"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Baxter"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.birthdate",
+              "equalTo": "1970-01-01"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001,00000009\", \"fuzzy\"=true}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for Individuals: Full Name",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "I"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.firstName",
+              "equalTo": "Jason"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Baxter"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.birthdate",
+              "equalTo": "1970-01-01"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.idValue",
+              "equalTo": "123456"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\"=false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for Individuals: Full Identification",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "I"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.idType",
+              "equalTo": "BCDL"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.idValue",
+              "equalTo": "123456"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"businessInformation.identification\", \"match\":\"00000001\", \"fuzzy\"=false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for Individuals: Full Identification",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "I"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.firstName",
+              "equalTo": "James"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Baxter"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.birthdate",
+              "equalTo": "1970-01-01"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.idType",
+              "equalTo": "BCDL"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.idValue",
+              "equalTo": "123456"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\"=false},{\"field\":\"businessInformation.identification\", \"match\":\"00000001\", \"fuzzy\"=false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }    
+  ]
+}
