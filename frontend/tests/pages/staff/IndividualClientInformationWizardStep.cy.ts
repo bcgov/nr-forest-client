@@ -143,6 +143,7 @@ describe("<individual-client-information-wizard-step />", () => {
           cy.get("#clientIdentification").shadow().find("input").type(valueNumeric13);
 
           cy.get("#clientIdentification").shadow().find("input").blur();
+          cy.wait(1);
 
           isValid();
         });
@@ -150,6 +151,7 @@ describe("<individual-client-information-wizard-step />", () => {
           cy.get("#clientIdentification").shadow().find("input").type(valueAlphanumeric13);
 
           cy.get("#clientIdentification").shadow().find("input").blur();
+          cy.wait(1);
 
           isInvalid();
         });
@@ -171,6 +173,7 @@ describe("<individual-client-information-wizard-step />", () => {
           cy.get("#clientIdentification").shadow().find("input").type(valueNumeric13);
 
           cy.get("#clientIdentification").shadow().find("input").blur();
+          cy.wait(1);
 
           isInvalid();
         });
@@ -178,6 +181,7 @@ describe("<individual-client-information-wizard-step />", () => {
           cy.get("#clientIdentification").shadow().find("input").type(valueAlphanumeric8);
 
           cy.get("#clientIdentification").shadow().find("input").blur();
+          cy.wait(1);
 
           isValid();
         });
@@ -200,6 +204,7 @@ describe("<individual-client-information-wizard-step />", () => {
             cy.get("#clientIdentification").shadow().find("input").type(valueNumeric13);
 
             cy.get("#clientIdentification").shadow().find("input").blur();
+            cy.wait(1);
 
             isInvalid();
           });
@@ -207,6 +212,7 @@ describe("<individual-client-information-wizard-step />", () => {
             cy.get("#clientIdentification").shadow().find("input").type(valueAlphanumeric8);
 
             cy.get("#clientIdentification").shadow().find("input").blur();
+            cy.wait(1);
 
             isInvalid();
           });
@@ -214,6 +220,7 @@ describe("<individual-client-information-wizard-step />", () => {
             cy.get("#clientIdentification").shadow().find("input").type(valueNumeric8);
 
             cy.get("#clientIdentification").shadow().find("input").blur();
+            cy.wait(1);
 
             isValid();
           });
@@ -235,6 +242,7 @@ describe("<individual-client-information-wizard-step />", () => {
             cy.get("#clientIdentification").shadow().find("input").type("12345678901234567890");
 
             cy.get("#clientIdentification").shadow().find("input").blur();
+            cy.wait(1);
 
             isValid();
           });
@@ -242,6 +250,7 @@ describe("<individual-client-information-wizard-step />", () => {
             cy.get("#clientIdentification").shadow().find("input").type(valueAlphanumeric8);
 
             cy.get("#clientIdentification").shadow().find("input").blur();
+            cy.wait(1);
 
             isValid();
           });
@@ -249,6 +258,7 @@ describe("<individual-client-information-wizard-step />", () => {
             cy.get("#clientIdentification").shadow().find("input").type("123456789012345678901");
 
             cy.get("#clientIdentification").shadow().find("input").blur();
+            cy.wait(1);
 
             isInvalid();
           });
@@ -302,6 +312,7 @@ describe("<individual-client-information-wizard-step />", () => {
       cy.get("#clientIdentification").shadow().find("input").type("1234567890123");
 
       cy.get("#clientIdentification").shadow().find("input").blur();
+      cy.wait(1);
     });
     it("emits valid true", () => {
       cy.get("@vueWrapper").should((vueWrapper) => {
@@ -316,6 +327,7 @@ describe("<individual-client-information-wizard-step />", () => {
         cy.get("#middleName").shadow().find("input").type("Michael");
 
         cy.get("#middleName").shadow().find("input").blur();
+        cy.wait(1);
       });
       it("should not emit valid false even if the middle name gets cleared", () => {
         cy.get("@vueWrapper").should((vueWrapper) => {
@@ -328,6 +340,7 @@ describe("<individual-client-information-wizard-step />", () => {
         cy.get("#middleName").shadow().find("input").clear();
 
         cy.get("#middleName").shadow().find("input").blur();
+        cy.wait(1);
 
         cy.get("@vueWrapper").should((vueWrapper) => {
           const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
@@ -342,13 +355,14 @@ describe("<individual-client-information-wizard-step />", () => {
         cy.get("#middleName").shadow().find("input").type("é");
 
         cy.get("#middleName").shadow().find("input").blur();
+        cy.wait(1);
 
         // Asserting the step is currently invalid
         cy.get("@vueWrapper").should((vueWrapper) => {
           const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
 
-          // The last valid event was emitted with true.
-          expect(lastValid[0]).to.equal(true);
+          // The last valid event was emitted with false.
+          expect(lastValid[0]).to.equal(false);
         });
       });
       describe("and the middle name gets cleared", () => {
