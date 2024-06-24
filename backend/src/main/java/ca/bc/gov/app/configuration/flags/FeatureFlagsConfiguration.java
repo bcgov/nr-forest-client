@@ -1,6 +1,7 @@
 package ca.bc.gov.app.configuration.flags;
 
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
+import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import java.util.function.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,7 +15,6 @@ public class FeatureFlagsConfiguration {
   @Bean
   @ConditionalOnProperty(name = "features.bcregistry.multiaddress", havingValue = "false")
   public Predicate<BcRegistryAddressDto> isMultiAddressDisabled() {
-    log.info("Feature :: Multi address is disabled");
     return addressDto -> addressDto.addressType().equalsIgnoreCase("mailing");
   }
 
@@ -23,5 +23,18 @@ public class FeatureFlagsConfiguration {
   public Predicate<BcRegistryAddressDto> isMultiAddressEnabled() {
     return addressDto -> true;
   }
+
+  @Bean
+  @ConditionalOnProperty(name = "features.staff.match", havingValue = "true")
+  public Predicate<ClientSubmissionDto> isMatcherEnabled() {
+    return dto -> true;
+  }
+
+  @Bean
+  @ConditionalOnProperty(name = "features.staff.match", matchIfMissing = true)
+  public Predicate<ClientSubmissionDto> isMatcherDisabled() {
+    return dto -> false;
+  }
+
 
 }

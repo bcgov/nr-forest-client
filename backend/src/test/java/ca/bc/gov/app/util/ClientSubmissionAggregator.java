@@ -43,8 +43,8 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     String birthdateAsString = accessor.getString(8);
     LocalDate birthdate =
         StringUtils.isNotBlank(birthdateAsString)
-         ? LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(birthdateAsString))
-        : null;
+            ? LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(birthdateAsString))
+            : null;
     String district = accessor.getString(9);
     String workSafeBcNumber = accessor.getString(33);
     String doingBusinessAs = accessor.getString(34);
@@ -119,19 +119,19 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     String contactNotes = accessor.getString(31);
 
     return new ClientAddressDto(
-        streetAddress, 
+        streetAddress,
         complementaryAddressOne,
         complementaryAddressTwo,
         new ClientValueTextDto(country, country),
-        new ClientValueTextDto(province, ""), 
-        city, 
-        postalCode, 
+        new ClientValueTextDto(province, ""),
+        city,
+        postalCode,
         businessPhoneNumber,
         secondaryPhoneNumber,
         faxNumber,
         emailAddress,
         contactNotes,
-        0, 
+        0,
         "test");
   }
 

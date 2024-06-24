@@ -4,16 +4,18 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import lombok.With;
 import org.apache.commons.lang3.StringUtils;
 
+@With
 public record ClientBusinessInformationDto(
-    String registrationNumber, 
+    String registrationNumber,
     String businessName,
-    String businessType, 
-    String clientType, 
-    String goodStandingInd, 
+    String businessType,
+    String clientType,
+    String goodStandingInd,
     String legalType,
-    LocalDate birthdate, 
+    LocalDate birthdate,
     String district,
     String workSafeBcNumber,
     String doingBusinessAs,
@@ -26,6 +28,7 @@ public record ClientBusinessInformationDto(
     String clientIdentification,
     String identificationCountry,
     String identificationProvince) {
+
   /**
    * Returns a map containing the description of the client's business information.
    *
@@ -48,10 +51,45 @@ public record ClientBusinessInformationDto(
     descMap.put("middleName", StringUtils.defaultString(middleName));
     descMap.put("lastName", StringUtils.defaultString(lastName));
     descMap.put("notes", StringUtils.defaultString(notes));
-    descMap.put("identificationType", StringUtils.defaultString(identificationType));
+    descMap.put("identificationType", StringUtils.defaultString(idType()));
     descMap.put("clientIdentification", StringUtils.defaultString(clientIdentification));
     descMap.put("identificationCountry", StringUtils.defaultString(identificationCountry));
     descMap.put("identificationProvince", StringUtils.defaultString(identificationProvince));
     return descMap;
   }
+
+  /**
+   * This method is used to determine the identification type of the client.
+   * <p>
+   * It first checks if both the identificationType and clientIdentification fields are not blank.
+   * If they are not, it then checks if the identificationType is either CDDL or USDL and if the
+   * identificationProvince is not blank. If these conditions are met, it returns the
+   * identificationProvince concatenated with "DL". If these conditions are not met, it simply
+   * returns the identificationType.
+   * <p>
+   * If either the identificationType or clientIdentification fields are blank, it returns null.
+   *
+   * @return The identification type of the client, or null if the necessary fields are blank.
+   */
+  public String idType() {
+
+    if (StringUtils.isNotBlank(identificationType) && StringUtils.isNotBlank(
+        clientIdentification)) {
+
+      if (
+          (
+              IdentificationTypeEnum.CDDL.equals(IdentificationTypeEnum.valueOf(identificationType))
+                  &&
+                  IdentificationTypeEnum.USDL.equals(
+                      IdentificationTypeEnum.valueOf(identificationType))
+          )
+              && StringUtils.isNotBlank(identificationProvince)) {
+        return identificationProvince + "DL";
+      }
+
+      return identificationType;
+    }
+    return null;
+  }
+
 }
