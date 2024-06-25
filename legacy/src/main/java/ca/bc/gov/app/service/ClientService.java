@@ -3,7 +3,6 @@ package ca.bc.gov.app.service;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
-import ca.bc.gov.app.repository.ForestClientRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +19,9 @@ import reactor.core.publisher.Mono;
 public class ClientService {
 
   private final R2dbcEntityOperations entityTemplate;
-  private final ForestClientRepository repository;
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> mapper;
 
   public Mono<String> saveAndGetIndex(ForestClientDto dto) {
-
-    log.info("Saving forest client {}", dto);
-
     return
         Mono
             .just(dto)
@@ -35,13 +30,11 @@ public class ClientService {
             )
             .doOnNext(forestClientDto ->
                 log.info(
-                    "Saving forest client {} {}",
-                    forestClientDto.clientNumber(),
+                    "Saving forest client {}",
                     forestClientDto.name()
                 )
             )
             .map(mapper::toEntity)
-            .filterWhen(this::locateClient)
             .flatMap(entity -> getNextClientNumber().map(entity::withClientNumber))
             .flatMap(entity -> entityTemplate
                 .insert(ForestClientEntity.class)
@@ -62,50 +55,12 @@ public class ClientService {
                             dto.clientNumber()
                         )
                     )
+                    .doOnNext(
+                        clientNumber -> log.info("Client with number {} already exists", clientNumber)
+                    )
             );
   }
-
-  private Mono<Boolean> locateClient(
-      ForestClientEntity entity
-  ) {
-
-    log.info("Locating forest client {}", entity);
-
-    if (
-        entity
-            .getClientTypeCode()
-            .equalsIgnoreCase("I")
-    ) {
-      return
-          repository
-              .findByIndividual(
-                  entity.getLegalFirstName(),
-                  entity.getClientName(),
-                  entity.getBirthdate()
-              )
-              .map(client -> false) // means you can't create it
-              .defaultIfEmpty(true)
-              .doOnNext(tag -> log.info("No individual client found {}", tag))
-              .last();
-    }
-
-    return
-        repository
-            .findClientByIncorporationOrName(
-                entity.getClientName().toUpperCase(),
-                String.join(
-                    StringUtils.EMPTY,
-                    entity.getRegistryCompanyTypeCode().toUpperCase(),
-                    entity.getCorpRegnNmbr()
-                )
-            )
-            .map(client -> false) // means you can't create it
-            .defaultIfEmpty(true)
-            .doOnNext(tag -> log.info("No client with type {} found {}", entity
-                .getClientTypeCode(), tag))
-            .last();
-  }
-
+  
   private Mono<String> getNextClientNumber() {
     return
         entityTemplate
@@ -124,7 +79,8 @@ public class ClientService {
                     .sql("SELECT client_number FROM max_client_nmbr")
                     .map((row, rowMetadata) -> row.get("client_number", String.class))
                     .first()
-            );
+            )
+            .doOnNext(clientNumber -> log.info("Next client number is {}", clientNumber));
   }
 
 }

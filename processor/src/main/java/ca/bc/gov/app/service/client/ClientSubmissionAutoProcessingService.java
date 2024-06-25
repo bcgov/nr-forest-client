@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -58,6 +59,8 @@ public class ClientSubmissionAutoProcessingService {
             .findBySubmissionId(submissionId)
             .doOnNext(entity -> entity.setProcessed(true))
             .doOnNext(entity -> entity.setUpdatedAt(LocalDateTime.now()))
+            .doOnNext(entity -> entity.setCreatedBy(StringUtils.isBlank(entity.getCreatedBy())
+                ? ApplicationConstant.PROCESSOR_USER_NAME : entity.getCreatedBy()))
             .flatMap(submissionMatchDetailRepository::save)
             .thenReturn(submissionId);
   }
@@ -83,16 +86,16 @@ public class ClientSubmissionAutoProcessingService {
   }
 
   /**
- * This method is used to load matching information for a given submission.
- * It retrieves the submission details from the repository using the submission ID from the message parameters.
- * If matching information is found, it is added to the message parameters under the key 'MATCHING_INFO'.
- * If no matching information is found, the original message is returned as is.
- *
- * @param message A MessagingWrapper object that contains the submission ID in its parameters.
- * @return A Mono of MessagingWrapper. If matching information is found, the returned MessagingWrapper
- *         will have the matching information added to its parameters. If no matching information is found,
- *         the original MessagingWrapper is returned.
- */
+   * This method is used to load matching information for a given submission. It retrieves the
+   * submission details from the repository using the submission ID from the message parameters. If
+   * matching information is found, it is added to the message parameters under the key
+   * 'MATCHING_INFO'. If no matching information is found, the original message is returned as is.
+   *
+   * @param message A MessagingWrapper object that contains the submission ID in its parameters.
+   * @return A Mono of MessagingWrapper. If matching information is found, the returned
+   * MessagingWrapper will have the matching information added to its parameters. If no matching
+   * information is found, the original MessagingWrapper is returned.
+   */
   public <T> Mono<MessagingWrapper<T>> loadMatchingInfo(MessagingWrapper<T> message) {
     return
         submissionMatchDetailRepository

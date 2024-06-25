@@ -105,7 +105,7 @@ const comboBoxMountTime = ref<[number]>([Date.now()]);
 
 //Watch for changes on the input
 watch([selectedValue], () => {
-  if (selectedValue.value === "") {
+  if (!selectedValue.value) {
     comboBoxMountTime.value = [Date.now()];
   }
   const reference = selectedValue.value

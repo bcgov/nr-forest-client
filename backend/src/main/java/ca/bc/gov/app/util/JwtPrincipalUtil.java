@@ -1,6 +1,5 @@
 package ca.bc.gov.app.util;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -129,8 +128,8 @@ public class JwtPrincipalUtil {
 
   /**
    * Retrieves the last name from the given JwtAuthenticationToken principal. The last name is
-   * extracted from the token attributes under the key "family_name". If the last
-   * name is blank, an empty string is returned.
+   * extracted from the token attributes under the key "family_name". If the last name is blank, an
+   * empty string is returned.
    *
    * @param principal JwtAuthenticationToken object from which the last name is to be extracted.
    * @return The last name or an empty string if the last name is blank.
@@ -139,7 +138,7 @@ public class JwtPrincipalUtil {
     Map<String, String> names = processName(principal);
     return names.get("lastName");
   }
-  
+
   /**
    * Retrieves the first name from the given JwtAuthenticationToken principal. The first name is
    * extracted from the token attributes under the key "given_name". If the first name is blank, the
@@ -165,22 +164,13 @@ public class JwtPrincipalUtil {
     String lastName = String.valueOf(payload.getOrDefault("family_name", StringUtils.EMPTY));
 
     // Determine if special handling for names is required
-    boolean useDisplayName = "bceidbusiness".equals(providerName) || (firstName.isEmpty()
-                                                                                && lastName.isEmpty());
+    boolean useDisplayName = "bceidbusiness".equals(getProvider(principal)) || (firstName.isEmpty()
+        && lastName.isEmpty());
     if (useDisplayName) {
-      String displayName = String.valueOf(payload.get("custom:idp_display_name"));
-      String[] nameParts =
-          displayName.contains(",") ? displayName.split(",") : displayName.split(" ");
-
-      if ("IDIR".equals(providerName) && nameParts.length >= 2) {
-        // For IDIR, split by comma and then by space for the first name as the value will be Lastname, Firsname MIN:XX
-        lastName = nameParts[0].trim();
-        firstName = nameParts[1].split(" ")[0].trim();
-      } else if (nameParts.length >= 2) {
-        // For others, assume space separates the first and last names
-        firstName = nameParts[0].trim();
-        lastName = String.join(" ", Arrays.copyOfRange(nameParts, 1, nameParts.length));
-      }
+      Map<String, String> names = ClientMapper.parseName(
+          String.valueOf(payload.get("custom:idp_display_name")), getProvider(principal));
+      firstName = names.get("firstName");
+      lastName = names.get("lastName");
     }
 
     // Put extracted or computed first and last names into the map
