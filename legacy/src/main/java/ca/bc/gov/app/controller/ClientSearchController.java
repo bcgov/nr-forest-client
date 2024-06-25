@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,10 +38,12 @@ public class ClientSearchController {
   public Flux<ForestClientDto> findIndividuals(
       @RequestParam String firstName,
       @RequestParam String lastName,
-      @RequestParam LocalDate dob
+      @RequestParam LocalDate dob,
+      @RequestParam(required = false) String identification
   ) {
-    log.info("Receiving request to search by individual {} {} {}", firstName, lastName, dob);
-    return service.findByIndividual(firstName, lastName, dob);
+    log.info("Receiving request to search by individual {} {} {} {}", firstName, lastName, dob,
+        identification);
+    return service.findByIndividual(firstName, lastName, dob, identification,true);
   }
 
   @GetMapping("/match")
@@ -58,6 +61,15 @@ public class ClientSearchController {
   ) {
     log.info("Receiving request to search by ID {} and Last Name {}", clientId, lastName);
     return service.findByIdAndLastName(clientId, lastName);
+  }
+
+  @GetMapping("/id/{idType}/{identification}")
+  public Flux<ForestClientDto> findByIdentification(
+      @PathVariable String idType,
+      @PathVariable String identification
+  ) {
+    log.info("Receiving request to search by ID with type {} and value {}", idType, identification);
+    return service.findByIdentification(idType, identification);
   }
 
 }

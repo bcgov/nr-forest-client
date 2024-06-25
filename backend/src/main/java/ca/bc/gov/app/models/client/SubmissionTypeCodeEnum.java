@@ -12,7 +12,8 @@ import lombok.Getter;
 public enum SubmissionTypeCodeEnum {
   SPP("Submission pending processing"),
   RNC("Review new client"),
-  AAC("Auto approved client");
+  AAC("Auto approved client"),
+  SSD("Staff submitted data");
 
   private final String description;
   private static final Map<String, SubmissionTypeCodeEnum>
