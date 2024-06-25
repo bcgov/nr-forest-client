@@ -45,7 +45,7 @@ class ClientLocationControllerIntegrationTest extends
                     "VICTORIA",
                     "BC",
                     "V8V8V8",
-                    "CANADA",
+                    "CA",
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
