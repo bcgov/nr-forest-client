@@ -2,6 +2,8 @@ package ca.bc.gov.app.service;
 
 import static org.springframework.data.relational.core.query.Criteria.where;
 
+import ca.bc.gov.app.ApplicationConstants;
+import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
@@ -129,6 +131,7 @@ public class ClientSearchService {
               dob.atStartOfDay()
           )
           .map(forestClientMapper::toDto)
+          .distinct(ForestClientDto::clientNumber)
           .doOnNext(dto -> log.info("Found individual matching {} {} {} as {} {}",
               firstName, lastName, dob,
               dto.clientNumber(), dto.clientName())
@@ -147,7 +150,7 @@ public class ClientSearchService {
           .ignoreCase(true);
     }
 
-    return searchClientByQuery(queryCriteria,ForestClientEntity.class)
+    return searchClientByQuery(queryCriteria, ForestClientEntity.class)
         .map(forestClientMapper::toDto)
         .doOnNext(
             dto -> log.info("Found individual matching {} {} {} {} as {} {}",
@@ -175,6 +178,7 @@ public class ClientSearchService {
         forestClientRepository
             .matchBy(companyName)
             .map(forestClientMapper::toDto)
+            .distinct(ForestClientDto::clientNumber)
             .doOnNext(dto -> log.info("Found match for {} as {} {}",
                 companyName,
                 dto.clientNumber(), dto.clientName()));
@@ -200,8 +204,9 @@ public class ClientSearchService {
     Criteria queryCriteria = where("clientIdentification").is(clientId).ignoreCase(true)
         .and("clientName").is(lastName).ignoreCase(true);
 
-    return searchClientByQuery(queryCriteria,ForestClientEntity.class)
+    return searchClientByQuery(queryCriteria, ForestClientEntity.class)
         .map(forestClientMapper::toDto)
+        .distinct(ForestClientDto::clientNumber)
         .doOnNext(
             dto -> log.info("Found client with clientId {} and lastName {} as  {} {}",
                 clientId, lastName,
@@ -231,8 +236,9 @@ public class ClientSearchService {
         .and("clientIdentification").is(identification).ignoreCase(true)
         .and("clientTypeCode").is("I").ignoreCase(true);
 
-    return searchClientByQuery(queryCriteria,ForestClientEntity.class)
+    return searchClientByQuery(queryCriteria, ForestClientEntity.class)
         .map(forestClientMapper::toDto)
+        .distinct(ForestClientDto::clientNumber)
         .doOnNext(
             dto -> log.info("Found client with clientId {} {} as  {} {}",
                 idType, identification,
@@ -240,70 +246,150 @@ public class ClientSearchService {
         );
   }
 
+  /**
+   * This method is used to find clients based on their email address. If the parameter is blank, it
+   * returns a MissingRequiredParameterException. If the parameter is valid, it queries the
+   * emailAddress field to match the provided email address. It does that for the location and
+   * contact entities.
+   * @param email The email address of the client to be searched for.
+   * @return A Flux stream of ForestClientDto objects that match the search criteria.
+   */
   public Flux<ForestClientDto> findByGeneralEmail(String email) {
+
+    if (StringUtils.isBlank(email)) {
+      return Flux.error(new MissingRequiredParameterException("email"));
+    }
 
     Criteria queryCriteria = where("emailAddress").is(email).ignoreCase(true);
 
+    Flux<ForestClientDto> locations =
+        searchClientByQuery(queryCriteria, ForestClientLocationEntity.class)
+            .flatMap(
+                entity -> searchClientByQuery(
+                    where(ApplicationConstants.CLIENT_NUMBER_LITERAL).is(entity.getClientNumber()),
+                    ForestClientEntity.class
+                )
+            )
+            .map(forestClientMapper::toDto);
+    Flux<ForestClientDto> contacts =
+        searchClientByQuery(queryCriteria, ForestClientContactEntity.class)
+            .flatMap(
+                entity -> searchClientByQuery(
+                    where(ApplicationConstants.CLIENT_NUMBER_LITERAL).is(entity.getClientNumber()),
+                    ForestClientEntity.class
+                )
+            )
+            .map(forestClientMapper::toDto);
 
-    Flux<ForestClientDto> locations = searchClientByQuery(queryCriteria,ForestClientLocationEntity.class)
-        .flatMap(entity -> searchClientByQuery(where("clientNumber").is(entity.getClientNumber()),ForestClientEntity.class))
-        .map(forestClientMapper::toDto);
-    Flux<ForestClientDto> contacts = searchClientByQuery(queryCriteria, ForestClientContactEntity.class)
-        .flatMap(entity -> searchClientByQuery(where("clientNumber").is(entity.getClientNumber()),ForestClientEntity.class))
-        .map(forestClientMapper::toDto);
-
-
-
-
-    locations
-
-
-
-
-        .switchIfEmpty(contacts)
-        .doOnNext(
-            dto -> log.info("Found client with email {} as  {} {}",
-                email,
-                dto.clientNumber(), dto.clientName())
-        );
-
-
-
-
-
-
-    return null;
+    return
+        Flux
+            .concat(locations, contacts)
+            .distinct(ForestClientDto::clientNumber)
+            .doOnNext(
+                dto -> log.info("Found client with email {} as  {} {}",
+                    email,
+                    dto.clientNumber(), dto.clientName())
+            );
   }
 
-  public Flux<ForestClientDto> findByEntireAddress(
-      String address,
-      String city,
-      String province,
-      String postalCode,
-      String country
-  ){
+  /**
+   * This method is used to find clients based on their phone number. If the parameter is blank, it
+   * returns a MissingRequiredParameterException. If the parameter is valid, it queries the
+   * businessPhone, cellPhone, faxNumber, and homePhone fields to match the provided phone number.
+   * It does that for the location and contact entities.
+   *
+   * @param phoneNumber The phone number of the client to be searched for.
+   * @return A Flux stream of ForestClientDto objects that match the search criteria.
+   */
+  public Flux<ForestClientDto> findByGeneralPhoneNumber(
+      String phoneNumber
+  ) {
+
+    if (StringUtils.isBlank(phoneNumber)) {
+      return Flux.error(new MissingRequiredParameterException("phoneNumber"));
+    }
+
+    Criteria queryCriteria = where("businessPhone").is(phoneNumber)
+        .or("cellPhone").is(phoneNumber)
+        .or("faxNumber").is(phoneNumber);
+
+    Flux<ForestClientDto> locations =
+        searchClientByQuery(
+            queryCriteria.or("homePhone").is(phoneNumber),
+            ForestClientLocationEntity.class
+        )
+            .flatMap(
+                entity -> searchClientByQuery(
+                    where(ApplicationConstants.CLIENT_NUMBER_LITERAL).is(entity.getClientNumber()),
+                    ForestClientEntity.class
+                )
+            )
+            .map(forestClientMapper::toDto);
+
+    Flux<ForestClientDto> contacts =
+        searchClientByQuery(
+            queryCriteria,
+            ForestClientContactEntity.class
+        )
+            .flatMap(
+                entity -> searchClientByQuery(
+                    where(ApplicationConstants.CLIENT_NUMBER_LITERAL).is(entity.getClientNumber()),
+                    ForestClientEntity.class
+                )
+            )
+            .map(forestClientMapper::toDto);
+
+    return
+        Flux
+            .concat(locations, contacts)
+            .distinct(ForestClientDto::clientNumber)
+            .doOnNext(
+                dto -> log.info("Found client with phone number {} as  {} {}",
+                    phoneNumber,
+                    dto.clientNumber(), dto.clientName())
+            );
+  }
+
+  /**
+   * This method is used to find clients based on their address. If the parameter is blank, it
+   * returns a MissingRequiredParameterException. If the parameter is valid, it queries the address,
+   * city, province, postal code, and country fields to match the provided address. It does that for
+   * the location entity.
+   *
+   * @param address The address of the client to be searched for.
+   * @return A Flux stream of ForestClientDto objects that match the search criteria.
+   */
+  public Flux<ForestClientDto> findByEntireAddress(AddressSearchDto address) {
+
+    if (address == null || !address.isValid()) {
+      return Flux.error(new MissingRequiredParameterException("address"));
+    }
 
     Criteria queryCriteria =
-        where("city").is(city).ignoreCase(true)
-            .and("province").is(province).ignoreCase(true)
-            .and("postalCode").is(postalCode).ignoreCase(true)
-            .and("country").is(country).ignoreCase(true)
+        where("city").is(address.city()).ignoreCase(true)
+            .and("province").is(address.province()).ignoreCase(true)
+            .and("postalCode").is(address.postalCode()).ignoreCase(true)
+            .and("country").is(address.country()).ignoreCase(true)
             .and(
-                where("addressOne").is(address).ignoreCase(true)
-                    .or("addressTwo").is(address).ignoreCase(true)
-                    .or("addressThree").is(address).ignoreCase(true)
+                where("addressOne").is(address.address()).ignoreCase(true)
+                    .or("addressTwo").is(address.address()).ignoreCase(true)
+                    .or("addressThree").is(address.address()).ignoreCase(true)
             );
 
-    return searchClientByQuery(queryCriteria,ForestClientLocationEntity.class)
-        .flatMap(entity -> searchClientByQuery(where("clientNumber").is(entity.getClientNumber()),ForestClientEntity.class))
+    return searchClientByQuery(queryCriteria, ForestClientLocationEntity.class)
+        .flatMap(entity ->
+            searchClientByQuery(
+                where(ApplicationConstants.CLIENT_NUMBER_LITERAL).is(entity.getClientNumber()),
+                ForestClientEntity.class
+            )
+        )
         .map(forestClientMapper::toDto)
+        .distinct(ForestClientDto::clientNumber)
         .doOnNext(
-            dto -> log.info("Found client with address {} as  {} {}",
+            dto -> log.info("Found client with address {} as [{}] {}",
                 address,
                 dto.clientNumber(), dto.clientName())
         );
-
-
   }
 
   /**
@@ -316,7 +402,7 @@ public class ClientSearchService {
    * the client number of each retrieved client.
    *
    * @param queryCriteria The criteria used to search for clients.
-   * @param entityClass The class of the entity to be retrieved.
+   * @param entityClass   The class of the entity to be retrieved.
    * @return A Flux stream of the entityClass objects.
    */
   private <T> Flux<T> searchClientByQuery(
@@ -332,14 +418,10 @@ public class ClientSearchService {
         .select(
             searchQuery
                 .with(PageRequest.of(0, 1000))
-                .sort(
-                    Sort
-                        .by(Sort.Order.asc("clientNumber"))
-                        .and(Sort.by(Sort.Order.asc("clientName")))
-                ),
+                .sort(Sort.by(Sort.Order.asc(ApplicationConstants.CLIENT_NUMBER_LITERAL))),
             entityClass
         )
-        .doOnNext(client -> log.info("Found client for query {}",queryCriteria));
+        .doOnNext(client -> log.info("Found client for query {}", queryCriteria));
   }
 
 

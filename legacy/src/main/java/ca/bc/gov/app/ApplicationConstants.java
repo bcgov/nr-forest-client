@@ -51,4 +51,5 @@ public class ApplicationConstants {
   public static final String CLIENT_EXISTS = "client-exists";
   public static final String CLIENT_SUBMITTER_NAME = "client-submitter-name";
 
+  public static final String CLIENT_NUMBER_LITERAL = "clientNumber";
 }
