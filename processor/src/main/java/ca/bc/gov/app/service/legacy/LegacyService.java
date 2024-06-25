@@ -6,11 +6,7 @@ import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
-import ca.bc.gov.app.repository.CountryCodeRepository;
-import jakarta.annotation.PostConstruct;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,29 +21,12 @@ import reactor.core.publisher.Mono;
 public class LegacyService {
 
   private final WebClient legacyApi;
-  private final CountryCodeRepository countryCodeRepository;
-  private final Map<String, String> countryList = new HashMap<>();
-
 
   public LegacyService(
-      @Qualifier("legacyClientApi") WebClient legacyApi,
-      CountryCodeRepository countryCodeRepository
+      @Qualifier("legacyClientApi") WebClient legacyApi
   ) {
     this.legacyApi = legacyApi;
-    this.countryCodeRepository = countryCodeRepository;
   }
-
-  /**
-   * Loads the country list from the database.
-   */
-  @PostConstruct
-  public void setUp() {
-    countryCodeRepository.findAll().doOnNext(
-            countryCode -> countryList.put(countryCode.getCountryCode(), countryCode.getDescription()))
-        .collectList()
-        .subscribe(list -> log.info("Loaded {} country codes", list.size()));
-  }
-
 
   public Mono<String> createLocation(
       SubmissionLocationEntity detail,
@@ -67,7 +46,7 @@ public class LegacyService {
             detail.getCityName().toUpperCase(),
             detail.getProvinceCode().toUpperCase(),
             detail.getPostalCode(),
-            countryList.getOrDefault(detail.getCountryCode(), detail.getCountryCode()).toUpperCase(),
+            detail.getCountryCode().toUpperCase(),
             StringUtils.EMPTY,
             StringUtils.EMPTY,
             StringUtils.EMPTY,
