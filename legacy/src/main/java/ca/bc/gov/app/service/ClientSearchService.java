@@ -15,6 +15,7 @@ import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.repository.ForestClientRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -92,7 +93,9 @@ public class ClientSearchService {
                             .flatMap(forestClientRepository::findByClientNumber)
                     )
             )
-            .map(forestClientMapper::toDto);
+            .map(forestClientMapper::toDto)
+            .distinct(ForestClientDto::clientNumber)
+            .sort(Comparator.comparing(ForestClientDto::clientNumber));
   }
 
   /**
@@ -132,6 +135,7 @@ public class ClientSearchService {
           )
           .map(forestClientMapper::toDto)
           .distinct(ForestClientDto::clientNumber)
+          .sort(Comparator.comparing(ForestClientDto::clientNumber))
           .doOnNext(dto -> log.info("Found individual matching {} {} {} as {} {}",
               firstName, lastName, dob,
               dto.clientNumber(), dto.clientName())
@@ -179,6 +183,7 @@ public class ClientSearchService {
             .matchBy(companyName)
             .map(forestClientMapper::toDto)
             .distinct(ForestClientDto::clientNumber)
+            .sort(Comparator.comparing(ForestClientDto::clientNumber))
             .doOnNext(dto -> log.info("Found match for {} as {} {}",
                 companyName,
                 dto.clientNumber(), dto.clientName()));
@@ -207,6 +212,7 @@ public class ClientSearchService {
     return searchClientByQuery(queryCriteria, ForestClientEntity.class)
         .map(forestClientMapper::toDto)
         .distinct(ForestClientDto::clientNumber)
+        .sort(Comparator.comparing(ForestClientDto::clientNumber))
         .doOnNext(
             dto -> log.info("Found client with clientId {} and lastName {} as  {} {}",
                 clientId, lastName,
@@ -239,6 +245,7 @@ public class ClientSearchService {
     return searchClientByQuery(queryCriteria, ForestClientEntity.class)
         .map(forestClientMapper::toDto)
         .distinct(ForestClientDto::clientNumber)
+        .sort(Comparator.comparing(ForestClientDto::clientNumber))
         .doOnNext(
             dto -> log.info("Found client with clientId {} {} as  {} {}",
                 idType, identification,
@@ -285,6 +292,7 @@ public class ClientSearchService {
         Flux
             .concat(locations, contacts)
             .distinct(ForestClientDto::clientNumber)
+            .sort(Comparator.comparing(ForestClientDto::clientNumber))
             .doOnNext(
                 dto -> log.info("Found client with email {} as  {} {}",
                     email,
@@ -343,6 +351,7 @@ public class ClientSearchService {
         Flux
             .concat(locations, contacts)
             .distinct(ForestClientDto::clientNumber)
+            .sort(Comparator.comparing(ForestClientDto::clientNumber))
             .doOnNext(
                 dto -> log.info("Found client with phone number {} as  {} {}",
                     phoneNumber,
@@ -385,6 +394,7 @@ public class ClientSearchService {
         )
         .map(forestClientMapper::toDto)
         .distinct(ForestClientDto::clientNumber)
+        .sort(Comparator.comparing(ForestClientDto::clientNumber))
         .doOnNext(
             dto -> log.info("Found client with address {} as [{}] {}",
                 address,
