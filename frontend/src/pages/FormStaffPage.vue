@@ -27,6 +27,7 @@ import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
 import { validate, runValidation } from "@/helpers/validators/StaffFormValidations";
 // Imported Pages
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
+import LocationsWizardStep from "@/pages/staffform/LocationsWizardStep.vue";
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 
@@ -267,6 +268,15 @@ const validation = reactive<Record<string, boolean>>({});
             :data="formData"
             @valid="validateStep"
           />
+        </div>
+      </div>
+      <div v-if="currentTab == 1" class="form-steps-02">
+        <div class="form-steps-section">
+          <h2 data-focus="focus-0" tabindex="-1">
+            <div data-scroll="step-title" class="header-offset"></div>
+            Locations
+          </h2>
+          <locations-wizard-step :active="currentTab == 1" :data="formData" @valid="validateStep" />
         </div>
       </div>
       <div class="form-footer" role="footer">
