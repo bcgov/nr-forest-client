@@ -47,4 +47,27 @@ public record ClientAddressDto(
     return Map.of(indexFormatted, descMap);
 
   }
+
+  public ClientAddressDto withIndexed(int index) {
+    if (this.index() == index) {
+      return this;
+    }
+    return this.withIndex(index);
+  }
+
+  public boolean isValid() {
+    return !StringUtils.isAnyBlank(
+        streetAddress,
+        city,
+        postalCode
+    ) &&
+        country != null
+        &&
+        StringUtils.isNotBlank(country.value())
+        &&
+        province != null
+        &&
+        StringUtils.isNotBlank(province.value());
+  }
+
 }

@@ -1,38 +1,43 @@
-package ca.bc.gov.app.service.client;
+package ca.bc.gov.app.controller.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
-import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.MatchResult;
-import ca.bc.gov.app.exception.DataMatchException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.UUID;
 import java.util.stream.Stream;
-import org.apache.commons.lang3.NotImplementedException;
-import org.assertj.core.api.Condition;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import reactor.test.StepVerifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
+import reactor.core.publisher.Mono;
 
-@DisplayName("Integrated Test | Client Match Service")
-class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
+@DisplayName("Integrated Test | Client Match Controller")
+class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @RegisterExtension
   static WireMockExtension legacyStub = WireMockExtension
@@ -48,29 +53,27 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
       .build();
 
   @Autowired
-  private ClientMatchService service;
+  protected WebTestClient client;
 
-  @DisplayName("Should fail for invalid cases")
-  @ParameterizedTest
-  @MethodSource("invalidCases")
-  void shouldFailForInvalidCases(
-      ClientSubmissionDto dto,
-      int step,
-      Class<RuntimeException> exceptionClass
-  ) {
-
-    service
-        .matchClients(dto, step)
-        .as(StepVerifier::create)
-        .expectError(exceptionClass)
-        .verify();
-
+  @BeforeEach
+  public void reset() {
+    client = client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_EDITOR))
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+        )
+        .mutate()
+        .responseTimeout(Duration.ofSeconds(10))
+        .build();
   }
 
-  @DisplayName("Matching individuals")
   @ParameterizedTest
   @MethodSource("individualMatch")
-  void shouldMatchIndividuals(
+  @DisplayName("List and Search")
+  void shouldRunMatch(
       ClientSubmissionDto dto,
       String individualFuzzyMatch,
       String individualFullMatch,
@@ -78,7 +81,6 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
       boolean error,
       boolean fuzzy
   ) {
-
     legacyStub.resetAll();
 
     legacyStub
@@ -111,191 +113,34 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                 .willReturn(okJson(documentMatch))
         );
 
-    StepVerifier.FirstStep<Void> matcher =
-        service
-            .matchClients(dto, 1)
-            .as(StepVerifier::create);
+    ResponseSpec response =
+        client
+            .post()
+            .uri("/api/clients/matches")
+            .header("X-STEP", "1")
+            .body(Mono.just(dto), ClientSubmissionDto.class)
+            .exchange();
 
     if (error) {
-      matcher
-          .consumeErrorWith(errorContent ->
-              assertThat(errorContent)
-                  .isInstanceOf(DataMatchException.class)
-                  .hasMessage("409 CONFLICT \"Match found on existing data.\"")
-                  .extracting("matches")
-                  .isInstanceOf(List.class)
-                  .asList()
-                  .has(
-                      new Condition<>(
-                          matchResult ->
-                              matchResult
-                                  .stream()
-                                  .map(m -> (MatchResult) m)
-                                  .anyMatch(m -> m.fuzzy() == fuzzy),
-                          "MatchResult with fuzzy value %s",
-                          fuzzy
-                      )
-                  )
-
-          )
-          .verify();
+      response
+          .expectStatus()
+          .isEqualTo(HttpStatus.CONFLICT)
+          .expectBodyList(MatchResult.class)
+          .value(values -> assertEquals(
+                  fuzzy,
+                  values
+                      .stream()
+                      .reduce(false, (acc, m) -> acc || m.fuzzy(), (a, b) -> a || b)
+              )
+          );
     } else {
-      matcher.verifyComplete();
+      response
+          .expectStatus()
+          .isNoContent();
     }
 
-  }
 
-  private static Stream<Arguments> invalidCases() {
-    return Stream
-        .of(
-            Arguments.of(
-                null,
-                1,
-                IllegalArgumentException.class
-            ),
-            Arguments.of(
-                new ClientSubmissionDto(
-                    null,
-                    null,
-                    null,
-                    null
-                ),
-                1,
-                IllegalArgumentException.class
-            ),
-            Arguments.of(
-                getDto(),
-                1,
-                IllegalArgumentException.class
-            ),
-            Arguments.of(
-                getRandomData().withLocation(null),
-                1,
-                IllegalArgumentException.class
-            ),
-            Arguments.of(
-                getRandomData()
-                    .withLocation(
-                        new ClientLocationDto(
-                            null,
-                            null
-                        )
-                    ),
-                2,
-                IllegalArgumentException.class
-            ),
-            Arguments.of(
-                getRandomData()
-                    .withLocation(
-                        new ClientLocationDto(
-                            List.of(),
-                            null
-                        )
-                    ),
-                2,
-                IllegalArgumentException.class
-            ),
-            Arguments.of(
-                getRandomData()
-                    .withLocation(
-                        new ClientLocationDto(
-                            List.of(
-                                new ClientAddressDto(
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    0,
-                                    null
-                                )
-                            ),
-                            null
-                        )
-                    ),
-                2,
-                IllegalArgumentException.class
-            ),
-            Arguments.of(
-                getRandomData(),
-                3,
-                NotImplementedException.class
-            ),
-            Arguments.of(
-                getRandomData(),
-                4,
-                IllegalArgumentException.class
-            ),
-            Arguments.of(
-                getRandomData()
-                    .withBusinessInformation(
-                        getRandomData()
-                            .businessInformation()
-                            .withClientType("BCR")
-                    ),
-                1,
-                NotImplementedException.class
-            ),
-            Arguments.of(
-                getRandomData()
-                    .withBusinessInformation(
-                        getRandomData()
-                            .businessInformation()
-                            .withClientType("R")
-                    ),
-                1,
-                NotImplementedException.class
-            ),
-            Arguments.of(
-                getRandomData()
-                    .withBusinessInformation(
-                        getRandomData()
-                            .businessInformation()
-                            .withClientType("G")
-                    ),
-                1,
-                NotImplementedException.class
-            ),
-            Arguments.of(
-                getRandomData()
-                    .withBusinessInformation(
-                        getRandomData()
-                            .businessInformation()
-                            .withClientType("F")
-                    ),
-                1,
-                NotImplementedException.class
-            ),
-            Arguments.of(
-                getRandomData()
-                    .withBusinessInformation(
-                        getRandomData()
-                            .businessInformation()
-                            .withClientType("U")
-                    ),
-                1,
-                NotImplementedException.class
-            ),
-            Arguments.of(
-                getRandomData()
-                    .withBusinessInformation(
-                        getRandomData()
-                            .businessInformation()
-                            .withClientType("J")
-                    ),
-                1,
-                IllegalArgumentException.class
-            )
-        );
   }
-
 
   private static Stream<Arguments> individualMatch() {
     return Stream.of(
@@ -418,17 +263,6 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             );
   }
 
-  private static ClientSubmissionDto getRandomData() {
-    return getIndividualDto(
-        UUID.randomUUID().toString(),
-        UUID.randomUUID().toString(),
-        LocalDate.now(),
-        UUID.randomUUID().toString(),
-        UUID.randomUUID().toString(),
-        UUID.randomUUID().toString()
-    );
-  }
-
   private static ClientSubmissionDto getDtoType(String type) {
     ClientSubmissionDto dto = getDto();
     return dto.withBusinessInformation(
@@ -470,5 +304,6 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
         null
     );
   }
+
 
 }

@@ -1,14 +1,18 @@
 package ca.bc.gov.app.service.client;
 
+import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
@@ -203,5 +207,54 @@ public class ClientLegacyService {
             );
 
   }
+
+  public Flux<ForestClientDto> searchGeneric(
+      String searchType,
+     String value
+  ) {
+
+    if(StringUtils.isBlank(value))
+      return Flux.empty();
+
+    Map<String, List<String>> parameters = Map.of(searchType, List.of(value));
+
+    return
+        legacyApi
+            .get()
+            // Build the URI for the request
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/api/search/" + searchType)
+                    .queryParams(CollectionUtils.toMultiValueMap(parameters))
+                    .build(Map.of())
+            )
+            // Convert the response to a Flux of ForestClientDto objects
+            .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                    "Found Legacy data for {} with {} in legacy with client number {}",
+                    searchType,
+                    parameters,
+                    dto.clientNumber()
+                )
+            );
+
+  }
+
+  public Flux<ForestClientDto> searchLocation(
+      AddressSearchDto dto
+  ){
+    return
+        legacyApi
+            .post()
+            .uri("/api/search/location")
+            .body(BodyInserters.fromValue(dto))
+            .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
+            .doOnNext(
+                client -> log.info("Found Legacy data for location search with client number {}", client.clientNumber())
+            );
+  }
+
 
 }

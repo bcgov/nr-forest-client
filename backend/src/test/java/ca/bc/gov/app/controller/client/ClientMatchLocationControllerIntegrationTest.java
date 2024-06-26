@@ -25,7 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -37,8 +36,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import reactor.core.publisher.Mono;
 
+//TODO: Convert this to verify the location match instead
 @DisplayName("Integrated Test | Client Match Controller")
-class ClientMatchControllerIntegrationTest extends AbstractTestContainerIntegrationTest {
+class ClientMatchLocationControllerIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @RegisterExtension
   static WireMockExtension legacyStub = WireMockExtension
@@ -74,7 +74,6 @@ class ClientMatchControllerIntegrationTest extends AbstractTestContainerIntegrat
   @ParameterizedTest
   @MethodSource("individualMatch")
   @DisplayName("List and Search")
-  @Order(2)
   void shouldRunMatch(
       ClientSubmissionDto dto,
       String individualFuzzyMatch,
