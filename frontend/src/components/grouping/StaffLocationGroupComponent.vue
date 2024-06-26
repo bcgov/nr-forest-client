@@ -374,14 +374,14 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
       <cds-button
         v-if="id > 0"
         :id="'deleteAddress_' + id"
-        :danger-descriptor="`Delete address &quot;${getAddressDescription(
+        :danger-descriptor="`Delete location &quot;${getAddressDescription(
           selectedValue,
           id,
         )}&quot;`"
         kind="danger--tertiary"
         @click.prevent="emit('remove', id)"
       >
-        <span>Delete address</span>
+        <span>Delete location</span>
         <Delete16 slot="icon" />
       </cds-button>
     </div>
