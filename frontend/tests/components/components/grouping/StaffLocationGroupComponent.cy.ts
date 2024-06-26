@@ -5,10 +5,7 @@ import type { Address } from "@/dto/ApplyClientNumberDto";
 import "@/helpers/validators/BCeIDFormValidations";
 
 describe("<StaffLocationGroupComponent />", () => {
-  const dummyValidation = (): ((
-    key: string,
-    field: string
-  ) => (value: string) => string) => {
+  const dummyValidation = (): ((key: string, field: string) => (value: string) => string) => {
     return (key: string, fieldId: string) => (value: string) => {
       if (value.includes("fault")) return "Error";
       return "";
@@ -33,34 +30,26 @@ describe("<StaffLocationGroupComponent />", () => {
 
     cy.intercept(
       "GET",
-      `/api/addresses?country=CA&maxSuggestions=10&searchTerm=${encodeURI(
-        "2975 Jutland Rd"
-      )}*`,
+      `/api/addresses?country=CA&maxSuggestions=10&searchTerm=${encodeURI("2975 Jutland Rd")}*`,
       {
         fixture: "addressSearch.json",
-      }
+      },
     ).as("searchAddress");
 
     cy.intercept(
       "GET",
-      `/api/addresses?country=CA&maxSuggestions=10&searchTerm=${encodeURI(
-        "158 Hargrave St"
-      )}*`,
+      `/api/addresses?country=CA&maxSuggestions=10&searchTerm=${encodeURI("158 Hargrave St")}*`,
       {
         fixture: "addressSearchMB.json",
-      }
+      },
     ).as("searchaddressMB");
 
-    cy.intercept(
-      "GET",
-      `/api/addresses?country=CA&maxSuggestions=10&searchTerm=111`,
-      [
-        {
-          code: "A1A1A1",
-          name: "111 A St Victoria, BC, A1A 1A1",
-        },
-      ]
-    ).as("searchAddress111");
+    cy.intercept("GET", `/api/addresses?country=CA&maxSuggestions=10&searchTerm=111`, [
+      {
+        code: "A1A1A1",
+        name: "111 A St Victoria, BC, A1A 1A1",
+      },
+    ]).as("searchAddress111");
 
     cy.intercept("GET", "/api/addresses/V8T5J9", {
       fixture: "address.json",
@@ -96,9 +85,7 @@ describe("<StaffLocationGroupComponent />", () => {
 
     cy.get("#city_0").should("be.visible").and("have.value", "Victoria");
 
-    cy.get("#province_0")
-      .should("be.visible")
-      .and("have.value", "British Columbia");
+    cy.get("#province_0").should("be.visible").and("have.value", "British Columbia");
 
     cy.get("#postalCode_0").should("be.visible").and("have.value", "V8T5J9");
   });
@@ -152,9 +139,7 @@ describe("<StaffLocationGroupComponent />", () => {
 
     cy.wait("@getProvinces");
 
-    cy.get("#name_0")
-      .should("be.visible")
-      .and("have.value", "Mailing address");
+    cy.get("#name_0").should("be.visible").and("have.value", "Mailing address");
   });
 
   it("should render the component and show the address name if id is bigger than 0", () => {
@@ -173,9 +158,7 @@ describe("<StaffLocationGroupComponent />", () => {
 
     cy.wait("@getProvinces");
 
-    cy.get("#name_1")
-      .should("be.visible")
-      .and("have.value", "Mailing address");
+    cy.get("#name_1").should("be.visible").and("have.value", "Mailing address");
   });
 
   it("should render the component and reset province when country changes", () => {
@@ -195,10 +178,7 @@ describe("<StaffLocationGroupComponent />", () => {
     cy.wait("@getProvinces");
 
     // Wait for the option's inner, standard HTML element to exist before clicking the combo-box
-    cy.get("#country_0")
-      .find('cds-combo-box-item[data-id="CA"]')
-      .shadow()
-      .find("div");
+    cy.get("#country_0").find('cds-combo-box-item[data-id="CA"]').shadow().find("div");
 
     cy.get("#country_0")
       .should("be.visible")
@@ -228,7 +208,6 @@ describe("<StaffLocationGroupComponent />", () => {
       .should("be.visible")
       .click()
       .and("have.value", "Illinois");
-
   });
 
   const streetAddressMatchingScenarios = [
@@ -261,18 +240,13 @@ describe("<StaffLocationGroupComponent />", () => {
 
         cy.wait("@getProvinces");
 
-        cy.get("#addr_0")
-          .shadow()
-          .find("input")
-          .type(scenario.value, { delay: 0 });
+        cy.get("#addr_0").shadow().find("input").type(scenario.value, { delay: 0 });
 
         cy.wait("@searchAddress");
 
         if (scenario.identical) {
           // Sanity check to make sure the option's full text content is the exact same value typed by the user.
-          cy.get("cds-combo-box-item")
-            .contains(scenario.value)
-            .should("have.text", scenario.value);
+          cy.get("cds-combo-box-item").contains(scenario.value).should("have.text", scenario.value);
         }
 
         cy.get("cds-combo-box-item").contains(scenario.value).click();
@@ -282,13 +256,9 @@ describe("<StaffLocationGroupComponent />", () => {
         cy.get("@addressFixture").then((address: Address) => {
           cy.get("#city_0").should("have.value", address.city);
 
-          cy.get("#province_0")
-            .should("be.visible")
-            .and("have.value", address.province.text);
+          cy.get("#province_0").should("be.visible").and("have.value", address.province.text);
 
-          cy.get("#postalCode_0")
-            .should("be.visible")
-            .and("have.value", address.postalCode);
+          cy.get("#postalCode_0").should("be.visible").and("have.value", address.postalCode);
         });
       });
     });
@@ -351,7 +321,7 @@ describe("<StaffLocationGroupComponent />", () => {
     const genericTest = (
       fieldSelector: string,
       firstContent: string,
-      additionalContent: string
+      additionalContent: string,
     ) => {
       const calls: boolean[] = [];
       const onValid = (valid: boolean) => {
@@ -373,14 +343,12 @@ describe("<StaffLocationGroupComponent />", () => {
       cy.wait("@getProvinces");
 
       cy.get(fieldSelector).shadow().find("input").clear(); // emits false
-      cy.get(fieldSelector).shadow().find("input").should('be.focused').blur();
+      cy.get(fieldSelector).shadow().find("input").should("be.focused").blur();
       cy.get(fieldSelector).shadow().find("input").type(firstContent); // emits true before blurring
-      cy.get(fieldSelector).shadow().find("input").should('be.focused').blur();
-      cy.get(fieldSelector)
-        .should("be.visible")
-        .and("have.value", firstContent);
+      cy.get(fieldSelector).shadow().find("input").should("be.focused").blur();
+      cy.get(fieldSelector).should("be.visible").and("have.value", firstContent);
       cy.get(fieldSelector).shadow().find("input").type(additionalContent); // emits true (last2)
-      cy.get(fieldSelector).shadow().find("input").should('be.focused').blur();
+      cy.get(fieldSelector).shadow().find("input").should("be.focused").blur();
       cy.get(fieldSelector)
         .should("be.visible")
         .and("have.value", `${firstContent}${additionalContent}`);
@@ -448,7 +416,7 @@ describe("<StaffLocationGroupComponent />", () => {
   });
 
   describe("province", () => {
-    it('should update the province when changed manually', () => {
+    it("should update the province when changed manually", () => {
       cy.get("@addressFixture").then((address) => {
         cy.get("@countriesFixture").then((countries) => {
           cy.mount(StaffLocationGroupComponent, {
@@ -464,24 +432,15 @@ describe("<StaffLocationGroupComponent />", () => {
 
       cy.wait("@getProvinces");
 
-      cy.get("#province_0")
-        .should("be.visible")
-        .and("have.value", "British Columbia");
+      cy.get("#province_0").should("be.visible").and("have.value", "British Columbia");
 
-      cy.get("#province_0")
-        .find("[part='trigger-button']")
-        .click();
+      cy.get("#province_0").find("[part='trigger-button']").click();
 
-      cy.get("#province_0")
-        .find('cds-combo-box-item[data-id="MB"]')
-        .should("be.visible")
-        .click();
+      cy.get("#province_0").find('cds-combo-box-item[data-id="MB"]').should("be.visible").click();
 
-      cy.get("#province_0")
-        .should("be.visible")
-        .and("have.value", "Manitoba");
+      cy.get("#province_0").should("be.visible").and("have.value", "Manitoba");
     });
-    it('should update the province when a Street address option gets selected', () => {
+    it("should update the province when a Street address option gets selected", () => {
       cy.get("@emptyAddressFixture").then((emptyAddress) => {
         cy.get("@countriesFixture").then((countries) => {
           cy.mount(StaffLocationGroupComponent, {
@@ -498,17 +457,12 @@ describe("<StaffLocationGroupComponent />", () => {
       cy.wait("@getProvinces");
 
       cy.get("@addressFixture").then((address: Address) => {
-        cy.get("#province_0")
-          .should("be.visible")
-          .and("have.value", "British Columbia");
+        cy.get("#province_0").should("be.visible").and("have.value", "British Columbia");
       });
 
       const typedAddress = "158 Hargrave St";
 
-      cy.get("#addr_0")
-        .shadow()
-        .find("input")
-        .type(typedAddress, { delay: 0 });
+      cy.get("#addr_0").shadow().find("input").type(typedAddress, { delay: 0 });
 
       cy.wait("@searchaddressMB");
 
@@ -517,17 +471,15 @@ describe("<StaffLocationGroupComponent />", () => {
       cy.wait("@getaddressMB");
 
       cy.get("@addressFixture").then((address: Address) => {
-        cy.get("#province_0")
-          .should("be.visible")
-          .and("have.value", "Manitoba");
+        cy.get("#province_0").should("be.visible").and("have.value", "Manitoba");
       });
     });
 
-    describe('when Province has been cleared by the user', () => {
+    describe("when Province has been cleared by the user", () => {
       /**
        * @see FSADT1-914
        */
-      it('should update the Province when a Street address in the same province gets selected', () => {
+      it("should update the Province when a Street address in the same province gets selected", () => {
         cy.get("@addressKelownaBCFixture").then((initialAddress) => {
           cy.get("@countriesFixture").then((countries) => {
             cy.mount(StaffLocationGroupComponent, {
@@ -544,25 +496,17 @@ describe("<StaffLocationGroupComponent />", () => {
         cy.wait("@getProvinces");
 
         // Original province is BC
-        cy.get("#province_0")
-          .should("be.visible")
-          .and("have.value", "British Columbia");
+        cy.get("#province_0").should("be.visible").and("have.value", "British Columbia");
 
         // Click the clear (x) button
         cy.get("#province_0").shadow().find("#selection-button").click();
 
         // Province got cleared.
-        cy.get("#province_0")
-          .should("be.visible")
-          .and("have.value", "");
+        cy.get("#province_0").should("be.visible").and("have.value", "");
 
         const typedAddress = "2975 Jutland Rd";
 
-        cy.get("#addr_0")
-          .shadow()
-          .find("input")
-          .clear()
-          .type(typedAddress, { delay: 0 });
+        cy.get("#addr_0").shadow().find("input").clear().type(typedAddress, { delay: 0 });
 
         cy.wait("@searchAddress");
 
@@ -572,13 +516,11 @@ describe("<StaffLocationGroupComponent />", () => {
 
         // Province is BC again
         cy.get("@addressFixture").then((address: Address) => {
-          cy.get("#province_0")
-            .should("be.visible")
-            .and("have.value", "British Columbia");
+          cy.get("#province_0").should("be.visible").and("have.value", "British Columbia");
         });
       });
 
-      it('should update the Province when a Street address in a different province gets selected', () => {
+      it("should update the Province when a Street address in a different province gets selected", () => {
         cy.get("@addressKelownaBCFixture").then((initialAddress) => {
           cy.get("@countriesFixture").then((countries) => {
             cy.mount(StaffLocationGroupComponent, {
@@ -595,25 +537,17 @@ describe("<StaffLocationGroupComponent />", () => {
         cy.wait("@getProvinces");
 
         // Original province is BC
-        cy.get("#province_0")
-          .should("be.visible")
-          .and("have.value", "British Columbia");
+        cy.get("#province_0").should("be.visible").and("have.value", "British Columbia");
 
         // Click the clear (x) button
         cy.get("#province_0").shadow().find("#selection-button").click();
 
         // Province got cleared.
-        cy.get("#province_0")
-          .should("be.visible")
-          .and("have.value", "");
+        cy.get("#province_0").should("be.visible").and("have.value", "");
 
         const typedAddress = "158 Hargrave St";
 
-        cy.get("#addr_0")
-          .shadow()
-          .find("input")
-          .clear()
-          .type(typedAddress, { delay: 0 });
+        cy.get("#addr_0").shadow().find("input").clear().type(typedAddress, { delay: 0 });
 
         cy.wait("@searchaddressMB");
 
@@ -623,16 +557,14 @@ describe("<StaffLocationGroupComponent />", () => {
 
         // Province is now MB
         cy.get("@addressFixture").then((address: Address) => {
-          cy.get("#province_0")
-            .should("be.visible")
-            .and("have.value", "Manitoba");
+          cy.get("#province_0").should("be.visible").and("have.value", "Manitoba");
         });
       });
     });
   });
-  
-  describe('when the following fields are displayed as invalid: City, Province, Postal code', () => {
-    it('should display them as valid once they get filled by selecting a Street address option', () => {
+
+  describe("when the following fields are displayed as invalid: City, Province, Postal code", () => {
+    it("should display them as valid once they get filled by selecting a Street address option", () => {
       cy.get("@emptyAddressFixture").then((emptyAddress) => {
         cy.get("@countriesFixture").then((countries) => {
           cy.mount(StaffLocationGroupComponent, {
@@ -650,10 +582,10 @@ describe("<StaffLocationGroupComponent />", () => {
 
       cy.get("#city_0").shadow().find("input").type("Test");
       cy.get("#city_0").shadow().find("input").clear();
-      cy.get("#city_0").shadow().find("input").should('be.focused').blur();
-      
+      cy.get("#city_0").shadow().find("input").should("be.focused").blur();
+
       cy.get("#province_0").shadow().find("#selection-button").click();
-      
+
       cy.get("#postalCode_0").shadow().find("input").type("Test");
       cy.get("#postalCode_0").shadow().find("input").clear();
       cy.get("#postalCode_0").shadow().find("input").click();
@@ -666,14 +598,14 @@ describe("<StaffLocationGroupComponent />", () => {
       // Fields are displayed as invalid
       cy.get("#city_0").shadow().find("input").should("have.class", "cds--text-input--invalid");
       cy.get("#province_0").shadow().find("div").should("have.class", "cds--dropdown--invalid");
-      cy.get("#postalCode_0").shadow().find("input").should("have.class", "cds--text-input--invalid");
+      cy.get("#postalCode_0")
+        .shadow()
+        .find("input")
+        .should("have.class", "cds--text-input--invalid");
 
       const typedAddress = "2975 Jutland Rd";
 
-      cy.get("#addr_0")
-        .shadow()
-        .find("input")
-        .type(typedAddress, { delay: 0 });
+      cy.get("#addr_0").shadow().find("input").type(typedAddress, { delay: 0 });
 
       cy.wait("@searchAddress");
 
@@ -684,7 +616,10 @@ describe("<StaffLocationGroupComponent />", () => {
       // Fields are now displayed as valid
       cy.get("#city_0").shadow().find("input").should("not.have.class", "cds--text-input--invalid");
       cy.get("#province_0").shadow().find("div").should("not.have.class", "cds--dropdown--invalid");
-      cy.get("#postalCode_0").shadow().find("input").should("not.have.class", "cds--text-input--invalid");
+      cy.get("#postalCode_0")
+        .shadow()
+        .find("input")
+        .should("not.have.class", "cds--text-input--invalid");
     });
   });
 });
