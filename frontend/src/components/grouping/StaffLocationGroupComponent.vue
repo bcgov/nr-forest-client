@@ -13,6 +13,8 @@ import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // @ts-ignore
 import Delete16 from "@carbon/icons-vue/es/trash-can/16";
+// @ts-ignore
+import Add16 from "@carbon/icons-vue/es/add/16";
 import { getAddressDescription } from "@/services/ForestClientService";
 
 //Define the input properties for this component
@@ -29,6 +31,7 @@ const emit = defineEmits<{
   (e: "valid", value: boolean): void;
   (e: "update:model-value", value: Address | undefined): void;
   (e: "remove", value: number): void;
+  (e: "removeAdditionalDelivery", value: number): void;
 }>();
 
 const noValidation = (value: string) => "";
@@ -239,6 +242,14 @@ watch([detailsData], () => {
  * Adds a named group to the fields. Specially useful when BCEID_MULTI_ADDRESS is enabled.
  */
 const section = (index: number, purpose: string) => `section-address-${index} ${purpose}`;
+
+const additionalDeliveryVisible = computed(
+  () => selectedValue.complementaryAddressTwo !== undefined,
+);
+
+const showAdditionalDelivery = () => {
+  selectedValue.complementaryAddressTwo = "";
+};
 </script>
 
 <template>
@@ -260,6 +271,65 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
       @empty="validation.locationName = !$event"
       @error="validation.locationName = !$event"
     />
+
+    <text-input-component
+      :id="'complementaryAddressOne_' + id"
+      label="Delivery information"
+      placeholder=""
+      tip="This is where 'care of' and similar information can be included"
+      v-model="selectedValue.complementaryAddressOne"
+      :enabled="true"
+      :validations="[
+        ...getValidations('location.addresses.*.complementaryAddressOne'),
+        submissionValidation(`location.addresses[${id}].complementaryAddressOne`),
+      ]"
+      :error-message="nameError"
+      @empty="validation.complementaryAddressOne = !$event"
+      @error="validation.complementaryAddressOne = !$event"
+    />
+
+    <cds-button
+      id="add-delivery-btn"
+      kind="tertiary"
+      @click.prevent="showAdditionalDelivery"
+      v-if="!additionalDeliveryVisible"
+    >
+      <span>Add more delivery information</span>
+      <Add16 slot="icon" />
+    </cds-button>
+
+    <div v-if="additionalDeliveryVisible" class="input-with-instruction">
+      <div class="horizontal-input-grouping">
+        <text-input-component
+          :id="'complementaryAddressTwo_' + id"
+          label="Additional delivery information"
+          placeholder=""
+          tip=""
+          v-model="selectedValue.complementaryAddressTwo"
+          :enabled="true"
+          :validations="[
+            ...getValidations('location.addresses.*.complementaryAddressTwo'),
+            submissionValidation(`location.addresses[${id}].complementaryAddressTwo`),
+          ]"
+          :error-message="nameError"
+          @empty="validation.complementaryAddressTwo = !$event"
+          @error="validation.complementaryAddressTwo = !$event"
+        />
+        <cds-button
+          :id="'deleteAddress_' + id"
+          :danger-descriptor="`Delete additional delivery information &quot;${selectedValue.complementaryAddressTwo || ''}&quot; from &quot;${getAddressDescription(
+            selectedValue,
+            id,
+          )}&quot;`"
+          kind="danger--tertiary"
+          size="md"
+          @click.prevent="emit('removeAdditionalDelivery', id)"
+        >
+          <Delete16 slot="icon" />
+        </cds-button>
+      </div>
+      <p class="body-compact-01">You can only add a maximum of 2 lines of delivery information.</p>
+    </div>
 
     <data-fetcher
       v-model:url="autoCompleteUrl"

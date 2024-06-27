@@ -3,10 +3,17 @@ import type { CodeDescrType } from "@/dto/CommonTypesDto";
 export interface Address {
   locationName: string;
   streetAddress: string;
+  complementaryAddressOne?: string;
+  complementaryAddressTwo?: string;
   country: CodeDescrType;
   province: CodeDescrType;
   city: string;
   postalCode: string;
+  businessPhoneNumber?: string;
+  secondaryPhoneNumber?: string;
+  faxNumber?: string;
+  emailAddress?: string;
+  notes?: string;
 }
 
 export interface Contact {

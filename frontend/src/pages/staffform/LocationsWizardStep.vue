@@ -146,6 +146,29 @@ const handleRemove = (index: number) => {
   });
 };
 
+const removeAdditionalDelivery = (index: number) => () => {
+  formData.location.addresses[index].complementaryAddressTwo = undefined;
+  bus.emit({
+    active: false,
+    message: "",
+    kind: "",
+    toastTitle: "",
+    handler: () => {},
+  });
+};
+
+const handleRemoveAdditionalDelivery = (index: number) => {
+  const selectedDeliveryInformation = formData.location.addresses[index].complementaryAddressTwo;
+  bus.emit({
+    name: selectedDeliveryInformation,
+    toastTitle: "Success",
+    kind: "delivery information",
+    message: `“${selectedDeliveryInformation}” additional delivery information was deleted`,
+    handler: removeAdditionalDelivery(index),
+    active: true,
+  });
+};
+
 onMounted(() => setFocusedComponent("focus-1", 0));
 </script>
 
@@ -174,6 +197,7 @@ onMounted(() => setFocusedComponent("focus-1", 0));
     :revalidate="revalidate"
     @update:model-value="updateAddress($event, 0)"
     @valid="updateValidState(0, $event)"
+    @remove-additional-delivery="handleRemoveAdditionalDelivery(0)"
   />
 
   <hr />
@@ -190,6 +214,7 @@ onMounted(() => setFocusedComponent("focus-1", 0));
         @update:model-value="updateAddress($event, index + 1)"
         @valid="updateValidState(index + 1, $event)"
         @remove="handleRemove(index + 1)"
+        @remove-additional-delivery="handleRemoveAdditionalDelivery(index + 1)"
       />
     </div>
   </div>
