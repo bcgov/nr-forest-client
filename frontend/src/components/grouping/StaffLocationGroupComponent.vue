@@ -49,9 +49,27 @@ const uniquenessValidation = () => {
   nameError.value = validateAddressNameData(selectedValue.locationName);
 };
 
+const additionalDeliveryVisible = computed(
+  () => selectedValue.complementaryAddressTwo !== undefined,
+);
+
+const showAdditionalDelivery = () => {
+  selectedValue.complementaryAddressTwo = "";
+};
+
+const deliveryInformationError = ref<string>();
+
+const deliveryInformationValidation = () => {
+  deliveryInformationError.value =
+    additionalDeliveryVisible.value && !selectedValue.complementaryAddressOne
+      ? "Delivery information cannot be empty when Additional delivery information is displayed"
+      : "";
+};
+
 //Watch for changes on the input
 watch([selectedValue], () => {
   uniquenessValidation();
+  deliveryInformationValidation();
   emit("update:model-value", selectedValue);
 });
 
@@ -244,14 +262,6 @@ watch([detailsData], () => {
  * Adds a named group to the fields. Specially useful when BCEID_MULTI_ADDRESS is enabled.
  */
 const section = (index: number, purpose: string) => `section-address-${index} ${purpose}`;
-
-const additionalDeliveryVisible = computed(
-  () => selectedValue.complementaryAddressTwo !== undefined,
-);
-
-const showAdditionalDelivery = () => {
-  selectedValue.complementaryAddressTwo = "";
-};
 </script>
 
 <template>
@@ -285,7 +295,8 @@ const showAdditionalDelivery = () => {
         ...getValidations('location.addresses.*.complementaryAddressOne'),
         submissionValidation(`location.addresses[${id}].complementaryAddressOne`),
       ]"
-      @empty="validation.complementaryAddressOne = true"
+      :error-message="deliveryInformationError"
+      @empty="validation.complementaryAddressOne = !additionalDeliveryVisible || !$event"
       @error="validation.complementaryAddressOne = !$event"
     />
 
