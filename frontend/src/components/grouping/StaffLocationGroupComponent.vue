@@ -38,22 +38,14 @@ const noValidation = (value: string) => "";
 
 //We set it as a separated ref due to props not being updatable
 const selectedValue = reactive<Address>(props.modelValue);
-const validateAddressData =
-  props.validations.length === 0
-    ? noValidation
-    : props.validations[0]("Address", props.id + "");
 const validateAddressNameData =
   props.validations.length === 0
     ? noValidation
     : props.validations[0]("Names", props.id + "");
-const addressError = ref<string | undefined>("");
 const nameError = ref<string | undefined>("");
 const showDetailsLoading = ref<boolean>(false);
 
 const uniquenessValidation = () => {
-  addressError.value = validateAddressData(
-    `${selectedValue.streetAddress} ${selectedValue.country.value} ${selectedValue.province.value} ${selectedValue.city} ${selectedValue.city} ${selectedValue.postalCode}`
-  );
   nameError.value = validateAddressNameData(selectedValue.locationName);
 };
 
@@ -283,7 +275,6 @@ const showAdditionalDelivery = () => {
         ...getValidations('location.addresses.*.complementaryAddressOne'),
         submissionValidation(`location.addresses[${id}].complementaryAddressOne`),
       ]"
-      :error-message="nameError"
       @empty="validation.complementaryAddressOne = !$event"
       @error="validation.complementaryAddressOne = !$event"
     />
@@ -311,7 +302,6 @@ const showAdditionalDelivery = () => {
             ...getValidations('location.addresses.*.complementaryAddressTwo'),
             submissionValidation(`location.addresses[${id}].complementaryAddressTwo`),
           ]"
-          :error-message="nameError"
           @empty="validation.complementaryAddressTwo = !$event"
           @error="validation.complementaryAddressTwo = !$event"
         />
@@ -355,7 +345,6 @@ const showAdditionalDelivery = () => {
         ]"
         :loading="loading"
         @update:selected-value="autoCompleteResult = $event"
-        :error-message="addressError"
         @empty="validation.streetAddress = !$event"
         @error="validation.streetAddress = !$event"
       />
@@ -372,7 +361,6 @@ const showAdditionalDelivery = () => {
       v-model="selectedValue.city"
       tip=""
       :enabled="true"
-      :error-message="addressError"
       :validations="[
         ...getValidations('location.addresses.*.city'),
         submissionValidation(`location.addresses[${id}].city`)
@@ -400,7 +388,6 @@ const showAdditionalDelivery = () => {
         :enabled="true"
         tip=""
         :validations="[...getValidations('location.addresses.*.province.text'),submissionValidation(`location.addresses[${id}].province`)]"
-        :error-message="addressError"
         @update:selected-value="updateStateProvince($event, 'province')"
         @empty="validation.province = !$event"
       />
@@ -417,7 +404,6 @@ const showAdditionalDelivery = () => {
       :enabled="true"
       :model-value="countryList"
       :validations="[...getValidations('location.addresses.*.country.text'),submissionValidation(`location.addresses[${id}].country`)]"
-      :error-message="addressError"
       @update:selected-value="updateStateProvince($event, 'country')"
       @update:model-value="resetProvinceOnChange"
       @empty="validation.country = !$event"
@@ -433,7 +419,6 @@ const showAdditionalDelivery = () => {
       placeholder=""
       :tip="postalCodePlaceholder"
       :enabled="true"
-      :error-message="addressError"
       v-model="modelValue.postalCode"
       :mask="postalCodeMask"
       :validations="postalCodeValidators"

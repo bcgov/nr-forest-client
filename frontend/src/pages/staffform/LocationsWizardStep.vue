@@ -123,7 +123,6 @@ const removeAddress = (index: number) => () => {
 
   updateAddress(undefined, index);
   delete validation[addressId];
-  uniqueValues.remove("Address", addressId + "");
   uniqueValues.remove("Names", addressId + "");
   bus.emit({
     active: false,
