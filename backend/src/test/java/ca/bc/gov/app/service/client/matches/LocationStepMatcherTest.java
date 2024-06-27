@@ -6,14 +6,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.DataMatchException;
+import ca.bc.gov.app.extensions.MatcherDataGen;
 import ca.bc.gov.app.service.client.ClientLegacyService;
 import java.util.List;
 import java.util.stream.Stream;
@@ -37,6 +35,7 @@ class LocationStepMatcherTest {
   @DisplayName("Should match step")
   @ParameterizedTest
   @MethodSource("matchStep")
+  @SuppressWarnings("unchecked")
   void shouldMatchStep(
       ClientSubmissionDto dto,
       Flux<ForestClientDto> emailMatch,
@@ -88,22 +87,20 @@ class LocationStepMatcherTest {
   }
 
 
-
-
   private static Stream<Arguments> matchStep() {
     return Stream.of(
         Arguments.of(
-            getAddress(),
+            MatcherDataGen.getAddress(),
             Flux.empty(), //Email
             Flux.empty(), //businessphone
             Flux.empty(), //secondary
             Flux.empty(), //fax
-            Flux.just(getForestClientDto("00000001")), //address
+            Flux.just(MatcherDataGen.getForestClientDto("00000001")), //address
             true,
             false
         ),
         Arguments.of(
-            getAddress(),
+            MatcherDataGen.getAddress(),
             Flux.empty(), //Email
             Flux.empty(), //businessphone
             Flux.empty(), //secondary
@@ -113,8 +110,8 @@ class LocationStepMatcherTest {
             false
         ),
         Arguments.of(
-            getAddress(),
-            Flux.just(getForestClientDto("00000001")), //Email
+            MatcherDataGen.getAddress(),
+            Flux.just(MatcherDataGen.getForestClientDto("00000001")), //Email
             Flux.empty(), //businessphone
             Flux.empty(), //secondary
             Flux.empty(), //fax
@@ -123,9 +120,9 @@ class LocationStepMatcherTest {
             false
         ),
         Arguments.of(
-            getAddress(),
+            MatcherDataGen.getAddress(),
             Flux.empty(), //Email
-            Flux.just(getForestClientDto("00000001")), //businessphone
+            Flux.just(MatcherDataGen.getForestClientDto("00000001")), //businessphone
             Flux.empty(), //secondary
             Flux.empty(), //fax
             Flux.empty(), //address
@@ -133,21 +130,21 @@ class LocationStepMatcherTest {
             false
         ),
         Arguments.of(
-            getAddress(),
+            MatcherDataGen.getAddress(),
             Flux.empty(), //Email
             Flux.empty(), //businessphone
-            Flux.just(getForestClientDto("00000001")), //secondary
+            Flux.just(MatcherDataGen.getForestClientDto("00000001")), //secondary
             Flux.empty(), //fax
             Flux.empty(), //address
             true,
             false
         ),
         Arguments.of(
-            getAddress(),
+            MatcherDataGen.getAddress(),
             Flux.empty(), //Email
             Flux.empty(), //businessphone
             Flux.empty(), //secondary
-            Flux.just(getForestClientDto("00000001")), //fax
+            Flux.just(MatcherDataGen.getForestClientDto("00000001")), //fax
             Flux.empty(), //address
             true,
             false
@@ -155,56 +152,5 @@ class LocationStepMatcherTest {
     );
   }
 
-  private static ClientSubmissionDto getAddress() {
-    return getDto(
-        new ClientAddressDto(
-            "1234 Fake St",
-            null,
-            null,
-            new ClientValueTextDto("CA", null),
-            new ClientValueTextDto("BC", null),
-            "Victoria",
-            "V8V4K9",
-            "2505551234",
-            "2505555678",
-            "2505559012",
-            "a@a.com",
-            null,
-            0,
-            null
-        )
-    );
-  }
-
-  private static ClientSubmissionDto getDto(ClientAddressDto addressDto) {
-    return new ClientSubmissionDto(
-        null,
-        new ClientLocationDto(
-            addressDto == null ? List.of() : List.of(addressDto),
-            List.of()
-        ),
-        null,
-        null
-    );
-  }
-
-  private static ForestClientDto getForestClientDto(String clientNumber) {
-    return new ForestClientDto(
-        clientNumber,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-    );
-  }
 
 }

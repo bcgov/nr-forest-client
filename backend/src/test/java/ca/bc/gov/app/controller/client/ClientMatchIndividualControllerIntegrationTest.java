@@ -5,24 +5,23 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
-import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
+import ca.bc.gov.app.extensions.MatcherDataGen;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -36,7 +35,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import reactor.core.publisher.Mono;
 
-@DisplayName("Integrated Test | Client Match Controller")
+@DisplayName("Integrated Test | Client Match for Individual Controller")
 class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @RegisterExtension
@@ -102,7 +101,8 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
                 .withQueryParam("dob", equalTo(dto.businessInformation().birthdate().format(
                     DateTimeFormatter.ISO_DATE))
                 )
-                .withQueryParam("identification", equalTo(dto.businessInformation().clientIdentification()))
+                .withQueryParam("identification",
+                    equalTo(dto.businessInformation().clientIdentification()))
                 .willReturn(okJson(individualFullMatch))
         );
 
@@ -126,7 +126,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
           .expectStatus()
           .isEqualTo(HttpStatus.CONFLICT)
           .expectBodyList(MatchResult.class)
-          .value(values -> assertEquals(
+          .value(values -> Assertions.assertEquals(
                   fuzzy,
                   values
                       .stream()
@@ -145,7 +145,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
   private static Stream<Arguments> individualMatch() {
     return Stream.of(
         Arguments.of(
-            getIndividualDto(
+            MatcherDataGen.getIndividualDto(
                 "Jhon",
                 "Wick",
                 LocalDate.of(1970, 1, 1),
@@ -160,7 +160,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             false
         ),
         Arguments.of(
-            getIndividualDto(
+            MatcherDataGen.getIndividualDto(
                 "James",
                 "Wick",
                 LocalDate.of(1970, 1, 1),
@@ -175,7 +175,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             false
         ),
         Arguments.of(
-            getIndividualDto(
+            MatcherDataGen.getIndividualDto(
                 "Valeria",
                 "Valid",
                 LocalDate.of(1970, 1, 1),
@@ -190,7 +190,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             false
         ),
         Arguments.of(
-            getIndividualDto(
+            MatcherDataGen.getIndividualDto(
                 "Papernon",
                 "Pompadour",
                 LocalDate.of(1970, 1, 1),
@@ -205,7 +205,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             true
         ),
         Arguments.of(
-            getIndividualDto(
+            MatcherDataGen.getIndividualDto(
                 "Karls",
                 "Enrikvinjon",
                 LocalDate.of(1970, 1, 1),
@@ -220,7 +220,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             false
         ),
         Arguments.of(
-            getIndividualDto(
+            MatcherDataGen.getIndividualDto(
                 "Palitz",
                 "Yelvengard",
                 LocalDate.of(1970, 1, 1),
@@ -236,74 +236,5 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
         )
     );
   }
-
-  private static ClientSubmissionDto getIndividualDto(
-      String firstName,
-      String lastName,
-      LocalDate birthdate,
-      String idType,
-      String idProvince,
-      String idValue
-  ) {
-
-    ClientSubmissionDto dto = getDtoType("I");
-
-    return
-        dto
-            .withBusinessInformation(
-                dto
-                    .businessInformation()
-                    .withBusinessName(lastName)
-                    .withFirstName(firstName)
-                    .withBirthdate(birthdate)
-                    .withIdentificationType(idType)
-                    .withIdentificationProvince(idProvince)
-                    .withClientIdentification(idValue)
-                    .withClientType("I")
-            );
-  }
-
-  private static ClientSubmissionDto getDtoType(String type) {
-    ClientSubmissionDto dto = getDto();
-    return dto.withBusinessInformation(
-        dto
-            .businessInformation()
-            .withClientType(type)
-    );
-
-  }
-
-  private static ClientSubmissionDto getDto() {
-    return new ClientSubmissionDto(
-        new ClientBusinessInformationDto(
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        ),
-        new ClientLocationDto(
-            null,
-            null
-        ),
-        null,
-        null
-    );
-  }
-
 
 }
