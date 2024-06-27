@@ -11,15 +11,6 @@ describe("<LocationsWizardStep />", () => {
     });
   });
 
-  const global = {
-    config: {
-      globalProperties: {
-        $features: {
-          BCEID_MULTI_ADDRESS: true,
-        },
-      },
-    },
-  };
   it("renders the LocationsWizardStep component", () => {
     cy.mount(LocationsWizardStep, {
       props: {
@@ -40,7 +31,6 @@ describe("<LocationsWizardStep />", () => {
         } as FormDataDto,
         active: false,
       },
-      global,
     });
 
     // Assert that the main component is rendered
@@ -48,6 +38,65 @@ describe("<LocationsWizardStep />", () => {
 
     // Assert that the first field is displayed
     cy.get("#addr_0").should("exist");
+  });
+
+  describe("additional delivery information", () => {
+    let bus: ReturnType<typeof useEventBus<ModalNotification>>;
+
+    beforeEach(() => {
+      bus = useEventBus<ModalNotification>("modal-notification");
+      bus.on((payload) => {
+        payload.handler(); // automatically proceed with the deletion
+      });
+
+      cy.mount(LocationsWizardStep, {
+        props: {
+          data: {
+            location: {
+              addresses: [
+                {
+                  locationName: "",
+                  streetAddress: "123 Forest Street",
+                  country: { value: "CA", text: "Canada" },
+                  province: { value: "BC", text: "British Columbia" },
+                  city: "Victoria",
+                  postalCode: "A0A0A0",
+                } as Address,
+              ],
+              contacts: [],
+            },
+          } as FormDataDto,
+          active: false,
+        },
+      });
+    });
+
+    afterEach(() => {
+      bus.reset();
+    });
+
+    it("should add the Additional delivery information and then remove it", () => {
+      // should not display the Additional delivery information input initially
+      cy.get("#complementaryAddressTwo_0").should("not.exist");
+
+      // click to add it
+      cy.contains("Add more delivery information").should("be.visible").click();
+
+      // should display the Additional delivery information input
+      cy.get("#complementaryAddressTwo_0").should("be.visible");
+
+      // should hide the button
+      cy.contains("Add more delivery information").should("not.exist");
+
+      // click to remove it
+      cy.get("#deleteAdditionalDeliveryInformation_0").click();
+
+      // should hide the Additional delivery information input again
+      cy.get("#complementaryAddressTwo_0").should("not.exist");
+
+      // the button to add it is visible again
+      cy.contains("Add more delivery information").should("be.visible");
+    });
   });
 
   describe("when an address which is not the last one gets deleted", () => {
@@ -119,7 +168,6 @@ describe("<LocationsWizardStep />", () => {
           } as FormDataDto,
           active: false,
         },
-        global,
       })
         .its("wrapper")
         .as("vueWrapper");

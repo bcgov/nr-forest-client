@@ -316,7 +316,7 @@ const showAdditionalDelivery = () => {
           @error="validation.complementaryAddressTwo = !$event"
         />
         <cds-button
-          :id="'deleteAddress_' + id"
+          :id="'deleteAdditionalDeliveryInformation_' + id"
           :danger-descriptor="`Delete additional delivery information &quot;${selectedValue.complementaryAddressTwo || ''}&quot; from &quot;${getAddressDescription(
             selectedValue,
             id,
