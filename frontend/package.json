@@ -53,7 +53,7 @@
     "@carbon/styles": "^1.57.0",
     "@carbon/web-components": "^2.9.0",
     "@vueuse/core": "^10.2.0",
-    "aws-amplify": "^6.3.3",
+    "aws-amplify": "^6.3.5",
     "axios": "^1.7.2",
     "date-fns": "^3.0.0",
     "dotenv": "^16.0.0",
