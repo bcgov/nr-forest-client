@@ -12,6 +12,7 @@ import {
   formFieldValidations as externalFormFieldValidations,
   validate as globalValidate,
   runValidation as globalRunValidation,
+  isAscii,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -177,7 +178,17 @@ export const getClientIdentificationValidations = (
   key: ClientIdentificationFormFieldValidationKey,
 ): ((value: any) => string)[] => getValidations(key);
 
-// Step 2: Addresses
+// Step 2: Locations
+
+fieldValidations["location.addresses.*.complementaryAddressOne"] = [
+  isMaxSizeMsg("delivery information", 40),
+  isAscii("delivery information"),
+];
+
+fieldValidations["location.addresses.*.complementaryAddressTwo"] = [
+  isMaxSizeMsg("additional delivery information", 40),
+  isAscii("additional delivery information"),
+];
 
 // Step 3: Contacts
 

@@ -9,7 +9,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import type { CodeNameType, BusinessSearchResult } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
 // Validators
-import { getValidations } from "@/helpers/validators/GlobalValidators";
+import { getValidations, validate } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // @ts-ignore
 import Delete16 from "@carbon/icons-vue/es/trash-can/16";
@@ -85,7 +85,17 @@ const addressControl = ref(false);
 
 //Validations
 const validation = reactive<Record<string, boolean>>({
-  locationName: props.id == 0,
+  locationName: false,
+  complementaryAddressOne:
+    !selectedValue.complementaryAddressOne || // since it is not required
+    validate(["location.addresses.*.complementaryAddressOne"], {
+      location: { addresses: [{ ...selectedValue }] },
+    }),
+  complementaryAddressTwo:
+    !selectedValue.complementaryAddressTwo || // since it is not required
+    validate(["location.addresses.*.complementaryAddressTwo"], {
+      location: { addresses: [{ ...selectedValue }] },
+    }),
   streetAddress: false,
   country: false,
   province: false,
@@ -275,7 +285,7 @@ const showAdditionalDelivery = () => {
         ...getValidations('location.addresses.*.complementaryAddressOne'),
         submissionValidation(`location.addresses[${id}].complementaryAddressOne`),
       ]"
-      @empty="validation.complementaryAddressOne = !$event"
+      @empty="validation.complementaryAddressOne = true"
       @error="validation.complementaryAddressOne = !$event"
     />
 
@@ -302,7 +312,7 @@ const showAdditionalDelivery = () => {
             ...getValidations('location.addresses.*.complementaryAddressTwo'),
             submissionValidation(`location.addresses[${id}].complementaryAddressTwo`),
           ]"
-          @empty="validation.complementaryAddressTwo = !$event"
+          @empty="validation.complementaryAddressTwo = true"
           @error="validation.complementaryAddressTwo = !$event"
         />
         <cds-button
