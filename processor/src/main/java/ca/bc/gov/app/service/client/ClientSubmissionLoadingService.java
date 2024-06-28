@@ -98,6 +98,7 @@ public class ClientSubmissionLoadingService {
                                     + submissionContact.getLastName(),
                                     details.getOrganizationName(),
                                     districtInfo.getRight(),
+                                    districtInfo.getLeft(),
                                     Objects.toString(details.getClientNumber(), ""),
                                     String.valueOf(message.parameters()
                                         .get(ApplicationConstant.MATCHING_REASON)),
@@ -162,14 +163,15 @@ public class ClientSubmissionLoadingService {
       String username,
       String businessName,
       String districtName,
+      String districtEmail,
       String clientNumber,
       String reason,
       Integer submissionId
   ) {
     return switch ((SubmissionStatusEnum) message.parameters()
         .get(ApplicationConstant.SUBMISSION_STATUS)) {
-      case A -> approvalParameters(username, businessName, clientNumber);
-      case R -> rejectionParameters(username, businessName, clientNumber, reason);
+      case A -> approvalParameters(username, businessName, clientNumber, districtName, districtEmail);
+      case R -> rejectionParameters(username, businessName, clientNumber, reason, districtName, districtEmail);
       default -> revisionParameters(username, businessName, submissionId, districtName);
     };
   }
@@ -193,13 +195,17 @@ public class ClientSubmissionLoadingService {
   private Map<String, Object> approvalParameters(
       String username,
       String businessName,
-      String clientNumber
+      String clientNumber,
+      String districtName,
+      String districtEmail
   ) {
     return Map.of(
         "userName", username,
         "business", Map.of(
             "name", businessName,
-            "clientNumber", clientNumber
+            "clientNumber", clientNumber,
+            "districtName", districtName,
+            "districtEmail", districtEmail
         )
     );
   }
@@ -208,14 +214,18 @@ public class ClientSubmissionLoadingService {
       String username,
       String businessName,
       String clientNumber,
-      String reason
+      String reason,
+      String districtName,
+      String districtEmail
   ) {
     return Map.of(
         "userName", username,
         "reason", reason,
         "business", Map.of(
             "name", businessName,
-            "clientNumber", clientNumber
+            "clientNumber", clientNumber,
+            "districtName", districtName,
+            "districtEmail", districtEmail
         )
     );
   }
