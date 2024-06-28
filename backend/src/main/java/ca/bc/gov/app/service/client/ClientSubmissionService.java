@@ -11,6 +11,7 @@ import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.client.DistrictDto;
 import ca.bc.gov.app.dto.submissions.SubmissionAddressDto;
 import ca.bc.gov.app.dto.submissions.SubmissionApproveRejectDto;
 import ca.bc.gov.app.dto.submissions.SubmissionBusinessDto;
@@ -42,6 +43,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -145,8 +147,15 @@ public class ClientSubmissionService {
             + districtCodeEntity.getDescription())
         .defaultIfEmpty("");
   }
-
-
+  
+  private Mono<DistrictDto> getDistrictByCode(String districtCode) {
+    return Mono.justOrEmpty(districtCode).flatMap(districtCodeRepository::findByCode)
+        .map(districtCodeEntity -> new DistrictDto(
+            districtCodeEntity.getCode(),
+            districtCodeEntity.getDescription(),
+            districtCodeEntity.getEmailAddress()));
+  }
+  
   /**
    * Submits a new client submission and returns a Mono of the submission ID.
    *
@@ -445,15 +454,34 @@ public class ClientSubmissionService {
       String email,
       String userName
   ) {
-    return chesService.sendEmail(
-            "registration",
-            email,
-            "Client number application received",
-            clientSubmissionDto.description(userName),
-            null)
-        .thenReturn(submissionId);
+      return getDistrictByCode(clientSubmissionDto.businessInformation().district())
+          .flatMap(district -> {
+              Map<String, Object> params = registrationParameters(
+                  clientSubmissionDto.description(userName), 
+                  district.description(), 
+                  district.emails()
+              );
+              return chesService.sendEmail(
+                      "registration",
+                      email,
+                      "Client number application received",
+                      params,
+                      null)
+                  .thenReturn(submissionId);
+          });
   }
-
+  
+  private Map<String, Object> registrationParameters(
+      Map<String, Object> clientSubmission,
+      String districtName,
+      String districtEmail
+  ) {
+    Map<String, Object> descMap = new HashMap<>();
+    descMap.putAll(clientSubmission);
+    descMap.put("districtName", StringUtils.defaultString(districtName));
+    descMap.put("districtEmail", StringUtils.defaultString(districtEmail));
+    return descMap;
+  }
 
   private Mono<Map<String, String>> getClientTypes() {
     return template
