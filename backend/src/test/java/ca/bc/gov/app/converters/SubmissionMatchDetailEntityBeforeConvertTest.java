@@ -35,7 +35,7 @@ class SubmissionMatchDetailEntityBeforeConvertTest {
         .as(StepVerifier::create)
         .assertNext(actual -> {
           assertEquals(expected.getMatchingField().asString(), actual.getMatchingField().asString());
-          if(expected.getMatchers() != null)
+          if (expected.getMatchers() != null)
             assertEquals(expected.getMatchers(), actual.getMatchers());
         })
         .verifyComplete();

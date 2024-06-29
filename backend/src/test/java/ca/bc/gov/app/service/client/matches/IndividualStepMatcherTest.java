@@ -7,12 +7,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.dto.client.StepMatchEnum;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.DataMatchException;
+import ca.bc.gov.app.extensions.ClientMatchDataGenerator;
 import ca.bc.gov.app.service.client.ClientLegacyService;
 import java.time.LocalDate;
 import java.util.List;
@@ -92,23 +92,23 @@ class IndividualStepMatcherTest {
     if (error) {
       matcher
           .consumeErrorWith(errorContent ->
-            assertThat(errorContent)
-                .isInstanceOf(DataMatchException.class)
-                .hasMessage("409 CONFLICT \"Match found on existing data.\"")
-                .extracting("matches")
-                .isInstanceOf(List.class)
-                .asList()
-                .has(
-                    new Condition<>(
-                        matchResult ->
-                        matchResult
-                            .stream()
-                            .map(m -> (MatchResult)m)
-                            .anyMatch(m -> m.fuzzy() == fuzzy),
-                        "MatchResult with fuzzy value %s",
-                        fuzzy
-                    )
-                )
+              assertThat(errorContent)
+                  .isInstanceOf(DataMatchException.class)
+                  .hasMessage("409 CONFLICT \"Match found on existing data.\"")
+                  .extracting("matches")
+                  .isInstanceOf(List.class)
+                  .asList()
+                  .has(
+                      new Condition<>(
+                          matchResult ->
+                              matchResult
+                                  .stream()
+                                  .map(m -> (MatchResult) m)
+                                  .anyMatch(m -> m.fuzzy() == fuzzy),
+                          "MatchResult with fuzzy value %s",
+                          fuzzy
+                      )
+                  )
 
           )
           .verify();
@@ -122,7 +122,8 @@ class IndividualStepMatcherTest {
   private static Stream<Arguments> matchStep() {
     return Stream.of(
         Arguments.of(
-            getDto("Jhon", "Wick", LocalDate.of(1970, 1, 1), "CDDL","BC", "1234567"),
+            ClientMatchDataGenerator.getDto("Jhon", "Wick", LocalDate.of(1970, 1, 1), "CDDL", "BC", "1234567",
+                null),
             Flux.empty(),
             Flux.empty(),
             Flux.empty(),
@@ -130,100 +131,51 @@ class IndividualStepMatcherTest {
             false
         ),
         Arguments.of(
-            getDto("James", "Wick", LocalDate.of(1970, 1, 1), "CDDL","AB", "7654321"),
+            ClientMatchDataGenerator.getDto("James", "Wick", LocalDate.of(1970, 1, 1), "CDDL", "AB",
+                "7654321", null),
             Flux.empty(),
             Flux.empty(),
-            Flux.just(getForestClientDto("00000001")),
+            Flux.just(ClientMatchDataGenerator.getForestClientDto("00000001")),
             true,
             false
         ),
         Arguments.of(
-            getDto("Valeria", "Valid", LocalDate.of(1970, 1, 1), "CDDL","YK", "1233210"),
+            ClientMatchDataGenerator.getDto("Valeria", "Valid", LocalDate.of(1970, 1, 1), "CDDL", "YK",
+                "1233210", null),
             Flux.empty(),
-            Flux.just(getForestClientDto("00000002")),
+            Flux.just(ClientMatchDataGenerator.getForestClientDto("00000002")),
             Flux.empty(),
             true,
             false
         ),
         Arguments.of(
-            getDto("Papernon", "Pompadour", LocalDate.of(1970, 1, 1), "CDDL","ON", "9994545"),
-            Flux.just(getForestClientDto("00000003")),
+            ClientMatchDataGenerator.getDto("Papernon", "Pompadour", LocalDate.of(1970, 1, 1), "CDDL", "ON",
+                "9994545", null),
+            Flux.just(ClientMatchDataGenerator.getForestClientDto("00000003")),
             Flux.empty(),
             Flux.empty(),
             true,
             true
         ),
         Arguments.of(
-            getDto("Karls", "Enrikvinjon", LocalDate.of(1970, 1, 1), "CDDL","BC", "3337474"),
-            Flux.just(getForestClientDto("00000004")),
-            Flux.just(getForestClientDto("00000005")),
+            ClientMatchDataGenerator.getDto("Karls", "Enrikvinjon", LocalDate.of(1970, 1, 1), "CDDL", "BC",
+                "3337474", null),
+            Flux.just(ClientMatchDataGenerator.getForestClientDto("00000004")),
+            Flux.just(ClientMatchDataGenerator.getForestClientDto("00000005")),
             Flux.empty(),
             true,
             false
         ),
         Arguments.of(
-            getDto("Palitz", "Yelvengard", LocalDate.of(1970, 1, 1), "USDL","AZ", "7433374"),
-            Flux.just(getForestClientDto("00000006")),
-            Flux.just(getForestClientDto("00000007")),
-            Flux.just(getForestClientDto("00000008")),
+            ClientMatchDataGenerator.getDto("Palitz", "Yelvengard", LocalDate.of(1970, 1, 1), "USDL", "AZ",
+                "7433374", null),
+            Flux.just(ClientMatchDataGenerator.getForestClientDto("00000006")),
+            Flux.just(ClientMatchDataGenerator.getForestClientDto("00000007")),
+            Flux.just(ClientMatchDataGenerator.getForestClientDto("00000008")),
             true,
             false
         )
     );
   }
 
-  private static ClientSubmissionDto getDto(
-      String firstName,
-      String lastName,
-      LocalDate birthdate,
-      String idType,
-      String idProvince,
-      String idValue
-  ) {
-    return new ClientSubmissionDto(
-        new ClientBusinessInformationDto(
-            null,
-            "",
-            null,
-            null,
-            null,
-            null,
-            birthdate,
-            null,
-            null,
-            null,
-            null,
-            firstName,
-            null,
-            lastName,
-            null,
-            idType,
-            idValue,
-            null,
-            idProvince
-        ),
-        null,
-        null,
-        null
-    );
-  }
-
-  private static ForestClientDto getForestClientDto(String clientNumber) {
-    return new ForestClientDto(
-        clientNumber,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-    );
-  }
 }

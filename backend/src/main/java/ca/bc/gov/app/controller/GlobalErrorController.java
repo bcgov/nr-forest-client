@@ -119,7 +119,7 @@ private Mono<ServerResponse> renderErrorResponse(
         .body(BodyInserters.fromValue(validationException.getErrors()));
   }
 
-  if(exception instanceof DataMatchException matchException){
+  if (exception instanceof DataMatchException matchException) {
     return ServerResponse
         .status(matchException.getStatusCode())
         .contentType(MediaType.APPLICATION_JSON)

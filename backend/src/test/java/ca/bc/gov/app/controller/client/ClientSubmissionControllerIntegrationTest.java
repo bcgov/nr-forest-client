@@ -381,7 +381,7 @@ class ClientSubmissionControllerIntegrationTest
   @Test
   @DisplayName("Submission Approval / Rejection again fails")
   @Order(9)
-  void shouldNotApproveRejectAgain(){
+  void shouldNotApproveRejectAgain() {
     client
         .mutateWith(csrf())
         .mutateWith(

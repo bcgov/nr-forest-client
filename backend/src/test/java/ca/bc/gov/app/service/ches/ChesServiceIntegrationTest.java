@@ -264,7 +264,7 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
         );
   }
 
-  private static Stream<ChesRequestDto> mailIsOk(){
+  private static Stream<ChesRequestDto> mailIsOk() {
     return Stream.of(
         new ChesRequestDto(List.of("jhon@mail.ca"),
             "Thanks for your email\nYou will hear from us soon"),

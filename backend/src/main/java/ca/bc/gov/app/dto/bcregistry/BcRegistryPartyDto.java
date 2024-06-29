@@ -55,7 +55,7 @@ public record BcRegistryPartyDto(
         .anyMatch(provided::equals);
   }
 
-  public boolean isPerson(){
+  public boolean isPerson() {
     return officer != null && officer().isPerson();
   }
 }
