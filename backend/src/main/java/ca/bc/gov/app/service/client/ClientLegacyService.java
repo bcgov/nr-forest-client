@@ -210,10 +210,10 @@ public class ClientLegacyService {
 
   public Flux<ForestClientDto> searchGeneric(
       String searchType,
-     String value
+      String value
   ) {
 
-    if(StringUtils.isBlank(value))
+    if (StringUtils.isBlank(value))
       return Flux.empty();
 
     Map<String, List<String>> parameters = Map.of(searchType, List.of(value));
@@ -242,9 +242,7 @@ public class ClientLegacyService {
 
   }
 
-  public Flux<ForestClientDto> searchLocation(
-      AddressSearchDto dto
-  ){
+  public Flux<ForestClientDto> searchLocation(AddressSearchDto dto) {
     return
         legacyApi
             .post()
@@ -255,6 +253,5 @@ public class ClientLegacyService {
                 client -> log.info("Found Legacy data for location search with client number {}", client.clientNumber())
             );
   }
-
 
 }

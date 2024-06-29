@@ -15,7 +15,7 @@ import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
-import ca.bc.gov.app.extensions.MatcherDataGen;
+import ca.bc.gov.app.extensions.ClientMatchDataGenerator;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.Duration;
@@ -149,7 +149,7 @@ class ClientMatchLocationControllerIntegrationTest extends AbstractTestContainer
   private static Stream<Arguments> individualMatch() {
     return Stream.of(
         Arguments.of(
-            MatcherDataGen.getAddress(),
+            ClientMatchDataGenerator.getAddress(),
             "[]",
             "[]",
             "[]",
@@ -159,7 +159,7 @@ class ClientMatchLocationControllerIntegrationTest extends AbstractTestContainer
             false
         ),
         Arguments.of(
-            MatcherDataGen.getAddress(),
+            ClientMatchDataGenerator.getAddress(),
             "[]",
             "[]",
             "[]",
@@ -169,7 +169,7 @@ class ClientMatchLocationControllerIntegrationTest extends AbstractTestContainer
             false
         ),
         Arguments.of(
-            MatcherDataGen.getAddress(),
+            ClientMatchDataGenerator.getAddress(),
             "[]",
             "[{\"clientNumber\":\"00000002\"}]",
             "[]",
@@ -179,7 +179,7 @@ class ClientMatchLocationControllerIntegrationTest extends AbstractTestContainer
             false
         ),
         Arguments.of(
-            MatcherDataGen.getAddress(),
+            ClientMatchDataGenerator.getAddress(),
             "[{\"clientNumber\":\"00000003\"}]",
             "[]",
             "[]",
@@ -189,7 +189,7 @@ class ClientMatchLocationControllerIntegrationTest extends AbstractTestContainer
             false
         ),
         Arguments.of(
-            MatcherDataGen.getAddress(),
+            ClientMatchDataGenerator.getAddress(),
             "[]",
             "[{\"clientNumber\":\"00000005\"}]",
             "[]",
@@ -199,7 +199,7 @@ class ClientMatchLocationControllerIntegrationTest extends AbstractTestContainer
             false
         ),
         Arguments.of(
-            MatcherDataGen.getAddress(),
+            ClientMatchDataGenerator.getAddress(),
             "[]",
             "[]",
             "[{\"clientNumber\":\"00000008\"}]",
@@ -209,7 +209,7 @@ class ClientMatchLocationControllerIntegrationTest extends AbstractTestContainer
             false
         ),
         Arguments.of(
-            MatcherDataGen.getAddress(),
+            ClientMatchDataGenerator.getAddress(),
             "[]",
             "[]",
             "[]",

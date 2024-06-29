@@ -74,7 +74,7 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                     )
                     .withClientTypeCode("I")
                     .withClientIdTypeCode(
-                        ProcessorUtil.getClientIdTypeCode(
+                        ProcessorUtil.getClientAuthenticationTypeCode(
                             ProcessorUtil.splitName(
                                 getUser(message, ApplicationConstant.CREATED_BY))[1]
                         )

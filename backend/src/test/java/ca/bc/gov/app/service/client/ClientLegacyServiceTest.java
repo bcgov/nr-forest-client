@@ -41,13 +41,13 @@ class ClientLegacyServiceTest extends AbstractTestContainerIntegrationTest {
   private ClientLegacyService service;
 
   @BeforeEach
-  public void setUp(){
+  public void setUp() {
     legacyStub.resetAll();
   }
 
   @DisplayName("searching legacy with userid instead")
   @Test
-  void shouldSearchLegacyWhenNoRegistration(){
+  void shouldSearchLegacyWhenNoRegistration() {
 
     String userId = UUID.randomUUID().toString();
 
@@ -74,14 +74,14 @@ class ClientLegacyServiceTest extends AbstractTestContainerIntegrationTest {
   @ParameterizedTest
   @MethodSource("invalidValues")
   @DisplayName("searching legacy with invalid values")
-  void shouldSearchGenericWithInvalidValues(String values){
+  void shouldSearchGenericWithInvalidValues(String values) {
     service.searchGeneric("email",values)
         .as(StepVerifier::create)
         .verifyComplete();
 
   }
 
-  private static Stream<String> invalidValues(){
+  private static Stream<String> invalidValues() {
     return Stream.of(null,StringUtils.EMPTY,"   ");
   }
 

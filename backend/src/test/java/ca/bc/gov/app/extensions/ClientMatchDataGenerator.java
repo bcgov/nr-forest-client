@@ -12,7 +12,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MatcherDataGen {
+public class ClientMatchDataGenerator {
 
   public static ClientSubmissionDto getIndividualDto(
       String firstName,

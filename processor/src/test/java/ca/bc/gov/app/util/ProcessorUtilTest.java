@@ -36,7 +36,7 @@ class ProcessorUtilTest {
   @MethodSource("clientIdTypeCode")
   @DisplayName("should get client id type code")
   void shouldGetClientIdTypeCode(String input, String expected) {
-    Assertions.assertEquals(expected, ProcessorUtil.getClientIdTypeCode(input));
+    Assertions.assertEquals(expected, ProcessorUtil.getClientAuthenticationTypeCode(input));
   }
 
   private static Stream<Arguments> extract() {
@@ -88,7 +88,7 @@ class ProcessorUtilTest {
         );
   }
 
-  private static Stream<Arguments> clientIdTypeCode(){
+  private static Stream<Arguments> clientAuthenticationTypeCode() {
     return
         Stream.of(
             Arguments.of("bcsc", "BCSC"),

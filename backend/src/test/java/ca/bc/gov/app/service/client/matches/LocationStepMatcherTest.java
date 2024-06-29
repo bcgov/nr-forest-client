@@ -11,7 +11,7 @@ import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.DataMatchException;
-import ca.bc.gov.app.extensions.MatcherDataGen;
+import ca.bc.gov.app.extensions.ClientMatchDataGenerator;
 import ca.bc.gov.app.service.client.ClientLegacyService;
 import java.util.List;
 import java.util.stream.Stream;
@@ -90,17 +90,17 @@ class LocationStepMatcherTest {
   private static Stream<Arguments> matchStep() {
     return Stream.of(
         Arguments.of(
-            MatcherDataGen.getAddress(),
+            ClientMatchDataGenerator.getAddress(),
             Flux.empty(), //Email
             Flux.empty(), //businessphone
             Flux.empty(), //secondary
             Flux.empty(), //fax
-            Flux.just(MatcherDataGen.getForestClientDto("00000001")), //address
+            Flux.just(ClientMatchDataGenerator.getForestClientDto("00000001")), //address
             true,
             false
         ),
         Arguments.of(
-            MatcherDataGen.getAddress(),
+            ClientMatchDataGenerator.getAddress(),
             Flux.empty(), //Email
             Flux.empty(), //businessphone
             Flux.empty(), //secondary
@@ -110,8 +110,8 @@ class LocationStepMatcherTest {
             false
         ),
         Arguments.of(
-            MatcherDataGen.getAddress(),
-            Flux.just(MatcherDataGen.getForestClientDto("00000001")), //Email
+            ClientMatchDataGenerator.getAddress(),
+            Flux.just(ClientMatchDataGenerator.getForestClientDto("00000001")), //Email
             Flux.empty(), //businessphone
             Flux.empty(), //secondary
             Flux.empty(), //fax
@@ -120,9 +120,9 @@ class LocationStepMatcherTest {
             false
         ),
         Arguments.of(
-            MatcherDataGen.getAddress(),
+            ClientMatchDataGenerator.getAddress(),
             Flux.empty(), //Email
-            Flux.just(MatcherDataGen.getForestClientDto("00000001")), //businessphone
+            Flux.just(ClientMatchDataGenerator.getForestClientDto("00000001")), //businessphone
             Flux.empty(), //secondary
             Flux.empty(), //fax
             Flux.empty(), //address
@@ -130,21 +130,21 @@ class LocationStepMatcherTest {
             false
         ),
         Arguments.of(
-            MatcherDataGen.getAddress(),
+            ClientMatchDataGenerator.getAddress(),
             Flux.empty(), //Email
             Flux.empty(), //businessphone
-            Flux.just(MatcherDataGen.getForestClientDto("00000001")), //secondary
+            Flux.just(ClientMatchDataGenerator.getForestClientDto("00000001")), //secondary
             Flux.empty(), //fax
             Flux.empty(), //address
             true,
             false
         ),
         Arguments.of(
-            MatcherDataGen.getAddress(),
+            ClientMatchDataGenerator.getAddress(),
             Flux.empty(), //Email
             Flux.empty(), //businessphone
             Flux.empty(), //secondary
-            Flux.just(MatcherDataGen.getForestClientDto("00000001")), //fax
+            Flux.just(ClientMatchDataGenerator.getForestClientDto("00000001")), //fax
             Flux.empty(), //address
             true,
             false

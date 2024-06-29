@@ -14,7 +14,7 @@ import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
-import ca.bc.gov.app.extensions.MatcherDataGen;
+import ca.bc.gov.app.extensions.ClientMatchDataGenerator;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.Duration;
@@ -145,7 +145,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
   private static Stream<Arguments> individualMatch() {
     return Stream.of(
         Arguments.of(
-            MatcherDataGen.getIndividualDto(
+            ClientMatchDataGenerator.getIndividualDto(
                 "Jhon",
                 "Wick",
                 LocalDate.of(1970, 1, 1),
@@ -160,7 +160,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             false
         ),
         Arguments.of(
-            MatcherDataGen.getIndividualDto(
+            ClientMatchDataGenerator.getIndividualDto(
                 "James",
                 "Wick",
                 LocalDate.of(1970, 1, 1),
@@ -175,7 +175,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             false
         ),
         Arguments.of(
-            MatcherDataGen.getIndividualDto(
+            ClientMatchDataGenerator.getIndividualDto(
                 "Valeria",
                 "Valid",
                 LocalDate.of(1970, 1, 1),
@@ -190,7 +190,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             false
         ),
         Arguments.of(
-            MatcherDataGen.getIndividualDto(
+            ClientMatchDataGenerator.getIndividualDto(
                 "Papernon",
                 "Pompadour",
                 LocalDate.of(1970, 1, 1),
@@ -205,7 +205,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             true
         ),
         Arguments.of(
-            MatcherDataGen.getIndividualDto(
+            ClientMatchDataGenerator.getIndividualDto(
                 "Karls",
                 "Enrikvinjon",
                 LocalDate.of(1970, 1, 1),
@@ -220,7 +220,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             false
         ),
         Arguments.of(
-            MatcherDataGen.getIndividualDto(
+            ClientMatchDataGenerator.getIndividualDto(
                 "Palitz",
                 "Yelvengard",
                 LocalDate.of(1970, 1, 1),
