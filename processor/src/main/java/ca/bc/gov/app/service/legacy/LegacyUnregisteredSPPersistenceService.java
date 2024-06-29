@@ -85,7 +85,7 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                         " submitted the sole proprietor with data acquired from Business BCeID")
                     .withClientTypeCode("I")
                     .withClientIdTypeCode(
-                        ProcessorUtil.getClientAuthenticationTypeCode(
+                        ProcessorUtil.getClientIdTypeCode(
                             ProcessorUtil.splitName(
                                 getUser(message, ApplicationConstant.CREATED_BY))[1]
                         )
