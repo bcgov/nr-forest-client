@@ -9,7 +9,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import type { CodeNameType, BusinessSearchResult } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
 // Validators
-import { getValidations, validate } from "@/helpers/validators/StaffFormValidations";
+import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 import Delete16 from "@carbon/icons-vue/es/trash-can/16";
 import Add16 from "@carbon/icons-vue/es/add/16";
@@ -90,16 +90,8 @@ const addressControl = ref(false);
 // Validations
 const validation = reactive<Record<string, boolean>>({
   locationName: false,
-  complementaryAddressOne:
-    !selectedValue.complementaryAddressOne || // since it is not required
-    validate(["location.addresses.*.complementaryAddressOne"], {
-      location: { addresses: [{ ...selectedValue }] },
-    }),
-  complementaryAddressTwo:
-    !selectedValue.complementaryAddressTwo || // since it is not required
-    validate(["location.addresses.*.complementaryAddressTwo"], {
-      location: { addresses: [{ ...selectedValue }] },
-    }),
+  complementaryAddressOne: true,
+  complementaryAddressTwo: true,
   streetAddress: false,
   country: false,
   province: false,
