@@ -22,14 +22,14 @@ public record MessagingWrapper<T>(
 
   @SuppressWarnings({"unchecked", "unused"})
   public <P> P getParameter(String key,Class<P> clazz) {
-    if(Objects.isNull(this.parameters.get(key)))
+    if (Objects.isNull(this.parameters.get(key)))
       return null;
     return (P) this.parameters.get(key);
   }
 
   public <P> P getInfoParameter(String key,Class<P> clazz) {
     Map<String,Object> info = getParameter("info",Map.class);
-    if(Objects.isNull(info))
+    if (Objects.isNull(info))
       return null;
     return (P) info.get(key);
   }

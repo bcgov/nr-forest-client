@@ -43,7 +43,7 @@ public class ClientMatchService {
       int step
   ) {
 
-    if(!isMatcherEnabled.test(dto)){
+    if (!isMatcherEnabled.test(dto)) {
       return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, StringUtils.EMPTY));
     }
 

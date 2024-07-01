@@ -35,7 +35,7 @@ class EmailLogEntityJsonConvertTest {
         .as(StepVerifier::create)
         .assertNext(actual -> {
           assertEquals(expected.getEmailVariables().asString(), actual.getEmailVariables().asString());
-          if(expected.getVariables() != null)
+          if (expected.getVariables() != null)
             assertEquals(expected.getVariables(), actual.getVariables());
         })
         .verifyComplete();

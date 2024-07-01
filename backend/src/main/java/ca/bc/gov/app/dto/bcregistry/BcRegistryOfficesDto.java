@@ -17,7 +17,7 @@ public record BcRegistryOfficesDto(
         .map(BcRegistryBusinessAdressesDto::addresses)
         .orElse(Set.of());
   }
-  public boolean isValid(){
+  public boolean isValid() {
     return businessOffice != null && businessOffice.isValid();
   }
 }

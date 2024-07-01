@@ -1,5 +1,6 @@
 package ca.bc.gov.app.controller;
 
+import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.service.ClientSearchService;
 import io.micrometer.observation.annotation.Observed;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,6 +73,30 @@ public class ClientSearchController {
   ) {
     log.info("Receiving request to search by ID with type {} and value {}", idType, identification);
     return service.findByIdentification(idType, identification);
+  }
+
+  @GetMapping("/email")
+  public Flux<ForestClientDto> findByGeneralEmail(
+      @RequestParam String email
+  ) {
+    log.info("Receiving request to search by email {}", email);
+    return service.findByGeneralEmail(email);
+  }
+
+  @GetMapping("/phone")
+  public Flux<ForestClientDto> findByGeneralPhone(
+      @RequestParam String phone
+  ) {
+    log.info("Receiving request to search by phone {}", phone);
+    return service.findByGeneralPhoneNumber(phone);
+  }
+
+  @PostMapping("/address")
+  public Flux<ForestClientDto> findByLocation(
+      @RequestBody AddressSearchDto address
+  ) {
+    log.info("Receiving request to search by address {}", address);
+    return service.findByEntireAddress(address);
   }
 
 }
