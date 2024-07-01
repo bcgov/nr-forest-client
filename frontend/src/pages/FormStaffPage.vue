@@ -262,10 +262,7 @@ const validation = reactive<Record<string, boolean>>({});
         The parent div is necessary to avoid the div.header-offset below from interfering in the flex flow.
         -->
         <div data-scroll="top-notification" class="header-offset"></div>
-        <error-notification-grouping-component
-          :form-data="formData"
-          :scroll-to-element-fn="() => {}"
-        />
+        <error-notification-grouping-component :form-data="formData" />
       </div>
     </div>
 
