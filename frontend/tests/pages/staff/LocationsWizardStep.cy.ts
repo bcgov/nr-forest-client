@@ -19,6 +19,8 @@ describe("<LocationsWizardStep />", () => {
             addresses: [
               {
                 locationName: "Mailing address",
+                complementaryAddressOne: "",
+                complementaryAddressTwo: null,
                 streetAddress: "123 Forest Street",
                 country: { value: "CA", text: "Canada" },
                 province: { value: "BC", text: "British Columbia" },
@@ -56,6 +58,8 @@ describe("<LocationsWizardStep />", () => {
               addresses: [
                 {
                   locationName: "",
+                  complementaryAddressOne: "",
+                  complementaryAddressTwo: null,
                   streetAddress: "123 Forest Street",
                   country: { value: "CA", text: "Canada" },
                   province: { value: "BC", text: "British Columbia" },
@@ -96,6 +100,41 @@ describe("<LocationsWizardStep />", () => {
 
       // the button to add it is visible again
       cy.contains("Add more delivery information").should("be.visible");
+    });
+
+    it("should display an error on the Delivery information when it's empty and Additional delivery information is displayed", () => {
+      cy.contains("Add more delivery information").click();
+
+      cy.get("#complementaryAddressTwo_0").should("be.visible");
+
+      // the error arrises
+      cy.get("#complementaryAddressOne_0")
+        .find("input")
+        .should("have.class", "cds--text-input--invalid");
+
+      // click to remove it
+      cy.get("#deleteAdditionalDeliveryInformation_0").click();
+
+      // the error goes away
+      cy.get("#complementaryAddressOne_0")
+        .find("input")
+        .should("not.have.class", "cds--text-input--invalid");
+
+      cy.contains("Add more delivery information").click();
+
+      cy.get("#complementaryAddressTwo_0").should("be.visible");
+
+      // the error is back
+      cy.get("#complementaryAddressOne_0")
+        .find("input")
+        .should("have.class", "cds--text-input--invalid");
+
+      cy.get("#complementaryAddressOne_0").find("input").type("anything");
+
+      // the error goes away
+      cy.get("#complementaryAddressOne_0")
+        .find("input")
+        .should("not.have.class", "cds--text-input--invalid");
     });
   });
 
@@ -150,6 +189,8 @@ describe("<LocationsWizardStep />", () => {
               addresses: [
                 {
                   locationName: "Mailing address",
+                  complementaryAddressOne: "",
+                  complementaryAddressTwo: null,
                   streetAddress: "123 Forest Street",
                   country: { value: "CA", text: "Canada" },
                   province: { value: "BC", text: "British Columbia" },
