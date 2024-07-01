@@ -62,6 +62,8 @@ export const emptyAddress = (): Address =>
   JSON.parse(
     JSON.stringify({
       locationName: "",
+      complementaryAddressOne: "",
+      complementaryAddressTwo: null,
       streetAddress: "",
       country: { value: "CA", text: "Canada" },
       province: { value: "BC", text: "British Columbia" },
@@ -84,6 +86,8 @@ export const formDataDto: FormDataDto = {
     birthdate: "",
     address: {
       locationName: "",
+      complementaryAddressOne: "",
+      complementaryAddressTwo: null,
       streetAddress: "",
       country: { value: "", text: "" },
       province: { value: "", text: "" },

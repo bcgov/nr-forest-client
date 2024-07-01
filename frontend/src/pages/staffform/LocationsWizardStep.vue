@@ -146,7 +146,7 @@ const handleRemove = (index: number) => {
 };
 
 const removeAdditionalDelivery = (index: number) => () => {
-  formData.location.addresses[index].complementaryAddressTwo = undefined;
+  formData.location.addresses[index].complementaryAddressTwo = null;
   bus.emit({
     active: false,
     message: "",

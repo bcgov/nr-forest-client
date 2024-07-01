@@ -49,9 +49,7 @@ const uniquenessValidation = () => {
   nameError.value = validateAddressNameData(selectedValue.locationName);
 };
 
-const additionalDeliveryVisible = computed(
-  () => selectedValue.complementaryAddressTwo !== undefined,
-);
+const additionalDeliveryVisible = computed(() => selectedValue.complementaryAddressTwo !== null);
 
 const showAdditionalDelivery = () => {
   selectedValue.complementaryAddressTwo = "";
