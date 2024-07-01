@@ -136,7 +136,7 @@ public class ForestClientConfiguration {
     private String environment;
     private List<NameSecretDto> serviceAccounts;
 
-    public String getDomainUrl(){
+    public String getDomainUrl() {
       return String.format("https://cognito-idp.%s.amazonaws.com/", region);
     }
 

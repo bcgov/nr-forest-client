@@ -88,7 +88,7 @@ class ProcessorUtilTest {
         );
   }
 
-  private static Stream<Arguments> clientIdTypeCode(){
+  private static Stream<Arguments> clientIdTypeCode() {
     return
         Stream.of(
             Arguments.of("bcsc", "BCSC"),

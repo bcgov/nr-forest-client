@@ -174,7 +174,7 @@ public class ClientAddressService {
 
   private <T extends AddressError> void handleError(List<T> addresses) {
 
-    if(CollectionUtils.isEmpty(addresses)) {
+    if (CollectionUtils.isEmpty(addresses)) {
       throw new AddressLookupException("No address data found");
     }
 
@@ -182,7 +182,7 @@ public class ClientAddressService {
         .stream()
         .allMatch(address -> StringUtils.isNotBlank(address.error()));
 
-    if(hasError) {
+    if (hasError) {
       throw new AddressLookupException(addresses.get(0).description());
     }
   }

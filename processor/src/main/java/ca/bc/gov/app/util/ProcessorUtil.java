@@ -61,7 +61,7 @@ public class ProcessorUtil {
     }
   }
 
-  public static String getClientIdTypeCode(String code){
+  public static String getClientIdTypeCode(String code) {
     if (StringUtils.isBlank(code)) {
       return StringUtils.EMPTY;
     }
