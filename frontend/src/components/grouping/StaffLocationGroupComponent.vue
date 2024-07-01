@@ -11,13 +11,11 @@ import type { Address } from "@/dto/ApplyClientNumberDto";
 // Validators
 import { getValidations, validate } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
-// @ts-ignore
 import Delete16 from "@carbon/icons-vue/es/trash-can/16";
-// @ts-ignore
 import Add16 from "@carbon/icons-vue/es/add/16";
 import { getAddressDescription } from "@/services/ForestClientService";
 
-//Define the input properties for this component
+// Define the input properties for this component
 const props = defineProps<{
   id: number;
   modelValue: Address;
@@ -26,7 +24,7 @@ const props = defineProps<{
   revalidate?: boolean;
 }>();
 
-//Events we emit during component lifecycle
+// Events we emit during component lifecycle
 const emit = defineEmits<{
   (e: "valid", value: boolean): void;
   (e: "update:model-value", value: Address | undefined): void;
@@ -36,12 +34,10 @@ const emit = defineEmits<{
 
 const noValidation = (value: string) => "";
 
-//We set it as a separated ref due to props not being updatable
+// We set it as a separated ref due to props not being updatable
 const selectedValue = reactive<Address>(props.modelValue);
 const validateAddressNameData =
-  props.validations.length === 0
-    ? noValidation
-    : props.validations[0]("Names", props.id + "");
+  props.validations.length === 0 ? noValidation : props.validations[0]("Names", props.id + "");
 const nameError = ref<string | undefined>("");
 const showDetailsLoading = ref<boolean>(false);
 
@@ -64,7 +60,7 @@ const deliveryInformationValidation = () => {
       : "";
 };
 
-//Watch for changes on the input
+// Watch for changes on the input
 watch([selectedValue], () => {
   uniquenessValidation();
   deliveryInformationValidation();
@@ -74,22 +70,18 @@ watch([selectedValue], () => {
 watch(
   () => props.revalidate,
   () => uniquenessValidation(),
-  { immediate: true }
+  { immediate: true },
 );
 
-const updateStateProvince = (
-  value: CodeNameType | undefined,
-  property: string
-) => {
+const updateStateProvince = (value: CodeNameType | undefined, property: string) => {
   if (value && (property === "country" || property === "province")) {
     selectedValue[property] = { value: value.code, text: value.name };
   }
 };
 
-//Province related data
+// Province related data
 const provinceUrl = computed(
-  () =>
-    `/api/countries/${selectedValue.country.value}/provinces?page=0&size=250`
+  () => `/api/countries/${selectedValue.country.value}/provinces?page=0&size=250`,
 );
 
 const resetProvinceOnChange = (receivedCountry: any) => {
@@ -99,7 +91,7 @@ const resetProvinceOnChange = (receivedCountry: any) => {
 
 const addressControl = ref(false);
 
-//Validations
+// Validations
 const validation = reactive<Record<string, boolean>>({
   locationName: false,
   complementaryAddressOne:
@@ -121,9 +113,8 @@ const validation = reactive<Record<string, boolean>>({
 
 const checkValid = () =>
   Object.values(validation).reduce(
-    (accumulator: boolean, currentValue: boolean) =>
-      accumulator && currentValue,
-    true
+    (accumulator: boolean, currentValue: boolean) => accumulator && currentValue,
+    true,
   );
 
 watch([validation], () => emit("valid", checkValid()));
@@ -134,21 +125,21 @@ const postalCodeValidators = computed(() => {
     case "CA":
       return [
         ...getValidations(
-          'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'
+          'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")',
         ),
         submissionValidation(`location.addresses[${props.id}].postalCode`),
       ];
     case "US":
       return [
         ...getValidations(
-          'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")'
+          'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")',
         ),
         submissionValidation(`location.addresses[${props.id}].postalCode`),
       ];
     default:
       return [
         ...getValidations(
-          'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")'
+          'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")',
         ),
         submissionValidation(`location.addresses[${props.id}].postalCode`),
       ];
@@ -204,7 +195,7 @@ const provinceNaming = computed(() => {
 });
 
 const postalCodeNaming = computed(() =>
-  selectedValue.country.value === "US" ? "Zip code" : "Postal code"
+  selectedValue.country.value === "US" ? "Zip code" : "Postal code",
 );
 
 const autoCompleteUrl = computed(
@@ -213,9 +204,7 @@ const autoCompleteUrl = computed(
       selectedValue.country.value ?? ""
     }&maxSuggestions=10&searchTerm=${selectedValue.streetAddress ?? ""}`,
 );
-const autoCompleteResult = ref<BusinessSearchResult | undefined>(
-  {} as BusinessSearchResult
-);
+const autoCompleteResult = ref<BusinessSearchResult | undefined>({} as BusinessSearchResult);
 const detailsData = ref<Address | null>(null);
 
 watch([autoCompleteResult], () => {
@@ -223,21 +212,16 @@ watch([autoCompleteResult], () => {
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
     showDetailsLoading.value = true;
     const { error, loading: detailsLoading } = useFetchTo(
-      `/api/addresses/${encodeURIComponent(
-        autoCompleteResult.value.code
-      )}`,
+      `/api/addresses/${encodeURIComponent(autoCompleteResult.value.code)}`,
       detailsData,
-      {}
+      {},
     );
 
     watch([error], () => {
       postalCodeShowHint.value = true;
     });
 
-    watch(
-      [detailsLoading],
-      () => (showDetailsLoading.value = detailsLoading.value)
-    );
+    watch([detailsLoading], () => (showDetailsLoading.value = detailsLoading.value));
   }
 });
 
@@ -250,8 +234,8 @@ watch([detailsData], () => {
     if (!selectedValue.postalCode) postalCodeShowHint.value = true;
     else postalCodeShowHint.value = false;
     addressControl.value = true;
-    //Why is this here? Because Address response differs from the street address value
-    //addressControl is responsible for giving an empty list instead of the AC value
+    // Why is this here? Because Address response differs from the street address value
+    // addressControl is responsible for giving an empty list instead of the AC value
     setTimeout(() => (addressControl.value = false), 200);
   }
 });
@@ -360,14 +344,16 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
         :contents="addressControl ? [] : content"
         :validations="[
           ...getValidations('location.addresses.*.streetAddress'),
-          submissionValidation(`location.addresses[${id}].streetAddress`)
+          submissionValidation(`location.addresses[${id}].streetAddress`),
         ]"
         :loading="loading"
         @update:selected-value="autoCompleteResult = $event"
         @empty="validation.streetAddress = !$event"
         @error="validation.streetAddress = !$event"
       />
-      <cds-inline-loading status="active" v-if="showDetailsLoading">Loading address details...</cds-inline-loading>
+      <cds-inline-loading status="active" v-if="showDetailsLoading"
+        >Loading address details...</cds-inline-loading
+      >
     </data-fetcher>
 
     <text-input-component
@@ -382,7 +368,7 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
       :enabled="true"
       :validations="[
         ...getValidations('location.addresses.*.city'),
-        submissionValidation(`location.addresses[${id}].city`)
+        submissionValidation(`location.addresses[${id}].city`),
       ]"
       @empty="validation.city = !$event"
       @error="validation.city = !$event"
@@ -406,7 +392,10 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
         :model-value="content"
         :enabled="true"
         tip=""
-        :validations="[...getValidations('location.addresses.*.province.text'),submissionValidation(`location.addresses[${id}].province`)]"
+        :validations="[
+          ...getValidations('location.addresses.*.province.text'),
+          submissionValidation(`location.addresses[${id}].province`),
+        ]"
         @update:selected-value="updateStateProvince($event, 'province')"
         @empty="validation.province = !$event"
       />
@@ -422,7 +411,10 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
       tip=""
       :enabled="true"
       :model-value="countryList"
-      :validations="[...getValidations('location.addresses.*.country.text'),submissionValidation(`location.addresses[${id}].country`)]"
+      :validations="[
+        ...getValidations('location.addresses.*.country.text'),
+        submissionValidation(`location.addresses[${id}].country`),
+      ]"
       @update:selected-value="updateStateProvince($event, 'country')"
       @update:model-value="resetProvinceOnChange"
       @empty="validation.country = !$event"
