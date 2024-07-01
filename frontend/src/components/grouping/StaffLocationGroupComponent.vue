@@ -51,19 +51,15 @@ const showAdditionalDelivery = () => {
   selectedValue.complementaryAddressTwo = "";
 };
 
-const deliveryInformationError = ref<string>();
-
-const deliveryInformationValidation = () => {
-  deliveryInformationError.value =
-    additionalDeliveryVisible.value && !selectedValue.complementaryAddressOne
-      ? "Delivery information cannot be empty when Additional delivery information is displayed"
-      : "";
-};
+const deliveryInformationError = computed(() =>
+  additionalDeliveryVisible.value && !selectedValue.complementaryAddressOne
+    ? "Delivery information cannot be empty when Additional delivery information is displayed"
+    : "",
+);
 
 // Watch for changes on the input
 watch([selectedValue], () => {
   uniquenessValidation();
-  deliveryInformationValidation();
   emit("update:model-value", selectedValue);
 });
 
