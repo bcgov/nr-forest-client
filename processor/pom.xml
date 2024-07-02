@@ -413,10 +413,12 @@
                   <allowedRepositories>
                     <id>central</id>
                     <id>spring-milestones</id>
+                    <id>github</id>
                   </allowedRepositories>
                   <allowedPluginRepositories>
                     <id>central</id>
                     <id>spring-milestones</id>
+                    <id>github</id>
                   </allowedPluginRepositories>
                 </requireNoRepositories>
                 <requireReleaseDeps>
@@ -519,5 +521,24 @@
       </properties>
     </profile>
   </profiles>
+
+  <repositories>
+    <repository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>github</id>
+      <name>Github Packages</name>
+      <url>https://maven.pkg.github.com/bcgov/nr-forest-client-commons</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
 </project>

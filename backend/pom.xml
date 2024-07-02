@@ -95,7 +95,6 @@
             <artifactId>reactor-core-micrometer</artifactId>
         </dependency>
 
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
@@ -473,10 +472,12 @@
                                     <allowedRepositories>
                                         <id>central</id>
                                         <id>spring-milestones</id>
+                                        <id>github</id>
                                     </allowedRepositories>
                                     <allowedPluginRepositories>
                                         <id>central</id>
                                         <id>spring-milestones</id>
+                                        <id>github</id>
                                     </allowedPluginRepositories>
                                 </requireNoRepositories>
                                 <requireReleaseDeps>
@@ -592,6 +593,14 @@
             <id>spring-milestones</id>
             <name>Spring Milestones</name>
             <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>github</id>
+            <name>Github Packages</name>
+            <url>https://maven.pkg.github.com/bcgov/nr-forest-client-commons</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
