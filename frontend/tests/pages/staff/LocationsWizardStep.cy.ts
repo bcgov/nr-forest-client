@@ -265,4 +265,73 @@ describe("<LocationsWizardStep />", () => {
       }),
     );
   });
+
+  it("should display error messages when two locations have the same name", () => {
+    cy.mount(LocationsWizardStep, {
+      props: {
+        data: {
+          location: {
+            addresses: [
+              {
+                locationName: "My Office",
+                complementaryAddressOne: "",
+                complementaryAddressTwo: null,
+                streetAddress: "",
+                country: { value: "CA", text: "Canada" },
+                province: { value: "BC", text: "British Columbia" },
+                city: "",
+                postalCode: "",
+              } as Address,
+            ],
+            contacts: [],
+          },
+        } as FormDataDto,
+        active: false,
+      },
+    });
+
+    cy.contains("Add another location").should("be.visible").click();
+
+    cy.get("#name_1").should("be.visible").find("input").type("my office");
+
+    cy.get("#name_0").find("input").should("have.class", "cds--text-input--invalid");
+    cy.get("#name_1").find("input").should("have.class", "cds--text-input--invalid");
+  });
+
+  it("should not display any error when two locations have the same address data", () => {
+    const address = {
+      streetAddress: "123 Forest Street",
+      country: { value: "CA", text: "Canada" },
+      province: { value: "BC", text: "British Columbia" },
+      city: "Victoria",
+      postalCode: "A0A0A0",
+    } as Address;
+    cy.mount(LocationsWizardStep, {
+      props: {
+        data: {
+          location: {
+            addresses: [
+              {
+                locationName: "My Office",
+                complementaryAddressOne: "",
+                complementaryAddressTwo: null,
+                ...address,
+              } as Address,
+              {
+                locationName: "My Store",
+                complementaryAddressOne: "",
+                complementaryAddressTwo: null,
+                ...address,
+              } as Address,
+            ],
+            contacts: [],
+          },
+        } as FormDataDto,
+        active: false,
+      },
+    });
+
+    cy.get("#addr_1").find("div").should("not.have.class", "cds--dropdown--invalid");
+    cy.get("#city_1").find("input").should("not.have.class", "cds--text-input--invalid");
+  });
 });
