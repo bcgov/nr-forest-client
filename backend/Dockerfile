@@ -42,7 +42,7 @@ COPY --from=build /app/target/nr-forest-client-backend ./nr-forest-client-backen
 # User, port and health check
 USER 1001
 EXPOSE ${PORT}
-HEALTHCHECK CMD curl -f http://localhost:${PORT}/actuator/health | grep '"status":"UP"'
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -f http://localhost:${PORT}/health | grep '"status":"UP"' || exit 1
 
 # Startup
 ENTRYPOINT ["/app/nr-forest-client-backend","--spring.profiles.active=container"]
