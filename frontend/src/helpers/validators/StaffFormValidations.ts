@@ -13,6 +13,9 @@ import {
   validate as globalValidate,
   runValidation as globalRunValidation,
   isAscii,
+  isEmail,
+  isPhoneNumber,
+  optional,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -189,6 +192,22 @@ fieldValidations["location.addresses.*.complementaryAddressTwo"] = [
   isMaxSizeMsg("additional delivery information", 40),
   isAscii("additional delivery information"),
 ];
+
+fieldValidations["location.addresses.*.email"] = [
+  optional(isEmail("Please provide a valid email address")),
+  optional(isMinSize("Please provide a valid email address")(6)),
+  isMaxSizeMsg("email address", 100),
+];
+
+const phoneValidations = [
+  optional(isPhoneNumber("Please provide a valid phone number")),
+  optional(isMinSize("Please provide a valid phone number")(10)),
+  isMaxSizeMsg("phone number", 14),
+];
+
+fieldValidations["location.addresses.*.businessPhoneNumber"] = [...phoneValidations];
+fieldValidations["location.addresses.*.secondaryPhoneNumber"] = [...phoneValidations];
+fieldValidations["location.addresses.*.faxNumber"] = [...phoneValidations];
 
 // Step 3: Contacts
 

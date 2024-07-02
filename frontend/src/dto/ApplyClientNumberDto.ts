@@ -69,6 +69,11 @@ export const emptyAddress = (): Address =>
       province: { value: "BC", text: "British Columbia" },
       city: "",
       postalCode: "",
+      businessPhoneNumber: "",
+      secondaryPhoneNumber: "",
+      faxNumber: "",
+      emailAddress: "",
+      notes: "",
     }),
   );
 
@@ -85,14 +90,9 @@ export const formDataDto: FormDataDto = {
     goodStandingInd: "",
     birthdate: "",
     address: {
-      locationName: "",
-      complementaryAddressOne: "",
-      complementaryAddressTwo: null,
-      streetAddress: "",
+      ...emptyAddress(),
       country: { value: "", text: "" },
       province: { value: "", text: "" },
-      city: "",
-      postalCode: "",
     },
   },
   location: {

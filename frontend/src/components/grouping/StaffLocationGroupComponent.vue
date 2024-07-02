@@ -97,6 +97,10 @@ const validation = reactive<Record<string, boolean>>({
   province: false,
   city: false,
   postalCode: false,
+  emailAddress: true,
+  primaryPhoneNumber: true,
+  secondaryPhoneNumber: true,
+  faxNumber: true,
 });
 
 const checkValid = () =>
@@ -419,6 +423,75 @@ watch([detailsData], () => {
       @error="validation.postalCode = !$event"
       @empty="validation.postalCode = !$event"
     />
+
+    <text-input-component
+      :id="'email_' + id"
+      label="Email address"
+      placeholder=""
+      autocomplete="off"
+      v-model="selectedValue.emailAddress"
+      :validations="[
+        ...getValidations('location.addresses.*.email'),
+        submissionValidation(`location.addresses[${id}].email`)
+      ]"
+      :enabled="true"
+      @empty="validation.emailAddress = true"
+      @error="validation.emailAddress = !$event"
+    />
+
+    <div class="horizontal-input-grouping">
+      <text-input-component
+        :id="'businessPhoneNumber_' + id"
+        label="Primary phone number"
+        type="tel"
+        autocomplete="off"
+        placeholder="( ) ___-____"
+        mask="(###) ###-####"
+        v-model="selectedValue.businessPhoneNumber"
+        :enabled="true"
+        :validations="[
+          ...getValidations('location.addresses.*.businessPhoneNumber'),
+          submissionValidation(`location.addresses[${id}].businessPhoneNumber`)
+        ]"
+        @empty="validation.businessPhoneNumber = true"
+        @error="validation.businessPhoneNumber = !$event"
+      />
+
+      <text-input-component
+        :id="'secondaryPhoneNumber_' + id"
+        label="Secondary phone number"
+        type="tel"
+        autocomplete="off"
+        placeholder="( ) ___-____"
+        mask="(###) ###-####"
+        v-model="selectedValue.secondaryPhoneNumber"
+        :enabled="true"
+        :validations="[
+          ...getValidations('location.addresses.*.secondaryPhoneNumber'),
+          submissionValidation(`location.addresses[${id}].secondaryPhoneNumber`)
+        ]"
+        @empty="validation.secondaryPhoneNumber = true"
+        @error="validation.secondaryPhoneNumber = !$event"
+      />
+
+      <text-input-component
+        :id="'faxNumber_' + id"
+        label="Fax"
+        type="tel"
+        autocomplete="off"
+        placeholder="( ) ___-____"
+        mask="(###) ###-####"
+        v-model="selectedValue.faxNumber"
+        :enabled="true"
+        :validations="[
+          ...getValidations('location.addresses.*.faxNumber'),
+          submissionValidation(`location.addresses[${id}].faxNumber`)
+        ]"
+        @empty="validation.faxNumber = true"
+        @error="validation.faxNumber = !$event"
+      />
+    </div>
+
     <div class="grouping-06">
       <cds-button
         v-if="id > 0"
