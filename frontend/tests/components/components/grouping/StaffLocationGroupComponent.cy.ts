@@ -66,7 +66,15 @@ describe("<StaffLocationGroupComponent />", () => {
         cy.mount(StaffLocationGroupComponent, {
           props: {
             id: 0,
-            modelValue: address,
+            modelValue: {
+              ...address,
+              locationName: "Headquarters",
+              businessPhoneNumber: "1114567890",
+              secondaryPhoneNumber: "2224567890",
+              faxNumber: "3334567890",
+              emailAddress: "john@mail.com",
+              notes: "",
+            } as Address,
             countryList: countries,
             validations: [],
           },
@@ -75,6 +83,8 @@ describe("<StaffLocationGroupComponent />", () => {
     });
 
     cy.wait("@getProvinces");
+
+    cy.get("#name_0").should("be.visible").and("have.value", "Headquarters");
 
     cy.get("#country_0").should("be.visible").and("have.value", "Canada");
 
@@ -88,6 +98,14 @@ describe("<StaffLocationGroupComponent />", () => {
     cy.get("#province_0").should("be.visible").and("have.value", "British Columbia");
 
     cy.get("#postalCode_0").should("be.visible").and("have.value", "V8T5J9");
+
+    cy.get("#emailAddress_0").should("be.visible").and("have.value", "john@mail.com");
+
+    cy.get("#businessPhoneNumber_0").should("be.visible").and("have.value", "1114567890");
+
+    cy.get("#secondaryPhoneNumber_0").should("be.visible").and("have.value", "2224567890");
+
+    cy.get("#faxNumber_0").should("be.visible").and("have.value", "3334567890");
   });
 
   it("should render the component with validation", () => {
