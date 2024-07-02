@@ -45,6 +45,7 @@ jobs:
           distribution: "temurin"
           java-version: "17"
           cache: "maven"
+          server-id: "github"
 
       # Java builds
       - name: Build Backend
