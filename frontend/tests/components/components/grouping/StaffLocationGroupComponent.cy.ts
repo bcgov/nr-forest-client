@@ -98,7 +98,7 @@ describe("<StaffLocationGroupComponent />", () => {
             id: 0,
             modelValue: {
               ...address,
-              streetAddress: address.streetAddress + " fault",
+              locationName: address.locationName + " fault",
             },
             countryList: countries,
             validations: [dummyValidation()],
@@ -110,12 +110,12 @@ describe("<StaffLocationGroupComponent />", () => {
     cy.wait("@getProvinces");
 
     cy.get("@addressFixture").then((address: any) => {
-      cy.get("#addr_0")
+      cy.get("#name_0")
         .should("be.visible")
-        .and("have.value", address.streetAddress + " fault");
+        .and("have.value", address.locationName + " fault");
     });
 
-    cy.get("#postalCode_0")
+    cy.get("#name_0")
       .shadow()
       .find(".cds--form-requirement")
       .should("be.visible")
