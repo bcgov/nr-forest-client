@@ -193,7 +193,7 @@ fieldValidations["location.addresses.*.complementaryAddressTwo"] = [
   isAscii("additional delivery information"),
 ];
 
-fieldValidations["location.addresses.*.email"] = [
+fieldValidations["location.addresses.*.emailAddress"] = [
   optional(isEmail("Please provide a valid email address")),
   optional(isMinSize("Please provide a valid email address")(6)),
   isMaxSizeMsg("email address", 100),

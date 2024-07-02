@@ -425,14 +425,14 @@ watch([detailsData], () => {
     />
 
     <text-input-component
-      :id="'email_' + id"
+      :id="'emailAddress_' + id"
       label="Email address"
       placeholder=""
       autocomplete="off"
       v-model="selectedValue.emailAddress"
       :validations="[
-        ...getValidations('location.addresses.*.email'),
-        submissionValidation(`location.addresses[${id}].email`)
+        ...getValidations('location.addresses.*.emailAddress'),
+        submissionValidation(`location.addresses[${id}].emailAddress`)
       ]"
       :enabled="true"
       @empty="validation.emailAddress = true"
