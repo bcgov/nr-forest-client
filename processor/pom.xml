@@ -215,6 +215,16 @@
       <plugin>
         <groupId>org.graalvm.buildtools</groupId>
         <artifactId>native-maven-plugin</artifactId>
+        <configuration>
+          <skip>false</skip>
+          <mainClass>ca.bc.gov.app.ProcessorApplication</mainClass>
+          <buildArgs>
+            <buildArg>-H:+ReportExceptionStackTraces</buildArg>
+            <buildArg>
+              --initialize-at-build-time=org.apache.commons.logging.LogFactoryService
+            </buildArg>
+          </buildArgs>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
