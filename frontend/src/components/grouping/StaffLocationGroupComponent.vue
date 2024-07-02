@@ -227,11 +227,6 @@ watch([detailsData], () => {
     setTimeout(() => (addressControl.value = false), 200);
   }
 });
-
-/**
- * Adds a named group to the fields. Specially useful when BCEID_MULTI_ADDRESS is enabled.
- */
-const section = (index: number, purpose: string) => `section-address-${index} ${purpose}`;
 </script>
 
 <template>
@@ -323,7 +318,7 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
       <AutoCompleteInputComponent
         :id="'addr_' + id"
         label="Street address or PO box"
-        :autocomplete="section(id, 'address-line1')"
+        autocomplete="off"
         required
         required-label
         placeholder=""
@@ -347,7 +342,7 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
     <text-input-component
       :id="'city_' + id"
       label="City"
-      :autocomplete="section(id, 'address-level2')"
+      autocomplete="off"
       required
       required-label
       placeholder=""
@@ -373,7 +368,7 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
       <dropdown-input-component
         :id="'province_' + id"
         :label="provinceNaming"
-        :autocomplete="section(id, 'address-level1')"
+        autocomplete="off"
         required
         required-label
         :initial-value="selectedValue.province.text"
@@ -392,7 +387,7 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
     <dropdown-input-component
       :id="'country_' + id"
       label="Country"
-      :autocomplete="section(id, 'country-name')"
+      autocomplete="off"
       required
       required-label
       :initial-value="selectedValue.country.text"
@@ -411,7 +406,7 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
     <text-input-component
       :id="'postalCode_' + id"
       :label="postalCodeNaming"
-      :autocomplete="section(id, 'postal-code')"
+      autocomplete="off"
       :numeric="postalCodeNumeric"
       required
       required-label
