@@ -21,12 +21,27 @@ describe("<StaffLocationGroupComponent />", () => {
       fixture: "states.json",
     }).as("getStates");
 
-    cy.fixture("address.json").as("addressFixture");
+    cy.fixture("address.json")
+      .then((jsonValue) => ({
+        ...jsonValue,
+        complementaryAddressTwo: null,
+      }))
+      .as("addressFixture");
     cy.fixture("countries.json").as("countriesFixture");
 
-    cy.fixture("emptyAddress.json").as("emptyAddressFixture");
+    cy.fixture("emptyAddress.json")
+      .then((jsonValue) => ({
+        ...jsonValue,
+        complementaryAddressTwo: null,
+      }))
+      .as("emptyAddressFixture");
 
-    cy.fixture("addressKelownaBC.json").as("addressKelownaBCFixture");
+    cy.fixture("addressKelownaBC.json")
+      .then((jsonValue) => ({
+        ...jsonValue,
+        complementaryAddressTwo: null,
+      }))
+      .as("addressKelownaBCFixture");
 
     cy.intercept(
       "GET",
