@@ -17,7 +17,10 @@ import { getAddressDescription } from "@/services/ForestClientService";
 import Add16 from "@carbon/icons-vue/es/add/16";
 
 //Defining the props and emitter to receive the data and emit an update
-const props = defineProps<{ data: FormDataDto; active: boolean }>();
+const props = withDefaults(
+  defineProps<{ data: FormDataDto; active: boolean; maxLocations?: number }>(),
+  { maxLocations: 25 },
+);
 
 const emit = defineEmits<{
   (e: "update:data", value: FormDataDto): void;
@@ -220,13 +223,17 @@ onMounted(() => setFocusedComponent("focus-1", 0));
   </div>
   <div class="grouping-02">
     <p class="body-02 light-theme-text-text-primary">
-      If the business operates in more than one location you can include additional addresses.
+      {{
+        formData.location.addresses.length < props.maxLocations
+          ? "If the business operates in more than one location you can include additional addresses."
+          : `You can only add a maximum of ${props.maxLocations} locations.`
+      }}
     </p>
   </div>
   <cds-button
     kind="tertiary"
     @click.prevent="addAddress"
-    v-if="formData.location.addresses.length < 5"
+    v-if="formData.location.addresses.length < props.maxLocations"
   >
     <span>Add another location</span>
     <Add16 slot="icon" />

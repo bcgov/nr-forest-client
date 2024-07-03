@@ -304,7 +304,12 @@ const validation = reactive<Record<string, boolean>>({});
             <div data-scroll="step-title" class="header-offset"></div>
             Locations
           </h2>
-          <locations-wizard-step :active="currentTab == 1" :data="formData" @valid="validateStep" />
+          <locations-wizard-step
+            :active="currentTab == 1"
+            :data="formData"
+            @valid="validateStep"
+            :max-locations="25"
+          />
         </div>
       </div>
       <div class="form-footer" role="footer">
