@@ -165,6 +165,12 @@ const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some
       />
     </div>
 
+    <div class="empty-submission-list" 
+        v-if="totalItems == 0 && userhasAuthority"
+        style="height: 16rem; background: #F3F3F5;">
+      Test
+    </div>
+    
     <div class="paginator" v-if="totalItems && userhasAuthority">
       <cds-pagination
           items-per-page-text="Submissions per page"        
