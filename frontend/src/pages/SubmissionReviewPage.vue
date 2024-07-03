@@ -535,7 +535,7 @@ const cleanedRejectionReason = computed(() => {
                 <span class="body-compact-01">{{ friendlyDate(data.approvedTimestamp) }}</span>
               </read-only-component>
 
-              <read-only-component label="Rejected By" v-if="data.submissionStatus === 'Rejected'">
+              <read-only-component label="Rejected by" v-if="data.submissionStatus === 'Rejected'">
                 <span class="body-compact-01">{{ data.confirmedMatchUserId }}</span>
               </read-only-component>
 
