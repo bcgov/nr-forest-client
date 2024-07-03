@@ -4,6 +4,7 @@ import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.StepMatchEnum;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
+import ca.bc.gov.app.exception.InvalidRequestObjectException;
 import ca.bc.gov.app.service.client.ClientLegacyService;
 import io.micrometer.observation.annotation.Observed;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -65,7 +66,7 @@ public class ContactStepMatcher implements StepMatcher {
 
     // Check if the location information is empty
     if (dto.location().contacts() == null || dto.location().contacts().isEmpty()) {
-      return Mono.error(new IllegalArgumentException("Invalid contact information"));
+      return Mono.error(new InvalidRequestObjectException("Invalid contact information"));
     }
 
     // Check if any of the addresses are invalid
@@ -78,7 +79,7 @@ public class ContactStepMatcher implements StepMatcher {
             .reduce(true, Boolean::logicalAnd)
         )
     ) {
-      return Mono.error(new IllegalArgumentException("Invalid contact information"));
+      return Mono.error(new InvalidRequestObjectException("Invalid contact information"));
     }
 
     // This is just to make sure index is filled in
