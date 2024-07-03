@@ -24,4 +24,21 @@ public interface ForestClientContactRepository
       String businessPhone
   );
 
+  @Query("""
+      SELECT *
+      FROM THE.CLIENT_CONTACT
+      WHERE
+      UTL_MATCH.JARO_WINKLER_SIMILARITY(UPPER(CONTACT_NAME),UPPER(:contactName)) >= 95
+      AND (
+        UPPER(BUSINESS_PHONE) = UPPER(:businessPhone)
+        OR UPPER(CELL_PHONE) = UPPER(:businessPhone)
+        OR UPPER(FAX_NUMBER) = UPPER(:businessPhone)
+      )
+      AND UPPER(EMAIL_ADDRESS) = UPPER(:email)""")
+  Flux<ForestClientContactEntity> matchByExpanded(
+      String contactName,
+      String email,
+      String businessPhone
+  );
+
 }

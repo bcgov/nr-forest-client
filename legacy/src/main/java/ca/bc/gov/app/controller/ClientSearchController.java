@@ -1,6 +1,7 @@
 package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.dto.AddressSearchDto;
+import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.service.ClientSearchService;
 import io.micrometer.observation.annotation.Observed;
@@ -97,6 +98,14 @@ public class ClientSearchController {
   ) {
     log.info("Receiving request to search by address {}", address);
     return service.findByEntireAddress(address);
+  }
+
+  @PostMapping("/contact")
+  public Flux<ForestClientDto> findByContact(
+      @RequestBody ContactSearchDto contact
+  ) {
+    log.info("Receiving request to search by contact {}", contact);
+    return service.findByContact(contact);
   }
 
 }

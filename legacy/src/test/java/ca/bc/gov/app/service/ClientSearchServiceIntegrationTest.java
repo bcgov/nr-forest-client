@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import ca.bc.gov.app.dto.AddressSearchDto;
+import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
@@ -78,6 +79,24 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
 
   }
 
+  @DisplayName("should find by contact")
+  @ParameterizedTest
+  @MethodSource("byContact")
+  void shouldFindByContact(
+      ContactSearchDto contact,
+      String expected,
+      Class<RuntimeException> exception
+  ) {
+
+    FirstStep<ForestClientDto> test =
+        service
+            .findByContact(contact)
+            .as(StepVerifier::create);
+
+    verifyTestData(expected, exception, test);
+
+  }
+
   private void verifyTestData(
       List<String> expectedList,
       Class<RuntimeException> exception,
@@ -143,6 +162,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
   private static Stream<Arguments> byLocation() {
     return Stream
         .of(
+            Arguments.of(null, null, MissingRequiredParameterException.class),
             Arguments.of(new AddressSearchDto(
                 "",
                 "",
@@ -164,6 +184,83 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
                 "T9J9R1",
                 "CANADA"
             ), "00000123", null)
+        );
+  }
+
+  private static Stream<Arguments> byContact(){
+    return Stream
+        .of(
+            Arguments.of(new ContactSearchDto(
+                "",
+                "",
+                "",
+                "",
+                ""
+            ), null, MissingRequiredParameterException.class),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "JAMESON",
+                "",
+                "RBRISLEN5@UN.ORG",
+                "7589636074"
+            ), null, MissingRequiredParameterException.class),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "JAMESON",
+                "BRISLEN",
+                "",
+                "7589636074"
+            ), null, MissingRequiredParameterException.class),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "JAMESON",
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                ""
+            ), null, MissingRequiredParameterException.class),
+            Arguments.of(null, null, MissingRequiredParameterException.class),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "",
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074"
+            ), "00000137", null),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "",
+                "BRIEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074"
+            ), "00000137", null),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                null,
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074"
+            ), "00000137", null),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "  ",
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074"
+            ), "00000137", null),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "JAMESON",
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074"
+            ), null, null),
+            Arguments.of(new ContactSearchDto(
+                "RANDOLPH",
+                null,
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074"
+            ), null, null)
         );
   }
 
