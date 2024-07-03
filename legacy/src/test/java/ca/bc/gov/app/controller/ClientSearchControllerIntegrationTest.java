@@ -221,6 +221,8 @@ class ClientSearchControllerIntegrationTest extends
                 "",
                 "",
                 "",
+                "",
+                "",
                 ""
             ), null, MissingRequiredParameterException.class),
             Arguments.of(new ContactSearchDto(
@@ -228,20 +230,26 @@ class ClientSearchControllerIntegrationTest extends
                 "JAMESON",
                 "",
                 "RBRISLEN5@UN.ORG",
-                "7589636074"
+                "7589636074",
+                "",
+                ""
             ), null, MissingRequiredParameterException.class),
             Arguments.of(new ContactSearchDto(
                 "RICARDO",
                 "JAMESON",
                 "BRISLEN",
                 "",
-                "7589636074"
+                "7589636074",
+                "",
+                ""
             ), null, MissingRequiredParameterException.class),
             Arguments.of(new ContactSearchDto(
                 "RICARDO",
                 "JAMESON",
                 "BRISLEN",
                 "RBRISLEN5@UN.ORG",
+                "",
+                "",
                 ""
             ), null, MissingRequiredParameterException.class),
             Arguments.of(new ContactSearchDto(
@@ -249,42 +257,54 @@ class ClientSearchControllerIntegrationTest extends
                 "",
                 "BRISLEN",
                 "RBRISLEN5@UN.ORG",
-                "7589636074"
+                "7589636074",
+                "",
+                ""
             ), "00000137", null),
             Arguments.of(new ContactSearchDto(
                 "RICARDO",
                 "",
                 "BRIEN",
                 "RBRISLEN5@UN.ORG",
-                "7589636074"
+                "7589636074",
+                "",
+                ""
             ), "00000137", null),
             Arguments.of(new ContactSearchDto(
                 "RICARDO",
                 null,
                 "BRISLEN",
                 "RBRISLEN5@UN.ORG",
-                "7589636074"
+                "7589636074",
+                "",
+                ""
             ), "00000137", null),
             Arguments.of(new ContactSearchDto(
                 "RICARDO",
                 "  ",
                 "BRISLEN",
                 "RBRISLEN5@UN.ORG",
-                "7589636074"
+                "7589636074",
+                "",
+                ""
             ), "00000137", null),
             Arguments.of(new ContactSearchDto(
                 "RICARDO",
                 "JAMESON",
                 "BRISLEN",
                 "RBRISLEN5@UN.ORG",
-                "7589636074"
+                "7589636074",
+                "",
+                ""
             ), null, null),
             Arguments.of(new ContactSearchDto(
                 "RANDOLPH",
                 null,
                 "BRISLEN",
                 "RBRISLEN5@UN.ORG",
-                "7589636074"
+                "7589636074",
+                "",
+                ""
             ), null, null)
         );
   }

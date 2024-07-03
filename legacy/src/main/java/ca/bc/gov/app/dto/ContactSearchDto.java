@@ -7,7 +7,9 @@ public record ContactSearchDto(
     String middleName,
     String lastName,
     String email,
-    String phone
+    String phone,
+    String phone2,
+    String fax
 ) {
 
   public boolean isValid() {

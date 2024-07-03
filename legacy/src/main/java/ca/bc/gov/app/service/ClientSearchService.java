@@ -430,7 +430,13 @@ public class ClientSearchService {
         .filter(StringUtils::isNotBlank)
         .collect(Collectors.joining(" "));
 
-    return contactRepository.matchByExpanded(name, contact.email(), contact.phone())
+    return contactRepository.matchByExpanded(
+        name,
+            contact.email(),
+            contact.phone(),
+            contact.phone2(),
+            contact.fax()
+        )
         .flatMap(entity ->
             searchClientByQuery(
                 where(ApplicationConstants.CLIENT_NUMBER_LITERAL).is(entity.getClientNumber()),
