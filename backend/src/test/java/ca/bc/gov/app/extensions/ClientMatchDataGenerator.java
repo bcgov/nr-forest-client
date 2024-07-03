@@ -2,6 +2,7 @@ package ca.bc.gov.app.extensions;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
+import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
@@ -57,6 +58,30 @@ public class ClientMatchDataGenerator {
             null,
             0,
             null
+        ),
+        null
+    );
+
+    return dto.withBusinessInformation(
+        dto
+            .businessInformation()
+            .withClientType("I")
+    );
+  }
+
+  public static ClientSubmissionDto getContact() {
+    ClientSubmissionDto dto = getDto(
+        null,
+        new ClientContactDto(
+            null,
+            "Avery",
+            "McCallister",
+            "9688296499",
+            "2218198891",
+            "2047810215",
+            "amccallister8@php.net",
+            0,
+            List.of()
         )
     );
 
@@ -68,7 +93,7 @@ public class ClientMatchDataGenerator {
   }
 
   public static ClientSubmissionDto getDtoType(String type) {
-    ClientSubmissionDto dto = getDto(null);
+    ClientSubmissionDto dto = getDto(null, null);
     return dto.withBusinessInformation(
         dto
             .businessInformation()
@@ -78,7 +103,8 @@ public class ClientMatchDataGenerator {
   }
 
   public static ClientSubmissionDto getDto(
-      ClientAddressDto addressDto
+      ClientAddressDto addressDto,
+      ClientContactDto contactDto
   ) {
     return
         getDto(
@@ -88,7 +114,8 @@ public class ClientMatchDataGenerator {
             null,
             null,
             null,
-            addressDto
+            addressDto,
+            contactDto
         );
   }
 
@@ -99,7 +126,8 @@ public class ClientMatchDataGenerator {
       String idType,
       String idProvince,
       String idValue,
-      ClientAddressDto addressDto
+      ClientAddressDto addressDto,
+      ClientContactDto contactDto
   ) {
     return new ClientSubmissionDto(
         new ClientBusinessInformationDto(
@@ -125,7 +153,7 @@ public class ClientMatchDataGenerator {
         ),
         new ClientLocationDto(
             addressDto == null ? List.of() : List.of(addressDto),
-            List.of()
+            contactDto == null ? List.of() : List.of(contactDto)
         ),
         null,
         null

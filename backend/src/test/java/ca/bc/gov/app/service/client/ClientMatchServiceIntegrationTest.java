@@ -9,10 +9,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
+import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.exception.DataMatchException;
+import ca.bc.gov.app.exception.InvalidRequestObjectException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -151,7 +153,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             Arguments.of(
                 null,
                 1,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 new ClientSubmissionDto(
@@ -161,17 +163,17 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                     null
                 ),
                 1,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getDto(),
                 1,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData().withLocation(null),
                 1,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData()
@@ -182,7 +184,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                         )
                     ),
                 2,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData()
@@ -193,7 +195,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                         )
                     ),
                 2,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData()
@@ -221,17 +223,57 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                         )
                     ),
                 2,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
-                getRandomData(),
+                getRandomData()
+                    .withLocation(
+                        new ClientLocationDto(
+                            null,
+                            null
+                        )
+                    ),
                 3,
-                NotImplementedException.class
+                InvalidRequestObjectException.class
+            ),
+            Arguments.of(
+                getRandomData()
+                    .withLocation(
+                        new ClientLocationDto(
+                            null,
+                            List.of()
+                        )
+                    ),
+                3,
+                InvalidRequestObjectException.class
+            ),
+            Arguments.of(
+                getRandomData()
+                    .withLocation(
+                        new ClientLocationDto(
+                            null,
+                            List.of(
+                                new ClientContactDto(
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    0,
+                                    null
+                                )
+                            )
+                        )
+                    ),
+                3,
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData(),
                 4,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData()
@@ -291,7 +333,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                             .withClientType("J")
                     ),
                 1,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             )
         );
   }
