@@ -122,8 +122,15 @@ class IndividualStepMatcherTest {
   private static Stream<Arguments> matchStep() {
     return Stream.of(
         Arguments.of(
-            ClientMatchDataGenerator.getDto("Jhon", "Wick", LocalDate.of(1970, 1, 1), "CDDL", "BC", "1234567",
-                null,null),
+            ClientMatchDataGenerator.getDto(
+                "Jhon", 
+                "Wick", 
+                LocalDate.of(1970, 1, 1), 
+                "CDDL", 
+                "BC", 
+                "1234567",
+                null,
+                null),
             Flux.empty(),
             Flux.empty(),
             Flux.empty(),
@@ -131,8 +138,15 @@ class IndividualStepMatcherTest {
             false
         ),
         Arguments.of(
-            ClientMatchDataGenerator.getDto("James", "Wick", LocalDate.of(1970, 1, 1), "CDDL", "AB",
-                "7654321", null,null),
+            ClientMatchDataGenerator.getDto(
+                "James", 
+                "Wick", 
+                LocalDate.of(1970, 1, 1), 
+                "CDDL", 
+                "AB",
+                "7654321", 
+                null,
+                null),
             Flux.empty(),
             Flux.empty(),
             Flux.just(ClientMatchDataGenerator.getForestClientDto("00000001")),
@@ -140,8 +154,15 @@ class IndividualStepMatcherTest {
             false
         ),
         Arguments.of(
-            ClientMatchDataGenerator.getDto("Valeria", "Valid", LocalDate.of(1970, 1, 1), "CDDL", "YK",
-                "1233210", null,null),
+            ClientMatchDataGenerator.getDto(
+                "Valeria", 
+                "Valid", 
+                LocalDate.of(1970, 1, 1), 
+                "CDDL", 
+                "YK",
+                "1233210", 
+                null,
+                null),
             Flux.empty(),
             Flux.just(ClientMatchDataGenerator.getForestClientDto("00000002")),
             Flux.empty(),
@@ -149,8 +170,15 @@ class IndividualStepMatcherTest {
             false
         ),
         Arguments.of(
-            ClientMatchDataGenerator.getDto("Papernon", "Pompadour", LocalDate.of(1970, 1, 1), "CDDL", "ON",
-                "9994545", null,null),
+            ClientMatchDataGenerator.getDto(
+                "Papernon", 
+                "Pompadour", 
+                LocalDate.of(1970, 1, 1), 
+                "CDDL", 
+                "ON",
+                "9994545", 
+                null,
+                null),
             Flux.just(ClientMatchDataGenerator.getForestClientDto("00000003")),
             Flux.empty(),
             Flux.empty(),
@@ -158,8 +186,15 @@ class IndividualStepMatcherTest {
             true
         ),
         Arguments.of(
-            ClientMatchDataGenerator.getDto("Karls", "Enrikvinjon", LocalDate.of(1970, 1, 1), "CDDL", "BC",
-                "3337474", null,null),
+            ClientMatchDataGenerator.getDto(
+                "Karls", 
+                "Enrikvinjon", 
+                LocalDate.of(1970, 1, 1), 
+                "CDDL", 
+                "BC",
+                "3337474", 
+                null,
+                null),
             Flux.just(ClientMatchDataGenerator.getForestClientDto("00000004")),
             Flux.just(ClientMatchDataGenerator.getForestClientDto("00000005")),
             Flux.empty(),
@@ -167,8 +202,15 @@ class IndividualStepMatcherTest {
             false
         ),
         Arguments.of(
-            ClientMatchDataGenerator.getDto("Palitz", "Yelvengard", LocalDate.of(1970, 1, 1), "USDL", "AZ",
-                "7433374", null,null),
+            ClientMatchDataGenerator.getDto(
+                "Palitz", 
+                "Yelvengard", 
+                LocalDate.of(1970, 1, 1), 
+                "USDL", 
+                "AZ",
+                "7433374", 
+                null,
+                null),
             Flux.just(ClientMatchDataGenerator.getForestClientDto("00000006")),
             Flux.just(ClientMatchDataGenerator.getForestClientDto("00000007")),
             Flux.just(ClientMatchDataGenerator.getForestClientDto("00000008")),
