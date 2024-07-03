@@ -9,6 +9,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
+import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.MatchResult;
@@ -224,9 +225,49 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                 IllegalArgumentException.class
             ),
             Arguments.of(
-                getRandomData(),
+                getRandomData()
+                    .withLocation(
+                        new ClientLocationDto(
+                            null,
+                            null
+                        )
+                    ),
                 3,
-                NotImplementedException.class
+                IllegalArgumentException.class
+            ),
+            Arguments.of(
+                getRandomData()
+                    .withLocation(
+                        new ClientLocationDto(
+                            null,
+                            List.of()
+                        )
+                    ),
+                3,
+                IllegalArgumentException.class
+            ),
+            Arguments.of(
+                getRandomData()
+                    .withLocation(
+                        new ClientLocationDto(
+                            null,
+                            List.of(
+                                new ClientContactDto(
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    0,
+                                    null
+                                )
+                            )
+                        )
+                    ),
+                3,
+                IllegalArgumentException.class
             ),
             Arguments.of(
                 getRandomData(),

@@ -1,9 +1,9 @@
 package ca.bc.gov.app.service.client.matches;
 
-import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.StepMatchEnum;
-import ca.bc.gov.app.dto.legacy.AddressSearchDto;
+import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.service.client.ClientLegacyService;
 import io.micrometer.observation.annotation.Observed;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,10 +19,10 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-public class LocationStepMatcher implements StepMatcher {
+public class ContactStepMatcher implements StepMatcher {
 
   private static final String PHONE_CONSTANT = "phone";
-  private static final String FIELD_NAME_PREFIX = "location.addresses[";
+  private static final String FIELD_NAME_PREFIX = "location.contacts[";
 
   /**
    * The ClientLegacyService used to search for individuals and documents.
@@ -40,19 +40,19 @@ public class LocationStepMatcher implements StepMatcher {
   }
 
   /**
-   * This method returns the step matcher enumeration value for location steps.
+   * This method returns the step matcher enumeration value for contact steps.
    *
    * @return The StepMatchEnum value representing the location step.
    */
   public StepMatchEnum getStepMatcher() {
-    return StepMatchEnum.STEP2;
+    return StepMatchEnum.STEP3;
   }
 
   /**
-   * <p>This method matches the client submission data to the location step. It performs three
+   * <p>This method matches the client submission data to the contact step. It performs three
    * searches:</p>
    * <ol>
-   * <li>A full match for a combination of all address-related fields</li>
+   * <li>A fuzzy match for a combination of name, email and phone numbers fields</li>
    * <li>A full match for the email address (both on location and contact)</li>
    * <li>A full match for each phone number (both on location and contact)</li>
    * </ol>
@@ -64,22 +64,21 @@ public class LocationStepMatcher implements StepMatcher {
   public Mono<Void> matchStep(ClientSubmissionDto dto) {
 
     // Check if the location information is empty
-    if (dto.location().addresses() == null || dto.location().addresses().isEmpty()) {
-      return Mono.error(new IllegalArgumentException("Invalid address information"));
+    if (dto.location().contacts() == null || dto.location().contacts().isEmpty()) {
+      return Mono.error(new IllegalArgumentException("Invalid contact information"));
     }
 
     // Check if any of the addresses are invalid
     if (
-        BooleanUtils.isFalse(
-          dto
+        BooleanUtils.isFalse(dto
             .location()
-            .addresses()
+            .contacts()
             .stream()
-            .map(ClientAddressDto::isValid)
+            .map(ClientContactDto::isValid)
             .reduce(true, Boolean::logicalAnd)
         )
     ) {
-      return Mono.error(new IllegalArgumentException("Invalid address information"));
+      return Mono.error(new IllegalArgumentException("Invalid contact information"));
     }
 
     // This is just to make sure index is filled in
@@ -88,63 +87,65 @@ public class LocationStepMatcher implements StepMatcher {
     return
         dto
             .location()
-            .addresses()
+            .contacts()
             // For each address in location
             .stream()
             // Fix nonexistent index
             .map(address -> address.withIndexed(indexCounter.getAndIncrement()))
-            .map(address ->
+            .map(contact ->
                 //Concat all the results for each address
                 Flux.concat(
                     processResult(
                         legacyService
                             .searchGeneric(
                                 "email",
-                                address.emailAddress()
+                                contact.email()
                             ),
-                        FIELD_NAME_PREFIX + address.index() + "].emailAddress",
+                        FIELD_NAME_PREFIX + contact.index() + "].emailAddress",
                         false
                     ).as(Flux::from),
                     processResult(
                         legacyService
                             .searchGeneric(
                                 PHONE_CONSTANT,
-                                address.businessPhoneNumber()
+                                contact.phoneNumber()
                             ),
-                        FIELD_NAME_PREFIX + address.index() + "].businessPhoneNumber",
+                        FIELD_NAME_PREFIX + contact.index() + "].businessPhoneNumber",
                         false
                     ).as(Flux::from),
                     processResult(
                         legacyService
                             .searchGeneric(
                                 PHONE_CONSTANT,
-                                address.secondaryPhoneNumber()
+                                contact.secondaryPhoneNumber()
                             ),
-                        FIELD_NAME_PREFIX + address.index() + "].secondaryPhoneNumber",
+                        FIELD_NAME_PREFIX + contact.index() + "].secondaryPhoneNumber",
                         false
                     ).as(Flux::from),
                     processResult(
                         legacyService
                             .searchGeneric(
                                 PHONE_CONSTANT,
-                                address.faxNumber()
+                                contact.faxNumber()
                             ),
-                        FIELD_NAME_PREFIX + address.index() + "].faxNumber",
+                        FIELD_NAME_PREFIX + contact.index() + "].faxNumber",
                         false
                     ).as(Flux::from),
                     processResult(
                         legacyService
-                            .searchLocation(
-                                new AddressSearchDto(
-                                    address.streetAddress(),
-                                    address.city(),
-                                    address.province().value(),
-                                    address.postalCode(),
-                                    address.country().value()
+                            .searchContact(
+                                new ContactSearchDto(
+                                    contact.firstName(),
+                                    null,
+                                    contact.lastName(),
+                                    contact.email(),
+                                    contact.phoneNumber(),
+                                    contact.secondaryPhoneNumber(),
+                                    contact.faxNumber()
                                 )
                             ),
-                        FIELD_NAME_PREFIX + address.index() + "].streetAddress",
-                        false
+                        FIELD_NAME_PREFIX + contact.index() + "].firstName",
+                        true
                     ).as(Flux::from)
                 )
             )
