@@ -70,6 +70,18 @@ public class ClientContactService {
             .map(ForestClientContactEntity::getClientNumber);
   }
 
+  /**
+   * Searches for forest client contacts based on the provided search criteria. This method combines
+   * the first name and last name into a single search string, and uses this along with the email
+   * and phone number to search for matching client contacts. The search is case-insensitive and can
+   * partially match the contact information.
+   *
+   * @param firstName The first name of the client contact to search for.
+   * @param lastName  The last name of the client contact to search for.
+   * @param email     The email address of the client contact to search for.
+   * @param phone     The phone number of the client contact to search for.
+   * @return A {@link Flux<ForestClientContactDto>} containing the search results mapped to DTOs.
+   */
   public Flux<ForestClientContactDto> search(
       String firstName,
       String lastName,
@@ -90,6 +102,19 @@ public class ClientContactService {
             .map(mapper::toDto);
   }
 
+  /**
+   * Locates a client contact based on the provided client number, location code, and contact name.
+   * This method performs a query to find any existing client contact entities that match the given
+   * criteria. The search criteria include the client's number, the location code, and the contact
+   * name (case-insensitive). If a matching client contact is found, it logs the existence of the
+   * client location.
+   *
+   * @param clientNumber The client's unique identifier.
+   * @param locationCode The location code associated with the client.
+   * @param contactName  The name of the contact, case-insensitive.
+   * @return A {@link Flux<ForestClientContactEntity>} containing any found client contacts that
+   * match the criteria.
+   */
   private Flux<ForestClientContactEntity> locateClientContact(
       String clientNumber,
       String locationCode,
@@ -116,14 +141,24 @@ public class ClientContactService {
             );
   }
 
+  /**
+   * Retrieves the next available contact ID from the database sequence. This method executes a SQL
+   * query to fetch the next value from a sequence named `client_contact_seq`. The sequence is
+   * expected to be present in the database schema, and it is used to generate unique identifiers
+   * for new client contact entries.
+   *
+   * @return a {@link Mono} emitting the next available contact ID as {@link Long}. If the query
+   * execution fails or the sequence value cannot be retrieved, the returned {@link Mono} will
+   * terminate with an error.
+   */
   private Mono<Long> getNextContactId() {
     return entityTemplate
-            .getDatabaseClient()
-            .sql("SELECT THE.client_contact_seq.NEXTVAL FROM dual")
-            .fetch()
-            .first()
-            .map(row -> row.get("NEXTVAL"))
-            .map(value -> Long.valueOf(value.toString()));
+        .getDatabaseClient()
+        .sql("SELECT THE.client_contact_seq.NEXTVAL FROM dual")
+        .fetch()
+        .first()
+        .map(row -> row.get("NEXTVAL"))
+        .map(value -> Long.valueOf(value.toString()));
   }
 
 }
