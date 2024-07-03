@@ -826,11 +826,30 @@ cds-actionable-notification * {
   background-blend-mode: multiply;
 }
 
+.form-steps-staff .frame-01 {
+  width: 42.5rem;
+}
+
 .form-steps-staff :is(
   .grouping-02,
   .grouping-03
 ) {
-  width: 42.5rem;
+  width: 100%;
+}
+
+.form-steps-staff {
+  cds-accordion-item {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    background: #fff;
+    padding: 1rem 1rem 1rem 1rem;
+
+    .frame-01 {
+      width: 100%;
+    }
+  }
 }
 
 .grouping-03:has(#identificationType) {

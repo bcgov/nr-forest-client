@@ -202,20 +202,21 @@ onMounted(() => setFocusedComponent("focus-1", 0));
   <hr />
   <h3>Additional locations</h3>
   <div class="frame-01" v-if="otherAddresses.length > 0" aria-live="off">
-    <div v-for="(address, index) in otherAddresses">
-      <staff-location-group-component
-        :key="addressesIdMap.get(address)"
-        :id="addressesIdMap.get(address)"
-        v-bind:model-value="address"
-        :countryList="countryList"
-        :validations="[uniqueValues.add]"
-        :revalidate="revalidate"
-        @update:model-value="updateAddress($event, index + 1)"
-        @valid="updateValidState(index + 1, $event)"
-        @remove="handleRemove(index + 1)"
-        @remove-additional-delivery="handleRemoveAdditionalDelivery(index + 1)"
-      />
-    </div>
+    <cds-accordion v-for="(address, index) in otherAddresses" :key="addressesIdMap.get(address)">
+      <cds-accordion-item open title="Additional location" size="lg" class="grouping-13">
+        <staff-location-group-component
+          :id="addressesIdMap.get(address)"
+          v-bind:model-value="address"
+          :countryList="countryList"
+          :validations="[uniqueValues.add]"
+          :revalidate="revalidate"
+          @update:model-value="updateAddress($event, index + 1)"
+          @valid="updateValidState(index + 1, $event)"
+          @remove="handleRemove(index + 1)"
+          @remove-additional-delivery="handleRemoveAdditionalDelivery(index + 1)"
+        />
+      </cds-accordion-item>
+    </cds-accordion>
   </div>
   <div class="grouping-02">
     <p class="body-02 light-theme-text-text-primary">
