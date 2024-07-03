@@ -17,7 +17,9 @@ public record SubmissionDetailsDto(
     SubmissionBusinessDto business,
     List<SubmissionContactDto> contact,
     List<SubmissionAddressDto> address,
-    Map<String, Object> matchers
+    Map<String, Object> matchers,
+    String rejectionReason,
+    String confirmedMatchUserId
 ) {
 
 }

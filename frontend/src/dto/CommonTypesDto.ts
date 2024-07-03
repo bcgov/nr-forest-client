@@ -151,6 +151,8 @@ export interface SubmissionDetails {
   contact: SubmissionDetailsContact[]
   address: SubmissionDetailsAddress[]
   matchers: SubmissionDetailsMatchers
+  rejectionReason: string
+  confirmedMatchUserId: string
 }
 
 export interface SubmissionDetailsBusiness {
