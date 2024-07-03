@@ -111,6 +111,18 @@ describe("Staff Form", () => {
       cy.get('#menu-list-staff-form')
         .should('be.visible')
         .click();
+
+      cy.intercept("GET", "/api/countries/CA/provinces?page=0&size=250", {
+        fixture: "provinces.json",
+      }).as("getProvinces");
+
+      cy.intercept("GET", "/api/addresses?country=CA&maxSuggestions=10&searchTerm=*", {
+        fixture: "addressSearch.json",
+      }).as("searchAddress");
+
+      cy.intercept("GET", "/api/addresses/V8T5J9", {
+        fixture: "address.json",
+      }).as("getAddress");
     });
 
     it("should display the Client type input field", () => {
@@ -271,7 +283,7 @@ describe("Staff Form", () => {
 
     const locationBaseData = {
       name_0: "Headquarters",
-      addr_0: "1234",
+      addr_0: "2975",
     };
 
     const fillLocation = (data = locationBaseData) => {
