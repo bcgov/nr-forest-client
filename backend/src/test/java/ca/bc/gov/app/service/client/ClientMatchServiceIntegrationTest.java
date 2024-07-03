@@ -14,6 +14,7 @@ import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.exception.DataMatchException;
+import ca.bc.gov.app.exception.InvalidRequestObjectException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -152,7 +153,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             Arguments.of(
                 null,
                 1,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 new ClientSubmissionDto(
@@ -162,17 +163,17 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                     null
                 ),
                 1,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getDto(),
                 1,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData().withLocation(null),
                 1,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData()
@@ -183,7 +184,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                         )
                     ),
                 2,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData()
@@ -194,7 +195,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                         )
                     ),
                 2,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData()
@@ -222,7 +223,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                         )
                     ),
                 2,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData()
@@ -233,7 +234,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                         )
                     ),
                 3,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData()
@@ -244,7 +245,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                         )
                     ),
                 3,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData()
@@ -267,12 +268,12 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                         )
                     ),
                 3,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData(),
                 4,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             ),
             Arguments.of(
                 getRandomData()
@@ -332,7 +333,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                             .withClientType("J")
                     ),
                 1,
-                IllegalArgumentException.class
+                InvalidRequestObjectException.class
             )
         );
   }
