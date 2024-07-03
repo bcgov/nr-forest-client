@@ -84,6 +84,8 @@ const data = ref<SubmissionDetails>({
     contact: "",
     location: "",
   },
+  rejectionReason: "",
+  confirmedMatchUserId: ""
 });
 
 // Modal related
@@ -302,13 +304,17 @@ const renderListItem = (label, clientNumbers) => {
 const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
 const isNotEditor = !ForestClientUserSession.authorities.includes('CLIENT_EDITOR') && !ForestClientUserSession.authorities.includes('CLIENT_ADMIN');
 
-if(isNotEditor){
+if (isNotEditor) {
   submitDisabled.value = true;
 }
 
 const rejectValidation = reactive<Record<string, boolean>>({
   reasons: false,
   message: false,
+});
+
+const cleanedRejectionReason = computed(() => {
+  return data.value.rejectionReason.replace(/<div>&nbsp;<\/div>/g, '').replace(/<p>/g, ' ').replace(/<\/p>/g, '');
 });
 </script>
 
@@ -487,8 +493,8 @@ const rejectValidation = reactive<Record<string, boolean>>({
         <div class="grouping-05-short">
           <div>
             <h2 class="mg-tl-2 heading-06">Client summary</h2>
+
             <div class="grouping-10">
-              
               <read-only-component label="Name">
                 <span class="body-compact-01">{{ toTitleCase(data.business.organizationName) }}</span>
               </read-only-component>
@@ -528,6 +534,15 @@ const rejectValidation = reactive<Record<string, boolean>>({
               <read-only-component label="Approved on" v-if="data.submissionStatus === 'Approved'">
                 <span class="body-compact-01">{{ friendlyDate(data.approvedTimestamp) }}</span>
               </read-only-component>
+
+              <read-only-component label="Rejected by" v-if="data.submissionStatus === 'Rejected'">
+                <span class="body-compact-01">{{ data.confirmedMatchUserId }}</span>
+              </read-only-component>
+
+              <read-only-component label="Reason for rejection" v-if="data.submissionStatus === 'Rejected'">
+                <span class="body-compact-01" style="width: 40rem" v-html="'Client' + cleanedRejectionReason"></span>
+              </read-only-component>
+
             </div>
           </div>
 
