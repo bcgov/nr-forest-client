@@ -284,10 +284,10 @@ watch([detailsData], () => {
     );
 
     formData.value.businessInformation.goodStandingInd =
-      (forestClientDetails.goodStanding ?? false) ? "Y" : "N";
-
+      (forestClientDetails.goodStanding ?? true) ? "Y" : "N";
+    
     toggleErrorMessages(
-      (forestClientDetails.goodStanding ?? false) ? false : true,
+      (forestClientDetails.goodStanding ?? true) ? false : true,
       null
     );
 
