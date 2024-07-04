@@ -62,9 +62,11 @@ jobs:
         run: docker run --network host -v "$PWD/output:/output" schemaspy/schemaspy:6.2.4 -t pgsql11 -db default -host 127.0.0.1 -port 5432 -u ${{ needs.vars.outputs.user }} -p ${{ needs.vars.outputs.pass }} -schemas nrfc
 
       - name: Convert README.md to index.html
+        continue-on-error: true
         run: |
           sudo apt-get install -y pandoc
-          pandoc README.md -o output/index.html
+          sed -i 's/README.md/index.html/g' README.md
+          pandoc README.md -o $PWD/output/index.html
  
       - name: Set up JDK 17 and Caching maven dependencies
         uses: actions/setup-java@v4
