@@ -28,3 +28,12 @@ For more info about the email templates, [click here](backend/docs/MAIL_FORMAT.m
 ## Automated End-to-End tests
 
 For automated end-to-end tests with cypress you can check [here](cypress/README.md). This is used to validate user journeys and some other cases.
+
+
+## Database Schema documentation
+
+As the application evolves, so does the data, and to control the evolution of the database that stores all this new data. To make it in a controllable way, we can apply the same strategy we use for our codebase into our database. To achieve that, we can use tools that will version and apply changes into the database in a controlled way. Team Alliance decided to make use of [Flyway](https://documentation.red-gate.com/flyway) as the de-facto tool to database versioning. This means that we can recreate the database structure as many times as we need, along with basic data that needs to be inserted into the database.
+
+We have the database schema documented using [SchemaSpy](https://schemaspy.org/). This is particularly useful tool for database administrators, developers, and analysts who need to understand the structure and relationships within a database. This allow us to automatically generate a visualization of the database schema through Entity-Relationship (ER) diagrams. These diagrams help users quickly grasp the relationships between tables, making it easier to navigate and understand complex databases. 
+
+You can find our database diagram on [this page](https://bcgov.github.io/nr-forest-client/nrfc/relationships.html)
