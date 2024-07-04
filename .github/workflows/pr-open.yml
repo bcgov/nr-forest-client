@@ -41,6 +41,10 @@ jobs:
           echo "semver=${{ steps.semver.outputs.tag }}"
           echo "url=${{ steps.calculate.outputs.url }}"
 
+  documentation:
+    name: Generating Documentation
+    uses: ./.github/workflows/reusable-doc-gen.yml
+
   builds:
     name: Builds
     runs-on: ubuntu-22.04
