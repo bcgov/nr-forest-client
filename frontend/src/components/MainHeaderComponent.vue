@@ -235,7 +235,7 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
       </cds-side-nav-link>
 
       <cds-side-nav-link active href="/submissions" large id="menu-list-submission-list">
-        <span>Submissions {{ userHasAuthority }} | {{ $session.authorities }}</span>
+        <span>Submissions {{ userHasAuthority }} | {{ $session.authorities }} | {{ featureFlags.STAFF_CREATE }}</span>
         <Result16 slot="title-icon" />
       </cds-side-nav-link>
 
