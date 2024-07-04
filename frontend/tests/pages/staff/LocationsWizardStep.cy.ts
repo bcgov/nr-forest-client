@@ -138,22 +138,24 @@ describe("<LocationsWizardStep />", () => {
     });
   });
 
+  const addAddress = (addressId: number, name: string) => {
+    cy.contains("Add another location").should("be.visible").click();
+
+    // Focus accordion title
+    // TODO: uncomment next line when the following issue is fixed: https://github.com/cypress-io/cypress/issues/26383
+    // cy.focused().should("contain.text", "Additional location");
+
+    cy.get(`#name_${addressId}`)
+      .should("be.visible")
+      .shadow()
+      .find("input")
+      .should("have.value", "")
+      .type(name);
+  };
+
   describe("when an address which is not the last one gets deleted", () => {
     const otherAddressNames = ["Sales Office", "Beach Office"];
-    const addAddress = (addressId: number, name: string) => {
-      cy.contains("Add another location").should("be.visible").click();
 
-      // Focus accordion title
-      // TODO: uncomment next line when the following issue is fixed: https://github.com/cypress-io/cypress/issues/26383
-      // cy.focused().should("contain.text", "Additional location");
-
-      cy.get(`#name_${addressId}`)
-        .should("be.visible")
-        .shadow()
-        .find("input")
-        .should("have.value", "")
-        .type(name);
-    };
     const fillAddress = (
       addressId: number,
       { streetAddress, postalCode }: { streetAddress: string; postalCode: string },
@@ -217,7 +219,7 @@ describe("<LocationsWizardStep />", () => {
 
     // Multi-scenario test
     [
-      // { includeOtherAddressesInProps: true, predicate: "are provided in the props" },
+      { includeOtherAddressesInProps: true, predicate: "are provided in the props" },
       { includeOtherAddressesInProps: false, predicate: "are added manually" },
     ].forEach(({ includeOtherAddressesInProps, predicate }) =>
       describe(`when other addresses ${predicate}`, () => {
@@ -334,5 +336,43 @@ describe("<LocationsWizardStep />", () => {
 
     cy.get("#addr_1").find("div").should("not.have.class", "cds--dropdown--invalid");
     cy.get("#city_1").find("input").should("not.have.class", "cds--text-input--invalid");
+  });
+
+  it("prevents from having more locations than the provided maxLocations", () => {
+    const maxLocations = 5;
+
+    cy.mount(LocationsWizardStep, {
+      props: {
+        data: {
+          location: {
+            addresses: [
+              {
+                locationName: "Mailing address",
+                complementaryAddressOne: "",
+                complementaryAddressTwo: null,
+                streetAddress: "123 Forest Street",
+                country: { value: "CA", text: "Canada" },
+                province: { value: "BC", text: "British Columbia" },
+                city: "Victoria",
+                postalCode: "A0A0A0",
+              } as Address,
+            ],
+            contacts: [],
+          },
+        } as FormDataDto,
+        active: false,
+        maxLocations,
+      },
+    });
+
+    // The button is visible
+    cy.contains("Add another location").should("be.visible");
+
+    for (let index = 1; index < maxLocations; index++) {
+      addAddress(index, `${index + 1}`);
+    }
+
+    // The button gets hidden
+    cy.contains("Add another location").should("not.exist");
   });
 });
