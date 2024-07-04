@@ -1132,7 +1132,7 @@ cds-text-input::part(label) {
   padding-bottom: unset;
 }
 
-cds-text-input::part(label)::before, .cds-text-input-required-label {
+:is(cds-text-input, cds-textarea)::part(label)::before, .cds-text-input-required-label {
   color: var(--light-theme-text-text-error, #b32001);
 }
 
@@ -1146,8 +1146,12 @@ cds-text-input::part(label)::before, .cds-text-input-required-label {
   gap: 0.5rem;
 }
 
-cds-text-input[data-required-label="true"]::part(label)::before {
+:is(cds-text-input, cds-textarea)[data-required-label="true"]::part(label)::before {
   content: '* ';
+}
+
+cds-textarea::part(label), .cds-text-input-label {
+  color: var(--light-theme-text-text-primary, #131315);
 }
 
 cds-modal::part(dialog) {
