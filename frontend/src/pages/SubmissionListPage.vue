@@ -173,6 +173,7 @@ const summitSvg = useSvg(summit);
                     class="standard-svg"/>
         <p class="heading-02">There are no submissions to show yet</p>
         <p class="body-compact-01">All submissions will appear here once they are submitted</p>
+        <p class="body-compact-01">Submissions remain in this list for only 7 days after they're reviewed</p>
     </div>
     
     <div class="paginator" v-if="totalItems && userhasAuthority">
