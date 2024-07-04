@@ -234,6 +234,11 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
         <Result16 slot="title-icon" />
       </cds-side-nav-link>
 
+      <cds-side-nav-link active href="/submissions" large id="menu-list-submission-list">
+        <span>Submissions {{ userHasAuthority }} | {{ $session.authorities }}</span>
+        <Result16 slot="title-icon" />
+      </cds-side-nav-link>
+
       <cds-side-nav-link active href="/new-client-staff" large v-if="userHasAuthority" v-shadow=1 id="menu-list-staff-form">
         <span>Create client</span>
         <TaskAdd16 slot="title-icon" />
