@@ -438,6 +438,18 @@ export const validateSelection =
   };
 
 /**
+ * Converts a validator to one that first checks if the input value is an empty string or null.
+ * In that case it approves the value right away and just skips the provided validator.
+ * Otherwise, it performs the provided validation.
+ * @param validator
+ */
+export const optional =
+  (validator: (value: string) => string) =>
+  (value: string): string => {
+    return value === "" || value === null ? "" : validator(value);
+  };
+
+/**
  * Retrieves the value of a field in an object or array based on a given path.
  * If the field is an array, it returns an array of values.
  *

@@ -12,6 +12,10 @@ import {
   formFieldValidations as externalFormFieldValidations,
   validate as globalValidate,
   runValidation as globalRunValidation,
+  isAscii,
+  isEmail,
+  isPhoneNumber,
+  optional,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -177,7 +181,33 @@ export const getClientIdentificationValidations = (
   key: ClientIdentificationFormFieldValidationKey,
 ): ((value: any) => string)[] => getValidations(key);
 
-// Step 2: Addresses
+// Step 2: Locations
+
+fieldValidations["location.addresses.*.complementaryAddressOne"] = [
+  isMaxSizeMsg("delivery information", 40),
+  isAscii("delivery information"),
+];
+
+fieldValidations["location.addresses.*.complementaryAddressTwo"] = [
+  isMaxSizeMsg("additional delivery information", 40),
+  isAscii("additional delivery information"),
+];
+
+fieldValidations["location.addresses.*.emailAddress"] = [
+  optional(isEmail("Please provide a valid email address")),
+  optional(isMinSize("Please provide a valid email address")(6)),
+  isMaxSizeMsg("email address", 100),
+];
+
+const phoneValidations = [
+  optional(isPhoneNumber("Please provide a valid phone number")),
+  optional(isMinSize("Please provide a valid phone number")(10)),
+  isMaxSizeMsg("phone number", 14),
+];
+
+fieldValidations["location.addresses.*.businessPhoneNumber"] = [...phoneValidations];
+fieldValidations["location.addresses.*.secondaryPhoneNumber"] = [...phoneValidations];
+fieldValidations["location.addresses.*.faxNumber"] = [...phoneValidations];
 
 // Step 3: Contacts
 

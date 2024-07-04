@@ -182,6 +182,7 @@ watch(
     <div class="input-group">
       <cds-text-input
         v-if="enabled"
+        v-bind="$attrs"
         ref="cdsTextInputRef"
         :id="id"
         :autocomplete="autocomplete"

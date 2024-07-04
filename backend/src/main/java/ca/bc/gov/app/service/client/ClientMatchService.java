@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.StepMatchEnum;
+import ca.bc.gov.app.exception.InvalidRequestObjectException;
 import ca.bc.gov.app.service.client.matches.StepMatcher;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
@@ -27,7 +28,7 @@ public class ClientMatchService {
 
   /**
    * This method is responsible for matching clients based on the provided ClientSubmissionDto and
-   * the step number. It first validates the input data and throws an IllegalArgumentException if
+   * the step number. It first validates the input data and throws an InvalidRequestObjectException if
    * any of the data is invalid. Then, it delegates the matching process to the appropriate method
    * based on the step number.
    *
@@ -48,26 +49,26 @@ public class ClientMatchService {
     }
 
     if (dto == null) {
-      return Mono.error(new IllegalArgumentException("Invalid data"));
+      return Mono.error(new InvalidRequestObjectException("Invalid data"));
     }
 
     if (dto.businessInformation() == null) {
-      return Mono.error(new IllegalArgumentException("Invalid business information"));
+      return Mono.error(new InvalidRequestObjectException("Invalid business information"));
     }
 
     if (StringUtils.isBlank(dto.businessInformation().clientType())) {
-      return Mono.error(new IllegalArgumentException("Invalid client type"));
+      return Mono.error(new InvalidRequestObjectException("Invalid client type"));
     }
 
     if (dto.location() == null) {
-      return Mono.error(new IllegalArgumentException("Invalid location"));
+      return Mono.error(new InvalidRequestObjectException("Invalid location"));
     }
 
     return switch (step) {
       case 1 -> matchStep1(dto);
       case 2 -> findAndRunMatcher(dto, StepMatchEnum.STEP2);
       case 3 -> findAndRunMatcher(dto, StepMatchEnum.STEP3);
-      default -> Mono.error(new IllegalArgumentException("Invalid step"));
+      default -> Mono.error(new InvalidRequestObjectException("Invalid step"));
     };
 
   }
@@ -102,7 +103,7 @@ public class ClientMatchService {
         return findAndRunMatcher(dto, StepMatchEnum.STEP1UNREGISTERED);
       }
       default -> {
-        return Mono.error(new IllegalArgumentException("Invalid client type"));
+        return Mono.error(new InvalidRequestObjectException("Invalid client type"));
       }
     }
   }

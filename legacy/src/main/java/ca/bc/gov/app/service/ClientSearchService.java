@@ -4,6 +4,7 @@ import static org.springframework.data.relational.core.query.Criteria.where;
 
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.AddressSearchDto;
+import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
@@ -12,11 +13,14 @@ import ca.bc.gov.app.entity.ForestClientLocationEntity;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
+import ca.bc.gov.app.repository.ForestClientContactRepository;
 import ca.bc.gov.app.repository.ForestClientRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +48,7 @@ public class ClientSearchService {
   private final ForestClientRepository forestClientRepository;
   private final ClientDoingBusinessAsRepository doingBusinessAsRepository;
   private final ForestClientRepository clientRepository;
+  private final ForestClientContactRepository contactRepository;
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> forestClientMapper;
   private final R2dbcEntityTemplate template;
 
@@ -398,6 +403,52 @@ public class ClientSearchService {
         .doOnNext(
             dto -> log.info("Found client with address {} as [{}] {}",
                 address,
+                dto.clientNumber(), dto.clientName())
+        );
+  }
+
+  /**
+   * Searches for clients based on a composite contact search criteria. It combines the names into
+   * a single search string, and along with the email address and the phone number queries the
+   * repository for matching client entities based on this name string, email, and
+   * phone number. Each matching entity is then mapped to a {@link ForestClientDto}. The search
+   * results are made distinct by client number.
+   *
+   * @param contact The {@link ContactSearchDto} containing search criteria such as name, email, and
+   *                phone number.
+   * @return A {@link Flux<ForestClientDto>} stream of client DTOs that match the search criteria.
+   * If the contact parameter is null or not valid, a {@link MissingRequiredParameterException} is
+   * emitted.
+   */
+  public Flux<ForestClientDto> findByContact(ContactSearchDto contact) {
+
+    if (contact == null || !contact.isValid()) {
+      return Flux.error(new MissingRequiredParameterException("contact"));
+    }
+
+    String name = Stream.of(contact.firstName(), contact.middleName(), contact.lastName())
+        .filter(StringUtils::isNotBlank)
+        .collect(Collectors.joining(" "));
+
+    return contactRepository.matchByExpanded(
+        name,
+            contact.email(),
+            contact.phone(),
+            contact.phone2(),
+            contact.fax()
+        )
+        .flatMap(entity ->
+            searchClientByQuery(
+                where(ApplicationConstants.CLIENT_NUMBER_LITERAL).is(entity.getClientNumber()),
+                ForestClientEntity.class
+            )
+        )
+        .map(forestClientMapper::toDto)
+        .distinct(ForestClientDto::clientNumber)
+        .sort(Comparator.comparing(ForestClientDto::clientNumber))
+        .doOnNext(
+            dto -> log.info("Found client with contact {} as [{}] {}",
+                contact,
                 dto.clientNumber(), dto.clientName())
         );
   }

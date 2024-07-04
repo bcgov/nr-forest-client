@@ -113,7 +113,7 @@ class ClientMatchLocationControllerIntegrationTest extends AbstractTestContainer
 
     legacyStub
         .stubFor(
-            post(urlPathEqualTo("/api/search/location"))
+            post(urlPathEqualTo("/api/search/address"))
                 .willReturn(okJson(addressMatch))
         );
 
