@@ -1,0 +1,25 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app: ${NAME}-${ZONE}
+  app.kubernetes.io/part-of: ${NAME}-${ZONE}
+parameters:
+  - name: NAME
+    description: Module name
+    value: nr-forest-client
+  - name: COMPONENT
+    description: Component name
+    value: backend
+  - name: ZONE
+    description: Deployment zone, e.g. pr-### or prod
+    required: true  
+objects:
+  - kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}-config
+    data:
+      params.js: |
+        window.localStorage.setItem('VITE_FEATURE_FLAGS','{}');
