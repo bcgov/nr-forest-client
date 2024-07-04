@@ -192,6 +192,17 @@ jobs:
           overwrite: true
           parameters: -p ZONE=${{ github.event.number }}
 
+      - name: Deploy Frontend ConfigMap
+        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        with:
+          file: frontend/openshift.configmap.dev.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true          
+          parameters:
+            -p ZONE=${{ github.event.number }}  
+
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
