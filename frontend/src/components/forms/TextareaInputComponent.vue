@@ -155,7 +155,9 @@ const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
         :data-scroll="id"
         :data-id="'input-' + id"
         v-shadow="3"
-      />
+      >
+        <slot></slot>
+      </cds-textarea>
     </div>
   </div>
 
