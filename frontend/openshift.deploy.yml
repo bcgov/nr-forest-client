@@ -144,9 +144,12 @@ objects:
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           volumes:
-            - name: env-config
+            - name: app-config
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}
+            - name: env-config
+              configMap:
+                name: ${NAME}-${ZONE}-${COMPONENT}-config
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               securityContext:
@@ -166,8 +169,12 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               volumeMounts:
+                - name: app-config
+                  mountPath: /srv/data/config.js
+                  subPath: config.js
                 - name: env-config
-                  mountPath: /srv/data
+                  mountPath: /srv/data/params.js
+                  subPath: params.js
               ports:
                 - containerPort: 3000
                   protocol: TCP
