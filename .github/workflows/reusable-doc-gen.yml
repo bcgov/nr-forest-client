@@ -22,7 +22,7 @@ jobs:
           echo "pass=$PASSWORD" >> $GITHUB_OUTPUT
 
   schemaspy:
-    name: Generate SchemaSpy Documentation
+    name: Generate Documentation
     runs-on: ubuntu-22.04
     needs: [vars]
     services:
@@ -55,18 +55,19 @@ jobs:
 
       - name: Create Output Folder
         run: |
-          mkdir output
+          mkdir -p output/schema
           chmod a+rwx -R output
 
       - name: Run Schemaspy
-        run: docker run --network host -v "$PWD/output:/output" schemaspy/schemaspy:6.2.4 -t pgsql11 -db default -host 127.0.0.1 -port 5432 -u ${{ needs.vars.outputs.user }} -p ${{ needs.vars.outputs.pass }} -schemas nrfc
+        run: docker run --network host -v "$PWD/output/schema:/output" schemaspy/schemaspy:6.2.4 -t pgsql11 -db default -host 127.0.0.1 -port 5432 -u ${{ needs.vars.outputs.user }} -p ${{ needs.vars.outputs.pass }} -schemas nrfc
 
       - name: Convert README.md to index.html
         continue-on-error: true
         run: |
           sudo apt-get install -y pandoc
           sed -i 's/README.md/index.html/g' README.md
-          pandoc README.md -o $PWD/output/index.html
+          pandoc README.md -o index.html
+          mv index.html output/
  
       - name: Set up JDK 17 and Caching maven dependencies
         uses: actions/setup-java@v4
