@@ -82,7 +82,7 @@ jobs:
         run: ./mvnw clean javadoc:javadoc
 
       - name: Copy Backend docs to output
-        run: cp -r backend/target/site/apidocs/* output/backend/
+        run: mv backend/target/site/apidocs/ output/backend/
 
       - name: Generate docs for Legacy
         continue-on-error: true
@@ -90,7 +90,7 @@ jobs:
         run: ./mvnw clean javadoc:javadoc
 
       - name: Copy Legacy docs to output
-        run: cp -r legacy/target/site/apidocs/* output/legacy/
+        run: mv legacy/target/site/apidocs/ output/legacy/
 
       - name: Generate docs for Processor
         continue-on-error: true
@@ -98,7 +98,7 @@ jobs:
         run: ./mvnw clean javadoc:javadoc
 
       - name: Copy Legacy docs to output
-        run: cp -r processor/target/site/apidocs/* output/processor/
+        run: mv processor/target/site/apidocs/ output/processor/
 
       - name: Deploy to Pages
         uses: JamesIves/github-pages-deploy-action@v4
