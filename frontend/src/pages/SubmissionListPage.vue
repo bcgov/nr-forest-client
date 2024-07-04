@@ -168,10 +168,11 @@ const summitSvg = useSvg(summit);
     </div>
 
     <div class="empty-submission-list" 
-        v-if="totalItems == 0 && userhasAuthority"
-        >
-        <summit-svg alt="Summit pictogram" class="standard-svg" role="presentation" />
-
+        v-if="totalItems == 0 && userhasAuthority">
+        <summit-svg alt="Summit pictogram" 
+                    class="standard-svg"/>
+        <p class="heading-02">There are no submissions to show yet</p>
+        <p class="body-compact-01">All submissions will appear here once they are submitted</p>
     </div>
     
     <div class="paginator" v-if="totalItems && userhasAuthority">
