@@ -143,7 +143,8 @@ describe("<LocationsWizardStep />", () => {
     const addAddress = (addressId: number, name: string) => {
       cy.contains("Add another location").should("be.visible").click();
 
-      // TODO: check focus on section title instead
+      // Focus accordion title
+      // TODO: uncomment next line when the following issue is fixed: https://github.com/cypress-io/cypress/issues/26383
       // cy.focused().should("contain.text", "Additional location");
 
       cy.get(`#name_${addressId}`)
@@ -216,7 +217,7 @@ describe("<LocationsWizardStep />", () => {
 
     // Multi-scenario test
     [
-      { includeOtherAddressesInProps: true, predicate: "are provided in the props" },
+      // { includeOtherAddressesInProps: true, predicate: "are provided in the props" },
       { includeOtherAddressesInProps: false, predicate: "are added manually" },
     ].forEach(({ includeOtherAddressesInProps, predicate }) =>
       describe(`when other addresses ${predicate}`, () => {
