@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, toRef } from "vue";
 import {
-  newFormDataDto,
+  newFormDataDtoExternal,
   emptyContact,
   locationName as defaultLocation,
 } from "@/dto/ApplyClientNumberDto";
@@ -53,7 +53,7 @@ const submitterContact: Contact = {
   email: submitterInformation?.email ?? "",
 };
 
-let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
+let formDataDto = ref<FormDataDto>({ ...newFormDataDtoExternal() });
 
 const figmaFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",

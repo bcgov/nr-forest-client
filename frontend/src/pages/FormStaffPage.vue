@@ -8,12 +8,13 @@ import "@carbon/web-components/es/components/tooltip/index";
 import { useRouter } from "vue-router";
 import { useEventBus } from "@vueuse/core";
 import { isSmallScreen, isTouchScreen } from "@/composables/useScreenSize";
+import { useFocus } from "@/composables/useFocus";
 import {
   BusinessTypeEnum,
   ClientTypeEnum,
   LegalTypeEnum,
   type CodeNameType,
-  type ModalNotification,
+  type ValidationMessageType,
 } from "@/dto/CommonTypesDto";
 import {
   locationName as defaultLocation,
@@ -27,6 +28,7 @@ import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
 import { validate, runValidation } from "@/helpers/validators/StaffFormValidations";
 // Imported Pages
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
+import LocationsWizardStep from "@/pages/staffform/LocationsWizardStep.vue";
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 
@@ -57,10 +59,12 @@ const clientTypesList: CodeNameType[] = [
   },
 ];
 
-const toastBus = useEventBus<ModalNotification>("toast-notification");
+const notificationBus = useEventBus<ValidationMessageType | undefined>("error-notification");
 
 // Route related
 const router = useRouter();
+
+const { setScrollPoint } = useFocus();
 
 const formData = ref<FormDataDto>({ ...newFormDataDto() });
 
@@ -87,7 +91,22 @@ const progressData = reactive([
     disabled: true,
     valid: false,
     step: 1,
-    fields: [],
+    fields: [
+      "location.addresses.*.locationName",
+      "location.addresses.*.complementaryAddressOne",
+      "location.addresses.*.complementaryAddressTwo",
+      "location.addresses.*.country.text",
+      "location.addresses.*.province.text",
+      "location.addresses.*.city",
+      "location.addresses.*.streetAddress",
+      'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")',
+      'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")',
+      'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")',
+      "location.addresses.*.emailAddress",
+      "location.addresses.*.businessPhoneNumber",
+      "location.addresses.*.secondaryPhoneNumber",
+      "location.addresses.*.faxNumber",
+    ],
     extraValidations: [],
   },
   {
@@ -151,20 +170,26 @@ const onCancel = () => {
 };
 
 const onNext = () => {
+  notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
       currentTab.value++;
       progressData[currentTab.value - 1].kind = "complete";
       progressData[currentTab.value].kind = "current";
+      setScrollPoint("step-title");
+    } else {
+      setScrollPoint("top-notification");
     }
   }
 };
 
 const onBack = () => {
+  notificationBus.emit(undefined);
   if (currentTab.value - 1 >= 0) {
     currentTab.value--;
     progressData[currentTab.value + 1].kind = "incomplete";
     progressData[currentTab.value].kind = "current";
+    setScrollPoint("step-title");
   }
 };
 
@@ -237,7 +262,11 @@ const validation = reactive<Record<string, boolean>>({});
       </cds-progress-indicator>
 
       <div class="hide-when-less-than-two-children">
+        <!--
+        The parent div is necessary to avoid the div.header-offset below from interfering in the flex flow.
+        -->
         <div data-scroll="top-notification" class="header-offset"></div>
+        <error-notification-grouping-component :form-data="formData" />
       </div>
     </div>
 
@@ -266,6 +295,20 @@ const validation = reactive<Record<string, boolean>>({});
             :active="currentTab == 0"
             :data="formData"
             @valid="validateStep"
+          />
+        </div>
+      </div>
+      <div v-if="currentTab == 1" class="form-steps-02">
+        <div class="form-steps-section">
+          <h2 data-focus="focus-0" tabindex="-1">
+            <div data-scroll="step-title" class="header-offset"></div>
+            Locations
+          </h2>
+          <locations-wizard-step
+            :active="currentTab == 1"
+            :data="formData"
+            @valid="validateStep"
+            :max-locations="25"
           />
         </div>
       </div>

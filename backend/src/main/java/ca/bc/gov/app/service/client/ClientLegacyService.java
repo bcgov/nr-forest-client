@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
+import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
@@ -246,11 +247,23 @@ public class ClientLegacyService {
     return
         legacyApi
             .post()
-            .uri("/api/search/location")
+            .uri("/api/search/address")
             .body(BodyInserters.fromValue(dto))
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
             .doOnNext(
                 client -> log.info("Found Legacy data for location search with client number {}", client.clientNumber())
+            );
+  }
+
+  public Flux<ForestClientDto> searchContact(ContactSearchDto dto) {
+    return
+        legacyApi
+            .post()
+            .uri("/api/search/contact")
+            .body(BodyInserters.fromValue(dto))
+            .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
+            .doOnNext(
+                client -> log.info("Found Legacy data for contact search with client number {}", client.clientNumber())
             );
   }
 

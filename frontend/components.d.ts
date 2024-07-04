@@ -21,6 +21,7 @@ declare module 'vue' {
     ReadOnlyComponent: typeof import('./src/components/forms/ReadOnlyComponent.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    StaffLocationGroupComponent: typeof import('./src/components/grouping/StaffLocationGroupComponent.vue')['default']
     TextInputComponent: typeof import('./src/components/forms/TextInputComponent.vue')['default']
     UserProfileComponent: typeof import('./src/components/UserProfileComponent.vue')['default']
   }

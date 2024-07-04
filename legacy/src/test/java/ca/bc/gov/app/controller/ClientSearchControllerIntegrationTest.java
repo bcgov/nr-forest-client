@@ -1,6 +1,7 @@
 package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.dto.AddressSearchDto;
+import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.Optional;
@@ -129,6 +130,38 @@ class ClientSearchControllerIntegrationTest extends
 
   }
 
+  @ParameterizedTest
+  @MethodSource("byContact")
+  @DisplayName("Search someone by contact")
+  void shouldSearchByContact(
+      ContactSearchDto contact,
+      String expected,
+      Class<RuntimeException> exception
+  ) {
+    ResponseSpec response =
+        client
+            .post()
+            .uri("/api/search/contact")
+            .body(BodyInserters.fromValue(contact))
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .exchange();
+
+    if (StringUtils.isNotBlank(expected)) {
+      response
+          .expectStatus().isOk()
+          .expectBody()
+          .jsonPath("$[0].clientNumber").isNotEmpty()
+          .jsonPath("$[0].clientNumber").isEqualTo(expected)
+          .jsonPath("$[0].clientName").isNotEmpty()
+          .consumeWith(System.out::println);
+    }
+
+    if (exception != null) {
+      response.expectStatus().is4xxClientError();
+    }
+
+  }
+
   private static Stream<Arguments> byEmail() {
     return
         Stream.concat(
@@ -177,6 +210,102 @@ class ClientSearchControllerIntegrationTest extends
                 "T9J9R1",
                 "CANADA"
             ), "00000123", null)
+        );
+  }
+
+  private static Stream<Arguments> byContact(){
+    return Stream
+        .of(
+            Arguments.of(new ContactSearchDto(
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ), null, MissingRequiredParameterException.class),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "JAMESON",
+                "",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), null, MissingRequiredParameterException.class),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "JAMESON",
+                "BRISLEN",
+                "",
+                "7589636074",
+                "",
+                ""
+            ), null, MissingRequiredParameterException.class),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "JAMESON",
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "",
+                "",
+                ""
+            ), null, MissingRequiredParameterException.class),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "",
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), "00000137", null),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "",
+                "BRIEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), "00000137", null),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                null,
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), "00000137", null),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "  ",
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), "00000137", null),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "JAMESON",
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), null, null),
+            Arguments.of(new ContactSearchDto(
+                "RANDOLPH",
+                null,
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), null, null)
         );
   }
 
