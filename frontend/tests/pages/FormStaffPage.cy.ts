@@ -53,7 +53,7 @@ describe("Step 2 - Locations", () => {
     cy.get("[data-test='wizard-next-button']").click();
 
     cy.get("@wrapper")
-      .then(async (wrapper) => {
+      .then((wrapper) => {
         const locations = wrapper.findComponent({ name: "LocationsWizardStep" });
         return locations.props("maxLocations");
       })
