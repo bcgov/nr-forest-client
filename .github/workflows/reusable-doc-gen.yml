@@ -57,10 +57,47 @@ jobs:
         run: |
           mkdir output
           chmod a+rwx -R output
+
       - name: Run Schemaspy
         run: docker run --network host -v "$PWD/output:/output" schemaspy/schemaspy:6.2.4 -t pgsql11 -db default -host 127.0.0.1 -port 5432 -u ${{ needs.vars.outputs.user }} -p ${{ needs.vars.outputs.pass }} -schemas nrfc
+
+      - name: Convert README.md to index.html
+        run: |
+          pandoc README.md -o output/index.html
+ 
+      - name: Set up JDK 17 and Caching maven dependencies
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+          cache: "maven"
+          server-id: "github"
+
+      - name: Generate docs for Backend
+        continue-on-error: true
+        working-directory: backend
+        run: ./mvnw clean javadoc:javadoc
+
+      - name: Copy Backend docs to output
+        run: cp -r backend/target/site/apidocs/* output/backend/
+
+      - name: Generate docs for Legacy
+        continue-on-error: true
+        working-directory: legacy
+        run: ./mvnw clean javadoc:javadoc
+
+      - name: Copy Legacy docs to output
+        run: cp -r legacy/target/site/apidocs/* output/legacy/
+
+      - name: Generate docs for Processor
+        continue-on-error: true
+        working-directory: processor
+        run: ./mvnw clean javadoc:javadoc
+
+      - name: Copy Legacy docs to output
+        run: cp -r processor/target/site/apidocs/* output/processor/
+
       - name: Deploy to Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: output
-          target-folder: schemaspy
