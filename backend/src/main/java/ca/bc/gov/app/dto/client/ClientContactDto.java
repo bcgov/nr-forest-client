@@ -45,4 +45,20 @@ public record ClientContactDto(
             )
         );
   }
+
+  public ClientContactDto withIndexed(int index) {
+    if (this.index() == index) {
+      return this;
+    }
+    return this.withIndex(index);
+  }
+
+  public boolean isValid() {
+    return !StringUtils.isAnyBlank(
+        firstName,
+        lastName,
+        phoneNumber,
+        email
+    );
+  }
 }

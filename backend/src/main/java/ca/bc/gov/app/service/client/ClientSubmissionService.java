@@ -287,7 +287,9 @@ public class ClientSubmissionService {
                     ),
                     List.of(),
                     List.of(),
-                    Map.of()
+                    Map.of(),
+                    "",
+                    ""
                 )
             )
             .one()
@@ -347,6 +349,8 @@ public class ClientSubmissionService {
                     submissionDetailsDto
                         .withApprovedTimestamp(matched.getUpdatedAt())
                         .withMatchers(matched.getMatchers())
+                        .withRejectionReason(matched.getMatchingMessage())
+                        .withConfirmedMatchUserId(matched.getCreatedBy())
                 )
                 .defaultIfEmpty(
                     submissionDetailsDto
