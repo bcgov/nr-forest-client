@@ -3,10 +3,17 @@ import type { CodeDescrType } from "@/dto/CommonTypesDto";
 export interface Address {
   locationName: string;
   streetAddress: string;
+  complementaryAddressOne?: string;
+  complementaryAddressTwo?: string;
   country: CodeDescrType;
   province: CodeDescrType;
   city: string;
   postalCode: string;
+  businessPhoneNumber?: string;
+  secondaryPhoneNumber?: string;
+  faxNumber?: string;
+  emailAddress?: string;
+  notes?: string;
 }
 
 export interface Contact {
@@ -51,6 +58,25 @@ export interface ForestClientDetailsDto {
   contacts: Contact[];
 }
 
+export const emptyAddress = (): Address =>
+  JSON.parse(
+    JSON.stringify({
+      locationName: "",
+      complementaryAddressOne: "",
+      complementaryAddressTwo: null,
+      streetAddress: "",
+      country: { value: "CA", text: "Canada" },
+      province: { value: "BC", text: "British Columbia" },
+      city: "",
+      postalCode: "",
+      businessPhoneNumber: "",
+      secondaryPhoneNumber: "",
+      faxNumber: "",
+      emailAddress: "",
+      notes: "",
+    }),
+  );
+
 export const locationName = { value: "0", text: "Mailing address" };
 
 export const formDataDto: FormDataDto = {
@@ -64,40 +90,16 @@ export const formDataDto: FormDataDto = {
     goodStandingInd: "",
     birthdate: "",
     address: {
-      locationName: "",
-      streetAddress: "",
+      ...emptyAddress(),
       country: { value: "", text: "" },
       province: { value: "", text: "" },
-      city: "",
-      postalCode: "",
     },
   },
   location: {
-    addresses: [
-      {
-        locationName: locationName.text,
-        streetAddress: "",
-        country: { value: "CA", text: "Canada" },
-        province: { value: "BC", text: "British Columbia" },
-        city: "",
-        postalCode: "",
-      },
-    ],
+    addresses: [emptyAddress()],
     contacts: [],
   },
 };
-
-export const emptyAddress = (): Address =>
-  JSON.parse(
-    JSON.stringify({
-      locationName: "",
-      streetAddress: "",
-      country: { value: "CA", text: "Canada" },
-      province: { value: "BC", text: "British Columbia" },
-      city: "",
-      postalCode: "",
-    })
-  );
 
 export const emptyContact: Contact = {
   locationNames: [],
@@ -108,5 +110,10 @@ export const emptyContact: Contact = {
   email: "",
 };
 
-export const newFormDataDto = (): FormDataDto =>
-  JSON.parse(JSON.stringify(formDataDto));
+export const newFormDataDto = (): FormDataDto => JSON.parse(JSON.stringify(formDataDto));
+
+export const newFormDataDtoExternal = (): FormDataDto => {
+  const value = newFormDataDto();
+  value.location.addresses[0].locationName = locationName.text;
+  return value;
+};

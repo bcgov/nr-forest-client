@@ -176,6 +176,40 @@ describe("<AddressWizardStep />", () => {
         }),
       );
     });
+
+    it("should display an error when two locations have the same address data", () => {
+      const address = {
+        streetAddress: "123 Forest Street",
+        country: { value: "CA", text: "Canada" },
+        province: { value: "BC", text: "British Columbia" },
+        city: "Victoria",
+        postalCode: "A0A0A0",
+      } as Address;
+      cy.mount(AddressWizardStep, {
+        props: {
+          data: {
+            location: {
+              addresses: [
+                {
+                  locationName: "My Office",
+                  ...address,
+                } as Address,
+                {
+                  locationName: "My Store",
+                  ...address,
+                } as Address,
+              ],
+              contacts: [],
+            },
+          } as FormDataDto,
+          active: false,
+        },
+        global,
+      });
+
+      cy.get("#addr_1").find("div").should("have.class", "cds--dropdown--invalid");
+      cy.get("#city_1").find("input").should("have.class", "cds--text-input--invalid");
+    });
   });
   describe("when feature BCEID_MULTI_ADDRESS is disabled", () => {
     const global = {

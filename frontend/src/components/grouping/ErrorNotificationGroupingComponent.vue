@@ -14,7 +14,7 @@ import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientServi
 
 const props = defineProps<{
   formData: FormDataDto;
-  scrollToElementFn: () => void;
+  scrollToElementFn?: () => void;
 }>();
 
 const nonAssociatedAddressList = reactive<string[]>([]);
