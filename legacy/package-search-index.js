@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"ca.bc.gov.app"},{"l":"ca.bc.gov.app.configuration"},{"l":"ca.bc.gov.app.controller"},{"l":"ca.bc.gov.app.dto"},{"l":"ca.bc.gov.app.entity"},{"l":"ca.bc.gov.app.exception"},{"l":"ca.bc.gov.app.mappers"},{"l":"ca.bc.gov.app.repository"},{"l":"ca.bc.gov.app.service"}];updateSearchResults();

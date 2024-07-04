@@ -1,0 +1,15 @@
+ca.bc.gov.app
+ca.bc.gov.app.configuration
+ca.bc.gov.app.converters
+ca.bc.gov.app.dto
+ca.bc.gov.app.dto.bcregistry
+ca.bc.gov.app.dto.legacy
+ca.bc.gov.app.entity
+ca.bc.gov.app.exception
+ca.bc.gov.app.matchers
+ca.bc.gov.app.repository
+ca.bc.gov.app.service.bcregistry
+ca.bc.gov.app.service.client
+ca.bc.gov.app.service.legacy
+ca.bc.gov.app.service.processor
+ca.bc.gov.app.util
