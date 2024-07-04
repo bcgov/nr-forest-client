@@ -63,6 +63,7 @@ jobs:
 
       - name: Convert README.md to index.html
         run: |
+          sudo apt-get install -y pandoc
           pandoc README.md -o output/index.html
  
       - name: Set up JDK 17 and Caching maven dependencies
