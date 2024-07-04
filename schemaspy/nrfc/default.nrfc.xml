@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?><database name="default" schema="nrfc" type="PostgreSQL - 16.3 (Debian 16.3-1.pgdg110+1)">
+   <sequences>
+      <sequence increment="1" name="email_log_id_seq" startValue="1"/>
+      <sequence increment="1" name="submission_contact_seq" startValue="1"/>
+      <sequence increment="1" name="submission_detail_id_seq" startValue="1"/>
+      <sequence increment="1" name="submission_id_seq" startValue="1"/>
+      <sequence increment="1" name="submission_location_seq" startValue="1"/>
+      <sequence increment="1" name="submission_matching_detail_id_seq" startValue="1"/>
+   </sequences>
+   <tables>
+      <table name="business_type_code" remarks="A code indicating the business type of a client. It could be either Registered Business and Unregistered Business." schema="nrfc" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="business_type_code" nullable="false" remarks="A code indicating the business type of a client." size="1" type="varchar" typeCode="12">
+            <child column="business_type_code" foreignKey="submission_detail_business_type_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_detail"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="The description of the code value." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="effective_date" nullable="false" remarks="The date that the code value has become or is expected to become effective. Default is the data that the code value is created." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="to_date('99991231'::text, 'YYYYMMDD'::text)" digits="0" id="3" name="expiry_date" nullable="false" remarks="The date on which the code value has expired or is expected to expire.  Default 9999-12-31." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="create_timestamp" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_timestamp" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="60" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="60" type="varchar" typeCode="12"/>
+         <primaryKey column="business_type_code" sequenceNumberInPK="1"/>
+         <index name="business_type_code_pk" unique="true">
+            <column ascending="true" name="business_type_code"/>
+         </index>
+      </table>
+      <table name="client_type_code" remarks="A code indicating the type of a client. Examples include, but are not limited to: Corporation, Individual, Association, and others." schema="nrfc" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="client_type_code" nullable="false" remarks="A code representing the type of a client." size="5" type="varchar" typeCode="12">
+            <child column="client_type_code" foreignKey="submission_detail_client_type_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_detail"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="The description of the code value." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="effective_date" nullable="false" remarks="The date that the code value has become or is expected to become effective. Default is the data that the code value is created." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="to_date('99991231'::text, 'YYYYMMDD'::text)" digits="0" id="3" name="expiry_date" nullable="false" remarks="The date on which the code value has expired or is expected to expire.  Default 9999-12-31." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="create_timestamp" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_timestamp" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="60" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="60" type="varchar" typeCode="12"/>
+         <primaryKey column="client_type_code" sequenceNumberInPK="1"/>
+         <index name="client_type_code_pk" unique="true">
+            <column ascending="true" name="client_type_code"/>
+         </index>
+      </table>
+      <table name="contact_type_code" remarks="A code indicating the role of a contact of a client." schema="nrfc" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="contact_type_code" nullable="false" remarks="A code representing the code of a role of a client's contact." size="2" type="varchar" typeCode="12">
+            <child column="contact_type_code" foreignKey="submission_contact_contact_type_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_contact"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="The description of the code value." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="effective_date" nullable="false" remarks="The date that the code value has become or is expected to become effective. Default is the data that the code value is created." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="to_date('99991231'::text, 'YYYYMMDD'::text)" digits="0" id="3" name="expiry_date" nullable="false" remarks="The date on which the code value has expired or is expected to expire.  Default 9999-12-31." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="create_timestamp" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_timestamp" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="60" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="60" type="varchar" typeCode="12"/>
+         <primaryKey column="contact_type_code" sequenceNumberInPK="1"/>
+         <index name="contact_type_code_pk" unique="true">
+            <column ascending="true" name="contact_type_code"/>
+         </index>
+      </table>
+      <table name="country_code" remarks="A list of countries, serving as a reference for country-specific data." schema="nrfc" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="country_code" nullable="false" remarks="A code representing the code of a country." size="2" type="varchar" typeCode="12">
+            <child column="country_code" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="nrfc" table="identification_type_code"/>
+            <child column="country_code" foreignKey="province_code_country_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="province_code"/>
+            <child column="country_code" foreignKey="submission_location_country_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_location"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="The description of the code value." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="effective_date" nullable="false" remarks="The date that the code value has become or is expected to become effective. Default is the data that the code value is created." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="to_date('99991231'::text, 'YYYYMMDD'::text)" digits="0" id="3" name="expiry_date" nullable="false" remarks="The date on which the code value has expired or is expected to expire.  Default 9999-12-31." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="display_order" nullable="true" remarks="The the display order of a country. If no value is provided, the application will order countries alphabetically by default." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="create_timestamp" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="6" name="update_timestamp" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="60" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="60" type="varchar" typeCode="12"/>
+         <primaryKey column="country_code" sequenceNumberInPK="1"/>
+         <index name="country_code_pk" unique="true">
+            <column ascending="true" name="country_code"/>
+         </index>
+         <index name="display_order_uk" unique="true">
+            <column ascending="true" name="display_order"/>
+         </index>
+      </table>
+      <table name="district_code" remarks="A list of Natural Resource Districts." schema="nrfc" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="district_code" nullable="false" remarks="A code representing the code of a Natural Resource District." size="5" type="varchar" typeCode="12">
+            <child column="district_code" foreignKey="submission_detail_district_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_detail"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="The description of the code value." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="email_address" nullable="false" remarks="The email address of the Natural Resource District." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="effective_date" nullable="false" remarks="The date that the code value has become or is expected to become effective. Default is the data that the code value is created." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="to_date('99991231'::text, 'YYYYMMDD'::text)" digits="0" id="4" name="expiry_date" nullable="false" remarks="The date on which the code value has expired or is expected to expire.  Default 9999-12-31." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="create_timestamp" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="6" name="update_timestamp" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="60" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="60" type="varchar" typeCode="12"/>
+         <primaryKey column="district_code" sequenceNumberInPK="1"/>
+         <index name="district_code_pk" unique="true">
+            <column ascending="true" name="district_code"/>
+         </index>
+      </table>
+      <table name="email_log" remarks="Stores email log information" schema="nrfc" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('nrfc.email_log_id_seq'::regclass)" digits="0" id="0" name="email_log_id" nullable="false" remarks="Incremental id generated for a submission email log." size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_id" nullable="true" remarks="Identifier for the associated email assigned by CHES (if applicable)." size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="email_sent_ind" nullable="true" remarks="Indicator for whether the email has been sent ('Y' for Yes, 'N' for No)." size="1" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="exception_message" nullable="true" remarks="Textual message describing any exceptions that occurred during email processing." size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="template_name" nullable="false" remarks="Name of the email template used for sending the email." size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="email_address" nullable="false" remarks="Email address to which the email is sent." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="email_subject" nullable="false" remarks="Subject of the email." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="email_variables" nullable="true" remarks="JSONB field to store variables related to the email content." size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="8" name="create_timestamp" nullable="false" remarks="Timestamp indicating when the email log entry was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="9" name="update_timestamp" nullable="true" remarks="Timestamp indicating when the email log entry was last updated." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="email_log_id" sequenceNumberInPK="1"/>
+         <index name="email_log_id_pk" unique="true">
+            <column ascending="true" name="email_log_id"/>
+         </index>
+      </table>
+      <table name="flyway_schema_history" remarks="" schema="nrfc" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="" size="200" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="type" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="script" nullable="false" remarks="" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="checksum" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="installed_by" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="installed_on" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="execution_time" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="success" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="installed_rank" sequenceNumberInPK="1"/>
+         <index name="flyway_schema_history_pk" unique="true">
+            <column ascending="true" name="installed_rank"/>
+         </index>
+         <index name="flyway_schema_history_s_idx" unique="false">
+            <column ascending="true" name="success"/>
+         </index>
+      </table>
+      <table name="identification_type_code" remarks="" schema="nrfc" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="identification_type_code" nullable="false" remarks="A code indicating the identification type of a client. Examples of possible ID types include Canadian Birth Certificate, Canadian Passport, and others." size="4" type="varchar" typeCode="12">
+            <child column="identification_type_code" foreignKey="identification_type_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_detail"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="The description of the code value." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="country_code" nullable="true" remarks="A code representing the country to which the ID type belongs. If the country code is populated, a province or state will be required." size="2" type="varchar" typeCode="12">
+            <parent column="country_code" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="nrfc" table="country_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="effective_date" nullable="false" remarks="The date that the code value has become or is expected to become effective. Default is the data that the code value is created." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="to_date('99991231'::text, 'YYYYMMDD'::text)" digits="0" id="4" name="expiry_date" nullable="false" remarks="The date on which the code value has expired or is expected to expire.  Default 9999-12-31." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="create_timestamp" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="6" name="update_timestamp" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="60" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="60" type="varchar" typeCode="12"/>
+         <primaryKey column="identification_type_code" sequenceNumberInPK="1"/>
+         <index name="identification_type_code_pk" unique="true">
+            <column ascending="true" name="identification_type_code"/>
+         </index>
+      </table>
+      <table name="province_code" remarks="A list of provinces, states, departments or territories, serving as a reference for province-specific data." schema="nrfc" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="province_code" nullable="false" remarks="A code representing the code of a province, state, department or territory." size="4" type="varchar" typeCode="12">
+            <child column="identification_province_code" foreignKey="province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_detail"/>
+            <child column="province_code" foreignKey="submission_location_province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_location"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="country_code" nullable="false" remarks="A code representing the country in which the province is located." size="2" type="varchar" typeCode="12">
+            <child column="identification_country_code" foreignKey="province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_detail"/>
+            <child column="country_code" foreignKey="submission_location_province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_location"/>
+            <parent column="country_code" foreignKey="province_code_country_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="country_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="The description of the code value." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="effective_date" nullable="false" remarks="The date that the code value has become or is expected to become effective. Default is the data that the code value is created." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="to_date('99991231'::text, 'YYYYMMDD'::text)" digits="0" id="4" name="expiry_date" nullable="false" remarks="The date on which the code value has expired or is expected to expire.  Default 9999-12-31." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="create_timestamp" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="6" name="update_timestamp" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="60" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="60" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="display_order" nullable="true" remarks="The the display order of a province/state. If no value is provided, the application will order provinces/states alphabetically by default." size="10" type="int4" typeCode="4"/>
+         <primaryKey column="country_code" sequenceNumberInPK="1"/>
+         <primaryKey column="province_code" sequenceNumberInPK="2"/>
+         <index name="province_code_pk" unique="true">
+            <column ascending="true" name="country_code"/>
+            <column ascending="true" name="province_code"/>
+         </index>
+      </table>
+      <table name="submission" remarks="A submission request to create a client." schema="nrfc" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('nrfc.submission_id_seq'::regclass)" digits="0" id="0" name="submission_id" nullable="false" remarks="Incremental id generated for a submission of a client." size="10" type="serial" typeCode="4">
+            <child column="submission_id" foreignKey="submission_id_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_contact"/>
+            <child column="submission_id" foreignKey="submission_id_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_detail"/>
+            <child column="submission_id" foreignKey="submission_id_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_location"/>
+            <child column="submission_id" foreignKey="submission_id_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_matching_detail"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="submission_status_code" nullable="true" remarks="TBD." size="5" type="varchar" typeCode="12">
+            <parent column="submission_status_code" foreignKey="submission_submission_status_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_status_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="submission_type_code" nullable="true" remarks="A code indicating the status of a submission request. Examples include, but are not limited to: New, Approved, Rejected, and others." size="5" type="varchar" typeCode="12">
+            <parent column="submission_type_code" foreignKey="submission_submission_type_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="submission_date" nullable="true" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="update_timestamp" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="60" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="60" type="varchar" typeCode="12"/>
+         <primaryKey column="submission_id" sequenceNumberInPK="1"/>
+         <index name="submission_pk" unique="true">
+            <column ascending="true" name="submission_id"/>
+         </index>
+      </table>
+      <table name="submission_contact" remarks="The details of a contacts for each client's location." schema="nrfc" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('nrfc.submission_contact_seq'::regclass)" digits="0" id="0" name="submission_contact_id" nullable="false" remarks="Incremental id generated for the contact details of a client." size="10" type="serial" typeCode="4">
+            <child column="submission_contact_id" foreignKey="submission_contact_id_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_location_contact_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="submission_id" nullable="false" remarks="Incremental id generated for a submission of a client." size="10" type="int4" typeCode="4">
+            <parent column="submission_id" foreignKey="submission_id_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="contact_type_code" nullable="false" remarks="A code representing the code of a role of a client's contact." size="2" type="varchar" typeCode="12">
+            <parent column="contact_type_code" foreignKey="submission_contact_contact_type_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="contact_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="first_name" nullable="true" remarks="The first name of the client's contact." size="30" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="last_name" nullable="true" remarks="The last name of the client's contact." size="30" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="business_phone_number" nullable="false" remarks="The phone number of the client's contact." size="14" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="email_address" nullable="false" remarks="The email address of the client's contact." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="idp_user_id" nullable="true" remarks="The unique identifier assigned to a user by the Identity Provider." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="secondary_phone_number" nullable="true" remarks="A secondary phone number of the client's contact." size="14" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="fax_number" nullable="true" remarks="The fax number of the client's contact." size="14" type="varchar" typeCode="12"/>
+         <primaryKey column="submission_contact_id" sequenceNumberInPK="1"/>
+         <index name="submission_contact_id_pk" unique="true">
+            <column ascending="true" name="submission_contact_id"/>
+         </index>
+      </table>
+      <table name="submission_detail" remarks="The details of a submission request to create a client." schema="nrfc" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('nrfc.submission_detail_id_seq'::regclass)" digits="0" id="0" name="submission_detail_id" nullable="false" remarks="Incremental id generated for a submission detail of a client." size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="submission_id" nullable="false" remarks="Incremental id generated for a submission of a client." size="10" type="int4" typeCode="4">
+            <parent column="submission_id" foreignKey="submission_id_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="client_number" nullable="true" remarks="" size="8" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="business_type_code" nullable="false" remarks="A code indicating the business type of a client. It could be either Registered Business and Unregistered Business." size="1" type="varchar" typeCode="12">
+            <parent column="business_type_code" foreignKey="submission_detail_business_type_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="business_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="incorporation_number" nullable="true" remarks="A number provided to B.C. corporations, businesses or societies as part of the registration or incorporation process." size="13" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="organization_name" nullable="true" remarks="The name of the client." size="60" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="client_type_code" nullable="false" remarks="A code representing the type of a client." size="5" type="varchar" typeCode="12">
+            <parent column="client_type_code" foreignKey="submission_detail_client_type_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="client_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="good_standing_ind" nullable="true" remarks="An indicator that determines whether a client is in good standing with respect to their financial obligations." size="1" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="birthdate" nullable="true" remarks="The date that the BC Services Card logged in person was born." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="district_code" nullable="true" remarks="A code representing the natural resource district of a client." size="5" type="varchar" typeCode="12">
+            <parent column="district_code" foreignKey="submission_detail_district_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="district_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="work_safe_bc_number" nullable="true" remarks="A Work Safe BC number of a client." size="6" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="doing_business_as" nullable="true" remarks="An alternate name that a client may be conducting business under. For example: John Smith doing business as: John's Logging." size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="client_acronym" nullable="true" remarks="A familiar alphabetic acronym to be used as an alternative to the ministry's client number for data entry and display." size="8" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="first_name" nullable="true" remarks="The first name of the client." size="30" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="middle_name" nullable="true" remarks="The middle name of the client." size="30" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="last_name" nullable="true" remarks="The last name of the client." size="30" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="notes" nullable="true" remarks="Any additional information about the client or specific instructions." size="4000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="identification_type_code" nullable="true" remarks="A code indicating the identification type of a client." size="4" type="varchar" typeCode="12">
+            <parent column="identification_type_code" foreignKey="identification_type_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="identification_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="client_identification" nullable="true" remarks="The reference number that identifies a client." size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="identification_country_code" nullable="true" remarks="A code representing the code of a country." size="2" type="varchar" typeCode="12">
+            <parent column="country_code" foreignKey="province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="province_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="identification_province_code" nullable="true" remarks="A code representing the code of a province, state, department or territory." size="4" type="varchar" typeCode="12">
+            <parent column="province_code" foreignKey="province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="province_code"/>
+         </column>
+         <primaryKey column="submission_detail_id" sequenceNumberInPK="1"/>
+         <index name="submission_detail_id_pk" unique="true">
+            <column ascending="true" name="submission_detail_id"/>
+         </index>
+      </table>
+      <table name="submission_location" remarks="The details of a client's location." schema="nrfc" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('nrfc.submission_location_seq'::regclass)" digits="0" id="0" name="submission_location_id" nullable="false" remarks="Incremental id generated for a location of a client." size="10" type="serial" typeCode="4">
+            <child column="submission_location_id" foreignKey="submission_location_id_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_location_contact_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="submission_id" nullable="false" remarks="Incremental id generated for a submission of a client." size="10" type="int4" typeCode="4">
+            <parent column="submission_id" foreignKey="submission_id_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="street_address" nullable="false" remarks="The address of a client, including the street number and street name." size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="country_code" nullable="false" remarks="A code representing the code of a country." size="2" type="varchar" typeCode="12">
+            <parent column="country_code" foreignKey="submission_location_province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="province_code"/>
+            <parent column="country_code" foreignKey="submission_location_country_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="country_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="province_code" nullable="false" remarks="A code representing the code of a province, state, department or territory." size="2" type="varchar" typeCode="12">
+            <parent column="province_code" foreignKey="submission_location_province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="province_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="city_name" nullable="false" remarks="The name of the city of the location." size="30" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="postal_code" nullable="false" remarks="" size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="location_name" nullable="false" remarks="The location name of an address. Examples of location names include, but are not limited to, Mailing Address, Billing Address among others." size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="business_phone_number" nullable="true" remarks="The phone number of a client's specific location." size="14" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="secondary_phone_number" nullable="true" remarks="A secondary phone number of a client's specific location." size="14" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="fax_number" nullable="true" remarks="The fax number of a client's specific location." size="14" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="notes" nullable="true" remarks="Any additional information about the client's location or specific instructions for contacting them." size="4000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="complementary_address_1" nullable="true" remarks="A complementary address line of a client" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="complementary_address_2" nullable="true" remarks="A second complementary address line of a client" size="40" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="email_address" nullable="true" remarks="The email address of the client's location." size="100" type="varchar" typeCode="12"/>
+         <primaryKey column="submission_location_id" sequenceNumberInPK="1"/>
+         <index name="submission_location_id_pk" unique="true">
+            <column ascending="true" name="submission_location_id"/>
+         </index>
+      </table>
+      <table name="submission_location_contact_xref" remarks="Identifies the multiple addresses for a given client, as well as the many contacts that may belong to a given address." schema="nrfc" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="submission_location_id" nullable="false" remarks="Incremental id generated for a location of a client." size="10" type="int4" typeCode="4">
+            <parent column="submission_location_id" foreignKey="submission_location_id_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_location"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="submission_contact_id" nullable="false" remarks="Incremental id generated for the contact details of a client." size="10" type="int4" typeCode="4">
+            <parent column="submission_contact_id" foreignKey="submission_contact_id_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_contact"/>
+         </column>
+         <primaryKey column="submission_location_id" sequenceNumberInPK="1"/>
+         <primaryKey column="submission_contact_id" sequenceNumberInPK="2"/>
+         <index name="submission_location_contact_xref_id_pk" unique="true">
+            <column ascending="true" name="submission_location_id"/>
+            <column ascending="true" name="submission_contact_id"/>
+         </index>
+      </table>
+      <table name="submission_matching_detail" remarks="The number of matches, if any, found in the legacy oracle database. These matches are determined through a combination of fuzzy search in specific fields and exact equality in others." schema="nrfc" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('nrfc.submission_matching_detail_id_seq'::regclass)" digits="0" id="0" name="submission_matching_detail_id" nullable="false" remarks="Incremental id generated for a submission matching detail of a client." size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="submission_id" nullable="false" remarks="Incremental id generated for a submission of a client." size="10" type="int4" typeCode="4">
+            <parent column="submission_id" foreignKey="submission_id_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="matching_fields" nullable="true" remarks="A JSON object provides information about matches found in the existing database. The matches can result from fuzzy search, like matching a name pattern, or from exact equality, such as matching incorporation number or good standing status." size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="confirmed_match_status_ind" nullable="true" remarks="An indicator that determines whether a specific match has been approved, allowing the processing to continue, or denied, requiring immediate action to be taken during the submission process." size="1" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="confirmed_match_message" nullable="true" remarks="A field with the reason for the denial of the submission." size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="confirmed_match_timestamp" nullable="true" remarks="The timestamp when the changes happened." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="confirmed_match_userid" nullable="true" remarks="The ID of the user submitting the changes." size="60" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="7" name="submission_matching_processed" nullable="false" remarks="A flag to indicate that the submission was finally processed." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="submission_matching_processed_time" nullable="true" remarks="The timestamp of when the processor started to process this specific entry" size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="submission_matching_detail_id" sequenceNumberInPK="1"/>
+         <index name="submission_matching_detail_id_pk" unique="true">
+            <column ascending="true" name="submission_matching_detail_id"/>
+         </index>
+      </table>
+      <table name="submission_status_code" remarks="A code indicating the status of a client creation submission request. Examples of possible statuses include Approved, Rejected, and others." schema="nrfc" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="submission_status_code" nullable="false" remarks="A code representing the status of a submission request." size="5" type="varchar" typeCode="12">
+            <child column="submission_status_code" foreignKey="submission_submission_status_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="The description of the code value." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="effective_date" nullable="false" remarks="The date that the code value has become or is expected to become effective. Default is the data that the code value is created." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="to_date('99991231'::text, 'YYYYMMDD'::text)" digits="0" id="3" name="expiry_date" nullable="false" remarks="The date on which the code value has expired or is expected to expire.  Default 9999-12-31." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="create_timestamp" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_timestamp" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="60" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="60" type="varchar" typeCode="12"/>
+         <primaryKey column="submission_status_code" sequenceNumberInPK="1"/>
+         <index name="submission_status_code_pk" unique="true">
+            <column ascending="true" name="submission_status_code"/>
+         </index>
+      </table>
+      <table name="submission_type_code" remarks="A code indicating the type of a submission request. Examples of possible type are TBD." schema="nrfc" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="submission_type_code" nullable="false" remarks="A code representing the type of a submission request." size="5" type="varchar" typeCode="12">
+            <child column="submission_type_code" foreignKey="submission_submission_type_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="description" nullable="false" remarks="The description of the code value." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="effective_date" nullable="false" remarks="The date that the code value has become or is expected to become effective. Default is the data that the code value is created." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="to_date('99991231'::text, 'YYYYMMDD'::text)" digits="0" id="3" name="expiry_date" nullable="false" remarks="The date on which the code value has expired or is expected to expire.  Default 9999-12-31." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="4" name="create_timestamp" nullable="false" remarks="The date and time the record was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="6" id="5" name="update_timestamp" nullable="true" remarks="The date and time the record was created or last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user" nullable="false" remarks="The user or proxy account that created the record." size="60" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user" nullable="true" remarks="The user or proxy account that created or last updated the record." size="60" type="varchar" typeCode="12"/>
+         <primaryKey column="submission_type_code" sequenceNumberInPK="1"/>
+         <index name="submission_type_code_pk" unique="true">
+            <column ascending="true" name="submission_type_code"/>
+         </index>
+      </table>
+   </tables>
+</database>
