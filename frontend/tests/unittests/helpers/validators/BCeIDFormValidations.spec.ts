@@ -103,12 +103,12 @@ describe("BCeIDFormValidations.ts", () => {
       ).toBeTruthy();
     });
     it("should return false when it's not valid", () => {
-      const newFormDataDto = structuredClone(formDataDto);
-      newFormDataDto.location.addresses[0].postalCode = "AAA111";
+      const newFormDataDtoExternal = structuredClone(formDataDto);
+      newFormDataDtoExternal.location.addresses[0].postalCode = "AAA111";
       expect(
         validate(
           ['location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'],
-          newFormDataDto
+          newFormDataDtoExternal
         )
       ).toBeFalsy();
     });
@@ -116,25 +116,25 @@ describe("BCeIDFormValidations.ts", () => {
       const condition =
       '$.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US"'
       it("should return true when it's valid", () => {
-        const newFormDataDto = structuredClone(formDataDto);
-        newFormDataDto.location.addresses[0].country = {
+        const newFormDataDtoExternal = structuredClone(formDataDto);
+        newFormDataDtoExternal.location.addresses[0].country = {
           value: "BR",
           text: "Brazil"
         };
-        newFormDataDto.location.addresses[0].postalCode = "12345678";
+        newFormDataDtoExternal.location.addresses[0].postalCode = "12345678";
         expect(
-          validate([`location.addresses.*.postalCode(${condition})`], newFormDataDto),
+          validate([`location.addresses.*.postalCode(${condition})`], newFormDataDtoExternal),
         ).toBeTruthy();
       });
       it("should return false when it's not valid", () => {
-        const newFormDataDto = structuredClone(formDataDto);
-        newFormDataDto.location.addresses[0].country.value = {
+        const newFormDataDtoExternal = structuredClone(formDataDto);
+        newFormDataDtoExternal.location.addresses[0].country.value = {
           value: "BR",
           text: "Brazil"
         };
-        newFormDataDto.location.addresses[0].postalCode = "A1A1A1";
+        newFormDataDtoExternal.location.addresses[0].postalCode = "A1A1A1";
         expect(
-          validate([`location.addresses.*.postalCode(${condition})`], newFormDataDto),
+          validate([`location.addresses.*.postalCode(${condition})`], newFormDataDtoExternal),
         ).toBeFalsy();
       });
     })

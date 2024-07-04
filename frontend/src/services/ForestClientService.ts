@@ -30,8 +30,11 @@ export const addNewContact = (contacts: Contact[]): number => {
   return newContacts;
 };
 
-export const getAddressDescription = (address: Address, index: number): string =>
-  address.locationName.length !== 0 ? address.locationName : "Address #" + index;
+export const getAddressDescription = (
+  address: Address,
+  index: number,
+  entityName = "Address",
+): string => (address.locationName.length !== 0 ? address.locationName : `${entityName} #` + index);
 
 export const getContactDescription = (contact: Contact, index: number): string =>
   !isNullOrUndefinedOrBlank(contact.firstName)
