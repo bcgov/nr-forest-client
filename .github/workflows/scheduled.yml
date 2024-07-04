@@ -9,6 +9,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  documentation:
+    name: Generating Documentation
+    uses: ./.github/workflows/reusable-doc-gen.yml
+    
   zap_scan:
     runs-on: ubuntu-latest
     name: Penetration Tests

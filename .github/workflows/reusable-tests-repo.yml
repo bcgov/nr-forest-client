@@ -55,5 +55,9 @@ jobs:
         working-directory: legacy
         run: ./mvnw clean package
 
+      - name: Build Processor
+        working-directory: processor
+        run: ./mvnw clean package
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
