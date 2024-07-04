@@ -2,6 +2,7 @@
 import { reactive, watch, computed, ref } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
+import "@carbon/web-components/es/components/tooltip/index";
 // Composables
 import { useEventBus } from "@vueuse/core";
 import { useFetchTo } from "@/composables/useFetch";
@@ -13,6 +14,7 @@ import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 import Delete16 from "@carbon/icons-vue/es/trash-can/16";
 import Add16 from "@carbon/icons-vue/es/add/16";
+import Information16 from "@carbon/icons-vue/es/information/16";
 import { getAddressDescription } from "@/services/ForestClientService";
 
 // Define the input properties for this component
@@ -498,6 +500,36 @@ const getLocationDescription = (address: Address, index: number): string =>
         @error="validation.faxNumber = !$event"
       />
     </div>
+
+    <textarea-input-component
+      :id="'notes_' + id"
+      label="Notes"
+      enable-counter
+      :max-count="4000"
+      :rows="7"
+      placeholder=""
+      v-model="selectedValue.notes"
+      :enabled="true"
+      :validations="[
+        ...getValidations('location.addresses.*.notes'),
+        submissionValidation(`location.addresses[${id}].notes`),
+      ]"
+      :error-message="nameError"
+      @empty="validation.notes = !$event"
+      @error="validation.notes = !$event"
+    >
+      <div slot="label-text" class="label-with-icon">
+        <div class="cds-text-input-label">
+          <span>Notes</span>
+        </div>
+        <cds-tooltip>
+          <Information16 />
+          <cds-tooltip-content>
+            For example, any information about the client location
+          </cds-tooltip-content>
+        </cds-tooltip>
+      </div>
+    </textarea-input-component>
 
     <div class="grouping-06">
       <cds-button

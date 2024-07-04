@@ -1141,9 +1141,17 @@ cds-text-input::part(label) {
 }
 
 .label-with-icon {
-  padding-bottom: 1rem;
   display: flex;
   gap: 0.5rem;
+  line-height: 0; // prevents the label from being pushed away from its input field (below it).
+}
+
+/*
+A parent label for a set of input fields that have their own labels like 'Date of birth' that has
+children: Year, Month, Day.
+*/
+.parent-label {
+  padding-bottom: 1rem;
 }
 
 :is(cds-text-input, cds-textarea)[data-required-label="true"]::part(label)::before {
