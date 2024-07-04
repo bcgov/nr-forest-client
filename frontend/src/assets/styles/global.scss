@@ -351,7 +351,13 @@ div#app {
 .submission-badge {
   width: 31.375rem;
   height: 31.375rem;
-  fill: var(--cds-button-primary, #0353e9);
+  fill: var(--cds-button-primary, #0073e6);
+}
+
+.standard-svg {
+  width: 16rem;
+  height: 16rem;
+  fill: var(--cds-button-primary, #0073e6);
 }
 
 .form-header-progress {
@@ -1440,6 +1446,14 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   overflow: hidden;
 }
 
+.empty-submission-list {
+  height: 16rem;
+  background: var(--light-theme-layer-layer-01, #f3f3f5);
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+}
+
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
   :root {
@@ -1629,11 +1643,6 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 
   .submission-list {
     padding: 2.5rem 0rem;
-  }
-
-  .empty-submission-list {
-    height: 16rem;
-    background: var(--light-theme-layer-layer-01, #f3f3f5);
   }
 
   .paginator {
