@@ -108,7 +108,7 @@ describe("BCeIDFormValidations.ts", () => {
       expect(
         validate(
           ['location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'],
-          newFormDataDto
+          newFormDataDtoExternal
         )
       ).toBeFalsy();
     });
