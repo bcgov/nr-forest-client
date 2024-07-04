@@ -107,4 +107,9 @@ describe("ForestClientService.ts", () => {
     const result = getAddressDescription({ locationName: "" } as Address, 7);
     expect(result).toEqual("Address #7");
   });
+
+  it("returns a string containing the provided entityName and the address' index", () => {
+    const result = getAddressDescription({ locationName: "" } as Address, 7, "Fancy");
+    expect(result).toEqual("Fancy #7");
+  });
 });

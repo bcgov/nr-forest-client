@@ -30,6 +30,7 @@ const emit = defineEmits<{
   (e: "update:model-value", value: Address | undefined): void;
   (e: "remove", value: number): void;
   (e: "removeAdditionalDelivery", value: number): void;
+  (e: "updateLocationName", value: "string"): void;
 }>();
 
 const noValidation = (value: string) => "";
@@ -231,6 +232,11 @@ watch([detailsData], () => {
     setTimeout(() => (addressControl.value = false), 200);
   }
 });
+
+const updateLocationName = (event: FocusEvent) => emit("updateLocationName", event.target.value);
+
+const getLocationDescription = (address: Address, index: number): string =>
+  getAddressDescription(address, index, "Location");
 </script>
 
 <template>
@@ -251,6 +257,7 @@ watch([detailsData], () => {
       :error-message="nameError"
       @empty="validation.locationName = !$event"
       @error="validation.locationName = !$event"
+      @blur="updateLocationName"
     />
 
     <text-input-component
@@ -297,7 +304,7 @@ watch([detailsData], () => {
         />
         <cds-button
           :id="'deleteAdditionalDeliveryInformation_' + id"
-          :danger-descriptor="`Delete additional delivery information &quot;${selectedValue.complementaryAddressTwo || ''}&quot; from &quot;${getAddressDescription(
+          :danger-descriptor="`Delete additional delivery information &quot;${selectedValue.complementaryAddressTwo || ''}&quot; from &quot;${getLocationDescription(
             selectedValue,
             id,
           )}&quot;`"
@@ -496,7 +503,7 @@ watch([detailsData], () => {
       <cds-button
         v-if="id > 0"
         :id="'deleteAddress_' + id"
-        :danger-descriptor="`Delete location &quot;${getAddressDescription(
+        :danger-descriptor="`Delete location &quot;${getLocationDescription(
           selectedValue,
           id,
         )}&quot;`"

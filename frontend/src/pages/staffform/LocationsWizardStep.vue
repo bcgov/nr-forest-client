@@ -136,13 +136,16 @@ const removeAddress = (index: number) => () => {
   });
 };
 
+const getLocationDescription = (address: Address, index: number): string =>
+  getAddressDescription(address, index, "Location");
+
 const handleRemove = (index: number) => {
-  const selectedAddress = getAddressDescription(formData.location.addresses[index], index);
+  const selectedAddress = getLocationDescription(formData.location.addresses[index], index);
   bus.emit({
     name: selectedAddress,
     toastTitle: "Success",
-    kind: "address",
-    message: `“${selectedAddress}” additional address was deleted`,
+    kind: "location",
+    message: `“${selectedAddress}” additional location was deleted`,
     handler: removeAddress(index),
     active: true,
   });
@@ -172,6 +175,12 @@ const handleRemoveAdditionalDelivery = (index: number) => {
 };
 
 onMounted(() => setFocusedComponent("focus-1", 0));
+
+const locationNames = ref<string[]>([]);
+
+const updateLocationName = (locationName: string, index: number) => {
+  locationNames.value[index] = locationName;
+};
 </script>
 
 <template>
@@ -206,7 +215,12 @@ onMounted(() => setFocusedComponent("focus-1", 0));
   <h3>Additional locations</h3>
   <div class="frame-01" v-if="otherAddresses.length > 0" aria-live="off">
     <cds-accordion v-for="(address, index) in otherAddresses" :key="addressesIdMap.get(address)">
-      <cds-accordion-item open title="Additional location" size="lg" class="grouping-13">
+      <cds-accordion-item
+        open
+        :title="locationNames[index + 1] || 'Additional location'"
+        size="lg"
+        class="grouping-13"
+      >
         <staff-location-group-component
           :id="addressesIdMap.get(address)"
           v-bind:model-value="address"
@@ -217,6 +231,7 @@ onMounted(() => setFocusedComponent("focus-1", 0));
           @valid="updateValidState(index + 1, $event)"
           @remove="handleRemove(index + 1)"
           @remove-additional-delivery="handleRemoveAdditionalDelivery(index + 1)"
+          @update-location-name="(locationName) => updateLocationName(locationName, index + 1)"
         />
       </cds-accordion-item>
     </cds-accordion>
