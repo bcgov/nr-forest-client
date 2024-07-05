@@ -209,6 +209,8 @@ fieldValidations["location.addresses.*.businessPhoneNumber"] = [...phoneValidati
 fieldValidations["location.addresses.*.secondaryPhoneNumber"] = [...phoneValidations];
 fieldValidations["location.addresses.*.faxNumber"] = [...phoneValidations];
 
+fieldValidations["location.addresses.*.notes"] = [isMaxSizeMsg("notes", 4000), isAscii("notes")];
+
 // Step 3: Contacts
 
 export const addValidation = (key: string, validation: (value: string) => string): void => {
