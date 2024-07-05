@@ -49,10 +49,8 @@ public record ClientAddressDto(
 
   }
 
-  }
-
   public ClientAddressDto withIndexed(int index) {
-    if (this.index() == index) {
+    if (this.index == index) {
       return this;
     }
     return this.withIndex(index);
