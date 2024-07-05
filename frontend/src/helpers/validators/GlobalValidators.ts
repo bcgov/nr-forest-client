@@ -16,6 +16,7 @@ const canadianPostalCodeRegex: RegExp = /^(([A-Z]\d){3})$/i;
 const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/;
 const nameRegex: RegExp = /^[a-zA-Z0-9\s'-]*$/;
 const ascii: RegExp = /^[\x20-\x7e]*$/;
+const asciiLineBreak: RegExp = /^[\n\x20-\x7e]*$/;
 
 const notificationBus = useEventBus<ValidationMessageType | undefined>(
   "error-notification"
@@ -290,6 +291,16 @@ export const isAscii =
   ) =>
   (value: string): string => {
     if (ascii.test(value)) return "";
+    return message;
+  };
+
+export const isAsciiLineBreak =
+  (
+    field: string = "field",
+    message: string = `The ${field} can only contain: A-Z, a-z, 0-9, space, line break or common symbols`,
+  ) =>
+  (value: string): string => {
+    if (asciiLineBreak.test(value)) return "";
     return message;
   };
 

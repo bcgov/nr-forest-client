@@ -16,6 +16,7 @@ import {
   isEmail,
   isPhoneNumber,
   optional,
+  isAsciiLineBreak,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -209,7 +210,10 @@ fieldValidations["location.addresses.*.businessPhoneNumber"] = [...phoneValidati
 fieldValidations["location.addresses.*.secondaryPhoneNumber"] = [...phoneValidations];
 fieldValidations["location.addresses.*.faxNumber"] = [...phoneValidations];
 
-fieldValidations["location.addresses.*.notes"] = [isMaxSizeMsg("notes", 4000), isAscii("notes")];
+fieldValidations["location.addresses.*.notes"] = [
+  isMaxSizeMsg("notes", 4000),
+  isAsciiLineBreak("notes"),
+];
 
 // Step 3: Contacts
 
