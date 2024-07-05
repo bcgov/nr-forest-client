@@ -1,0 +1,39 @@
+[
+  {
+    "name": "Squamish Nation",
+    "id": "555",
+    "goodStanding": true,
+    "addresses": [
+      {
+        "streetAddress": "320 Seymour Boulevard",
+        "complementaryAddressOne": "P.O. Box 86131",
+        "complementaryAddressTwo": "",
+        "country": {
+          "value": "CA",
+          "text": "Canada"
+        },
+        "province": {
+          "value": "BC",
+          "text": null
+        },
+        "city": "NORTH VANCOUVER",
+        "postalCode": "V7L4J5",
+        "businessPhoneNumber": "",
+        "secondaryPhoneNumber": "",
+        "faxNumber": "",
+        "emailAddress": "",
+        "notes": "",
+        "index": 0,
+        "locationName": "Mailing Address"
+      }
+    ],
+    "contacts": []
+  },
+  {
+    "name": "Webequie",
+    "id": "240",
+    "goodStanding": true,
+    "addresses": [],
+    "contacts": []
+  }
+]
