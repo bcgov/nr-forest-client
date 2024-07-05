@@ -305,7 +305,7 @@ onMounted(() => {
     />
 
     <div>
-      <div class="label-with-icon">
+      <div class="label-with-icon parent-label">
         <div class="cds-text-input-label">
           <span class="cds-text-input-required-label">* </span>
           <span>Date of birth</span>

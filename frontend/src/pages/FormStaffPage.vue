@@ -106,6 +106,7 @@ const progressData = reactive([
       "location.addresses.*.businessPhoneNumber",
       "location.addresses.*.secondaryPhoneNumber",
       "location.addresses.*.faxNumber",
+      "location.addresses.*.notes",
     ],
     extraValidations: [],
   },

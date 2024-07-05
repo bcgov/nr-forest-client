@@ -88,7 +88,7 @@ describe("<StaffLocationGroupComponent />", () => {
               secondaryPhoneNumber: "2224567890",
               faxNumber: "3334567890",
               emailAddress: "john@mail.com",
-              notes: "",
+              notes: "Some notes about the location",
             } as Address,
             countryList: countries,
             validations: [],
@@ -121,6 +121,21 @@ describe("<StaffLocationGroupComponent />", () => {
     cy.get("#secondaryPhoneNumber_0").should("be.visible").and("have.value", "2224567890");
 
     cy.get("#faxNumber_0").should("be.visible").and("have.value", "3334567890");
+
+    /*
+    cy.get("#notes_0")
+    This wouldn't work because for some reason the cds-textarea strips off its id attribute.
+    Interestingly, Cypress still refers to the component as <cds-textarea#notes_0> in its UI
+    messages, after we get it using an alternative selector. Sample message:
+    - expected <cds-textarea#notes_0> to be visible.
+    
+    And though the id is not there as an attribute, it is there as a property, as tested with the
+    "have.prop" below.
+    */
+    cy.get("[data-id='input-notes_0']")
+      .should("be.visible")
+      .and("have.prop", "id", "notes_0")
+      .and("have.value", "Some notes about the location");
   });
 
   it("should render the component with validation", () => {

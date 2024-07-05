@@ -15,6 +15,7 @@ import {
   isNot,
   hasOnlyNamingCharacters,
   isAscii,
+  isAsciiLineBreak,
   isIdCharacters,
   isRegex,
   validateSelection,
@@ -279,19 +280,37 @@ describe('GlobalValidators', () => {
     const result = hasOnlyNamingCharacters()("Tom-d'John Paul");
     expect(result).toBe("");
   });
-  it("should return an error when value has any non-ASCII characters", () => {
-    const result = isAscii()("Aço");
-    expect(result).toEqual(expect.any(String));
+
+  const generateTestCase = (fn: Function) => ({
+    fn,
+    name: fn.name,
+  })
+  describe.each([generateTestCase(isAscii), generateTestCase(isAsciiLineBreak)])("$name", ({ fn }) => {
+    it("should return an error when value has any non-ASCII characters", () => {
+      const result = fn()("Aço");
+      expect(result).toEqual(expect.any(String));
+      expect(result).not.toBe("");
+    });
+    it("should return empty when value has only ASCII characters", () => {
+      const result = fn()("AZaz09 '!@#$%_-+()/\\");
+      expect(result).toBe("");
+    });
+    it("should return empty when value is an empty string", () => {
+      const result = fn()("");
+      expect(result).toBe("");
+    });
+  });
+
+  it("should return an error when value has a line break", () => {
+    const result = isAscii()("First\nSecond");
     expect(result).not.toBe("");
   });
-  it("should return empty when value has only ASCII characters", () => {
-    const result = isAscii()("AZaz09 '!@#$%_-+()/\\");
+
+  it("should return empty when value has a line break", () => {
+    const result = isAsciiLineBreak()("First\nSecond");
     expect(result).toBe("");
   });
-  it("should return empty when value is an empty string", () => {
-    const result = isAscii()("");
-    expect(result).toBe("");
-  });
+
   describe("isIdCharacters", () => {
     it.each([
       ["is an empty string", ""],
