@@ -1140,7 +1140,7 @@ cds-text-input::part(label) {
   padding-bottom: unset;
 }
 
-cds-text-input::part(label)::before, .cds-text-input-required-label {
+:is(cds-text-input, cds-textarea)::part(label)::before, .cds-text-input-required-label {
   color: var(--light-theme-text-text-error, #b32001);
 }
 
@@ -1149,13 +1149,25 @@ cds-text-input::part(label)::before, .cds-text-input-required-label {
 }
 
 .label-with-icon {
-  padding-bottom: 1rem;
   display: flex;
   gap: 0.5rem;
+  line-height: 0; // prevents the label from being pushed away from its input field (below it).
 }
 
-cds-text-input[data-required-label="true"]::part(label)::before {
+/*
+A parent label for a set of input fields that have their own labels like 'Date of birth' that has
+children: Year, Month, Day.
+*/
+.parent-label {
+  padding-bottom: 1rem;
+}
+
+:is(cds-text-input, cds-textarea)[data-required-label="true"]::part(label)::before {
   content: '* ';
+}
+
+cds-textarea::part(label), .cds-text-input-label {
+  color: var(--light-theme-text-text-primary, #131315);
 }
 
 cds-modal::part(dialog) {

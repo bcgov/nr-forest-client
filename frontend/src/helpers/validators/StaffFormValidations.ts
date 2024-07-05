@@ -16,6 +16,7 @@ import {
   isEmail,
   isPhoneNumber,
   optional,
+  isAsciiLineBreak,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -208,6 +209,11 @@ const phoneValidations = [
 fieldValidations["location.addresses.*.businessPhoneNumber"] = [...phoneValidations];
 fieldValidations["location.addresses.*.secondaryPhoneNumber"] = [...phoneValidations];
 fieldValidations["location.addresses.*.faxNumber"] = [...phoneValidations];
+
+fieldValidations["location.addresses.*.notes"] = [
+  isMaxSizeMsg("notes", 4000),
+  isAsciiLineBreak("notes"),
+];
 
 // Step 3: Contacts
 
