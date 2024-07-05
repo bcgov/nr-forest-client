@@ -88,7 +88,7 @@ describe("<StaffLocationGroupComponent />", () => {
               secondaryPhoneNumber: "2224567890",
               faxNumber: "3334567890",
               emailAddress: "john@mail.com",
-              notes: "",
+              notes: "Some notes about the location",
             } as Address,
             countryList: countries,
             validations: [],
@@ -121,6 +121,10 @@ describe("<StaffLocationGroupComponent />", () => {
     cy.get("#secondaryPhoneNumber_0").should("be.visible").and("have.value", "2224567890");
 
     cy.get("#faxNumber_0").should("be.visible").and("have.value", "3334567890");
+
+    cy.get("[data-id='input-notes_0'")
+      .should("be.visible")
+      .and("have.value", "Some notes about the location");
   });
 
   it("should render the component with validation", () => {

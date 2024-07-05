@@ -104,6 +104,7 @@ const validation = reactive<Record<string, boolean>>({
   primaryPhoneNumber: true,
   secondaryPhoneNumber: true,
   faxNumber: true,
+  notes: true,
 });
 
 const checkValid = () =>
@@ -515,7 +516,7 @@ const getLocationDescription = (address: Address, index: number): string =>
         submissionValidation(`location.addresses[${id}].notes`),
       ]"
       :error-message="nameError"
-      @empty="validation.notes = !$event"
+      @empty="validation.notes = true"
       @error="validation.notes = !$event"
     >
       <div slot="label-text" class="label-with-icon">
