@@ -102,7 +102,8 @@ class OpenDataControllerIntegrationTest extends AbstractTestContainerIntegration
         .jsonPath("$.length()").isEqualTo(1)
         .jsonPath("$[0].name").isEqualTo("Squamish Nation")
         .jsonPath("$[0].id").isEqualTo(555)
-        //.jsonPath("$[0].addresses[0].streetAddress").isEqualTo("320 Seymour Boulevard")
+        .jsonPath("$[0].addresses[0].streetAddress").isEqualTo("320 Seymour Boulevard")
+        .jsonPath("$[0].addresses[0].locationName").isEqualTo("Mailing Address")
         .consumeWith(System.out::println);
 
 
@@ -146,7 +147,7 @@ class OpenDataControllerIntegrationTest extends AbstractTestContainerIntegration
         .jsonPath("$.length()").isEqualTo(1)
         .jsonPath("$[0].name").isEqualTo("Webequie")
         .jsonPath("$[0].id").isEqualTo(240)
-        .jsonPath("$[0].addresses[0].streetAddress").isEqualTo(null)
+        .jsonPath("$[0].addresses.length()").isEqualTo(0)
         .consumeWith(System.out::println);
   }
 

@@ -33,25 +33,34 @@ public class OpenDataService {
   }
 
   private ClientDetailsDto convertToDto(Feature openDataFeature) {
+
+    ClientAddressDto addressDto = new ClientAddressDto(
+        StringUtils.defaultIfBlank(
+            openDataFeature.properties().addressLine2(),
+            openDataFeature.properties().addressLine1()
+        ),
+        StringUtils.isNotBlank(openDataFeature.properties().addressLine2())
+            ? openDataFeature.properties().addressLine1() : StringUtils.EMPTY,
+        StringUtils.EMPTY,
+        new ClientValueTextDto("CA", "Canada"),
+        new ClientValueTextDto(openDataFeature.properties().officeProvince(), null),
+        openDataFeature.properties().officeCity(),
+        StringUtils.defaultIfBlank(openDataFeature.properties().officePostalCode(),
+            StringUtils.EMPTY).replace(" ", StringUtils.EMPTY),
+        StringUtils.EMPTY,
+        StringUtils.EMPTY,
+        StringUtils.EMPTY,
+        StringUtils.EMPTY,
+        StringUtils.EMPTY,
+        0,
+        "Mailing Address"
+    );
+
     return new ClientDetailsDto(
         openDataFeature.properties().getNationName(),
         openDataFeature.properties().getNationId() + "",
         true,
-        List.of(
-            new ClientAddressDto(
-                openDataFeature.properties().addressLine1(),
-                new ClientValueTextDto("CA", "Canada"),
-                new ClientValueTextDto(openDataFeature.properties().officeProvince(), null),
-                openDataFeature.properties().officeCity(),
-                StringUtils.defaultIfBlank(openDataFeature.properties().officePostalCode(),
-                    StringUtils.EMPTY).replace(" ", StringUtils.EMPTY),
-                0,
-                StringUtils.defaultIfBlank(
-                    openDataFeature.properties().addressLine2(),
-                    openDataFeature.properties().siteName()
-                )
-            )
-        ),
+        addressDto.isValid() ? List.of(addressDto) : List.of(),
         List.of()
     );
   }
