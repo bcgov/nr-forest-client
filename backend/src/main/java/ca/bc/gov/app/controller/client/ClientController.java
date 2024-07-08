@@ -35,7 +35,7 @@ public class ClientController {
   ) {
     log.info("Requesting client details for client number {} from the client service. {}",
         clientNumber,
-        principal
+        JwtPrincipalUtil.getUserId(principal)
     );
     return clientService
         .getClientDetails(
