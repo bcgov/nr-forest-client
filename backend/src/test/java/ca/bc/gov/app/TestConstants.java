@@ -801,4 +801,112 @@ public class TestConstants {
     };
 
   }
+
+  public static final String OPENMAPS_SAC_DATA = """
+      {
+        "type": "FeatureCollection",
+        "crs": {
+            "type": "name",
+            "properties": {
+                "name": "EPSG:4326"
+            }
+        },
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -87.35969666,
+                        52.98282376
+                    ]
+                },
+                "properties": {
+                    "GmlID": "Première_Nation___First_Nation.1351416",
+                    "OBJECTID": 1351416,
+                    "Numéro_de_bande___Band_Number": 240,
+                    "Nom_de_bande___Band_Name": "Webequie"
+                }
+            }
+        ]
+      }""";
+
+  public static final String OPENMAPS_SAC_NODATA = """
+      {
+         "type": "FeatureCollection",
+         "crs": {
+             "type": "name",
+             "properties": {
+                 "name": "EPSG:4326"
+             }
+         },
+         "features": []
+       }""";
+
+  public static final String OPENMAPS_BCMAPS_DATA = """
+      {
+         "type": "FeatureCollection",
+         "features": [
+             {
+                 "type": "Feature",
+                 "id": "WHSE_HUMAN_CULTURAL_ECONOMIC.FN_COMMUNITY_LOCATIONS_SP.29",
+                 "geometry": {
+                     "type": "Point",
+                     "coordinates": [
+                         1208415.942,
+                         482549.267
+                     ]
+                 },
+                 "geometry_name": "SHAPE",
+                 "properties": {
+                     "COMMUNITY_LOCATION_ID": 29,
+                     "FIRST_NATION_BC_NAME": "Squamish Nation",
+                     "FIRST_NATION_FEDERAL_NAME": "Squamish",
+                     "FIRST_NATION_FEDERAL_ID": 555,
+                     "URL_TO_BC_WEBSITE": "http://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/consulting-with-first-nations/first-nations-negotiations/first-nations-a-z-listing/squamish-nation",
+                     "URL_TO_FEDERAL_WEBSITE": "http://fnp-ppn.aadnc-aandc.gc.ca/fnp/Main/Search/FNMain.aspx?BAND_NUMBER=555&lang=eng",
+                     "URL_TO_FIRST_NATION_WEBSITE": "http://www.squamish.net/",
+                     "MEMBER_ORGANIZATION_NAMES": "Independent",
+                     "LANGUAGE_GROUP": "Sḵwx̱wú7mesh sníchim",
+                     "BC_REGIONAL_OFFICE": "South Coast (Surrey)",
+                     "MAPSHEET_NUMBER": "92G",
+                     "PREFERRED_NAME": "Squamish",
+                     "ALTERNATIVE_NAME_1": "variation SKWAMISH, SKWAWAMISH; alternate CH'CH'ELXWIKW; SEYMOUR; includes FALSE CREEK (pre-1914); includes CAPILANO (variation KAPILANO - 1923; CAPITANO CREEK - circa 1917; alternate HOMULCHSEAN); includes KITSILANO (1923) (alternate SENAKW)),",
+                     "ALTERNATIVE_NAME_2": "K'IK'ELXEN, SEAICHEM (1923), CHEAKAMUS, CHEKWELP, WAIWAKUM, MISSION (traditional name USTLAWN), KOWTAIN, POQUIOSIN, POYAM, SHELTER ISLAND (alternate SXAALTXW), STAWAMUS, SKOWISHIN, YOOKWITZ; includes HOWE SOUND",
+                     "ADDRESS_LINE1": "P.O. Box 86131",
+                     "ADDRESS_LINE2": "320 Seymour Boulevard",
+                     "OFFICE_CITY": "NORTH VANCOUVER",
+                     "OFFICE_PROVINCE": "BC",
+                     "OFFICE_POSTAL_CODE": "V7L 4J5",
+                     "LOCATION_DESCRIPTION": "NEW WESTMINSTER DISTRICT ON NORTH SHORE OF BURRARD INLET AT FIRST NARROWS, N. END OF LIONS GATE BRIDGE",
+                     "SITE_NAME": "Capilano 5",
+                     "SITE_NUMBER": "07969",
+                     "COMMENTS": "Moved to reflect largest community",
+                     "OBJECTID": 543,
+                     "SE_ANNO_CAD_DATA": null
+                 }
+             }
+         ],
+         "totalFeatures": 1,
+         "numberMatched": 1,
+         "numberReturned": 1,
+         "timeStamp": "2024-05-16T21:45:54.500Z",
+         "crs": {
+             "type": "name",
+             "properties": {
+                 "name": "urn:ogc:def:crs:EPSG::3005"
+             }
+         }
+     }""";
+
+  public static final String OPENMAPS_BCMAPS_NODATA = """
+      {
+        "type": "FeatureCollection",
+        "features": [],
+        "totalFeatures": 0,
+        "numberMatched": 0,
+        "numberReturned": 0,
+        "timeStamp": "2024-07-05T16:10:50.847Z",
+        "crs": null
+      }""";
 }

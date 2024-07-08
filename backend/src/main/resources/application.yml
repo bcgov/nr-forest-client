@@ -172,6 +172,9 @@ ca:
               - PUT
               - DELETE
             age: 5m
+        openData:
+          sacUrl: https://data.sac-isc.gc.ca/geomatics/services/Donnees_Ouvertes-Open_Data/Premiere_Nation_First_Nation/MapServer/WFSServer
+          bcMapsUrl: https://openmaps.gov.bc.ca/geo/pub/WHSE_HUMAN_CULTURAL_ECONOMIC.FN_COMMUNITY_LOCATIONS_SP/ows
 
 logging:
   pattern:
