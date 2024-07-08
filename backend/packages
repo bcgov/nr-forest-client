@@ -3,6 +3,7 @@ ca.bc.gov.app.controller.client
 ca.bc.gov.app.controller
 ca.bc.gov.app.controller.ches
 ca.bc.gov.app.controller.filters
+ca.bc.gov.app.controller.opendata
 ca.bc.gov.app
 ca.bc.gov.app.predicates
 ca.bc.gov.app.security
@@ -11,6 +12,7 @@ ca.bc.gov.app.validator.client
 ca.bc.gov.app.service.client
 ca.bc.gov.app.service.client.matches
 ca.bc.gov.app.service.ches
+ca.bc.gov.app.service.opendata
 ca.bc.gov.app.service.bcregistry
 ca.bc.gov.app.util
 ca.bc.gov.app.models.client
@@ -22,7 +24,7 @@ ca.bc.gov.app.dto.legacy
 ca.bc.gov.app.dto.submissions
 ca.bc.gov.app.dto.client
 ca.bc.gov.app.dto.ches
-ca.bc.gov.app.dto.openmaps
+ca.bc.gov.app.dto.opendata
 ca.bc.gov.app.dto.bcregistry
 ca.bc.gov.app.dto
 ca.bc.gov.app.configuration
