@@ -38,7 +38,7 @@ public class ClientCodesController {
     return clientService.getClientTypeByCode(code);
   }
 
-  @GetMapping("/contactTypes")
+  @GetMapping("/contact-types")
   public Flux<CodeNameDto> listClientContactTypeCodes(
       @RequestParam(value = "page", required = false, defaultValue = "0")
       Integer page,
