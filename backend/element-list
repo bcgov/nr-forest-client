@@ -4,6 +4,7 @@ ca.bc.gov.app.configuration.flags
 ca.bc.gov.app.controller
 ca.bc.gov.app.controller.ches
 ca.bc.gov.app.controller.client
+ca.bc.gov.app.controller.filters
 ca.bc.gov.app.converters
 ca.bc.gov.app.dto
 ca.bc.gov.app.dto.bcregistry

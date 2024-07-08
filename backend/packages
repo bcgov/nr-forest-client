@@ -2,6 +2,7 @@ ca.bc.gov.app.repository.client
 ca.bc.gov.app.controller.client
 ca.bc.gov.app.controller
 ca.bc.gov.app.controller.ches
+ca.bc.gov.app.controller.filters
 ca.bc.gov.app
 ca.bc.gov.app.predicates
 ca.bc.gov.app.security
