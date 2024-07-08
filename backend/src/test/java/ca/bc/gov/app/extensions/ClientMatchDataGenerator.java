@@ -57,7 +57,7 @@ public class ClientMatchDataGenerator {
             "a@a.com",
             null,
             0,
-            null
+            "That Place"
         ),
         null
     );
