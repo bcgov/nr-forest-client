@@ -109,5 +109,7 @@ public final class ApplicationConstant {
 
   public static final String OPENDATA_FILTER = "<Filter><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike></Filter>";
 
+  public static final String MDC_USERID = "X-USER";
+
 }
 
