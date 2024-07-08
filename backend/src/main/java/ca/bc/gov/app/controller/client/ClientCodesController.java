@@ -24,14 +24,14 @@ public class ClientCodesController {
 
   private final ClientService clientService;
 
-  @GetMapping("/clientTypes")
+  @GetMapping("/client-types")
   public Flux<CodeNameDto> findActiveClientTypeCodes() {
     log.info("Requesting a list of active client type codes from the client service.");
     return clientService
         .findActiveClientTypeCodes(LocalDate.now());
   }
 
-  @GetMapping("/clientTypes/{code}")
+  @GetMapping("/client-types/{code}")
   public Mono<CodeNameDto> getClientTypeByCode(
       @PathVariable String code) {
     log.info("Requesting a client type by code {} from the client service.", code);

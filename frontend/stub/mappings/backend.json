@@ -121,7 +121,7 @@
     {
       "name": "Contact Type Codes",
       "request": {
-        "url": "/api/codes/contactTypes?page=0&size=250",
+        "url": "/api/codes/contact-types?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -146,7 +146,7 @@
     {
       "name": "Get ClientType by Code",
       "request": {
-        "urlPattern": "/api/codes/clientTypes/(.*)",
+        "urlPattern": "/api/codes/client-types/(.*)",
         "method": "GET"
       },
       "response": {

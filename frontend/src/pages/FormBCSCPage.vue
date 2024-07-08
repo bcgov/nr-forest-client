@@ -135,7 +135,7 @@ const scrollToNewContact = () => {
 //Role related data
 const roleList = ref([]);
 const fetch = () => {
-  useFetchTo("/api/codes/contactTypes?page=0&size=250", roleList);
+  useFetchTo("/api/codes/contact-types?page=0&size=250", roleList);
 };
 fetch();
 
