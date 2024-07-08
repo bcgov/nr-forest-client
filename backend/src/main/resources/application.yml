@@ -39,12 +39,15 @@ spring:
   sleuth:
     propagation-keys:
       - X-TRACE-ID
+      - X-USER
     baggage-keys:
       - X-TRACE-ID
+      - X-USER
     log:
       slf4j:
         whitelisted-mdc-keys:
           - X-TRACE-ID
+          - X-USER
 
 management:
   enable-native-support: true
@@ -74,9 +77,11 @@ management:
     baggage:
       remote-fields:
         - X-TRACE-ID
+        - X-USER
       correlation:
         fields:
           - X-TRACE-ID
+          - X-USER
     sampling:
       probability: 0.75
   zipkin:
@@ -170,7 +175,7 @@ ca:
 
 logging:
   pattern:
-    correlation: "[${spring.application.name:},%X{${X-TRACE-ID:traceId}:-},%X{spanId:-}] "
+    correlation: "[${spring.application.name:},%X{${X-TRACE-ID:traceId}:-},%X{spanId:-},%X{X-USER:-}] "
 
 # Profile Specific Properties
 ---
@@ -181,14 +186,16 @@ spring:
   sleuth:
     propagation-keys:
       - X-TRACE-ID
+      - X-USER
     baggage-keys:
       - X-TRACE-ID
+      - X-USER
     log:
       slf4j:
         whitelisted-mdc-keys:
           - X-TRACE-ID
+          - X-USER
 
 logging:
   pattern:
-    #console: "{\"time\": \"%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}\", \"level\": \"${LOG_LEVEL:%5p}\", \"app\":\"${spring.application.name:-}\", \"traceId\":\"%X{${X-TRACE-ID:traceId}:-}\", \"spanId\":\"%X{spanId:-}\", \"pid\": \"${PID: }\", \"thread\": \"%t\", \"source\": \"%logger{63}:%L\", \"message\": \"%m${LOG_EXCEPTION_CONVERSION_WORD:%wEx}\"}%n"
-    console: "{\"time\": \"%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}\", \"level\": \"${LOG_LEVEL:%5p}\", \"app\":\"${spring.application.name:-}\", \"traceId\":\"%X{${X-TRACE-ID:traceId}:-}\", \"spanId\":\"%X{spanId:-}\", \"pid\": \"${PID: }\", \"thread\": \"%t\", \"source\": \"%logger{63}:%L\", \"message\": \"%m\", \"exception\":\"${LOG_EXCEPTION_CONVERSION_WORD:%wEx}\"}%n"
+    console: "{\"time\": \"%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}\", \"level\": \"${LOG_LEVEL:%5p}\", \"app\":\"${spring.application.name:-}\", \"user\":\"%X{X-USER:-}\", \"traceId\":\"%X{${X-TRACE-ID:traceId}:-}\", \"spanId\":\"%X{spanId:-}\", \"pid\": \"${PID: }\", \"thread\": \"%t\", \"source\": \"%logger{63}:%L\", \"message\": \"%m\", \"exception\":\"${LOG_EXCEPTION_CONVERSION_WORD:%wEx}\"}%n"
