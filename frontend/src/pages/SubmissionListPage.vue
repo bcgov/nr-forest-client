@@ -168,7 +168,7 @@ const summitSvg = useSvg(summit);
     </div>
 
     <div class="empty-submission-list" 
-        v-if="totalItems == 0 && userhasAuthority">
+        v-if="totalItems == 0 && userhasAuthority && !loading">
         <summit-svg alt="Summit pictogram" 
                     class="standard-svg"/>
         <p class="heading-02">No submissions to show yet</p>
