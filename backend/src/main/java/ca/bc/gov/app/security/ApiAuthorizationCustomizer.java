@@ -98,7 +98,18 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
             ApplicationConstant.USERTYPE_BCSC_USER,
             ApplicationConstant.USERTYPE_SERVICE_USER);
-
+    
+    // Viewer, editor, admin, BCeIDBusiness, BCSC and service users can GET from the identification types
+    // endpoint
+    authorize
+        .pathMatchers(HttpMethod.GET, "/api/identification-types/**")
+        .hasAnyRole(ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+            ApplicationConstant.USERTYPE_BCSC_USER,
+            ApplicationConstant.USERTYPE_SERVICE_USER);
+    
     // Only editor and admin can POST to the clients submissions endpoint with a specific id
     authorize
         .pathMatchers(HttpMethod.POST, "/api/clients/submissions/{id:[0-9]+}")

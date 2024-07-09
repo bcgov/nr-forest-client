@@ -47,7 +47,7 @@ public class CountryController {
       Integer page,
       @RequestParam(value = "size", required = false, defaultValue = "10")
       Integer size) {
-    log.info("Requesting a list of provinces for country code {} from the client service.",
+    log.info("Requesting a list of provinces by country code {} from the client service.",
         countryCode);
     return clientService
         .listProvinces(countryCode, page, size);
