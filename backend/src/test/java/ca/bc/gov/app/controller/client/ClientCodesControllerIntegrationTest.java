@@ -42,7 +42,7 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
 
     client
         .get()
-        .uri("/api/codes/clientTypes")
+        .uri("/api/codes/client-types")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
