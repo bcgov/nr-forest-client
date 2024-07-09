@@ -40,7 +40,7 @@ watch(
   () => emit("update:data", formData.value),
 );
 
-const identificationTypeList: IdentificationType[] = [
+/*const identificationTypeList: IdentificationType[] = [
   { code: "BRTH", name: "Canadian birth certificate" },
   { code: "CDDL", name: "Canadian driver's licence" },
   { code: "PASS", name: "Canadian passport" },
@@ -48,11 +48,14 @@ const identificationTypeList: IdentificationType[] = [
   { code: "FNID", name: "First Nation status ID" },
   { code: "USDL", name: "US driver's licence" },
   { code: "OTHR", name: "Other Identification" },
-];
+];*/
+
+const identificationTypeList = ref([]);
+useFetchTo("/api/identification-types", identificationTypeList);
 
 const identificationType = computed(() => {
   const value = formData.value.businessInformation.identificationType;
-  return value ? identificationTypeList.find((item) => item.code === value) : undefined;
+  return value ? identificationTypeList.value.find((item) => item.code === value) : undefined;
 });
 
 const identificationProvince = computed(() => {
@@ -80,28 +83,21 @@ const { fetch: fetchProvinceList } = useFetchTo(provinceUrl, provinceList, {
 
 watch(identificationType, (value) => {
   formData.value.businessInformation.identificationProvince = null;
-
-  // is driver's licence
-  if (["CDDL", "USDL"].includes(value?.code)) {
-    // TODO: this should be removed/updated when FSADT1-1383 is done
-    formData.value.businessInformation.identificationCountry =
-      identificationType.value?.code === "USDL" ? "US" : "CA";
-
-    fetchProvinceList();
-  }
+  formData.value.businessInformation.identificationCountry = identificationType.value?.countryCode;
+  fetchProvinceList();
 });
 
 watch(provinceList, () => {
   if (
-    identificationType.value.code === "CDDL" &&
+    identificationType.value.countryCode === "CA" &&
     (!identificationProvince.value || !identificationProvince.value.code)
   ) {
-    // default value for Issuing province when ID type is Canadian driver's licence
+    // Default value for Issuing province when ID type is Canadian driver's licence
     formData.value.businessInformation.identificationProvince = "BC";
   }
 });
 
-const identificationProvinceNaming = computed(() => {
+const identificationProvinceLabel = computed(() => {
   const countryCode = formData.value.businessInformation.identificationCountry;
   return countryCode === "US" ? "Issuing state" : "Issuing province";
 });
@@ -352,7 +348,7 @@ onMounted(() => {
       <dropdown-input-component
         v-if="shouldDisplayProvince"
         id="identificationProvince"
-        :label="identificationProvinceNaming"
+        :label="identificationProvinceLabel"
         required
         required-label
         :initial-value="identificationProvince?.name"
