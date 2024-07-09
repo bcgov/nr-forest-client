@@ -61,7 +61,7 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
     Function<UriBuilder, URI> uri = uriBuilder -> {
 
       UriBuilder localBuilder = uriBuilder
-          .path("/api/codes/contactTypes");
+          .path("/api/codes/contact-types");
 
       if (page != null) {
         localBuilder = localBuilder.queryParam("page", page);
