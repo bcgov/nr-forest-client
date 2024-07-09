@@ -40,16 +40,6 @@ watch(
   () => emit("update:data", formData.value),
 );
 
-/*const identificationTypeList: IdentificationType[] = [
-  { code: "BRTH", name: "Canadian birth certificate" },
-  { code: "CDDL", name: "Canadian driver's licence" },
-  { code: "PASS", name: "Canadian passport" },
-  { code: "CITZ", name: "Canadian citizenship card" },
-  { code: "FNID", name: "First Nation status ID" },
-  { code: "USDL", name: "US driver's licence" },
-  { code: "OTHR", name: "Other Identification" },
-];*/
-
 const identificationTypeList = ref([]);
 useFetchTo("/api/identification-types", identificationTypeList);
 

@@ -1,0 +1,10 @@
+[
+    { "code": "BRTH", "name": "Canadian birth certificate", "countryCode": "" },
+    { "code": "CDDL", "name": "Canadian driver's licence", "countryCode": "CA" },
+    { "code": "PASS", "name": "Canadian passport", "countryCode": "" },
+    { "code": "CITZ", "name": "Canadian citizenship card", "countryCode": "" },
+    { "code": "FNID", "name": "First Nation status card", "countryCode": "" },
+    { "code": "USDL", "name": "US driver's licence", "countryCode": "US" },
+    { "code": "OTHR", "name": "Other", "countryCode": "" }
+  ]
+  

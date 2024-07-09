@@ -10,6 +10,10 @@ describe("<individual-client-information-wizard-step />", () => {
     cy.intercept("GET", "/api/countries/US/provinces?page=0&size=250", {
       fixture: "states.json",
     }).as("getStates");
+
+    cy.intercept("GET", "/api/identification-types", {
+      fixture: "identificationTypes.json",
+    }).as("getIdentificationTypes");
   });
 
   const getDefaultProps = () => ({
