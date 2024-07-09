@@ -32,6 +32,10 @@ ca:
               secret: donttellanyonethisisasecret
         frontend:
           url: http://localhost:1234
+        openData:
+          sacUrl: http://127.0.0.1:11111/sac
+          bcMapsUrl: http://127.0.0.1:11112/bcmaps
+
 
 features:
   staff:
