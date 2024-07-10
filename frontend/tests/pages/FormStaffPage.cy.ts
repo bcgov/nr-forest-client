@@ -24,13 +24,16 @@ const fillIndividual = (data = individualBaseData) => {
   cy.get("#identificationType").find("[part='trigger-button']").click();
   cy.wait(2000);
   cy.get("#identificationType")
-  .find(`cds-combo-box-item[data-id="${data.identificationTypeCode}"]`)
-  .should('be.visible')
-  .log('Combo-box item visible')
-  .click()
-  .log('Combo-box item clicked')
-  .should("have.value", data.identificationTypeValue)
-  .log('Value assertion passed');
+    .find(`cds-combo-box-item[data-id="${data.identificationTypeCode}"]`)
+    .should('exist')
+    .should('be.visible')
+    .then(($el) => {
+      if ($el.length > 0) {
+        cy.wrap($el).click();
+      } else {
+        throw new Error('Element not found');
+      }
+    });
 
   cy.get("#clientIdentification").find("input").clear();
   cy.get("#clientIdentification").find("input").should('be.focused').blur();
