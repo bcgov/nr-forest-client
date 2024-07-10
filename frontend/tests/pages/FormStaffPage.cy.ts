@@ -20,13 +20,12 @@ const fillIndividual = (data = individualBaseData) => {
   cy.get("#birthdateYear").find("input").type(data.birthdateYear);
   cy.get("#birthdateMonth").find("input").type(data.birthdateMonth);
   cy.get("#birthdateDay").find("input").type(data.birthdateDay);
-
+  
   cy.get("#identificationType").find("[part='trigger-button']").click();
   cy.get("#identificationType")
-    .find(`cds-combo-box-item[data-id="${data.identificationTypeCode}"]`, { timeout: 10000 })
-    .should("exist")
-    .and("be.visible")
-    .click();
+    .find(`cds-combo-box-item[data-id="${data.identificationTypeCode}"]`)
+    .click()
+    .should("have.value", data.identificationTypeValue);
 
   cy.get("#clientIdentification").find("input").clear();
   cy.get("#clientIdentification").find("input").should('be.focused').blur();
