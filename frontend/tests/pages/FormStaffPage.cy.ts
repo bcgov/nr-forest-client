@@ -22,18 +22,12 @@ const fillIndividual = (data = individualBaseData) => {
   cy.get("#birthdateDay").find("input").type(data.birthdateDay);
 
   cy.get("#identificationType").find("[part='trigger-button']").click();
-  cy.wait(2000);
+  cy.wait(5000);
   cy.get("#identificationType")
     .find(`cds-combo-box-item[data-id="${data.identificationTypeCode}"]`)
-    .should('exist')
-    .should('be.visible')
-    .then(($el) => {
-      if ($el.length > 0) {
-        cy.wrap($el).click();
-      } else {
-        throw new Error('Element not found');
-      }
-    });
+    .should("be.visible")
+    .click()
+    .and("have.value", data.identificationTypeValue);
 
   cy.get("#clientIdentification").find("input").clear();
   cy.get("#clientIdentification").find("input").should('be.focused').blur();
