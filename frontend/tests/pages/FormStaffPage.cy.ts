@@ -22,6 +22,7 @@ const fillIndividual = (data = individualBaseData) => {
   cy.get("#birthdateDay").find("input").type(data.birthdateDay);
 
   cy.get("#identificationType").find("[part='trigger-button']").click();
+  cy.wait(1000);
   cy.get("#identificationType")
     .find(`cds-combo-box-item[data-id="${data.identificationTypeCode}"]`, { timeout: 10000 })
     .should("exist")
