@@ -1,4 +1,5 @@
 {
+  "extends": "./tsconfig.base.json",
   "files": [],
   "references": [
     {
@@ -13,15 +14,5 @@
     {
       "path": "./tsconfig.cypress.json"
     }
-  ],
-  "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "composite": true,
-    "moduleResolution": "node",
-    "module": "es2020",
-    "target": "es2015",
-    "downlevelIteration": true
-  }
+  ]
 }
