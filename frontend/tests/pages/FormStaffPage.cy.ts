@@ -35,9 +35,10 @@ const fillIndividual = (data = individualBaseData) => {
       .click();
   }
 
+  cy.get("#clientIdentification").shadow().find("input").clear();
+  cy.get("#clientIdentification").shadow().find("input").should('be.focused').blur();
   cy.get("#clientIdentification").shadow().find("input").type(data.clientIdentification);
-
-  cy.get("#clientIdentification").shadow().find("input").blur();
+  cy.get("#clientIdentification").shadow().find("input").should('be.focused').blur();
 };
 
 describe("Step 2 - Locations", () => {
