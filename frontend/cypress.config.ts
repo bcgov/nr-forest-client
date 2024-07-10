@@ -29,12 +29,7 @@ export default defineConfig({
     setupNodeEvents: (on, config) => {      
       require('@cypress/code-coverage/task')(on, config)
       return config
-    },
-    defaultCommandTimeout: 10000,
-    retries: {
-      runMode: 2,
-      openMode: 1,
-    },
+    }
   },
 
   component: {
