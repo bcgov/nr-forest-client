@@ -27,14 +27,7 @@ const fillIndividual = (data = individualBaseData) => {
   cy.get("#identificationType")
     .find(`cds-combo-box-item[data-value="${data.identificationTypeValue}"]`)
     .click();
-
-  if (data.identificationProvinceValue) {
-    cy.get("#identificationProvince").find("[part='trigger-button']").click();
-    cy.get("#identificationProvince")
-      .find(`cds-combo-box-item[data-value="${data.identificationProvinceValue}"]`)
-      .click();
-  }
-
+    
   cy.get("#clientIdentification").shadow().find("input").clear();
   cy.get("#clientIdentification").shadow().find("input").should('be.focused').blur();
   cy.get("#clientIdentification").shadow().find("input").type(data.clientIdentification);
