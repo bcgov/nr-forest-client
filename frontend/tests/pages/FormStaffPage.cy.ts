@@ -7,6 +7,7 @@ const individualBaseData = {
   birthdateYear: "2001",
   birthdateMonth: "05",
   birthdateDay: "30",
+  identificationTypeCode: "PASS",
   identificationTypeValue: "Canadian passport",
   identificationProvinceValue: undefined,
   clientIdentification: "AB345678",
@@ -14,20 +15,19 @@ const individualBaseData = {
 
 const fillIndividual = (data = individualBaseData) => {
   cy.get("#firstName").shadow().find("input").type(data.firstName);
-
   cy.get("#middleName").shadow().find("input").type(data.middleName);
-
   cy.get("#lastName").shadow().find("input").type(data.lastName);
-
   cy.get("#birthdateYear").shadow().find("input").type(data.birthdateYear);
   cy.get("#birthdateMonth").shadow().find("input").type(data.birthdateMonth);
   cy.get("#birthdateDay").shadow().find("input").type(data.birthdateDay);
 
   cy.get("#identificationType").find("[part='trigger-button']").click();
   cy.get("#identificationType")
-    .find(`cds-combo-box-item[data-value="${data.identificationTypeValue}"]`)
+    .find(`cds-combo-box-item[data-id="${data.identificationTypeCode}"]`)
+    .and("have.value", data.identificationTypeValue)
+    .should("be.visible")
     .click();
-    
+
   cy.get("#clientIdentification").shadow().find("input").clear();
   cy.get("#clientIdentification").shadow().find("input").should('be.focused').blur();
   cy.get("#clientIdentification").shadow().find("input").type(data.clientIdentification);
