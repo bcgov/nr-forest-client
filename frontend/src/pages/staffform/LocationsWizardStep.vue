@@ -8,7 +8,7 @@ import { useFocus } from "@/composables/useFocus";
 import { useFetchTo } from "@/composables/useFetch";
 // Type
 import type { FormDataDto, Address } from "@/dto/ApplyClientNumberDto";
-import { emptyAddress } from "@/dto/ApplyClientNumberDto";
+import { indexedEmptyAddress } from "@/dto/ApplyClientNumberDto";
 import type { ModalNotification } from "@/dto/CommonTypesDto";
 import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 import { getAddressDescription } from "@/services/ForestClientService";
@@ -79,18 +79,23 @@ const getNewAddressId = () => ++lastAddressId;
 
 // Associate each address to a unique id, permanent for the lifecycle of this component.
 const addressesIdMap = new Map<Address, number>(
-  formData.location.addresses.map((address) => [address, getNewAddressId()]),
+  formData.location.addresses.map((address) => {
+    let addressId = getNewAddressId();
+    if(addressId !== address.index) addressId = address.index;
+    address.index = addressId;
+    return [address, addressId];
+  }),
 );
+
 
 //New address being added
 const otherAddresses = computed(() => formData.location.addresses.slice(1));
-const addAddress = () => {
-  const newLength = formData.location.addresses.push(emptyAddress());
+const addAddress = () => {  
+  const newLength = formData.location.addresses.push(indexedEmptyAddress(getNewAddressId()));
   const address = formData.location.addresses[newLength - 1];
-  addressesIdMap.set(address, getNewAddressId());
-  const focusIndex = newLength - 1;
-  setScrollPoint(`address-${focusIndex}-heading`);
-  setFocusedComponent(`address-${focusIndex}-heading`);
+  addressesIdMap.set(address, address.index);  
+  setScrollPoint(`address-${address.index}-heading`);
+  setFocusedComponent(`address-${address.index}-heading`);
   return newLength;
 };
 
