@@ -1,7 +1,6 @@
 import type { CodeDescrType } from "@/dto/CommonTypesDto";
 
 export interface Address {
-  locationName: string;
   streetAddress: string;
   complementaryAddressOne?: string;
   complementaryAddressTwo?: string;
@@ -14,31 +13,39 @@ export interface Address {
   faxNumber?: string;
   emailAddress?: string;
   notes?: string;
+  index: number;
+  locationName: string;
 }
 
 export interface Contact {
-  locationNames: CodeDescrType[];
   contactType: CodeDescrType;
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  secondaryPhoneNumber?: string;
+  faxNumber?: string;
   email: string;
+  index: number;
+  locationNames: CodeDescrType[];
 }
 
 export interface FormDataDto {
   businessInformation: {
-    district: string;
-    businessType: string;
-    legalType: string;
-    clientType: string;
     registrationNumber: string;
     businessName: string;
+    businessType: string;
+    clientType: string;
     goodStandingInd: string;
+    legalType: string;
     birthdate: string;
-    address: Address;
+    district: string;
+    workSafeBcNumber?: string;
+    doingBusinessAs?: string;
+    clientAcronym?: string;
     firstName?: string;
     middleName?: string;
     lastName?: string;
+    notes?: string;
     identificationType?: string;
     clientIdentification?: string;
     identificationCountry?: string;
@@ -58,7 +65,7 @@ export interface ForestClientDetailsDto {
   contacts: Contact[];
 }
 
-export const emptyAddress = (): Address =>
+export const indexedEmptyAddress = (index: number): Address =>
   JSON.parse(
     JSON.stringify({
       locationName: "",
@@ -74,6 +81,22 @@ export const emptyAddress = (): Address =>
       faxNumber: "",
       emailAddress: "",
       notes: "",
+      index,
+    }),
+  );
+
+export const emptyAddress = (): Address => indexedEmptyAddress(0);
+
+export const indexedEmptyContact = (index: number): Contact =>
+  JSON.parse(
+    JSON.stringify({
+      locationNames: [],
+      contactType: { value: "", text: "" },
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
+      email: "",
+      index,
     }),
   );
 
@@ -88,12 +111,7 @@ export const formDataDto: FormDataDto = {
     registrationNumber: "",
     businessName: "",
     goodStandingInd: "",
-    birthdate: "",
-    address: {
-      ...emptyAddress(),
-      country: { value: "", text: "" },
-      province: { value: "", text: "" },
-    },
+    birthdate: ""
   },
   location: {
     addresses: [emptyAddress()],
@@ -108,6 +126,7 @@ export const emptyContact: Contact = {
   lastName: "",
   phoneNumber: "",
   email: "",
+  index: 0,
 };
 
 export const newFormDataDto = (): FormDataDto => JSON.parse(JSON.stringify(formDataDto));
