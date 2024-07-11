@@ -34,6 +34,12 @@ const fillIndividual = (data = individualBaseData) => {
 };
 
 describe("Step 2 - Locations", () => {
+  beforeEach(() => {
+    cy.intercept("GET", "/api/identification-types", {
+      fixture: "identificationTypes.json",
+    }).as("getIdentificationTypes");
+  });
+
   it("should render the LocationsWizardStep with maxLocations set to 25", () => {
     cy.mount(FormStaffPage, {}).its("wrapper").as("wrapper");
 
@@ -41,6 +47,7 @@ describe("Step 2 - Locations", () => {
 
     cy.get("#clientType").find('cds-combo-box-item[data-id="I"]').click();
 
+    cy.wait("@getIdentificationTypes");
     fillIndividual();
 
     cy.get("[data-test='wizard-next-button']").click();
