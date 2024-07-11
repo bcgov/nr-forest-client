@@ -73,60 +73,6 @@ const { setScrollPoint } = useFocus();
 
 const formData = ref<FormDataDto>({ ...newFormDataDto() });
 
-// TODO: Remove this function once development is done
-const debugValues = () => {  
-formData.value = {
-  "businessInformation":{
-    "district":"",
-    "businessType":"U",
-    "legalType":"SP",
-    "clientType":"I",
-    "registrationNumber":"",
-    "businessName":"Paulo Gomes Cruz",
-    "goodStandingInd":"Y",
-    "birthdate":"1985-07-17",
-    "firstName":"Paulo",
-    "middleName":"Gomes",
-    "lastName":"Cruz",
-    "identificationType":"CDDL",
-    "identificationProvince":"BC",
-    "identificationCountry":"CA",
-    "clientIdentification":"99999999"
-  },
-  "location":{
-    "addresses":[
-      {
-        "locationName":"Main Address",
-        "complementaryAddressOne":"",
-        "complementaryAddressTwo":null,
-        "streetAddress":"3925 Dieppe Ave",
-        "country":{"value":"CA","text":"Canada"},
-        "province":{"value":"NS","text":"Nova Scotia"},
-        "city":"Lumsden",
-        "postalCode":"M2W5E5",
-        "businessPhoneNumber":"",
-        "secondaryPhoneNumber":"",
-        "faxNumber":"",
-        "emailAddress":"",
-        "notes":"",
-        index: 0
-      }
-    ],
-    "contacts":[
-      {
-        "locationNames":[{"value":"0","text":"Mailing address"}],
-        "contactType":{"value":"P","text":"Person"},
-        "firstName":"Paulo",
-        "lastName":"Cruz",
-        "phoneNumber":"2366382676",
-        "email":"paulushc@gmail.com",
-        index: 0
-      }
-    ]
-  }
-} 
-
-};
 const locations = computed(() =>
   formData.value.location.addresses.map((address: any) => address.locationName)
 );
@@ -320,9 +266,7 @@ const updateClientType = (value: CodeNameType | undefined) => {
           locationNames: [defaultLocation],
           contactType: { value: "BL", text: "Billing" },
         };
-        formData.value.location.contacts[0] = applicantContact;
-
-        debugValues();
+        formData.value.location.contacts[0] = applicantContact;        
         break;
       }
       default:
@@ -427,7 +371,7 @@ const validation = reactive<Record<string, boolean>>({});
             :active="currentTab == 2"
             :data="formData"
             @valid="validateStep"
-            :max-locations="25"
+            :max-contacts="25"
           />
         </div>
       </div>
