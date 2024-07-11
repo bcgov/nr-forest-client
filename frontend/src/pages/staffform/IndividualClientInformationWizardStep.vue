@@ -10,7 +10,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Importing types
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
-import type { CodeNameType, IdentificationType } from "@/dto/CommonTypesDto";
+import type { CodeNameType, IdentificationCodeNameType } from "@/dto/CommonTypesDto";
 // Importing validators
 import { getValidations, validate } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
@@ -43,18 +43,16 @@ watch(
 const identificationTypeList = ref([]);
 useFetchTo("/api/codes/identification-types", identificationTypeList);
 
-const identificationType = computed(() => {
-  const value = formData.value.businessInformation.identificationType;
-  return value ? identificationTypeList.value.find((item) => item.code === value) : undefined;
-});
-
 const identificationProvince = computed(() => {
   const value = formData.value.businessInformation.identificationProvince;
   return value ? provinceList.value.find((item) => item.code === value) : undefined;
 });
 
-const updateIdentificationType = (value: IdentificationType | undefined) => {
-  formData.value.businessInformation.identificationType = value?.code;
+const updateIdentificationType = (value: IdentificationCodeNameType | undefined) => {
+  formData.value.businessInformation.identificationType = { value: value.code, text: value.name, countryCode: value.countryCode };
+  formData.value.businessInformation.identificationCountry = formData.value.businessInformation.identificationType.countryCode;
+  if (formData.value.businessInformation.identificationType.countryCode) 
+    fetchProvinceList();
 };
 
 const provinceUrl = computed(() => {
@@ -71,15 +69,9 @@ const { fetch: fetchProvinceList } = useFetchTo(provinceUrl, provinceList, {
   skip: !provinceUrl.value,
 });
 
-watch(identificationType, (value) => {
-  formData.value.businessInformation.identificationProvince = null;
-  formData.value.businessInformation.identificationCountry = identificationType.value?.countryCode;
-  fetchProvinceList();
-});
-
 watch(provinceList, () => {
   if (
-    identificationType.value.countryCode === "CA" &&
+    formData.value.businessInformation.identificationType.countryCode === "CA" &&
     (!identificationProvince.value || !identificationProvince.value.code)
   ) {
     // Default value for Issuing province when ID type is Canadian driver's licence
@@ -109,7 +101,7 @@ const getClientIdentificationMask = (type: keyof typeof clientIdentificationMask
 const clientIdentificationMask = ref<string>();
 
 const shouldDisplayProvince = computed(() =>
-  ["CDDL", "USDL"].includes(identificationType.value?.code),
+  ["CDDL", "USDL"].includes(formData.value.businessInformation.identificationType?.value),
 );
 
 watch(shouldDisplayProvince, (value) => {
@@ -135,20 +127,20 @@ const watcherTypeAndProvinceFirstRun = ref(true);
 
 watch(
   [
-    () => formData.value.businessInformation.identificationType as IdentificationType["code"],
+    () => formData.value.businessInformation.identificationType,
     () => formData.value.businessInformation.identificationProvince,
   ],
-  ([identificationTypeCode, identificationProvinceCode]) => {
+  ([identificationType, identificationProvinceCode]) => {
     clientIdentificationAdditionalValidations.value = [];
 
     const oldClientIdentificationMask = clientIdentificationMask.value;
     clientIdentificationMask.value = undefined;
 
-    if (identificationTypeCode) {
-      if (identificationTypeCode === "CDDL" || identificationTypeCode === "USDL") {
+    if (identificationType) {
+      if (identificationType.value === "CDDL" || identificationType.value === "USDL") {
         if (identificationProvinceCode) {
           // Driver's licences
-          if (identificationTypeCode === "CDDL" && identificationProvinceCode === "BC") {
+          if (identificationType.value  === "CDDL" && identificationProvinceCode  === "BC") {
             // BC driver's licences
             clientIdentificationAdditionalValidations.value = getClientIdentificationValidations(
               "businessInformation.clientIdentification-BCDL",
@@ -165,9 +157,9 @@ watch(
       } else {
         // Every other ID type
         clientIdentificationAdditionalValidations.value = getClientIdentificationValidations(
-          `businessInformation.clientIdentification-${identificationTypeCode}`,
+          `businessInformation.clientIdentification-${formData.value.businessInformation.identificationType.value}`,
         );
-        clientIdentificationMask.value = getClientIdentificationMask(identificationTypeCode);
+        clientIdentificationMask.value = getClientIdentificationMask(formData.value.businessInformation.identificationType.value);
       }
 
       /*
@@ -316,22 +308,22 @@ onMounted(() => {
         required
       />
     </div>
-
+    
     <div class="horizontal-input-grouping">
       <dropdown-input-component
         id="identificationType"
         label="ID type"
-        :initial-value="identificationType?.name"
+        :initial-value="formData.businessInformation.identificationType?.text"
         required
         required-label
         :model-value="identificationTypeList"
         :enabled="true"
         tip=""
         :validations="[
-          ...getValidations('identificationType.text'),
-          submissionValidation('identificationType.text'),
+          ...getValidations('businessInformation.identificationType.text'),
+          submissionValidation('businessInformation.identificationType.text'),
         ]"
-        @update:selected-value="updateIdentificationType($event as IdentificationType)"
+        @update:selected-value="updateIdentificationType($event)"
         @empty="validation.identificationType = !$event"
       />
 

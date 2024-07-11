@@ -77,8 +77,16 @@ export enum IdentificationTypeEnum {
   OTHR,
 }
 
-export interface IdentificationType extends CodeNameType {
-  code: keyof typeof IdentificationTypeEnum;
+export interface IdentificationCodeNameType {
+  code: string;
+  name: string;
+  countryCode: string;
+}
+
+export interface IdentificationCodeDescrType {
+  value: string;
+  text: string;
+  countryCode: string;
 }
 
 export interface ProgressData {
