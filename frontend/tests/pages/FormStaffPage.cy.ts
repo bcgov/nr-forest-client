@@ -44,15 +44,15 @@ const fillIndividual = (data = individualBaseData) => {
 describe("Step 2 - Locations", () => {
 
   beforeEach(() => {
-    cy.intercept("GET", "/api/countries/CA/provinces?page=0&size=250", {
+    cy.intercept("GET", "/api/codes/countries/CA/provinces?page=0&size=250", {
       fixture: "provinces.json",
     }).as("getProvinces");
 
-    cy.intercept("GET", "/api/countries/US/provinces?page=0&size=250", {
+    cy.intercept("GET", "/api/codes/countries/US/provinces?page=0&size=250", {
       fixture: "states.json",
     }).as("getStates");
 
-    cy.intercept("GET", "/api/identification-types", {
+    cy.intercept("GET", "/api/codes/identification-types", {
       fixture: "identificationTypes.json",
     }).as("getIdentificationTypes");
   });

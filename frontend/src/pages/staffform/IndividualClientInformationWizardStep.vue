@@ -41,7 +41,7 @@ watch(
 );
 
 const identificationTypeList = ref([]);
-useFetchTo("/api/identification-types", identificationTypeList);
+useFetchTo("/api/codes/identification-types", identificationTypeList);
 
 const identificationType = computed(() => {
   const value = formData.value.businessInformation.identificationType;
@@ -60,7 +60,7 @@ const updateIdentificationType = (value: IdentificationType | undefined) => {
 const provinceUrl = computed(() => {
   const countryCode = formData.value.businessInformation.identificationCountry;
   if (countryCode) {
-    return `/api/countries/${countryCode}/provinces?page=0&size=250`;
+    return `/api/codes/countries/${countryCode}/provinces?page=0&size=250`;
   }
   return "";
 });

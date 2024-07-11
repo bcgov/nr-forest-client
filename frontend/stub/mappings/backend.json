@@ -74,7 +74,7 @@
     {
       "name": "Country Codes",
       "request": {
-        "url": "/api/countries?page=0&size=250",
+        "url": "/api/codes/countries?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -85,7 +85,7 @@
     {
       "name": "District Codes",
       "request": {
-        "url": "/api/districts?page=0&size=250",
+        "url": "/api/codes/districts?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -96,7 +96,7 @@
     {
       "name": "Identification Type Codes",
       "request": {
-        "url": "/api/identification-types",
+        "url": "/api/codes/identification-types",
         "method": "GET"
       },
       "response": {
@@ -107,7 +107,7 @@
     {
       "name": "Province Codes",
       "request": {
-        "urlPattern": "/api/countries/([A-Z]+)/provinces\\?page=0&size=250",
+        "urlPattern": "/api/codes/countries/([A-Z]+)/provinces\\?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -132,7 +132,7 @@
     {
       "name": "Get Country by CountryCode",
       "request": {
-        "urlPattern": "/api/countries/([A-Z]+)",
+        "urlPattern": "/api/codes/countries/([A-Z]+)",
         "method": "GET"
       },
       "response": {

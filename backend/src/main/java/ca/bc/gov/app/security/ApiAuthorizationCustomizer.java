@@ -83,32 +83,10 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
         .hasAnyRole(ApplicationConstant.ROLE_EDITOR,
             ApplicationConstant.ROLE_ADMIN);
 
-    // Viewer, editor, admin, BCeIDBusiness, BCSC and service users can GET from the districts
-    // endpoint
-    authorize
-      .pathMatchers(HttpMethod.GET, "/api/districts/**")
-      .hasAnyRole(ApplicationConstant.ROLE_VIEWER, 
-                  ApplicationConstant.ROLE_EDITOR,
-                  ApplicationConstant.ROLE_ADMIN, 
-                  ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
-                  ApplicationConstant.USERTYPE_BCSC_USER, 
-                  ApplicationConstant.USERTYPE_SERVICE_USER);
-
     // Viewer, editor, admin, BCeIDBusiness, BCSC and service users can GET from the countries
     // endpoint
     authorize
         .pathMatchers(HttpMethod.GET, "/api/countries/**")
-        .hasAnyRole(ApplicationConstant.ROLE_VIEWER,
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN,
-            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
-            ApplicationConstant.USERTYPE_BCSC_USER,
-            ApplicationConstant.USERTYPE_SERVICE_USER);
-    
-    // Viewer, editor, admin, BCeIDBusiness, BCSC and service users can GET from the identification types
-    // endpoint
-    authorize
-        .pathMatchers(HttpMethod.GET, "/api/identification-types/**")
         .hasAnyRole(ApplicationConstant.ROLE_VIEWER,
             ApplicationConstant.ROLE_EDITOR,
             ApplicationConstant.ROLE_ADMIN,

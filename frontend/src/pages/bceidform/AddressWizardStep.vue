@@ -65,7 +65,7 @@ const countryList = ref([]);
 
 const fetch = () => {
   if (props.active)
-    useFetchTo("/api/countries?page=0&size=250", countryList);
+    useFetchTo("/api/codes/countries?page=0&size=250", countryList);
 };
 
 watch(() => props.active, fetch);
