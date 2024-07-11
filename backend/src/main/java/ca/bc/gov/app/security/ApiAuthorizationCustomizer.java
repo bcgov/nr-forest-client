@@ -66,7 +66,9 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
     authorize
       .pathMatchers(HttpMethod.GET, "/api/addresses/**")
       .hasAnyRole(ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER, 
-                  ApplicationConstant.USERTYPE_BCSC_USER);
+                  ApplicationConstant.USERTYPE_BCSC_USER,
+                  ApplicationConstant.ROLE_EDITOR,
+                  ApplicationConstant.ROLE_ADMIN);
 
     // Viewer, editor, admin, BCeIDBusiness and BCSC users can GET from the codes endpoint
     authorize
