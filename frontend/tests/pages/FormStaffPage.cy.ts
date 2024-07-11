@@ -22,9 +22,17 @@ const fillIndividual = (data = individualBaseData) => {
   cy.get("#birthdateDay").find("input").type(data.birthdateDay);
 
   cy.get("#identificationType").find("[part='trigger-button']").click();
+
+
+  cy.get("#identificationType")
+    .find(`cds-combo-box-item[data-id="${data.identificationTypeCode}"]`)
+    .debug();
+
+
   cy.get("#identificationType")
     .find(`cds-combo-box-item[data-id="${data.identificationTypeCode}"]`)
     .should("be.visible")
+    .debug()
     .click();
 
   cy.get("#clientIdentification").find("input").clear();
@@ -34,7 +42,25 @@ const fillIndividual = (data = individualBaseData) => {
 };
 
 describe("Step 2 - Locations", () => {
+
+  beforeEach(() => {
+    cy.intercept("GET", "/api/countries/CA/provinces?page=0&size=250", {
+      fixture: "provinces.json",
+    }).as("getProvinces");
+
+    cy.intercept("GET", "/api/countries/US/provinces?page=0&size=250", {
+      fixture: "states.json",
+    }).as("getStates");
+
+    cy.intercept("GET", "/api/identification-types", {
+      fixture: "identificationTypes.json",
+    }).as("getIdentificationTypes");
+  });
+
   it("should render the LocationsWizardStep with maxLocations set to 25", () => {
+
+    cy.viewport(1056, 800);
+
     cy.mount(FormStaffPage, {}).its("wrapper").as("wrapper");
 
     cy.get("#clientType").find("[part='trigger-button']").click();
