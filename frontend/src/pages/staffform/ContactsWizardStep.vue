@@ -19,8 +19,8 @@ import Add16 from "@carbon/icons-vue/es/add/16";
 
 //Defining the props and emitter to receive the data and emit an update
 const props = withDefaults(
-  defineProps<{ data: FormDataDto; active: boolean; maxLocations?: number }>(),
-  { maxLocations: 25 },
+  defineProps<{ data: FormDataDto; active: boolean; maxContacts?: number }>(),
+  { maxContacts: 25 },
 );
 
 const emit = defineEmits<{
@@ -49,10 +49,6 @@ const updateContact = (value: Contact | undefined, index: number) => {
     }
     revalidate.value = !revalidate.value;
   }
-  console.log(
-    'formData.location.contacts', 
-    JSON.stringify(formData.location.contacts)
-  )
 };
 
 //Country related data
@@ -224,16 +220,16 @@ const contactName = (contact: Contact) =>{
   <div class="grouping-02">
     <p class="body-02 light-theme-text-text-primary">
       {{
-        formData.location.contacts.length < props.maxLocations
+        formData.location.contacts.length < props.maxContacts
           ? "Contacts can be added to the applicant's account"
-          : `You can only add a maximum of ${props.maxLocations} contacts.`
+          : `You can only add a maximum of ${props.maxContacts} contacts.`
       }}
     </p>
   </div>
   <cds-button
     kind="tertiary"
     @click.prevent="addContact"
-    v-if="formData.location.contacts.length < props.maxLocations"
+    v-if="formData.location.contacts.length < props.maxContacts"
   >
     <span>Add another contact</span>
     <Add16 slot="icon" />

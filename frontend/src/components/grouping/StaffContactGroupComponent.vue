@@ -160,8 +160,8 @@ const updateContactType = (value: CodeNameType | undefined) => {
       autocomplete="off"
       v-model="selectedValue.email"
       :validations="[
-        ...getValidations('location.addresses.*.email'),
-        submissionValidation(`location.addresses[${id}].email`)
+        ...getValidations('location.contacts.*.email'),
+        submissionValidation(`location.contacts[${id}].email`)
       ]"
       :enabled="true"
       @empty="validation.email = true"
@@ -179,8 +179,8 @@ const updateContactType = (value: CodeNameType | undefined) => {
         v-model="selectedValue.phoneNumber"
         :enabled="true"
         :validations="[
-          ...getValidations('location.addresses.*.phoneNumber'),
-          submissionValidation(`location.addresses[${id}].phoneNumber`)
+          ...getValidations('location.contacts.*.phoneNumber'),
+          submissionValidation(`location.contacts[${id}].phoneNumber`)
         ]"
         @empty="validation.phoneNumber = true"
         @error="validation.phoneNumber = !$event"
@@ -196,8 +196,8 @@ const updateContactType = (value: CodeNameType | undefined) => {
         v-model="selectedValue.secondaryPhoneNumber"
         :enabled="true"
         :validations="[
-          ...getValidations('location.addresses.*.secondaryPhoneNumber'),
-          submissionValidation(`location.addresses[${id}].secondaryPhoneNumber`)
+          ...getValidations('location.contacts.*.secondaryPhoneNumber'),
+          submissionValidation(`location.contacts[${id}].secondaryPhoneNumber`)
         ]"
         @empty="validation.secondaryPhoneNumber = true"
         @error="validation.secondaryPhoneNumber = !$event"
@@ -213,8 +213,8 @@ const updateContactType = (value: CodeNameType | undefined) => {
         v-model="selectedValue.faxNumber"
         :enabled="true"
         :validations="[
-          ...getValidations('location.addresses.*.faxNumber'),
-          submissionValidation(`location.addresses[${id}].faxNumber`)
+          ...getValidations('location.contacts.*.faxNumber'),
+          submissionValidation(`location.contacts[${id}].faxNumber`)
         ]"
         @empty="validation.faxNumber = true"
         @error="validation.faxNumber = !$event"
