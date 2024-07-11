@@ -17,6 +17,7 @@ import {
   isPhoneNumber,
   optional,
   isAsciiLineBreak,
+  isNotEmptyArray,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -216,6 +217,34 @@ fieldValidations["location.addresses.*.notes"] = [
 ];
 
 // Step 3: Contacts
+
+fieldValidations["location.contacts.*.locationNames"] = [
+  isNotEmptyArray("You must select at least one location"),
+];
+fieldValidations["location.contacts.*.contactType.text"] = [
+  isNotEmpty("You must select a contact type."),
+];
+
+fieldValidations["location.contacts.*.firstName"] = [
+  isMinSize("Please enter the first name")(1),
+  isMaxSizeMsg("first name", 30),
+  hasOnlyNamingCharacters("first name"),
+];
+fieldValidations["location.contacts.*.lastName"] = [
+  isMinSize("Please enter the last name")(1),
+  isMaxSizeMsg("last name", 30),
+  hasOnlyNamingCharacters("last name"),
+];
+
+fieldValidations["location.contacts.*.emailAddress"] = [
+  optional(isEmail("Please provide a valid email address")),
+  optional(isMinSize("Please provide a valid email address")(6)),
+  isMaxSizeMsg("email address", 100),
+];
+
+fieldValidations["location.contacts.*.phoneNumber"] = [...phoneValidations];
+fieldValidations["location.contacts.*.secondaryPhoneNumber"] = [...phoneValidations];
+fieldValidations["location.contacts.*.faxNumber"] = [...phoneValidations];
 
 export const addValidation = (key: string, validation: (value: string) => string): void => {
   if (!fieldValidations[key]) fieldValidations[key] = [];
