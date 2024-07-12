@@ -1,8 +1,14 @@
 {
-  "include": ["vite.config.*"],
+  "extends": "./tsconfig.base.json",
+  "include": [
+    "vite.config.*"
+  ],
   "compilerOptions": {
     "composite": true,
     "verbatimModuleSyntax": true,
-    "types": ["node", "vitest"]
+    "types": [
+      "node",
+      "vitest"
+    ]
   }
 }

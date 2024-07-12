@@ -26,6 +26,7 @@ describe("ForestClientService.ts", () => {
     city: "Victoria",
     postalCode: "V8T5J9",
     locationName: "Mailing address",
+    index: 0,
   };
   const sampleContact = {
     contactType: {
@@ -42,6 +43,7 @@ describe("ForestClientService.ts", () => {
         text: "Mailing address",
       },
     ],
+    index: 0,
   };
 
   beforeEach(() => {
@@ -67,6 +69,7 @@ describe("ForestClientService.ts", () => {
         province: { value: "", text: "" },
         city: "",
         postalCode: "",
+        index: 1,
       },
     ]);
   });
@@ -84,6 +87,7 @@ describe("ForestClientService.ts", () => {
         lastName: "",
         phoneNumber: "",
         email: "",
+        index: 1,
       },
     ]);
   });
