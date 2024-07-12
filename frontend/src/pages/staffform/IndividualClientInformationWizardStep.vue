@@ -51,6 +51,8 @@ const identificationProvince = computed(() => {
 const updateIdentificationType = (value: IdentificationCodeNameType | undefined) => {
   formData.value.businessInformation.identificationType = { value: value.code, text: value.name, countryCode: value.countryCode };
   formData.value.businessInformation.identificationCountry = formData.value.businessInformation.identificationType.countryCode;
+  formData.value.businessInformation.clientIdentification = "";
+
   if (formData.value.businessInformation.identificationType.countryCode) 
     fetchProvinceList();
 };
@@ -123,8 +125,6 @@ const validation = reactive<Record<string, boolean>>({
   clientIdentification: false,
 });
 
-const watcherTypeAndProvinceFirstRun = ref(true);
-
 watch(
   [
     () => formData.value.businessInformation.identificationType,
@@ -161,24 +161,7 @@ watch(
         );
         clientIdentificationMask.value = getClientIdentificationMask(formData.value.businessInformation.identificationType.value);
       }
-
-      /*
-      We need to clear the clientIdentification when the type/province gets updated, except when
-      the input mask is the same.
-      The following condition also prevents from doing it when the type/province did not actually
-      changed, which could happen when rendering the component with information already filled up.
-      */
-      if (
-        !watcherTypeAndProvinceFirstRun.value &&
-        (clientIdentificationMask.value || oldClientIdentificationMask) &&
-        clientIdentificationMask.value !== oldClientIdentificationMask &&
-        formData.value.businessInformation.clientIdentification
-      ) {
-        formData.value.businessInformation.clientIdentification = "";
-      }
     }
-
-    watcherTypeAndProvinceFirstRun.value = false;
   },
   { immediate: true },
 );
@@ -308,7 +291,7 @@ onMounted(() => {
         required
       />
     </div>
-    
+
     <div class="horizontal-input-grouping">
       <dropdown-input-component
         id="identificationType"

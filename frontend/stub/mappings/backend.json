@@ -115,7 +115,7 @@
         "transformers": [
           "response-template"
         ],
-        "bodyFileName": "response-provinces-{{request.path.[2]}}.json"
+        "bodyFileName": "response-provinces-{{request.path.[3]}}.json"
       }
     },
     {
