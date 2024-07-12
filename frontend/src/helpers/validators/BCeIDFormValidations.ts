@@ -63,7 +63,7 @@ formFieldValidations["location.addresses.*.city"] = [
   isNotEmpty("You must provide a city"),
   isMinSize("The city name must be between 3 and 30 characters")(3),
   isMaxSize("The city name must be between 3 and 30 characters")(30),
-  hasOnlyNamingCharacters("city name"),
+  isAscii("city name"),
 ];
 formFieldValidations["location.addresses.*.streetAddress"] = [
   isNotEmpty("Please provide a valid address or PO Box"),
