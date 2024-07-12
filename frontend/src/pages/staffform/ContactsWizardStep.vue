@@ -20,7 +20,7 @@ import Add16 from "@carbon/icons-vue/es/add/16";
 //Defining the props and emitter to receive the data and emit an update
 const props = withDefaults(
   defineProps<{ data: FormDataDto; active: boolean; maxContacts?: number }>(),
-  { maxContacts: 25 },
+  { maxContacts: 25 }
 );
 
 const emit = defineEmits<{
@@ -58,7 +58,7 @@ const countryList = ref([]);
 const roleList = ref([]);
 const fetch = () => {
   if (props.active)
-    useFetchTo("/api/codes/contactTypes?page=0&size=250", roleList);
+    useFetchTo("/api/codes/contact-types?page=0&size=250", roleList);
 };
 
 watch(() => props.active, fetch);
@@ -78,18 +78,20 @@ const getNewContactId = () => ++lastContactId;
 const contactsIdMap = new Map<Contact, number>(
   formData.location.contacts.map((contact) => {
     const contactId = getNewContactId();
-    if(contactId !== contact.index) contact.index = contactId;
+    if (contactId !== contact.index) contact.index = contactId;
     contact.index = contactId;
     return [contact, contactId];
-  }),
+  })
 );
 
 //New contact being added
 const otherContacts = computed(() => formData.location.contacts.slice(1));
 const addContact = () => {
-  const newLength = formData.location.contacts.push(indexedEmptyContact(getNewContactId()));
+  const newLength = formData.location.contacts.push(
+    indexedEmptyContact(getNewContactId())
+  );
   const contact = formData.location.contacts[newLength - 1];
-  contactsIdMap.set(contact, contact.index);  
+  contactsIdMap.set(contact, contact.index);
   setScrollPoint(`contact-${contact.index}-heading`);
   setFocusedComponent(`contact-${contact.index}-heading`);
   return newLength;
@@ -124,8 +126,7 @@ const removeContact = (index: number) => () => {
   const contact = formData.location.contacts[index];
   const contactId = contactsIdMap.get(contact);
   contactsIdMap.delete(contact);
-  
-  
+
   updateContact(undefined, index);
   delete validation[contactId];
   uniqueValues.remove("Name", contactId + "");
@@ -139,7 +140,10 @@ const removeContact = (index: number) => () => {
 };
 
 const handleRemove = (index: number) => {
-  const selectedContact = getContactDescription(formData.location.contacts[index], index);  
+  const selectedContact = getContactDescription(
+    formData.location.contacts[index],
+    index
+  );
   bus.emit({
     name: selectedContact,
     toastTitle: "Success",
@@ -152,13 +156,12 @@ const handleRemove = (index: number) => {
 
 onMounted(() => setFocusedComponent("focus-1", 0));
 
-const contactName = (contact: Contact) =>{
-  if(!contact) return 'Additional contact'
-  const name = `${contact.firstName} ${contact.lastName}`
-  if(!name.trim()) return 'Additional contact'
-  return name
-}
-
+const contactName = (contact: Contact) => {
+  if (!contact) return "Additional contact";
+  const name = `${contact.firstName} ${contact.lastName}`;
+  if (!name.trim()) return "Additional contact";
+  return name;
+};
 </script>
 
 <template>
