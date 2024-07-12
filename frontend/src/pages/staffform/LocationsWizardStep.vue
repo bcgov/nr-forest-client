@@ -8,7 +8,7 @@ import { useFocus } from "@/composables/useFocus";
 import { useFetchTo } from "@/composables/useFetch";
 // Type
 import type { FormDataDto, Address } from "@/dto/ApplyClientNumberDto";
-import { emptyAddress } from "@/dto/ApplyClientNumberDto";
+import { indexedEmptyAddress } from "@/dto/ApplyClientNumberDto";
 import type { ModalNotification } from "@/dto/CommonTypesDto";
 import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 import { getAddressDescription } from "@/services/ForestClientService";
@@ -19,7 +19,7 @@ import Add16 from "@carbon/icons-vue/es/add/16";
 //Defining the props and emitter to receive the data and emit an update
 const props = withDefaults(
   defineProps<{ data: FormDataDto; active: boolean; maxLocations?: number }>(),
-  { maxLocations: 25 },
+  { maxLocations: 25 }
 );
 
 const emit = defineEmits<{
@@ -79,18 +79,23 @@ const getNewAddressId = () => ++lastAddressId;
 
 // Associate each address to a unique id, permanent for the lifecycle of this component.
 const addressesIdMap = new Map<Address, number>(
-  formData.location.addresses.map((address) => [address, getNewAddressId()]),
+  formData.location.addresses.map((address) => {
+    const addressId = getNewAddressId(); // Always get a new ID
+    address.index = addressId;
+    return [address, addressId];
+  })
 );
 
 //New address being added
 const otherAddresses = computed(() => formData.location.addresses.slice(1));
 const addAddress = () => {
-  const newLength = formData.location.addresses.push(emptyAddress());
+  const newLength = formData.location.addresses.push(
+    indexedEmptyAddress(getNewAddressId())
+  );
   const address = formData.location.addresses[newLength - 1];
-  addressesIdMap.set(address, getNewAddressId());
-  const focusIndex = newLength - 1;
-  setScrollPoint(`address-${focusIndex}-heading`);
-  setFocusedComponent(`address-${focusIndex}-heading`);
+  addressesIdMap.set(address, address.index);
+  setScrollPoint(`address-${address.index}-heading`);
+  setFocusedComponent(`address-${address.index}-heading`);
   return newLength;
 };
 
@@ -140,7 +145,10 @@ const getLocationDescription = (address: Address, index: number): string =>
   getAddressDescription(address, index, "Location");
 
 const handleRemove = (index: number) => {
-  const selectedAddress = getLocationDescription(formData.location.addresses[index], index);
+  const selectedAddress = getLocationDescription(
+    formData.location.addresses[index],
+    index
+  );
   bus.emit({
     name: selectedAddress,
     toastTitle: "Success",
@@ -163,7 +171,8 @@ const removeAdditionalDelivery = (index: number) => () => {
 };
 
 const handleRemoveAdditionalDelivery = (index: number) => {
-  const selectedDeliveryInformation = formData.location.addresses[index].complementaryAddressTwo;
+  const selectedDeliveryInformation =
+    formData.location.addresses[index].complementaryAddressTwo;
   bus.emit({
     name: selectedDeliveryInformation,
     toastTitle: "Success",

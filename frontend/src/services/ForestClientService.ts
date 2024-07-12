@@ -10,6 +10,7 @@ export const addNewAddress = (addresses: Address[]): number => {
     province: { value: "", text: "" } as CodeDescrType,
     city: "",
     postalCode: "",
+    index: addresses.length,
   };
 
   const newAddresses = addresses.push(blankAddress);
@@ -24,6 +25,7 @@ export const addNewContact = (contacts: Contact[]): number => {
     lastName: "",
     phoneNumber: "",
     email: "",
+    index: contacts.length,
   };
 
   const newContacts = contacts.push(blankContact);

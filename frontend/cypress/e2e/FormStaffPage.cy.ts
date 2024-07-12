@@ -1,5 +1,3 @@
-import type { StaticResponse } from "../../node_modules/cypress/types/net-stubbing";
-
 /* eslint-disable no-undef */
 describe("Staff Form", () => {
   
@@ -123,6 +121,11 @@ describe("Staff Form", () => {
       cy.intercept("GET", "/api/addresses/V8T5J9", {
         fixture: "address.json",
       }).as("getAddress");
+
+      cy.intercept('GET', '/api/codes/contactTypes?page=0&size=250', {
+        fixture: 'roles.json',
+      })
+      .as('getContactTypes');
     });
 
     it("should display the Client type input field", () => {
@@ -187,6 +190,7 @@ describe("Staff Form", () => {
           .click()
           .and("have.value", "Individual");
       });
+
       it("should display the Individual information input fields", () => {
         cy.contains("h2", "Client information");
         cy.get("#firstName").should("be.visible");
@@ -298,6 +302,56 @@ describe("Staff Form", () => {
       cy.wait("@getAddress");
     };
 
+    const fillFormEntry = (field: string, value: string) => {
+      cy.get(field)
+      .should("exist")
+      .shadow()
+      .find('input')      
+      .type(value);
+  
+      cy.get(field)    
+      .shadow()
+      .find('input').blur();
+    }
+
+    const selectFormEntry = (field: string, value: string, box: boolean) => {
+      cy.get(field).find("[part='trigger-button']").click();
+  
+      if(!box){
+        cy.get(field)
+          .find(`cds-combo-box-item[data-value="${value}"]`)
+          .click();
+      }else{
+        cy.get(field)
+          .find(`cds-multi-select-item[data-value="${value}"]`)
+          .click();
+        cy.get(field).click();
+      }
+    }
+
+    const contactBaseData = {
+      mail:'contact1@mail.ca',
+      phone1:'1234567890',
+      phone2:'1234567890',
+      fax:'1234567890',
+      role:'Person',
+      address: locationBaseData.name_0,
+    };
+
+    const fillContact = (data = contactBaseData) => {
+
+      fillFormEntry('#emailAddress_0', data.mail);
+      fillFormEntry('#businessPhoneNumber_0', data.phone1);
+      fillFormEntry('#secondaryPhoneNumber_0', data.phone2);
+      fillFormEntry('#faxNumber_0', data.fax);
+
+      cy.wait("@getContactTypes");
+  
+      selectFormEntry('#role_0', data.role,false);
+      selectFormEntry('#addressname_0', data.address,true);
+
+    };
+
     describe("locations step", () => {
       beforeEach(() => {
         cy.get("#clientType")
@@ -385,5 +439,80 @@ describe("Staff Form", () => {
         });
       });
     });
+
+    describe("contacts step",() =>{
+      beforeEach(() =>{
+
+        cy.get("#clientType")
+        .should("be.visible")
+        .and("have.value", "")
+        .find("[part='trigger-button']")
+        .click();
+
+      cy.get("#clientType")
+        .find('cds-combo-box-item[data-id="I"]')
+        .should("be.visible")
+        .click()
+        .and("have.value", "Individual");
+
+      fillIndividual();
+
+      cy.get("[data-test='wizard-next-button']").click();
+
+      fillLocation();
+
+      cy.get("[data-test='wizard-next-button']").click();
+
+      });
+
+      it("displays the Contacts section", () =>{
+        cy.contains("h2", "Contacts");
+      });
+
+      describe("when all the required fields are filled in", () => {
+        beforeEach(() => {
+          fillContact();
+        });
+
+        describe("and there is a simple input validation error", () => {
+          beforeEach(() => {
+            // Add invalid character to the email
+            fillFormEntry('#emailAddress_0', "é");
+          });
+
+          describe("and the user goes back to the Client information step and returns to the Contacts step", () => {
+            beforeEach(() => {
+              cy.get("[data-test='wizard-back-button']").click();
+              cy.contains("h2", "Locations");
+              cy.get("[data-test='wizard-back-button']").click();
+              cy.contains("h2", "Client information");
+              cy.get("[data-test='wizard-next-button']").click();
+              cy.contains("h2", "Locations");
+              cy.get("[data-test='wizard-next-button']").click();
+              cy.contains("h2", "Contacts");
+            });
+
+            describe("and the user attempts to go to the Next step without fixing the invalid character", () => {
+              beforeEach(() => {
+                cy.get("[data-test='wizard-next-button']").click();
+              });
+
+              it("should display an error message at the top of the page", () => {
+                cy.wait(10);
+                cy.contains("h2", "Contacts");
+                cy.get(".top-notification cds-actionable-notification")
+                  .should("be.visible")
+                  .and("have.attr", "kind", "error");
+
+                cy.get("#emailAddress_0").find("input").should("have.class", "cds--text-input--invalid");
+              });
+            });
+          });
+        });
+
+      });
+
+    });
+
   });
 });

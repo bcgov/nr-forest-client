@@ -217,12 +217,9 @@ watch(
 
   <div v-if="!enabled" class="grouping-04">
     <div :data-scroll="id" class="grouping-04-label">
-      <span :for="id" class="label-01">{{ label }}</span>
+      <span :for="id" :class="'label-'+id">{{ label }}</span>
     </div>
-    <span class="text-01">{{ modelValue }}</span>
+    <span :class="'text-'+id">{{ modelValue }}</span>
   </div>
 
 </template>
-
-<style scoped>
-</style>

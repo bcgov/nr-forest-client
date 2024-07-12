@@ -1,9 +1,18 @@
 {
+  "extends": "./tsconfig.base.json",
+  "include": [
+    "cypress/**/*.ts",
+    "tests/components/**/*.ts"
+  ],
   "compilerOptions": {
     "composite": true,
-    "types": ["cypress"],
+    "types": [
+      "cypress"
+    ],
     "target": "ES6",
-    "lib": ["DOM", "ESNext"]
+    "lib": [
+      "DOM",
+      "ESNext"
+    ]
   },
-  "include": ["cypress/**/*.ts","tests/components/**/*.ts"]
 }

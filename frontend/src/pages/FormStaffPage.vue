@@ -15,22 +15,27 @@ import {
   LegalTypeEnum,
   type CodeNameType,
   type ValidationMessageType,
+  type CodeDescrType,
 } from "@/dto/CommonTypesDto";
 import {
   locationName as defaultLocation,
   emptyContact,
   newFormDataDto,
   type Contact,
+  type Address,
   type FormDataDto,
 } from "@/dto/ApplyClientNumberDto";
 import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
 // Imported global validations
-import { validate, runValidation } from "@/helpers/validators/StaffFormValidations";
+import { validate, runValidation, addValidation } from "@/helpers/validators/StaffFormValidations";
+import { isContainedIn } from "@/helpers/validators/GlobalValidators";
 // Imported Pages
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
 import LocationsWizardStep from "@/pages/staffform/LocationsWizardStep.vue";
+import ContactsWizardStep from "@/pages/staffform/ContactsWizardStep.vue";
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
+
 
 const clientTypesList: CodeNameType[] = [
   {
@@ -67,6 +72,25 @@ const router = useRouter();
 const { setScrollPoint } = useFocus();
 
 const formData = ref<FormDataDto>({ ...newFormDataDto() });
+
+const locations = computed(() =>
+  formData.value.location.addresses.map((address: any) => address.locationName)
+);
+const associatedLocations = computed(() =>
+  formData.value.location.contacts
+    .map((contact: Contact) => contact.locationNames)
+    .map((locationNames: CodeDescrType[]) =>
+      locationNames.map((locationName: CodeDescrType) => locationName.text)
+    )
+    .reduce(
+      (accumulator: string[], current: string[]) => accumulator.concat(current),
+      []
+    )
+);
+addValidation(
+  "location.contacts.*.locationNames.*.text",
+  isContainedIn(locations)
+);
 
 // Tab system
 const progressData = reactive([
@@ -117,7 +141,16 @@ const progressData = reactive([
     disabled: true,
     valid: false,
     step: 2,
-    fields: [],
+    fields: [
+      "location.contacts.*.locationNames.*.text",
+      "location.contacts.*.contactType.text",
+      "location.contacts.*.firstName",
+      "location.contacts.*.lastName",
+      "location.contacts.*.email",
+      "location.contacts.*.phoneNumber",
+      "location.contacts.*.secondaryPhoneNumber",
+      "location.contacts.*.faxNumber",
+    ],
     extraValidations: [],
   },
   {
@@ -171,6 +204,20 @@ const onCancel = () => {
 };
 
 const onNext = () => {
+
+  formData.value.location.addresses.forEach((address: Address,index: number) => console.log('Address #'+index,address.index));
+  formData.value.location.contacts.forEach((contact: Contact,index: number) => console.log('Contact #'+index,contact.index));
+
+
+  //This fixes the index
+  formData.value.location.addresses.forEach((address: Address,index: number) => address.index = index);
+  formData.value.location.contacts.forEach((contact: Contact,index: number) => contact.index = index);
+
+
+  formData.value.location.addresses.forEach((address: Address,index: number) => console.log('Address #'+index,address.index));
+  formData.value.location.contacts.forEach((contact: Contact,index: number) => console.log('Contact #'+index,contact.index));
+
+
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
@@ -205,6 +252,7 @@ const updateClientType = (value: CodeNameType | undefined) => {
 
     switch (value.code) {
       case "I": {
+
         Object.assign(formData.value.businessInformation, {
           businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
           legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
@@ -218,7 +266,7 @@ const updateClientType = (value: CodeNameType | undefined) => {
           locationNames: [defaultLocation],
           contactType: { value: "BL", text: "Billing" },
         };
-        formData.value.location.contacts[0] = applicantContact;
+        formData.value.location.contacts[0] = applicantContact;        
         break;
       }
       default:
@@ -310,6 +358,20 @@ const validation = reactive<Record<string, boolean>>({});
             :data="formData"
             @valid="validateStep"
             :max-locations="25"
+          />
+        </div>
+      </div>
+      <div v-if="currentTab == 2" class="form-steps-03">
+        <div class="form-steps-section">
+          <h2 data-focus="focus-0" tabindex="-1">
+            <div data-scroll="step-title" class="header-offset"></div>
+            Contacts
+          </h2>
+          <contacts-wizard-step
+            :active="currentTab == 2"
+            :data="formData"
+            @valid="validateStep"
+            :max-contacts="25"
           />
         </div>
       </div>
