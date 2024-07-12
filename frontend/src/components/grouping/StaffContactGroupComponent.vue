@@ -127,7 +127,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
         ]"
         :enabled="true"
         required
-        :requiredLabel="requiredLabel"
+        required-label
         :error-message="error"
         @empty="validation.firstName = !$event"
         @error="validation.firstName = !$event"
@@ -146,7 +146,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
         ]"
         :enabled="true"
         required
-        :requiredLabel="requiredLabel"
+        required-label
         :error-message="error"
         @empty="validation.lastName = !$event"
         @error="validation.lastName = !$event"
@@ -164,6 +164,8 @@ const updateContactType = (value: CodeNameType | undefined) => {
         submissionValidation(`location.contacts[${id}].email`)
       ]"
       :enabled="true"
+      required
+      required-label
       @empty="validation.email = true"
       @error="validation.email = !$event"
     />
@@ -177,6 +179,8 @@ const updateContactType = (value: CodeNameType | undefined) => {
         placeholder="( ) ___-____"
         mask="(###) ###-####"
         v-model="selectedValue.phoneNumber"
+        required
+        required-label
         :enabled="true"
         :validations="[
           ...getValidations('location.contacts.*.phoneNumber'),
@@ -232,7 +236,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
         submissionValidation(`location.contacts[${id}].contactType`)
       ]"
       required
-      :requiredLabel="requiredLabel"
+      required-label
       @update:selected-value="updateContactType($event)"
       @empty="validation.contactType = !$event"
       @error="validation.contactType = !$event"
@@ -250,7 +254,8 @@ const updateContactType = (value: CodeNameType | undefined) => {
         submissionValidation(`location.contacts[${id}].locationNames`)
       ]"
       required
-      :requiredLabel="requiredLabel"
+      required-label
+      :error-message="error"
       @update:selected-value="
         selectedValue.locationNames = nameTypesToCodeDescr($event)
       "
