@@ -121,7 +121,7 @@ describe("Staff Form", () => {
       cy.intercept("GET", "/api/addresses/V8T5J9", {
         fixture: "address.json",
       }).as("getAddress");
-
+      
       cy.intercept('GET', '/api/codes/contact-types?page=0&size=250', {
         fixture: 'roles.json',
       })
