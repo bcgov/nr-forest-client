@@ -7,41 +7,60 @@ const individualBaseData = {
   birthdateYear: "2001",
   birthdateMonth: "05",
   birthdateDay: "30",
+  identificationTypeCode: "PASS",
   identificationTypeValue: "Canadian passport",
   identificationProvinceValue: undefined,
   clientIdentification: "AB345678",
 };
 
 const fillIndividual = (data = individualBaseData) => {
-  cy.get("#firstName").shadow().find("input").type(data.firstName);
-
-  cy.get("#middleName").shadow().find("input").type(data.middleName);
-
-  cy.get("#lastName").shadow().find("input").type(data.lastName);
-
-  cy.get("#birthdateYear").shadow().find("input").type(data.birthdateYear);
-  cy.get("#birthdateMonth").shadow().find("input").type(data.birthdateMonth);
-  cy.get("#birthdateDay").shadow().find("input").type(data.birthdateDay);
+  cy.get("#firstName").find("input").type(data.firstName);
+  cy.get("#middleName").find("input").type(data.middleName);
+  cy.get("#lastName").find("input").type(data.lastName);
+  cy.get("#birthdateYear").find("input").type(data.birthdateYear);
+  cy.get("#birthdateMonth").find("input").type(data.birthdateMonth);
+  cy.get("#birthdateDay").find("input").type(data.birthdateDay);
 
   cy.get("#identificationType").find("[part='trigger-button']").click();
+
+
   cy.get("#identificationType")
-    .find(`cds-combo-box-item[data-value="${data.identificationTypeValue}"]`)
+    .find(`cds-combo-box-item[data-id="${data.identificationTypeCode}"]`)
+    .debug();
+
+
+  cy.get("#identificationType")
+    .find(`cds-combo-box-item[data-id="${data.identificationTypeCode}"]`)
+    .should("be.visible")
+    .debug()
     .click();
 
-  if (data.identificationProvinceValue) {
-    cy.get("#identificationProvince").find("[part='trigger-button']").click();
-    cy.get("#identificationProvince")
-      .find(`cds-combo-box-item[data-value="${data.identificationProvinceValue}"]`)
-      .click();
-  }
-
-  cy.get("#clientIdentification").shadow().find("input").type(data.clientIdentification);
-
-  cy.get("#clientIdentification").shadow().find("input").blur();
+  cy.get("#clientIdentification").find("input").clear();
+  cy.get("#clientIdentification").find("input").should('be.focused').blur();
+  cy.get("#clientIdentification").find("input").type(data.clientIdentification);
+  cy.get("#clientIdentification").find("input").should('be.focused').blur();
 };
 
 describe("Step 2 - Locations", () => {
+
+  beforeEach(() => {
+    cy.intercept("GET", "/api/codes/countries/CA/provinces?page=0&size=250", {
+      fixture: "provinces.json",
+    }).as("getProvinces");
+
+    cy.intercept("GET", "/api/codes/countries/US/provinces?page=0&size=250", {
+      fixture: "states.json",
+    }).as("getStates");
+
+    cy.intercept("GET", "/api/codes/identification-types", {
+      fixture: "identificationTypes.json",
+    }).as("getIdentificationTypes");
+  });
+
   it("should render the LocationsWizardStep with maxLocations set to 25", () => {
+
+    cy.viewport(1056, 800);
+
     cy.mount(FormStaffPage, {}).its("wrapper").as("wrapper");
 
     cy.get("#clientType").find("[part='trigger-button']").click();
