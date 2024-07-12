@@ -1,4 +1,4 @@
-import type { CodeDescrType } from "@/dto/CommonTypesDto";
+import type { CodeDescrType, IdentificationCodeDescrType } from "@/dto/CommonTypesDto";
 
 export interface Address {
   streetAddress: string;
@@ -46,7 +46,7 @@ export interface FormDataDto {
     middleName?: string;
     lastName?: string;
     notes?: string;
-    identificationType?: string;
+    identificationType?: IdentificationCodeDescrType;
     clientIdentification?: string;
     identificationCountry?: string;
     identificationProvince?: string;

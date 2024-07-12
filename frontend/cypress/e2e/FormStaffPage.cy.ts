@@ -110,7 +110,7 @@ describe("Staff Form", () => {
         .should('be.visible')
         .click();
 
-      cy.intercept("GET", "/api/countries/CA/provinces?page=0&size=250", {
+      cy.intercept("GET", "/api/codes/countries/CA/provinces?page=0&size=250", {
         fixture: "provinces.json",
       }).as("getProvinces");
 

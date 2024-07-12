@@ -45,7 +45,7 @@ const districtObject = computed(() =>
 const receviedClientType = ref({} as CodeNameType);
 
 useFetchTo(
-  `/api/codes/clientTypes/${formData.value.businessInformation.clientType}`,
+  `/api/codes/client-types/${formData.value.businessInformation.clientType}`,
   receviedClientType
 );
 
