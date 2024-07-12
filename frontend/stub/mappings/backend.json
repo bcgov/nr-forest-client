@@ -72,20 +72,9 @@
       }
     },
     {
-      "name": "District Codes",
-      "request": {
-        "url": "/api/districts?page=0&size=250",
-        "method": "GET"
-      },
-      "response": {
-        "status": 200,
-        "bodyFileName": "response-districts.json"
-      }
-    },
-    {
       "name": "Country Codes",
       "request": {
-        "url": "/api/countries?page=0&size=250",
+        "url": "/api/codes/countries?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -96,7 +85,7 @@
     {
       "name": "District Codes",
       "request": {
-        "url": "/api/districts?page=0&size=250",
+        "url": "/api/codes/districts?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -105,9 +94,20 @@
       }
     },
     {
+      "name": "Identification Type Codes",
+      "request": {
+        "url": "/api/codes/identification-types",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-identification-types.json"
+      }
+    },
+    {
       "name": "Province Codes",
       "request": {
-        "urlPattern": "/api/countries/([A-Z]+)/provinces\\?page=0&size=250",
+        "urlPattern": "/api/codes/countries/([A-Z]+)/provinces\\?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -115,13 +115,13 @@
         "transformers": [
           "response-template"
         ],
-        "bodyFileName": "response-provinces-{{request.path.[2]}}.json"
+        "bodyFileName": "response-provinces-{{request.path.[3]}}.json"
       }
     },
     {
       "name": "Contact Type Codes",
       "request": {
-        "url": "/api/codes/contactTypes?page=0&size=250",
+        "url": "/api/codes/contact-types?page=0&size=250",
         "method": "GET"
       },
       "response": {
@@ -132,7 +132,7 @@
     {
       "name": "Get Country by CountryCode",
       "request": {
-        "urlPattern": "/api/countries/([A-Z]+)",
+        "urlPattern": "/api/codes/countries/([A-Z]+)",
         "method": "GET"
       },
       "response": {
@@ -146,7 +146,7 @@
     {
       "name": "Get ClientType by Code",
       "request": {
-        "urlPattern": "/api/codes/clientTypes/(.*)",
+        "urlPattern": "/api/codes/client-types/(.*)",
         "method": "GET"
       },
       "response": {

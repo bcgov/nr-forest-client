@@ -63,7 +63,7 @@ describe('<BusinessInformationWizardStep />', () => {
       delay: 10,
     });
 
-    cy.intercept("GET", "/api/codes/clientTypes/C", {
+    cy.intercept("GET", "/api/codes/client-types/C", {
       statusCode: 200,
       body: {
         code: "C",

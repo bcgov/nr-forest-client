@@ -101,7 +101,7 @@ let formData = reactive<FormDataDto>({
 const receviedCountry = ref({} as CodeNameType);
 
 useFetchTo(
-  `/api/countries/${submitterInformation?.address?.country?.value}`,
+  `/api/codes/countries/${submitterInformation?.address?.country?.value}`,
   receviedCountry
 );
 
@@ -135,7 +135,7 @@ const scrollToNewContact = () => {
 //Role related data
 const roleList = ref([]);
 const fetch = () => {
-  useFetchTo("/api/codes/contactTypes?page=0&size=250", roleList);
+  useFetchTo("/api/codes/contact-types?page=0&size=250", roleList);
 };
 fetch();
 
@@ -403,7 +403,7 @@ watch([validationError], () => {
 });
 
 const districtsList = ref([]);
-useFetchTo("/api/districts?page=0&size=250", districtsList);
+useFetchTo("/api/codes/districts?page=0&size=250", districtsList);
 
 const formattedDistrictsList = computed(() =>
   districtsList.value.map((district) => ({

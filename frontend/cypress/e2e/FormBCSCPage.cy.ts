@@ -15,7 +15,7 @@ describe("BCSC Form", () => {
   beforeEach(() => {
     submitResponse = structuredClone(defaultSubmitResponse);
 
-    cy.intercept("GET", "/api/districts?page=0&size=250", {
+    cy.intercept("GET", "/api/codes/districts?page=0&size=250", {
       fixture: "districts.json",
     }).as("getDistricts");
 
@@ -27,7 +27,7 @@ describe("BCSC Form", () => {
       fixture: "example.json",
     }).as("selectCompany");
 
-    cy.intercept("GET", "/api/countries/CA",{
+    cy.intercept("GET", "/api/codes/countries/CA",{
       fixture: "countryCodeCA.json",
     }).as("getCanadaByCode");
 
