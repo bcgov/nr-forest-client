@@ -117,7 +117,7 @@ describe('<ContactsWizardStep />', () => {
 
     cy.viewport(1056, 768);
 
-    cy.intercept('GET', '/api/codes/contactTypes?page=0&size=250', {
+    cy.intercept('GET', '/api/codes/contact-types?page=0&size=250', {
       fixture: 'roles.json',
     })
     .as('getContactTypes');
