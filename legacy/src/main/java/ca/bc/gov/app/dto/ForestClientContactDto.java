@@ -6,6 +6,8 @@ public record ForestClientContactDto(
     String contactCode,
     String contactName,
     String businessPhone,
+    String secondaryPhone,
+    String faxNumber,
     String emailAddress,
     String createdBy,
     String updatedBy,

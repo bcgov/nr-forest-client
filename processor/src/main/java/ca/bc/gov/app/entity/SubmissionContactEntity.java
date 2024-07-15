@@ -34,17 +34,25 @@ public class SubmissionContactEntity {
   private String contactTypeCode;
 
   @Column("first_name")
-  @Size(min = 1, max = 100)
+  @Size(min = 1, max = 30)
   private String firstName;
 
   @Column("last_name")
-  @Size(min = 1, max = 100)
+  @Size(min = 1, max = 30)
   private String lastName;
 
   @Column("business_phone_number")
   @NotNull
-  @Size(min = 5, max = 20)
+  @Size(min = 5, max = 14)
   private String businessPhoneNumber;
+
+  @Column("secondary_phone_number")
+  @Size(max = 14)
+  private String secondaryPhoneNumber;
+
+  @Column("fax_number")
+  @Size(max = 14)
+  private String faxNumber;
 
   @Column("email_address")
   @NotNull
