@@ -33,6 +33,7 @@ import { isContainedIn } from "@/helpers/validators/GlobalValidators";
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
 import LocationsWizardStep from "@/pages/staffform/LocationsWizardStep.vue";
 import ContactsWizardStep from "@/pages/staffform/ContactsWizardStep.vue";
+import ReviewWizardStep from "@/pages/staffform/ReviewWizardStep.vue";
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 
@@ -217,6 +218,7 @@ const onBack = () => {
     progressData[currentTab.value + 1].kind = "incomplete";
     progressData[currentTab.value].kind = "current";
     setScrollPoint("step-title");
+    setTimeout(revalidateBus.emit, 1000);
   }
 };
 
@@ -257,6 +259,15 @@ const updateClientType = (value: CodeNameType | undefined) => {
 };
 
 const validation = reactive<Record<string, boolean>>({});
+
+const revalidateBus = useEventBus<void>("revalidate-bus");
+
+const goToStep = (index: number, skipCheck: boolean = false) => {
+  if (skipCheck || (index <= currentTab.value && checkStepValidity(index)))
+    currentTab.value = index;
+  else notificationBus.emit({ fieldId: "missing.info", errorMsg: "" });
+  revalidateBus.emit();
+};
 </script>
 
 <template>
@@ -303,7 +314,7 @@ const validation = reactive<Record<string, boolean>>({});
         <div class="form-steps-section">
           <h2 data-focus="focus-0" tabindex="-1">
             <div data-scroll="step-title" class="header-offset"></div>
-            Client information
+            {{ progressData[0].title}}
           </h2>
           <dropdown-input-component
             id="clientType"
@@ -326,11 +337,12 @@ const validation = reactive<Record<string, boolean>>({});
           />
         </div>
       </div>
+
       <div v-if="currentTab == 1" class="form-steps-02">
         <div class="form-steps-section">
           <h2 data-focus="focus-0" tabindex="-1">
             <div data-scroll="step-title" class="header-offset"></div>
-            Locations
+            {{ progressData[1].title}}
           </h2>
           <locations-wizard-step
             :active="currentTab == 1"
@@ -340,11 +352,12 @@ const validation = reactive<Record<string, boolean>>({});
           />
         </div>
       </div>
+
       <div v-if="currentTab == 2" class="form-steps-03">
         <div class="form-steps-section">
           <h2 data-focus="focus-0" tabindex="-1">
             <div data-scroll="step-title" class="header-offset"></div>
-            Contacts
+            {{ progressData[2].title}}
           </h2>
           <contacts-wizard-step
             :active="currentTab == 2"
@@ -354,6 +367,26 @@ const validation = reactive<Record<string, boolean>>({});
           />
         </div>
       </div>
+
+      <div v-if="currentTab == 3" class="form-steps-04">
+        <div class="form-steps-section form-steps-section-04">
+          <h2 data-scroll="scroll-3" data-focus="focus-3" tabindex="-1">
+            <div data-scroll="step-title" class="header-offset"></div>
+            {{ progressData[3].title}}
+          </h2>
+          <span class="body-02">
+            Make any changes by using the "Edit" buttons in each section below
+          </span>
+
+          <review-wizard-step
+              v-model:data="formData"
+              :active="currentTab == 3"
+              @valid="validateStep"
+              :goToStep="goToStep"
+            />
+        </div>
+      </div>
+
       <div class="form-footer" role="footer">
         <div class="form-footer-group">
           <div class="form-footer-group-next">
