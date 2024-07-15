@@ -76,20 +76,9 @@ const formData = ref<FormDataDto>({ ...newFormDataDto() });
 const locations = computed(() =>
   formData.value.location.addresses.map((address: any) => address.locationName)
 );
-const associatedLocations = computed(() =>
-  formData.value.location.contacts
-    .map((contact: Contact) => contact.locationNames)
-    .map((locationNames: CodeDescrType[]) =>
-      locationNames.map((locationName: CodeDescrType) => locationName.text)
-    )
-    .reduce(
-      (accumulator: string[], current: string[]) => accumulator.concat(current),
-      []
-    )
-);
 addValidation(
   "location.contacts.*.locationNames.*.text",
-  isContainedIn(locations)
+  isContainedIn(locations, "Location name must be one of the locations")
 );
 
 // Tab system
@@ -204,20 +193,10 @@ const onCancel = () => {
 };
 
 const onNext = () => {
-
-  formData.value.location.addresses.forEach((address: Address,index: number) => console.log('Address #'+index,address.index));
-  formData.value.location.contacts.forEach((contact: Contact,index: number) => console.log('Contact #'+index,contact.index));
-
-
   //This fixes the index
   formData.value.location.addresses.forEach((address: Address,index: number) => address.index = index);
   formData.value.location.contacts.forEach((contact: Contact,index: number) => contact.index = index);
-
-
-  formData.value.location.addresses.forEach((address: Address,index: number) => console.log('Address #'+index,address.index));
-  formData.value.location.contacts.forEach((contact: Contact,index: number) => console.log('Contact #'+index,contact.index));
-
-
+  
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
@@ -266,7 +245,7 @@ const updateClientType = (value: CodeNameType | undefined) => {
           locationNames: [defaultLocation],
           contactType: { value: "BL", text: "Billing" },
         };
-        formData.value.location.contacts[0] = applicantContact;        
+        formData.value.location.contacts[0] = applicantContact;                
         break;
       }
       default:
