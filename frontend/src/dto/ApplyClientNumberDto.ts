@@ -95,6 +95,8 @@ export const indexedEmptyContact = (index: number): Contact =>
       firstName: "",
       lastName: "",
       phoneNumber: "",
+      secondaryPhoneNumber: "",
+      faxNumber: "",
       email: "",
       index,
     }),
@@ -125,6 +127,8 @@ export const emptyContact: Contact = {
   firstName: "",
   lastName: "",
   phoneNumber: "",
+  secondaryPhoneNumber: "",
+  faxNumber: "",
   email: "",
   index: 0,
 };

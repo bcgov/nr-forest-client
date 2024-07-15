@@ -218,7 +218,7 @@ fieldValidations["location.addresses.*.notes"] = [
 
 // Step 3: Contacts
 
-fieldValidations["location.contacts.*.locationNames"] = [
+fieldValidations["location.contacts.*.locationNames.text"] = [
   isNotEmptyArray("You must select at least one location"),
 ];
 fieldValidations["location.contacts.*.contactType.text"] = [
@@ -230,6 +230,7 @@ fieldValidations["location.contacts.*.firstName"] = [
   isMaxSizeMsg("first name", 30),
   hasOnlyNamingCharacters("first name"),
 ];
+
 fieldValidations["location.contacts.*.lastName"] = [
   isMinSize("Please enter the last name")(1),
   isMaxSizeMsg("last name", 30),
@@ -243,8 +244,12 @@ fieldValidations["location.contacts.*.emailAddress"] = [
 ];
 
 fieldValidations["location.contacts.*.phoneNumber"] = [...phoneValidations];
+
 fieldValidations["location.contacts.*.secondaryPhoneNumber"] = [...phoneValidations];
+
 fieldValidations["location.contacts.*.faxNumber"] = [...phoneValidations];
+
+// General information
 
 export const addValidation = (key: string, validation: (value: string) => string): void => {
   if (!fieldValidations[key]) fieldValidations[key] = [];
@@ -255,7 +260,7 @@ const defaultGetValidations = getValidations;
 
 export const validate = (
   ...args: Parameters<typeof globalValidate>
-): ReturnType<typeof globalValidate> => {
+): ReturnType<typeof globalValidate> => {  
   const getValidations = args[3] || defaultGetValidations;
   args[3] = getValidations;
   return globalValidate.apply(this, args);
