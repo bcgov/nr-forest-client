@@ -18,6 +18,7 @@ public final class ApplicationConstant {
   public static final String SUBMISSION_CLIENTID = "submission-clientid";
   public static final String SUBMISSION_TYPE = "submission-type-code";
   public static final String SUBMISSION_NAME = "submission-name";
+  public static final String SUBMISSION_STARTER = "submission-started-by";
   public static final String CREATED_BY = "createdBy";
   public static final String UPDATED_BY = "updatedBy";
   public static final String FOREST_CLIENT_NUMBER = "forestClientNumber";
