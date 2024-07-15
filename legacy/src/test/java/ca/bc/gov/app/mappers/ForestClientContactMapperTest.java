@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import java.time.LocalDateTime;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -23,6 +24,8 @@ class ForestClientContactMapperTest {
       "BL",
       "James Baxter",
       "2502502550",
+      StringUtils.EMPTY,
+      StringUtils.EMPTY,
       "mail@mail.ca",
       "Test",
       "Test",
