@@ -26,6 +26,7 @@ public interface SubmissionRepository extends ReactiveCrudRepository<SubmissionE
       ON nrfc.submission_matching_detail.submission_id = nrfc.submission.submission_id
       WHERE
       nrfc.submission.submission_status_code in ('R','A')
+      AND nrfc.submission.submission_type_code != 'SSD'
       AND ( nrfc.submission_matching_detail.submission_matching_processed  is null or
       nrfc.submission_matching_detail.submission_matching_processed = false)
       AND (nrfc.submission_matching_detail.submission_matching_processed_time is null or
