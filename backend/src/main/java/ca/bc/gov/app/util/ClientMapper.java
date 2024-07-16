@@ -37,7 +37,16 @@ public class ClientMapper {
         .withClientTypeCode(clientBusinessInformationDto.clientType())
         .withGoodStandingInd(clientBusinessInformationDto.goodStandingInd())
         .withBirthdate(clientBusinessInformationDto.birthdate())
-        .withDistrictCode(clientBusinessInformationDto.district());
+        .withDistrictCode(clientBusinessInformationDto.district())
+        .withFirstName(clientBusinessInformationDto.firstName())
+        .withMiddleName(clientBusinessInformationDto.middleName())
+        .withLastName(clientBusinessInformationDto.lastName())
+        .withWorkSafeBCNumber(clientBusinessInformationDto.workSafeBcNumber())
+        .withDoingBusinessAs(clientBusinessInformationDto.doingBusinessAs())
+        .withClientAcronym(clientBusinessInformationDto.clientAcronym())
+        .withNotes(clientBusinessInformationDto.notes())
+        .withIdentificationTypeCode(clientBusinessInformationDto.idType())
+        .withClientIdentification(clientBusinessInformationDto.clientIdentification());
   }
   
   /**
@@ -51,7 +60,8 @@ public class ClientMapper {
    */
   public static SubmissionLocationEntity mapToSubmissionLocationEntity(
       Integer submissionId,
-      ClientAddressDto clientAddressDto) {
+      ClientAddressDto clientAddressDto
+  ) {
     return new SubmissionLocationEntity()
         .withName(clientAddressDto.locationName())
         .withSubmissionId(submissionId)
@@ -59,7 +69,12 @@ public class ClientMapper {
         .withCountryCode(clientAddressDto.country().value())
         .withProvinceCode(clientAddressDto.province().value())
         .withCityName(clientAddressDto.city())
-        .withPostalCode(clientAddressDto.postalCode());
+        .withPostalCode(clientAddressDto.postalCode())
+        .withBusinessPhoneNumber(clientAddressDto.businessPhoneNumber())
+        .withSecondaryPhoneNumber(clientAddressDto.secondaryPhoneNumber())
+        .withFaxNumber(clientAddressDto.faxNumber())
+        .withEmailAddress(clientAddressDto.emailAddress())
+        .withNotes(clientAddressDto.notes());
   }
 
   /**
@@ -67,16 +82,16 @@ public class ClientMapper {
    * using the specified submission ID.
    *
    * @param submissionId    the submission ID to be set on the {@link SubmissionLocationEntity}
-   * @param clientaddresses the list of {@link ClientAddressDto} object to be
+   * @param clientAddresses the list of {@link ClientAddressDto} object to be
    *                        mapped to a list of {@link SubmissionLocationEntity}
    * @return the {@link SubmissionLocationEntity} object list mapped from {@link ClientAddressDto}
    */
   public static List<SubmissionLocationEntity> mapAllToSubmissionLocationEntity(
       Integer submissionId,
-      List<ClientAddressDto> clientaddresses
+      List<ClientAddressDto> clientAddresses
   ) {
     return
-        clientaddresses
+        clientAddresses
             .stream()
             .map(clientAddressDto -> mapToSubmissionLocationEntity(submissionId, clientAddressDto))
             .toList();
@@ -96,25 +111,9 @@ public class ClientMapper {
         .withFirstName(clientContactDto.firstName())
         .withLastName(clientContactDto.lastName())
         .withBusinessPhoneNumber(clientContactDto.phoneNumber())
+        .withSecondaryPhoneNumber(clientContactDto.secondaryPhoneNumber())
+        .withFaxNumber(clientContactDto.faxNumber())
         .withEmailAddress(clientContactDto.email());
-  }
-
-
-  public static List<SubmissionContactEntity> mapAllToSubmissionLocationContactEntity(
-      List<ClientContactDto> contacts
-  ) {
-    return
-        contacts
-            .stream()
-            .map(clientContactDto ->
-                new SubmissionContactEntity()
-                    .withContactTypeCode(clientContactDto.contactType().value())
-                    .withFirstName(clientContactDto.firstName())
-                    .withLastName(clientContactDto.lastName())
-                    .withBusinessPhoneNumber(clientContactDto.phoneNumber())
-                    .withEmailAddress(clientContactDto.email())
-            )
-            .toList();
   }
 
   public static Integer getLocationIdByName(
