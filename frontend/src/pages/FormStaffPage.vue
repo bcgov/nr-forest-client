@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, watch, toRef } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/ui-shell/index";
 import "@carbon/web-components/es/components/breadcrumb/index";
@@ -7,7 +7,7 @@ import "@carbon/web-components/es/components/tooltip/index";
 // Composables
 import { useRouter } from "vue-router";
 import { useEventBus } from "@vueuse/core";
-import { isSmallScreen, isTouchScreen } from "@/composables/useScreenSize";
+import { usePost } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 import {
   BusinessTypeEnum,
@@ -25,7 +25,7 @@ import {
   type Address,
   type FormDataDto,
 } from "@/dto/ApplyClientNumberDto";
-import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
+import { getEnumKeyByEnumValue, convertFieldNameToSentence } from "@/services/ForestClientService";
 // Imported global validations
 import { validate, runValidation, addValidation } from "@/helpers/validators/StaffFormValidations";
 import { isContainedIn } from "@/helpers/validators/GlobalValidators";
@@ -268,6 +268,59 @@ const goToStep = (index: number, skipCheck: boolean = false) => {
   else notificationBus.emit({ fieldId: "missing.info", errorMsg: "" });
   revalidateBus.emit();
 };
+
+const {
+  response,
+  error,
+  fetch: post,
+  handleErrorDefault,
+} = usePost("/api/clients/submissions/staff", toRef(formData).value, {
+  skip: true,
+  skipDefaultErrorHandling: true,
+});
+
+watch([response], () => {
+  if (response.value.status === 201) {
+    router.push({ name: "confirmation" });
+  }
+});
+
+watch([error], () => {
+  // reset the button to allow a new submission attempt
+  submitBtnDisabled.value = false;
+
+  if (Array.isArray(error.value.response?.data)) {
+    const validationErrors: ValidationMessageType[] = error.value.response?.data;
+
+    validationErrors.forEach((errorItem: ValidationMessageType) =>
+      notificationBus.emit({
+        fieldId: "server.validation.error",
+        fieldName: convertFieldNameToSentence(errorItem.fieldId),
+        errorMsg: errorItem.errorMsg,
+      }),
+    );
+  } else {
+    handleErrorDefault();
+  }
+
+  setScrollPoint("top-notification");
+});
+
+const errorBus = useEventBus<ValidationMessageType[]>(
+  "submission-error-notification"
+);
+
+const submitBtnDisabled = ref(false);
+
+const submit = () => {
+  errorBus.emit([]);
+  notificationBus.emit(undefined);
+
+  if (checkStepValidity(currentTab.value)) {
+    submitBtnDisabled.value = true;
+    post();
+  }
+};
 </script>
 
 <template>
@@ -414,6 +467,18 @@ const goToStep = (index: number, skipCheck: boolean = false) => {
                 data-test="wizard-back-button"
               >
                 <span>Back</span>
+              </cds-button>
+
+              <cds-button
+                v-if="isLast"
+                  data-test="wizard-submit-button"
+                  kind="primary"
+                  size="lg"
+                  @click.prevent="submit"
+                  :disabled="submitBtnDisabled"
+                >
+                <span>Create client</span>
+                <Check16 slot="icon" />
               </cds-button>
 
               <cds-tooltip v-if="!isLast">

@@ -188,7 +188,7 @@ emit("valid", false);
         <cds-tooltip>
           <Information16 />
           <cds-tooltip-content>
-            TBD
+            For example, any information about the client, their locations or specific instructions for contacting them
           </cds-tooltip-content>
         </cds-tooltip>
       </div>
