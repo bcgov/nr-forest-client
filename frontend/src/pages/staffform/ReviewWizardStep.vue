@@ -91,14 +91,17 @@ emit("valid", false);
           {{ clientType.text }}
         </p>
       </div>
-      <div v-if="formData.businessInformation.identificationType" class="grouping-22-item">
+      <div class="grouping-22" 
+          v-if="clientType.value === 'I'">
+      <div class="grouping-22-item">
         <p class="label-01">{{ formData.businessInformation.identificationType.text }}</p>
         <p class="body-compact-01">{{ formData.businessInformation.clientIdentification }}</p>
       </div>
-      <div v-if="formData.businessInformation.birthdate" class="grouping-22-item">
+      <div class="grouping-22-item">
         <p class="label-01">Birthdate</p>
         <p class="body-compact-01">{{ formData.businessInformation.birthdate }}</p>
       </div>
+    </div>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(0)">

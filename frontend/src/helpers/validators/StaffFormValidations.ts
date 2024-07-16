@@ -217,7 +217,6 @@ fieldValidations["location.addresses.*.notes"] = [
 ];
 
 // Step 3: Contacts
-
 fieldValidations["location.contacts.*.locationNames.text"] = [
   isNotEmptyArray("You must select at least one location"),
 ];
@@ -248,6 +247,12 @@ fieldValidations["location.contacts.*.phoneNumber"] = [...phoneValidations];
 fieldValidations["location.contacts.*.secondaryPhoneNumber"] = [...phoneValidations];
 
 fieldValidations["location.contacts.*.faxNumber"] = [...phoneValidations];
+
+// Step 4: Review
+fieldValidations["businessInformation.notes"] = [
+  isMaxSizeMsg("notes", 10),
+  isAsciiLineBreak("notes"),
+];
 
 // General information
 

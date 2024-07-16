@@ -9,13 +9,13 @@ import { useRouter } from "vue-router";
 import { useEventBus } from "@vueuse/core";
 import { usePost } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
+import { isSmallScreen, isTouchScreen } from "@/composables/useScreenSize";
 import {
   BusinessTypeEnum,
   ClientTypeEnum,
   LegalTypeEnum,
   type CodeNameType,
   type ValidationMessageType,
-  type CodeDescrType,
 } from "@/dto/CommonTypesDto";
 import {
   locationName as defaultLocation,
@@ -150,7 +150,35 @@ const progressData = reactive([
     disabled: true,
     valid: false,
     step: 3,
-    fields: [],
+    fields: [
+      "businessInformation.businessType",
+      "businessInformation.businessName",
+      "businessInformation.clientType",
+      "businessInformation.notes",
+      "location.addresses.*.locationName",
+      "location.addresses.*.complementaryAddressOne",
+      "location.addresses.*.complementaryAddressTwo",
+      "location.addresses.*.country.text",
+      "location.addresses.*.province.text",
+      "location.addresses.*.city",
+      "location.addresses.*.streetAddress",
+      'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")',
+      'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")',
+      'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")',
+      "location.addresses.*.emailAddress",
+      "location.addresses.*.businessPhoneNumber",
+      "location.addresses.*.secondaryPhoneNumber",
+      "location.addresses.*.faxNumber",
+      "location.addresses.*.notes",
+      "location.contacts.*.locationNames.*.text",
+      "location.contacts.*.contactType.text",
+      "location.contacts.*.firstName",
+      "location.contacts.*.lastName",
+      "location.contacts.*.email",
+      "location.contacts.*.phoneNumber",
+      "location.contacts.*.secondaryPhoneNumber",
+      "location.contacts.*.faxNumber",
+    ],
     extraValidations: [],
   },
 ]);
@@ -420,7 +448,7 @@ const submit = () => {
           />
         </div>
       </div>
-
+      
       <div v-if="currentTab == 3" class="form-steps-04">
         <div class="form-steps-section form-steps-section-04">
           <h2 data-scroll="scroll-3" data-focus="focus-3" tabindex="-1">
