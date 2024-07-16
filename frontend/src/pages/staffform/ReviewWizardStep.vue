@@ -68,13 +68,17 @@ const nameError = ref<string | undefined>("");
 const validation = reactive<Record<string, boolean>>({
   notes: true
 });
+
 const checkValid = () =>
   Object.values(validation).reduce(
     (accumulator: boolean, currentValue: boolean) => accumulator && currentValue,
     true,
   );
 
-watch([validation], () => emit("valid", checkValid()));
+watch([validation], () => {
+  emit("valid", checkValid())
+});
+
 emit("valid", false);
 </script>
 
@@ -93,15 +97,15 @@ emit("valid", false);
       </div>
       <div class="grouping-22" 
           v-if="clientType.value === 'I'">
-      <div class="grouping-22-item">
-        <p class="label-01">{{ formData.businessInformation.identificationType.text }}</p>
-        <p class="body-compact-01">{{ formData.businessInformation.clientIdentification }}</p>
+        <div class="grouping-22-item">
+          <p class="label-01">{{ formData.businessInformation.identificationType.text }}</p>
+          <p class="body-compact-01">{{ formData.businessInformation.clientIdentification }}</p>
+        </div>
+        <div class="grouping-22-item">
+          <p class="label-01">Birthdate</p>
+          <p class="body-compact-01">{{ formData.businessInformation.birthdate }}</p>
+        </div>
       </div>
-      <div class="grouping-22-item">
-        <p class="label-01">Birthdate</p>
-        <p class="body-compact-01">{{ formData.businessInformation.birthdate }}</p>
-      </div>
-    </div>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(0)">
@@ -177,8 +181,8 @@ emit("valid", false);
       v-model="formData.businessInformation.notes"
       :enabled="true"
       :validations="[
-        ...getValidations('formData.businessInformation.notes'),
-        submissionValidation(`formData.businessInformation.notes`),
+        ...getValidations('businessInformation.notes'),
+        submissionValidation('businessInformation.notes'),
       ]"
       :error-message="nameError"
       @empty="validation.notes = true"

@@ -250,7 +250,7 @@ fieldValidations["location.contacts.*.faxNumber"] = [...phoneValidations];
 
 // Step 4: Review
 fieldValidations["businessInformation.notes"] = [
-  isMaxSizeMsg("notes", 10),
+  isMaxSizeMsg("notes", 4000),
   isAsciiLineBreak("notes"),
 ];
 
