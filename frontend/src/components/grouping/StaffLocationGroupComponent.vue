@@ -4,7 +4,6 @@ import { reactive, watch, computed, ref } from "vue";
 import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/tooltip/index";
 // Composables
-import { useEventBus } from "@vueuse/core";
 import { useFetchTo } from "@/composables/useFetch";
 // Types
 import type { CodeNameType, BusinessSearchResult } from "@/dto/CommonTypesDto";

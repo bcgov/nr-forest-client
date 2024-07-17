@@ -476,8 +476,7 @@ describe("Staff Form", () => {
 
         describe("and there is a simple input validation error", () => {
           beforeEach(() => {
-            // Add invalid character to the email
-            fillFormEntry('#emailAddress_0', "é");
+            cy.get("#emailAddress_0").shadow().find("input").type("é");
           });
 
           describe("and the user goes back to the Client information step and returns to the Contacts step", () => {
