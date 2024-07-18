@@ -24,7 +24,7 @@ public record ClientBusinessInformationDto(
     String middleName,
     String lastName,
     String notes,
-    String identificationType,
+    ClientValueTextDto identificationType,
     String clientIdentification,
     String identificationCountry,
     String identificationProvince) {
@@ -73,21 +73,25 @@ public record ClientBusinessInformationDto(
    */
   public String idType() {
 
-    if (StringUtils.isNotBlank(identificationType) && StringUtils.isNotBlank(
-        clientIdentification)) {
+    if (
+        identificationType != null
+            &&
+        StringUtils.isNotBlank(identificationType.value())
+            && StringUtils.isNotBlank(clientIdentification)
+    ) {
 
       if (
           (
-              IdentificationTypeEnum.CDDL.equals(IdentificationTypeEnum.valueOf(identificationType))
+              IdentificationTypeEnum.CDDL.equals(IdentificationTypeEnum.valueOf(identificationType.value()))
                   &&
                   IdentificationTypeEnum.USDL.equals(
-                      IdentificationTypeEnum.valueOf(identificationType))
+                      IdentificationTypeEnum.valueOf(identificationType.value()))
           )
               && StringUtils.isNotBlank(identificationProvince)) {
         return identificationProvince + "DL";
       }
 
-      return identificationType;
+      return identificationType.value();
     }
     return null;
   }
