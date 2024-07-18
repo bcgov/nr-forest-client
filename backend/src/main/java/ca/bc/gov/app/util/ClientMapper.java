@@ -9,8 +9,11 @@ import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientMapper {
@@ -19,11 +22,12 @@ public class ClientMapper {
    * Maps a {@link ClientBusinessInformationDto} object to a {@link SubmissionDetailEntity} object,
    * using the specified submission ID.
    *
-   * @param submissionId                 the submission ID to be set on the {@link SubmissionDetailEntity}
+   * @param submissionId                 the submission ID to be set on the
+   *                                     {@link SubmissionDetailEntity}
    * @param clientBusinessInformationDto the {@link ClientBusinessInformationDto} object to be
    *                                     mapped to a {@link SubmissionDetailEntity}
    * @return the {@link SubmissionDetailEntity} object mapped from
-   *         {@link ClientBusinessInformationDto}
+   * {@link ClientBusinessInformationDto}
    */
   public static SubmissionDetailEntity mapToSubmissionDetailEntity(
       Integer submissionId,
@@ -37,7 +41,8 @@ public class ClientMapper {
         .withClientTypeCode(clientBusinessInformationDto.clientType())
         .withGoodStandingInd(clientBusinessInformationDto.goodStandingInd())
         .withBirthdate(clientBusinessInformationDto.birthdate())
-        .withDistrictCode(clientBusinessInformationDto.district())
+        .withDistrictCode(StringUtils.isBlank(clientBusinessInformationDto.district()) ? null
+            : clientBusinessInformationDto.district())
         .withFirstName(clientBusinessInformationDto.firstName())
         .withMiddleName(clientBusinessInformationDto.middleName())
         .withLastName(clientBusinessInformationDto.lastName())
@@ -48,14 +53,14 @@ public class ClientMapper {
         .withIdentificationTypeCode(clientBusinessInformationDto.idType())
         .withClientIdentification(clientBusinessInformationDto.clientIdentification());
   }
-  
+
   /**
-   * Maps a {@link ClientAddressDto} object to a {@link SubmissionLocationEntity} object,
-   * using the specified submission ID.
+   * Maps a {@link ClientAddressDto} object to a {@link SubmissionLocationEntity} object, using the
+   * specified submission ID.
    *
    * @param submissionId     the submission ID to be set on the {@link SubmissionLocationEntity}
-   * @param clientAddressDto the {@link ClientAddressDto} object to be
-   *                         mapped to a {@link SubmissionLocationEntity}
+   * @param clientAddressDto the {@link ClientAddressDto} object to be mapped to a
+   *                         {@link SubmissionLocationEntity}
    * @return the {@link SubmissionLocationEntity} object mapped from {@link ClientAddressDto}
    */
   public static SubmissionLocationEntity mapToSubmissionLocationEntity(
@@ -78,12 +83,12 @@ public class ClientMapper {
   }
 
   /**
-   * Maps all {@link ClientAddressDto} objects to a {@link SubmissionLocationEntity} list,
-   * using the specified submission ID.
+   * Maps all {@link ClientAddressDto} objects to a {@link SubmissionLocationEntity} list, using the
+   * specified submission ID.
    *
    * @param submissionId    the submission ID to be set on the {@link SubmissionLocationEntity}
-   * @param clientAddresses the list of {@link ClientAddressDto} object to be
-   *                        mapped to a list of {@link SubmissionLocationEntity}
+   * @param clientAddresses the list of {@link ClientAddressDto} object to be mapped to a list of
+   *                        {@link SubmissionLocationEntity}
    * @return the {@link SubmissionLocationEntity} object list mapped from {@link ClientAddressDto}
    */
   public static List<SubmissionLocationEntity> mapAllToSubmissionLocationEntity(
@@ -134,15 +139,42 @@ public class ClientMapper {
             .orElse(0);
   }
 
-  public static Map<String,String> parseName(String displayName,String provider) {
+  public static Map<String, String> parseName(String displayName, String provider) {
     String[] nameParts =
-        displayName.contains(",") ? displayName.split(",") : displayName.split(" ");
+        displayName.contains(",")
+            ? displayName.split(",")
+            : displayName.split(" ");
+
     if ("IDIR".equalsIgnoreCase(provider) && nameParts.length >= 2) {
-      return Map.of("firstName", nameParts[1].split(" ")[0].trim(), "lastName", nameParts[0].trim());
+
+      String firstName = nameParts[1].replaceAll("\\s+\\w+:\\w+$", StringUtils.EMPTY).trim();
+      String lastName = nameParts[0].trim();
+
+      return
+          Map.of(
+              "firstName", firstName.split(" ")[0].trim(),
+              "lastName",
+
+              Stream.concat(
+                      Stream
+                          .of(Arrays.copyOfRange(firstName.split(" "), 1, firstName.split(" ").length)),
+                      Stream.of(lastName)
+                  )
+                  .filter(StringUtils::isNotBlank)
+                  .collect(Collectors.joining(" "))
+          );
+
     } else if (nameParts.length >= 2) {
-      return Map.of("firstName", nameParts[0].trim(), "lastName", String.join(" ", Arrays.copyOfRange(nameParts, 1, nameParts.length)));
+      return Map.of(
+          "firstName", nameParts[0].trim(),
+          "lastName", String.join(" ", Arrays.copyOfRange(nameParts, 1, nameParts.length))
+      );
     }
-    return Map.of("firstName", nameParts[0], "lastName", nameParts[1]);
+
+    return Map.of(
+        "firstName", nameParts[0],
+        "lastName", ""
+    );
   }
 
 }
