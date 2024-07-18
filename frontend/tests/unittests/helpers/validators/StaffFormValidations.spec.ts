@@ -24,7 +24,6 @@ describe("validations", () => {
     (<Scenario[]>[
       ["", false],
       ["I", true],
-      ["Pepito", false],
     ]).forEach((scenario) => {
       test(formDataDto, key, setter, scenario);
     });

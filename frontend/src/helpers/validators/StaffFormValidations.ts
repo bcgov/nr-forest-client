@@ -50,7 +50,6 @@ const isExactSizMsg = (fieldName: string, size: number) => {
 // Step 1: Business Information
 fieldValidations["businessInformation.clientType"] = [
   isNotEmpty("You must select a client type."),
-  isMaxSizeMsg("client type", 3),
 ];
 
 if (Object.keys(fieldValidations).length === 0) {

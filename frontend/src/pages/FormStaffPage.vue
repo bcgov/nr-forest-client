@@ -391,7 +391,7 @@ const submit = () => {
         <error-notification-grouping-component :form-data="formData" />
       </div>
     </div>
-    
+
     <div class="form-steps-staff" role="main">
       <div v-if="currentTab == 0" class="form-steps-01">
         <div class="form-steps-section">
@@ -402,11 +402,11 @@ const submit = () => {
           <dropdown-input-component
             id="clientType"
             label="Client type"
+            :initial-value="clientType?.name"
             required
             required-label
             :model-value="clientTypesList"
             :enabled="true"
-            initial-value=""
             tip=""
             :validations="[
               ...getValidations('businessInformation.clientType'),
