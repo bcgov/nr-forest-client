@@ -27,8 +27,10 @@ import {
 } from "@/dto/ApplyClientNumberDto";
 import { getEnumKeyByEnumValue, convertFieldNameToSentence } from "@/services/ForestClientService";
 // Imported global validations
-import { validate, runValidation, addValidation } from "@/helpers/validators/StaffFormValidations";
+import { validate, runValidation, addValidation, getValidations } from "@/helpers/validators/StaffFormValidations";
 import { isContainedIn } from "@/helpers/validators/GlobalValidators";
+import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
+
 // Imported Pages
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
 import LocationsWizardStep from "@/pages/staffform/LocationsWizardStep.vue";
@@ -406,7 +408,10 @@ const submit = () => {
             :model-value="clientTypesList"
             :enabled="true"
             tip=""
-            :validations="[]"
+            :validations="[
+              ...getValidations('businessInformation.clientType'),
+              submissionValidation('businessInformation.clientType'),
+            ]"
             @update:selected-value="updateClientType($event)"
             @empty="validation.type = !$event"
           />

@@ -27,9 +27,13 @@ import "@/helpers/validators/BCeIDFormValidations";
 Start by grabbing the same validations we use on the external form.
 And just change / add what's different.
 */
-const fieldValidations: Record<string, ((value: any) => string)[]> = {
+/*const fieldValidations: Record<string, ((value: any) => string)[]> = {
   ...externalFormFieldValidations,
-};
+};*/
+let fieldValidations: Record<
+  string,
+  ((value: string) => string)[]
+> = {};
 
 // This function will return all validators for the field
 export const getValidations = (key: string): ((value: any) => string)[] =>
@@ -47,14 +51,23 @@ const isExactSizMsg = (fieldName: string, size: number) => {
 };
 
 // Step 1: Business Information
+fieldValidations["businessInformation.clientType"] = [
+  isNotEmpty("You must select a client type.")
+];
+
+if (Object.keys(fieldValidations).length === 0) {
+  Object.assign(fieldValidations, externalFormFieldValidations);
+}
+
 fieldValidations["businessInformation.birthdate"] = [
   isDateInThePast("Date of birth must be in the past"),
   isMinimumYearsAgo(19, "The applicant must be at least 19 years old to apply"),
 ];
 
 // use the same validations as firstName in contacts
+const locationContactsFirstNameValidations = fieldValidations["location.contacts.*.firstName"] || [];
 fieldValidations["businessInformation.firstName"] = [
-  ...fieldValidations["location.contacts.*.firstName"],
+  ...locationContactsFirstNameValidations,
 ];
 
 fieldValidations["businessInformation.middleName"] = [
@@ -63,8 +76,9 @@ fieldValidations["businessInformation.middleName"] = [
 ];
 
 // use the same validations as lastName in contacts
+const locationContactsLastNameValidations = fieldValidations["location.contacts.*.lastName"] || [];
 fieldValidations["businessInformation.lastName"] = [
-  ...fieldValidations["location.contacts.*.lastName"],
+  ...locationContactsLastNameValidations,
 ];
 
 // For the input field.
