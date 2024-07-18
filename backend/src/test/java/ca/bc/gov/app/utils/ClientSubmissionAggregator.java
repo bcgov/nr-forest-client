@@ -74,7 +74,7 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
                 middleName,
                 lastName,
                 submissionNotes,
-                identificationType,
+                new ClientValueTextDto(identificationType,identificationType),
                 clientIdentification,
                 identificationCountry,
                 identificationProvince);
