@@ -139,13 +139,6 @@ describe("Staff Form", () => {
 
       cy.get("#lastName").shadow().find("input").type(data.lastName);
 
-      cy.get("#birthdateYear").shadow().find("input").type(data.birthdateYear);
-      cy.get("#birthdateMonth")
-        .shadow()
-        .find("input")
-        .type(data.birthdateMonth);
-      cy.get("#birthdateDay").shadow().find("input").type(data.birthdateDay);
-
       cy.get("#identificationType").find("[part='trigger-button']").click();
       cy.get("#identificationType")
         .find(
@@ -170,6 +163,15 @@ describe("Staff Form", () => {
         .type(data.clientIdentification);
 
       cy.get("#clientIdentification").shadow().find("input").blur();
+
+      cy.get("#birthdateYear").shadow().find("input").type(data.birthdateYear);
+
+      cy.get("#birthdateMonth")
+        .shadow()
+        .find("input")
+        .type(data.birthdateMonth);
+
+      cy.get("#birthdateDay").shadow().find("input").type(data.birthdateDay);
     };
 
     describe("when option Individual gets selected", () => {
@@ -507,5 +509,35 @@ describe("Staff Form", () => {
         });
       });
     });
+
+    describe("review step", () => {
+      beforeEach(() => {
+        cy.get("#clientType")
+          .should("be.visible")
+          .and("have.value", "")
+          .find("[part='trigger-button']")
+          .click();
+
+        cy.get("#clientType")
+          .find('cds-combo-box-item[data-id="I"]')
+          .should("be.visible")
+          .click()
+          .and("have.value", "Individual");
+
+        fillIndividual();
+        cy.get("[data-test='wizard-next-button']").click();
+
+        fillLocation();
+        cy.get("[data-test='wizard-next-button']").click();
+        
+        fillContact();
+        cy.get("[data-test='wizard-next-button']").click();
+      });
+
+      it("displays the Review section", () => {
+        cy.contains("h2", "Review");
+      });
+    });
+
   });
 });
