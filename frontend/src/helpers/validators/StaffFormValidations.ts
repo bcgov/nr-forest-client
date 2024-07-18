@@ -27,9 +27,6 @@ import "@/helpers/validators/BCeIDFormValidations";
 Start by grabbing the same validations we use on the external form.
 And just change / add what's different.
 */
-/*const fieldValidations: Record<string, ((value: any) => string)[]> = {
-  ...externalFormFieldValidations,
-};*/
 let fieldValidations: Record<
   string,
   ((value: string) => string)[]
