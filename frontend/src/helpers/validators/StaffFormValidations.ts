@@ -49,7 +49,8 @@ const isExactSizMsg = (fieldName: string, size: number) => {
 
 // Step 1: Business Information
 fieldValidations["businessInformation.clientType"] = [
-  isNotEmpty("You must select a client type.")
+  isNotEmpty("You must select a client type."),
+  isMaxSizeMsg("client type", 3),
 ];
 
 if (Object.keys(fieldValidations).length === 0) {
@@ -62,9 +63,10 @@ fieldValidations["businessInformation.birthdate"] = [
 ];
 
 // use the same validations as firstName in contacts
-const locationContactsFirstNameValidations = fieldValidations["location.contacts.*.firstName"] || [];
 fieldValidations["businessInformation.firstName"] = [
-  ...locationContactsFirstNameValidations,
+  isMinSize("Please enter the first name")(1),
+  isMaxSizeMsg("first name", 30),
+  hasOnlyNamingCharacters("first name"),
 ];
 
 fieldValidations["businessInformation.middleName"] = [
@@ -73,9 +75,10 @@ fieldValidations["businessInformation.middleName"] = [
 ];
 
 // use the same validations as lastName in contacts
-const locationContactsLastNameValidations = fieldValidations["location.contacts.*.lastName"] || [];
 fieldValidations["businessInformation.lastName"] = [
-  ...locationContactsLastNameValidations,
+  isMinSize("Please enter the last name")(1),
+  isMaxSizeMsg("last name", 30),
+  hasOnlyNamingCharacters("last name"),
 ];
 
 // For the input field.
