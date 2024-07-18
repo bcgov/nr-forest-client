@@ -347,9 +347,9 @@ public class JwtPrincipalUtil {
     }
 
     // Put extracted or computed first and last names into the map
-    additionalInfo.put("firstName", firstName);
-    additionalInfo.put("lastName", lastName);
-    additionalInfo.put("fullName", String.join(" ", firstName, lastName));
+    additionalInfo.put("firstName", firstName.trim());
+    additionalInfo.put("lastName", lastName.trim());
+    additionalInfo.put("fullName", String.join(" ", firstName, lastName).trim());
 
     return additionalInfo;
   }
