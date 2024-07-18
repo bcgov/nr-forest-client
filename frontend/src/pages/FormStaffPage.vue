@@ -309,7 +309,7 @@ const {
 
 watch([response], () => {
   if (response.value.status === 201) {
-    router.push({ name: "confirmation" });
+    router.push({ name: "staff-confirmation" });
   }
 });
 

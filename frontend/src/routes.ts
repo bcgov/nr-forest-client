@@ -11,6 +11,7 @@ import BCeIDForm from "@/pages/FormBCeIDPage.vue";
 import BCSCForm from "@/pages/FormBCSCPage.vue";
 import StaffForm from "@/pages/FormStaffPage.vue";
 import FormSubmittedPage from "@/pages/FormSubmittedPage.vue";
+import FormStaffConfirmationPage from "@/pages/FormStaffConfirmationPage.vue";
 import UserLoadingPage from "@/pages/UserLoadingPage.vue";
 import LandingPage from "@/pages/LandingPage.vue";
 import ErrorPage from "@/pages/ErrorPage.vue";
@@ -19,13 +20,12 @@ import LogoutPage from "@/pages/LogoutPage.vue";
 
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-import { featureFlags } from "@/CoreConstants";
+import { featureFlags, externalConfirmationRoute, staffConfirmationRoute } from "@/CoreConstants";
 
-const CONFIRMATION_ROUTE_NAME = "confirmation";
 const targetPathStorage = useLocalStorage("targetPath", "");
 const userProviderInfo = useLocalStorage("userProviderInfo", "");
 
-const routes = [
+export const routes = [
   {
     path: "/landing",
     name: "home",
@@ -94,7 +94,7 @@ const routes = [
   },
   {
     path: "/form-submitted",
-    name: CONFIRMATION_ROUTE_NAME,
+    name: externalConfirmationRoute,
     component: FormSubmittedPage,
     props: true,
     meta: {
@@ -105,6 +105,27 @@ const routes = [
       visibleTo: ["bceidbusiness", "bcsc"],
       redirectTo: {
         idir: "internal",
+      },
+      style: "content",
+      headersStyle: "headers",
+      sideMenu: false,
+      profile: false,
+    },
+  },
+  {
+    path: "/client-created",
+    name: staffConfirmationRoute,
+    component: FormStaffConfirmationPage,
+    props: true,
+    meta: {
+      format: "full-centered",
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ["idir"],
+      redirectTo: {
+        bceidbusiness: "form",
+        bcsc: "form",
       },
       style: "content",
       headersStyle: "headers",
@@ -269,7 +290,7 @@ const routes = [
   },
 ];
 
-const router = createRouter({
+export const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior: () => ({ top: 0 }),
@@ -340,8 +361,6 @@ Hub.listen("auth", async ({ payload }) => {
       break;
   }
 });
-
-export { routes, router, CONFIRMATION_ROUTE_NAME };
 
 declare module "vue-router" {
   // eslint-disable-next-line no-unused-vars
