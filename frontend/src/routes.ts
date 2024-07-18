@@ -11,6 +11,7 @@ import BCeIDForm from "@/pages/FormBCeIDPage.vue";
 import BCSCForm from "@/pages/FormBCSCPage.vue";
 import StaffForm from "@/pages/FormStaffPage.vue";
 import FormSubmittedPage from "@/pages/FormSubmittedPage.vue";
+import FormStaffConfirmationPage from "@/pages/FormStaffConfirmationPage.vue";
 import UserLoadingPage from "@/pages/UserLoadingPage.vue";
 import LandingPage from "@/pages/LandingPage.vue";
 import ErrorPage from "@/pages/ErrorPage.vue";
@@ -22,6 +23,7 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import { featureFlags } from "@/CoreConstants";
 
 const CONFIRMATION_ROUTE_NAME = "confirmation";
+const staffConfirmationRoute = "staff-confirmation";
 const targetPathStorage = useLocalStorage("targetPath", "");
 const userProviderInfo = useLocalStorage("userProviderInfo", "");
 
@@ -105,6 +107,27 @@ const routes = [
       visibleTo: ["bceidbusiness", "bcsc"],
       redirectTo: {
         idir: "internal",
+      },
+      style: "content",
+      headersStyle: "headers",
+      sideMenu: false,
+      profile: false,
+    },
+  },
+  {
+    path: "/client-created",
+    name: staffConfirmationRoute,
+    component: FormStaffConfirmationPage,
+    props: true,
+    meta: {
+      format: "full-centered",
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ["idir"],
+      redirectTo: {
+        bceidbusiness: "form",
+        bcsc: "form",
       },
       style: "content",
       headersStyle: "headers",
@@ -341,7 +364,7 @@ Hub.listen("auth", async ({ payload }) => {
   }
 });
 
-export { routes, router, CONFIRMATION_ROUTE_NAME };
+export { routes, router, CONFIRMATION_ROUTE_NAME, staffConfirmationRoute };
 
 declare module "vue-router" {
   // eslint-disable-next-line no-unused-vars
