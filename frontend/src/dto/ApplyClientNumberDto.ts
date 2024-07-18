@@ -113,7 +113,8 @@ export const formDataDto: FormDataDto = {
     registrationNumber: "",
     businessName: "",
     goodStandingInd: "",
-    birthdate: ""
+    birthdate: "",
+    notes: ""
   },
   location: {
     addresses: [emptyAddress()],
