@@ -15,7 +15,7 @@ import { useRoute } from "vue-router";
 import { nodeEnv, appVersion, featureFlags } from "@/CoreConstants";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 // Routes
-import { CONFIRMATION_ROUTE_NAME } from "@/routes";
+import { externalConfirmationRoute, staffConfirmationRoute } from "@/CoreConstants";
 // @ts-ignore
 import Logout16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
@@ -94,7 +94,8 @@ const logout = () => {
 const route = useRoute();
 
 const onClickLogout = () => {
-  if (route.name === CONFIRMATION_ROUTE_NAME) {
+  if (route.name === externalConfirmationRoute ||
+      route.name === staffConfirmationRoute) {
     logout();
   } else {
     logoutModalActive.value = true;
