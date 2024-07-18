@@ -98,6 +98,24 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
                   ApplicationConstant.ROLE_EDITOR,
                   ApplicationConstant.ROLE_ADMIN);
 
+    // Only editor and admin users can POST to the staff submissions endpoint
+    authorize
+        .pathMatchers(HttpMethod.POST, "/api/clients/submissions/staff")
+        .hasAnyRole(
+            ApplicationConstant.USERTYPE_SERVICE_USER, //TODO: test only, remove me later
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN
+        );
+
+    // Only editor and admin users can OPTIONS to the staff submissions endpoint
+    authorize
+        .pathMatchers(HttpMethod.OPTIONS, "/api/clients/submissions/staff")
+        .hasAnyRole(
+            ApplicationConstant.USERTYPE_SERVICE_USER, //TODO: test only, remove me later
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN
+        );
+
     // Only BCeIDBusiness and BCSC users can POST to the clients submissions endpoint
     authorize
       .pathMatchers(HttpMethod.POST, "/api/clients/submissions/**")
@@ -119,6 +137,8 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
                   ApplicationConstant.ROLE_VIEWER, 
                   ApplicationConstant.ROLE_EDITOR,
                   ApplicationConstant.ROLE_ADMIN);
+
+
 
     // Deny all other requests
     authorize.anyExchange().denyAll();
