@@ -12,6 +12,7 @@ import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.exception.DataMatchException;
 import ca.bc.gov.app.exception.InvalidRequestObjectException;
@@ -453,7 +454,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                     .withBusinessName(lastName)
                     .withFirstName(firstName)
                     .withBirthdate(birthdate)
-                    .withIdentificationType(idType)
+                    .withIdentificationType(new ClientValueTextDto(idType,idType))
                     .withIdentificationProvince(idProvince)
                     .withClientIdentification(idValue)
                     .withClientType("I")
