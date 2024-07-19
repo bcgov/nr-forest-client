@@ -142,6 +142,15 @@ class ClientSubmissionControllerIntegrationTest
 
     chesStub
         .stubFor(
+            post("/chess/uri/email")
+                .willReturn(
+                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
+
+    chesStub
+        .stubFor(
             post("/token/uri")
                 .willReturn(
                     ok(TestConstants.CHES_TOKEN_MESSAGE)
