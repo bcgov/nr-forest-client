@@ -30,7 +30,6 @@ class BusinessInformationBusinessClientTypeValidatorTest {
   @DisplayName("Should run validate")
   void shouldValidate(
       String clientType,
-      String legalType,
       String expectedMessage
   ) {
 
@@ -43,7 +42,7 @@ class BusinessInformationBusinessClientTypeValidatorTest {
                     StringUtils.EMPTY,
                     clientType,
                     StringUtils.EMPTY,
-                    legalType,
+                    StringUtils.EMPTY,
                     null,
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
@@ -76,14 +75,9 @@ class BusinessInformationBusinessClientTypeValidatorTest {
   private static Stream<Arguments> validation() {
     return
         Stream.of(
-            Arguments.of(StringUtils.EMPTY, StringUtils.EMPTY, "Client type has an invalid value []"),
-            Arguments.of("J", StringUtils.EMPTY, "Client type has an invalid value [J]"),
-
-            Arguments.of("A", StringUtils.EMPTY, "A value for clientType does not match the expected value for legal type"),
-            Arguments.of("A", "S", "A value for clientType does not match the expected value for legal type"),
-
-
-            Arguments.of("C", "C", StringUtils.EMPTY)
+            Arguments.of(StringUtils.EMPTY, "Client type has an invalid value []"),
+            Arguments.of("J", "Client type has an invalid value [J]"),
+            Arguments.of("A", StringUtils.EMPTY)
         );
   }
 }

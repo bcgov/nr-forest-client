@@ -71,12 +71,12 @@ public class BusinessInformationBusinessRegisteredNumberValidator implements
                     new ValidationError(fieldName,
                         "Incorporation Number was not found in BC Registry")
                 )
-                .next()
                 .defaultIfEmpty(
                     new ValidationError(fieldName,
                         "Incorporation Number was not found in BC Registry")
                 )
-                .filter(ValidationError::isValid);
+                .filter(ValidationError::isValid)
+                .next();
       }
     }
     return Mono.empty();
