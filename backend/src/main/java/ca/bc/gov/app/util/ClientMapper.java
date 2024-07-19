@@ -50,8 +50,14 @@ public class ClientMapper {
         .withDoingBusinessAs(clientBusinessInformationDto.doingBusinessAs())
         .withClientAcronym(clientBusinessInformationDto.clientAcronym())
         .withNotes(clientBusinessInformationDto.notes())
-        .withIdentificationTypeCode(clientBusinessInformationDto.idType())
-        .withClientIdentification(clientBusinessInformationDto.clientIdentification());
+        .withIdentificationTypeCode(
+            clientBusinessInformationDto.identificationType() != null
+            ? clientBusinessInformationDto.identificationType().value()
+            : null
+        )
+        .withClientIdentification(clientBusinessInformationDto.clientIdentification())
+        .withProvinceCode(clientBusinessInformationDto.identificationProvince())
+        .withCountryCode(clientBusinessInformationDto.identificationCountry());
   }
 
   /**
