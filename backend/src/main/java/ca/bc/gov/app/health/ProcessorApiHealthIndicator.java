@@ -18,7 +18,7 @@ public class ProcessorApiHealthIndicator implements HealthIndicator {
 
   private final WebClient processorApi;
   private final ObservationRegistry registry;
-  private Health apiHealth = Health.unknown().build();
+  private Health apiHealth = Health.up().build();
 
   public ProcessorApiHealthIndicator(
       @Qualifier("processorApi") WebClient processorApi,
