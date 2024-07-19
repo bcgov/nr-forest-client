@@ -14,8 +14,6 @@ import ca.bc.gov.app.service.client.ClientSubmissionService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import ca.bc.gov.app.validator.SubmissionValidatorService;
 import io.micrometer.observation.annotation.Observed;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,8 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -154,34 +150,8 @@ public class ClientSubmissionController {
   public Mono<Void> submitStaff(
       @RequestBody ClientSubmissionDto request,
       ServerHttpResponse serverResponse,
-      //TODO: uncomment here
-      //JwtAuthenticationToken principal
-      AbstractAuthenticationToken user
+      JwtAuthenticationToken principal
   ) {
-
-    //TODO: remove here
-    JwtAuthenticationToken principal = new JwtAuthenticationToken(
-        new Jwt(
-            "token",
-            LocalDateTime.now().toInstant(ZoneOffset.UTC),
-            LocalDateTime.now().plusMinutes(30).toInstant(ZoneOffset.UTC),
-            Map.of(
-                "preferred_username", "staff@bcsc",
-                "email", "staff@bcsc",
-                "name", "Staff BCSC",
-                "sub", "BCSC\\staff"
-            ),
-            Map.of(
-                "sub", "561b8922-0269-4f6b-a0ba-23bc25b1fd60",
-                "cognito:groups", List.of("CLIENT_EDITOR"),
-                "custom:idp_name", "idir",
-                "custom:idp_user_id", "C4F7EAD6855E42858A5AB9EF3529A20D",
-                "custom:idp_username", "PCRUZ",
-                "custom:idp_display_name", "Cruz, Paulo WLRS:EX",
-                "email", "paulo.cruz@gov.bc.ca"
-            )
-        )
-    );
 
     log.info("Staff {} submitting request for: {}",
         JwtPrincipalUtil.getUserId(principal),
