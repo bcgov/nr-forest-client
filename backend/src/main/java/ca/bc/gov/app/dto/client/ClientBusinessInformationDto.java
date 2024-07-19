@@ -74,26 +74,25 @@ public record ClientBusinessInformationDto(
   public String idType() {
 
     if (
-        identificationType != null
-            &&
-        StringUtils.isNotBlank(identificationType.value())
-            && StringUtils.isNotBlank(clientIdentification)
+        identificationType == null ||
+            StringUtils.isBlank(identificationType.value()) ||
+            IdentificationTypeEnum.fromValue(identificationType.value()) == null
     ) {
-
-      if (
-          (
-              IdentificationTypeEnum.CDDL.equals(IdentificationTypeEnum.valueOf(identificationType.value()))
-                  &&
-                  IdentificationTypeEnum.USDL.equals(
-                      IdentificationTypeEnum.valueOf(identificationType.value()))
-          )
-              && StringUtils.isNotBlank(identificationProvince)) {
-        return identificationProvince + "DL";
-      }
-
-      return identificationType.value();
+      return null;
     }
-    return null;
+
+    if (
+        (
+            IdentificationTypeEnum.CDDL.equals(
+                IdentificationTypeEnum.fromValue(identificationType.value()))
+                ||
+                IdentificationTypeEnum.USDL.equals(
+                    IdentificationTypeEnum.fromValue(identificationType.value()))
+        ) &&
+            StringUtils.isNotBlank(identificationProvince)) {
+      return identificationProvince + "DL";
+    }
+    return identificationType.value();
   }
 
 }
