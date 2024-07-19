@@ -1,0 +1,108 @@
+package ca.bc.gov.app.validator.business;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import ca.bc.gov.app.dto.ValidationError;
+import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
+import ca.bc.gov.app.dto.client.ValidationSourceEnum;
+import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
+import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
+import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+@DisplayName("Unit Tests | BusinessInformationClientTypeValidator")
+class BusinessInformationClientTypeValidatorTest {
+
+  private final ClientTypeCodeRepository clientTypeCodeRepository = mock(
+      ClientTypeCodeRepository.class);
+  private final BusinessInformationClientTypeValidator validator = new BusinessInformationClientTypeValidator(
+      clientTypeCodeRepository);
+
+  @ParameterizedTest
+  @MethodSource("ca.bc.gov.app.validator.address.AddressAddressValidatorTest#validSources")
+  @DisplayName("Should support all validation sources")
+  void shouldSupportAllValidationSources(ValidationSourceEnum source, boolean support) {
+    assertEquals(support, validator.supports(source));
+  }
+
+
+  @ParameterizedTest
+  @MethodSource("validation")
+  @DisplayName("Should run validate")
+  void shouldValidate(
+      String clientType,
+      boolean isDbFound,
+      String expectedMessage
+  ) {
+
+    if (isDbFound) {
+      when(clientTypeCodeRepository.findByCode(clientType))
+          .thenReturn(
+              Mono.just(
+                  ClientTypeCodeEntity
+                      .builder()
+                      .code(clientType)
+                      .description(clientType)
+                      .build()
+              )
+          );
+    } else {
+      when(clientTypeCodeRepository.findByCode(clientType))
+          .thenReturn(Mono.empty());
+    }
+
+    StepVerifier.FirstStep<ValidationError> validation =
+        validator.validate(
+                new ClientBusinessInformationDto(
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    clientType,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    null,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    null,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY
+                ), 0
+            )
+            .as(StepVerifier::create);
+
+    if (StringUtils.isNotBlank(expectedMessage)) {
+      validation.expectNext(new ValidationError(
+              "businessInformation.clientType",
+              expectedMessage
+          )
+      );
+    }
+
+    validation.verifyComplete();
+
+  }
+
+  private static Stream<Arguments> validation() {
+    return
+        Stream.of(
+            Arguments.of(StringUtils.EMPTY, false, "Client does not have a type"),
+            Arguments.of("J", false, "Client type is invalid"),
+            Arguments.of("I", true, StringUtils.EMPTY)
+        );
+  }
+}

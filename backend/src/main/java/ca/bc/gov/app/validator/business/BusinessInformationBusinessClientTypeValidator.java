@@ -48,11 +48,12 @@ public class BusinessInformationBusinessClientTypeValidator implements
                 .orElse(
                     new ValidationError(
                         fieldName,
-                        String.format("%s has an invalid value [%s]", fieldName,
+                        String.format("Client type has an invalid value [%s]",
                             target.clientType())
                     )
                 )
-        );
+        )
+        .filter(ValidationError::isValid);
   }
 
   private Mono<ValidationError> validateClientToLegalMatch(
@@ -61,22 +62,23 @@ public class BusinessInformationBusinessClientTypeValidator implements
   ) {
 
     return Mono.justOrEmpty(
-        Optional
-            .ofNullable(target.legalType())
-            .map(LegalTypeEnum::fromValue)
-            .map(ClientValidationUtils::getClientType)
-            .filter(Objects::nonNull)
-            .filter(legalEnum -> legalEnum.equals(ClientTypeEnum.fromValue(target.clientType())))
-            .map(value -> new ValidationError("", ""))
-            .orElse(
-                new ValidationError(
-                    fieldName,
-                    String.format(
-                        "%s value for clientType does not match the expected value for legalType",
-                        fieldName)
+            Optional
+                .ofNullable(target.legalType())
+                .map(LegalTypeEnum::fromValue)
+                .map(ClientValidationUtils::getClientType)
+                .filter(Objects::nonNull)
+                .filter(legalEnum -> legalEnum.equals(ClientTypeEnum.fromValue(target.clientType())))
+                .map(value -> new ValidationError("", ""))
+                .orElse(
+                    new ValidationError(
+                        fieldName,
+                        String.format(
+                            "%s value for clientType does not match the expected value for legal type",
+                            target.clientType())
+                    )
                 )
-            )
-    );
+        )
+        .filter(ValidationError::isValid);
 
 
   }

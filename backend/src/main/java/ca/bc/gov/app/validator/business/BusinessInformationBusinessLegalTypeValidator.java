@@ -39,10 +39,11 @@ public class BusinessInformationBusinessLegalTypeValidator implements
                     .map(value -> new ValidationError("", ""))
                     .orElse(new ValidationError(
                             fieldName,
-                            String.format("%s has an invalid value [%s]", fieldName, target.legalType())
+                            String.format("Legal type has an invalid value [%s]", target.legalType())
                         )
                     )
-            );
+            )
+            .filter(ValidationError::isValid);
   }
 
 }

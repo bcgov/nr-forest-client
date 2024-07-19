@@ -8,7 +8,6 @@ import ca.bc.gov.app.validator.ForestClientValidator;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -27,13 +26,17 @@ public class BusinessInformationBusinessTypeValidator implements
 
   @Override
   public Mono<ValidationError> validate(ClientBusinessInformationDto target, Integer index) {
-    String businessType = target.businessType();
-    if (StringUtils.isAllBlank(businessType)) {
-      return Mono.just(new ValidationError("businessInformation.businessType", "You must choose an option"));
-    } else if (!EnumUtils.isValidEnum(BusinessTypeEnum.class, businessType)) {
+
+    if (StringUtils.isAllBlank(target.businessType())) {
+      return Mono.just(
+          new ValidationError("businessInformation.businessType", "You must choose an option"));
+    }
+
+    if (BusinessTypeEnum.fromValue(target.businessType()) == null) {
       return Mono.just(
           new ValidationError("businessInformation.businessType",
-              String.format("%s has an invalid value", "Business type"))
+              "Business type has an invalid value"
+          )
       );
     }
     return Mono.empty();

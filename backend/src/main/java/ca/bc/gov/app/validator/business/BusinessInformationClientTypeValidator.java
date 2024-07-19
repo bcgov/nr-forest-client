@@ -29,9 +29,7 @@ public class BusinessInformationClientTypeValidator implements
   @Override
   public Mono<ValidationError> validate(ClientBusinessInformationDto target, Integer index) {
 
-    String clientTypeCode = target.clientType();
-
-    if (StringUtils.isBlank(clientTypeCode)) {
+    if (StringUtils.isBlank(target.clientType())) {
       return Mono.just(
           new ValidationError("businessInformation.clientType", "Client does not have a type")
       );
@@ -39,7 +37,7 @@ public class BusinessInformationClientTypeValidator implements
 
     return
         clientTypeCodeRepository
-            .findByCode(clientTypeCode)
+            .findByCode(target.clientType())
             .map(entity -> new ValidationError("", ""))
             .defaultIfEmpty(
                 new ValidationError("businessInformation.clientType", "Client type is invalid"))

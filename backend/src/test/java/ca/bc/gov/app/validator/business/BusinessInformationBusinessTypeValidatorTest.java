@@ -1,9 +1,9 @@
-package ca.bc.gov.app.validator.address;
+package ca.bc.gov.app.validator.business;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.bc.gov.app.dto.ValidationError;
-import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ValidationSourceEnum;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
@@ -13,39 +13,48 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import reactor.test.StepVerifier;
 
-@DisplayName("Unit Tests | AddressAddressValidator")
-class AddressAddressValidatorTest {
+@DisplayName("Unit Tests | BusinessInformationBusinessTypeValidator")
+class BusinessInformationBusinessTypeValidatorTest {
 
-  private final AddressAddressValidator validator = new AddressAddressValidator();
+  private final BusinessInformationBusinessTypeValidator validator = new BusinessInformationBusinessTypeValidator();
 
   @ParameterizedTest
-  @MethodSource("validSources")
+  @MethodSource("ca.bc.gov.app.validator.address.AddressAddressValidatorTest#validSources")
   @DisplayName("Should support all validation sources")
   void shouldSupportAllValidationSources(ValidationSourceEnum source, boolean support) {
     assertEquals(support, validator.supports(source));
   }
 
+
   @ParameterizedTest
   @MethodSource("validation")
   @DisplayName("Should run validate")
-  void shouldValidate(String address, String expectedMessage) {
+  void shouldValidate(
+      String businessType,
+      String expectedMessage
+  ) {
 
     StepVerifier.FirstStep<ValidationError> validation =
         validator.validate(
-                new ClientAddressDto(
-                    address,
+                new ClientBusinessInformationDto(
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    businessType,
+                    StringUtils.EMPTY,
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
                     null,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
                     null,
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
-                    StringUtils.EMPTY,
-                    StringUtils.EMPTY,
-                    StringUtils.EMPTY,
-                    StringUtils.EMPTY,
-                    StringUtils.EMPTY,
-                    0,
                     StringUtils.EMPTY
                 ), 0
             )
@@ -53,7 +62,7 @@ class AddressAddressValidatorTest {
 
     if (StringUtils.isNotBlank(expectedMessage)) {
       validation.expectNext(new ValidationError(
-              "location.addresses[0].streetAddress",
+              "businessInformation.businessType",
               expectedMessage
           )
       );
@@ -63,39 +72,12 @@ class AddressAddressValidatorTest {
 
   }
 
-  public static Stream<Arguments> staffSource() {
-    return Stream.of(
-        Arguments.of(ValidationSourceEnum.STAFF, true),
-        Arguments.of(ValidationSourceEnum.EXTERNAL, false),
-        Arguments.of(null, false)
-    );
-  }
-
-  public static Stream<Arguments> externalSource() {
-    return Stream.of(
-        Arguments.of(ValidationSourceEnum.STAFF, false),
-        Arguments.of(ValidationSourceEnum.EXTERNAL, true),
-        Arguments.of(null, false)
-    );
-  }
-
-  public static Stream<Arguments> validSources() {
-    return Stream.of(
-        Arguments.of(ValidationSourceEnum.STAFF, true),
-        Arguments.of(ValidationSourceEnum.EXTERNAL, true),
-        Arguments.of(null, true)
-    );
-  }
-
   private static Stream<Arguments> validation() {
     return
         Stream.of(
-            Arguments.of(StringUtils.EMPTY, "You must enter a street address or PO box number."),
-            Arguments.of("1234 Mainé St", "1234 Mainé St has an invalid character."),
-            Arguments.of("Avenida Bailarina Selma Parada 505, Sala 12 Conjunto 5",
-                "This field has a 40 character limit."),
-            Arguments.of("1234 Main St", StringUtils.EMPTY)
+            Arguments.of(StringUtils.EMPTY, "You must choose an option"),
+            Arguments.of("J", "Business type has an invalid value"),
+            Arguments.of("R", StringUtils.EMPTY)
         );
   }
-
 }

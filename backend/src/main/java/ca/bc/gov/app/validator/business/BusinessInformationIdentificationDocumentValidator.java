@@ -4,6 +4,7 @@ import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientTypeEnum;
+import ca.bc.gov.app.dto.client.IdentificationTypeEnum;
 import ca.bc.gov.app.dto.client.ValidationSourceEnum;
 import ca.bc.gov.app.validator.ForestClientValidator;
 import io.micrometer.observation.annotation.Observed;
@@ -48,11 +49,11 @@ public class BusinessInformationIdentificationDocumentValidator implements
       }
 
       return switch (target.idType()) {
-        case "BCDL" -> validateBCDL(valueField, target.clientIdentification());
         case "BRTH" -> validateBirthCertificate(valueField, target.clientIdentification());
+        case "BCDL" -> validateBCDL(valueField, target.clientIdentification());
         case "PASS" -> validatePassport(valueField, target.clientIdentification());
-        case "FNID" -> validateFirstNationsId(valueField, target.clientIdentification());
         case "CITZ" -> validateCanadianCitizenship(valueField, target.clientIdentification());
+        case "FNID" -> validateFirstNationsId(valueField, target.clientIdentification());
         case "OTHR" -> validateOtherDocuments(valueField, target.clientIdentification());
         default -> validateDL(valueField, target.clientIdentification());
       };
