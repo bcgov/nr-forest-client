@@ -16,6 +16,19 @@ const test = (target: any, key: string, setter: (value: any) => void, scenario: 
 };
 
 describe("validations", () => {
+  describe.each(["businessInformation.clientType"])("%s", (key) => {
+    const formDataDto = newFormDataDto();
+    const setter = (value: string) => {
+      formDataDto.businessInformation.clientType = value;
+    };
+    (<Scenario[]>[
+      ["", false],
+      ["I", true],
+    ]).forEach((scenario) => {
+      test(formDataDto, key, setter, scenario);
+    });
+  });
+
   describe.each(["businessInformation.birthdate"])("%s", (key) => {
     const formDataDto = newFormDataDto();
     const setter = (value: string) => {
