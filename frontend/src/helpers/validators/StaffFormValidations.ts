@@ -27,10 +27,9 @@ import "@/helpers/validators/BCeIDFormValidations";
 Start by grabbing the same validations we use on the external form.
 And just change / add what's different.
 */
-let fieldValidations: Record<
-  string,
-  ((value: string) => string)[]
-> = {};
+const fieldValidations: Record<string, ((value: any) => string)[]> = {
+  ...externalFormFieldValidations,
+};
 
 // This function will return all validators for the field
 export const getValidations = (key: string): ((value: any) => string)[] =>
@@ -51,10 +50,6 @@ const isExactSizMsg = (fieldName: string, size: number) => {
 fieldValidations["businessInformation.clientType"] = [
   isNotEmpty("You must select a client type."),
 ];
-
-if (Object.keys(fieldValidations).length === 0) {
-  Object.assign(fieldValidations, externalFormFieldValidations);
-}
 
 fieldValidations["businessInformation.birthdate"] = [
   isDateInThePast("Date of birth must be in the past"),
