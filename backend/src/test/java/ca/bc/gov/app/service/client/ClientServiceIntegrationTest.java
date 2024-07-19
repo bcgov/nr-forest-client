@@ -60,7 +60,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     DistrictDto expectedDto =
         new DistrictDto("DMH", "100 Mile House Natural Resource District",
-            "FLNR.100MileHouseDistrict@gov.bc.ca");
+            "mail@mail.ca");
 
     when(districtCodeRepository
         .findByCode("DMH"))

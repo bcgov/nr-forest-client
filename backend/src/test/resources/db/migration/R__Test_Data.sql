@@ -18,6 +18,7 @@ insert into nrfc.client_type_code (client_type_code, description, effective_date
 insert into nrfc.client_type_code (client_type_code, description, effective_date, create_user) values ('U', 'Unregistered Company', current_timestamp, 'mariamar') on conflict (client_type_code) do nothing;
 
 update nrfc.client_type_code set effective_date = '1970-01-01 00:00:00.000';
+update nrfc.district_code set email_address = 'mail@mail.ca';
 
 -- Test case data Review new client submission
 
