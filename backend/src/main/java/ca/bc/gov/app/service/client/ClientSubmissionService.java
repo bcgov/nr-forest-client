@@ -191,7 +191,6 @@ public class ClientSubmissionService {
                     // This configures the retry conditions and configuration
                     // We use a backoff strategy with a jitter of 12% and a max of 5 retries
                     // It should take around 30~40 seconds to give up and return an error
-                    //TODO: parametize the max attempts
                     .retryWhen(
                         Retry
                             .backoff(5, Duration.ofSeconds(1))
