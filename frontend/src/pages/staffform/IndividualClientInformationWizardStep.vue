@@ -10,9 +10,15 @@ import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Importing types
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
-import type { CodeNameType, IdentificationCodeNameType } from "@/dto/CommonTypesDto";
+import type {
+  CodeNameType,
+  IdentificationCodeNameType,
+} from "@/dto/CommonTypesDto";
 // Importing validators
-import { getValidations, validate } from "@/helpers/validators/StaffFormValidations";
+import {
+  getValidations,
+  validate,
+} from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 import {
   clientIdentificationMaskParams,
@@ -37,7 +43,7 @@ const emit = defineEmits<{
 const formData = ref<FormDataDto>(props.data);
 watch(
   () => formData.value,
-  () => emit("update:data", formData.value),
+  () => emit("update:data", formData.value)
 );
 
 const identificationTypeList = ref([]);
@@ -45,15 +51,24 @@ useFetchTo("/api/codes/identification-types", identificationTypeList);
 
 const identificationProvince = computed(() => {
   const value = formData.value.businessInformation.identificationProvince;
-  return value ? provinceList.value.find((item) => item.code === value) : undefined;
+  return value
+    ? provinceList.value.find((item) => item.code === value)
+    : undefined;
 });
 
-const updateIdentificationType = (value: IdentificationCodeNameType | undefined) => {
-  formData.value.businessInformation.identificationType = { value: value.code, text: value.name, countryCode: value.countryCode };
-  formData.value.businessInformation.identificationCountry = formData.value.businessInformation.identificationType.countryCode;
+const updateIdentificationType = (
+  value: IdentificationCodeNameType | undefined
+) => {
+  formData.value.businessInformation.identificationType = {
+    value: value.code,
+    text: value.name,
+    countryCode: value.countryCode,
+  };
+  formData.value.businessInformation.identificationCountry =
+    formData.value.businessInformation.identificationType.countryCode;
   formData.value.businessInformation.clientIdentification = "";
 
-  if (formData.value.businessInformation.identificationType.countryCode) 
+  if (formData.value.businessInformation.identificationType.countryCode)
     fetchProvinceList();
 };
 
@@ -90,9 +105,13 @@ const updateIdentificationProvince = (value: CodeNameType | undefined) => {
   formData.value.businessInformation.identificationProvince = value?.code;
 };
 
-const clientIdentificationAdditionalValidations = ref<((value: string) => string)[]>([]);
+const clientIdentificationAdditionalValidations = ref<
+  ((value: string) => string)[]
+>([]);
 
-const getClientIdentificationMask = (type: keyof typeof clientIdentificationMaskParams) => {
+const getClientIdentificationMask = (
+  type: keyof typeof clientIdentificationMaskParams
+) => {
   if (clientIdentificationMaskParams[type]) {
     const token = clientIdentificationMaskParams[type].onlyNumbers ? "#" : "N";
     return token.repeat(clientIdentificationMaskParams[type].maxSize);
@@ -103,7 +122,9 @@ const getClientIdentificationMask = (type: keyof typeof clientIdentificationMask
 const clientIdentificationMask = ref<string>();
 
 const shouldDisplayProvince = computed(() =>
-  ["CDDL", "USDL"].includes(formData.value.businessInformation.identificationType?.value),
+  ["CDDL", "USDL"].includes(
+    formData.value.businessInformation.identificationType?.value
+  )
 );
 
 watch(shouldDisplayProvince, (value) => {
@@ -137,33 +158,46 @@ watch(
     clientIdentificationMask.value = undefined;
 
     if (identificationType) {
-      if (identificationType.value === "CDDL" || identificationType.value === "USDL") {
+      if (
+        identificationType.value === "CDDL" ||
+        identificationType.value === "USDL"
+      ) {
         if (identificationProvinceCode) {
           // Driver's licences
-          if (identificationType.value  === "CDDL" && identificationProvinceCode  === "BC") {
+          if (
+            identificationType.value === "CDDL" &&
+            identificationProvinceCode === "BC"
+          ) {
             // BC driver's licences
-            clientIdentificationAdditionalValidations.value = getClientIdentificationValidations(
-              "businessInformation.clientIdentification-BCDL",
-            );
-            clientIdentificationMask.value = getClientIdentificationMask("BCDL");
+            clientIdentificationAdditionalValidations.value =
+              getClientIdentificationValidations(
+                "businessInformation.clientIdentification-BCDL"
+              );
+            clientIdentificationMask.value =
+              getClientIdentificationMask("BCDL");
           } else {
             // Every other driver's licences, including both Canadian or US.
-            clientIdentificationAdditionalValidations.value = getClientIdentificationValidations(
-              "businessInformation.clientIdentification-nonBCDL",
-            );
-            clientIdentificationMask.value = getClientIdentificationMask("nonBCDL");
+            clientIdentificationAdditionalValidations.value =
+              getClientIdentificationValidations(
+                "businessInformation.clientIdentification-nonBCDL"
+              );
+            clientIdentificationMask.value =
+              getClientIdentificationMask("nonBCDL");
           }
         }
       } else {
         // Every other ID type
-        clientIdentificationAdditionalValidations.value = getClientIdentificationValidations(
-          `businessInformation.clientIdentification-${formData.value.businessInformation.identificationType.value}`,
+        clientIdentificationAdditionalValidations.value =
+          getClientIdentificationValidations(
+            `businessInformation.clientIdentification-${formData.value.businessInformation.identificationType.value}`
+          );
+        clientIdentificationMask.value = getClientIdentificationMask(
+          formData.value.businessInformation.identificationType.value
         );
-        clientIdentificationMask.value = getClientIdentificationMask(formData.value.businessInformation.identificationType.value);
       }
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 watch(
@@ -171,7 +205,7 @@ watch(
   (value) => {
     // copy the firstName into the first contact
     formData.value.location.contacts[0].firstName = value;
-  },
+  }
 );
 
 watch(
@@ -179,7 +213,7 @@ watch(
   (value) => {
     // copy the lastName into the first contact
     formData.value.location.contacts[0].lastName = value;
-  },
+  }
 );
 
 const fullName = computed(() => {
@@ -199,8 +233,9 @@ watch(fullName, (fullNameValue) => {
 
 const checkValid = () =>
   Object.values(validation).reduce(
-    (accumulator: boolean, currentValue: boolean) => accumulator && currentValue,
-    true,
+    (accumulator: boolean, currentValue: boolean) =>
+      accumulator && currentValue,
+    true
   );
 
 watch([validation], () => emit("valid", checkValid()));
