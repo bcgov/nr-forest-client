@@ -281,7 +281,7 @@ public class TestConstants {
           "documents": [
               {
                   "documentKey": "aa0a00a0a",
-                  "documentType": "BUSINESS_SUMMARY_FILING_HISTORY",                  
+                  "documentType": "BUSINESS_SUMMARY_FILING_HISTORY",
                   "id": 18315
               }
           ]

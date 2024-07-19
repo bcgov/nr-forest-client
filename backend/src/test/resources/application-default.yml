@@ -43,7 +43,7 @@ features:
 
 logging:
   level:
-    org.springframework.security: DEBUG
+    org.springframework.security: OFF
     org.springframework.r2dbc: DEBUG
     io.r2dbc.postgresql.QUERY: DEBUG
     io.r2dbc.postgresql.PARAM: DEBUG

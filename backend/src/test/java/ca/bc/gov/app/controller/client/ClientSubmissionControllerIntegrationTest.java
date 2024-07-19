@@ -117,7 +117,17 @@ class ClientSubmissionControllerIntegrationTest
             .willReturn(
                 status(200)
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                    .withBody(TestConstants.BCREG_DETAIL_OK)
+                    .withBody(TestConstants.BCREG_DOC_REQ_RES)
+            )
+        );
+
+    bcRegistryStub
+        .stubFor(get(
+            urlPathEqualTo("/registry-search/api/v1/businesses/1234/documents/aa0a00a0a"))
+            .willReturn(
+                status(200)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(TestConstants.BCREG_DOC_DATA)
             )
         );
 
@@ -259,7 +269,6 @@ class ClientSubmissionControllerIntegrationTest
     if (!found) {
       expectedBody.json(TestConstants.SUBMISSION_LIST_CONTENT_EMPTY);
     } else {
-
       expectedBody
           .jsonPath("$.[0]").isNotEmpty();
     }
