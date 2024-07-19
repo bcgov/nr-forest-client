@@ -1,7 +1,10 @@
 package ca.bc.gov.app.controller.client;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.created;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
@@ -60,6 +63,19 @@ class ClientStaffSubmissionControllerIntegrationTest
       .configureStaticDsl(true)
       .build();
 
+  @RegisterExtension
+  static WireMockExtension processorStub = WireMockExtension
+      .newInstance()
+      .options(
+          wireMockConfig()
+              .port(10070)
+              .notifier(new WiremockLogNotifier())
+              .asynchronousResponseEnabled(true)
+              .stubRequestLoggingDisabled(false)
+      )
+      .configureStaticDsl(true)
+      .build();
+
   @Autowired
   protected WebTestClient client;
   @Autowired
@@ -94,6 +110,12 @@ class ClientStaffSubmissionControllerIntegrationTest
                     ok(TestConstants.CHES_TOKEN_MESSAGE)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 )
+        );
+
+    processorStub
+        .stubFor(
+            get(urlMatching("/api/processor/\\d"))
+                .willReturn(created())
         );
 
     client = client.mutate()

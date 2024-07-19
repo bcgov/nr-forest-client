@@ -53,11 +53,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -65,12 +65,12 @@ import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Observed
 public class ClientSubmissionService {
@@ -85,6 +85,34 @@ public class ClientSubmissionService {
   private final ChesService chesService;
   private final R2dbcEntityTemplate template;
   private final ForestClientConfiguration configuration;
+  private final WebClient processorApi;
+
+  public ClientSubmissionService(
+      SubmissionRepository submissionRepository,
+      SubmissionDetailRepository submissionDetailRepository,
+      SubmissionLocationRepository submissionLocationRepository,
+      SubmissionContactRepository submissionContactRepository,
+      SubmissionLocationContactRepository submissionLocationContactRepository,
+      SubmissionMatchDetailRepository submissionMatchDetailRepository,
+      DistrictCodeRepository districtCodeRepository,
+      ChesService chesService,
+      R2dbcEntityTemplate template,
+      ForestClientConfiguration configuration,
+      @Qualifier("processorApi") WebClient processorApi
+  ) {
+    this.submissionRepository = submissionRepository;
+    this.submissionDetailRepository = submissionDetailRepository;
+    this.submissionLocationRepository = submissionLocationRepository;
+    this.submissionContactRepository = submissionContactRepository;
+    this.submissionLocationContactRepository = submissionLocationContactRepository;
+    this.submissionMatchDetailRepository = submissionMatchDetailRepository;
+    this.districtCodeRepository = districtCodeRepository;
+    this.chesService = chesService;
+    this.template = template;
+    this.configuration = configuration;
+    this.processorApi = processorApi;
+  }
+
 
   public Flux<ClientListSubmissionDto> listSubmissions(
       int page,
@@ -378,12 +406,12 @@ public class ClientSubmissionService {
             .then();
   }
 
-  private Mono<String> triggerProcessor(Integer submissionId) {
-    return Mono
-        .just("doRequest")
-        .doOnNext(s -> log.info("Requesting processor to process submission {}", submissionId))
-        .delayElement(Duration.ofMinutes(3))
-        .doOnNext(s -> log.info("Processor completed processing submission {}", submissionId));
+  private Mono<Void> triggerProcessor(Integer submissionId) {
+    return
+        processorApi
+            .get()
+            .uri("/api/processor/{id}", submissionId)
+            .exchangeToMono(response -> response.bodyToMono(Void.class));
   }
 
   private Mono<Integer> saveSubmission(
@@ -578,8 +606,7 @@ public class ClientSubmissionService {
       String districtName,
       String districtEmail
   ) {
-    Map<String, Object> descMap = new HashMap<>();
-    descMap.putAll(clientSubmission);
+    Map<String, Object> descMap = new HashMap<>(clientSubmission);
     descMap.put("districtName", StringUtils.defaultString(districtName));
     descMap.put("districtEmail", StringUtils.defaultString(districtEmail));
     return descMap;
