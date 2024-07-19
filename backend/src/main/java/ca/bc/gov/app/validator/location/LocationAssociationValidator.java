@@ -35,8 +35,6 @@ public class LocationAssociationValidator implements ForestClientValidator<Clien
         .map(ClientAddressDto::locationName)
         .collect(Collectors.toSet());
 
-    log.info("Validating location association for location: {}", locationNames);
-
     // Keep in mind that it will return the first error found
     // If there's more than one, it will have to run again to point out the next one
     return
@@ -49,10 +47,6 @@ public class LocationAssociationValidator implements ForestClientValidator<Clien
 
   private boolean isLocationAssociated(Set<String> locationNames,
       Set<String> contactLocationNames) {
-    log.info("Location names: {}", locationNames);
-    log.info("Contact location names: {}", contactLocationNames);
-    log.info("Location names contains all contact location names: {}",
-        locationNames.containsAll(contactLocationNames));
     return locationNames.containsAll(contactLocationNames);
   }
 
