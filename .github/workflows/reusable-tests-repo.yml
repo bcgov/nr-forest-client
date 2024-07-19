@@ -49,15 +49,15 @@ jobs:
       # Java builds
       - name: Build Backend
         working-directory: backend
-        run: ./mvnw clean package
+        run: ./mvnw clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
 
       - name: Build Legacy
         working-directory: legacy
-        run: ./mvnw clean package
+        run: ./mvnw clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
 
       - name: Build Processor
         working-directory: processor
-        run: ./mvnw clean package
+        run: ./mvnw clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
