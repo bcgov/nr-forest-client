@@ -44,9 +44,9 @@ features:
 logging:
   level:
     org.springframework.security: OFF
-    org.springframework.r2dbc: DEBUG
-    io.r2dbc.postgresql.QUERY: DEBUG
-    io.r2dbc.postgresql.PARAM: DEBUG
+    org.springframework.r2dbc: OFF
+    io.r2dbc.postgresql.QUERY: OFF
+    io.r2dbc.postgresql.PARAM: OFF
     org.springframework.test: OFF
     org.testcontainers: OFF
     com.github.dockerjava: OFF
