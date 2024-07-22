@@ -24,8 +24,8 @@ class ForestClientContactMapperTest {
       "BL",
       "James Baxter",
       "2502502550",
-      StringUtils.EMPTY,
-      StringUtils.EMPTY,
+      "2504405544",
+      "2362362663",
       "mail@mail.ca",
       "Test",
       "Test",
@@ -40,6 +40,8 @@ class ForestClientContactMapperTest {
           .contactCode("BL")
           .contactName("James Baxter")
           .businessPhone("2502502550")
+          .cellPhone("2504405544")
+          .faxNumber("2362362663")
           .emailAddress("mail@mail.ca")
           .createdAt(LocalDateTime.now())
           .updatedAt(LocalDateTime.now())
@@ -65,7 +67,7 @@ class ForestClientContactMapperTest {
   @Test
   @DisplayName("Should convert to dto")
   void shouldConvertToDto() {
-    assertEquals(dto, mapper.toDto(entity));
+    assertEquals(dto,mapper.toDto(entity));
   }
 
 }

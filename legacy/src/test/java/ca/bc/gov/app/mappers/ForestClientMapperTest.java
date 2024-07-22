@@ -54,6 +54,7 @@ class ForestClientMapperTest {
           .createdByUnit(1L)
           .updatedByUnit(1L)
           .revision(1L)
+          .clientAcronym(StringUtils.EMPTY)
           .build();
 
   @Test
