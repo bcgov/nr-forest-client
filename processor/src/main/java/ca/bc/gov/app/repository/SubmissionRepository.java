@@ -33,4 +33,19 @@ public interface SubmissionRepository extends ReactiveCrudRepository<SubmissionE
       nrfc.submission_matching_detail.submission_matching_processed_time < now() - interval '2 minutes')"""
   )
   Flux<Integer> loadProcessedSubmissions();
+
+  @Query("""
+      SELECT nrfc.submission.submission_id
+      FROM nrfc.submission
+      LEFT JOIN nrfc.submission_matching_detail
+      ON nrfc.submission_matching_detail.submission_id = nrfc.submission.submission_id
+      WHERE
+      nrfc.submission.submission_status_code = 'A'
+      AND nrfc.submission.submission_type_code = 'SSD'
+      AND ( nrfc.submission_matching_detail.submission_matching_processed  is null or
+      nrfc.submission_matching_detail.submission_matching_processed = false)
+      AND (nrfc.submission_matching_detail.submission_matching_processed_time is null or
+      nrfc.submission_matching_detail.submission_matching_processed_time < now() - interval '2 minutes')"""
+  )
+  Flux<Integer> loadStaffSubmissions();
 }

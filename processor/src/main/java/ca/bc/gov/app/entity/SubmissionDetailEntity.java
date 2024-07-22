@@ -110,13 +110,12 @@ public class SubmissionDetailEntity {
 
   public String getIdentificationCode() {
 
-    if (StringUtils.isNotBlank(identificationTypeCode) && StringUtils.isNotBlank(
-        clientIdentification)) {
+    if (!StringUtils.isAllBlank(identificationTypeCode, clientIdentification)) {
 
       if (
           (
               IdentificationTypeEnum.CDDL.equals(IdentificationTypeEnum.valueOf(identificationTypeCode))
-                  &&
+                  ||
                   IdentificationTypeEnum.USDL.equals(
                       IdentificationTypeEnum.valueOf(identificationTypeCode))
           )

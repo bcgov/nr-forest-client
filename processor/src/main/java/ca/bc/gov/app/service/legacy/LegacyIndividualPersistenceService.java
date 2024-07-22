@@ -111,7 +111,7 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                     )
                     .withClientIdentification(
                         Objects.toString(
-                            detailEntity.getClientIdentification(),
+                            detailEntity.getIdentificationCode(),
                             ProcessorUtil.splitName(
                                 getUser(message, ApplicationConstant.CREATED_BY)
                             )[0]

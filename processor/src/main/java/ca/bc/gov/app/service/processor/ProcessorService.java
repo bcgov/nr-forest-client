@@ -31,7 +31,10 @@ public class ProcessorService {
   private final ClientSubmissionMailService mailService;
   private final LegacyPersistenceService legacyPersistenceService;
 
-  @Scheduled(fixedDelay = 30000)
+  /**
+   * Process newly created submissions each 30 seconds
+   */
+  @Scheduled(fixedDelay = 30_000)
   public void submissionMessages() {
     //Load submission
     submissionRepository
@@ -76,13 +79,34 @@ public class ProcessorService {
         .subscribe();
   }
 
-  @Scheduled(fixedDelay = 30000, initialDelay = 10000)
+  /**
+   * Process external approved and rejected submissions each 30 seconds,
+   * but with an initial delay after the application starts of 10 seconds
+   */
+  @Scheduled(fixedDelay = 30_000, initialDelay = 10_000)
   public void processedMessages() {
     //Load the submissions that were processed
     submissionRepository
         .loadProcessedSubmissions()
         //Call the processedMessage method
         .flatMap(submissionId -> processedMessage(submissionId, SubmissionProcessTypeEnum.EXTERNAL))
+        .subscribe();
+  }
+
+  /**
+   * Process staff submitted submissions that failed to complete each 10 seconds,
+   * but with an initial delay after the application starts of 5 seconds.
+   * <p>The failed to complete part here is important</p>
+   * It means that the submission was processed, but failed in the middle of the process,
+   * so it needs to be reprocessed.
+   */
+  @Scheduled(fixedDelay = 10_000, initialDelay = 5_000)
+  public void processStaffSubmitted() {
+    //Load the submissions that were processed
+    submissionRepository
+        .loadStaffSubmissions()
+        //Call the processedMessage method
+        .flatMap(submissionId -> processedMessage(submissionId, SubmissionProcessTypeEnum.STAFF))
         .subscribe();
   }
 
