@@ -100,6 +100,12 @@ public class ClientSubmissionAutoProcessingService {
     return
         submissionMatchDetailRepository
             .findBySubmissionId((int) message.parameters().get(ApplicationConstant.SUBMISSION_ID))
+            .doOnNext(entity -> log.info(
+                    "Loaded submission {} with matching info {}",
+                    entity.getSubmissionId(),
+                    entity.getMatchingField()
+                )
+            )
             .filter(not(SubmissionMatchDetailEntity::isBeingProcessed))
             //This will add the current date to the processing time to prevent concurrency
             .flatMap(entity ->

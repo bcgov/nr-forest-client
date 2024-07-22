@@ -1,6 +1,7 @@
 package ca.bc.gov.app.dto.client;
 
 import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Map;
 import lombok.With;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +22,6 @@ public record ClientAddressDto(
     String emailAddress,
     String notes,
     int index,
-
     String locationName
 ) {
 
@@ -49,25 +49,20 @@ public record ClientAddressDto(
   }
 
   public ClientAddressDto withIndexed(int index) {
-    if (this.index() == index) {
+    if (this.index == index) {
       return this;
     }
     return this.withIndex(index);
   }
 
+  @JsonIgnore
   public boolean isValid() {
-    return !StringUtils.isAnyBlank(
-        streetAddress,
-        city,
-        postalCode
-    ) &&
-        country != null
-        &&
-        StringUtils.isNotBlank(country.value())
-        &&
-        province != null
-        &&
-        StringUtils.isNotBlank(province.value());
+    return
+        StringUtils.isNotBlank(streetAddress)
+            && (country != null && StringUtils.isNotBlank(country.value()))
+            && (province != null && StringUtils.isNotBlank(province.value()))
+            && StringUtils.isNotBlank(city)
+            && StringUtils.isNotBlank(postalCode)
+            && StringUtils.isNotBlank(locationName);
   }
-
 }

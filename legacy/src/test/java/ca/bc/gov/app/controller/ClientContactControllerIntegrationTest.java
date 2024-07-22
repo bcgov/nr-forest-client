@@ -6,6 +6,7 @@ import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.Map;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -42,7 +43,9 @@ class ClientContactControllerIntegrationTest extends
                     "BL",
                     "James Baxter",
                     "2502502550",
-                    "mail@mail.ca",
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    "oknowwhat@mail.ca",
                     "Test",
                     "Test",
                     1L

@@ -46,6 +46,14 @@ public class SubmissionContactEntity {
   @Size(min = 5, max = 14)
   private String businessPhoneNumber;
 
+  @Column("secondary_phone_number")
+  @Size(max = 14)
+  private String secondaryPhoneNumber;
+
+  @Column("fax_number")
+  @Size(max = 14)
+  private String faxNumber;
+
   @Column("email_address")
   @NotNull
   @Size(min = 5, max = 100)

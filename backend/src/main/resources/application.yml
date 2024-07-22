@@ -118,6 +118,8 @@ ca:
           password: ${POSTGRESQL_PASSWORD:passwd}
         legacy:
           url: ${LEGACY_URL:http://127.0.0.1:9019}
+        processor:
+          url: ${PROCESSOR_URL:http://127.0.0.1:3100}
         addressComplete:
           url: ${ADDRESS_COMPLETE_URL:https://ws1.postescanada-canadapost.ca/addresscomplete/interactive}
           apiKey: ${ADDRESS_COMPLETE_KEY:apiKey}
@@ -172,6 +174,9 @@ ca:
               - PUT
               - DELETE
             age: 5m
+        openData:
+          sacUrl: https://data.sac-isc.gc.ca/geomatics/services/Donnees_Ouvertes-Open_Data/Premiere_Nation_First_Nation/MapServer/WFSServer
+          bcMapsUrl: https://openmaps.gov.bc.ca/geo/pub/WHSE_HUMAN_CULTURAL_ECONOMIC.FN_COMMUNITY_LOCATIONS_SP/ows
 
 logging:
   pattern:

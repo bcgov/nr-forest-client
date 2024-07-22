@@ -1,13 +1,12 @@
-import type { StaticResponse } from "../../node_modules/cypress/types/net-stubbing";
-
 /* eslint-disable no-undef */
 describe("Staff Form", () => {
-  
   beforeEach(() => {
-
     cy.visit("/");
     cy.wait(500);
-    cy.get("#landing-title").should("contain", "Forests Client Management System");
+    cy.get("#landing-title").should(
+      "contain",
+      "Forests Client Management System"
+    );
     cy.get("#landing-subtitle").should(
       "contain",
       "Create and manage client accounts"
@@ -17,7 +16,6 @@ describe("Staff Form", () => {
   });
 
   it("CLIENT_EDITOR should be able to see the button", () => {
-
     cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
       given_name: "James",
       family_name: "Baxter",
@@ -25,15 +23,13 @@ describe("Staff Form", () => {
     });
 
     // Check if the Create client button is visible
-    cy.get('#menu-list-staff-form')
-      .should('be.visible')
-      .find('span')
-      .should('contain', 'Create client');
-    
+    cy.get("#menu-list-staff-form")
+      .should("be.visible")
+      .find("span")
+      .should("contain", "Create client");
   });
 
   it("CLIENT_ADMIN should be able to see the button", () => {
-
     cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
       given_name: "James",
       family_name: "Baxter",
@@ -41,15 +37,13 @@ describe("Staff Form", () => {
     });
 
     // Check if the Create client button is visible
-    cy.get('#menu-list-staff-form')
-      .should('be.visible')
-      .find('span')
-      .should('contain', 'Create client');
-    
+    cy.get("#menu-list-staff-form")
+      .should("be.visible")
+      .find("span")
+      .should("contain", "Create client");
   });
 
   it("CLIENT_VIEWER should not be able to see the button", () => {
-
     cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
       given_name: "James",
       family_name: "Baxter",
@@ -57,12 +51,10 @@ describe("Staff Form", () => {
     });
 
     // Check if the Create client button is not visible and cannot be found
-    cy.get('#menu-list-staff-form').should('not.exist');
-    
+    cy.get("#menu-list-staff-form").should("not.exist");
   });
 
   it("CLIENT_EDITOR should be able to click the button", () => {
-
     cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
       given_name: "James",
       family_name: "Baxter",
@@ -70,18 +62,12 @@ describe("Staff Form", () => {
     });
 
     // Check if the Create client button is visible
-    cy.get('#menu-list-staff-form')
-      .should('be.visible')
-      .click();
+    cy.get("#menu-list-staff-form").should("be.visible").click();
 
-      cy.get('h1')
-      .should('be.visible')      
-      .should('contain', ' Create client ');
-    
+    cy.get("h1").should("be.visible").should("contain", " Create client ");
   });
 
   it("CLIENT_ADMIN should be able to click the button", () => {
-
     cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
       given_name: "James",
       family_name: "Baxter",
@@ -89,14 +75,9 @@ describe("Staff Form", () => {
     });
 
     // Check if the Create client button is visible
-    cy.get('#menu-list-staff-form')
-      .should('be.visible')
-      .click();
+    cy.get("#menu-list-staff-form").should("be.visible").click();
 
-      cy.get('h1')
-      .should('be.visible')      
-      .should('contain', ' Create client ');
-    
+    cy.get("h1").should("be.visible").should("contain", " Create client ");
   });
 
   describe("when the user clicks the Create client button", () => {
@@ -108,21 +89,27 @@ describe("Staff Form", () => {
       });
 
       // Check if the Create client button is visible
-      cy.get('#menu-list-staff-form')
-        .should('be.visible')
-        .click();
+      cy.get("#menu-list-staff-form").should("be.visible").click();
 
-      cy.intercept("GET", "/api/countries/CA/provinces?page=0&size=250", {
+      cy.intercept("GET", "/api/codes/countries/CA/provinces?page=0&size=250", {
         fixture: "provinces.json",
       }).as("getProvinces");
 
-      cy.intercept("GET", "/api/addresses?country=CA&maxSuggestions=10&searchTerm=*", {
-        fixture: "addressSearch.json",
-      }).as("searchAddress");
+      cy.intercept(
+        "GET",
+        "/api/addresses?country=CA&maxSuggestions=10&searchTerm=*",
+        {
+          fixture: "addressSearch.json",
+        }
+      ).as("searchAddress");
 
       cy.intercept("GET", "/api/addresses/V8T5J9", {
         fixture: "address.json",
       }).as("getAddress");
+
+      cy.intercept("GET", "/api/codes/contact-types?page=0&size=250", {
+        fixture: "roles.json",
+      }).as("getContactTypes");
     });
 
     it("should display the Client type input field", () => {
@@ -152,25 +139,39 @@ describe("Staff Form", () => {
 
       cy.get("#lastName").shadow().find("input").type(data.lastName);
 
-      cy.get("#birthdateYear").shadow().find("input").type(data.birthdateYear);
-      cy.get("#birthdateMonth").shadow().find("input").type(data.birthdateMonth);
-      cy.get("#birthdateDay").shadow().find("input").type(data.birthdateDay);
-
       cy.get("#identificationType").find("[part='trigger-button']").click();
       cy.get("#identificationType")
-        .find(`cds-combo-box-item[data-value="${data.identificationTypeValue}"]`)
+        .find(
+          `cds-combo-box-item[data-value="${data.identificationTypeValue}"]`
+        )
         .click();
 
       if (data.identificationProvinceValue) {
-        cy.get("#identificationProvince").find("[part='trigger-button']").click();
         cy.get("#identificationProvince")
-          .find(`cds-combo-box-item[data-value="${data.identificationProvinceValue}"]`)
+          .find("[part='trigger-button']")
+          .click();
+        cy.get("#identificationProvince")
+          .find(
+            `cds-combo-box-item[data-value="${data.identificationProvinceValue}"]`
+          )
           .click();
       }
 
-      cy.get("#clientIdentification").shadow().find("input").type(data.clientIdentification);
+      cy.get("#clientIdentification")
+        .shadow()
+        .find("input")
+        .type(data.clientIdentification);
 
       cy.get("#clientIdentification").shadow().find("input").blur();
+
+      cy.get("#birthdateYear").shadow().find("input").type(data.birthdateYear);
+
+      cy.get("#birthdateMonth")
+        .shadow()
+        .find("input")
+        .type(data.birthdateMonth);
+
+      cy.get("#birthdateDay").shadow().find("input").type(data.birthdateDay);
     };
 
     describe("when option Individual gets selected", () => {
@@ -187,6 +188,7 @@ describe("Staff Form", () => {
           .click()
           .and("have.value", "Individual");
       });
+
       it("should display the Individual information input fields", () => {
         cy.contains("h2", "Client information");
         cy.get("#firstName").should("be.visible");
@@ -238,14 +240,20 @@ describe("Staff Form", () => {
                   cy.get("[data-test='wizard-back-button']").click();
                 });
                 it("renders the Individual input fields with the same data", () => {
-                  cy.get("#firstName").shadow().find("input").should("have.value", data.firstName);
+                  cy.get("#firstName")
+                    .shadow()
+                    .find("input")
+                    .should("have.value", data.firstName);
 
                   cy.get("#middleName")
                     .shadow()
                     .find("input")
                     .should("have.value", data.middleName);
 
-                  cy.get("#lastName").shadow().find("input").should("have.value", data.lastName);
+                  cy.get("#lastName")
+                    .shadow()
+                    .find("input")
+                    .should("have.value", data.lastName);
 
                   cy.get("#birthdateYear")
                     .shadow()
@@ -260,12 +268,15 @@ describe("Staff Form", () => {
                     .find("input")
                     .should("have.value", data.birthdateDay);
 
-                  cy.get("#identificationType").should("have.value", data.identificationTypeValue);
+                  cy.get("#identificationType").should(
+                    "have.value",
+                    data.identificationTypeValue
+                  );
 
                   if (data.identificationProvinceValue) {
                     cy.get("#identificationProvince").should(
                       "have.value",
-                      data.identificationProvinceValue,
+                      data.identificationProvinceValue
                     );
                   }
 
@@ -296,6 +307,46 @@ describe("Staff Form", () => {
       cy.get("#addr_0 cds-combo-box-item").contains(data.addr_0).click();
 
       cy.wait("@getAddress");
+    };
+
+    const fillFormEntry = (field: string, value: string) => {
+      cy.get(field).should("exist").shadow().find("input").type(value);
+
+      cy.get(field).shadow().find("input").blur();
+    };
+
+    const selectFormEntry = (field: string, value: string, box: boolean) => {
+      cy.get(field).find("[part='trigger-button']").click();
+
+      if (!box) {
+        cy.get(field).find(`cds-combo-box-item[data-value="${value}"]`).click();
+      } else {
+        cy.get(field)
+          .find(`cds-multi-select-item[data-value="${value}"]`)
+          .click();
+        cy.get(field).click();
+      }
+    };
+
+    const contactBaseData = {
+      mail: "contact1@mail.ca",
+      phone1: "1234567890",
+      phone2: "1234567890",
+      fax: "1234567890",
+      role: "Person",
+      address: locationBaseData.name_0,
+    };
+
+    const fillContact = (data = contactBaseData) => {
+      fillFormEntry("#emailAddress_0", data.mail);
+      fillFormEntry("#businessPhoneNumber_0", data.phone1);
+      fillFormEntry("#secondaryPhoneNumber_0", data.phone2);
+      fillFormEntry("#faxNumber_0", data.fax);
+
+      cy.wait("@getContactTypes");
+
+      selectFormEntry("#role_0", data.role, false);
+      selectFormEntry("#addressname_0", data.address, true);
     };
 
     describe("locations step", () => {
@@ -352,7 +403,9 @@ describe("Staff Form", () => {
                   .should("be.visible")
                   .and("have.attr", "kind", "error");
 
-                cy.get("#city_0").find("input").should("have.class", "cds--text-input--invalid");
+                cy.get("#city_0")
+                  .find("input")
+                  .should("have.class", "cds--text-input--invalid");
               });
             });
           });
@@ -385,5 +438,106 @@ describe("Staff Form", () => {
         });
       });
     });
+
+    describe("contacts step", () => {
+      beforeEach(() => {
+        cy.get("#clientType")
+          .should("be.visible")
+          .and("have.value", "")
+          .find("[part='trigger-button']")
+          .click();
+
+        cy.get("#clientType")
+          .find('cds-combo-box-item[data-id="I"]')
+          .should("be.visible")
+          .click()
+          .and("have.value", "Individual");
+
+        fillIndividual();
+
+        cy.get("[data-test='wizard-next-button']").click();
+
+        fillLocation();
+
+        cy.get("[data-test='wizard-next-button']").click();
+      });
+
+      it("displays the Contacts section", () => {
+        cy.contains("h2", "Contacts");
+      });
+
+      describe("when all the required fields are filled in", () => {
+        beforeEach(() => {
+          fillContact();
+        });
+
+        describe("and there is a simple input validation error", () => {
+          beforeEach(() => {
+            cy.get("#emailAddress_0").shadow().find("input").type("é");
+          });
+
+          describe("and the user goes back to the Client information step and returns to the Contacts step", () => {
+            beforeEach(() => {
+              cy.get("[data-test='wizard-back-button']").click();
+              cy.contains("h2", "Locations");
+              cy.get("[data-test='wizard-back-button']").click();
+              cy.contains("h2", "Client information");
+              cy.get("[data-test='wizard-next-button']").click();
+              cy.contains("h2", "Locations");
+              cy.get("[data-test='wizard-next-button']").click();
+              cy.contains("h2", "Contacts");
+            });
+
+            describe("and the user attempts to go to the Next step without fixing the invalid character", () => {
+              beforeEach(() => {
+                cy.get("[data-test='wizard-next-button']").click();
+              });
+
+              it("should display an error message at the top of the page", () => {
+                cy.wait(10);
+                cy.contains("h2", "Contacts");
+                cy.get(".top-notification cds-actionable-notification")
+                  .should("be.visible")
+                  .and("have.attr", "kind", "error");
+
+                cy.get("#emailAddress_0")
+                  .find("input")
+                  .should("have.class", "cds--text-input--invalid");
+              });
+            });
+          });
+        });
+      });
+    });
+
+    describe("review step", () => {
+      beforeEach(() => {
+        cy.get("#clientType")
+          .should("be.visible")
+          .and("have.value", "")
+          .find("[part='trigger-button']")
+          .click();
+
+        cy.get("#clientType")
+          .find('cds-combo-box-item[data-id="I"]')
+          .should("be.visible")
+          .click()
+          .and("have.value", "Individual");
+
+        fillIndividual();
+        cy.get("[data-test='wizard-next-button']").click();
+
+        fillLocation();
+        cy.get("[data-test='wizard-next-button']").click();
+        
+        fillContact();
+        cy.get("[data-test='wizard-next-button']").click();
+      });
+
+      it("displays the Review section", () => {
+        cy.contains("h2", "Review");
+      });
+    });
+
   });
 });

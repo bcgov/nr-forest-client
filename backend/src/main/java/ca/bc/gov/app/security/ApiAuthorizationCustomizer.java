@@ -66,7 +66,9 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
     authorize
         .pathMatchers(HttpMethod.GET, "/api/addresses/**")
         .hasAnyRole(ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
-            ApplicationConstant.USERTYPE_BCSC_USER);
+            ApplicationConstant.USERTYPE_BCSC_USER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN);
 
     // Viewer, editor, admin, BCeIDBusiness and BCSC users can GET from the codes endpoint
     authorize
@@ -77,27 +79,11 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
             ApplicationConstant.USERTYPE_BCSC_USER);
 
-    // Viewer, editor, admin, BCeIDBusiness, BCSC and service users can GET from the districts
-    // endpoint
+    // Viewer, editor, admin can GET from First Nation data endpoint
     authorize
-        .pathMatchers(HttpMethod.GET, "/api/districts/**")
-        .hasAnyRole(ApplicationConstant.ROLE_VIEWER,
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN,
-            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
-            ApplicationConstant.USERTYPE_BCSC_USER,
-            ApplicationConstant.USERTYPE_SERVICE_USER);
-
-    // Viewer, editor, admin, BCeIDBusiness, BCSC and service users can GET from the countries
-    // endpoint
-    authorize
-        .pathMatchers(HttpMethod.GET, "/api/countries/**")
-        .hasAnyRole(ApplicationConstant.ROLE_VIEWER,
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN,
-            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
-            ApplicationConstant.USERTYPE_BCSC_USER,
-            ApplicationConstant.USERTYPE_SERVICE_USER);
+        .pathMatchers(HttpMethod.GET, "/api/opendata/**")
+        .hasAnyRole(ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN);
 
     // Only editor and admin can POST to the clients submissions endpoint with a specific id
     authorize
@@ -111,6 +97,22 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
         .hasAnyRole(ApplicationConstant.ROLE_VIEWER,
             ApplicationConstant.ROLE_EDITOR,
             ApplicationConstant.ROLE_ADMIN);
+
+    // Only editor and admin users can POST to the staff submissions endpoint
+    authorize
+        .pathMatchers(HttpMethod.POST, "/api/clients/submissions/staff")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN
+        );
+
+    // Only editor and admin users can OPTIONS to the staff submissions endpoint
+    authorize
+        .pathMatchers(HttpMethod.OPTIONS, "/api/clients/submissions/staff")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN
+        );
 
     // Only BCeIDBusiness and BCSC users can POST to the clients submissions endpoint
     authorize

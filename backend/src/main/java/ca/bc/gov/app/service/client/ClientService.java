@@ -14,6 +14,7 @@ import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.DistrictDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
+import ca.bc.gov.app.dto.client.IdentificationTypeDto;
 import ca.bc.gov.app.dto.client.LegalTypeEnum;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
@@ -25,6 +26,7 @@ import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
 import ca.bc.gov.app.repository.client.DistrictCodeRepository;
+import ca.bc.gov.app.repository.client.IdentificationTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import ca.bc.gov.app.service.ches.ChesService;
@@ -57,6 +59,7 @@ public class ClientService {
   private final CountryCodeRepository countryCodeRepository;
   private final ProvinceCodeRepository provinceCodeRepository;
   private final ContactTypeCodeRepository contactTypeCodeRepository;
+  private final IdentificationTypeCodeRepository identificationTypeCodeRepository;
   private final BcRegistryService bcRegistryService;
   private final ChesService chesService;
   private final ClientLegacyService legacyService;
@@ -568,6 +571,36 @@ public class ClientService {
                 entity.getEmailAddress()
             )
         );
+  }
+
+  /**
+   * Retrieves all active identification types as of the specified target date.
+   *
+   * @param targetDate the date to check for active identification types.
+   * @return a Flux stream of IdentificationTypeDto containing the code, description, and country code of each active identification type.
+   */
+  public Flux<IdentificationTypeDto> getAllActiveIdentificationTypes(LocalDate targetDate) {
+    log.info("Loading active identification type codes by {}", targetDate);
+    return identificationTypeCodeRepository
+        .findActiveAt(targetDate)
+        .map(entity -> new IdentificationTypeDto(
+                             entity.getCode(), 
+                             entity.getDescription(),
+                             entity.getCountryCode()));
+  }
+
+  /**
+   * Retrieves an identification type by its code.
+   *
+   * @param idCode the code of the identification type to retrieve.
+   * @return a Mono containing a CodeNameDto with the code and description of the identification type, or an empty Mono if not found.
+   */
+  public Mono<CodeNameDto> getIdentificationTypeByCode(String idCode) {
+    log.info("Loading identification type by {}", idCode);
+    return identificationTypeCodeRepository
+        .findByCode(idCode)
+        .map(entity -> new CodeNameDto(entity.getCode(),
+                                       entity.getDescription()));
   }
 
 }

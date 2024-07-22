@@ -24,6 +24,7 @@ import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
 import ca.bc.gov.app.exception.RequestAlreadyProcessedException;
+import ca.bc.gov.app.exception.SubmissionNotCompletedException;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.predicates.QueryPredicates;
@@ -38,7 +39,9 @@ import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.service.ches.ChesService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
+import ca.bc.gov.app.util.RetryUtil;
 import io.micrometer.observation.annotation.Observed;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -50,11 +53,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -62,11 +65,12 @@ import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Observed
 public class ClientSubmissionService {
@@ -81,6 +85,34 @@ public class ClientSubmissionService {
   private final ChesService chesService;
   private final R2dbcEntityTemplate template;
   private final ForestClientConfiguration configuration;
+  private final WebClient processorApi;
+
+  public ClientSubmissionService(
+      SubmissionRepository submissionRepository,
+      SubmissionDetailRepository submissionDetailRepository,
+      SubmissionLocationRepository submissionLocationRepository,
+      SubmissionContactRepository submissionContactRepository,
+      SubmissionLocationContactRepository submissionLocationContactRepository,
+      SubmissionMatchDetailRepository submissionMatchDetailRepository,
+      DistrictCodeRepository districtCodeRepository,
+      ChesService chesService,
+      R2dbcEntityTemplate template,
+      ForestClientConfiguration configuration,
+      @Qualifier("processorApi") WebClient processorApi
+  ) {
+    this.submissionRepository = submissionRepository;
+    this.submissionDetailRepository = submissionDetailRepository;
+    this.submissionLocationRepository = submissionLocationRepository;
+    this.submissionContactRepository = submissionContactRepository;
+    this.submissionLocationContactRepository = submissionLocationContactRepository;
+    this.submissionMatchDetailRepository = submissionMatchDetailRepository;
+    this.districtCodeRepository = districtCodeRepository;
+    this.chesService = chesService;
+    this.template = template;
+    this.configuration = configuration;
+    this.processorApi = processorApi;
+  }
+
 
   public Flux<ClientListSubmissionDto> listSubmissions(
       int page,
@@ -140,22 +172,74 @@ public class ClientSubmissionService {
         );
   }
 
-  private Mono<String> getDistrictFullDescByCode(String districtCode) {
-    return Mono.justOrEmpty(districtCode)
-        .flatMap(districtCodeRepository::findByCode)
-        .map(districtCodeEntity -> districtCodeEntity.getCode() + " - "
-            + districtCodeEntity.getDescription())
-        .defaultIfEmpty("");
+  /**
+   * Processes a staff submission for a client.
+   * <p>
+   * This method handles the submission process for staff members. It follows a similar workflow as
+   * external submissions but uses a specific submission type. The process includes saving the
+   * submission, triggering an external processor, and implementing a retry mechanism to wait for
+   * the processor to complete its task. The retry logic checks for the presence of a client number
+   * in the submission details, which indicates that the processor has successfully created an entry
+   * in the forest_client table. If the client number is not present after the specified number of
+   * retries, a {@link SubmissionNotCompletedException} is thrown.
+   * </p>
+   *
+   * @param clientSubmissionDto The data transfer object containing the submission details.
+   * @param principal           The security principal representing the authenticated user making
+   *                            the submission.
+   * @return A {@link Mono} emitting the client number as a {@link String} once the submission is
+   * successfully processed. If the submission cannot be completed, it emits an error.
+   */
+  public Mono<String> staffSubmit(
+      ClientSubmissionDto clientSubmissionDto,
+      JwtAuthenticationToken principal
+  ) {
+    return
+        // Use the same workflow as the external to save the submission
+        saveSubmission(clientSubmissionDto, principal, SubmissionTypeCodeEnum.SSD)
+            .doOnNext(
+                submissionId -> log.info("Submission {} saved, triggering processor", submissionId)
+            )
+            // Trigger the processor to start processing the submission (fire and forget)
+            .doOnSuccess(submissionId -> triggerProcessor(submissionId).subscribe())
+            .flatMap(submissionId ->
+                // Load the detail of the submission
+                submissionDetailRepository
+                    .findBySubmissionId(submissionId)
+                    .doOnNext(submissionDetail ->
+                        log.info(
+                            "Checking submission {} for completion in oracle [{}]",
+                            submissionId,
+                            submissionDetail.getClientNumber()
+                        )
+                    )
+                    // This is where the retry logic is implemented, we check for the client number
+                    // It will be populated once the processor creates the forest_client entry
+                    .handle(RetryUtil.handleRetry(submissionId))
+                    // This configures the retry conditions and configuration
+                    // We use a backoff strategy with a jitter of 12% and a max of 5 retries
+                    // It should take around 30~40 seconds to give up and return an error
+                    .retryWhen(
+                        Retry
+                            .backoff(5, Duration.ofSeconds(1))
+                            .jitter(0.12)
+                            .doBeforeRetry(retrySignal -> log.warn(
+                                    "[Check #{}] Checking submission {} completion in oracle",
+                                    retrySignal.totalRetries() + 2,
+                                    //We add 2 because the first one happens before the retry and starts on 0
+                                    submissionId
+                                )
+                            )
+                            .filter(SubmissionNotCompletedException.class::isInstance)
+                    )
+            )
+            .doOnNext(
+                clientNumber -> log.info("Oracle client created with number {}.", clientNumber)
+            )
+            .map(String::valueOf);
   }
-  
-  private Mono<DistrictDto> getDistrictByCode(String districtCode) {
-    return Mono.justOrEmpty(districtCode).flatMap(districtCodeRepository::findByCode)
-        .map(districtCodeEntity -> new DistrictDto(
-            districtCodeEntity.getCode(),
-            districtCodeEntity.getDescription(),
-            districtCodeEntity.getEmailAddress()));
-  }
-  
+
+
   /**
    * Submits a new client submission and returns a Mono of the submission ID.
    *
@@ -166,92 +250,7 @@ public class ClientSubmissionService {
       ClientSubmissionDto clientSubmissionDto,
       JwtAuthenticationToken principal
   ) {
-
-    log.info("Submitting client submission for user {} with email {} and name {}",
-        JwtPrincipalUtil.getUserId(principal),
-        JwtPrincipalUtil.getEmail(principal),
-        JwtPrincipalUtil.getName(principal)
-    );
-
-    return
-        Mono
-            .just(
-                SubmissionEntity
-                    .builder()
-                    .submissionStatus(SubmissionStatusEnum.N)
-                    .submissionType(SubmissionTypeCodeEnum.SPP)
-                    .submissionDate(LocalDateTime.now())
-                    .createdBy(JwtPrincipalUtil.getUserId(principal))
-                    .updatedBy(JwtPrincipalUtil.getUserId(principal))
-                    .build()
-            )
-            //Save submission to begin with
-            .flatMap(submissionRepository::save)
-            //Save the submission detail
-            .map(submission -> mapToSubmissionDetailEntity(submission.getSubmissionId(),
-                clientSubmissionDto.businessInformation())
-            )
-            .flatMap(submissionDetailRepository::save)
-            //Save the locationNames and contacts and do the association
-            .flatMap(submission ->
-                //Save all locationNames
-                saveAddresses(clientSubmissionDto, submission)
-                    //For each contact, save it,
-                    // then find the associated location and save the association
-                    .flatMapMany(locations ->
-                        //Best way to handle lists reactively is by using Flux
-                        //Convert the list into a flux and process each entry individually
-                        Flux.fromIterable(
-                                clientSubmissionDto
-                                    .location()
-                                    .contacts()
-                            )
-                            .flatMap(contact ->
-                                saveAndAssociateContact(
-                                    locations,
-                                    contact,
-                                    submission.getSubmissionId(),
-                                    JwtPrincipalUtil.getUserId(principal)
-                                )
-                            )
-                    )
-                    //Then grab all back as a list, to make all reactive flows complete
-                    .collectList()
-                    //Return what we need only
-                    .thenReturn(submission.getSubmissionId())
-            )
-            .flatMap(submission ->
-                Mono
-                    .just(SubmissionMatchDetailEntity
-                        .builder()
-                        .submissionId(submission)
-                        .updatedAt(LocalDateTime.now())
-                        .createdBy(JwtPrincipalUtil.getUserId(principal))
-                        .matchers(
-                            Map.of(
-                                "info",
-                                Map.of(
-                                    "businessId", JwtPrincipalUtil.getBusinessId(principal),
-                                    "businessName", JwtPrincipalUtil.getBusinessName(principal),
-                                    "userId", JwtPrincipalUtil.getUserId(principal),
-                                    "email", JwtPrincipalUtil.getEmail(principal),
-                                    "name", JwtPrincipalUtil.getName(principal)
-                                )
-                            )
-                        )
-                        .build()
-                    )
-                    .flatMap(submissionMatchDetailRepository::save)
-                    .map(SubmissionMatchDetailEntity::getSubmissionId)
-            )
-
-            .flatMap(submissionId -> sendEmail(
-                    submissionId,
-                    clientSubmissionDto,
-                    JwtPrincipalUtil.getEmail(principal),
-                    JwtPrincipalUtil.getName(principal)
-                )
-            );
+    return saveSubmission(clientSubmissionDto, principal, SubmissionTypeCodeEnum.SPP);
   }
 
   public Mono<SubmissionDetailsDto> getSubmissionDetail(Long id) {
@@ -407,6 +406,128 @@ public class ClientSubmissionService {
             .then();
   }
 
+  private Mono<Void> triggerProcessor(Integer submissionId) {
+    return
+        processorApi
+            .get()
+            .uri("/api/processor/{id}", submissionId)
+            .exchangeToMono(response -> response.bodyToMono(Void.class));
+  }
+
+  private Mono<Integer> saveSubmission(
+      ClientSubmissionDto clientSubmissionDto,
+      JwtAuthenticationToken principal,
+      SubmissionTypeCodeEnum submissionType
+  ) {
+
+    log.info("Saving submission from user {} with email {} and name {} with type {}",
+        JwtPrincipalUtil.getUserId(principal),
+        JwtPrincipalUtil.getEmail(principal),
+        JwtPrincipalUtil.getName(principal),
+        submissionType
+    );
+
+    return
+        Mono
+            .just(
+                SubmissionEntity
+                    .builder()
+                    //If the submission type is SPP, then the status is New, otherwise it is Approved
+                    .submissionStatus(
+                        SubmissionTypeCodeEnum.SPP.equals(submissionType)
+                            ? SubmissionStatusEnum.N
+                            : SubmissionStatusEnum.A
+                    )
+                    .submissionType(submissionType)
+                    .submissionDate(LocalDateTime.now())
+                    .createdBy(JwtPrincipalUtil.getUserId(principal))
+                    .updatedBy(JwtPrincipalUtil.getUserId(principal))
+                    .build()
+            )
+            //Save submission to begin with
+            .flatMap(submissionRepository::save)
+            //Save the submission detail
+            .map(submission -> mapToSubmissionDetailEntity(submission.getSubmissionId(),
+                clientSubmissionDto.businessInformation())
+            )
+            .flatMap(submissionDetailRepository::save)
+            //Save the locationNames and contacts and do the association
+            .flatMap(submission ->
+                //Save all locationNames
+                saveAddresses(clientSubmissionDto, submission)
+                    //For each contact, save it,
+                    // then find the associated location and save the association
+                    .flatMapMany(locations ->
+                        //Best way to handle lists reactively is by using Flux
+                        //Convert the list into a flux and process each entry individually
+                        Flux.fromIterable(
+                                clientSubmissionDto
+                                    .location()
+                                    .contacts()
+                            )
+                            .flatMap(contact ->
+                                saveAndAssociateContact(
+                                    locations,
+                                    contact,
+                                    submission.getSubmissionId(),
+                                    JwtPrincipalUtil.getUserId(principal)
+                                )
+                            )
+                    )
+                    //Then grab all back as a list, to make all reactive flows complete
+                    .collectList()
+                    //Return what we need only
+                    .thenReturn(submission.getSubmissionId())
+            )
+            .flatMap(submission ->
+                Mono
+                    .just(SubmissionMatchDetailEntity
+                        .builder()
+                        .submissionId(submission)
+                        .updatedAt(LocalDateTime.now())
+                        .createdBy(JwtPrincipalUtil.getUserId(principal))
+                        .matchers(
+                            Map.of(
+                                "info",
+                                Map.of(
+                                    "businessId", JwtPrincipalUtil.getBusinessId(principal),
+                                    "businessName", JwtPrincipalUtil.getBusinessName(principal),
+                                    "userId", JwtPrincipalUtil.getUserId(principal),
+                                    "email", JwtPrincipalUtil.getEmail(principal),
+                                    "name", JwtPrincipalUtil.getName(principal)
+                                )
+                            )
+                        )
+                        .build()
+                    )
+                    .flatMap(submissionMatchDetailRepository::save)
+                    .map(SubmissionMatchDetailEntity::getSubmissionId)
+            )
+            .flatMap(submissionId -> sendEmail(
+                    submissionId,
+                    clientSubmissionDto,
+                    JwtPrincipalUtil.getEmail(principal),
+                    JwtPrincipalUtil.getName(principal)
+                )
+            );
+  }
+
+  private Mono<String> getDistrictFullDescByCode(String districtCode) {
+    return Mono.justOrEmpty(districtCode)
+        .flatMap(districtCodeRepository::findByCode)
+        .map(districtCodeEntity -> districtCodeEntity.getCode() + " - "
+            + districtCodeEntity.getDescription())
+        .defaultIfEmpty("");
+  }
+
+  private Mono<DistrictDto> getDistrictByCode(String districtCode) {
+    return Mono.justOrEmpty(districtCode).flatMap(districtCodeRepository::findByCode)
+        .map(districtCodeEntity -> new DistrictDto(
+            districtCodeEntity.getCode(),
+            districtCodeEntity.getDescription(),
+            districtCodeEntity.getEmailAddress()));
+  }
+
   private void cleanMatchers(SubmissionMatchDetailEntity entity) {
     entity.getMatchers().entrySet().forEach(entry -> {
       if (entry.getValue() instanceof String value) {
@@ -458,30 +579,34 @@ public class ClientSubmissionService {
       String email,
       String userName
   ) {
-      return getDistrictByCode(clientSubmissionDto.businessInformation().district())
-          .flatMap(district -> {
-              Map<String, Object> params = registrationParameters(
-                  clientSubmissionDto.description(userName), 
-                  district.description(), 
-                  district.emails()
-              );
-              return chesService.sendEmail(
-                      "registration",
-                      email,
-                      "Client number application received",
-                      params,
-                      null)
-                  .thenReturn(submissionId);
-          });
+    return
+        getDistrictByCode(clientSubmissionDto.businessInformation().district())
+            .map(district -> registrationParameters(
+                    clientSubmissionDto.description(userName),
+                    district.description(),
+                    district.emails()
+                )
+            )
+            .defaultIfEmpty(
+                registrationParameters(clientSubmissionDto.description(userName), "", "")
+            )
+            .flatMap(params ->
+                chesService.sendEmail(
+                        "registration",
+                        email,
+                        "Client number application received",
+                        params,
+                        null)
+                    .thenReturn(submissionId)
+            );
   }
-  
+
   private Map<String, Object> registrationParameters(
       Map<String, Object> clientSubmission,
       String districtName,
       String districtEmail
   ) {
-    Map<String, Object> descMap = new HashMap<>();
-    descMap.putAll(clientSubmission);
+    Map<String, Object> descMap = new HashMap<>(clientSubmission);
     descMap.put("districtName", StringUtils.defaultString(districtName));
     descMap.put("districtEmail", StringUtils.defaultString(districtEmail));
     return descMap;

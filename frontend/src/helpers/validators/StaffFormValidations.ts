@@ -17,6 +17,7 @@ import {
   isPhoneNumber,
   optional,
   isAsciiLineBreak,
+  isNotEmptyArray,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -46,6 +47,10 @@ const isExactSizMsg = (fieldName: string, size: number) => {
 };
 
 // Step 1: Business Information
+fieldValidations["businessInformation.clientType"] = [
+  isNotEmpty("You must select a client type."),
+];
+
 fieldValidations["businessInformation.birthdate"] = [
   isDateInThePast("Date of birth must be in the past"),
   isMinimumYearsAgo(19, "The applicant must be at least 19 years old to apply"),
@@ -53,7 +58,9 @@ fieldValidations["businessInformation.birthdate"] = [
 
 // use the same validations as firstName in contacts
 fieldValidations["businessInformation.firstName"] = [
-  ...fieldValidations["location.contacts.*.firstName"],
+  isMinSize("Please enter the first name")(1),
+  isMaxSizeMsg("first name", 30),
+  hasOnlyNamingCharacters("first name"),
 ];
 
 fieldValidations["businessInformation.middleName"] = [
@@ -63,7 +70,9 @@ fieldValidations["businessInformation.middleName"] = [
 
 // use the same validations as lastName in contacts
 fieldValidations["businessInformation.lastName"] = [
-  ...fieldValidations["location.contacts.*.lastName"],
+  isMinSize("Please enter the last name")(1),
+  isMaxSizeMsg("last name", 30),
+  hasOnlyNamingCharacters("last name"),
 ];
 
 // For the input field.
@@ -216,6 +225,44 @@ fieldValidations["location.addresses.*.notes"] = [
 ];
 
 // Step 3: Contacts
+fieldValidations["location.contacts.*.locationNames.text"] = [
+  isNotEmptyArray("You must select at least one location"),
+];
+fieldValidations["location.contacts.*.contactType.text"] = [
+  isNotEmpty("You must select a contact type."),
+];
+
+fieldValidations["location.contacts.*.firstName"] = [
+  isMinSize("Please enter the first name")(1),
+  isMaxSizeMsg("first name", 30),
+  hasOnlyNamingCharacters("first name"),
+];
+
+fieldValidations["location.contacts.*.lastName"] = [
+  isMinSize("Please enter the last name")(1),
+  isMaxSizeMsg("last name", 30),
+  hasOnlyNamingCharacters("last name"),
+];
+
+fieldValidations["location.contacts.*.emailAddress"] = [
+  optional(isEmail("Please provide a valid email address")),
+  optional(isMinSize("Please provide a valid email address")(6)),
+  isMaxSizeMsg("email address", 100),
+];
+
+fieldValidations["location.contacts.*.phoneNumber"] = [...phoneValidations];
+
+fieldValidations["location.contacts.*.secondaryPhoneNumber"] = [...phoneValidations];
+
+fieldValidations["location.contacts.*.faxNumber"] = [...phoneValidations];
+
+// Step 4: Review
+fieldValidations["businessInformation.notes"] = [
+  isMaxSizeMsg("notes", 4000),
+  isAsciiLineBreak("notes"),
+];
+
+// General information
 
 export const addValidation = (key: string, validation: (value: string) => string): void => {
   if (!fieldValidations[key]) fieldValidations[key] = [];
@@ -226,7 +273,7 @@ const defaultGetValidations = getValidations;
 
 export const validate = (
   ...args: Parameters<typeof globalValidate>
-): ReturnType<typeof globalValidate> => {
+): ReturnType<typeof globalValidate> => {  
   const getValidations = args[3] || defaultGetValidations;
   args[3] = getValidations;
   return globalValidate.apply(this, args);
