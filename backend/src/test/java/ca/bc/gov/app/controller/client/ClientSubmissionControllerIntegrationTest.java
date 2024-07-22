@@ -20,23 +20,29 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.ValidationError;
+import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.submissions.SubmissionApproveRejectDto;
 import ca.bc.gov.app.entity.client.SubmissionContactEntity;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
+import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
+import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -56,6 +62,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.BodyContentSpec;
+import org.springframework.test.web.reactive.server.WebTestClient.ListBodySpec;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -70,6 +77,9 @@ class ClientSubmissionControllerIntegrationTest
   protected WebTestClient client;
   @Autowired
   private SubmissionContactRepository contactRepository;
+  @Autowired
+  private SubmissionDetailRepository detailRepository;
+  private final AtomicLong submissionId = new AtomicLong(0L);
 
   @RegisterExtension
   static WireMockExtension bcRegistryStub = WireMockExtension
@@ -180,59 +190,19 @@ class ClientSubmissionControllerIntegrationTest
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .post()
         .uri("/api/clients/submissions")
         .body(Mono.just(REGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
-        .expectHeader().location("/api/clients/submissions/1")
-        .expectHeader().valueEquals("x-sub-id", "1")
+        .expectHeader().exists("Location")
+        .expectHeader().exists("x-sub-id")
         .expectBody().isEmpty();
-  }
-
-  @Test
-  @DisplayName("Submit Unregistered Business client data")
-  @Order(4)
-  void shouldSubmitUnregisteredBusinessData() {
-    client
-        .mutateWith(csrf())
-        .mutateWith(
-            mockJwt()
-                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
-        )
-        .post()
-        .uri("/api/clients/submissions")
-        .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
-        .exchange()
-        .expectStatus().isCreated()
-        .expectHeader().location("/api/clients/submissions/2")
-        .expectHeader().valueEquals("x-sub-id", "2")
-        .expectBody().isEmpty();
-  }
-
-  @DisplayName("Fail Validation")
-  @ParameterizedTest
-  @CsvFileSource(resources = "/failValidationTest.csv", numLinesToSkip = 1)
-  @Order(3)
-  void shouldFailValidationSubmit(
-      @AggregateWith(ClientSubmissionAggregator.class) ClientSubmissionDto clientSubmissionDto) {
-    client
-        .mutateWith(csrf())
-        .mutateWith(
-            mockJwt()
-                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
-        )
-        .post()
-        .uri("/api/clients/submissions")
-        .body(Mono.just(clientSubmissionDto), ClientSubmissionDto.class)
-        .exchange()
-        .expectStatus().isBadRequest()
-        .expectHeader().valueEquals("Reason", "Validation failed");
   }
 
   @ParameterizedTest
@@ -258,14 +228,16 @@ class ClientSubmissionControllerIntegrationTest
             .apply(uriBuilder.path("/api/clients/submissions"))
             .build(Map.of());
 
-    BodyContentSpec expectedBody =
+    ListBodySpec<ClientListSubmissionDto> expectedBody =
         client
             .mutateWith(csrf())
             .mutateWith(mockUser().roles(ApplicationConstant.ROLE_EDITOR))
             .mutateWith(
                 mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
-                    .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_EDITOR))
+                    .jwt(
+                        jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                    .authorities(
+                        new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
             )
             .get()
             .uri(uri)
@@ -274,31 +246,85 @@ class ClientSubmissionControllerIntegrationTest
             .header(ApplicationConstant.USERNAME_HEADER, "Jhon Doe")
             .exchange()
             .expectStatus().isOk()
-            .expectBody()
-            .consumeWith(System.out::println);
+            .expectBodyList(ClientListSubmissionDto.class);
 
     if (!found) {
-      expectedBody.json(TestConstants.SUBMISSION_LIST_CONTENT_EMPTY);
+      expectedBody.isEqualTo(List.of());
     } else {
       expectedBody
-          .jsonPath("$.[0]").isNotEmpty();
+          .value(clientListSubmissionDtos -> AssertionsForInterfaceTypes.assertThat(
+              clientListSubmissionDtos).isNotEmpty())
+          .consumeWith(content ->
+              content
+                  .getResponseBody()
+                  .stream()
+                  .filter(listEntry -> listEntry.name().equalsIgnoreCase("Goldfinger"))
+                  .map(ClientListSubmissionDto::id)
+                  .findFirst()
+                  .ifPresent(submissionId::set)
+          );
     }
+  }
+
+  @DisplayName("Fail Validation")
+  @ParameterizedTest
+  @CsvFileSource(resources = "/failValidationTest.csv", numLinesToSkip = 1)
+  @Order(3)
+  void shouldFailValidationSubmit(
+      @AggregateWith(ClientSubmissionAggregator.class) ClientSubmissionDto clientSubmissionDto) {
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+        )
+        .post()
+        .uri("/api/clients/submissions")
+        .body(Mono.just(clientSubmissionDto), ClientSubmissionDto.class)
+        .exchange()
+        .expectStatus().isBadRequest()
+        .expectHeader().valueEquals("Reason", "Validation failed");
+  }
+
+  @Test
+  @DisplayName("Submit Unregistered Business client data")
+  @Order(4)
+  void shouldSubmitUnregisteredBusinessData() {
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+        )
+        .post()
+        .uri("/api/clients/submissions")
+        .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_DTO), ClientSubmissionDto.class)
+        .exchange()
+        .expectStatus().isCreated()
+        .expectHeader().exists("Location")
+        .expectHeader().exists("x-sub-id")
+        .expectBody().isEmpty();
   }
 
   @Test
   @DisplayName("Submission Details")
   @Order(5)
   void shouldGetSubmissionDetails() {
-
     client
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_EDITOR))
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
         )
         .get()
-        .uri("/api/clients/submissions/1")
+        .uri("/api/clients/submissions/{id}", submissionId.get())
         .exchange()
         .expectStatus().isOk()
         .expectBody()
@@ -316,11 +342,11 @@ class ClientSubmissionControllerIntegrationTest
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_EDITOR))
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
         )
         .post()
-        .uri("/api/clients/submissions/1")
+        .uri("/api/clients/submissions/{id}", submissionId.get())
         .body(Mono.just(new SubmissionApproveRejectDto(true, List.of(), null)),
             SubmissionApproveRejectDto.class)
         .exchange()
@@ -337,8 +363,10 @@ class ClientSubmissionControllerIntegrationTest
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .post()
         .uri("/api/clients/submissions")
@@ -359,41 +387,55 @@ class ClientSubmissionControllerIntegrationTest
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .post()
         .uri("/api/clients/submissions")
         .body(Mono.just(UNREGISTERED_BUSINESS_SUBMISSION_MULTI_DTO), ClientSubmissionDto.class)
         .exchange()
         .expectStatus().isCreated()
-        .expectHeader().location("/api/clients/submissions/3")
-        .expectHeader().valueEquals("x-sub-id", "3")
+        .expectHeader().exists("Location")
+        .expectHeader().exists("x-sub-id")
         .expectBody().isEmpty();
 
+    detailRepository
+        .findAll()
+            .filter(detail -> detail.getOrganizationName().equalsIgnoreCase("James Baxter"))
+        .doOnNext(detail -> submissionId.set(detail.getSubmissionId()))
+        .last()
+        .as(StepVerifier::create)
+            .assertNext(detail ->
+                assertThat(detail)
+                    .hasFieldOrPropertyWithValue("submissionId", (int)submissionId.get())
+                    .hasFieldOrPropertyWithValue("organizationName", "James Baxter")
+            )
+                .verifyComplete();
 
     contactRepository
         .findAll()
-        .filter(contact -> contact.getSubmissionId().intValue() == 3)
         .sort(Comparator.comparing(SubmissionContactEntity::getContactTypeCode))
+        .filter(contact -> contact.getSubmissionId().longValue() == submissionId.get())
         .as(StepVerifier::create)
         .assertNext(contact ->
             assertThat(contact)
                 .hasFieldOrPropertyWithValue("firstName", "James")
                 .hasFieldOrPropertyWithValue("lastName", "Baxter")
                 .hasFieldOrPropertyWithValue("emailAddress", "jbaxter@007.com")
-                .hasFieldOrPropertyWithValue("businessPhoneNumber","9826543210")
+                .hasFieldOrPropertyWithValue("businessPhoneNumber", "9826543210")
                 .hasFieldOrPropertyWithValue("userId", null)
-                .hasFieldOrPropertyWithValue("contactTypeCode","BL")
+                .hasFieldOrPropertyWithValue("contactTypeCode", "BL")
         )
         .assertNext(contact ->
             assertThat(contact)
                 .hasFieldOrPropertyWithValue("firstName", "James")
                 .hasFieldOrPropertyWithValue("lastName", "Bond")
                 .hasFieldOrPropertyWithValue("emailAddress", "bond_james_bond@007.com")
-                .hasFieldOrPropertyWithValue("businessPhoneNumber","9876543210")
+                .hasFieldOrPropertyWithValue("businessPhoneNumber", "9876543210")
                 .hasFieldOrPropertyWithValue("userId", "BCEIDBUSINESS\\jdoe")
-                .hasFieldOrPropertyWithValue("contactTypeCode","LP")
+                .hasFieldOrPropertyWithValue("contactTypeCode", "LP")
         )
         .verifyComplete();
   }
@@ -406,8 +448,8 @@ class ClientSubmissionControllerIntegrationTest
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.ROLE_EDITOR))
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
         )
         .post()
         .uri("/api/clients/submissions/1")
