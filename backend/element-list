@@ -28,4 +28,8 @@ ca.bc.gov.app.service.client
 ca.bc.gov.app.service.client.matches
 ca.bc.gov.app.service.opendata
 ca.bc.gov.app.util
-ca.bc.gov.app.validator.client
+ca.bc.gov.app.validator
+ca.bc.gov.app.validator.address
+ca.bc.gov.app.validator.business
+ca.bc.gov.app.validator.contact
+ca.bc.gov.app.validator.location

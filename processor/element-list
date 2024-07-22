@@ -1,5 +1,6 @@
 ca.bc.gov.app
 ca.bc.gov.app.configuration
+ca.bc.gov.app.controller
 ca.bc.gov.app.converters
 ca.bc.gov.app.dto
 ca.bc.gov.app.dto.bcregistry
