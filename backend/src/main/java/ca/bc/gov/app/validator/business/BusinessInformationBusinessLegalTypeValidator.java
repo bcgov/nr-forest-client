@@ -63,7 +63,7 @@ public class BusinessInformationBusinessLegalTypeValidator implements
   ) {
 
     // The below validation is only applicable to Registered Business
-    if(!BusinessTypeEnum.R.equals(BusinessTypeEnum.fromValue(target.businessType()))){
+    if (!BusinessTypeEnum.R.equals(BusinessTypeEnum.fromValue(target.businessType()))) {
       return Mono.empty();
     }
 

@@ -55,7 +55,7 @@ public class ClientValidationUtils {
 
   public static Mono<ValidationError> validateNotes(String notes, String field) {
 
-    if(StringUtils.isEmpty(notes)){
+    if (StringUtils.isEmpty(notes)) {
       return Mono.empty();
     }
 

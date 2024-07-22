@@ -121,9 +121,9 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
           .body(BodyInserters.fromValue(matchException.getMatches()));
     }
 
-    if(exception instanceof IllegalStateException e){
+    if (exception instanceof IllegalStateException e) {
 
-      if(e.getCause() instanceof SubmissionNotCompletedException notCompletedException){
+      if (e.getCause() instanceof SubmissionNotCompletedException notCompletedException) {
         log.error("Submission is still ongoing: {}",notCompletedException.getReason());
         return ServerResponse.status(notCompletedException.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
