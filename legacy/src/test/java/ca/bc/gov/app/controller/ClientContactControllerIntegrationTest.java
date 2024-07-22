@@ -45,7 +45,7 @@ class ClientContactControllerIntegrationTest extends
                     "2502502550",
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
-                    "mail@mail.ca",
+                    "oknowwhat@mail.ca",
                     "Test",
                     "Test",
                     1L

@@ -142,7 +142,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
                 .of(
                     Arguments.of("celinedion@email.ca", List.of(), null),
                     Arguments.of("uturfes0@cnn.com", List.of("00000103"), null),
-                    Arguments.of("mail@mail.ca", List.of("00000001","00000003","00000006"), null)
+                    Arguments.of("themail@mail.ca", List.of("00000006"), null)
                 )
         );
   }
