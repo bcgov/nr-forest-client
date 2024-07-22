@@ -328,7 +328,7 @@ class ClientSubmissionControllerIntegrationTest
         .exchange()
         .expectStatus().isOk()
         .expectBody()
-        .jsonPath("$.submissionId").isEqualTo(1)
+        .jsonPath("$.submissionId").isEqualTo(submissionId.get())
         .jsonPath("$.updateUser").isEqualTo("jdoe")
         .jsonPath("$.submissionType").isEqualTo("Submission pending processing");
   }
