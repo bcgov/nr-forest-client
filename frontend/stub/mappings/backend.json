@@ -639,6 +639,78 @@
           "response-template"
         ]
       }
+    },
+
+    {
+      "name": "Submission Error for Staff - Individual",
+      "request": {
+        "url": "/api/clients/submissions/staff",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "contains": "I"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.identificationType.value",
+              "contains": "PASS"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 400,
+        "bodyFileName": "response-submission-fault-pass.json",
+        "fixedDelayMilliseconds": 750
+      }
+    },
+    {
+      "name": "Submission Success for Staff - Individual",
+      "request": {
+        "url": "/api/clients/submissions/staff",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "contains": "I"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Location": "/api/clients/details/00123456",
+          "x-client-id": "00123456"
+        },
+        "fixedDelayMilliseconds": 750
+      }
+    },
+    {
+      "name": "Submission Still Processing for Staff - Individual",
+      "request": {
+        "url": "/api/clients/submissions/staff",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "contains": "I"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 408,
+        "body":"Submission 4444 is still being processed",
+        "fixedDelayMilliseconds": 750
+      }
     }
+    
+
   ]
 }
