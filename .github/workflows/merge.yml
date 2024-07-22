@@ -157,6 +157,20 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
 
+      - name: Deploy Processor
+        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        with:
+          file: processor/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          verification_path: health
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/processor:${{ env.ZONE }}
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+
       - name: Deploy Backend ConfigMap
         uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
@@ -228,20 +242,6 @@ jobs:
             -p COGNITO_ENVIRONMENT=TEST
             -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
             -p FRONTEND_URL=${{ env.URL }}
-
-      - name: Deploy Processor
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
-        with:
-          file: processor/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          verification_path: health
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/processor:${{ env.ZONE }}
-            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
   documentation:
     name: Generating Documentation
@@ -356,7 +356,21 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}            
+            -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}    
+            
+      - name: Deploy Processor
+        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        with:
+          file: processor/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          verification_path: health
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/processor:${{ env.PREV }}
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
       - name: Deploy Backend ConfigMap
         uses: bcgov-nr/action-deployer-openshift@v2.3.0
@@ -419,17 +433,3 @@ jobs:
             -p COGNITO_ENVIRONMENT=PROD
             -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
             -p FRONTEND_URL=${{ env.URL }}
-
-      - name: Deploy Processor
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
-        with:
-          file: processor/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          verification_path: health
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/processor:${{ env.PREV }}
-            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'

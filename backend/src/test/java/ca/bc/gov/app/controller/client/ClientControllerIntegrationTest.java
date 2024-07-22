@@ -11,7 +11,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
-import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
@@ -94,6 +93,15 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     chesStub
         .stubFor(
+            post("/chess/uri/email")
+                .willReturn(
+                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
+
+    chesStub
+        .stubFor(
             post("/token/uri")
                 .willReturn(
                     ok(TestConstants.CHES_TOKEN_MESSAGE)
@@ -164,8 +172,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             .mutateWith(csrf())
             .mutateWith(
                 mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                    .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                    .jwt(jwt -> jwt.claims(
+                        claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                    .authorities(new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
             )
             .get()
             .uri("/api/clients/{clientNumber}", Map.of("clientNumber", clientNumber))
@@ -200,8 +210,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
         .uri("/api/clients/incorporation/BC0772006")
@@ -230,8 +242,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
         .uri("/api/clients/incorporation/BC0000000")
@@ -260,8 +274,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
         .uri("/api/clients/name/Power")
@@ -289,8 +305,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
         .uri("/api/clients/name/Jhon")
@@ -316,8 +334,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
         .uri("/api/clients/individual/{userId}?lastName=Doe", Map.of("userId", "123456"))
@@ -343,8 +363,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
         .uri("/api/clients/individual/{userId}?lastName=Doe", Map.of("userId", "123456"))

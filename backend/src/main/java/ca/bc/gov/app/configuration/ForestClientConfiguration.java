@@ -29,6 +29,8 @@ public class ForestClientConfiguration {
   @NestedConfigurationProperty
   private LegacyConfiguration legacy;
   @NestedConfigurationProperty
+  private LegacyConfiguration processor;
+  @NestedConfigurationProperty
   private BcRegistryConfiguration bcregistry;
   @NestedConfigurationProperty
   private AddressCompleteConfiguration addressComplete;

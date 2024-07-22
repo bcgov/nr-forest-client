@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import java.time.LocalDateTime;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -23,6 +24,8 @@ class ForestClientContactMapperTest {
       "BL",
       "James Baxter",
       "2502502550",
+      "2504405544",
+      "2362362663",
       "mail@mail.ca",
       "Test",
       "Test",
@@ -37,6 +40,8 @@ class ForestClientContactMapperTest {
           .contactCode("BL")
           .contactName("James Baxter")
           .businessPhone("2502502550")
+          .cellPhone("2504405544")
+          .faxNumber("2362362663")
           .emailAddress("mail@mail.ca")
           .createdAt(LocalDateTime.now())
           .updatedAt(LocalDateTime.now())
@@ -62,7 +67,7 @@ class ForestClientContactMapperTest {
   @Test
   @DisplayName("Should convert to dto")
   void shouldConvertToDto() {
-    assertEquals(dto, mapper.toDto(entity));
+    assertEquals(dto,mapper.toDto(entity));
   }
 
 }

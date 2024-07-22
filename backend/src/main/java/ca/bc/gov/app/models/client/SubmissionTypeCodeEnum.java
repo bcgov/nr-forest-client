@@ -13,6 +13,7 @@ public enum SubmissionTypeCodeEnum {
   SPP("Submission pending processing"),
   RNC("Review new client"),
   AAC("Auto approved client"),
+  RAC("Review approved client"),
   SSD("Staff submitted data");
 
   private final String description;

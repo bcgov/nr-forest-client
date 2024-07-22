@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -111,14 +112,18 @@ public class ClientSubmissionLoadingService {
   }
 
   private Mono<Pair<String, String>> getDistrictEmailsAndDescription(String districtCode) {
-    return forestClientApi
-        .get()
-        .uri("/districts/{districtCode}", districtCode)
-        .exchangeToMono(clientResponse -> clientResponse.bodyToMono(DistrictDto.class))
-        .doOnNext(district -> log.info("Loaded district details {} {}",
-            district.code(),
-            district.description()))
-        .map(district -> Pair.of(district.emails(), district.description()));
+    return
+        StringUtils.isBlank(districtCode) ?
+            Mono.just(Pair.of(StringUtils.EMPTY, StringUtils.EMPTY))
+            :
+                forestClientApi
+                    .get()
+                    .uri("/districts/{districtCode}", districtCode)
+                    .exchangeToMono(clientResponse -> clientResponse.bodyToMono(DistrictDto.class))
+                    .doOnNext(district -> log.info("Loaded district details {} {}",
+                        district.code(),
+                        district.description()))
+                    .map(district -> Pair.of(district.emails(), district.description()));
   }
 
   private String getTemplate(MessagingWrapper<Integer> message) {
@@ -154,7 +159,7 @@ public class ClientSubmissionLoadingService {
     };
 
     return emails
-        .filter(Objects::nonNull)
+        .filter(StringUtils::isNotBlank)
         .collect(Collectors.joining(","));
   }
 

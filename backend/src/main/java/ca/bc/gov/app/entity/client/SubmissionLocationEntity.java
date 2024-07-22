@@ -57,5 +57,34 @@ public class SubmissionLocationEntity {
   @NotNull
   @Size(min = 2, max = 40)
   private String name;
+
+  @Column("business_phone_number")
+  @NotNull
+  @Size(min = 5, max = 14)
+  private String businessPhoneNumber;
+
+  @Column("secondary_phone_number")
+  @Size(max = 14)
+  private String secondaryPhoneNumber;
+
+  @Column("fax_number")
+  @Size(max = 14)
+  private String faxNumber;
+
+  @Column("email_address")
+  @Size(min = 5, max = 100)
+  private String emailAddress;
+
+  @Column("notes")
+  @Size(max = 4000)
+  private String notes;
+
+  @Column("complementary_address_1")
+  @Size(max = 40)
+  private String complementaryAddress1;
+
+  @Column("complementary_address_2")
+  @Size(max = 40)
+  private String complementaryAddress2;
   
 }

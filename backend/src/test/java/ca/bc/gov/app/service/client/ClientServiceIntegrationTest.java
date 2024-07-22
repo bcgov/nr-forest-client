@@ -30,13 +30,13 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
   @Autowired
   private ClientService service;
-  
+
   @Mock
   private CountryCodeRepository countryCodeRepository;
-  
+
   @Mock
   private DistrictCodeRepository districtCodeRepository;
-  
+
   @Mock
   private ClientTypeCodeRepository clientTypeCodeRepository;
 
@@ -50,20 +50,21 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         .expectNextCount(13)
         .verifyComplete();
   }
-  
+
   @Test
   @DisplayName("Return district by code")
   void testGetDistrictByCode() {
 
-    DistrictCodeEntity districtCodeEntity = 
+    DistrictCodeEntity districtCodeEntity =
         new DistrictCodeEntity("DMH", "100 Mile House Natural Resource District");
-    
+
     DistrictDto expectedDto =
-        new DistrictDto("DMH", "100 Mile House Natural Resource District","FLNR.100MileHouseDistrict@gov.bc.ca");
+        new DistrictDto("DMH", "100 Mile House Natural Resource District",
+            "mail@mail.ca");
 
     when(districtCodeRepository
-          .findByCode("DMH"))
-          .thenReturn(Mono.just(districtCodeEntity));
+        .findByCode("DMH"))
+        .thenReturn(Mono.just(districtCodeEntity));
 
     service
         .getDistrictByCode("DMH")
@@ -71,11 +72,12 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         .expectNext(expectedDto)
         .verifyComplete();
   }
-  
+
   @Test
   void testGetCountryByCode() {
 
-    CountryCodeEntity countryCodeEntity = new CountryCodeEntity("CA", "Canada");
+    CountryCodeEntity countryCodeEntity = CountryCodeEntity.builder().countryCode("CA")
+        .description("Canada").build();
     CodeNameDto expectedDto = new CodeNameDto("CA", "Canada");
 
     when(countryCodeRepository.findByCountryCode("CA")).thenReturn(Mono.just(countryCodeEntity));
@@ -86,7 +88,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         .expectNext(expectedDto)
         .verifyComplete();
   }
-  
+
   @Test
   void testGetClientTypeByCode() {
 
@@ -99,7 +101,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     service
         .getClientTypeByCode("RSP")
-            .as(StepVerifier::create)
+        .as(StepVerifier::create)
         .expectNext(expectedDto)
         .verifyComplete();
   }

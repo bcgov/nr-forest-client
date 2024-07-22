@@ -170,7 +170,7 @@ class ClientSearchControllerIntegrationTest extends
                 .of(
                     Arguments.of("celinedion@email.ca", StringUtils.EMPTY, null),
                     Arguments.of("uturfes0@cnn.com", "00000103", null),
-                    Arguments.of("mail@mail.ca", "00000001", null)
+                    Arguments.of("jbaxter@mail.ca", "00000002", null)
                 )
         );
   }

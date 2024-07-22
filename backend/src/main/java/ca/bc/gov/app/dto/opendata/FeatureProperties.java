@@ -38,11 +38,11 @@ public record FeatureProperties(
     @JsonProperty("SE_ANNO_CAD_DATA") Object seAnnoCadData // Keeping this as Object since it's null in the provided JSON
 ) {
 
-  public String getNationName(){
+  public String getNationName() {
     return StringUtils.defaultIfBlank(firstNationBCName(), bandName());
   }
 
-  public int getNationId(){
+  public int getNationId() {
     return IntStream
         .of(firstNationFederalId(), bandNumber())
         .filter(id -> id > 0)

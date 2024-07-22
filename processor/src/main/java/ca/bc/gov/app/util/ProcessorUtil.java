@@ -2,6 +2,8 @@ package ca.bc.gov.app.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +19,24 @@ public class ProcessorUtil {
   public static String extractNumbers(String input) {
     Pattern pattern = Pattern.compile("\\d+");
     return getStringFromPattern(input, pattern);
+  }
+
+  public static String[] splitName(
+      String firstName,
+      String middleName,
+      String lastName,
+      String companyName
+  ) {
+    if (StringUtils.isAllBlank(firstName, lastName)) {
+      return splitName(companyName);
+    }
+    return new String[]{
+        Stream
+            .of(middleName, lastName)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.joining(" ")),
+        firstName
+    };
   }
 
   public static String[] splitName(String input) {

@@ -243,6 +243,29 @@ public class GlobalServiceConfiguration {
     return webClientBuilder.baseUrl(configuration.getOpenData().getBcMapsUrl()).build();
   }
 
+  /**
+   * Configures and provides a {@link WebClient} instance for making HTTP requests to the Processor
+   * API. This method utilizes the {@link ForestClientConfiguration} to retrieve the Processor API's
+   * base URL and configures a {@link WebClient.Builder} with this URL. The configured
+   * {@link WebClient} is then built and returned. This WebClient can be used throughout the
+   * application to interact with the Processor API, facilitating operations such as sending
+   * requests and receiving responses.
+   *
+   * @param configuration    The {@link ForestClientConfiguration} containing the Processor API's
+   *                         configuration details.
+   * @param webClientBuilder A pre-configured {@link WebClient.Builder} for creating WebClient
+   *                         instances.
+   * @return A fully configured {@link WebClient} instance ready for interacting with the Processor
+   * API.
+   */
+  @Bean
+  public WebClient processorApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder.baseUrl(configuration.getProcessor().getUrl()).build();
+  }
+
   @Bean
   public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
     return builder.build();
