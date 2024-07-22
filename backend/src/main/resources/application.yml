@@ -118,6 +118,8 @@ ca:
           password: ${POSTGRESQL_PASSWORD:passwd}
         legacy:
           url: ${LEGACY_URL:http://127.0.0.1:9019}
+        processor:
+          url: ${PROCESSOR_URL:http://127.0.0.1:3100}
         addressComplete:
           url: ${ADDRESS_COMPLETE_URL:https://ws1.postescanada-canadapost.ca/addresscomplete/interactive}
           apiKey: ${ADDRESS_COMPLETE_KEY:apiKey}

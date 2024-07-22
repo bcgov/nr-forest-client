@@ -34,7 +34,7 @@ public class ClientMatchDataGenerator {
                     .withBusinessName(lastName)
                     .withFirstName(firstName)
                     .withBirthdate(birthdate)
-                    .withIdentificationType(idType)
+                    .withIdentificationType(new ClientValueTextDto(idType, idType))
                     .withIdentificationProvince(idProvince)
                     .withClientIdentification(idValue)
                     .withClientType("I")
@@ -146,7 +146,7 @@ public class ClientMatchDataGenerator {
             null,
             lastName,
             null,
-            idType,
+            new ClientValueTextDto(idType,idType),
             idValue,
             null,
             idProvince

@@ -18,6 +18,10 @@ public interface ForestClientContactMapper extends
       target = "orgUnit",
       qualifiedByName = "InitialRevisionQualifier"
   )
+  @Mapping(
+      source = "cellPhone",
+      target = "secondaryPhone"
+  )
   ForestClientContactDto toDto(ForestClientContactEntity entity);
 
   @Override
@@ -55,6 +59,10 @@ public interface ForestClientContactMapper extends
       source = "updatedBy",
       target = "updatedBy",
       qualifiedByName = "UserIdSizeQualifier"
+  )
+  @Mapping(
+      source = "secondaryPhone",
+      target = "cellPhone"
   )
   ForestClientContactEntity toEntity(ForestClientContactDto dto);
 }

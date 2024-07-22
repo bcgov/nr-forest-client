@@ -116,6 +116,8 @@ objects:
                   value: https://${FRONTEND_URL}
                 - name: LEGACY_URL
                   value: http://${NAME}-${ZONE}-legacy
+                - name: PROCESSOR_URL
+                  value: http://${NAME}-${ZONE}-processor
                 - name: SELF_URI
                   value: https://${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
                 - name: CHES_CLIENT_ID

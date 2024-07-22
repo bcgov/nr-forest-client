@@ -6,7 +6,6 @@ import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
-import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,22 +39,22 @@ public class LegacyService {
             clientNumber,
             String.format("%02d", index),
             detail.getName(),
-            detail.getStreetAddress().toUpperCase(),
-            StringUtils.EMPTY,
-            StringUtils.EMPTY,
+            detail.getAddressValue1(),
+            detail.getAddressValue2(),
+            detail.getAddressValue3(),
             detail.getCityName().toUpperCase(),
             detail.getProvinceCode().toUpperCase(),
             detail.getPostalCode(),
             detail.getCountryCode().toUpperCase(),
+            StringUtils.defaultString(detail.getBusinessPhoneNumber()),
             StringUtils.EMPTY,
-            StringUtils.EMPTY,
-            StringUtils.EMPTY,
-            StringUtils.EMPTY,
-            StringUtils.EMPTY,
+            StringUtils.defaultString(detail.getSecondaryPhoneNumber()),
+            StringUtils.defaultString(detail.getFaxNumber()),
+            StringUtils.defaultString(detail.getEmailAddress()),
             "N",
             null,
             "N",
-            StringUtils.EMPTY,
+            StringUtils.defaultString(detail.getNotes()),
             ApplicationConstant.PROCESSOR_USER_NAME,
             ApplicationConstant.PROCESSOR_USER_NAME,
             ApplicationConstant.ORG_UNIT,
@@ -136,10 +135,9 @@ public class LegacyService {
               if (response.statusCode().is2xxSuccessful()) {
                 return response.bodyToMono(String.class);
               } else {
-                return Mono.error(new RuntimeException("Failed to submit " + url));
+                return Mono.error(new RuntimeException("Failed to submit to " + url));
               }
-            })
-            .delayElement(Duration.ofSeconds(7));
+            });
   }
 
 }

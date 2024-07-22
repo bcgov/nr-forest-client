@@ -224,7 +224,7 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
         .exchange()
         .expectStatus().isOk()
         .expectBody(DistrictDto.class)
-        .isEqualTo(new DistrictDto("DMH", "100 Mile House Natural Resource District","FLNR.100MileHouseDistrict@gov.bc.ca"));
+        .isEqualTo(new DistrictDto("DMH", "100 Mile House Natural Resource District","mail@mail.ca"));
 
   }
   

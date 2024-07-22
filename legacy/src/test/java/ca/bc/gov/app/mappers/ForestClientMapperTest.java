@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import java.time.LocalDateTime;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -31,7 +32,8 @@ class ForestClientMapperTest {
       "Client is Corporation",
       "Test",
       "Test",
-      1L
+      1L,
+      StringUtils.EMPTY
   );
 
   ForestClientEntity entity =
@@ -52,6 +54,7 @@ class ForestClientMapperTest {
           .createdByUnit(1L)
           .updatedByUnit(1L)
           .revision(1L)
+          .clientAcronym(StringUtils.EMPTY)
           .build();
 
   @Test

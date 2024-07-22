@@ -140,7 +140,7 @@ public abstract class LegacyAbstractPersistenceService {
                     .doOnNext(submissionDetail ->
                         log.info(
                             "Updating submission detail for persistence on oracle {} {} {}",
-                            message.payload().clientNumber(),
+                            clientNumber,
                             submissionDetail.getOrganizationName(),
                             submissionDetail.getRegistrationNumber()
                         )
@@ -249,6 +249,16 @@ public abstract class LegacyAbstractPersistenceService {
                     submissionContact.getLastName()).toUpperCase(),
                 RegExUtils.replaceAll(submissionContact.getBusinessPhoneNumber(), "\\D",
                     StringUtils.EMPTY),
+                RegExUtils.replaceAll(
+                    StringUtils.defaultString(submissionContact.getSecondaryPhoneNumber()),
+                    "\\D",
+                    StringUtils.EMPTY
+                ),
+                RegExUtils.replaceAll(
+                    StringUtils.defaultString(submissionContact.getFaxNumber()),
+                    "\\D",
+                    StringUtils.EMPTY
+                ),
                 submissionContact.getEmailAddress(),
                 ApplicationConstant.PROCESSOR_USER_NAME,
                 ApplicationConstant.PROCESSOR_USER_NAME,
@@ -280,7 +290,8 @@ public abstract class LegacyAbstractPersistenceService {
             StringUtils.EMPTY,
             createdBy,
             updatedBy,
-            ApplicationConstant.ORG_UNIT
+            ApplicationConstant.ORG_UNIT,
+            StringUtils.EMPTY
         );
   }
 
@@ -320,14 +331,14 @@ public abstract class LegacyAbstractPersistenceService {
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
         )
-        .defaultIfEmpty(clientNumber)
         .doOnNext(forestClientNumber ->
             log.info(
                 "Created doing business as for {} {}",
                 forestClientNumber,
                 message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME)
             )
-        );
+        )
+        .defaultIfEmpty(clientNumber);
   }
 
 }

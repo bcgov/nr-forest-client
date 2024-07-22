@@ -22,7 +22,6 @@ public record ClientAddressDto(
     String emailAddress,
     String notes,
     int index,
-
     String locationName
 ) {
 

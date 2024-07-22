@@ -3,6 +3,7 @@ package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
@@ -10,7 +11,9 @@ import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -64,26 +67,58 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
                     .withBirthdate(detailEntity.getBirthdate())
-                    .withLegalFirstName(ProcessorUtil.splitName(
-                        detailEntity.getOrganizationName())[1].toUpperCase())
-                    .withClientName(ProcessorUtil.splitName(
-                        detailEntity.getOrganizationName())[0].toUpperCase())
+                    .withLegalFirstName(
+                        ProcessorUtil
+                            .splitName(
+                                detailEntity.getFirstName(),
+                                detailEntity.getMiddleName(),
+                                detailEntity.getLastName(),
+                                detailEntity.getOrganizationName()
+                            )[1]
+                            .toUpperCase()
+                    )
+                    .withClientName(
+                        ProcessorUtil
+                            .splitName(
+                                detailEntity.getFirstName(),
+                                detailEntity.getMiddleName(),
+                                detailEntity.getLastName(),
+                                detailEntity.getOrganizationName()
+                            )[0]
+                            .toUpperCase()
+                    )
                     .withClientComment(
-                        getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
-                        " submitted the individual with data acquired from BC Services Card"
+                        BooleanUtils
+                            .toString(
+                                SubmissionProcessTypeEnum.STAFF.equals(
+                                    message.getParameter(ApplicationConstant.SUBMISSION_STARTER,
+                                        SubmissionProcessTypeEnum.class)
+                                ),
+                                detailEntity.getNotes(),
+                                getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
+                                    " submitted the individual with data acquired from BC Services Card"
+                            )
                     )
                     .withClientTypeCode("I")
                     .withClientIdTypeCode(
-                        ProcessorUtil.getClientIdTypeCode(
-                            ProcessorUtil.splitName(
-                                getUser(message, ApplicationConstant.CREATED_BY))[1]
+                        Objects.toString(
+                            detailEntity.getIdentificationCode(),
+                            ProcessorUtil.getClientIdTypeCode(
+                                ProcessorUtil.splitName(
+                                    getUser(message, ApplicationConstant.CREATED_BY))[1]
+                            )
                         )
                     )
                     .withClientIdentification(
-                        ProcessorUtil.splitName(
-                            getUser(message, ApplicationConstant.CREATED_BY))[0]
+                        Objects.toString(
+                            detailEntity.getIdentificationCode(),
+                            ProcessorUtil.splitName(
+                                getUser(message, ApplicationConstant.CREATED_BY)
+                            )[0]
+                        )
                     )
                     .withClientNumber(message.payload())
+                    .withAcronym(detailEntity.getClientAcronym())
             )
             .doOnNext(forestClient -> log.info("forest client generated for individual {}",
                 forestClient.clientIdTypeCode() + forestClient.clientIdentification()))
