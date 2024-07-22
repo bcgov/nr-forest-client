@@ -4,6 +4,7 @@ import ca.bc.gov.app.exception.DataMatchException;
 import ca.bc.gov.app.exception.SubmissionNotCompletedException;
 import ca.bc.gov.app.exception.ValidationException;
 import java.util.Arrays;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -124,9 +125,9 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
 
       if(e.getCause() instanceof SubmissionNotCompletedException notCompletedException){
         log.error("Submission is still ongoing: {}",notCompletedException.getReason());
-        return ServerResponse.status(HttpStatus.REQUEST_TIMEOUT)
+        return ServerResponse.status(notCompletedException.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(notCompletedException.getReason()));
+            .body(BodyInserters.fromValue(Objects.requireNonNull(notCompletedException.getReason())));
       }
       log.error("Request encountered an illegal state", exception);
       return ServerResponse.status(HttpStatus.REQUEST_TIMEOUT)
