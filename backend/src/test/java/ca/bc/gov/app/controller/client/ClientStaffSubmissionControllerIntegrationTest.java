@@ -34,6 +34,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ import reactor.util.retry.Retry;
 
 @DisplayName("Integrated Test | FSA Staff Client Submission Controller")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Slf4j
 class ClientStaffSubmissionControllerIntegrationTest
     extends AbstractTestContainerIntegrationTest {
