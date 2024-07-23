@@ -124,7 +124,7 @@ describe("validations", () => {
 
   describe.each(["businessInformation.identificationType"])("%s", (key) => {
     const formDataDto = newFormDataDto();
-    const setter = (value: string) => {
+    const setter = (value: any) => {
       formDataDto.businessInformation.identificationType = value;
     };
     (<Scenario[]>[
