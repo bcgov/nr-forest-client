@@ -114,7 +114,8 @@ export const formDataDto: FormDataDto = {
     businessName: "",
     goodStandingInd: "",
     birthdate: "",
-    notes: ""
+    notes: "",
+    identificationType: {value: "", text: "", countryCode: ""}
   },
   location: {
     addresses: [emptyAddress()],
