@@ -18,7 +18,7 @@
         "status": 201,
         "headers": {
           "Content-Type": "application/json",
-          "Location": "/api/clients/123456",
+          "Location": "/api/clients/submissions/123456",
           "x-sub-id": "123456",
           "Access-Control-Expose-Headers": "x-sub-id, Location"
         },
@@ -117,7 +117,7 @@
         "status": 201,
         "headers":{
           "Content-Type": "application/json",
-          "Location": "/api/clients/123456",
+          "Location": "/api/clients/submissions/123456",
           "x-sub-id": "123456",
           "Access-Control-Expose-Headers": "x-sub-id, Location"
         },
@@ -148,7 +148,7 @@
         "status": 201,
         "headers":{
           "Content-Type": "application/json",
-          "Location": "/api/clients/123456",
+          "Location": "/api/clients/submissions/123456",
           "x-sub-id": "123456",
           "Access-Control-Expose-Headers": "x-sub-id, Location"
         },

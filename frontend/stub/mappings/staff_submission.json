@@ -17,7 +17,10 @@
       "response": {
         "status": 408,
         "headers": {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Access-Control-Expose-Headers": "x-sub-id, Location",
+          "Location": "/api/clients/submissions/4444",
+          "x-sub-id": "4444"
         },
         "body":"Submission 4444 is still being processed",
         "fixedDelayMilliseconds": 750
