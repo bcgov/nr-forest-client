@@ -116,7 +116,10 @@ export const routes = [
     path: "/client-created",
     name: staffConfirmationRoute,
     component: FormStaffConfirmationPage,
-    props: true,
+    props: route => ({ 
+      clientNumber: history.state.clientNumber, 
+      clientEmail: history.state.clientEmail 
+    }),
     meta: {
       format: "full-centered",
       hideHeader: false,
