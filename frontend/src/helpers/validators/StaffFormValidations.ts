@@ -117,7 +117,6 @@ export const clientIdentificationMaskParams = (() => {
       maxSize: 10,
       onlyNumbers: true,
     },
-    OTHR: undefined,
   };
   return init as Record<keyof typeof init, ClientIdentificationValidation | undefined>;
 })();
@@ -132,6 +131,18 @@ const createClientIdentificationFieldValidations = (
 // clientIdentification base validations - applied regardless of the ID type / province.
 fieldValidations["businessInformation.clientIdentification"] = [
   isNotEmpty("You must provide an ID number"),
+];
+
+fieldValidations["businessInformation.clientTypeOfId"] = [
+  isNotEmpty("You must provide a type of ID"),
+  isMaxSizeMsg("Type of ID", 38), //40 - 1 colon - at least 1 from ID number
+  hasOnlyNamingCharacters("Type of ID")
+];
+
+fieldValidations["businessInformation.clientIdNumber"] = [
+  isNotEmpty("You must provide an ID number"),
+  isMaxSizeMsg("ID number", 38), //40 - 1 colon - at least 1 from Type of ID
+  hasOnlyNamingCharacters("ID number")
 ];
 
 const extractOtherId = (value: string) => value.split(":")[1]?.trim();
@@ -172,18 +183,6 @@ Object.assign(
       ...isExactSizMsg("First Nation status ID", clientIdentificationMaskParams.FNID.maxSize),
     ],
 
-    "businessInformation.clientIdentification-OTHR": [
-      isMinSizeMsg("ID number", 3),
-      isMaxSizeMsg("ID number", 40),
-      isRegex(
-        /^[^:]+:\s?[^\s:]+$/,
-        'Other identification must follow the pattern: [ID Type] : [ID Value] such as "USA Passport : 12345"',
-      ),
-      validateSelection(extractOtherId)(
-        isIdCharacters("The value to right of the colon can only contain: A-Z or 0-9"),
-      ),
-      validateSelection(extractOtherId)(isMinSizeMsg("value to right of the colon", 3)),
-    ],
   }),
 );
 

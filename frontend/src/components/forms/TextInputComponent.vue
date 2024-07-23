@@ -31,6 +31,7 @@ const props = withDefaults(
   }>(),
   {
     type: "text",
+    enabled: true
   },
 );
 
