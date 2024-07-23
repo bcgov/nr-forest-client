@@ -4,10 +4,6 @@ import { nextTick } from "vue";
 import CDSModal from "@carbon/web-components/es/components/modal/modal";
 
 import MainHeaderComponent from "@/components/MainHeaderComponent.vue";
-import {
-  externalConfirmationRoute,
-  staffConfirmationRoute,
-} from "@/CoreConstants";
 
 const defaultRouteData = { name: "any" };
 let routeData = { ...defaultRouteData };
@@ -83,8 +79,8 @@ describe("MainHeaderComponent.vue", () => {
 
     describe("when current route is the confirmation page", () => {
       const routes = [
-        { name: 'externalConfirmationRoute', route: externalConfirmationRoute },
-        { name: 'staffConfirmationRoute', route: staffConfirmationRoute }
+        { name: 'externalConfirmationRoute', route: "confirmation" },
+        { name: 'staffConfirmationRoute', route: "staff-confirmation" }
       ];
     
       routes.forEach(({ name, route }) => {
