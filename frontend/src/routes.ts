@@ -137,6 +137,27 @@ export const routes = [
     },
   },
   {
+    path: "/client-submitted/:submissionId",
+    name: "staff-processing",
+    component: () => import("@/pages/FormStaffProcessingPage.vue"),
+    props: true,
+    meta: {
+      format: "full-centered",
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ["idir"],
+      redirectTo: {
+        bceidbusiness: "form",
+        bcsc: "form",
+      },
+      style: "content",
+      headersStyle: "headers",
+      sideMenu: false,
+      profile: false,
+    },
+  },
+  {
     path: "/submissions",
     name: "internal",
     component: SubmissionList,
