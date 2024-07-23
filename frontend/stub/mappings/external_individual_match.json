@@ -1,0 +1,81 @@
+{
+  "mappings": [
+    {
+      "name": "Individual Match for BCSC",
+      "priority": 5,
+      "request": {
+        "urlPath": "/api/clients/individual/NA5TCPGMIGUFVCSS6SAO3TIDBMAHXL3F",
+        "method": "GET",
+        "queryParameters": {
+          "lastName": {
+            "equalTo": "Baxter"
+          }
+        }
+      },
+      "response": {
+        "status": 409,
+        "body": "Client already exists with the client number 00000002"
+      }
+    },
+    {
+      "name": "No Individual Match for BCSC",
+      "request": {
+        "urlPath": "/api/clients/individual/NA5TCPGMIGUFVCSS6SAO3TIDBMAHXL3F",
+        "method": "GET",
+        "queryParameters": {
+          "lastName": {
+            "equalTo": "Baxter"
+          }
+        }
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "name": "No Individual Match for IDIR",
+      "request": {
+        "urlPath": "/api/clients/individual/JRYAN",
+        "method": "GET",
+        "queryParameters": {
+          "lastName": {
+            "equalTo": "Ryan"
+          }
+        }
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "name": "No Individual Match for BCeID",
+      "request": {
+        "urlPath": "/api/clients/individual/uattest",
+        "method": "GET",
+        "queryParameters": {
+          "lastName": {
+            "equalTo": "Test"
+          }
+        }
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "name": "No Individual Match for BCeID",
+      "request": {
+        "urlPath": "/api/clients/individual/uattest",
+        "method": "GET",
+        "queryParameters": {
+          "lastName": {
+            "equalTo": "Uat"
+          }
+        }
+      },
+      "response": {
+        "status": 200
+      }
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+{
+  "mappings": [
+    {
+      "name": "Submission List Page",
+      "request": {
+        "urlPath": "/api/clients/submissions",
+        "method": "GET",
+        "queryParameters": {
+          "page": {
+            "matches": "^[0-5]$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-total-count": "57",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "bodyFileName": "response-submissions-page{{request.query.page}}.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 2500
+      }
+    },
+    {
+      "name": "Submission List Empty",
+      "request": {
+        "urlPath": "/api/clients/submissions",
+        "method": "GET",
+        "queryParameters": {
+          "page": {
+            "matches": "^[6-9]\\d*$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-total-count": "57",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "body": "[]",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+    {
+      "name": "Submission List Search",
+      "request": {
+        "urlPath": "/api/clients/submissions",
+        "method": "GET",
+        "queryParameters": {
+          "page": {
+            "matches": "^\\d+$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          },
+          "keyword": {
+            "matches": "^(.*)$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-total-count": "3",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "bodyFileName": "response-submissions-search.json",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+    {
+      "name": "Submission Details Review",
+      "request": {
+        "urlPattern": "/api/clients/submissions/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-submissions-details-review.json",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+    {
+      "name": "Submission Details Approved",
+      "request": {
+        "urlPath": "/api/clients/submissions/a17d274f-3f5f-425b-b94e-757fea4dcfbb",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-submissions-details-approved.json",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+    {
+      "name": "Submission Details Review Dupped",
+      "request": {
+        "urlPath": "/api/clients/submissions/5f1f7209-fb2f-487d-9619-786c63a52a07",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-submissions-details-dupped.json",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+    {
+      "name": "Submission Details Review Approved",
+      "request": {
+        "urlPath": "/api/clients/submissions/e14ad3a8-c7a1-4bd4-8cdf-8a6e9e013888",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-submissions-details-reviewedapproved.json",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+    {
+      "name": "Submission Details Review Unregistered",
+      "request": {
+        "urlPath": "/api/clients/submissions/9ceca504-f014-44f9-8a62-24e9b4311865",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-submissions-details-unregistered.json",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+    {
+      "name": "Submission processed successfully",
+      "request": {
+        "urlPattern": "/api/clients/submissions/(.*)",
+        "method": "POST"
+      },
+      "response": {
+        "status": 202
+      }
+    }
+  ]
+}
