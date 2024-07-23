@@ -20,7 +20,7 @@ import LogoutPage from "@/pages/LogoutPage.vue";
 
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-import { featureFlags, externalConfirmationRoute, staffConfirmationRoute } from "@/CoreConstants";
+import { featureFlags } from "@/CoreConstants";
 
 const targetPathStorage = useLocalStorage("targetPath", "");
 const userProviderInfo = useLocalStorage("userProviderInfo", "");
@@ -94,7 +94,7 @@ export const routes = [
   },
   {
     path: "/form-submitted",
-    name: externalConfirmationRoute,
+    name: "confirmation",
     component: FormSubmittedPage,
     props: true,
     meta: {
@@ -114,7 +114,7 @@ export const routes = [
   },
   {
     path: "/client-created",
-    name: staffConfirmationRoute,
+    name: "staff-confirmation",
     component: FormStaffConfirmationPage,
     props: route => ({ 
       clientNumber: history.state.clientNumber, 
