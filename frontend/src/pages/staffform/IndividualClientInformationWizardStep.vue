@@ -127,6 +127,10 @@ const shouldDisplayProvince = computed(() =>
   )
 );
 
+const isOtherIdentificationType = computed(() =>
+  formData.value.businessInformation.identificationType?.value === "OTHR"
+);
+
 watch(shouldDisplayProvince, (value) => {
   if (!value) {
     validation.identificationProvince = true;
@@ -153,11 +157,14 @@ watch(
   ],
   ([identificationType, identificationProvinceCode]) => {
     clientIdentificationAdditionalValidations.value = [];
-
-    const oldClientIdentificationMask = clientIdentificationMask.value;
     clientIdentificationMask.value = undefined;
+    validation.clientIdentification = false;
 
     if (identificationType) {
+      if (identificationType.value === "OTHR") {
+        validation.clientIdentification = true;
+      }
+
       if (
         identificationType.value === "CDDL" ||
         identificationType.value === "USDL"
@@ -185,7 +192,8 @@ watch(
               getClientIdentificationMask("nonBCDL");
           }
         }
-      } else {
+      } 
+      else {
         // Every other ID type
         clientIdentificationAdditionalValidations.value =
           getClientIdentificationValidations(
@@ -245,6 +253,29 @@ const { setFocusedComponent } = useFocus();
 onMounted(() => {
   if (props.autoFocus) {
     setFocusedComponent("focus-0", 0);
+  }
+});
+
+let clientTypeOfId = ref('');
+let clientIdNumber = ref('');
+
+if (formData.value.businessInformation.clientIdentification &&
+    formData.value.businessInformation.identificationType.value == 'OTHR'
+) {
+    const [clientType, clientId] = formData.value.businessInformation.clientIdentification.split(':');
+    clientTypeOfId.value = clientType.trim();
+    clientIdNumber.value = clientId.trim();
+  }
+
+const combinedValue = computed(() => ({
+  clientTypeOfId: clientTypeOfId.value,
+  clientIdNumber: clientIdNumber.value
+}));
+
+// Watch the combined computed property
+watch(combinedValue, (newValue) => {
+  if (formData.value.businessInformation.identificationType.value == 'OTHR') {
+    formData.value.businessInformation.clientIdentification = `${newValue.clientTypeOfId}:${newValue.clientIdNumber}`;
   }
 });
 </script>
@@ -364,6 +395,7 @@ onMounted(() => {
       />
 
       <text-input-component
+        v-if="!isOtherIdentificationType"
         id="clientIdentification"
         label="ID number"
         placeholder=""
@@ -375,12 +407,46 @@ onMounted(() => {
           ...clientIdentificationAdditionalValidations,
           submissionValidation('businessInformation.clientIdentification'),
         ]"
-        enabled
         required
         required-label
         @empty="validation.clientIdentification = !$event"
         @error="validation.clientIdentification = !$event"
       />
+
+      <text-input-component
+        v-if="isOtherIdentificationType"
+        id="clientTypeOfId"
+        label="Type of ID"
+        placeholder=""
+        autocomplete="off"
+        v-model="clientTypeOfId"
+        :validations="[
+          ...getValidations('businessInformation.clientTypeOfId'),
+          submissionValidation('businessInformation.clientTypeOfId'),
+        ]"
+        required
+        required-label
+        @empty="validation.clientTypeOfId = !$event"
+        @error="validation.clientTypeOfId = !$event"
+      />
+
+      <text-input-component
+        v-if="isOtherIdentificationType"
+        id="clientIdNumber"
+        label="ID number"
+        placeholder=""
+        autocomplete="off"
+        v-model="clientIdNumber"
+        :validations="[
+          ...getValidations('businessInformation.clientIdNumber'),
+          submissionValidation('businessInformation.clientIdNumber'),
+        ]"
+        required
+        required-label
+        @empty="validation.clientIdNumber = !$event"
+        @error="validation.clientIdNumber = !$event"
+      />
+
     </div>
   </div>
 </template>
