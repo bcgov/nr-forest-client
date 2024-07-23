@@ -5,7 +5,8 @@ import useSvg from "@/composables/useSvg";
 import badgePictogram from "@carbon/pictograms/es/badge";
 
 defineProps<{  
-  submissionId: Number;
+  submissionId: number;
+  clientEmail: string;
 }>();
 const SVG = useSvg(badgePictogram);
 
@@ -19,18 +20,20 @@ const SVG = useSvg(badgePictogram);
       <p class="fluid-paragraph-01">
         We’ll send the client number and details submitted to <strong>{{ clientEmail }}</strong> once the submission is complete.
       </p>
-      <cds-button
-        kind="secondary"
-        :href="`/submissions/${submissionId}`"
-        size="field">
-        <span>Track submission</span>
-      </cds-button>
-      <cds-button
-        kind="primary"
-        href="/new-client-staff"
-        size="field">
-        <span>Create another client</span>
-      </cds-button>
+      <div class="form-footer-group-buttons">
+        <cds-button
+          kind="tertiary"
+          :href="`/submissions/${submissionId}`"
+          size="field">
+          <span>Track submission</span>
+        </cds-button>
+        <cds-button
+          kind="primary"
+          href="/new-client-staff"
+          size="field">
+          <span>Create another client</span>
+        </cds-button>
+      </div>
     </div>
   </div>
 </template>
