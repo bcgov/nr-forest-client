@@ -316,6 +316,23 @@ const rejectValidation = reactive<Record<string, boolean>>({
 const cleanedRejectionReason = computed(() => {
   return data.value.rejectionReason.replace(/<div>&nbsp;<\/div>/g, '').replace(/<p>/g, ' ').replace(/<\/p>/g, '');
 });
+
+
+const isProcessing = computed(() => {
+  const processingStatus = (
+    !data.value.business.clientNumber
+    && data.value.submissionType === 'Staff submitted data'  
+  );
+
+  if(processingStatus) {
+    setTimeout(() => location.reload(), 10000);
+  }
+
+  return processingStatus;
+});
+
+
+
 </script>
 
 <template>
@@ -344,6 +361,21 @@ const cleanedRejectionReason = computed(() => {
         This div is necessary to avoid the div.header-offset below from interfering in the flex flow.
       -->
         <div data-scroll="top-notification" class="header-offset"></div>
+        <cds-actionable-notification
+          v-if="isProcessing"
+          low-contrast="true"
+          hide-close-button="true"
+          open="true"
+          kind="warning"
+          title="Submission is being processed"      
+        >    
+          <div>
+            <p>
+              It may take a few minutes. Once completed, this page will be automatically updated and the client number will be shown in the "Client Sumarry" below.
+            </p>
+          </div>
+        </cds-actionable-notification>
+
         <cds-actionable-notification
           v-if="networkErrorMsg !== '' && userhasAuthority"
           v-shadow="true"
