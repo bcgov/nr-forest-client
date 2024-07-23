@@ -324,7 +324,7 @@ const isProcessing = computed(() => {
     && data.value.submissionType === 'Staff submitted data'  
   );
 
-  if(processingStatus) {
+  if (processingStatus) {
     setTimeout(() => location.reload(), 10000);
   }
 
