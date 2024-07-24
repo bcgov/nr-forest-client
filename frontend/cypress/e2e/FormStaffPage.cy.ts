@@ -569,7 +569,7 @@ describe("Staff Form", () => {
 
     });
 
-    describe("", () => {
+    describe("submitting data", () => {
       beforeEach(() => {
         cy.get("#clientType")
           .should("be.visible")
@@ -582,6 +582,10 @@ describe("Staff Form", () => {
           .should("be.visible")
           .click()
           .and("have.value", "Individual");
+        
+      });
+
+      it("should submit the form and display a success message", () => {
 
         fillIndividual({
           ...individualBaseData,
@@ -596,9 +600,6 @@ describe("Staff Form", () => {
         
         fillContact();
         cy.get("[data-test='wizard-next-button']").click();
-      });
-
-      it("should submit the form and display a success message", () => {
 
         cy.intercept("POST", "/api/clients/submissions/staff", {
           statusCode: 201,
@@ -619,6 +620,20 @@ describe("Staff Form", () => {
 
       it("should submit the form and display timeout message", () => {
 
+        fillIndividual({
+          ...individualBaseData,
+          identificationTypeValue: "Canadian driver's licence",
+          identificationProvinceValue: "Nova Scotia",
+          clientIdentification: "12345678"
+        });
+        cy.get("[data-test='wizard-next-button']").click();
+
+        fillLocation();
+        cy.get("[data-test='wizard-next-button']").click();
+        
+        fillContact();
+        cy.get("[data-test='wizard-next-button']").click();
+
         cy.intercept("POST", "/api/clients/submissions/staff", {
           statusCode: 408,
           body: {},
@@ -630,6 +645,12 @@ describe("Staff Form", () => {
           }
         }).as("submitForm");
 
+
+        cy.get("cds-textarea")
+        .shadow()
+        .find("textarea")
+        .type("error");
+
         cy.get("[data-test='wizard-submit-button']").click();
         cy.wait("@submitForm");
         cy.get("h1").should("contain", "Submission still being processed!");
@@ -638,6 +659,19 @@ describe("Staff Form", () => {
       });
 
       it("should submit the form and display validation error message", () => {
+
+        fillIndividual({
+          ...individualBaseData,
+          identificationTypeValue: "Canadian passport",
+          clientIdentification: "FY123456"
+        });
+        cy.get("[data-test='wizard-next-button']").click();
+
+        fillLocation();
+        cy.get("[data-test='wizard-next-button']").click();
+        
+        fillContact();
+        cy.get("[data-test='wizard-next-button']").click();
 
         cy.intercept("POST", "/api/clients/submissions/staff", {
           statusCode: 400,
