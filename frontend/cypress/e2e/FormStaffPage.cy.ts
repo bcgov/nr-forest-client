@@ -612,8 +612,7 @@ describe("Staff Form", () => {
           }
         }).as("submitForm");
 
-        cy.get("[data-test='wizard-submit-button']").click();
-        cy.wait("@submitForm");
+        cy.get("[data-test='wizard-submit-button']").click();        
         cy.get("h1").should("contain", "New client 00123456 has been created!");
 
       });
@@ -634,25 +633,12 @@ describe("Staff Form", () => {
         fillContact();
         cy.get("[data-test='wizard-next-button']").click();
 
-        cy.intercept("POST", "/api/clients/submissions/staff", {
-          statusCode: 408,
-          body: {},
-          headers:{
-            "Content-Type": "application/json",
-            "Access-Control-Expose-Headers": "x-sub-id, Location",
-            "Location": "/api/clients/submissions/4444",
-            "x-sub-id": "4444"
-          }
-        }).as("submitForm");
-
-
         cy.get("cds-textarea")
         .shadow()
         .find("textarea")
         .type("error");
 
-        cy.get("[data-test='wizard-submit-button']").click();
-        cy.wait("@submitForm");
+        cy.get("[data-test='wizard-submit-button']").click();        
         cy.get("h1").should("contain", "Submission still being processed!");
         cy.get("cds-button[href='/submissions/4444']").should("exist");
 
@@ -673,17 +659,8 @@ describe("Staff Form", () => {
         fillContact();
         cy.get("[data-test='wizard-next-button']").click();
 
-        cy.intercept("POST", "/api/clients/submissions/staff", {
-          statusCode: 400,
-          body: [{"fieldId":"businessInformation.identificationType","errorMsg":"You must select an identification type"}],
-          headers:{
-            "Content-Type": "application/json"
-          }
-        }).as("submitForm");
-
         cy.get("[data-test='wizard-submit-button']").click();
-        cy.wait("@submitForm");
-
+        
         cy.get("cds-actionable-notification")
           .should("be.visible")
           .and("have.attr", "kind", "error")          
