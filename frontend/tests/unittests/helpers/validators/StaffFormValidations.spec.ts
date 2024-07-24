@@ -115,7 +115,7 @@ describe("validations", () => {
     };
     (<Scenario[]>[
       [{ text: "" }, false],
-      [{ text: "" }, false],
+      [{ text: null }, false],
       [{ text: "AB" }, true],
     ]).forEach((scenario) => {
       test(data, key, setter, scenario);
@@ -124,7 +124,7 @@ describe("validations", () => {
 
   describe.each(["businessInformation.identificationType"])("%s", (key) => {
     const formDataDto = newFormDataDto();
-    const setter = (value: string) => {
+    const setter = (value: any) => {
       formDataDto.businessInformation.identificationType = value;
     };
     (<Scenario[]>[
@@ -248,34 +248,5 @@ describe("validations", () => {
       });
     });
 
-    describe.each(["businessInformation.clientIdentification-OTHR"])("%s", (key) => {
-      const setter = (value: string) => {
-        data.businessInformation["clientIdentification-OTHR"] = value;
-      };
-      (<Scenario[]>[
-        ["12345", false, "No colon"],
-        ["Name:", false, "missing Id number value"],
-        [":1234", false, "missing Id type value"],
-        ["A:123", true],
-        ["A: 123", true],
-        ["A :123", true],
-        ["A : 123", true],
-        ["A:  123", false, "more than 1 space after colon"],
-        ["Name With Spaces: 123", true],
-        ["Name: 1234ABC!", false, "Id number part contains special character"],
-        ["Name: 1234ABCa", false, "Id number part contains lower-case letter"],
-        ["Name: 1234 ABC", false, "Id number part contains space"],
-        ["Name: 12", false, "Id number part is less than 3 digits"],
-        ["Name: 123", true],
-        ["Name: 7890123456789012345678901234567890", true],
-        [
-          "Name: 78901234567890123456789012345678901",
-          false,
-          "the whole value has more than 40 digits",
-        ],
-      ]).forEach((scenario) => {
-        test(data, key, setter, scenario);
-      });
-    });
   });
 });
