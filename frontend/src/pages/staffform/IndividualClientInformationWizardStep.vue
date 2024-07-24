@@ -5,7 +5,6 @@ import "@carbon/web-components/es/components/inline-loading/index";
 import "@carbon/web-components/es/components/notification/index";
 import "@carbon/web-components/es/components/tooltip/index";
 // Importing composables
-import { useEventBus } from "@vueuse/core";
 import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Importing types
@@ -18,12 +17,10 @@ import type {
 import {
   getValidations,
   validate,
-} from "@/helpers/validators/StaffFormValidations";
-import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
-import {
   clientIdentificationMaskParams,
   getClientIdentificationValidations,
 } from "@/helpers/validators/StaffFormValidations";
+import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // @ts-ignore
 import Information16 from "@carbon/icons-vue/es/information/16";
 
@@ -105,10 +102,6 @@ const updateIdentificationProvince = (value: CodeNameType | undefined) => {
   formData.value.businessInformation.identificationProvince = value?.code;
 };
 
-const clientIdentificationAdditionalValidations = ref<
-  ((value: string) => string)[]
->([]);
-
 const getClientIdentificationMask = (
   type: keyof typeof clientIdentificationMaskParams
 ) => {
@@ -150,13 +143,15 @@ const validation = reactive<Record<string, boolean>>({
   clientIdentification: false,
 });
 
+const clientIdentificationValidationExtras = ref<string>('');
+
 watch(
   [
     () => formData.value.businessInformation.identificationType,
     () => formData.value.businessInformation.identificationProvince,
   ],
   ([identificationType, identificationProvinceCode]) => {
-    clientIdentificationAdditionalValidations.value = [];
+    clientIdentificationValidationExtras.value = "";
     clientIdentificationMask.value = undefined;
     validation.clientIdentification = false;
 
@@ -176,18 +171,14 @@ watch(
             identificationProvinceCode === "BC"
           ) {
             // BC driver's licences
-            clientIdentificationAdditionalValidations.value =
-              getClientIdentificationValidations(
-                "businessInformation.clientIdentification-BCDL"
-              );
+            clientIdentificationValidationExtras.value =
+              "businessInformation.clientIdentification-BCDL";
             clientIdentificationMask.value =
               getClientIdentificationMask("BCDL");
           } else {
             // Every other driver's licences, including both Canadian or US.
-            clientIdentificationAdditionalValidations.value =
-              getClientIdentificationValidations(
-                "businessInformation.clientIdentification-nonBCDL"
-              );
+            clientIdentificationValidationExtras.value =
+              "businessInformation.clientIdentification-nonBCDL";
             clientIdentificationMask.value =
               getClientIdentificationMask("nonBCDL");
           }
@@ -195,12 +186,10 @@ watch(
       } 
       else {
         // Every other ID type
-        clientIdentificationAdditionalValidations.value =
-          getClientIdentificationValidations(
-            `businessInformation.clientIdentification-${formData.value.businessInformation.identificationType.value}`
-          );
+        clientIdentificationValidationExtras.value =
+          `businessInformation.clientIdentification-${identificationType.value}`;
         clientIdentificationMask.value = getClientIdentificationMask(
-          formData.value.businessInformation.identificationType.value
+          identificationType.value
         );
       }
     }
@@ -404,7 +393,7 @@ watch(combinedValue, (newValue) => {
         :mask="clientIdentificationMask"
         :validations="[
           ...getValidations('businessInformation.clientIdentification'),
-          ...clientIdentificationAdditionalValidations,
+          
           submissionValidation('businessInformation.clientIdentification'),
         ]"
         required

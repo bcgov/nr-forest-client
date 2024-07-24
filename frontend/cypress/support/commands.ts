@@ -126,7 +126,6 @@ Cypress.Commands.add(
     cy.addCookie(`${baseUserCookieName}.idToken`,`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${jwtfy(jwtBody)}.`);
     
     cy.reload();
-    cy.wait(1000);
   }
 );
 
