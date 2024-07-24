@@ -218,7 +218,9 @@ watch(
 
   <div v-if="!enabled" class="grouping-04">
     <div :data-scroll="id" class="grouping-04-label">
-      <span :for="id" :class="'label-'+id">{{ label }}</span>
+      <div class="cds--text-input__label-wrapper" part="div cds--text-input__label-wrapper">
+        <span :for="id" :class="'cds--label cds-text-input-label label-'+id" part="label cds--label">{{ label }}</span>
+      </div>
     </div>
     <span :class="'text-'+id">{{ modelValue }}</span>
   </div>
