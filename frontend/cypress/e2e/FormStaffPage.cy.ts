@@ -524,7 +524,12 @@ describe("Staff Form", () => {
           .click()
           .and("have.value", "Individual");
 
-        fillIndividual();
+        fillIndividual({
+          ...individualBaseData,
+          identificationTypeValue: "Canadian driver's licence",
+          identificationProvinceValue: "Nova Scotia",
+          clientIdentification: "12345678"
+        });
         cy.get("[data-test='wizard-next-button']").click();
 
         fillLocation();
@@ -537,6 +542,122 @@ describe("Staff Form", () => {
       it("displays the Review section", () => {
         cy.contains("h2", "Review");
       });
+
+      it("should allow notes to be added", () => {
+        cy.get("cds-textarea")
+        .shadow()
+        .find("textarea")
+        .type("This is a note!");
+
+        cy.get("cds-textarea")
+        .shadow()
+        .find(".cds--text-area__label-wrapper")
+        .should("contain", "15/4000");
+        
+        // Even if I try to add more than 4k characters, it will stop at 4k
+        cy.get("cds-textarea")
+        .shadow()
+        .find("textarea")
+        .type("A".repeat(4010));
+        
+        cy.get("cds-textarea")
+        .shadow()
+        .find(".cds--text-area__label-wrapper")
+        .should("contain", "4000/4000");
+
+      });
+
+    });
+
+    describe("", () => {
+      beforeEach(() => {
+        cy.get("#clientType")
+          .should("be.visible")
+          .and("have.value", "")
+          .find("[part='trigger-button']")
+          .click();
+
+        cy.get("#clientType")
+          .find('cds-combo-box-item[data-id="I"]')
+          .should("be.visible")
+          .click()
+          .and("have.value", "Individual");
+
+        fillIndividual({
+          ...individualBaseData,
+          identificationTypeValue: "Canadian driver's licence",
+          identificationProvinceValue: "Nova Scotia",
+          clientIdentification: "12345678"
+        });
+        cy.get("[data-test='wizard-next-button']").click();
+
+        fillLocation();
+        cy.get("[data-test='wizard-next-button']").click();
+        
+        fillContact();
+        cy.get("[data-test='wizard-next-button']").click();
+      });
+
+      it("should submit the form and display a success message", () => {
+
+        cy.intercept("POST", "/api/clients/submissions/staff", {
+          statusCode: 201,
+          body: {},
+          headers:{
+            "Content-Type": "application/json",
+            "Access-Control-Expose-Headers": "x-client-id, Location",
+            "Location": "/api/clients/details/00123456",
+            "x-client-id": "00123456"
+          }
+        }).as("submitForm");
+
+        cy.get("[data-test='wizard-submit-button']").click();
+        cy.wait("@submitForm");
+        cy.get("h1").should("contain", "New client 00123456 has been created!");
+
+      });
+
+      it("should submit the form and display timeout message", () => {
+
+        cy.intercept("POST", "/api/clients/submissions/staff", {
+          statusCode: 408,
+          body: {},
+          headers:{
+            "Content-Type": "application/json",
+            "Access-Control-Expose-Headers": "x-sub-id, Location",
+            "Location": "/api/clients/submissions/4444",
+            "x-sub-id": "4444"
+          }
+        }).as("submitForm");
+
+        cy.get("[data-test='wizard-submit-button']").click();
+        cy.wait("@submitForm");
+        cy.get("h1").should("contain", "Submission still being processed!");
+        cy.get("cds-button[href='/submissions/4444']").should("exist");
+
+      });
+
+      it("should submit the form and display validation error message", () => {
+
+        cy.intercept("POST", "/api/clients/submissions/staff", {
+          statusCode: 400,
+          body: [{"fieldId":"businessInformation.identificationType","errorMsg":"You must select an identification type"}],
+          headers:{
+            "Content-Type": "application/json"
+          }
+        }).as("submitForm");
+
+        cy.get("[data-test='wizard-submit-button']").click();
+        cy.wait("@submitForm");
+
+        cy.get("cds-actionable-notification")
+          .should("be.visible")
+          .and("have.attr", "kind", "error")          
+          .shadow()
+          .find("div.cds--actionable-notification__details div.cds--actionable-notification__text-wrapper div.cds--actionable-notification__content div.cds--actionable-notification__title")          
+          .should("contain", "Your application could not be submitted:");
+      });
+
     });
 
   });
