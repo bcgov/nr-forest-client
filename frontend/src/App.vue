@@ -12,6 +12,7 @@ import Delete16 from '@carbon/icons-vue/es/trash-can/16'
 
 const modalBus = useEventBus<ModalNotification>('modal-notification')
 const toastBus = useEventBus<ModalNotification>('toast-notification')
+const overlayBus = useEventBus<boolean>('overlay-event')
 
 //Modal opening and closing
 const modalContent = ref<ModalNotification>({
@@ -30,6 +31,16 @@ const toastContent = ref<ModalNotification>({
   handler: () => {}
 })
 
+const overlayContent = ref<{
+  isVisible: boolean;
+  message: string;
+  showLoading: boolean;
+}>({
+  isVisible: false,
+  message: '',
+  showLoading: false
+})
+
 const openModal = (event: ModalNotification) => (modalContent.value = event)
 
 const closeModal = () =>
@@ -39,6 +50,12 @@ const openToast = (event: ModalNotification) => {
   toastContent.value = event
   setTimeout(() => (toastContent.value.active = false), 8000)
 }
+
+const openOverlay = (event: {
+  isVisible: boolean;
+  message: string;
+  showLoading: boolean;
+}) => (overlayContent.value = event)
 
 const deleteContentModal = () => {
   openToast({
@@ -55,6 +72,7 @@ const deleteContentModal = () => {
 
 modalBus.on(openModal)
 toastBus.on(openToast)
+overlayBus.on(openOverlay)
 </script>
 
 <template>
@@ -115,5 +133,11 @@ toastBus.on(openToast)
       :subtitle="toastContent.message"
     >
   </cds-toast-notification>
+
+  <loading-overlay-component 
+      :is-visible="overlayContent.isVisible"
+      :message="overlayContent.message"
+      :show-loading="overlayContent.showLoading"
+    />
 </template>
 

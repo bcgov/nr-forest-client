@@ -1,0 +1,18 @@
+{
+  "mappings": [
+    {
+      "name": "Search for First Nations",
+      "request": {
+        "urlPattern": "/api/opendata/(.+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-opendata-autocomplete.json",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    }
+  ]
+}

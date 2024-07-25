@@ -1,0 +1,75 @@
+{
+  "mappings": [
+    {
+      "name": "Autocomplete BC Registry",
+      "request": {
+        "urlPattern": "/api/clients/name/(.+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-autocomplete.json",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+    {
+      "name": "BC Registry Details OK",
+      "request": {
+        "urlPattern": "/api/clients/(XX|YY|UU|JJ|FM)(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-details-{{regexExtract request.path.[2] '(XX|YY|UU|JJ|FM)(.*)' 'parts'}}{{parts.0}}.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 1000
+      }
+    },
+    {
+      "name": "BC Registry Details Duplicated",
+      "request": {
+        "urlPattern": "/api/clients/ZZ(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 409,
+        "body": "The Edgar Paciolli already exists with the registration number {{request.path.[2]}} and client number 999999",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+    {
+      "name": "BC Registry Details Non Person",
+      "request": {
+        "url": "/api/clients/FM7654321",
+        "method": "GET"
+      },
+      "response": {
+        "status": 422,
+        "body": "Unable to process request. This sole proprietor is not owner by a person",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    },
+    {
+      "name": "BC Registry Details Unsupported Client Type",
+      "request": {
+        "url": "/api/clients/BC1234567",
+        "method": "GET"
+      },
+      "response": {
+        "status": 406,
+        "body": "Client type BC is not supported at the moment",
+        "transformers": [
+          "response-template"
+        ]
+      }
+    }
+  ]
+}

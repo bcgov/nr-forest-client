@@ -868,6 +868,12 @@ cds-actionable-notification * {
 .grouping-02:has(#clientIdentification) {
   width: 9.875rem;
 }
+.grouping-02:has(#clientTypeOfId) {
+  width: 9.875rem;
+}
+.grouping-02:has(#clientIdNumber) {
+  width: 9.875rem;
+}
 
 .grouping-04 {
   align-self: stretch;

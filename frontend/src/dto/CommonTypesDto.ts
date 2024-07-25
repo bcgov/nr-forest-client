@@ -107,7 +107,6 @@ export interface Submitter {
   businessName: string;
   birthdate: string;
   address: Address;
-  clientNumber: string;
 }
 
 export interface ModalNotification {

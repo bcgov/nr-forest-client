@@ -72,6 +72,17 @@ export default defineConfig(({ command, mode }) => {
     optimizeDeps: {
       exclude: ['@carbon/web-components'],
       entries: process.env.VITE_MODE === "test" ? ['./src/**/*.{vue,js,jsx,ts,tsx}'] : undefined,
+    },
+    server: {
+      watch: {
+        ignored: [
+          '**/coverage/**',  // Ignore coverage directory
+          '**/node_modules/**',  // Ignore node_modules
+          '**/.git/**',  // Ignore .git directory
+          '**/dist/**',  // Ignore dist directory
+          '**/reports*/**',  // Ignore reports directory
+        ]
+      }
     }
   }
 })

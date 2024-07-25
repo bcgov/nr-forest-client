@@ -68,16 +68,18 @@ const clientTypesList: CodeNameType[] = [
 ];
 
 const notificationBus = useEventBus<ValidationMessageType | undefined>("error-notification");
+const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
+const overlayBus = useEventBus<boolean>('overlay-event');
 
 // Route related
 const router = useRouter();
 
 const { setScrollPoint } = useFocus();
 
-const formData = ref<FormDataDto>({ ...newFormDataDto() });
+let formData = reactive<FormDataDto>({ ...newFormDataDto() });
 
 const locations = computed(() =>
-  formData.value.location.addresses.map((address: any) => address.locationName)
+  formData.location.addresses.map((address: any) => address.locationName)
 );
 addValidation(
   "location.contacts.*.locationNames.*.text",
@@ -192,7 +194,7 @@ const isFirst = computed(() => currentTab.value === 0);
 const checkStepValidity = (stepNumber: number): boolean => {
   progressData.forEach((step: any) => {
     if (step.step <= stepNumber) {
-      step.valid = validate(step.fields, formData.value, true);
+      step.valid = validate(step.fields, formData, true);
     }
   });
 
@@ -203,7 +205,7 @@ const checkStepValidity = (stepNumber: number): boolean => {
 
   if (
     !progressData[stepNumber].extraValidations.every((validation: any) =>
-      runValidation(validation.field, formData.value, validation.validation, true, true),
+      runValidation(validation.field, formData, validation.validation, true, true),
     )
   )
     return false;
@@ -225,8 +227,8 @@ const onCancel = () => {
 
 const onNext = () => {
   //This fixes the index
-  formData.value.location.addresses.forEach((address: Address,index: number) => address.index = index);
-  formData.value.location.contacts.forEach((contact: Contact,index: number) => contact.index = index);
+  formData.location.addresses.forEach((address: Address,index: number) => address.index = index);
+  formData.location.contacts.forEach((contact: Contact,index: number) => contact.index = index);
   
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
@@ -259,12 +261,12 @@ const updateClientType = (value: CodeNameType | undefined) => {
     clientType.value = value;
 
     // reset formData
-    formData.value = newFormDataDto();
+    formData = newFormDataDto();
 
     switch (value.code) {
       case "I": {
 
-        Object.assign(formData.value.businessInformation, {
+        Object.assign(formData.businessInformation, {
           businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
           legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
           clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.I),
@@ -277,7 +279,7 @@ const updateClientType = (value: CodeNameType | undefined) => {
           locationNames: [defaultLocation],
           contactType: { value: "BL", text: "Billing" },
         };
-        formData.value.location.contacts[0] = applicantContact;                
+        formData.location.contacts[0] = applicantContact;                
         break;
       }
       default:
@@ -299,56 +301,74 @@ const goToStep = (index: number, skipCheck: boolean = false) => {
   revalidateBus.emit();
 };
 
-const {
-  response,
-  error,
-  fetch: post,
-  handleErrorDefault,
-} = usePost("/api/clients/submissions/staff", toRef(formData).value, {
-  skip: true,
-  skipDefaultErrorHandling: true,
-});
-
-watch([response], () => {
-  if (response.value.status === 201) {
-    router.push({ name: "staff-confirmation" });
-  }
-});
-
-watch([error], () => {
-  // reset the button to allow a new submission attempt
-  submitBtnDisabled.value = false;
-
-  if (Array.isArray(error.value.response?.data)) {
-    const validationErrors: ValidationMessageType[] = error.value.response?.data;
-
-    validationErrors.forEach((errorItem: ValidationMessageType) =>
-      notificationBus.emit({
-        fieldId: "server.validation.error",
-        fieldName: convertFieldNameToSentence(errorItem.fieldId),
-        errorMsg: errorItem.errorMsg,
-      }),
-    );
-  } else {
-    handleErrorDefault();
-  }
-
-  setScrollPoint("top-notification");
-});
-
-const errorBus = useEventBus<ValidationMessageType[]>(
-  "submission-error-notification"
-);
-
 const submitBtnDisabled = ref(false);
 
 const submit = () => {
   errorBus.emit([]);
   notificationBus.emit(undefined);
 
+  const {
+    response,
+    error,
+    fetch: fetchSubmission,
+    handleErrorDefault,
+  } = usePost("/api/clients/submissions/staff", toRef(formData).value, {
+    skip: true,
+    skipDefaultErrorHandling: true,
+  });
+
+  watch([response], () => {
+    if (response.value.status === 201) {
+      overlayBus.emit({ isVisible: false, message: "", showLoading: false });
+      router.push(
+        { 
+          name: "staff-confirmation", 
+          state: { 
+            clientNumber: response.value.headers['x-client-id'],
+            clientEmail: formData.location.contacts[0].email,
+          }
+        } 
+      );
+    }
+  });
+
+  watch([error], () => {
+    // reset the button to allow a new submission attempt
+    submitBtnDisabled.value = false;
+    //Disable the overlay
+    overlayBus.emit({ isVisible: false, message: "", showLoading: false });
+
+    if(error.value.response?.status === 400) {
+      const validationErrors: ValidationMessageType[] = error.value.response?.data;
+
+      validationErrors.forEach((errorItem: ValidationMessageType) =>
+        notificationBus.emit({
+          fieldId: "server.validation.error",
+          fieldName: convertFieldNameToSentence(errorItem.fieldId),
+          errorMsg: errorItem.errorMsg,
+        }),
+      );
+    } else if(error.value.response?.status === 408) {      
+      router.push(
+        { 
+          name: "staff-processing", 
+          params: { 
+            submissionId: error.value.response.headers['x-sub-id'],
+            clientEmail: formData.location.contacts[0].email
+          }
+        } 
+      );
+    } else{
+      handleErrorDefault();
+    }
+
+    setScrollPoint("top-notification");
+  });
+
   if (checkStepValidity(currentTab.value)) {
     submitBtnDisabled.value = true;
-    post();
+    overlayBus.emit({ isVisible: true, message: "", showLoading: true });
+    fetchSubmission();
   }
 };
 </script>
@@ -537,6 +557,6 @@ const submit = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div>  
   </div>
 </template>

@@ -1,0 +1,11 @@
+{
+  "firstName": "Johnathan",
+  "middleName": "Valerie",
+  "lastName": "Wick",
+  "birthdateYear": "1972",
+  "birthdateMonth": "05",
+  "birthdateDay": "30",
+  "identificationTypeValue": "Canadian driver's licence",
+  "identificationProvinceValue": "Manitoba",
+  "clientIdentification": "34567899"
+}

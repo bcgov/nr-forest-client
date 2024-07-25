@@ -45,6 +45,3 @@ export const awsconfig = {
     },
   },
 };
-
-export const externalConfirmationRoute = "confirmation";
-export const staffConfirmationRoute = "staff-confirmation";
