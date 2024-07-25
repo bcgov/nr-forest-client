@@ -3,8 +3,6 @@ describe("Staff Form Submission", () => {
 
   /* Test variables and functions */
   const API_BASE = "http://localhost:8080/api";
-  
-
 
   const fillIndividual = (extraData : any = {}) => {
 
@@ -181,7 +179,7 @@ describe("Staff Form Submission", () => {
     fillContact();
     clickNext();
 
-    cy.get("[data-test='wizard-submit-button']").click();        
+    cy.get("[data-test='wizard-submit-button']").click();
     cy.get("h1").should("contain", "New client 00123456 has been created!");
   });
 
@@ -195,9 +193,12 @@ describe("Staff Form Submission", () => {
 
     cy.fillFormEntry("cds-textarea","error",10,true);
 
-    cy.get("[data-test='wizard-submit-button']").click();        
-    cy.get("h1").should("contain", "Submission still being processed!");
-    cy.get("cds-button[href='/submissions/4444']").should("exist");
+    cy.get("[data-test='wizard-submit-button']").click();
+    cy.wait("@submitForm").then((interception) => {
+      cy.wait(5000);
+      cy.get("h1").should("contain", "Submission still being processed!");
+      cy.get("cds-button[href='/submissions/4444']").should("exist");
+    });
 
   });
 
