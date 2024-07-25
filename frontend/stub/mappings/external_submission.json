@@ -1,0 +1,159 @@
+{
+  "mappings": [
+    {
+      "name": "Submission Success for XX",
+      "request": {
+        "url": "/api/clients/submissions",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.registrationNumber",
+              "contains": "XX"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json",
+          "Location": "/api/clients/submissions/123456",
+          "x-sub-id": "123456",
+          "Access-Control-Expose-Headers": "x-sub-id, Location"
+        },
+        "fixedDelayMilliseconds": 750
+      }
+    },
+    {
+      "name": "Submission Error for UU",
+      "request": {
+        "url": "/api/clients/submissions",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.registrationNumber",
+              "contains": "UU"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "bodyFileName": "response-submission-fault.json",
+        "fixedDelayMilliseconds": 750
+      }
+    },
+    {
+      "name": "Send email for ZZ",
+      "request": {
+        "url": "/api/ches/duplicate",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.registrationNumber",
+              "contains": "ZZ"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 202,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 750
+      }
+    },
+    {
+      "name": "Submission Error for FM1234567",
+      "request": {
+        "url": "/api/clients/submissions",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.registrationNumber",
+              "contains": "FM1234567"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "[{\"fieldId\":\"businessInformation.clientType\",\"errorMsg\":\"clientType value I is not supported for registered businesses\"}]",
+        "fixedDelayMilliseconds": 750
+      }
+    },
+    {
+      "name": "Submission for Unregistered",
+      "request": {
+        "url": "/api/clients/submissions",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessType",
+              "contains": "U"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "contains": "U"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 201,
+        "headers":{
+          "Content-Type": "application/json",
+          "Location": "/api/clients/submissions/123456",
+          "x-sub-id": "123456",
+          "Access-Control-Expose-Headers": "x-sub-id, Location"
+        },
+        "fixedDelayMilliseconds": 750
+      }
+    },
+    {
+      "name": "Submission for Unregistered clientType I",
+      "request": {
+        "url": "/api/clients/submissions",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessType",
+              "contains": "U"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "contains": "I"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 201,
+        "headers":{
+          "Content-Type": "application/json",
+          "Location": "/api/clients/submissions/123456",
+          "x-sub-id": "123456",
+          "Access-Control-Expose-Headers": "x-sub-id, Location"
+        },
+        "fixedDelayMilliseconds": 750
+      }
+    }
+  ]
+}

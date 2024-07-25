@@ -114,7 +114,7 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
     }
 
     if (exception instanceof DataMatchException matchException) {
-      log.error("Found matches: {}",matchException.getMatches());
+      log.error("Found matches: {}", matchException.getMatches());
       return ServerResponse
           .status(matchException.getStatusCode())
           .contentType(MediaType.APPLICATION_JSON)
@@ -124,10 +124,14 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
     if (exception instanceof IllegalStateException e) {
 
       if (e.getCause() instanceof SubmissionNotCompletedException notCompletedException) {
-        log.error("Submission is still ongoing: {}",notCompletedException.getReason());
+        log.error("Submission is still ongoing: {}", notCompletedException.getReason());
         return ServerResponse.status(notCompletedException.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(Objects.requireNonNull(notCompletedException.getReason())));
+            .header("x-sub-id", notCompletedException.getSubmissionId().toString())
+            .header("Location",
+                "/api/clients/submissions/" + notCompletedException.getSubmissionId())
+            .body(
+                BodyInserters.fromValue(Objects.requireNonNull(notCompletedException.getReason())));
       }
       log.error("Request encountered an illegal state", exception);
       return ServerResponse.status(HttpStatus.REQUEST_TIMEOUT)
@@ -151,7 +155,7 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
         BooleanUtils.toString(StringUtils.isBlank(errorMessage), StringUtils.EMPTY, errorMessage);
 
     // Log the error status and message
-    log.error("{} - {}", errorStatus, errorMessage,exception);
+    log.error("{} - {}", errorStatus, errorMessage, exception);
 
     // Return a response with the status code and error message
     return ServerResponse.status(errorStatus)

@@ -524,7 +524,12 @@ describe("Staff Form", () => {
           .click()
           .and("have.value", "Individual");
 
-        fillIndividual();
+        fillIndividual({
+          ...individualBaseData,
+          identificationTypeValue: "Canadian driver's licence",
+          identificationProvinceValue: "Nova Scotia",
+          clientIdentification: "12345678"
+        });
         cy.get("[data-test='wizard-next-button']").click();
 
         fillLocation();
@@ -537,6 +542,31 @@ describe("Staff Form", () => {
       it("displays the Review section", () => {
         cy.contains("h2", "Review");
       });
+
+      it("should allow notes to be added", () => {
+        cy.get("cds-textarea")
+        .shadow()
+        .find("textarea")
+        .type("This is a note!");
+
+        cy.get("cds-textarea")
+        .shadow()
+        .find(".cds--text-area__label-wrapper")
+        .should("contain", "15/4000");
+        
+        // Even if I try to add more than 4k characters, it will stop at 4k
+        cy.get("cds-textarea")
+        .shadow()
+        .find("textarea")
+        .type("A".repeat(4010));
+        
+        cy.get("cds-textarea")
+        .shadow()
+        .find(".cds--text-area__label-wrapper")
+        .should("contain", "4000/4000");
+
+      });
+
     });
 
   });

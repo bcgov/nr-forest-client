@@ -126,7 +126,6 @@ Cypress.Commands.add(
     cy.addCookie(`${baseUserCookieName}.idToken`,`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${jwtfy(jwtBody)}.`);
     
     cy.reload();
-    cy.wait(1000);
   }
 );
 
@@ -145,4 +144,28 @@ Cypress.Commands.add("getMany", (names: string[]): Cypress.Chainable<any[]> => {
   }
 
   return cy.wrap(values);
+});
+
+Cypress.Commands.add("fillFormEntry",(field: string, value: string, delayMS: number = 10, area: boolean = false) =>{
+  cy.get(field).should("exist").shadow().find(area ? "textarea" : "input").type(value,{ delay: delayMS });
+  cy.get(field).shadow().find(area ? "textarea" : "input").blur();
+});
+
+Cypress.Commands.add("selectFormEntry", (field: string, value: string, box: boolean) => {
+  cy.get(field).find("[part='trigger-button']").click();
+
+  if (!box) {
+    cy.get(field).find(`cds-combo-box-item[data-value="${value}"]`).click();
+  } else {
+    cy.get(field)
+      .find(`cds-multi-select-item[data-value="${value}"]`)
+      .click();
+    cy.get(field).click();
+  }
+});
+
+Cypress.Commands.add("selectAutocompleteEntry", (field: string, value: string, dataid: string) => {
+  cy.fillFormEntry(field, value);
+  cy.get(field).find("[part='trigger-button']").click();    
+  cy.get(field).find(`cds-combo-box-item[data-id="${dataid}"]`).click();
 });

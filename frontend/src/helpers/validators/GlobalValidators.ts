@@ -38,7 +38,7 @@ const errorBus = useEventBus<ValidationMessageType[]>(
  */
 export const isNotEmpty =
   (message: string = "This field is required") =>
-  (value: string): string => {
+  (value: string): string => {    
     if (value && value.trim().length > 0) return "";
     return message;
   };
@@ -182,6 +182,16 @@ export const isMinSize =
   (minSize: number) => {
     return (value: string): string => {
       if (isNotEmpty(message)(value) === "" && value.length >= minSize)
+        return "";
+      return message;
+    };
+  };
+
+export const isExactSize =
+  (message: string = "This field must have the defined size") =>
+  (size: number) => {
+    return (value: string): string => {
+      if (isNotEmpty(message)(value) === "" && value.length == size)
         return "";
       return message;
     };

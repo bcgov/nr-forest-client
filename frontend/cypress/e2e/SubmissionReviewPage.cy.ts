@@ -148,6 +148,51 @@ describe("Submission Review Page", () => {
     }
   });
 
+
+  it("Should show notification and refresh if staff submitted is pending", () => {
+    let incomplete = true;
+    cy.intercept("GET", "api/clients/submissions/4444",(req) => {
+      if(incomplete){
+        req.reply({ fixture: 'test-case-review-staff-pending.json' })
+      } else {
+        req.reply({ fixture: 'test-case-review-staff-completed.json' })
+      }
+      incomplete = !incomplete;
+    }).as("loadSubmissionData");
+
+    cy.visit("/submissions/4444");
+
+    cy.wait("@loadSubmissionData")
+      .its("response.body.submissionStatus")
+      .should("eq", "Approved");
+
+      cy.get("cds-actionable-notification")
+      .should("exist")
+      .should(
+        "contain",
+        "It may take a few minutes. Once completed, this page will be automatically updated and the client number will be shown in the \"Client Sumarry\" below."
+      );
+      
+      cy.wait(10000);
+      cy.wait("@loadSubmissionData")
+      .its("response.body.business.clientNumber")
+      .should("eq", "00140791");
+      
+
+      cy.get("cds-actionable-notification")
+      .should("not.exist");
+
+      cy.get(".grouping-10 > :nth-child(2) > .label-01")
+      .should("contain", "Client number");
+
+      cy.get(".grouping-10 > :nth-child(2) > .body-compact-01")
+      .should("contain", "00140791");
+
+
+  });
+
+
+
   const approveLabel = "Approve submission";
   const rejectLabel = "Reject submission";
   const actions = [
@@ -275,6 +320,11 @@ describe("Submission Review Page", () => {
 
     cy.wait("@loadSubmission").its("response.body.submissionStatus").should("eq", "New");
   };
+
+
+  
+
+
 
   // TODO: have e2e tests running with BCEID_MULTI_ADDRESS enabled
   // describe("when BCEID_MULTI_ADDRESS is enabled", () => {

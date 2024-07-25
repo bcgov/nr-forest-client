@@ -52,7 +52,7 @@ const revalidateBus = useEventBus<void>("revalidate-bus");
  * @param errorMessage - the error message
  */
 const setError = (errorMessage: string | undefined) => {
-  error.value = errorMessage;
+  error.value = errorMessage ?? "";
 
   /*
   The error should be emitted whenever it is found, instead of watching and emitting only when it
@@ -95,15 +95,18 @@ watch([selectedValue], () => {
 
 //We call all the validations
 const validateInput = (newValue: string) => {
-  if (props.validations) {
+  if (props.validations) {    
     setError(
       props.validations
-        .map((validation) => validation(newValue))
+        .map((validation) => validation(newValue))        
         .filter((errorMessage) => {
           if (errorMessage) return true;
           return false;
-        })
-        .shift() ?? props.errorMessage,
+        })        
+        .reduce(
+          (acc, errorMessage) => acc ?? errorMessage,
+          props.errorMessage,
+        )
     );
   }
 };
@@ -195,7 +198,7 @@ watch(
         :placeholder="placeholder"
         :value="selectedValue"
         :helper-text="tip"
-        :disabled="!enabled"
+        :disabled="!enabled"        
         :invalid="error ? true : false"
         :aria-invalid="ariaInvalidString"
         :invalid-text="error"
@@ -218,7 +221,9 @@ watch(
 
   <div v-if="!enabled" class="grouping-04">
     <div :data-scroll="id" class="grouping-04-label">
-      <span :for="id" :class="'label-'+id">{{ label }}</span>
+      <div class="cds--text-input__label-wrapper" part="div cds--text-input__label-wrapper">
+        <span :for="id" :class="'cds--label cds-text-input-label label-'+id" part="label cds--label">{{ label }}</span>
+      </div>
     </div>
     <span :class="'text-'+id">{{ modelValue }}</span>
   </div>

@@ -1,0 +1,57 @@
+{
+    "submissionId": 4444,
+    "submissionStatus": "Approved",
+    "submissionType": "Staff submitted data",
+    "submittedTimestamp": "2024-01-01 00:00:00",
+    "updateTimestamp": "2024-01-01 00:00:00",
+    "approvedTimestamp": "2024-01-01 00:00:00",
+    "updateUser": "CLIADMIN",
+    "business": {
+        "businessType": "U",
+        "registrationNumber": "",
+        "clientNumber": "00140791",
+        "organizationName": "Johnathan Wick",
+        "clientType": "I",
+        "clientTypeDesc": "Individual",
+        "goodStandingInd": "Y",
+        "birthdate": "1962-08-17",
+        "district": null,
+        "districtDesc": null
+    },
+    "contact": [
+        {
+            "index": 0,
+            "contactType": "Billing",
+            "firstName": "Johnathan",
+            "lastName": "Wick",
+            "phoneNumber": "(222) 333-4455",
+            "emailAddress": "thatmail@maila.ca",
+            "locations": [
+                "Hangar"
+            ],
+            "userId": "userid"
+        }
+    ],
+    "address": [
+        {
+            "index": 0,
+            "streetAddress": "1234 Nowhere St",
+            "country": "Canada",
+            "province": "British Columbia",
+            "city": "Victoria",
+            "postalCode": "V8V8V8",
+            "name": "Hangar"
+        }
+    ],
+    "matchers": {
+        "info": {
+            "name": "Johnathan Wick",
+            "email": "johnwick@mail.ca",
+            "userId": "",
+            "businessId": "",
+            "businessName": ""
+        }
+    },
+    "rejectionReason": null,
+    "confirmedMatchUserId": ""
+}
