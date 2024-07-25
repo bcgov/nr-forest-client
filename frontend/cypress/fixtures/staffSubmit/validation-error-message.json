@@ -1,0 +1,12 @@
+{
+  "statusCode": 400,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": [
+    {
+      "fieldId": "businessInformation.identificationType",
+      "errorMsg": "You must select an identification type"
+    }
+  ]
+}
