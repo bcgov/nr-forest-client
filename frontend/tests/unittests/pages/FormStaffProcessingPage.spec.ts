@@ -25,7 +25,7 @@ describe('FormStaffProcessingPage.vue', () => {
     const wrapper = mount(FormStaffProcessingPage, {
       props: { submissionId, clientEmail }
     });
-    expect(wrapper.text()).toContain('Submission still being processed!');
+    expect(wrapper.text()).toContain('This submission is being processed');
     expect(wrapper.text()).toContain('Create another client');
   });
 
