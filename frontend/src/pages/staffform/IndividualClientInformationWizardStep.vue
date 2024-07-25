@@ -393,7 +393,7 @@ watch(combinedValue, (newValue) => {
         :mask="clientIdentificationMask"
         :validations="[
           ...getValidations('businessInformation.clientIdentification'),
-          
+          ...getValidations(clientIdentificationValidationExtras),
           submissionValidation('businessInformation.clientIdentification'),
         ]"
         required
