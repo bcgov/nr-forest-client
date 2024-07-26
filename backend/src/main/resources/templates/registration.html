@@ -29,11 +29,13 @@
 			you provided.</p>
 		<div>&nbsp;</div>
 		
-		<p>
-			If you need to contact us before then please contact the ${districtName} at  
-			<a href="mailto:${districtEmail}">${districtEmail}.</a>
-		</p>
-		<div>&nbsp;</div>
+		<#if districtEmail?has_content>
+			<p>
+				If you need to contact us before then please contact the ${districtName} at  
+				<a href="mailto:${districtEmail}">${districtEmail}.</a>
+			</p>
+			<div>&nbsp;</div>
+		</#if>
 		
 		<p>Thank you,</p>
 		<p>The Forests Client Management System Team</p>

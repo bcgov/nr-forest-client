@@ -367,11 +367,11 @@ const isProcessing = computed(() => {
           hide-close-button="true"
           open="true"
           kind="warning"
-          title="Submission is being processed"      
+          title="This submission is being processed"      
         >    
           <div>
             <p>
-              It may take a few minutes. Once completed, this page will be automatically updated and the client number will be shown in the "Client Sumarry" below.
+              It may take a few minutes. Once completed, the client number will display in the “Client summary” section below.
             </p>
           </div>
         </cds-actionable-notification>

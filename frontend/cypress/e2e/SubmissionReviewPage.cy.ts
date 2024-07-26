@@ -170,7 +170,7 @@ describe("Submission Review Page", () => {
       .should("exist")
       .should(
         "contain",
-        "It may take a few minutes. Once completed, this page will be automatically updated and the client number will be shown in the \"Client Sumarry\" below."
+        "It may take a few minutes. Once completed, the client number will display in the \“Client summary\” section below."
       );
       
       cy.wait(10000);

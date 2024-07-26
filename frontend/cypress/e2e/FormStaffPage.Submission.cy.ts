@@ -196,7 +196,7 @@ describe("Staff Form Submission", () => {
     cy.get("[data-test='wizard-submit-button']").click();
     cy.wait("@submitForm").then((interception) => {
       cy.wait(5000);
-      cy.get("h1").should("contain", "Submission still being processed!");
+      cy.get("h1").should("contain", "This submission is being processed");
       cy.get("cds-button[href='/submissions/4444']").should("exist");
     });
 

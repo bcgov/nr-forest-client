@@ -38,7 +38,7 @@ public class LegacyService {
         new ForestClientLocationDto(
             clientNumber,
             String.format("%02d", index),
-            detail.getName(),
+            detail.getName().toUpperCase(),
             detail.getAddressValue1(),
             detail.getAddressValue2(),
             detail.getAddressValue3(),

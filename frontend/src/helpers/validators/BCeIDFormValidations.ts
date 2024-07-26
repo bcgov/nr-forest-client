@@ -127,3 +127,6 @@ export const addValidation = (
   if (!formFieldValidations[key]) formFieldValidations[key] = [];
   formFieldValidations[key].push(validation);
 };
+
+export const getValidations = (key: string): ((value: any) => string)[] =>
+  key ? formFieldValidations[key] || [] : [];
