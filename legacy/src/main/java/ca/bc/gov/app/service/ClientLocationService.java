@@ -10,6 +10,8 @@ import ca.bc.gov.app.repository.ForestClientLocationRepository;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.util.function.Function;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
@@ -28,6 +30,9 @@ public class ClientLocationService {
   private final ForestClientLocationRepository repository;
 
   public Mono<String> saveAndGetIndex(ForestClientLocationDto dto) {
+    
+    dto = sanitizePhoneNumbers(dto);
+      
     return
         //Load the country detail from the database
         getCountry(dto.country())
@@ -62,7 +67,27 @@ public class ClientLocationService {
             .map(ForestClientLocationEntity::getClientNumber);
   }
 
-	public Flux<ForestClientLocationDto> search(String address, String postalCode) {
+  private ForestClientLocationDto sanitizePhoneNumbers(ForestClientLocationDto dto) {
+    dto = sanitizePhoneNumber(dto, dto.businessPhone(), dto::withBusinessPhone);
+    dto = sanitizePhoneNumber(dto, dto.faxNumber(), dto::withFaxNumber);
+    dto = sanitizePhoneNumber(dto, dto.cellPhone(), dto::withCellPhone);
+    dto = sanitizePhoneNumber(dto, dto.homePhone(), dto::withHomePhone);
+    return dto;
+  }
+
+  private ForestClientLocationDto sanitizePhoneNumber(
+      ForestClientLocationDto dto,
+      String phoneNumber, 
+      Function<String, 
+      ForestClientLocationDto> withPhoneNumber) {
+    if (!StringUtils.isEmpty(phoneNumber)) {
+      String sanitizedPhone = phoneNumber.replaceAll("\\D", "");
+      dto = withPhoneNumber.apply(sanitizedPhone);
+    }
+    return dto;
+  }
+
+  public Flux<ForestClientLocationDto> search(String address, String postalCode) {
     log.info("Searching for forest client location {} {}", address, postalCode);
 		return repository
 				.matchBy(address, postalCode)

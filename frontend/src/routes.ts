@@ -132,8 +132,8 @@ export const routes = [
       },
       style: "content",
       headersStyle: "headers",
-      sideMenu: false,
-      profile: false,
+      sideMenu: true,
+      profile: true,
     },
   },
   {
@@ -153,8 +153,8 @@ export const routes = [
       },
       style: "content",
       headersStyle: "headers",
-      sideMenu: false,
-      profile: false,
+      sideMenu: true,
+      profile: true,
     },
   },
   {

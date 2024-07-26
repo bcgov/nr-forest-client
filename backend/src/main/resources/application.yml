@@ -167,6 +167,8 @@ ca:
               - X-User-Businessid
               - x-total-count
               - X-Total-Count
+              - x-client-id
+              - X-Client-Id
             methods:
               - OPTIONS
               - GET

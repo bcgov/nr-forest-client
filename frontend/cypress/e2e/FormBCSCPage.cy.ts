@@ -1,39 +1,60 @@
-import type { StaticResponse } from "../../node_modules/cypress/types/net-stubbing";
+import { delay } from "cypress/types/bluebird";
 
 /* eslint-disable no-undef */
 describe("BCSC Form", () => {
-  const defaultSubmitResponse = {
-    statusCode: 201,
-    headers: {
-      location: "http://localhost:8080/api/clients/submissions/1",
-      "x-sub-id": "123456",
+  
+  const submitResponse = {
+    "success":{
+      statusCode: 201,
+      body: {},
+      headers: {
+        location: "http://localhost:3000/clients/submissions/1",
+        "Access-Control-Expose-Headers": "x-sub-count, location",
+        "x-sub-id": "123456",
+      },
+      delay: 1000,
     },
-    delay: 150,
+    "failure": {
+      statusCode: 400,
+      body: [],
+      headers: {},
+      delay: 1000,
+    },
   };
-  let submitResponse: StaticResponse = structuredClone(defaultSubmitResponse);
 
-  beforeEach(() => {
-    submitResponse = structuredClone(defaultSubmitResponse);
+  beforeEach(function(){    
 
-    cy.intercept("GET", "/api/codes/districts?page=0&size=250", {
+    cy.intercept("GET", "**/api/codes/districts?page=0&size=250", {
       fixture: "districts.json",
     }).as("getDistricts");
 
-    cy.intercept("http://localhost:8080/api/clients/name/*", {
+    cy.intercept("**/api/clients/name/*", {
       fixture: "business.json",
     }).as("searchCompany");
 
-    cy.intercept("GET", "/api/clients/XX9016140", {
+    cy.intercept("GET", "**/api/clients/XX9016140", {
       fixture: "example.json",
     }).as("selectCompany");
 
-    cy.intercept("GET", "/api/codes/countries/CA",{
+    cy.intercept("GET", "**/api/codes/countries/CA",{
       fixture: "countryCodeCA.json",
     }).as("getCanadaByCode");
 
-    cy.intercept("POST", "/api/clients/submissions", (req) => {
-      req.reply(submitResponse);
+    const response = this.currentTest.title.endsWith("failure") ? submitResponse.failure : submitResponse.success;
+
+    cy.intercept("POST", "**/api/clients/submissions",function(req) {
+      req.reply(response);
     }).as("submitForm");
+
+    cy.intercept("GET", "**/api/clients/individual/**", {
+      statusCode: 200,
+      body: {},
+    }).as("getIndividual");
+
+    cy.intercept("GET", "**/api/codes/contact-types?page=0&size=250", {
+      statusCode: 200,
+      body: [{"code":"P","name":"Person"}],
+    }).as("getContactTypes");
 
     cy.visit("/");
     cy.wait(500);
@@ -44,7 +65,6 @@ describe("BCSC Form", () => {
       "contain",
       "Create and manage client accounts"
     );
-
 
     cy.login("uattest@gov.bc.ca", "Uat Test", "ca.bc.gov.flnr.fam.dev",
     {
@@ -97,10 +117,6 @@ describe("BCSC Form", () => {
   });
 
   describe("when submission fails", () => {
-    beforeEach(() => {
-      submitResponse.statusCode = 400;
-      submitResponse.body = [];
-    });
     it("should disable the Submit button after clicked, then re-enable it after the failure", () => {
       cy.get("#district").find("[part='trigger-button']").click();
 

@@ -52,7 +52,7 @@ const revalidateBus = useEventBus<void>("revalidate-bus");
  * @param errorMessage - the error message
  */
 const setError = (errorMessage: string | undefined) => {
-  error.value = errorMessage ?? "";
+  error.value = errorMessage || "";
 
   /*
   The error should be emitted whenever it is found, instead of watching and emitting only when it
@@ -94,17 +94,17 @@ watch([selectedValue], () => {
 });
 
 //We call all the validations
-const validateInput = (newValue: string) => {
+const validateInput = (newValue: string) => {  
   if (props.validations) {    
     setError(
       props.validations
-        .map((validation) => validation(newValue))        
+        .map((validation) => validation(newValue))
         .filter((errorMessage) => {
           if (errorMessage) return true;
           return false;
-        })        
+        })
         .reduce(
-          (acc, errorMessage) => acc ?? errorMessage,
+          (acc, errorMessage) => acc || errorMessage,
           props.errorMessage,
         )
     );
