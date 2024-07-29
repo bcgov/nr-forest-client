@@ -109,7 +109,16 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                             )
                         )
                     )
-                    .withClientIdentification(detailEntity.getClientIdentification())
+                    .withClientIdentification(
+                        "BCSC".equals(detailEntity.getIdentificationCode())
+                        ? Objects.toString(
+                            detailEntity.getIdentificationCode(),
+                            ProcessorUtil.splitName(
+                                getUser(message, ApplicationConstant.CREATED_BY)
+                            )[0]
+                        )
+                        : detailEntity.getClientIdentification()
+                    )
                     .withClientNumber(message.payload())
                     .withAcronym(detailEntity.getClientAcronym())
             )
