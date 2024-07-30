@@ -166,7 +166,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
       :enabled="true"
       required
       required-label
-      @empty="validation.email = true"
+      @empty="validation.email = !$event"
       @error="validation.email = !$event"
     />
 
@@ -186,7 +186,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
           ...getValidations('location.contacts.*.phoneNumber'),
           submissionValidation(`location.contacts[${id}].phoneNumber`)
         ]"
-        @empty="validation.phoneNumber = true"
+        @empty="validation.phoneNumber = !$event"
         @error="validation.phoneNumber = !$event"
       />
 
