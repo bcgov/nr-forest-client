@@ -63,9 +63,13 @@ class LegacyIndividualPersistenceServiceTest {
         .submissionId(2)
         .submissionDetailId(2)
         .organizationName("James Baxter")
+        .firstName("James")
+        .lastName("Baxter")
         .businessTypeCode("U")
         .clientTypeCode("I")
         .goodStandingInd("Y")
+        .identificationTypeCode("OTHR")
+        .clientIdentification("ABC:123")
         .build();
 
     when(submissionDetailRepository.findBySubmissionId(eq(2)))
@@ -98,8 +102,7 @@ class LegacyIndividualPersistenceServiceTest {
                   "Jhon Snow submitted the individual with data acquired from BC Services Card")
               .hasFieldOrPropertyWithValue("clientTypeCode", "I")
               .hasFieldOrPropertyWithValue("clientIdTypeCode", "OTHR")
-              .hasFieldOrPropertyWithValue("clientIdentification",
-                  "ottomated");
+              .hasFieldOrPropertyWithValue("clientIdentification", "ABC:123");
 
           assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
               .isNotNull()
