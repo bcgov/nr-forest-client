@@ -11,6 +11,7 @@ import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
+import ca.bc.gov.app.util.ProcessorUtil;
 import java.time.Duration;
 import java.util.function.Function;
 import lombok.Getter;
@@ -288,8 +289,8 @@ public abstract class LegacyAbstractPersistenceService {
             StringUtils.EMPTY,
             StringUtils.EMPTY,
             StringUtils.EMPTY,
-            createdBy,
-            updatedBy,
+            ProcessorUtil.limitString(createdBy, 30),
+            ProcessorUtil.limitString(updatedBy, 30),
             ApplicationConstant.ORG_UNIT,
             StringUtils.EMPTY
         );
