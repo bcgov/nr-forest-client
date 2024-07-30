@@ -110,18 +110,20 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                         )
                     )
                     .withClientIdentification(
-                        Objects.toString(
+                        null == detailEntity.getIdentificationCode()
+                        ? Objects.toString(
                             detailEntity.getIdentificationCode(),
                             ProcessorUtil.splitName(
                                 getUser(message, ApplicationConstant.CREATED_BY)
                             )[0]
                         )
+                        : detailEntity.getClientIdentification()
                     )
                     .withClientNumber(message.payload())
                     .withAcronym(detailEntity.getClientAcronym())
             )
             .doOnNext(forestClient -> log.info("forest client generated for individual {}",
-                forestClient.clientIdTypeCode() + forestClient.clientIdentification()))
+                forestClient.clientIdTypeCode() + " " + forestClient.clientIdentification()))
             .map(forestClient ->
                 new MessagingWrapper<>(forestClient, message.parameters())
                     .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
