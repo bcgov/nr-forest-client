@@ -1,30 +1,31 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch, toRef, onMounted } from "vue";
+import { ref, reactive, computed, watch, onMounted } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/inline-loading/index";
 import "@carbon/web-components/es/components/notification/index";
 // Importing composables
 import { useEventBus } from "@vueuse/core";
-import { useFetch, useFetchTo } from "@/composables/useFetch";
+import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Importing types
 import {
   BusinessSearchResult,
-  ClientTypeEnum,
   ProgressNotification,
+  CodeNameType
 } from "@/dto/CommonTypesDto";
-import { BusinessTypeEnum, CodeNameType, LegalTypeEnum } from "@/dto/CommonTypesDto";
 import type {
   FormDataDto,
   ForestClientDetailsDto,
 } from "@/dto/ApplyClientNumberDto";
 // Importing helper functions
 import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
+// Importing validators
+import { getValidations, validate } from "@/helpers/validators/StaffFormValidations";
+import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // @ts-ignore
 import Information16 from "@carbon/icons-vue/es/information/16";
 import Check16 from "@carbon/icons-vue/es/checkmark--filled/20";
 import Warning16 from "@carbon/icons-vue/es/warning--filled/20";
-import { locationName } from '../../dto/ApplyClientNumberDto';
 
 // Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
@@ -69,6 +70,8 @@ const showDetailsLoading = ref<boolean>(false);
 const detailsData = ref(null);
 const soleProprietorOwner = ref<string>("");
 const receivedClientType = ref<CodeNameType>();
+const bcRegistryError = ref<boolean>(false);
+const clientNameError = ref(null);
 
 const toggleErrorMessages = (
   goodStanding: boolean | null = null,
@@ -105,7 +108,7 @@ const showFields = computed(() => {
     formData.value.businessInformation.clientType &&
     formData.value.businessInformation.registrationNumber &&
     formData.value.businessInformation.legalType &&
-    detailsData.value
+    validation.business
   );
 });
 
@@ -138,6 +141,7 @@ const autoCompleteResult = ref<BusinessSearchResult>();
   // reset business validation state
   validation.business = false;
   detailsData.value = null;
+  bcRegistryError.value = false;
 
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
     toggleErrorMessages(false, false, false);
@@ -164,7 +168,9 @@ const autoCompleteResult = ref<BusinessSearchResult>();
 
     showDetailsLoading.value = true;
     watch(error, () => {
-      if (error.value.response?.status === 409) {
+      if (error.value.response?.status === 409) {    
+        validation.business = false;
+        clientNameError.value = error.value.response.data.split('client number')[1];
         toggleErrorMessages(null, true, null);        
         return;
       }
@@ -188,6 +194,7 @@ const autoCompleteResult = ref<BusinessSearchResult>();
         return;
       }
       handleErrorDefault();
+      bcRegistryError.value = true;
     });
 
     watch(
@@ -223,10 +230,7 @@ watch([detailsData], () => {
     formData.value.businessInformation.goodStandingInd =
       forestClientDetails.goodStanding ? "Y" : forestClientDetails.goodStanding === false ? "N" : null;
     
-    toggleErrorMessages(
-      (forestClientDetails.goodStanding ?? true) ? false : true,
-      null
-    );
+    toggleErrorMessages((forestClientDetails.goodStanding ?? true),null);
 
     validation.business = (forestClientDetails.goodStanding ?? true);
 
@@ -237,9 +241,7 @@ watch([detailsData], () => {
 
     if (forestClientDetails.contacts.length > 0) {
       soleProprietorOwner.value = forestClientDetails.contacts[0].lastName;
-    }
-
-    console.log("Data loaded", formData.value);
+    }    
   }
 });
 
@@ -253,6 +255,10 @@ const checkValid = () =>
 watch([validation], () => emit("valid", checkValid()));
 emit("valid", checkValid());
 
+if(formData.value.businessInformation.businessName){
+  validation.business = true;
+}
+
 const { setFocusedComponent } = useFocus();
 onMounted(() => {
   if (props.autoFocus) {
@@ -263,7 +269,7 @@ onMounted(() => {
 </script>
 <template>
   <div class="frame-01">
-
+TODO: Add the error message on top for duplicated
     <data-fetcher
       v-model:url="autoCompleteUrl"
       :min-length="3"
@@ -278,15 +284,32 @@ onMounted(() => {
         autocomplete="off"
         required
         required-label
+        :error-message="clientNameError ? 'Client already exists' : null"
         tip=""
         v-model="formData.businessInformation.businessName"
         :contents="content"
-        :validations="[]"
+        :validations="[
+          ...getValidations('businessInformation.businessName'),
+          submissionValidation('businessInformation.businessName'),
+          submissionValidation('businessInformation.clientType'),
+          submissionValidation('businessInformation.legalType'),
+          ]"
         :loading="loading"
         @update:selected-value="autoCompleteResult = $event"
         @update:model-value="validation.business = false"
         />
         <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
+        
+        <cds-inline-notification
+          v-shadow="2"
+          v-if="bcRegistryError || (error?.response?.status ?? false)"
+          low-contrast="true"
+          open="true"
+          kind="error"
+          hide-close-button="true"
+          title="BC Registries is down">
+            <span class="body-compact-01"> You'll need to try again later.</span>      
+        </cds-inline-notification>
     </data-fetcher>
 
     <cds-inline-notification
@@ -304,6 +327,8 @@ onMounted(() => {
         </ol>
       </div>
     </cds-inline-notification>
+
+    
 
     <div v-if="showFields" class="read-only-box">
 
@@ -380,12 +405,16 @@ onMounted(() => {
 
     <text-input-component
       id="workSafeBCNumber"
-      v-if="showFields"
+      v-if="showFields || bcRegistryError"
       label="WorkSafeBC number"
+      mask="######"
       placeholder=""
       autocomplete="off"
-      v-model="formData.businessInformation.workSafeBCNumber"
-      :validations="[]"
+      v-model="formData.businessInformation.workSafeBcNumber"
+      :validations="[
+        ...getValidations('businessInformation.workSafeBcNumber'),
+        submissionValidation(`businessInformation.workSafeBcNumber`),
+      ]"
       enabled
       @empty="validation.workSafeBCNumber = true"
       @error="validation.workSafeBCNumber = !$event"
@@ -393,12 +422,15 @@ onMounted(() => {
 
     <text-input-component
       id="doingBusinessAs"
-      v-if="showFields"
+      v-if="showFields || bcRegistryError"
       label="Doing business as"
       placeholder=""
       autocomplete="off"
       v-model="formData.businessInformation.doingBusinessAs"
-      :validations="[]"
+      :validations="[
+        ...getValidations('businessInformation.doingBusinessAs'),
+        submissionValidation(`businessInformation.doingBusinessAs`),
+      ]"
       enabled
       @empty="validation.doingBusinessAs = true"
       @error="validation.doingBusinessAs = !$event"
@@ -406,12 +438,15 @@ onMounted(() => {
 
     <text-input-component
       id="acronym"
-      v-if="showFields"
+      v-if="showFields || bcRegistryError"
       label="Acronym"
       placeholder=""
       autocomplete="off"
-      v-model="formData.businessInformation.acronym"
-      :validations="[]"
+      v-model="formData.businessInformation.clientAcronym"
+      :validations="[
+        ...getValidations('businessInformation.clientAcronym'),
+        submissionValidation(`businessInformation.clientAcronym`),
+      ]"
       enabled
       @empty="validation.acronym = true"
       @error="validation.acronym = !$event"
@@ -437,9 +472,3 @@ onMounted(() => {
 }
 
 </style>
-
-//TODO: Add some other mocks to test the different scenarios
-//TODO: check why is not marking as valid
-//TODO: Add validators
-//TODO: Add tests to the component
-//TODO: Add a new entry to the submission e2e
