@@ -7,6 +7,7 @@ import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -46,10 +47,10 @@ public class LegacyService {
             detail.getProvinceCode().toUpperCase(),
             detail.getPostalCode(),
             detail.getCountryCode().toUpperCase(),
-            StringUtils.defaultString(detail.getBusinessPhoneNumber().replaceAll("\\D", "")),
+            RegExUtils.replaceAll(detail.getBusinessPhoneNumber(), "\\D", StringUtils.EMPTY),
             StringUtils.EMPTY,
-            StringUtils.defaultString(detail.getSecondaryPhoneNumber().replaceAll("\\D", "")),
-            StringUtils.defaultString(detail.getFaxNumber().replaceAll("\\D", "")),
+            RegExUtils.replaceAll(detail.getSecondaryPhoneNumber(), "\\D", StringUtils.EMPTY),
+            RegExUtils.replaceAll(detail.getFaxNumber(), "\\D", StringUtils.EMPTY),
             StringUtils.defaultString(detail.getEmailAddress()),
             "N",
             null,
