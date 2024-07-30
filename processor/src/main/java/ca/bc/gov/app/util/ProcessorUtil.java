@@ -2,8 +2,6 @@ package ca.bc.gov.app.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -31,11 +29,9 @@ public class ProcessorUtil {
       return splitName(companyName);
     }
     return new String[]{
-        Stream
-            .of(middleName, lastName)
-            .filter(StringUtils::isNotBlank)
-            .collect(Collectors.joining(" ")),
-        firstName
+        lastName,
+        firstName,
+        StringUtils.defaultString(middleName)
     };
   }
 
@@ -64,37 +60,40 @@ public class ProcessorUtil {
     String[] words = cleanedInput.replace(",", StringUtils.EMPTY).split("\\s+");
 
     //Keeping the OG switch statement as native has some issues with new switch
-    switch (words.length) {
-      case 1:
+    return switch (words.length) {
+      case 1 ->
         //Return the word for first 2 elements and empty string for the last
-        return new String[]{words[0].trim(), words[0].trim(), StringUtils.EMPTY};
-      case 2:
+          new String[]{words[0].trim(), words[0].trim(), StringUtils.EMPTY};
+      case 2 ->
         //Return the second word for first, first word for second and empty string for the last
-        return new String[]{words[1].trim(), words[0].trim(), StringUtils.EMPTY};
-      default:
+          new String[]{words[1].trim(), words[0].trim(), StringUtils.EMPTY};
+      default ->
         //Return the last word for first, first word for second and the rest for the last
-        return new String[]{
-            words[words.length - 1].trim(),
-            words[0].trim(),
-            StringUtils.join(words, ' ', 1, words.length - 1).trim()
-        };
-    }
+          new String[]{
+              words[words.length - 1].trim(),
+              words[0].trim(),
+              StringUtils.join(words, ' ', 1, words.length - 1).trim()
+          };
+    };
   }
 
   public static String getClientIdTypeCode(String code) {
     if (StringUtils.isBlank(code)) {
       return StringUtils.EMPTY;
     }
-    switch (code.toLowerCase()) {
-      case "bcsc":
-        return "BCSC";
-      case "bceidbusiness":
-        return "BCEI";
-      case "idir":
-        return "OTHR";
-      default:
-        return StringUtils.EMPTY;
+    return switch (code.toLowerCase()) {
+      case "bcsc" -> "BCSC";
+      case "bceidbusiness" -> "BCEI";
+      case "idir" -> "OTHR";
+      default -> StringUtils.EMPTY;
+    };
+  }
+
+  public static String limitString(String input, int limit) {
+    if (StringUtils.isNotBlank(input) && input.length() > limit) {
+      return StringUtils.substring(input, 0, limit);
     }
+    return input;
   }
 
   private static String getStringFromPattern(String input, Pattern pattern) {

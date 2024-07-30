@@ -87,6 +87,16 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                             )[0]
                             .toUpperCase()
                     )
+                    .withLegalMiddleName(
+                        ProcessorUtil
+                            .splitName(
+                                detailEntity.getFirstName(),
+                                detailEntity.getMiddleName(),
+                                detailEntity.getLastName(),
+                                detailEntity.getOrganizationName()
+                            )[2]
+                            .toUpperCase()
+                    )
                     .withClientComment(
                         BooleanUtils
                             .toString(
@@ -110,14 +120,16 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                         )
                     )
                     .withClientIdentification(
-                        null == detailEntity.getIdentificationCode()
-                        ? Objects.toString(
-                            detailEntity.getIdentificationCode(),
-                            ProcessorUtil.splitName(
-                                getUser(message, ApplicationConstant.CREATED_BY)
-                            )[0]
-                        )
-                        : detailEntity.getClientIdentification()
+                        ProcessorUtil
+                            .limitString(
+                                Objects.toString(
+                                    detailEntity.getClientIdentification(),
+                                    ProcessorUtil.splitName(
+                                        getUser(message, ApplicationConstant.CREATED_BY)
+                                    )[0]
+                                ),
+                                30
+                            )
                     )
                     .withClientNumber(message.payload())
                     .withAcronym(detailEntity.getClientAcronym())

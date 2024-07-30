@@ -225,7 +225,9 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
     ></div>
   </cds-header>
 
-  <cds-side-nav v-if="$route.meta.sideMenu" v-shadow=1>
+  <cds-side-nav 
+    v-if="$route.meta.sideMenu" 
+    v-shadow=1>
     <cds-side-nav-items v-shadow=1>      
       <cds-side-nav-link 
         :active="$route.name == 'internal'" 

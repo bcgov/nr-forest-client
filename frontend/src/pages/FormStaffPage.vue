@@ -504,7 +504,7 @@ const submit = () => {
         <div class="form-footer-group">
           <div class="form-footer-group-next">
             <span class="body-compact-01" v-if="!isLast && !progressData[currentTab].valid">
-              All fields must be filled out correctly to enable the "Next" button below
+              All required fields must be filled out correctly to enable the "Next" button below
             </span>
             <div class="form-footer-group-buttons">
               <cds-button
@@ -557,7 +557,7 @@ const submit = () => {
                   v-if="!isTouchScreen"
                   v-show="progressData[currentTab].valid === false"
                 >
-                  All fields must be filled in correctly.
+                  All required fields must be filled in correctly.
                 </cds-tooltip-content>
               </cds-tooltip>
             </div>
