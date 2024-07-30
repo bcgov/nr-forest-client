@@ -1,0 +1,33 @@
+{
+  "name": "Bruen, Hammes and Purdy",
+  "id": "{{request.path.[2]}}",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "80079 Messerschmidt Way",
+      "country": {
+        "value": "US",
+        "text": "United States"
+      },
+      "province": {
+        "value": "NY",
+        "text": "New York"
+      },
+      "city": "Great Neck",
+      "postalCode": "11024",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "DI",
+        "text": null
+      },
+      "firstName": "Lynea",
+      "lastName": "Plaunch",
+      "phoneNumber": null,
+      "email": null
+    }
+  ]
+}

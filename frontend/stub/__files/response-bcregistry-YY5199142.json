@@ -1,0 +1,33 @@
+{
+  "name": "Powel of the Pacific",
+  "id": "{{request.path.[2]}}",
+  "goodStanding": false,
+  "addresses": [
+    {
+      "streetAddress": "28400 Dorton Avenue",
+      "country": {
+        "value": "US",
+        "text": "United States"
+      },
+      "province": {
+        "value": "CA",
+        "text": "California"
+      },
+      "city": "Santa Cruz",
+      "postalCode": "95064",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "DI",
+        "text": null
+      },
+      "firstName": "Sophey",
+      "lastName": "Egell",
+      "phoneNumber": "5058602894",
+      "email": null
+    }
+  ]
+}

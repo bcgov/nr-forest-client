@@ -1,5 +1,20 @@
 {
-  "mappings": [
+  "mappings": [    
+    {
+      "name": "BC Registry Details OK",
+      "request": {
+        "urlPattern": "/api/clients/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-bcregistry-{{request.path.[2]}}.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 1000
+      }
+    },
     {
       "name": "Autocomplete BC Registry",
       "request": {
@@ -15,24 +30,9 @@
       }
     },
     {
-      "name": "BC Registry Details OK",
-      "request": {
-        "urlPattern": "/api/clients/(XX|YY|UU|JJ|FM)(.*)",
-        "method": "GET"
-      },
-      "response": {
-        "status": 200,
-        "bodyFileName": "response-details-{{regexExtract request.path.[2] '(XX|YY|UU|JJ|FM)(.*)' 'parts'}}{{parts.0}}.json",
-        "transformers": [
-          "response-template"
-        ],
-        "fixedDelayMilliseconds": 1000
-      }
-    },
-    {
       "name": "BC Registry Details Duplicated",
       "request": {
-        "urlPattern": "/api/clients/ZZ(.*)",
+        "urlPattern": "/api/clients/ZZ8201962",
         "method": "GET"
       },
       "response": {
@@ -60,7 +60,7 @@
     {
       "name": "BC Registry Details Unsupported Client Type",
       "request": {
-        "url": "/api/clients/BC1234567",
+        "urlPattern": "/api/clients/BC(.*)",
         "method": "GET"
       },
       "response": {
