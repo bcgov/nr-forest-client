@@ -223,18 +223,18 @@
         "comments": "<p>The user or proxy account that created or last updated the record.<\/p>"
     },
     {
-        "tableName": "submission_location_contact_xref",
-        "tableFileName": "submission_location_contact_xref",
+        "tableName": "submission_matching_detail",
+        "tableFileName": "submission_matching_detail",
         "tableType": "Table",
         "keyClass": "primaryKey",
         "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_location_id",
-        "type": "int4",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_matching_detail_id",
+        "type": "serial",
         "length": 10,
         "nullable": "",
-        "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>Incremental id generated for a location of a client.<\/p>"
+        "autoUpdated": "√",
+        "defaultValue": "nextval('nrfc.submission_matching_detail_id_seq'::regclass)",
+        "comments": "<p>Incremental id generated for a submission matching detail of a client.<\/p>"
     },
     {
         "tableName": "client_type_code",
@@ -606,13 +606,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "confirmed_match_timestamp",
-        "type": "timestamp",
-        "length": 29,
-        "nullable": "√",
+        "name": "submission_matching_processed",
+        "type": "bool",
+        "length": 1,
+        "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>The timestamp when the changes happened.<\/p>"
+        "defaultValue": "false",
+        "comments": "<p>A flag to indicate that the submission was finally processed.<\/p>"
     },
     {
         "tableName": "flyway_schema_history",
@@ -984,13 +984,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "matching_fields",
-        "type": "jsonb",
-        "length": 2147483647,
+        "name": "confirmed_match_message",
+        "type": "varchar",
+        "length": 1000,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>A JSON object provides information about matches found in the existing database. The matches can result from fuzzy search, like matching a name pattern, or from exact equality, such as matching incorporation number or good standing status.<\/p>"
+        "comments": "<p>A field with the reason for the denial of the submission.<\/p>"
     },
     {
         "tableName": "client_type_code",
@@ -1320,13 +1320,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "confirmed_match_status_ind",
-        "type": "varchar",
-        "length": 1,
+        "name": "confirmed_match_timestamp",
+        "type": "timestamp",
+        "length": 29,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>An indicator that determines whether a specific match has been approved, allowing the processing to continue, or denied, requiring immediate action to be taken during the submission process.<\/p>"
+        "comments": "<p>The timestamp when the changes happened.<\/p>"
     },
     {
         "tableName": "client_type_code",
@@ -1376,13 +1376,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "confirmed_match_message",
+        "name": "confirmed_match_userid",
         "type": "varchar",
-        "length": 1000,
+        "length": 60,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>A field with the reason for the denial of the submission.<\/p>"
+        "comments": "<p>The ID of the user submitting the changes.<\/p>"
     },
     {
         "tableName": "submission",
@@ -1469,18 +1469,18 @@
         "comments": "<p>The date and time the record was created.<\/p>"
     },
     {
-        "tableName": "submission_matching_detail",
-        "tableFileName": "submission_matching_detail",
+        "tableName": "submission_location_contact_xref",
+        "tableFileName": "submission_location_contact_xref",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "submission_matching_processed",
-        "type": "bool",
-        "length": 1,
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_location_id",
+        "type": "int4",
+        "length": 10,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "false",
-        "comments": "<p>A flag to indicate that the submission was finally processed.<\/p>"
+        "defaultValue": "null",
+        "comments": "<p>Incremental id generated for a location of a client.<\/p>"
     },
     {
         "tableName": "submission_detail",
@@ -1525,18 +1525,18 @@
         "comments": "<p>The middle name of the client.<\/p>"
     },
     {
-        "tableName": "submission_location_contact_xref",
-        "tableFileName": "submission_location_contact_xref",
+        "tableName": "submission_matching_detail",
+        "tableFileName": "submission_matching_detail",
         "tableType": "Table",
-        "keyClass": "primaryKey",
-        "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_contact_id",
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_id",
         "type": "int4",
         "length": 10,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Incremental id generated for the contact details of a client.<\/p>"
+        "comments": "<p>Incremental id generated for a submission of a client.<\/p>"
     },
     {
         "tableName": "submission_location",
@@ -1581,18 +1581,18 @@
         "comments": "<p>The date on which the code value has expired or is expected to expire.  Default 9999-12-31.<\/p>"
     },
     {
-        "tableName": "submission_matching_detail",
-        "tableFileName": "submission_matching_detail",
+        "tableName": "submission_location_contact_xref",
+        "tableFileName": "submission_location_contact_xref",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "submission_matching_processed_time",
-        "type": "timestamp",
-        "length": 29,
-        "nullable": "√",
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_contact_id",
+        "type": "int4",
+        "length": 10,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The timestamp of when the processor started to process this specific entry<\/p>"
+        "comments": "<p>Incremental id generated for the contact details of a client.<\/p>"
     },
     {
         "tableName": "flyway_schema_history",
@@ -1682,15 +1682,15 @@
         "tableName": "submission_matching_detail",
         "tableFileName": "submission_matching_detail",
         "tableType": "Table",
-        "keyClass": "primaryKey",
-        "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_matching_detail_id",
-        "type": "serial",
-        "length": 10,
-        "nullable": "",
-        "autoUpdated": "√",
-        "defaultValue": "nextval('nrfc.submission_matching_detail_id_seq'::regclass)",
-        "comments": "<p>Incremental id generated for a submission matching detail of a client.<\/p>"
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "matching_fields",
+        "type": "jsonb",
+        "length": 2147483647,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>A JSON object provides information about matches found in the existing database. The matches can result from fuzzy search, like matching a name pattern, or from exact equality, such as matching incorporation number or good standing status.<\/p>"
     },
     {
         "tableName": "submission_detail",
@@ -1908,13 +1908,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "confirmed_match_userid",
-        "type": "varchar",
-        "length": 60,
+        "name": "submission_matching_processed_time",
+        "type": "timestamp",
+        "length": 29,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The ID of the user submitting the changes.<\/p>"
+        "comments": "<p>The timestamp of when the processor started to process this specific entry<\/p>"
     },
     {
         "tableName": "submission_detail",
@@ -2270,15 +2270,15 @@
         "tableName": "submission_matching_detail",
         "tableFileName": "submission_matching_detail",
         "tableType": "Table",
-        "keyClass": "foreignKey",
-        "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_id",
-        "type": "int4",
-        "length": 10,
-        "nullable": "",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "confirmed_match_status_ind",
+        "type": "varchar",
+        "length": 1,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Incremental id generated for a submission of a client.<\/p>"
+        "comments": "<p>An indicator that determines whether a specific match has been approved, allowing the processing to continue, or denied, requiring immediate action to be taken during the submission process.<\/p>"
     },
     {
         "tableName": "submission_type_code",
