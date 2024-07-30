@@ -132,7 +132,7 @@ export const routes = [
       },
       style: "content",
       headersStyle: "headers",
-      sideMenu: true,
+      sideMenu: false,
       profile: true,
     },
   },
