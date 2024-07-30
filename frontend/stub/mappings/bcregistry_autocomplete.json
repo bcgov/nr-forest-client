@@ -14,7 +14,7 @@
         ],
         "fixedDelayMilliseconds": 1000
       }
-    },
+    },    
     {
       "name": "Autocomplete BC Registry",
       "request": {
@@ -69,6 +69,16 @@
         "transformers": [
           "response-template"
         ]
+      }
+    },
+    {
+      "name": "Autocomplete BC Registry",
+      "request": {
+        "url": "/api/clients/name/fail",
+        "method": "GET"
+      },
+      "response": {
+        "status": 500        
       }
     }
   ]
