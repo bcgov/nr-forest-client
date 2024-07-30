@@ -224,9 +224,9 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
       @click.prevent="myProfileAction?.click"
     ></div>
   </cds-header>
-  
+
   <cds-side-nav 
-    v-if="$route.meta.sideMenu && $route.name != 'staff-confirmation'" 
+    v-if="$route.meta.sideMenu" 
     v-shadow=1>
     <cds-side-nav-items v-shadow=1>      
       <cds-side-nav-link 
