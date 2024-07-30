@@ -110,7 +110,7 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                         )
                     )
                     .withClientIdentification(
-                        "BCSC".equals(detailEntity.getIdentificationCode())
+                        null == detailEntity.getIdentificationCode()
                         ? Objects.toString(
                             detailEntity.getIdentificationCode(),
                             ProcessorUtil.splitName(
