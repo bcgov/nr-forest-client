@@ -1521,6 +1521,21 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   text-align: center;
 }
 
+div.internal-grouping-01 span.body-compact-01 ~ svg.good {
+  fill: var(--cds-support-success)
+}
+
+div.internal-grouping-01 span.body-compact-01 ~ svg.warning {
+  fill: var(--cds-support-warning);
+}
+
+
+div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
+  font-weight: 900;
+  background-color: color-mix(in srgb, var(--cds-support-warning) 40%, white);
+}
+
+
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
   :root {
