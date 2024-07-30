@@ -466,8 +466,8 @@ export const validateSelection =
  */
 export const optional =
   (validator: (value: string) => string) =>
-  (value: string): string => {
-    return value === "" || value === null ? "" : validator(value);
+  (value: string): string => {    
+    return value === "" || value === null || value === undefined ? "" : validator(value);
   };
 
 /**
