@@ -11,6 +11,6 @@ declare namespace Cypress {
     getMany(names: string[]): Chainable<any[]>;
     fillFormEntry(field: string, value: string, delayMS: number = 10, area: boolean = false): Chainable<void>;
     selectFormEntry(field: string, value: string, box: boolean): Chainable<void>;
-    selectAutocompleteEntry(field: string, value: string, dataid: string): Chainable<void>;
+    selectAutocompleteEntry(field: string, value: string, dataid: string, delayTarget: string): Chainable<void>;
   }
 }

@@ -1,0 +1,1 @@
+Client type LLP is not supported at the moment

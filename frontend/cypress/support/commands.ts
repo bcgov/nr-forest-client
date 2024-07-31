@@ -164,8 +164,11 @@ Cypress.Commands.add("selectFormEntry", (field: string, value: string, box: bool
   }
 });
 
-Cypress.Commands.add("selectAutocompleteEntry", (field: string, value: string, dataid: string) => {
-  cy.fillFormEntry(field, value);
-  cy.get(field).find("[part='trigger-button']").click();    
+Cypress.Commands.add("selectAutocompleteEntry", (field: string, value: string, dataid: string,delayTarget: string = '') => {
+  cy.get(field).should("exist").shadow().find("input").type(value);
+  if(delayTarget)
+    cy.wait(delayTarget);
+  else
+    cy.wait(10);
   cy.get(field).find(`cds-combo-box-item[data-id="${dataid}"]`).click();
 });
