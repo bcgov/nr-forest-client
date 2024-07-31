@@ -52,12 +52,25 @@ public class ClientMapper {
         .withNotes(clientBusinessInformationDto.notes())
         .withIdentificationTypeCode(
             clientBusinessInformationDto.identificationType() != null
-            ? clientBusinessInformationDto.identificationType().value()
-            : null
+                && StringUtils.isNotBlank(clientBusinessInformationDto.identificationType().value())
+                ? clientBusinessInformationDto.identificationType().value()
+                : null
         )
-        .withClientIdentification(clientBusinessInformationDto.clientIdentification())
-        .withProvinceCode(clientBusinessInformationDto.identificationProvince())
-        .withCountryCode(clientBusinessInformationDto.identificationCountry());
+        .withClientIdentification(
+            StringUtils.isNotBlank(clientBusinessInformationDto.clientIdentification())
+                ? clientBusinessInformationDto.clientIdentification()
+                : null
+        )
+        .withProvinceCode(
+            StringUtils.isNotBlank(clientBusinessInformationDto.identificationProvince())
+                ? clientBusinessInformationDto.identificationProvince()
+                : null
+        )
+        .withCountryCode(
+            StringUtils.isNotBlank(clientBusinessInformationDto.identificationCountry())
+                ? clientBusinessInformationDto.identificationCountry()
+                : null
+        );
   }
 
   /**
