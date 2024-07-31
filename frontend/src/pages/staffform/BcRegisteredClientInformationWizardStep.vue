@@ -40,10 +40,10 @@ const emit = defineEmits<{
 }>();
 
 //Defining the event bus to send notifications up
-const progressIndicatorBus = useEventBus<ProgressNotification>(
-  "progress-indicator-bus"
-);
+const progressIndicatorBus = useEventBus<ProgressNotification>("progress-indicator-bus");
 const exitBus = useEventBus<Record<string, boolean | null>>("exit-notification");
+const fuzzyBus = useEventBus<ValidationMessageType[]>("fuzzy-error-notification");
+const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
 
 
 // Set the prop as a ref, and then emit when it changes
@@ -71,7 +71,6 @@ const detailsData = ref(null);
 const soleProprietorOwner = ref<string>("");
 const receivedClientType = ref<CodeNameType>();
 const bcRegistryError = ref<boolean>(false);
-const clientNameError = ref(null);
 
 const toggleErrorMessages = (
   goodStanding: boolean | null = null,
@@ -91,7 +90,7 @@ const toggleErrorMessages = (
       duplicated,
       nonPersonSP,
       unsupportedClientType,
-    });
+    });    
   } else {
     progressIndicatorBus.emit({ kind: "disabled", value: false });
     exitBus.emit({
@@ -168,33 +167,34 @@ const autoCompleteResult = ref<BusinessSearchResult>();
 
     showDetailsLoading.value = true;
     watch(error, () => {
-      if (error.value.response?.status === 409) {    
+      if (error.value.response?.status === 409) {
         validation.business = false;
-        clientNameError.value = error.value.response.data.split('client number')[1];
-        toggleErrorMessages(null, true, null);        
+
+        errorBus.emit([
+          {fieldId: "businessInformation.businessName", errorMsg: 'Client already exists'}
+        ]);
+
+        fuzzyBus.emit({
+          id: 'global',
+          matches:[{
+            fieldId: "businessInformation.clientName", 
+            match: error.value.response.data.split('client number')[1], 
+            fuzzy: false
+          }]
+        });
         return;
       }
-      if (error.value.response?.status === 422) {
-        toggleErrorMessages(null, null, true);
+    
+      //Here we only care for 5xx and 408 errors
+      if (error.value.response?.status >= 500 || error.value.response?.status === 408) {
+        handleErrorDefault();
+        bcRegistryError.value = true;
         return;
       }
-      if (error.value.response?.status === 406) {
-        toggleErrorMessages(null, null, null, true);
-        receivedClientType.value = null;
-        useFetchTo(
-          `/api/codes/client-types/${formData.value.businessInformation.clientType}`,
-          receivedClientType
-        );
-        return;
-      }
-      if (error.value.response?.status === 404) {
-        toggleErrorMessages();
-        validation.business = true;
-        emit("update:data", formData.value);
-        return;
-      }
-      handleErrorDefault();
-      bcRegistryError.value = true;
+
+      //All other know errors are fine and can proceed
+      validation.business = true;
+      emit("update:data", formData.value);
     });
 
     watch(
@@ -206,7 +206,12 @@ const autoCompleteResult = ref<BusinessSearchResult>();
 
 watch([detailsData], () => {
   if (detailsData.value) {
+    fuzzyBus.emit({id:'',matches:[]});    
     const forestClientDetails: ForestClientDetailsDto = detailsData.value;
+
+    if(forestClientDetails.clientType === 'SP'){
+      formData.value.businessInformation.doingBusinessAs = forestClientDetails.businessName;
+    }
         
     const receivedContacts = forestClientDetails.contacts ?? [];
     receivedContacts.forEach((contact) => {
@@ -269,7 +274,6 @@ onMounted(() => {
 </script>
 <template>
   <div class="frame-01">
-TODO: Add the error message on top for duplicated
     <data-fetcher
       v-model:url="autoCompleteUrl"
       :min-length="3"
@@ -284,7 +288,6 @@ TODO: Add the error message on top for duplicated
         autocomplete="off"
         required
         required-label
-        :error-message="clientNameError ? 'Client already exists' : null"
         tip=""
         v-model="formData.businessInformation.businessName"
         :contents="content"
@@ -302,6 +305,7 @@ TODO: Add the error message on top for duplicated
         
         <cds-inline-notification
           v-shadow="2"
+          id="bcRegistryDownNotification"
           v-if="bcRegistryError || (error?.response?.status ?? false)"
           low-contrast="true"
           open="true"
@@ -310,10 +314,13 @@ TODO: Add the error message on top for duplicated
           title="BC Registries is down">
             <span class="body-compact-01"> You'll need to try again later.</span>      
         </cds-inline-notification>
+
+
     </data-fetcher>
 
     <cds-inline-notification
       v-shadow="2"
+      id="bcRegistrySearchNotification"
       v-if="!formData.businessInformation.clientType"
       low-contrast="true"
       open="true"
@@ -328,11 +335,10 @@ TODO: Add the error message on top for duplicated
       </div>
     </cds-inline-notification>
 
-    
-
     <div v-if="showFields" class="read-only-box">
 
       <cds-inline-notification
+      id="readOnlyNotification"
       v-shadow="2"
       v-if="formData.businessInformation.goodStandingInd === 'Y'"
       low-contrast="true"
@@ -362,6 +368,7 @@ TODO: Add the error message on top for duplicated
 
       <cds-inline-notification
         v-shadow="2"
+        id="notGoodStandingNotification"
         v-if="formData.businessInformation.goodStandingInd === 'N'"
         low-contrast="true"
         open="true"
@@ -379,6 +386,7 @@ TODO: Add the error message on top for duplicated
 
       <cds-inline-notification
         v-shadow="2"
+        id="unknownStandingNotification"
         v-if="formData.businessInformation.goodStandingInd !== 'N' && formData.businessInformation.goodStandingInd !== 'Y'"
         low-contrast="true"
         open="true"
@@ -422,7 +430,7 @@ TODO: Add the error message on top for duplicated
 
     <text-input-component
       id="doingBusinessAs"
-      v-if="showFields || bcRegistryError"
+      v-if="(showFields || bcRegistryError) && formData.businessInformation.clientType !== 'RSP'"
       label="Doing business as"
       placeholder=""
       autocomplete="off"

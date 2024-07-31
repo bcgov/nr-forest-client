@@ -410,10 +410,12 @@ const submit = () => {
         -->
         <div data-scroll="top-notification" class="header-offset"></div>
         <error-notification-grouping-component :form-data="formData" />
+        
       </div>
     </div>
 
     <div class="form-steps-staff" role="main">
+      <fuzzy-match-notification-grouping-component id="global" />
       <div v-if="currentTab == 0" class="form-steps-01">
         <div class="form-steps-section">
           <h2 data-focus="focus-0" tabindex="-1">
