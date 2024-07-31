@@ -49,11 +49,10 @@ let submissionValidators: ValidationMessageType[] = [];
  * Register a listener for submission errors on the error bus.
  * When an error is received, update the submission validators array.
  */
-errorBus.on((errors) => {
-  submissionValidators = errors.map((error: ValidationMessageType) => {
-    notificationBus.emit(error);
-    return { ...error, originalValue: "" };
-  });
+errorBus.on((errors) => {  
+  if(errors){
+    errors.forEach((error: ValidationMessageType) => submissionValidators.push({...error, originalValue:""}));
+  }
   revalidateBus.emit();
 });
 
@@ -63,7 +62,7 @@ errorBus.on((errors) => {
  * @param fieldId - The fieldId of the validator to update.
  * @param value - The new value for the validator's originalValue property.
  */
-const updateValidators = (fieldId: string, value: string): void => {
+const updateValidators = (fieldId: string, value: string): void => {  
   submissionValidators = submissionValidators.map(
     (validator: ValidationMessageType) => {
       if (validator.fieldId === fieldId) {
