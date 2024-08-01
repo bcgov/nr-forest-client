@@ -77,7 +77,7 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
 
   describe('Scenario combinations', () => {
 
-    const scenarios = [      
+    const scenarios = [
       {
         scenarioName: 'OK State - Corporation',
         companySearch: 'cmp',
@@ -88,12 +88,10 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         showNotGoodStandingNotification: false,
         showBcRegDownNotification: false,
         showDuplicatedNotification: false,
-        showSPNotOwnedByPersonNotification: false,
-        showUnsupportedTypeNotification: false,
         type: 'Corporation',
         standing: 'Good standing',
         dba: '',
-      },      
+      },
       {
         scenarioName: 'OK State - Sole Proprietorship, show birthdate',
         companySearch: 'spp',
@@ -104,8 +102,33 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         showNotGoodStandingNotification: false,
         showBcRegDownNotification: false,
         showDuplicatedNotification: false,
-        showSPNotOwnedByPersonNotification: false,
-        showUnsupportedTypeNotification: false,
+        type: 'Sole proprietorship',
+        standing: 'Good standing',
+        dba: 'Soleprop',
+      },    
+      {
+        scenarioName: 'OK State - Unsuported types for external',
+        companySearch: 'llp',
+        companyCode: 'LL123123',
+        showData: false,
+        showBirthdate: false,
+        showUnknowNotification: false,
+        showNotGoodStandingNotification: false,
+        showBcRegDownNotification: false,
+        type: 'Limited liability partnership',
+        standing: 'Unknow',
+        dba: '',
+      },
+      {
+        scenarioName: 'OK State - SP not owned by person',
+        companySearch: 'spw',
+        companyCode: 'FM7715744',
+        showData: true,
+        showBirthdate: true,
+        showUnknowNotification: false,
+        showNotGoodStandingNotification: false,
+        showBcRegDownNotification: false,
+        showDuplicatedNotification: false,
         type: 'Sole proprietorship',
         standing: 'Good standing',
         dba: 'Soleprop',
@@ -120,8 +143,6 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         showNotGoodStandingNotification: false,
         showBcRegDownNotification: false,
         showDuplicatedNotification: false,
-        showSPNotOwnedByPersonNotification: false,
-        showUnsupportedTypeNotification: false,
         type: 'Corporation',
         standing: 'Unknow',
         dba: '',
@@ -136,26 +157,8 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         showNotGoodStandingNotification: false,
         showBcRegDownNotification: true,
         showDuplicatedNotification: false,
-        showSPNotOwnedByPersonNotification: false,
-        showUnsupportedTypeNotification: false,
         type: 'Corporation',
         standing: 'Good Standing',
-        dba: '',
-      },
-      {
-        scenarioName: 'Failed state - Not in good standing',
-        companySearch: 'ngs',
-        companyCode: 'C4443332',
-        showData: true,
-        showBirthdate: false,
-        showUnknowNotification: true,
-        showNotGoodStandingNotification: true,
-        showBcRegDownNotification: false,
-        showDuplicatedNotification: false,
-        showSPNotOwnedByPersonNotification: false,
-        showUnsupportedTypeNotification: false,
-        type: 'Corporation',
-        standing: 'Not in good standing',
         dba: '',
       },
       {
@@ -164,48 +167,27 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         companyCode: 'C7775745',
         showData: true,
         showBirthdate: false,
-        showUnknowNotification: false,
+        showUnknowNotification: true,
         showNotGoodStandingNotification: false,
         showBcRegDownNotification: false,
         showDuplicatedNotification: true,
-        showSPNotOwnedByPersonNotification: false,
-        showUnsupportedTypeNotification: false,
         type: 'Corporation',
-        standing: 'Good standing',
+        standing: 'Unknow',
         dba: '',
       },
       {
-        scenarioName: 'Success state - SP not owned by person',
-        companySearch: 'spw',
-        companyCode: 'FM7715744',
+        scenarioName: 'Failed state - Not in good standing',
+        companySearch: 'ngs',
+        companyCode: 'C4443332',
         showData: true,
         showBirthdate: false,
         showUnknowNotification: false,
-        showNotGoodStandingNotification: false,
+        showNotGoodStandingNotification: true,
         showBcRegDownNotification: false,
-        showDuplicatedNotification: false,
-        showSPNotOwnedByPersonNotification: true,
-        showUnsupportedTypeNotification: false,
-        type: 'Sole proprietorship',
-        standing: 'Good standing',
+        type: 'Corporation',
+        standing: 'Not in good standing',
         dba: '',
       },
-      {
-        scenarioName: 'Success state - Unsuported type',
-        companySearch: 'llp',
-        companyCode: 'LL123123',
-        showData: false,
-        showBirthdate: false,
-        showUnknowNotification: false,
-        showNotGoodStandingNotification: false,
-        showBcRegDownNotification: false,
-        showDuplicatedNotification: false,
-        showSPNotOwnedByPersonNotification: false,
-        showUnsupportedTypeNotification: true,
-        type: 'Limited liability partnership',
-        standing: 'Unknow',
-        dba: '',
-      }      
     ]
 
     
@@ -221,10 +203,7 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
       .split(' ');
       
       const detailsCode = (code: string) =>{
-        return code === 'bcd' ? 408 :
-               code === 'dup' ? 409 :
-               code === 'spw' ? 422 :
-               code === 'llp' ? 406 : 200;
+        return code === 'bcd' ? 408 : code === 'dup' ? 409 : 200;
       }
 
       //We need to intercept the client search for the scenario, as param 1
@@ -233,17 +212,24 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         fixture: 'clients/bcreg_ac_list2.json',
       }).as('clientSearch');
       
-      //If the search is successful, we need to intercept the subsequent search that happens when the client is selected
+      //If the search is successful, we need to intercept the subsequent search that happens when the clie8nt is selected
       if(detailsCode(params[0]) === 200){
         cy.fixture(`clients/bcreg_${params[1]}.json`, 'utf-8').then((data) => {
           cy.intercept('GET', `**/api/clients/name/${encodeURIComponent(data.name)}`, {
             fixture: 'clients/bcreg_ac_list2.json',
-          });
-        });
+          }).as('clientSearchEncoded');
+        }).as('responseData');
+      }
+
+      if(detailsCode(params[0]) === 409){        
+        cy.intercept('GET', `**/api/clients/name/${encodeURIComponent('Corporation 5')}`, {
+          fixture: 'clients/bcreg_ac_list2.json',
+        }).as('clientSearchEncodedToo');        
       }
   
       //We load the fixture beforehand due to the different content types and extensions based on the response
       cy.fixture(`clients/bcreg_${params[1]}.${detailsCode(params[0]) === 200 ? 'json' : 'txt'}`, 'utf-8').then((data) => {
+        cy.log('data', data);
         cy.intercept('GET', `**/api/clients/${params[1]}`, {
           statusCode: detailsCode(params[0]),
           body: data,
@@ -252,13 +238,7 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
           },
         }).as('clientDetails');
       });
-  
-      //We need to intercept the client type search
-      cy.intercept('GET', `**/api/codes/client-types/C`, {
-        statusCode: 200,
-        body:{"code":"C","name":"Corporation"}
-      });  
-  
+    
     });
 
     scenarios.forEach((scenario) => {
@@ -288,7 +268,17 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
 
         // Then, when a client is selected, the rest of the form should appear
         cy.selectAutocompleteEntry('#businessName', scenario.companySearch,scenario.companyCode,'@clientSearch');
-        
+
+        if(scenario.showDuplicatedNotification){
+          cy.get("#businessName")          
+          .should('have.attr', 'aria-invalid', 'true')
+          .should('have.attr', 'invalid-text', 'Client already exists');
+
+          cy.get("#businessName")
+          .shadow()
+          .find('svg').should('exist');
+        }
+
         cy.get('cds-inline-notification#bcRegistrySearchNotification').should('not.exist');
 
         if(scenario.showBcRegDownNotification){
@@ -304,28 +294,27 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
           .map(([key, value]) => value)
           .every(value => value === false);
 
-          cy.get('.read-only-box > cds-inline-notification#readOnlyNotification').should(success ? 'exist' : 'not.exist');
+          cy.get('.read-only-box > cds-inline-notification#readOnlyNotification').should(success || scenario.showDuplicatedNotification ? 'exist' : 'not.exist');
           
-          cy.get(`.read-only-box > :nth-child(${success ? '2' : '1'}) > .title-group-01 > .label-01`)
+          cy.get(`.read-only-box > #legalType > .title-group-01 > .label-01`)
           .should('exist')
           .and('have.text', 'Type');
 
-          cy.get(`.read-only-box > :nth-child(${success ? '2' : '1'}) > .body-compact-01`)
+          cy.get(`.read-only-box > #legalType > .body-compact-01`)
           .should('exist')    
           .and('have.text', scenario.type);
 
-          cy.get(`.read-only-box > :nth-child(${success ? '4' : '3'}) > .title-group-01 > .label-01`)
+          cy.get(`.read-only-box > #registrationNumber > .title-group-01 > .label-01`)
           .should('exist')
           .and('have.text', 'Registration number');
 
-          cy.get(`.read-only-box > :nth-child(${success ? '4' : '3'}) > .body-compact-01`)
+          cy.get(`.read-only-box > #registrationNumber > .body-compact-01`)
           .should('exist')
           .and('have.text', scenario.companyCode);
 
           if(scenario.showUnknowNotification){
             cy.get('.read-only-box > cds-inline-notification#unknownStandingNotification')
             .should('exist');
-
             //TODO: check the text and style maybe?!
           }
 
@@ -334,22 +323,19 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
             .should('exist');
             //TODO: check the text and style maybe?!
           }
-/*
-         
-          showBcRegDownNotification: false,
-          showDuplicatedNotification: false,
-          showSPNotOwnedByPersonNotification: false,
-          showUnsupportedTypeNotification: false,
-*/
 
-          cy.get('.read-only-box > :nth-child(6) > .title-group-01 > .label-01')    
+          cy.get(`.read-only-box > #goodStanding > .title-group-01 > .label-01`)    
           .should('exist')
           .and('have.text', 'BC Registries standing');
 
-          cy.get('.read-only-box > :nth-child(6) > div.internal-grouping-01 > .body-compact-01')
+          cy.get(`.read-only-box > #goodStanding > div.internal-grouping-01 > .body-compact-01`)
           .should('exist')
           .and('have.text', scenario.standing);
 
+        }
+
+        if(scenario.showBirthdate){
+          cy.get("#birthdate").should("be.visible");
         }
 
         cy.get('#workSafeBCNumber').should('exist').and("have.value", "");

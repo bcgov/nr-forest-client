@@ -11,7 +11,6 @@ import { useFocus } from "@/composables/useFocus";
 import {
   BusinessSearchResult,
   ProgressNotification,
-  CodeNameType
 } from "@/dto/CommonTypesDto";
 import type {
   FormDataDto,
@@ -20,7 +19,7 @@ import type {
 // Importing helper functions
 import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
 // Importing validators
-import { getValidations, validate } from "@/helpers/validators/StaffFormValidations";
+import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // @ts-ignore
 import Information16 from "@carbon/icons-vue/es/information/16";
@@ -60,47 +59,12 @@ const validation = reactive<Record<string, boolean>>({
   acronym: true,
 });
 
-// Defining the error message toggles
-const showAutoCompleteInfo = ref<boolean>(false);
-const showGoodStandingError = ref<boolean>(false);
-const showDuplicatedError = ref<boolean>(false);
-const showNonPersonSPError = ref<boolean>(false);
-const showUnsupportedClientTypeError = ref<boolean>(false);
 const showDetailsLoading = ref<boolean>(false);
 const detailsData = ref(null);
 const soleProprietorOwner = ref<string>("");
-const receivedClientType = ref<CodeNameType>();
 const bcRegistryError = ref<boolean>(false);
+const showOnError = ref<boolean>(false);
 
-const toggleErrorMessages = (
-  goodStanding: boolean | null = null,
-  duplicated: boolean | null = null,
-  nonPersonSP: boolean | null = null,
-  unsupportedClientType: boolean | null = null
-) => {
-  showGoodStandingError.value = goodStanding ?? false;
-  showDuplicatedError.value = duplicated ?? false;
-  showNonPersonSPError.value = nonPersonSP ?? false;
-  showUnsupportedClientTypeError.value = unsupportedClientType ?? false;
-
-  if (goodStanding || duplicated || nonPersonSP || unsupportedClientType) {
-    progressIndicatorBus.emit({ kind: "disabled", value: true });
-    exitBus.emit({
-      goodStanding,
-      duplicated,
-      nonPersonSP,
-      unsupportedClientType,
-    });    
-  } else {
-    progressIndicatorBus.emit({ kind: "disabled", value: false });
-    exitBus.emit({
-      goodStanding: false,
-      duplicated: false,
-      nonPersonSP: false,
-      unsupportedClientType: false,
-    });
-  }
-};
 
 const showFields = computed(() => {
   return (
@@ -135,16 +99,23 @@ const autoCompleteUrl = computed(
   () =>
     `/api/clients/name/${formData.value.businessInformation.businessName || ""}`
 );
+
+const standingValue = (goodStanding: boolean | null | undefined) => {
+  if (goodStanding === true) return "Y";
+  if (goodStanding === false) return "N";
+  return null;
+};
+
 const autoCompleteResult = ref<BusinessSearchResult>();
   watch([autoCompleteResult], () => {
   // reset business validation state
   validation.business = false;
   detailsData.value = null;
   bcRegistryError.value = false;
+  showOnError.value = false;
 
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
-    toggleErrorMessages(false, false, false);
-
+    
     formData.value.businessInformation.registrationNumber =
       autoCompleteResult.value.code;
     formData.value.businessInformation.legalType =
@@ -152,8 +123,7 @@ const autoCompleteResult = ref<BusinessSearchResult>();
     formData.value.businessInformation.clientType = retrieveClientType(
       autoCompleteResult.value.legalType
     );
-    showAutoCompleteInfo.value = false;
-
+    
     emit("update:data", formData.value);
 
     //Also, we will load the backend data to fill all the other information as well
@@ -169,6 +139,7 @@ const autoCompleteResult = ref<BusinessSearchResult>();
     watch(error, () => {
       if (error.value.response?.status === 409) {
         validation.business = false;
+        showOnError.value = true;
 
         errorBus.emit([
           {fieldId: "businessInformation.businessName", errorMsg: 'Client already exists'}
@@ -232,12 +203,10 @@ watch([detailsData], () => {
     });
     formData.value.location.addresses = exportAddress(receivedAddresses);
 
-    formData.value.businessInformation.goodStandingInd =
-      forestClientDetails.goodStanding ? "Y" : forestClientDetails.goodStanding === false ? "N" : null;
-    
-    toggleErrorMessages((forestClientDetails.goodStanding ?? true),null);
-
-    validation.business = (forestClientDetails.goodStanding ?? true);
+    formData.value.businessInformation.goodStandingInd = standingValue(forestClientDetails.goodStanding);
+        
+    //FSADT1-1388 standing is not a factor that prevents a submission
+    validation.business = true;
 
     emit("update:data", formData.value);
 
@@ -335,12 +304,12 @@ onMounted(() => {
       </div>
     </cds-inline-notification>
 
-    <div v-if="showFields" class="read-only-box">
+    <div v-if="showFields || showOnError" class="read-only-box">
 
       <cds-inline-notification
       id="readOnlyNotification"
       v-shadow="2"
-      v-if="formData.businessInformation.goodStandingInd === 'Y'"
+      v-if="formData.businessInformation.goodStandingInd === 'Y' || showOnError"
       low-contrast="true"
       open="true"
       kind="info"
@@ -349,13 +318,13 @@ onMounted(() => {
         <div class="body-compact-01">This information is from BC Registries</div>
       </cds-inline-notification>
 
-      <read-only-component label="Type" v-if="showFields">    
+      <read-only-component label="Type" id="legalType">    
         <span class="body-compact-01">{{ legalTypeText }}</span>
       </read-only-component>
 
       <hr class="divider" />
 
-      <read-only-component label="Registration number" v-if="showFields">
+      <read-only-component label="Registration number" id="registrationNumber">
         <template v-slot:icon>
           <Information16 />
         </template>
@@ -401,7 +370,7 @@ onMounted(() => {
             > before going ahead.</div>
       </cds-inline-notification>
 
-      <read-only-component label="BC Registries standing" v-if="showFields">
+      <read-only-component label="BC Registries standing" id="goodStanding">
         <div class="internal-grouping-01">
           <span class="body-compact-01">{{ standingMessage }}</span>
           <Check16 v-if="formData.businessInformation.goodStandingInd === 'Y'" class="good" />
@@ -411,9 +380,36 @@ onMounted(() => {
 
     </div>
 
+    <div v-if="formData.businessInformation.clientType === 'RSP'">
+      <div class="label-with-icon parent-label">
+        <div class="cds-text-input-label">
+          <span class="cds-text-input-required-label">* </span>
+          <span>Date of birth</span>
+        </div>
+        <cds-tooltip>
+          <Information16 />
+          <cds-tooltip-content>
+            We need the applicant's birthdate to confirm their identity
+          </cds-tooltip-content>
+        </cds-tooltip>
+      </div>
+      <date-input-component
+        id="birthdate"
+        title="Date of birth"
+        :autocomplete="['bday-year', 'bday-month', 'bday-day']"
+        v-model="formData.businessInformation.birthdate"
+        :enabled="true"
+        :validations="[...getValidations('businessInformation.birthdate')]"
+        :year-validations="[...getValidations('businessInformation.birthdate.year')]"
+        @error="validation.birthdate = !$event"
+        @possibly-valid="validation.birthdate = $event"
+        required
+      />
+    </div>
+
     <text-input-component
       id="workSafeBCNumber"
-      v-if="showFields || bcRegistryError"
+      v-if="showFields || bcRegistryError || showOnError"
       label="WorkSafeBC number"
       mask="######"
       placeholder=""
@@ -430,7 +426,7 @@ onMounted(() => {
 
     <text-input-component
       id="doingBusinessAs"
-      v-if="(showFields || bcRegistryError) && formData.businessInformation.clientType !== 'RSP'"
+      v-if="(showFields || bcRegistryError || showOnError) && formData.businessInformation.clientType !== 'RSP'"
       label="Doing business as"
       placeholder=""
       autocomplete="off"
@@ -446,7 +442,7 @@ onMounted(() => {
 
     <text-input-component
       id="acronym"
-      v-if="showFields || bcRegistryError"
+      v-if="showFields || bcRegistryError || showOnError"
       label="Acronym"
       placeholder=""
       autocomplete="off"
@@ -478,5 +474,4 @@ onMounted(() => {
   display: flex;
   gap: 0.5rem;
 }
-
 </style>

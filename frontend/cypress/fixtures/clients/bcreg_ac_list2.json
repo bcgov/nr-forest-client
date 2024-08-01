@@ -39,12 +39,12 @@
     "code": "FM7715744",
     "name": "Sole Proprietorship 2",
     "status": "ACTIVE",
-    "legalType": "C"
+    "legalType": "SP"
   },
   {
     "code": "LL123123",
     "name": "Limited liability partnership 1",
     "status": "ACTIVE",
-    "legalType": "LLP"
+    "legalType": "LP"
   }
 ]
