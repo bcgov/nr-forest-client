@@ -25,6 +25,23 @@ export interface ValidationMessageType {
   originalValue?: string;
 }
 
+export interface FuzzyMatchResult {
+  field: string;
+  match: string;
+  fuzzy: boolean;
+}
+
+export interface FuzzyMatcherData {
+  show: boolean;
+  fuzzy: boolean;
+  matches: FuzzyMatchResult[];
+}
+
+export interface FuzzyMatcherEvent {
+  id: string;
+  matches: FuzzyMatchResult[];
+}
+
 export const isEmpty = (receivedValue: any): boolean => {
   const value = isRef(receivedValue) ? receivedValue.value : receivedValue;
   return value === undefined || value === null || value === "";
