@@ -174,10 +174,13 @@ describe("Staff Form Submission", () => {
   it("should be success message", () => {
     fillIndividual();
     clickNext();
+    cy.contains("h2", "Locations");
     fillLocation();
     clickNext();
+    cy.contains("h2", "Contacts");
     fillContact();
     clickNext();
+    cy.contains("h2", "Review");
 
     cy.get("[data-test='wizard-submit-button']").click();
     cy.get("h1").should("contain", "New client 00123456 has been created!");
@@ -186,10 +189,13 @@ describe("Staff Form Submission", () => {
   it("should be timeout message", () => {
     fillIndividual();
     clickNext();
+    cy.contains("h2", "Locations");
     fillLocation();
     clickNext();
+    cy.contains("h2", "Contacts");
     fillContact();
     clickNext();
+    cy.contains("h2", "Review");
 
     cy.fillFormEntry("cds-textarea","error",10,true);
 
@@ -209,10 +215,13 @@ describe("Staff Form Submission", () => {
     clientIdentification: "AB345678",
     });
     clickNext();
+    cy.contains("h2", "Locations");
     fillLocation();
     clickNext();
+    cy.contains("h2", "Contacts");
     fillContact();
     clickNext();
+    cy.contains("h2", "Review");
 
     cy.get("[data-test='wizard-submit-button']").click();   
     cy.get("cds-actionable-notification")
