@@ -6,6 +6,7 @@ import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -96,8 +97,8 @@ public class LegacyService {
         new ClientDoingBusinessAsDto(
             clientNumber,
             doingBusinessAsName,
-            ApplicationConstant.PROCESSOR_USER_NAME,
-            ApplicationConstant.PROCESSOR_USER_NAME,
+            Objects.toString(createdBy,ApplicationConstant.PROCESSOR_USER_NAME),
+            Objects.toString(updatedBy,ApplicationConstant.PROCESSOR_USER_NAME),
             ApplicationConstant.ORG_UNIT
         )
     )
