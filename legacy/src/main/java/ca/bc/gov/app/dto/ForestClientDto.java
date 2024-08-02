@@ -22,7 +22,8 @@ public record ForestClientDto(
     String createdBy,
     String updatedBy,
     Long orgUnit,
-    String acronym) {
+    String acronym,
+    String wcbFirmNumber) {
 
   @Transient
   public String name() {

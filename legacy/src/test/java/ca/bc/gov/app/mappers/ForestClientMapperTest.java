@@ -33,6 +33,7 @@ class ForestClientMapperTest {
       "Test",
       "Test",
       1L,
+      StringUtils.EMPTY,
       StringUtils.EMPTY
   );
 
