@@ -327,7 +327,41 @@ const updateClientType = (value: CodeNameType | undefined) => {
           locationNames: [defaultLocation],
           contactType: { value: "BL", text: "Billing" },
         };
-        formData.location.contacts[0] = applicantContact;                
+        formData.location.contacts[0] = applicantContact;
+
+        formData.businessInformation = {
+            district: "",
+            businessType: "U",
+            legalType: "SP",
+            clientType: "I",
+            registrationNumber: "",
+            businessName: "Jhonny Baxter",
+            firstName: "Jhonny",
+            lastName: "Baxter",
+            goodStandingInd: "Y",
+            birthdate: "1970-01-01",
+            address: {
+              locationName: "",
+              complementaryAddressOne: "",
+              complementaryAddressTwo: null,
+              streetAddress: "",
+              country: {
+                value: "",
+                text: "",
+              },
+              province: {
+                value: "",
+                text: "",
+              },
+              city: "",
+              postalCode: "",
+            },
+            middleName: "Michael",
+            identificationType: { value: "PASS", text: "Canadian passport", countryCode: "CA" },
+            identificationProvince: null,
+            clientIdentification: "1W2E3R5T",
+        };
+
         break;
       }
       default:
