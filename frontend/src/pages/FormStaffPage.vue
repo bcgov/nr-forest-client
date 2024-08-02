@@ -230,6 +230,9 @@ const onCancel = () => {
 };
 
 const lookForMatches = (onEmpty: () => void) => {
+  /*
+  Disabling for now, as this task wasn't supposed to have this yet
+
   overlayBus.emit({ isVisible: true, message: "", showLoading: true });
   fuzzyBus.emit(undefined);
   errorBus.emit([]);
@@ -268,6 +271,7 @@ const lookForMatches = (onEmpty: () => void) => {
 
     setScrollPoint("top-notification");
   });
+  */
 };
 
 const moveToNextStep = () => {
