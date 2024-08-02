@@ -348,4 +348,239 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
 
   });
 
+  describe('Validation', () => {
+
+    beforeEach(() => {
+
+      // Existing Corporation 1
+      cy.intercept('GET', '**/api/clients/name/cor', {
+        statusCode: 200,
+        fixture: 'clients/bcreg_ac_list3.json',
+      }).as('clientSearchCOR');
+
+      cy.intercept('GET', `**/api/clients/name/${encodeURIComponent('Existing Corporation 1')}`, {
+        fixture: 'clients/bcreg_ac_list3.json',
+      }).as('clientSearchEncodedCOR');
+
+      cy.intercept('GET', `**/api/clients/C1234567`, {        
+        fixture: 'clients/bcreg_C1234567.json',
+      }).as('clientDetailsC1234567');
+
+      // Long name corporation
+      cy.intercept('GET', '**/api/clients/name/lon', {
+        statusCode: 200,
+        fixture: 'clients/bcreg_ac_list3.json',
+      }).as('clientSearchLON');
+
+      cy.intercept('GET', `**/api/clients/name/${encodeURIComponent('Existing Corporation with a super long name that should not be allowed here')}`, {
+        fixture: 'clients/bcreg_ac_list3.json',
+      }).as('clientSearchEncodedLON');
+
+      cy.intercept('GET', `**/api/clients/C1231231`, {        
+        fixture: 'clients/bcreg_C1231231.json',
+      }).as('clientDetailsC1231231');
+
+      // Existing Sole Proprietorship
+      cy.intercept('GET', '**/api/clients/name/sol', {
+        statusCode: 200,
+        fixture: 'clients/bcreg_ac_list3.json',
+      }).as('clientSearchSOL');
+      
+      cy.intercept('GET', `**/api/clients/name/${encodeURIComponent('Existing Sole Proprietorship 1')}`, {
+        fixture: 'clients/bcreg_ac_list3.json',
+      }).as('clientSearchEncodedSOL');  
+      
+      cy.intercept('GET', `**/api/clients/FM123456`, {        
+        fixture: 'clients/bcreg_FM123456.json',
+      }).as('clientDetailsFM123456');
+
+      
+    
+    });
+
+    it('should validate the client name',() => {
+
+      const formContent: FormDataDto = newFormDataDto();
+      formContent.businessInformation.businessName = '';
+      formContent.businessInformation.businessType = 'BCR';
+      
+      cy.mount(BcRegisteredClientInformationWizardStep, {
+        props: {
+          data: formContent,
+          active: true,
+          autofocus: false,
+        },
+      });
+
+      cy.selectAutocompleteEntry('#businessName', 'cor','C1234567','@clientSearchCOR');
+
+      cy.get("#businessName")
+      .shadow()
+      .find('div#selection-button')
+      .click();
+  
+      cy.checkAutoCompleteErrorMessage("#businessName", 'Client name cannot be empty');
+
+      cy.selectAutocompleteEntry('#businessName', 'lon','C1231231','@clientSearchLON');
+      cy.checkAutoCompleteErrorMessage("#businessName", 'The client name has a 60 character limit');
+
+      cy.get("#businessName")
+      .shadow()
+      .find('div#selection-button')
+      .click();
+
+      cy.fillFormEntry('#businessName', 'lá');
+      cy.get('div.frame-01').should('exist').click();
+      cy.checkAutoCompleteErrorMessage("#businessName", 'The client name can only contain: A-Z, a-z, 0-9, space or common symbols');
+
+    });
+
+    it('should validate work safe bc number',() => {
+
+      const formContent: FormDataDto = newFormDataDto();
+      formContent.businessInformation.businessName = '';
+      formContent.businessInformation.businessType = 'BCR';
+      
+      cy.mount(BcRegisteredClientInformationWizardStep, {
+        props: {
+          data: formContent,
+          active: true,
+          autofocus: false,
+        }
+      });
+
+      cy.selectAutocompleteEntry('#businessName', 'cor','C1234567','@clientSearchCOR');
+      cy.wait('@clientDetailsC1234567');
+      cy.get('#workSafeBCNumber').should('exist').and("have.value", "");
+
+      cy.fillFormEntry('#workSafeBCNumber', '23456789012');
+      cy.checkInputErrorMessage('#workSafeBCNumber','The WorkSafeBC has a 6 character limit');
+
+      cy.get('#workSafeBCNumber').shadow().find('input').clear();
+      cy.fillFormEntry('#workSafeBCNumber', 'potato');
+      cy.checkInputErrorMessage('#workSafeBCNumber','WorkSafeBC number should contain only numbers');
+
+    });
+
+    it('should validate doing business as',() => {
+
+      const formContent: FormDataDto = newFormDataDto();
+      formContent.businessInformation.businessName = '';
+      formContent.businessInformation.businessType = 'BCR';
+      
+      cy.mount(BcRegisteredClientInformationWizardStep, {
+        props: {
+          data: formContent,
+          active: true,
+          autofocus: false,
+        }
+      });
+
+      cy.selectAutocompleteEntry('#businessName', 'cor','C1234567','@clientSearchCOR');
+      cy.wait('@clientDetailsC1234567');
+      cy.get('#doingBusinessAs').should('exist').and("have.value", "");
+
+      cy.fillFormEntry('#doingBusinessAs', '1'.repeat(200));
+      cy.checkInputErrorMessage('#doingBusinessAs','The doing business as has a 120 character limit');
+      
+      cy.get('#doingBusinessAs').shadow().find('input').clear();
+      cy.fillFormEntry('#doingBusinessAs', 'lá');
+      cy.checkInputErrorMessage('#doingBusinessAs','The doing business as can only contain: A-Z, a-z, 0-9, space or common symbols');
+
+
+    });
+
+    it('should validate acronym',() => {
+
+      const formContent: FormDataDto = newFormDataDto();
+      formContent.businessInformation.businessName = '';
+      formContent.businessInformation.businessType = 'BCR';
+      
+      cy.mount(BcRegisteredClientInformationWizardStep, {
+        props: {
+          data: formContent,
+          active: true,
+          autofocus: false,
+        }
+      });
+
+      cy.selectAutocompleteEntry('#businessName', 'cor','C1234567','@clientSearchCOR');
+      cy.wait('@clientDetailsC1234567');
+      cy.get('#acronym').should('exist').and("have.value", "");
+
+      cy.fillFormEntry('#acronym', '1'.repeat(10));
+      cy.checkInputErrorMessage('#acronym','The acronym has a 8 character limit');
+      
+      cy.get('#acronym').shadow().find('input').clear();
+      cy.fillFormEntry('#acronym', 'lá');
+      cy.checkInputErrorMessage('#acronym','The acronym can only contain: A-Z, a-z, 0-9, space or common symbols');
+
+
+    });
+
+    it('should validate birthdate',() => {
+      const formContent: FormDataDto = newFormDataDto();
+      formContent.businessInformation.businessName = '';
+      formContent.businessInformation.businessType = 'BCR';
+      
+      cy.mount(BcRegisteredClientInformationWizardStep, {
+        props: {
+          data: formContent,
+          active: true,
+          autofocus: false,
+        }
+      });
+
+      cy.selectAutocompleteEntry('#businessName', 'sol','FM123456','@clientSearchSOL');
+      cy.wait('@clientDetailsFM123456');
+
+      cy.get('#birthdateYear').should('exist').and("have.value", "");
+      cy.get('#birthdateMonth').should('exist').and("have.value", "");
+      cy.get('#birthdateDay').should('exist').and("have.value", "");
+
+      cy.fillFormEntry('#birthdateYear', '2021');
+      cy.fillFormEntry('#birthdateMonth', '12');
+      cy.fillFormEntry('#birthdateDay', '12');
+
+      cy.get('.cds--form-requirement')
+      .should('exist')
+      .and('have.class', 'field-error')
+      .and('include.text', 'The applicant must be at least 19 years old to apply');
+
+      cy.wait(15);
+
+      cy.get('#birthdateYear').shadow().find('input').clear();
+      cy.get('div.frame-01').should('exist').click();
+      cy.wait(15);
+
+      cy.get('.cds--form-requirement')
+      .should('exist')
+      .and('have.class', 'field-error')
+      .and('include.text', 'Date of birth must include a year');
+
+      cy.fillFormEntry('#birthdateYear', '1970');      
+      cy.get('#birthdateMonth').shadow().find('input').clear();
+      cy.get('div.frame-01').should('exist').click();
+      cy.wait(15);
+
+      cy.get('.cds--form-requirement')
+      .should('exist')
+      .and('have.class', 'field-error')
+      .and('include.text', 'Date of birth must include a month');
+
+      cy.fillFormEntry('#birthdateMonth', '12');
+      cy.get('#birthdateDay').shadow().find('input').clear();
+      cy.get('div.frame-01').should('exist').click();
+      cy.wait(15);
+
+      cy.get('.cds--form-requirement')
+      .should('exist')
+      .and('have.class', 'field-error')
+      .and('include.text', 'Date of birth must include a day');
+
+    });
+
+
+  });
+
 });
