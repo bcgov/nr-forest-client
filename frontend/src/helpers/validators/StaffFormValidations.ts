@@ -73,9 +73,9 @@ fieldValidations["businessInformation.lastName"] = [
 ];
 
 fieldValidations["businessInformation.businessName"] = [
-  isNotEmpty("Business name cannot be empty"),
-  isMaxSizeMsg("business name", 60),
-  isAscii("business name"),
+  isNotEmpty("Client name cannot be empty"),
+  isMaxSizeMsg("client name", 60),
+  isAscii("client name"),
 ];
 
 fieldValidations["businessInformation.workSafeBcNumber"] = [
@@ -90,7 +90,7 @@ fieldValidations["businessInformation.doingBusinessAs"] = [
 
 fieldValidations["businessInformation.clientAcronym"] = [  
   optional(isMaxSizeMsg("acronym", 8)),
-  optional(isAscii("business name")),
+  optional(isAscii("acronym")),
 ];
 
 // For the input field.
