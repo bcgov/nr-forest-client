@@ -8,9 +8,11 @@ import { useEventBus } from "@vueuse/core";
 import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Importing types
-import {
+import type {
   BusinessSearchResult,
   ProgressNotification,
+  FuzzyMatcherEvent,
+  ValidationMessageType
 } from "@/dto/CommonTypesDto";
 import type {
   FormDataDto,
@@ -41,7 +43,7 @@ const emit = defineEmits<{
 //Defining the event bus to send notifications up
 const progressIndicatorBus = useEventBus<ProgressNotification>("progress-indicator-bus");
 const exitBus = useEventBus<Record<string, boolean | null>>("exit-notification");
-const fuzzyBus = useEventBus<ValidationMessageType[]>("fuzzy-error-notification");
+const fuzzyBus = useEventBus<FuzzyMatcherEvent>("fuzzy-error-notification");
 const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
 
 
@@ -142,14 +144,18 @@ const autoCompleteResult = ref<BusinessSearchResult>();
         showOnError.value = true;
 
         errorBus.emit([
-          {fieldId: "businessInformation.businessName", errorMsg: 'Client already exists'}
+          {
+            fieldId: "businessInformation.businessName", 
+            fieldName: "Client name",
+            errorMsg: 'Client already exists'
+          }
         ]);
 
         fuzzyBus.emit({
           id: 'global',
           matches:[{
-            fieldId: "businessInformation.clientName", 
-            match: error.value.response.data.split('client number')[1], 
+            field: "businessInformation.clientName", 
+            match: (error.value.response.data as string).split('client number')[1], 
             fuzzy: false
           }]
         });
@@ -180,8 +186,10 @@ watch([detailsData], () => {
     fuzzyBus.emit({id:'',matches:[]});    
     const forestClientDetails: ForestClientDetailsDto = detailsData.value;
 
-    if(forestClientDetails.clientType === 'SP'){
-      formData.value.businessInformation.doingBusinessAs = forestClientDetails.businessName;
+    if(formData.value.businessInformation.clientType === 'RSP'){
+      formData.value.businessInformation.doingBusinessAs = forestClientDetails.name;
+      formData.value.businessInformation.firstName = forestClientDetails.contacts[0]?.firstName;
+      formData.value.businessInformation.lastName = forestClientDetails.contacts[0]?.lastName;
     }
         
     const receivedContacts = forestClientDetails.contacts ?? [];
