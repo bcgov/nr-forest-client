@@ -33,6 +33,7 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 
 // Imported Pages
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
+import FirstNationClientInformationWizardStep from "@/pages/staffform/FirstNationClientInformationWizardStep.vue";
 import LocationsWizardStep from "@/pages/staffform/LocationsWizardStep.vue";
 import ContactsWizardStep from "@/pages/staffform/ContactsWizardStep.vue";
 import ReviewWizardStep from "@/pages/staffform/ReviewWizardStep.vue";
@@ -437,6 +438,12 @@ const submit = () => {
           />
           <individual-client-information-wizard-step
             v-if="clientType?.code === 'I'"
+            :active="currentTab == 0"
+            :data="formData"
+            @valid="validateStep"
+          />
+          <first-nation-client-information-wizard-step
+            v-if="clientType?.code === 'R'"
             :active="currentTab == 0"
             :data="formData"
             @valid="validateStep"

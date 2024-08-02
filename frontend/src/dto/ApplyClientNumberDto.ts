@@ -65,6 +65,13 @@ export interface ForestClientDetailsDto {
   contacts: Contact[];
 }
 
+export interface FirstNationDetailsDto {
+  id: string;
+  name: string;
+  goodStanding: boolean;
+  addresses: Address[];
+}
+
 export const indexedEmptyAddress = (index: number): Address =>
   JSON.parse(
     JSON.stringify({
