@@ -136,14 +136,14 @@ class LegacyIndividualPersistenceServiceTest {
         .verifyComplete();
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{0}")
   @MethodSource("generateForestClient")
   @DisplayName("All kinds of forest clients")
   void shouldCreateIndividualFromStaff(
+      String testTitle,
       MessagingWrapper<String> wrapper,
       SubmissionDetailEntity entity,
       ForestClientDto dto
-
   ) {
     when(
         submissionDetailRepository
@@ -183,6 +183,7 @@ class LegacyIndividualPersistenceServiceTest {
 
     return Stream.of(
         Arguments.of(
+            "Staff-submitted Individual",
             new MessagingWrapper<>(
                 clientNumber,
                 Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
@@ -190,7 +191,14 @@ class LegacyIndividualPersistenceServiceTest {
                 .withParameter(ApplicationConstant.SUBMISSION_STARTER,
                     SubmissionProcessTypeEnum.STAFF)
                 .withParameter(ApplicationConstant.MATCHING_INFO,
-                    "{\"name\": \"John Wick\", \"email\": \"jhon.wick@gov.bc.ca\", \"userId\": \"IDIR\\\\JWICK\", \"businessId\": \"\", \"businessName\": \"\"}")
+                    Map.of(
+                        "name", "John Wick",
+                        "email", "jhon.wick@gov.bc.ca",
+                        "userId", "IDIR\\JWICK",
+                        "businessId", StringUtils.EMPTY,
+                        "businessName", StringUtils.EMPTY
+                    )
+                )
                 .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.A)
                 .withParameter(ApplicationConstant.SUBMISSION_CLIENTID, StringUtils.EMPTY)
                 .withParameter(ApplicationConstant.SUBMISSION_NAME, "Johnathan Valelono Wick")
@@ -234,10 +242,12 @@ class LegacyIndividualPersistenceServiceTest {
                 "IDIR\\JWICK",
                 "IDIR\\JWICK",
                 ApplicationConstant.ORG_UNIT,
+                null,
                 null
             )
         ),
         Arguments.of(
+            "BCSC-submitted Individual",
             new MessagingWrapper<>(
                 clientNumber,
                 Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
@@ -245,7 +255,14 @@ class LegacyIndividualPersistenceServiceTest {
                 .withParameter(ApplicationConstant.SUBMISSION_STARTER,
                     SubmissionProcessTypeEnum.EXTERNAL)
                 .withParameter(ApplicationConstant.MATCHING_INFO,
-                    "{\"name\": \"John Wick\", \"email\": \"jhon.wick@gov.bc.ca\", \"userId\": \"IDIR\\\\JWICK\", \"businessId\": \"\", \"businessName\": \"\"}")
+                    Map.of(
+                        "name", "John Wick",
+                        "email", "jhon.wick@gov.bc.ca",
+                        "userId", "IDIR\\JWICK",
+                        "businessId", StringUtils.EMPTY,
+                        "businessName", StringUtils.EMPTY
+                    )
+                )
                 .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.A)
                 .withParameter(ApplicationConstant.SUBMISSION_CLIENTID, StringUtils.EMPTY)
                 .withParameter(ApplicationConstant.SUBMISSION_NAME, "Johnathan Wick")
@@ -289,6 +306,7 @@ class LegacyIndividualPersistenceServiceTest {
                 "BCSC\\83JB4SM0MGI9KXYFFHBT2Y2F7",
                 "idir\\ottomated",
                 ApplicationConstant.ORG_UNIT,
+                null,
                 null
             )
         )
