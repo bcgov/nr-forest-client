@@ -84,7 +84,7 @@ public class ClientMatchService {
   private Mono<Void> matchStep1(ClientSubmissionDto dto) {
 
     switch (dto.businessInformation().clientType()) {
-      case "RSP" -> {
+      case "BCR" -> {
         return findAndRunMatcher(dto, StepMatchEnum.STEP1REGISTERED);
       }
       case "R" -> {
