@@ -46,5 +46,11 @@
     "name": "Limited liability partnership 1",
     "status": "ACTIVE",
     "legalType": "LP"
+  },
+  {
+    "code": "C9999999",
+    "name": "Corporation 6",
+    "status": "ACTIVE",
+    "legalType": "C"
   }
 ]

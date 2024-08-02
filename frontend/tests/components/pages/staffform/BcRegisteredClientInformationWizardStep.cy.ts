@@ -93,6 +93,20 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         dba: '',
       },
       {
+        scenarioName: 'OK State - Corporation not found',
+        companySearch: 'cnf',
+        companyCode: 'C9999999',
+        showData: true,
+        showBirthdate: false,
+        showUnknowNotification: true,
+        showNotGoodStandingNotification: false,
+        showBcRegDownNotification: false,
+        showDuplicatedNotification: false,
+        type: 'Corporation',
+        standing: 'Unknow',
+        dba: '',
+      },
+      {
         scenarioName: 'OK State - Sole Proprietorship, show birthdate',
         companySearch: 'spp',
         companyCode: 'FM123123',
@@ -203,7 +217,10 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
       .split(' ');
       
       const detailsCode = (code: string) =>{
-        return code === 'bcd' ? 408 : code === 'dup' ? 409 : 200;
+        return code === 'bcd' ? 408 
+        : code === 'dup' ? 409 
+        : code === 'cnf' ? 404 
+        : 200;
       }
 
       //We need to intercept the client search for the scenario, as param 1
@@ -223,6 +240,12 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
 
       if(detailsCode(params[0]) === 409){        
         cy.intercept('GET', `**/api/clients/name/${encodeURIComponent('Corporation 5')}`, {
+          fixture: 'clients/bcreg_ac_list2.json',
+        }).as('clientSearchEncodedToo');        
+      }
+
+      if(detailsCode(params[0]) === 404){        
+        cy.intercept('GET', `**/api/clients/name/${encodeURIComponent('Corporation 6')}`, {
           fixture: 'clients/bcreg_ac_list2.json',
         }).as('clientSearchEncodedToo');        
       }
