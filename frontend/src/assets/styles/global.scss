@@ -1479,11 +1479,14 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   top: calc(-1 * var(--header-height));
 }
 
-.hide-when-less-than-two-children {
+.hide-when-less-than-two-children:not(:has(:nth-child(2))) {
   display: none;
 }
-.hide-when-less-than-two-children:has(:nth-child(2)) {
-  display: unset;
+
+.errors-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .invisible {

@@ -374,6 +374,7 @@ describe("Staff Form", () => {
 
       describe("when all the required fields are filled in", () => {
         beforeEach(() => {
+          cy.contains("h2", "Locations");
           fillLocation();
         });
 
@@ -457,6 +458,7 @@ describe("Staff Form", () => {
 
         cy.get("[data-test='wizard-next-button']").click();
 
+        cy.contains("h2", "Locations");
         fillLocation();
 
         cy.get("[data-test='wizard-next-button']").click();
@@ -468,6 +470,7 @@ describe("Staff Form", () => {
 
       describe("when all the required fields are filled in", () => {
         beforeEach(() => {
+          cy.contains("h2", "Contacts");
           fillContact();
         });
 
@@ -532,9 +535,11 @@ describe("Staff Form", () => {
         });
         cy.get("[data-test='wizard-next-button']").click();
 
+        cy.contains("h2", "Locations");
         fillLocation();
         cy.get("[data-test='wizard-next-button']").click();
         
+        cy.contains("h2", "Contacts");
         fillContact();
         cy.get("[data-test='wizard-next-button']").click();
       });
@@ -558,7 +563,7 @@ describe("Staff Form", () => {
         cy.get("cds-textarea")
         .shadow()
         .find("textarea")
-        .type("A".repeat(4010));
+        .type("A".repeat(4010), {delay: 0});
         
         cy.get("cds-textarea")
         .shadow()

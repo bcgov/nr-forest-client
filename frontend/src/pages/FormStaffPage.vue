@@ -16,6 +16,8 @@ import {
   LegalTypeEnum,
   type CodeNameType,
   type ValidationMessageType,
+  type FuzzyMatcherEvent,
+  type FuzzyMatchResult,
 } from "@/dto/CommonTypesDto";
 import {
   locationName as defaultLocation,
@@ -71,6 +73,7 @@ const clientTypesList: CodeNameType[] = [
 const notificationBus = useEventBus<ValidationMessageType | undefined>("error-notification");
 const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
 const overlayBus = useEventBus<boolean>('overlay-event');
+const fuzzyBus = useEventBus<FuzzyMatcherEvent>("fuzzy-error-notification");
 
 // Route related
 const router = useRouter();
@@ -226,18 +229,63 @@ const onCancel = () => {
   router.push("/");
 };
 
+const lookForMatches = (onEmpty: () => void) => {
+  overlayBus.emit({ isVisible: true, message: "", showLoading: true });
+  fuzzyBus.emit(undefined);
+  errorBus.emit([]);
+  notificationBus.emit(undefined);
+
+  const { response, error, handleErrorDefault } = usePost(
+    "/api/clients/matches",
+    toRef(formData).value,
+    {
+      skipDefaultErrorHandling: true,
+      headers: {
+        "X-STEP": `${currentTab.value + 1}`,
+      },
+    },
+  );
+
+  watch([response], () => {
+    if (response.value.status === 204) {
+      overlayBus.emit({ isVisible: false, message: "", showLoading: false });
+      onEmpty();
+    }
+  });
+
+  watch([error], () => {
+    // Disable the overlay
+    overlayBus.emit({ isVisible: false, message: "", showLoading: false });
+
+    if (error.value.response?.status === 409) {
+      fuzzyBus.emit({
+        id: "global",
+        matches: error.value.response.data as FuzzyMatchResult[],
+      });
+    } else {
+      handleErrorDefault();
+    }
+
+    setScrollPoint("top-notification");
+  });
+};
+
+const moveToNextStep = () => {
+  currentTab.value++;
+  progressData[currentTab.value - 1].kind = "complete";
+  progressData[currentTab.value].kind = "current";
+  setScrollPoint("step-title");
+};
+
 const onNext = () => {
   //This fixes the index
-  formData.location.addresses.forEach((address: Address,index: number) => address.index = index);
-  formData.location.contacts.forEach((contact: Contact,index: number) => contact.index = index);
-  
+  formData.location.addresses.forEach((address: Address, index: number) => (address.index = index));
+  formData.location.contacts.forEach((contact: Contact, index: number) => (contact.index = index));
+
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
-      currentTab.value++;
-      progressData[currentTab.value - 1].kind = "complete";
-      progressData[currentTab.value].kind = "current";
-      setScrollPoint("step-title");
+      lookForMatches(moveToNextStep);
     } else {
       setScrollPoint("top-notification");
     }
@@ -403,19 +451,20 @@ const submit = () => {
           :aria-current="item.step === currentTab ? 'step' : 'false'"
         />
       </cds-progress-indicator>
+    </div>
 
-      <div class="hide-when-less-than-two-children">
+    <div class="form-steps-staff" role="main">
+     <div class="errors-container hide-when-less-than-two-children">
         <!--
         The parent div is necessary to avoid the div.header-offset below from interfering in the flex flow.
         -->
         <div data-scroll="top-notification" class="header-offset"></div>
         <error-notification-grouping-component :form-data="formData" />
-        
+        <fuzzy-match-notification-grouping-component
+          id="global"
+          :business-name="formData.businessInformation.businessName"
+        />
       </div>
-    </div>
-
-    <div class="form-steps-staff" role="main">
-      <fuzzy-match-notification-grouping-component id="global" />
       <div v-if="currentTab == 0" class="form-steps-01">
         <div class="form-steps-section">
           <h2 data-focus="focus-0" tabindex="-1">

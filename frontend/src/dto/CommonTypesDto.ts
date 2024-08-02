@@ -26,7 +26,7 @@ export interface ValidationMessageType {
 }
 
 export interface FuzzyMatchResult {
-  fieldId: string;
+  field: string;
   match: string;
   fuzzy: boolean;
 }
