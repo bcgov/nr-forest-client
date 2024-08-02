@@ -172,3 +172,27 @@ Cypress.Commands.add("selectAutocompleteEntry", (field: string, value: string, d
     cy.wait(10);
   cy.get(field).find(`cds-combo-box-item[data-id="${dataid}"]`).click();
 });
+
+Cypress.Commands.add("checkInputErrorMessage", (field: string, message: string) => {
+  cy.get(field)
+  .shadow()
+  .find('#invalid-text')
+  .invoke('text')
+  .should('contains',message);
+});
+
+Cypress.Commands.add("checkAutoCompleteErrorMessage", (field: string, message: string) => {
+  cy.get(field)          
+      .should('have.attr', 'aria-invalid', 'true')
+      .should('have.attr', 'invalid-text', message);
+
+      cy.get(field)
+      .shadow()
+      .find('svg').should('exist');
+
+      cy.get(field)
+      .shadow()
+      .find('div.cds--form__helper-text > slot#helper-text')
+      .invoke('text')
+      .should('contains', message);
+});
