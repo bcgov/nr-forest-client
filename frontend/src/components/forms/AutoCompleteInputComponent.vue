@@ -95,8 +95,11 @@ const emitValueChange = (newValue: string): void => {
   // Prevent selecting the empty value included when props.contents is empty.
   selectedValue = newValue ? inputList.value.find((entry) => entry.code === newValue) : undefined;
 
-  emit("update:model-value", selectedValue?.name ?? newValue);
-  emit("update:selected-value", selectedValue);
+  if (selectedValue) {
+    emit("update:model-value", selectedValue?.name ?? newValue);
+    emit("update:selected-value", selectedValue);
+  }
+
   emit("empty", isEmpty(newValue));
 };
 
@@ -106,21 +109,25 @@ const isUserEvent = ref(false);
 const userValue = ref("");
 
 const cdsComboBoxRef = ref<InstanceType<typeof CDSComboBox> | null>(null);
+
 watch(
   () => props.modelValue,
-  () => {
-    inputValue.value = props.modelValue;
-    if (!isUserEvent.value && cdsComboBoxRef.value) {
-      cdsComboBoxRef.value._filterInputValue = props.modelValue || "";
-
-      // Validate the SELECTED value immediately.
-      validateInput(props.modelValue);
+  (newValue, oldValue) => {
+    if (newValue !== oldValue) {
+      inputValue.value = newValue;
+      if (!isUserEvent.value && cdsComboBoxRef.value) {
+        cdsComboBoxRef.value._filterInputValue = newValue || "";
+        validateInput(newValue);
+      }
+      isUserEvent.value = false;
     }
-    isUserEvent.value = false;
   },
 );
-watch([inputValue], () => {
-  emitValueChange(inputValue.value);
+
+watch([inputValue], (newValue, oldValue) => {
+  if (newValue !== oldValue) {
+    emitValueChange(inputValue.value);
+  }
 });
 
 const setError = (errorMessage: string | undefined) => {
