@@ -15,6 +15,7 @@ declare module 'vue' {
     DateInputPart: typeof import('./src/components/forms/DateInputComponent/DateInputPart.vue')['default']
     DropdownInputComponent: typeof import('./src/components/forms/DropdownInputComponent.vue')['default']
     ErrorNotificationGroupingComponent: typeof import('./src/components/grouping/ErrorNotificationGroupingComponent.vue')['default']
+    FuzzyMatchNotificationGroupingComponent: typeof import('./src/components/grouping/FuzzyMatchNotificationGroupingComponent.vue')['default']
     LoadingOverlayComponent: typeof import('./src/components/LoadingOverlayComponent.vue')['default']
     MainHeaderComponent: typeof import('./src/components/MainHeaderComponent.vue')['default']
     MultiselectInputComponent: typeof import('./src/components/forms/MultiselectInputComponent.vue')['default']

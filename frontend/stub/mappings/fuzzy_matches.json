@@ -10,7 +10,8 @@
         "status": 204,
         "headers": {
           "Content-Type": "application/json"
-        }
+        },
+        "fixedDelayMilliseconds": 500
       }
     },
     {
@@ -41,7 +42,7 @@
           },
           {
             "matchesJsonPath": {
-              "expression": "$.businessInformation.businessName",
+              "expression": "$.businessInformation.lastName",
               "equalTo": "Baxter"
             }
           },
@@ -55,10 +56,11 @@
       },
       "response": {
         "status": 409,
-        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001,00000009\", \"fuzzy\"=true}]",
+        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001,00000009\", \"fuzzy\":true}]",
         "headers": {
           "Content-Type": "application/json"
-        }
+        },
+        "fixedDelayMilliseconds": 500
       }
     },
     {
@@ -89,7 +91,7 @@
           },
           {
             "matchesJsonPath": {
-              "expression": "$.businessInformation.businessName",
+              "expression": "$.businessInformation.lastName",
               "equalTo": "Baxter"
             }
           },
@@ -101,18 +103,19 @@
           },
           {
             "matchesJsonPath": {
-              "expression": "$.businessInformation.idValue",
-              "equalTo": "123456"
+              "expression": "$.businessInformation.clientIdentification",
+              "equalTo": "1234567"
             }
           }
         ]
       },
       "response": {
         "status": 409,
-        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\"=false}]",
+        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\":false}]",
         "headers": {
           "Content-Type": "application/json"
-        }
+        },
+        "fixedDelayMilliseconds": 500
       }
     },
     {
@@ -137,24 +140,25 @@
           },
           {
             "matchesJsonPath": {
-              "expression": "$.businessInformation.idType",
+              "expression": "$.businessInformation.identificationType.value",
               "equalTo": "BCDL"
             }
           },
           {
             "matchesJsonPath": {
-              "expression": "$.businessInformation.idValue",
-              "equalTo": "123456"
+              "expression": "$.businessInformation.clientIdentification",
+              "equalTo": "1234567"
             }
           }
         ]
       },
       "response": {
         "status": 409,
-        "body": "[{\"field\":\"businessInformation.identification\", \"match\":\"00000001\", \"fuzzy\"=false}]",
+        "body": "[{\"field\":\"businessInformation.identification\", \"match\":\"00000001\", \"fuzzy\":false}]",
         "headers": {
           "Content-Type": "application/json"
-        }
+        },
+        "fixedDelayMilliseconds": 500
       }
     },
     {
@@ -185,7 +189,7 @@
           },
           {
             "matchesJsonPath": {
-              "expression": "$.businessInformation.businessName",
+              "expression": "$.businessInformation.lastName",
               "equalTo": "Baxter"
             }
           },
@@ -197,24 +201,25 @@
           },
           {
             "matchesJsonPath": {
-              "expression": "$.businessInformation.idType",
+              "expression": "$.businessInformation.identificationType.value",
               "equalTo": "BCDL"
             }
           },
           {
             "matchesJsonPath": {
-              "expression": "$.businessInformation.idValue",
-              "equalTo": "123456"
+              "expression": "$.businessInformation.clientIdentification",
+              "equalTo": "1234567"
             }
           }
         ]
       },
       "response": {
         "status": 409,
-        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\"=false},{\"field\":\"businessInformation.identification\", \"match\":\"00000001\", \"fuzzy\"=false}]",
+        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\":false},{\"field\":\"businessInformation.identification\", \"match\":\"00000001\", \"fuzzy\":false}]",
         "headers": {
           "Content-Type": "application/json"
-        }
+        },
+        "fixedDelayMilliseconds": 500
       }
     }    
   ]
