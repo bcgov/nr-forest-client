@@ -49,9 +49,11 @@ let submissionValidators: ValidationMessageType[] = [];
  * Register a listener for submission errors on the error bus.
  * When an error is received, update the submission validators array.
  */
-errorBus.on((errors) => {
+errorBus.on((errors, payload) => {
   submissionValidators = errors.map((error: ValidationMessageType) => {
-    notificationBus.emit(error);
+    if (!payload.skipNotification) {
+      notificationBus.emit(error);
+    }
     return { ...error, originalValue: "" };
   });
   revalidateBus.emit();

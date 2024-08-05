@@ -339,7 +339,10 @@ watch(combinedValue, (newValue) => {
         :autocomplete="['bday-year', 'bday-month', 'bday-day']"
         v-model="formData.businessInformation.birthdate"
         :enabled="true"
-        :validations="[...getValidations('businessInformation.birthdate')]"
+        :validations="[
+          ...getValidations('businessInformation.birthdate'),
+          submissionValidation('businessInformation.birthdate'),
+        ]"
         :year-validations="[...getValidations('businessInformation.birthdate.year')]"
         @error="validation.birthdate = !$event"
         @possibly-valid="validation.birthdate = $event"

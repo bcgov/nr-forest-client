@@ -5,7 +5,12 @@ import "@carbon/web-components/es/components/notification/index";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
-import type { FuzzyMatchResult, FuzzyMatcherData, FuzzyMatcherEvent } from "@/dto/CommonTypesDto";
+import type {
+  FuzzyMatcherData,
+  FuzzyMatcherEvent,
+  ValidationMessageType,
+  MiscFuzzyMatchResult,
+} from "@/dto/CommonTypesDto";
 import { greenDomain } from "@/CoreConstants";
 import { convertFieldNameToSentence } from "@/services/ForestClientService";
 
@@ -16,6 +21,7 @@ const props = defineProps<{
 }>();
 
 const fuzzyBus = useEventBus<FuzzyMatcherEvent>("fuzzy-error-notification");
+const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
 
 const fuzzyMatchedError = ref<FuzzyMatcherData>(
   props.error ?? {
@@ -30,11 +36,37 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
     fuzzyMatchedError.value.show = true;
     fuzzyMatchedError.value.fuzzy = true;
     fuzzyMatchedError.value.matches = [];
-    for (const match of event.matches) {
-      if (!match.fuzzy) {
+    for (const rawMatch of event.matches) {
+      const match: MiscFuzzyMatchResult = { result: rawMatch };
+      if (!rawMatch.fuzzy) {
         fuzzyMatchedError.value.fuzzy = false;
       }
       fuzzyMatchedError.value.matches.push(match);
+
+      if (rawMatch.field === "businessInformation.businessName") {
+        if (rawMatch.fuzzy) {
+          match.label = "Partial matching on name and date of birth";
+          errorBus.emit(
+            [
+              {
+                fieldId: "businessInformation.firstName",
+                errorMsg: "There's already a client with this name",
+              },
+              {
+                fieldId: "businessInformation.lastName",
+                errorMsg: "There's already a client with this name",
+              },
+              {
+                fieldId: "businessInformation.birthdate",
+                errorMsg: "There's already a client with this date of birth",
+              },
+            ],
+            { skipNotification: true },
+          );
+        } else {
+          match.label = "Matching on name, date of birth and ID number";
+        }
+      }
     }
   } else {
     fuzzyMatchedError.value.show = false;
@@ -43,8 +75,8 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
   }
 };
 
-const getListItemContent = ref((match: FuzzyMatchResult) => {
-  return match && match.match ? renderListItem(match) : "";
+const getListItemContent = ref((match: MiscFuzzyMatchResult) => {
+  return match && match.result?.match ? renderListItem(match) : "";
 });
 
 const getLegacyUrl = (duplicatedClient, label) => {
@@ -59,25 +91,28 @@ const getLegacyUrl = (duplicatedClient, label) => {
   }
 };
 
-const renderListItem = (match: FuzzyMatchResult) => {
+const renderListItem = (misc: MiscFuzzyMatchResult) => {
+  const { result } = misc;
   let finalLabel = "";
-  if (match.field === "contact" || match.field === "location") {
-    finalLabel = "Matching one or more " + match.field + "s";
+  if (misc.label) {
+    finalLabel = misc.label;
+  } else if (result.field === "contact" || result.field === "location") {
+    finalLabel = "Matching one or more " + result.field + "s";
   } else {
     finalLabel =
-      (match.fuzzy ? "Partial m" : "M") +
+      (result.fuzzy ? "Partial m" : "M") +
       "atching on " +
-      convertFieldNameToSentence(match.field).toLowerCase();
+      convertFieldNameToSentence(result.field).toLowerCase();
   }
 
   finalLabel += " - Client number: ";
 
-  const clients = [...new Set<string>(match.match.split(","))];
+  const clients = [...new Set<string>(result.match.split(","))];
   finalLabel += clients
     .map(
       (clientNumber) =>
         '<a target="_blank" href="' +
-        getLegacyUrl(clientNumber, match.field) +
+        getLegacyUrl(clientNumber, result.field) +
         '">' +
         clientNumber +
         "</a>",
@@ -91,11 +126,11 @@ const renderListItem = (match: FuzzyMatchResult) => {
  * Gets unique client numbers across all the matches
  * @param matches
  */
-const getUniqueClientNumbers = (matches: FuzzyMatchResult[]) => {
+const getUniqueClientNumbers = (matches: MiscFuzzyMatchResult[]) => {
   const results: string[] = [];
 
   matches.forEach((data) => {
-    results.push(...data.match.split(","));
+    results.push(...data.result.match.split(","));
   });
 
   return [...new Set(results)];
@@ -135,7 +170,7 @@ fuzzyBus.on(handleFuzzyErrorMessage);
         <!-- eslint-disable-next-line vue/no-v-html -->
         <li
           v-for="match in fuzzyMatchedError.matches"
-          :key="match.field"
+          :key="match.result.field"
           v-dompurify-html="getListItemContent(match)"
         ></li>
       </ul>
