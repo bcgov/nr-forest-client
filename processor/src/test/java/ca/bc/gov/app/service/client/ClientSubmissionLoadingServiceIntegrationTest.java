@@ -60,7 +60,7 @@ class ClientSubmissionLoadingServiceIntegrationTest extends AbstractTestContaine
     backendStub.resetAll();
     backendStub
         .stubFor(
-            get("/districts/DCR")
+            get("/codes/districts/DCR")
                 .withBasicAuth("uat", "thisisasupersecret")
                 .willReturn(
                     aResponse()
