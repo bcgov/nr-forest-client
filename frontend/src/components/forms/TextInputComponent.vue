@@ -6,7 +6,7 @@ import type { CDSTextInput } from "@carbon/web-components";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
-import { isEmpty } from "@/dto/CommonTypesDto";
+import { isEmpty, type ValidationMessageType } from "@/dto/CommonTypesDto";
 import type { TextInputType } from "@/components/types";
 
 //Define the input properties for this component
@@ -47,12 +47,20 @@ const error = ref<string | undefined>(props.errorMessage ?? "");
 
 const revalidateBus = useEventBus<void>("revalidate-bus");
 
+const warning = ref(false);
+
 /**
  * Sets the error and emits an error event.
- * @param errorMessage - the error message
+ * @param errorObject - the error object or string
  */
-const setError = (errorMessage: string | undefined) => {
+const setError = (errorObject: string | ValidationMessageType | undefined) => {
+  const errorMessage = typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
   error.value = errorMessage || "";
+
+  warning.value = false;
+  if (typeof errorObject === "object") {
+    warning.value = errorObject.warning;
+  }
 
   /*
   The error should be emitted whenever it is found, instead of watching and emitting only when it
@@ -187,6 +195,7 @@ watch(
       <cds-text-input
         v-if="enabled"
         v-bind="$attrs"
+        :class="warning ? 'warning' : ''"
         ref="cdsTextInputRef"
         :id="id"
         :autocomplete="autocomplete"
@@ -198,11 +207,13 @@ watch(
         :placeholder="placeholder"
         :value="selectedValue"
         :helper-text="tip"
-        :disabled="!enabled"        
-        :invalid="error ? true : false"
+        :disabled="!enabled"
+        :invalid="!warning && error ? true : false"
         :aria-invalid="ariaInvalidString"
-        :invalid-text="error"
+        :invalid-text="!warning && error"
         v-masked="mask"
+        :warn="warning"
+        :warn-text="warning && error"
         @focus="isFocused = true"
         @blur="
           (event: any) => {
@@ -214,7 +225,7 @@ watch(
         :data-focus="id"
         :data-scroll="id"
         :data-id="'input-' + id"
-        v-shadow="3"
+        v-shadow="4"
       />
     </div>
   </div>

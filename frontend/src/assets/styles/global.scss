@@ -1176,6 +1176,10 @@ cds-textarea::part(label), .cds-text-input-label {
   color: var(--light-theme-text-text-primary, #131315);
 }
 
+cds-text-input.warning::part(input) {
+  outline: 2px solid var(--cds-support-warning,#ffc300)
+}
+
 cds-modal::part(dialog) {
   width: 40rem;
   border-radius: 0.5rem;

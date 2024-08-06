@@ -14,6 +14,7 @@ const props = defineProps<{
   selectedValue: string;
   enabled?: boolean;
   invalid: boolean;
+  warning: boolean;
   required?: boolean;
   autocomplete?: string;
 }>();
@@ -65,6 +66,7 @@ watch(cdsTextInputRef, async (cdsTextInput) => {
   <div class="input-group">
     <cds-text-input
       v-if="enabled"
+      :class="warning ? 'warning' : ''"
       ref="cdsTextInputRef"
       :id="id"
       :autocomplete="autocomplete"
@@ -75,6 +77,7 @@ watch(cdsTextInputRef, async (cdsTextInput) => {
       :value="selectedValue"
       :disabled="!enabled"
       :invalid="invalid"
+      :warn="warning"
       @blur="(e) => emit('blur', e)"
       @input="(e) => emit('input', e)"
       :data-focus="id"

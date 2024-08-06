@@ -61,8 +61,8 @@ errorBus.on((errors, payload) => {
     if (!payload.skipNotification) {
       notificationBus.emit(error);
     }
-    const { groupId } = payload;
-    return { ...error, originalValue: "", groupId };
+    const { groupId, warning } = payload;
+    return { ...error, originalValue: "", groupId, warning };
   });
   revalidateBus.emit();
 });
@@ -73,11 +73,16 @@ errorBus.on((errors, payload) => {
  * @param fieldId - The fieldId of the validator to update.
  * @param originalValue - The new value for the validator's originalValue property.
  */
-const updateValidators = (fieldId: string, originalValue: string, groupId?: string): void => {
+const updateValidators = (
+  fieldId: string,
+  originalValue: string,
+  groupId?: string,
+  warning?: boolean,
+): void => {
   submissionValidators = submissionValidators.map(
     (validator: ValidationMessageType) => {
       if (validator.fieldId === fieldId) {
-        return { ...validator, originalValue, groupId };
+        return { ...validator, originalValue, groupId, warning };
       }
       return validator;
     }
@@ -104,9 +109,11 @@ const updateGroup = (groupId: string, fieldId: string, error: boolean) => {
  * Create a submission validation function for the specified fieldName.
  * This function validates a value based on the submission validators array.
  * @param fieldName - The name of the field to validate.
- * @returns A function that takes a value and returns an error message if applicable.
+ * @returns A function that takes a value and returns an error (object or string) if applicable.
  */
-export const submissionValidation = (fieldName: string): ((value: string) => string) => {
+export const submissionValidation = (
+  fieldName: string,
+): ((value: string) => string | ValidationMessageType) => {
   return (value: string) => {
     const foundError = submissionValidators.find(
       (validator: ValidationMessageType) => validator.fieldId === fieldName,
@@ -130,7 +137,10 @@ export const submissionValidation = (fieldName: string): ((value: string) => str
           (!foundError.groupId || errorGroups[foundError.groupId].result)) ||
         foundError.originalValue === ""
       ) {
-        updateValidators(fieldName, value, foundError.groupId);
+        updateValidators(fieldName, value, foundError.groupId, foundError.warning);
+        if (foundError.warning) {
+          return foundError;
+        }
         return foundError.errorMsg;
       }
     }

@@ -61,9 +61,29 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
             },
           ];
           const groupId = JSON.stringify(errorEvent);
-          errorBus.emit(errorEvent, { skipNotification: true, groupId });
+          errorBus.emit(errorEvent, { skipNotification: true, groupId, warning: true });
         } else {
           match.label = "Matching on name, date of birth and ID number";
+          const errorEvent = [
+            {
+              fieldId: "businessInformation.firstName",
+              errorMsg: "Client already exists",
+            },
+            {
+              fieldId: "businessInformation.lastName",
+              errorMsg: "Client already exists",
+            },
+            {
+              fieldId: "businessInformation.birthdate",
+              errorMsg: "Client already exists",
+            },
+            {
+              fieldId: "businessInformation.clientIdentification",
+              errorMsg: "Client already exists",
+            },
+          ];
+          const groupId = JSON.stringify(errorEvent);
+          errorBus.emit(errorEvent, { skipNotification: true, groupId });
         }
       }
     }
