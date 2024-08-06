@@ -31,7 +31,10 @@ import { getEnumKeyByEnumValue, convertFieldNameToSentence } from "@/services/Fo
 // Imported global validations
 import { validate, runValidation, addValidation, getValidations } from "@/helpers/validators/StaffFormValidations";
 import { isContainedIn } from "@/helpers/validators/GlobalValidators";
-import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
+import {
+  submissionValidation,
+  resetSubmissionValidators,
+} from "@/helpers/validators/SubmissionValidators";
 
 // Imported Pages
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
@@ -79,7 +82,15 @@ const router = useRouter();
 
 const { setScrollPoint } = useFocus();
 
-let formData = reactive<FormDataDto>({ ...newFormDataDto() });
+const formData = reactive<FormDataDto>({ ...newFormDataDto() });
+
+watch(formData, () => {
+  if (fuzzyError.value) {
+    resetSubmissionValidators();
+    revalidateBus.emit();
+    fuzzyError.value = false;
+  }
+});
 
 const locations = computed(() =>
   formData.location.addresses.map((address: any) => address.locationName)
@@ -228,6 +239,8 @@ const onCancel = () => {
   router.push("/");
 };
 
+const fuzzyError = ref(false);
+
 const lookForMatches = (onEmpty: () => void) => {
   overlayBus.emit({ isVisible: true, message: "", showLoading: true });
   fuzzyBus.emit(undefined);
@@ -247,6 +260,7 @@ const lookForMatches = (onEmpty: () => void) => {
 
   watch([response], () => {
     if (response.value.status === 204) {
+      fuzzyError.value = false;
       overlayBus.emit({ isVisible: false, message: "", showLoading: false });
       onEmpty();
     }
@@ -257,6 +271,7 @@ const lookForMatches = (onEmpty: () => void) => {
     overlayBus.emit({ isVisible: false, message: "", showLoading: false });
 
     if (error.value.response?.status === 409) {
+      fuzzyError.value = true;
       fuzzyBus.emit({
         id: "global",
         matches: error.value.response.data as FuzzyMatchResult[],
@@ -309,7 +324,7 @@ const updateClientType = (value: CodeNameType | undefined) => {
     clientType.value = value;
 
     // reset formData
-    formData = newFormDataDto();
+    Object.assign(formData, newFormDataDto());
 
     switch (value.code) {
       case "I": {

@@ -106,3 +106,8 @@ export const submissionValidation = (
     return "";
   };
 };
+
+export const resetSubmissionValidators = (): void => {
+  submissionValidators = [];
+  revalidateBus.emit();
+};
