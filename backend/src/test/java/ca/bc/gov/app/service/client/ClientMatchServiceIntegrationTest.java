@@ -15,9 +15,11 @@ import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.MatchResult;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.DataMatchException;
 import ca.bc.gov.app.exception.InvalidRequestObjectException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
+import ca.bc.gov.app.extensions.ClientMatchDataGenerator;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.LocalDate;
@@ -25,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -32,6 +35,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 @DisplayName("Integrated Test | Client Match Service")
@@ -114,6 +118,118 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                 + dto.businessInformation().clientIdentification()))
                 .willReturn(okJson(documentMatch))
         );
+
+    StepVerifier.FirstStep<Void> matcher =
+        service
+            .matchClients(dto, 1)
+            .as(StepVerifier::create);
+
+    if (error) {
+      matcher
+          .consumeErrorWith(errorContent ->
+              assertThat(errorContent)
+                  .isInstanceOf(DataMatchException.class)
+                  .hasMessage("409 CONFLICT \"Match found on existing data.\"")
+                  .extracting("matches")
+                  .isInstanceOf(List.class)
+                  .asList()
+                  .has(
+                      new Condition<>(
+                          matchResult ->
+                              matchResult
+                                  .stream()
+                                  .map(m -> (MatchResult) m)
+                                  .anyMatch(m -> m.fuzzy() == fuzzy),
+                          "MatchResult with fuzzy value %s",
+                          fuzzy
+                      )
+                  )
+
+          )
+          .verify();
+    } else {
+      matcher.verifyComplete();
+    }
+
+  }
+
+  @DisplayName("Matching registered clients")
+  @ParameterizedTest
+  @MethodSource("registeredMatch")
+  void shouldMatchRegistered(
+      ClientSubmissionDto dto,
+      String individualFuzzyMatch,
+      String clientNameFuzzyMatch,
+      String clientRegistrationFullMatch,
+      String fullNameMatch,
+      String acronymMatch,
+      String dbaFuzzyMatch,
+      String dbaFullMatch,
+      boolean error,
+      boolean fuzzy
+  ) {
+
+    legacyStub.resetAll();
+
+    if(dto.businessInformation().clientType().equalsIgnoreCase("RSP")) {
+      legacyStub
+          .stubFor(
+              get(urlPathEqualTo("/api/search/individual"))
+                  .withQueryParam("firstName", equalTo(dto.businessInformation().firstName()))
+                  .withQueryParam("lastName", equalTo(dto.businessInformation().lastName()))
+                  .withQueryParam("dob", equalTo(dto.businessInformation().birthdate().format(
+                      DateTimeFormatter.ISO_DATE))
+                  )
+                  .willReturn(okJson(individualFuzzyMatch))
+          );
+    }
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/search/registrationOrName"))
+                .withQueryParam("registrationNumber", equalTo(dto.businessInformation().registrationNumber()))
+                .willReturn(okJson(clientRegistrationFullMatch))
+        );
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/search/clientName"))
+                .withQueryParam("clientName", equalTo(dto.businessInformation().businessName()))
+                .willReturn(okJson(fullNameMatch))
+        );
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/search/match"))
+                .withQueryParam("companyName", equalTo(dto.businessInformation().businessName()))
+                .willReturn(okJson(clientNameFuzzyMatch))
+        );
+
+    if(StringUtils.isNotBlank(dto.businessInformation().clientAcronym())) {
+      legacyStub
+          .stubFor(
+              get(urlPathEqualTo("/api/search/acronym"))
+                  .withQueryParam("acronym", equalTo(dto.businessInformation().clientAcronym()))
+                  .willReturn(okJson(acronymMatch))
+          );
+    }
+
+    if(StringUtils.isNotBlank(dto.businessInformation().doingBusinessAs())) {
+      legacyStub
+          .stubFor(
+              get(urlPathEqualTo("/api/search/doingBusinessAs"))
+                  .withQueryParam("dbaName", equalTo(dto.businessInformation().doingBusinessAs()))
+                  .willReturn(okJson(dbaFuzzyMatch))
+          );
+
+      legacyStub
+          .stubFor(
+              get(urlPathEqualTo("/api/search/doingBusinessAs"))
+                  .withQueryParam("dbaName", equalTo(dto.businessInformation().doingBusinessAs()))
+                  .withQueryParam("isFuzzy", equalTo("false"))
+                  .willReturn(okJson(dbaFullMatch))
+          );
+    }
 
     StepVerifier.FirstStep<Void> matcher =
         service
@@ -243,7 +359,6 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                 4,
                 named("Invalid Request", InvalidRequestObjectException.class)
             ),
-            //TODO: add invalid BC Registered cases
             Arguments.of(
                 named("Random First Nation", getRandomData("R")),
                 1,
@@ -362,6 +477,225 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             "[{\"clientNumber\":\"00000006\"}]",
             "[{\"clientNumber\":\"00000007\"}]",
             "[{\"clientNumber\":\"00000008\"}]",
+            true,
+            false
+        )
+    );
+  }
+
+  private static Stream<Arguments> registeredMatch() {
+    return Stream.of(
+        Arguments.of(
+            ClientMatchDataGenerator
+                .getRegistered(
+                    "C123456",
+                    "Fake Corp",
+                    "C",
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    "C"
+                ),
+            named("no individual", "[]"),
+            named("no fuzzy name", "[]"),
+            named("no registration", "[]"),
+            named("no full name", "[]"),
+            named("no acronym", "[]"),
+            named("no dba fuzzy", "[]"),
+            named("no dba full", "[]"),
+            false,
+            false
+        ),
+        Arguments.of(
+            ClientMatchDataGenerator
+                .getRegisteredSP(
+                    "C123456",
+                    "Fake Corp",
+                    StringUtils.EMPTY,
+                    "Fake Corp",
+                    StringUtils.EMPTY,
+                    "Johnathan",
+                    "Wick",
+                    LocalDate.of(1970, 1, 12)
+                ),
+            named("individual matched", "[{\"clientNumber\":\"00000001\"}]"),
+            named("no fuzzy name", "[]"),
+            named("no registration", "[]"),
+            named("no full name", "[]"),
+            named("no acronym", "[]"),
+            named("no dba fuzzy", "[]"),
+            named("no dba full", "[]"),
+            true,
+            true
+        ),
+        Arguments.of(
+            ClientMatchDataGenerator
+                .getRegistered(
+                    "S123456",
+                    "Fake Corp",
+                    "C",
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    "S"
+                ),
+            named("no individual", "[]"),
+            named("no fuzzy name", "[]"),
+            named("registration matched", "[{\"clientNumber\":\"00000001\"}]"),
+            named("no full name", "[]"),
+            named("no acronym", "[]"),
+            named("no dba fuzzy", "[]"),
+            named("no dba full", "[]"),
+            true,
+            false
+        ),
+        Arguments.of(
+            ClientMatchDataGenerator
+                .getRegistered(
+                    "A123456",
+                    "Fake Corp",
+                    "C",
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    "FAKE",
+                    "A"
+                ),
+            named("no individual", "[]"),
+            named("no fuzzy name", "[]"),
+            named("no registration", "[]"),
+            named("no full name", "[]"),
+            named("acronym matched","[{\"clientNumber\":\"00000001\"}]"),
+            named("no dba fuzzy", "[]"),
+            named("no dba full", "[]"),
+            true,
+            false
+        ),
+        Arguments.of(
+            ClientMatchDataGenerator
+                .getRegistered(
+                    "P123456",
+                    "Fake Corp",
+                    "C",
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    "P"
+                ),
+            named("no individual", "[]"),
+            named("fuzzy name matched", "[{\"clientNumber\":\"00000001\"}]"),
+            named("no registration", "[]"),
+            named("no full name", "[]"),
+            named("no acronym", "[]"),
+            named("no dba fuzzy", "[]"),
+            named("no dba full", "[]"),
+            true,
+            true
+        ),
+        Arguments.of(
+            ClientMatchDataGenerator
+                .getRegistered(
+                    "L123456",
+                    "Fake Corp",
+                    "C",
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    "L"
+                ),
+            named("no individual", "[]"),
+            named("fuzzy name matched", "[{\"clientNumber\":\"00000001\"}]"),
+            named("no registration", "[]"),
+            named("full name matched", "[{\"clientNumber\":\"00000002\"}]"),
+            named("no acronym", "[]"),
+            named("no dba fuzzy", "[]"),
+            named("no dba full", "[]"),
+            true,
+            false
+        ),
+
+
+        Arguments.of(
+            ClientMatchDataGenerator
+                .getRegistered(
+                    "C123456",
+                    "Fake Corp",
+                    "C",
+                    StringUtils.EMPTY,
+                    "Fake Corp",
+                    StringUtils.EMPTY,
+                    "C"
+                ),
+            named("no individual", "[]"),
+            named("no fuzzy name", "[]"),
+            named("no registration", "[]"),
+            named("no full name", "[]"),
+            named("no acronym", "[]"),
+            named("no dba fuzzy", "[{\"clientNumber\":\"00000001\"}]"),
+            named("no dba full", "[]"),
+            true,
+            true
+        ),
+        Arguments.of(
+            ClientMatchDataGenerator
+                .getRegistered(
+                    "C123456",
+                    "Fake Corp",
+                    "C",
+                    StringUtils.EMPTY,
+                    "Fake Corp",
+                    StringUtils.EMPTY,
+                    "C"
+                ),
+            named("no individual", "[]"),
+            named("no fuzzy name", "[]"),
+            named("no registration", "[]"),
+            named("no full name", "[]"),
+            named("no acronym", "[]"),
+            named("dba fuzzy matched", "[{\"clientNumber\":\"00000001\"}]"),
+            named("dba full matched", "[{\"clientNumber\":\"00000001\"}]"),
+            true,
+            false
+        ),
+        Arguments.of(
+            ClientMatchDataGenerator
+                .getRegistered(
+                    "C123456",
+                    "Fake Corp",
+                    "C",
+                    StringUtils.EMPTY,
+                    "Fake Corp",
+                    StringUtils.EMPTY,
+                    "C"
+                ),
+            named("no individual", "[]"),
+            named("fuzzy name matched", "[{\"clientNumber\":\"00000001\"}]"),
+            named("no registration", "[]"),
+            named("full name matched", "[{\"clientNumber\":\"00000002\"}]"),
+            named("no acronym", "[]"),
+            named("dba fuzzy matched", "[{\"clientNumber\":\"00000003\"}]"),
+            named("dba full matched", "[{\"clientNumber\":\"00000004\"}]"),
+            true,
+            false
+        ),
+        Arguments.of(
+            ClientMatchDataGenerator
+                .getRegisteredSP(
+                    "C123456",
+                    "Fake Corp",
+                    StringUtils.EMPTY,
+                    "Fake Corp",
+                    "FAKE",
+                    "Johnathan",
+                    "Wick",
+                    LocalDate.of(1970, 1, 12)
+                ),
+            named("individual matched", "[{\"clientNumber\":\"00000001\"}]"),
+            named("fuzzy name matched", "[{\"clientNumber\":\"00000002\"}]"),
+            named("registration matched", "[{\"clientNumber\":\"00000003\"}]"),
+            named("full name matched", "[{\"clientNumber\":\"00000004\"}]"),
+            named("acronym matched","[{\"clientNumber\":\"00000005\"}]"),
+            named("dba fuzzy matched", "[{\"clientNumber\":\"00000006\"}]"),
+            named("dba full matched", "[{\"clientNumber\":\"00000007\"}]"),
             true,
             false
         )
