@@ -9,7 +9,11 @@ import { useEventBus } from "@vueuse/core";
 import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Importing types
-import type { FirstNationDetailsDto, ForestClientDetailsDto, FormDataDto } from "@/dto/ApplyClientNumberDto";
+import type {
+  FirstNationDetailsDto,
+  ForestClientDetailsDto,
+  FormDataDto,
+} from "@/dto/ApplyClientNumberDto";
 import type {
   BusinessSearchResult,
   CodeNameType,
@@ -78,7 +82,7 @@ onMounted(() => {
 });
 
 const autoCompleteUrl = computed(
-  () => `/api/opendata/${formData.value.businessInformation.businessName ?? ""}`,
+  () => `/api/opendata/${formData.value.businessInformation.businessName ?? ""}`
 );
 
 const autoCompleteResult = ref<BusinessSearchResult | undefined>(
@@ -90,25 +94,37 @@ const showDetailsLoading = ref<boolean>(false);
 
 watch([autoCompleteResult], () => {
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
-    showDetailsLoading.value = true;    
+    console.log("Test " + JSON.stringify(autoCompleteResult.value));
+    showDetailsLoading.value = true;
   }
   firstNationControl.value = false;
 });
 
+const updateModelValue = ($event) => {
+  validation.businessName =
+    !!$event && $event === autoCompleteResult.value?.name;
+};
 
-const parseSelectedNation = (selectedNation: FirstNationDetailsDto, values: ForestClientDetailsDto[]) => {
-  console.log("parseSelectedNation called with:", selectedNation, values);
+const parseSelectedNation = (
+  selectedNation: FirstNationDetailsDto
+) => {
   if (selectedNation) {
     validation.businessName = true;
-    formData.value.businessInformation.goodStandingInd = (selectedNation.goodStanding ?? true) ? "Y" : "N";
-    //formData.value.location.addresses = selectedNation.addresses;
   }
   return selectedNation;
 };
 
-const updateModelValue = ($event) => {
-  validation.businessName = !!$event && $event === autoCompleteResult.value?.name;
-}
+const mapFirstNationInfo = (firstNations: ForestClientDetailsDto[]) => {
+  let maapedFirstNations: any[];
+
+  maapedFirstNations = firstNations.map((v) => ({
+    ...v,
+    code: v.id,
+  }));
+
+  return maapedFirstNations;
+};
+
 </script>
 
 <template>
@@ -130,21 +146,14 @@ const updateModelValue = ($event) => {
         placeholder=""
         tip="Start typing to search for your nation or band name"
         v-model="formData.businessInformation.businessName"
-        :contents="firstNationControl ? [] : content.map((v) => (
-          {
-            code: v.id,
-            name: v.name,
-            status:'ACTIVE',
-            legalType:'R'
-          }
-        ))"
+        :contents="firstNationControl ? [] : mapFirstNationInfo(content)"
         :validations="[
           ...getValidations('businessInformation.businessName'),
           submissionValidation(`businessInformation.businessName`),
         ]"
         enabled
         :loading="loading"
-        @update:selected-value="autoCompleteResult = parseSelectedNation($event, content)"
+        @update:selected-value="autoCompleteResult = parseSelectedNation($event)"
         @update:model-value="updateModelValue"
       />
       <cds-inline-loading status="active" v-if="loading">Loading first nation details...</cds-inline-loading>

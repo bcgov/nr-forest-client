@@ -82,6 +82,7 @@ export enum ClientTypeEnum {
   L,
   RSP,
   USP,
+  B
 }
 
 export enum IdentificationTypeEnum {

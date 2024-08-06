@@ -303,6 +303,13 @@ const onBack = () => {
   }
 };
 
+// Initialize the "primary" contact - the individual him/herself
+const applicantContact: Contact = {
+  ...emptyContact,
+  locationNames: [defaultLocation],
+  contactType: { value: "BL", text: "Billing" },
+};
+
 const clientType = ref<CodeNameType>();
 
 const updateClientType = (value: CodeNameType | undefined) => {
@@ -314,7 +321,6 @@ const updateClientType = (value: CodeNameType | undefined) => {
 
     switch (value.code) {
       case "I": {
-
         Object.assign(formData.businessInformation, {
           businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
           legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
@@ -322,12 +328,17 @@ const updateClientType = (value: CodeNameType | undefined) => {
           goodStandingInd: "Y",
         });
 
-        // Initialize the "primary" contact - the individual him/herself
-        const applicantContact: Contact = {
-          ...emptyContact,
-          locationNames: [defaultLocation],
-          contactType: { value: "BL", text: "Billing" },
-        };
+        formData.location.contacts[0] = applicantContact;                
+        break;
+      }
+      case "R": {
+        Object.assign(formData.businessInformation, {
+          businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),//Verify this
+          legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),//Verify this
+          clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.B),//Verify this
+          goodStandingInd: "Y",
+        });
+
         formData.location.contacts[0] = applicantContact;                
         break;
       }
@@ -465,6 +476,7 @@ const submit = () => {
           :business-name="formData.businessInformation.businessName"
         />
       </div>
+
       <div v-if="currentTab == 0" class="form-steps-01">
         <div class="form-steps-section">
           <h2 data-focus="focus-0" tabindex="-1">
