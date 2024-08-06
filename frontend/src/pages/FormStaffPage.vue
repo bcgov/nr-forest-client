@@ -229,7 +229,7 @@ const onCancel = () => {
 };
 
 const lookForMatches = (onEmpty: () => void) => {
-  overlayBus.emit({ isVisible: true, message: "", showLoading: true });
+  /*overlayBus.emit({ isVisible: true, message: "", showLoading: true });
   fuzzyBus.emit(undefined);
   errorBus.emit([]);
   notificationBus.emit(undefined);
@@ -266,7 +266,7 @@ const lookForMatches = (onEmpty: () => void) => {
     }
 
     setScrollPoint("top-notification");
-  });
+  });*/
 };
 
 const moveToNextStep = () => {
