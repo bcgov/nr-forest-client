@@ -1,5 +1,8 @@
 package ca.bc.gov.app.service.client;
 
+import static ca.bc.gov.app.extensions.ClientMatchDataGenerator.getDto;
+import static ca.bc.gov.app.extensions.ClientMatchDataGenerator.getIndividualDto;
+import static ca.bc.gov.app.extensions.ClientMatchDataGenerator.getRandomData;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
@@ -9,11 +12,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Named.named;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
-import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.exception.DataMatchException;
 import ca.bc.gov.app.exception.InvalidRequestObjectException;
@@ -23,10 +23,8 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -174,150 +172,100 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             ),
 
             Arguments.of(
-                named("getDto()", getDto()),
+                named("getDto()", getDto(null, null)),
                 1,
                 named("Invalid Request", InvalidRequestObjectException.class)
             ),
 
             Arguments.of(
                 named("Individual random data and null location",
-                    getRandomData().withLocation(null)),
+                    getRandomData("I").withLocation(null)),
                 1,
                 named("Invalid Request", InvalidRequestObjectException.class)
             ),
 
             Arguments.of(
-                named("Individual random data and null content location", getRandomData()
-                    .withLocation(
-                        new ClientLocationDto(
-                            null,
-                            null
-                        )
-                    )
-                ),
-                2,
-                named("Invalid Request", InvalidRequestObjectException.class)
-            ),
-            Arguments.of(
-                named("Individual random data and empty list address location", getRandomData()
-                    .withLocation(
-                        new ClientLocationDto(
-                            List.of(),
-                            null
-                        )
-                    )
-                ),
+                named("Individual random data and null content location", getRandomData("I")),
                 2,
                 named("Invalid Request", InvalidRequestObjectException.class)
             ),
             Arguments.of(
                 named("Individual random with invalid address on list",
-                    getRandomData()
-                        .withLocation(
-                            new ClientLocationDto(
-                                List.of(
-                                    new ClientAddressDto(
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        0,
-                                        null
-                                    )
-                                ),
-                                null
-                            )
-                        )
+                    getRandomData("I",
+                        new ClientAddressDto(
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            0,
+                            null
+                        ),
+                        null
+                    )
                 ),
                 2,
                 named("Invalid Request", InvalidRequestObjectException.class)
             ),
             Arguments.of(
-                named("Individual random data and null content location", getRandomData()
-                    .withLocation(
-                        new ClientLocationDto(
-                            null,
-                            null
-                        )
-                    )
-                ),
+                named("Individual random data and null content location", getRandomData("I")),
                 3,
                 named("Invalid Request", InvalidRequestObjectException.class)
             ),
-            Arguments.of(
-                named("Individual random data and empty list contact location", getRandomData()
-                    .withLocation(
-                        new ClientLocationDto(
-                            List.of(),
-                            null
-                        )
-                    )
-                ),
-                3,
-                named("Invalid Request", InvalidRequestObjectException.class)
-            ),
-
             Arguments.of(
                 named("Individual random with invalid contact on list",
-                    getRandomData()
-                        .withLocation(
-                            new ClientLocationDto(
-                                null,
-                                List.of(
-                                    new ClientContactDto(
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        0,
-                                        null
-                                    )
-                                )
-                            )
+                    getRandomData("I", null,
+                        new ClientContactDto(
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            0,
+                            null
                         )
+                    )
                 ),
                 3,
                 named("Invalid Request", InvalidRequestObjectException.class)
             ),
             Arguments.of(
-                named("Random individual with wrong step", getRandomData()),
+                named("Random individual with wrong step", getRandomData("I")),
                 4,
                 named("Invalid Request", InvalidRequestObjectException.class)
             ),
             //TODO: add invalid BC Registered cases
             Arguments.of(
-                named("Random First Nation",getRandomData("R")),
+                named("Random First Nation", getRandomData("R")),
                 1,
-                named("Not Implemented",NotImplementedException.class)
+                named("Not Implemented", NotImplementedException.class)
             ),
             Arguments.of(
-                named("Random Government",getRandomData("G")),
+                named("Random Government", getRandomData("G")),
                 1,
-                named("Not Implemented",NotImplementedException.class)
+                named("Not Implemented", NotImplementedException.class)
             ),
             Arguments.of(
-                named("Random Forest",getRandomData("F")),
+                named("Random Forest", getRandomData("F")),
                 1,
-                named("Not Implemented",NotImplementedException.class)
+                named("Not Implemented", NotImplementedException.class)
             ),
             Arguments.of(
-                named("Random Unregistered",getRandomData("U")),
+                named("Random Unregistered", getRandomData("U")),
                 1,
-                named("Not Implemented",NotImplementedException.class)
+                named("Not Implemented", NotImplementedException.class)
             ),
             Arguments.of(
-                named("Random Invalid type",getRandomData("J")),
+                named("Random Invalid type", getRandomData("J")),
                 1,
                 named("Invalid Request", InvalidRequestObjectException.class)
             )
@@ -417,162 +365,6 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             true,
             false
         )
-    );
-  }
-
-  private static ClientSubmissionDto getIndividualDto(
-      String firstName,
-      String lastName,
-      LocalDate birthdate,
-      String idType,
-      String idProvince,
-      String idValue
-  ) {
-
-    ClientSubmissionDto dto = getDtoType("I");
-
-    return
-        dto
-            .withBusinessInformation(
-                dto
-                    .businessInformation()
-                    .withBusinessName(lastName)
-                    .withFirstName(firstName)
-                    .withBusinessType("U")
-                    .withBirthdate(birthdate)
-                    .withIdentificationType(new ClientValueTextDto(idType, idType))
-                    .withIdentificationProvince(idProvince)
-                    .withClientIdentification(idValue)
-            );
-  }
-
-  private static ClientSubmissionDto getRegistered(
-      String registrationNumber,
-      String businessName,
-      String legalType,
-      String workSafeBcNumber,
-      String doingBusinessAs,
-      String clientAcronym,
-      String clientType
-  ) {
-
-    ClientSubmissionDto dto = getDtoType(clientType);
-
-    return
-        dto
-            .withBusinessInformation(
-                dto
-                    .businessInformation()
-                    .withRegistrationNumber(registrationNumber)
-                    .withBusinessName(businessName)
-                    .withBusinessType("R")
-                    .withLegalType(legalType)
-                    .withWorkSafeBcNumber(workSafeBcNumber)
-                    .withDoingBusinessAs(doingBusinessAs)
-                    .withClientAcronym(clientAcronym)
-
-            );
-  }
-
-  private static ClientSubmissionDto getOther(
-      String businessName,
-      String legalType,
-      String workSafeBcNumber,
-      String clientAcronym,
-      String clientType
-  ) {
-
-    ClientSubmissionDto dto = getDtoType(clientType);
-
-    return
-        dto
-            .withBusinessInformation(
-                dto
-                    .businessInformation()
-                    .withBusinessName(businessName)
-                    .withBusinessType("U")
-                    .withLegalType(legalType)
-                    .withWorkSafeBcNumber(workSafeBcNumber)
-                    .withClientAcronym(clientAcronym)
-
-            );
-  }
-
-  private static ClientSubmissionDto getRandomData(String type) {
-
-    return switch (type) {
-      case "I" -> getIndividualDto(
-          UUID.randomUUID().toString(),
-          UUID.randomUUID().toString(),
-          LocalDate.now(),
-          UUID.randomUUID().toString(),
-          UUID.randomUUID().toString(),
-          UUID.randomUUID().toString()
-      );
-      case "C", "RSP", "S", "A", "P", "L" -> getRegistered(
-          "C1234567",
-          UUID.randomUUID().toString(),
-          "C",
-          StringUtils.EMPTY,
-          StringUtils.EMPTY,
-          StringUtils.EMPTY,
-          type
-      );
-      case "G", "F", "U", "R" -> getOther(
-          UUID.randomUUID().toString(),
-          "C",
-          StringUtils.EMPTY,
-          StringUtils.EMPTY,
-          type
-      );
-      default -> getDtoType(type);
-    };
-
-  }
-
-  private static ClientSubmissionDto getRandomData() {
-    return getRandomData("I");
-  }
-
-  private static ClientSubmissionDto getDtoType(String type) {
-    ClientSubmissionDto dto = getDto();
-    return dto.withBusinessInformation(
-        dto
-            .businessInformation()
-            .withClientType(type)
-    );
-
-  }
-
-  private static ClientSubmissionDto getDto() {
-    return new ClientSubmissionDto(
-        new ClientBusinessInformationDto(
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        ),
-        new ClientLocationDto(
-            null,
-            null
-        ),
-        null,
-        null
     );
   }
 
