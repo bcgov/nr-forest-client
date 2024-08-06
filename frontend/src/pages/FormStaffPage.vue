@@ -81,14 +81,6 @@ const { setScrollPoint } = useFocus();
 
 let formData = reactive<FormDataDto>({ ...newFormDataDto() });
 
-const locations = computed(() =>
-  formData.location.addresses.map((address: any) => address.locationName)
-);
-addValidation(
-  "location.contacts.*.locationNames.*.text",
-  isContainedIn(locations, "Location name must be one of the locations")
-);
-
 // Tab system
 const progressData = reactive([
   {
@@ -284,7 +276,8 @@ const onNext = () => {
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
-      lookForMatches(moveToNextStep);
+      //lookForMatches(moveToNextStep);
+      moveToNextStep();
     } else {
       setScrollPoint("top-notification");
     }
