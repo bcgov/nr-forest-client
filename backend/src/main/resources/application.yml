@@ -169,8 +169,8 @@ ca:
               - X-Total-Count
               - x-client-id
               - X-Client-Id
-              - X-Step
               - x-step
+              - X-Step
             methods:
               - OPTIONS
               - GET
