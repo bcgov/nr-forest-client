@@ -82,14 +82,6 @@ const { setScrollPoint } = useFocus();
 
 let formData = reactive<FormDataDto>({ ...newFormDataDto() });
 
-const locations = computed(() =>
-  formData.location.addresses.map((address: any) => address.locationName)
-);
-addValidation(
-  "location.contacts.*.locationNames.*.text",
-  isContainedIn(locations, "Location name must be one of the locations")
-);
-
 // Tab system
 const progressData = reactive([
   {
