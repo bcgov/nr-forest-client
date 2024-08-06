@@ -49,7 +49,7 @@ watch(
 
 // -- Validation of the component --
 const validation = reactive<Record<string, boolean>>({
-  business: !!formData.value.businessInformation.businessName,
+  businessName: !!formData.value.businessInformation.businessName,
 });
 
 watch(
@@ -99,12 +99,16 @@ watch([autoCompleteResult], () => {
 const parseSelectedNation = (selectedNation: FirstNationDetailsDto, values: ForestClientDetailsDto[]) => {
   console.log("parseSelectedNation called with:", selectedNation, values);
   if (selectedNation) {
-    validation.business = true;
+    validation.businessName = true;
     formData.value.businessInformation.goodStandingInd = (selectedNation.goodStanding ?? true) ? "Y" : "N";
     //formData.value.location.addresses = selectedNation.addresses;
   }
   return selectedNation;
 };
+
+const updateModelValue = ($event) => {
+  validation.businessName = !!$event && $event === autoCompleteResult.value?.name;
+}
 </script>
 
 <template>
@@ -141,8 +145,7 @@ const parseSelectedNation = (selectedNation: FirstNationDetailsDto, values: Fore
         enabled
         :loading="loading"
         @update:selected-value="autoCompleteResult = parseSelectedNation($event, content)"
-        @empty="validation.businessName = !$event"
-        @error="validation.businessName = !$event"
+        @update:model-value="updateModelValue"
       />
       <cds-inline-loading status="active" v-if="loading">Loading first nation details...</cds-inline-loading>
     </data-fetcher>
