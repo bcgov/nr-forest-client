@@ -284,7 +284,8 @@ const onNext = () => {
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
-      lookForMatches(moveToNextStep);
+      //lookForMatches(moveToNextStep);
+      moveToNextStep();
     } else {
       setScrollPoint("top-notification");
     }
