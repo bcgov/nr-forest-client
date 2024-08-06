@@ -45,6 +45,13 @@ const notificationBus = useEventBus<ValidationMessageType | undefined>(
  */
 let submissionValidators: ValidationMessageType[] = [];
 
+interface ErrorGroup {
+  result: boolean;
+  fields: Record<string, boolean>;
+}
+
+const errorGroups: Record<string, ErrorGroup> = {};
+
 /**
  * Register a listener for submission errors on the error bus.
  * When an error is received, update the submission validators array.
@@ -54,7 +61,8 @@ errorBus.on((errors, payload) => {
     if (!payload.skipNotification) {
       notificationBus.emit(error);
     }
-    return { ...error, originalValue: "" };
+    const { groupId } = payload;
+    return { ...error, originalValue: "", groupId };
   });
   revalidateBus.emit();
 });
@@ -63,17 +71,33 @@ errorBus.on((errors, payload) => {
  * Update the submission validators array with the provided fieldId and value.
  * If a validator with the same fieldId is found, update its originalValue property.
  * @param fieldId - The fieldId of the validator to update.
- * @param value - The new value for the validator's originalValue property.
+ * @param originalValue - The new value for the validator's originalValue property.
  */
-const updateValidators = (fieldId: string, value: string): void => {
+const updateValidators = (fieldId: string, originalValue: string, groupId?: string): void => {
   submissionValidators = submissionValidators.map(
     (validator: ValidationMessageType) => {
       if (validator.fieldId === fieldId) {
-        return { ...validator, originalValue: value };
+        return { ...validator, originalValue, groupId };
       }
       return validator;
     }
   );
+};
+
+const updateGroup = (groupId: string, fieldId: string, error: boolean) => {
+  if (!errorGroups[groupId]) {
+    errorGroups[groupId] = {
+      fields: {},
+      result: true,
+    };
+  }
+  errorGroups[groupId].fields[fieldId] = error;
+  const result = Object.values(errorGroups[groupId].fields).reduce(
+    (accumulator: boolean, currentValue: boolean) => accumulator && currentValue,
+    true,
+  );
+  errorGroups[groupId].result = result;
+  return result;
 };
 
 /**
@@ -82,19 +106,33 @@ const updateValidators = (fieldId: string, value: string): void => {
  * @param fieldName - The name of the field to validate.
  * @returns A function that takes a value and returns an error message if applicable.
  */
-export const submissionValidation = (
-  fieldName: string
-): ((value: string) => string) => {
+export const submissionValidation = (fieldName: string): ((value: string) => string) => {
   return (value: string) => {
     const foundError = submissionValidators.find(
-      (validator: ValidationMessageType) => validator.fieldId === fieldName
+      (validator: ValidationMessageType) => validator.fieldId === fieldName,
     );
-    if (
-      foundError &&
-      (foundError.originalValue === value || foundError.originalValue === "")
-    ) {
-      updateValidators(fieldName, value);
-      return foundError.errorMsg;
+    if (foundError) {
+      if (foundError.groupId) {
+        const oldResult = errorGroups[foundError.groupId]
+          ? errorGroups[foundError.groupId].result
+          : undefined;
+        const result = updateGroup(
+          foundError.groupId,
+          fieldName,
+          foundError.originalValue === value || foundError.originalValue === "",
+        );
+        if (oldResult !== undefined && result !== oldResult) {
+          revalidateBus.emit();
+        }
+      }
+      if (
+        (foundError.originalValue === value &&
+          (!foundError.groupId || errorGroups[foundError.groupId].result)) ||
+        foundError.originalValue === ""
+      ) {
+        updateValidators(fieldName, value, foundError.groupId);
+        return foundError.errorMsg;
+      }
     }
     return "";
   };

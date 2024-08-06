@@ -46,23 +46,22 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
       if (rawMatch.field === "businessInformation.businessName") {
         if (rawMatch.fuzzy) {
           match.label = "Partial matching on name and date of birth";
-          errorBus.emit(
-            [
-              {
-                fieldId: "businessInformation.firstName",
-                errorMsg: "There's already a client with this name",
-              },
-              {
-                fieldId: "businessInformation.lastName",
-                errorMsg: "There's already a client with this name",
-              },
-              {
-                fieldId: "businessInformation.birthdate",
-                errorMsg: "There's already a client with this date of birth",
-              },
-            ],
-            { skipNotification: true },
-          );
+          const errorEvent = [
+            {
+              fieldId: "businessInformation.firstName",
+              errorMsg: "There's already a client with this name",
+            },
+            {
+              fieldId: "businessInformation.lastName",
+              errorMsg: "There's already a client with this name",
+            },
+            {
+              fieldId: "businessInformation.birthdate",
+              errorMsg: "There's already a client with this date of birth",
+            },
+          ];
+          const groupId = JSON.stringify(errorEvent);
+          errorBus.emit(errorEvent, { skipNotification: true, groupId });
         } else {
           match.label = "Matching on name, date of birth and ID number";
         }
