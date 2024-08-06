@@ -22,7 +22,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-class ClientLegacyServiceTest extends AbstractTestContainerIntegrationTest {
+@DisplayName("Integration Test | Client Legacy Service Test")
+class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @RegisterExtension
   static WireMockExtension legacyStub = WireMockExtension
@@ -82,7 +83,11 @@ class ClientLegacyServiceTest extends AbstractTestContainerIntegrationTest {
   }
 
   private static Stream<String> invalidValues() {
-    return Stream.of(null,StringUtils.EMPTY,"   ");
+    return Stream.of(
+        null,
+        StringUtils.EMPTY,
+        "   "
+    );
   }
 
 }

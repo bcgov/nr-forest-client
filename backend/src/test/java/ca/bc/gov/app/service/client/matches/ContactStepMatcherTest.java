@@ -47,7 +47,7 @@ class ContactStepMatcherTest {
       boolean error,
       boolean fuzzy
   ) {
-    when(legacyService.searchGeneric(anyString(), any()))
+    when(legacyService.searchGeneric(anyString(), anyString()))
         .thenReturn(emailMatch, businessPhoneMatch, secondaryPhoneMatch, faxMatch);
 
     when(legacyService.searchContact(any(ContactSearchDto.class)))
