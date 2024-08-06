@@ -4,6 +4,7 @@ import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import io.micrometer.observation.annotation.Observed;
+import java.time.Duration;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Service
 @RequiredArgsConstructor
@@ -35,10 +37,25 @@ public class ClientService {
                 )
             )
             .map(mapper::toEntity)
-            .flatMap(entity -> getNextClientNumber().map(entity::withClientNumber))
-            .flatMap(entity -> entityTemplate
-                .insert(ForestClientEntity.class)
-                .using(entity)
+            .flatMap(entity ->
+                getNextClientNumber()
+                    .map(entity::withClientNumber)
+                    .flatMap(numberedEntity -> entityTemplate
+                        .insert(ForestClientEntity.class)
+                        .using(numberedEntity)
+                    )
+                    .retryWhen(
+                        Retry
+                            .backoff(5, Duration.ofMillis(500))
+                            .doBeforeRetry(retrySignal -> log.warn(
+                                    "[Check #{}] Saving client {} failed. Will retry",
+                                    retrySignal.totalRetries() + 2,
+                                    //We add 2 because the first one happens before the retry and starts on 0
+                                entity.getName()
+                                )
+                            )
+                            .filter(org.springframework.dao.DataIntegrityViolationException.class::isInstance)
+                    )
             )
             .doOnNext(forestClientContact ->
                 log.info(
