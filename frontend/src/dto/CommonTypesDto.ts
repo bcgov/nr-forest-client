@@ -23,7 +23,6 @@ export interface ValidationMessageType {
   fieldName: string;
   errorMsg: string;
   originalValue?: string;
-  groupId?: string;
   warning?: boolean;
 }
 
