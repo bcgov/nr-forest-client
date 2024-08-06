@@ -230,7 +230,7 @@ const onCancel = () => {
 };
 
 const lookForMatches = (onEmpty: () => void) => {
-  overlayBus.emit({ isVisible: true, message: "", showLoading: true });
+  /*overlayBus.emit({ isVisible: true, message: "", showLoading: true });
   fuzzyBus.emit(undefined);
   errorBus.emit([]);
   notificationBus.emit(undefined);
@@ -267,7 +267,7 @@ const lookForMatches = (onEmpty: () => void) => {
     }
 
     setScrollPoint("top-notification");
-  });
+  });*/
 };
 
 const moveToNextStep = () => {
@@ -285,7 +285,8 @@ const onNext = () => {
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
-      lookForMatches(moveToNextStep);
+      //lookForMatches(moveToNextStep);
+      moveToNextStep();
     } else {
       setScrollPoint("top-notification");
     }

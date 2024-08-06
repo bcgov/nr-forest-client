@@ -78,8 +78,32 @@ public class ClientSubmissionLoadingService {
         .flatMap(details ->
             contactRepository
                 .findFirstBySubmissionId(message.payload())
+                .doOnNext(
+                    submissionContact -> log.info("Submission contact loaded for mail purpose {} [{} {}]",
+                        submissionContact.getSubmissionId(),
+                        submissionContact.getFirstName(),
+                        submissionContact.getLastName()
+                    )
+                )
                 .flatMap(
-                    submissionContact -> getDistrictEmailsAndDescription(details.getDistrictCode())
+                    submissionContact ->
+                        getDistrictEmailsAndDescription(details.getDistrictCode())
+                            .doOnNext(
+                                districtInfo -> log.info("District email and description loaded for mail purpose {} {} [{}]",
+                                    message.payload(),
+                                    districtInfo.getLeft(),
+                                    districtInfo.getRight()
+                                )
+                            )
+                            .switchIfEmpty(
+                                Mono.just(Pair.of(StringUtils.EMPTY, StringUtils.EMPTY))
+                                    .doOnNext(
+                                        districtInfo -> log.info("No district email and description found for mail purpose {} [{}]",
+                                            message.payload(),
+                                            details.getDistrictCode()
+                                        )
+                                    )
+                            )
                         .map(districtInfo ->
                             new EmailRequestDto(
                                 details.getRegistrationNumber(),
@@ -118,12 +142,14 @@ public class ClientSubmissionLoadingService {
             :
                 forestClientApi
                     .get()
-                    .uri("/districts/{districtCode}", districtCode)
+                    .uri("/codes/districts/{districtCode}", districtCode)
                     .exchangeToMono(clientResponse -> clientResponse.bodyToMono(DistrictDto.class))
                     .doOnNext(district -> log.info("Loaded district details {} {}",
                         district.code(),
                         district.description()))
-                    .map(district -> Pair.of(district.emails(), district.description()));
+                    .map(district -> Pair.of(district.emails(), district.description()))
+                    .onErrorReturn(Pair.of(StringUtils.EMPTY, StringUtils.EMPTY))
+        ;
   }
 
   private String getTemplate(MessagingWrapper<Integer> message) {
