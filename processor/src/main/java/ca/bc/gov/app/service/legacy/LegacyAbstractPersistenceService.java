@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
 import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.entity.SubmissionDetailEntity;
@@ -17,6 +18,7 @@ import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -292,6 +294,7 @@ public abstract class LegacyAbstractPersistenceService {
             ProcessorUtil.limitString(createdBy, 30),
             ProcessorUtil.limitString(updatedBy, 30),
             ApplicationConstant.ORG_UNIT,
+            StringUtils.EMPTY,
             StringUtils.EMPTY
         );
   }
@@ -300,34 +303,44 @@ public abstract class LegacyAbstractPersistenceService {
     return message.parameters().get(headerName).toString();
   }
 
-  private String getClientNumber(MessagingWrapper<?> message) {
-    return message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER).toString();
+  protected boolean isStaffSubmitted(MessagingWrapper<?> message) {
+    return SubmissionProcessTypeEnum.STAFF.equals(
+        message.getParameter(ApplicationConstant.SUBMISSION_STARTER,
+            SubmissionProcessTypeEnum.class)
+    );
   }
 
-  private boolean isRegisteredSoleProprietorship(ForestClientDto forestClient) {
-    return forestClient.clientTypeCode().equalsIgnoreCase("I") && StringUtils.equalsIgnoreCase(
-        forestClient.clientIdTypeCode(), "BCRE");
+  private String getClientNumber(MessagingWrapper<?> message) {
+    return message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER).toString();
   }
 
   private Mono<String> createClientDoingBusinessAs(MessagingWrapper<ForestClientDto> message,
       String clientNumber) {
     return Mono
         .just(clientNumber)
+        //FSADT1-1388: Allow doing business as based on parameter
         .filter(
-            forestClientNumber -> isRegisteredSoleProprietorship(message.payload())
+            forestClientNumber -> BooleanUtils
+                .toBoolean(
+                    message
+                        .getParameter(
+                            ApplicationConstant.IS_DOING_BUSINESS_AS,
+                            String.class
+                        )
+                )
         )
         .doOnNext(forestClientNumber ->
             log.info(
                 "Creating doing business as for {} {}",
                 forestClientNumber,
-                message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME)
+                message.parameters().get(ApplicationConstant.DOING_BUSINESS_AS)
             )
         )
         .flatMap(forestClientNumber ->
             legacyService
                 .createDoingBusinessAs(
                     forestClientNumber,
-                    message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME).toString(),
+                    message.parameters().get(ApplicationConstant.DOING_BUSINESS_AS).toString(),
                     getUser(message, ApplicationConstant.CREATED_BY),
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )

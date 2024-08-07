@@ -15,7 +15,7 @@ public interface ForestClientMapper extends
   @Override
   @Mapping(
       target = "wcbFirmNumber",
-      source = "clientNumber",
+      source = "wcbFirmNumber",
       qualifiedByName = "EmptySpaceQualifier",
       defaultValue = " "
   )

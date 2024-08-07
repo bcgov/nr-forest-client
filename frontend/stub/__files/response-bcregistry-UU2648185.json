@@ -1,0 +1,33 @@
+{
+  "name": "Boyer, Satterfield and Sporer",
+  "id": "{{request.path.[2]}}",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "1 Eliot Junction",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "MB",
+        "text": "Manitoba"
+      },
+      "city": "Niverville",
+      "postalCode": "T5G5B1",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "DI",
+        "text": null
+      },
+      "firstName": "Anallise",
+      "lastName": "Woolliams",
+      "phoneNumber": null,
+      "email": null
+    }
+  ]
+}

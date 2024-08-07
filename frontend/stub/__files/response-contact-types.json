@@ -1,0 +1,34 @@
+[
+  {
+    "code": "BL",
+    "name": "Billing"
+  },
+  {
+    "code": "DI",
+    "name": "Director"
+  },
+  {
+    "code": "RC",
+    "name": "Recreation Agreement Holder"
+  },
+  {
+    "code": "SI",
+    "name": "Scale Site Contact"
+  },
+  {
+    "code": "SP",
+    "name": "SPAR System Contact"
+  },
+  {
+    "code": "SR",
+    "name": "Stumpage Rates"
+  },
+  {
+    "code": "TC",
+    "name": "BCTS Contractor"
+  },
+  {
+    "code": "TN",
+    "name": "Tenure Administration"
+  }
+]

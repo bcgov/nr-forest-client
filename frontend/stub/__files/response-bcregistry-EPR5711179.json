@@ -1,0 +1,32 @@
+{
+  "name": "Rutherford Inc",  
+  "id": "{{request.path.[2]}}",
+  "addresses": [
+    {
+      "streetAddress": "42518 Bunker Hill Lane",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "ON",
+        "text": "Ontario"
+      },
+      "city": "Norfolk County",
+      "postalCode": "T0C0T0",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "SR",
+        "text": null
+      },
+      "firstName": "Nelson",
+      "lastName": "Huntriss",
+      "phoneNumber": null,
+      "email": null
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "name": "Sole proprietorship 1",
+  "id": "FM123123",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "78417 Fulton Place",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "AB",
+        "text": "Alberta"
+      },
+      "city": "Rocky Mountain House",
+      "postalCode": "T4T4T4",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "DI",
+        "text": null
+      },
+      "firstName": "Brig",
+      "lastName": "Kettlestringes",
+      "phoneNumber": null,
+      "email": null
+    }
+  ]
+}

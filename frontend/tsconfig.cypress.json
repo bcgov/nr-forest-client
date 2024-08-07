@@ -2,7 +2,11 @@
   "extends": "./tsconfig.base.json",
   "include": [
     "cypress/**/*.ts",
-    "tests/components/**/*.ts"
+    "tests/components/**/*.ts",
+    "env.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    "components.d.ts"
   ],
   "compilerOptions": {
     "composite": true,

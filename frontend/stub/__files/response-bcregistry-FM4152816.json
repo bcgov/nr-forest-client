@@ -1,0 +1,33 @@
+{
+  "name": "Dooley Inc",
+  "id": "{{request.path.[2]}}",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "8 Bonner Court",
+      "country": {
+        "value": "US",
+        "text": "United States"
+      },
+      "province": {
+        "value": "KY",
+        "text": "Kentucky"
+      },
+      "city": "Lexington",
+      "postalCode": "40510",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "DI",
+        "text": null
+      },
+      "firstName": "Delmore",
+      "lastName": "Cashman",
+      "phoneNumber": null,
+      "email": null
+    }
+  ]
+}
