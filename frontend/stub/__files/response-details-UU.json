@@ -37,8 +37,8 @@
   "contacts": [
     {
       "contactType": {
-        "value": "P",
-        "text": "Person"
+        "value": "",
+        "text": ""
       },
       "firstName": "Jhon",
       "lastName": "Wick",
@@ -54,8 +54,8 @@
     },
     {
       "contactType": {
-        "value": "P",
-        "text": "Person"
+        "value": "",
+        "text": ""
       },
       "firstName": "James",
       "lastName": "Kirk",

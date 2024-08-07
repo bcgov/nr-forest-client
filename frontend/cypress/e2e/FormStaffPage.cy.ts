@@ -1,6 +1,13 @@
 /* eslint-disable no-undef */
 describe("Staff Form", () => {
   beforeEach(() => {
+    cy.intercept("POST", '**/api/clients/matches',{
+      statusCode: 204,
+      headers:{
+        "content-type": "application/json;charset=UTF-8"
+      }
+    }).as("doMatch");
+
     cy.visit("/");
     cy.wait(500);
     cy.get("#landing-title").should(
@@ -133,45 +140,21 @@ describe("Staff Form", () => {
     };
 
     const fillIndividual = (data = individualBaseData) => {
-      cy.get("#firstName").shadow().find("input").type(data.firstName);
+      cy.fillFormEntry("#firstName", data.firstName);
+      cy.fillFormEntry("#middleName", data.middleName);
+      cy.fillFormEntry("#lastName", data.lastName);
 
-      cy.get("#middleName").shadow().find("input").type(data.middleName);
-
-      cy.get("#lastName").shadow().find("input").type(data.lastName);
-
-      cy.get("#identificationType").find("[part='trigger-button']").click();
-      cy.get("#identificationType")
-        .find(
-          `cds-combo-box-item[data-value="${data.identificationTypeValue}"]`
-        )
-        .click();
+      cy.selectFormEntry("#identificationType", data.identificationTypeValue, false);
 
       if (data.identificationProvinceValue) {
-        cy.get("#identificationProvince")
-          .find("[part='trigger-button']")
-          .click();
-        cy.get("#identificationProvince")
-          .find(
-            `cds-combo-box-item[data-value="${data.identificationProvinceValue}"]`
-          )
-          .click();
+        cy.selectFormEntry("#identificationProvince", data.identificationProvinceValue, false);
       }
 
-      cy.get("#clientIdentification")
-        .shadow()
-        .find("input")
-        .type(data.clientIdentification);
+      cy.fillFormEntry("#clientIdentification", data.clientIdentification);
 
-      cy.get("#clientIdentification").shadow().find("input").blur();
-
-      cy.get("#birthdateYear").shadow().find("input").type(data.birthdateYear);
-
-      cy.get("#birthdateMonth")
-        .shadow()
-        .find("input")
-        .type(data.birthdateMonth);
-
-      cy.get("#birthdateDay").shadow().find("input").type(data.birthdateDay);
+      cy.fillFormEntry("#birthdateYear", data.birthdateYear);
+      cy.fillFormEntry("#birthdateMonth", data.birthdateMonth);
+      cy.fillFormEntry("#birthdateDay", data.birthdateDay);
     };
 
     describe("when option Individual gets selected", () => {
