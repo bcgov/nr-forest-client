@@ -3,6 +3,7 @@ package ca.bc.gov.app.mappers;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Named;
 
@@ -19,7 +20,12 @@ public interface AbstractForestClientMapper<D, E> {
   }
 
   @Named("EmptySpaceQualifier")
-  default String defaultEmptySpace(Object origin) {
+  default String defaultEmptySpace(String origin) {
+    return StringUtils.isBlank(origin) ? " " : origin;
+  }
+
+  @Named("AlwaysEmptySpaceQualifier")
+  default String defaultEmptySpaceAlways(Object origin) {
     return " ";
   }
 

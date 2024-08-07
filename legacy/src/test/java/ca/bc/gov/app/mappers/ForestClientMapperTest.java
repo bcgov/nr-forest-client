@@ -34,7 +34,7 @@ class ForestClientMapperTest {
       "Test",
       1L,
       StringUtils.EMPTY,
-      StringUtils.EMPTY
+      " "
   );
 
   ForestClientEntity entity =
@@ -46,7 +46,6 @@ class ForestClientMapperTest {
           .clientTypeCode("C")
           .registryCompanyTypeCode("BC")
           .corpRegnNmbr("0101141401")
-          .wcbFirmNumber(" ")
           .clientComment("Client is Corporation")
           .createdAt(LocalDateTime.now())
           .updatedAt(LocalDateTime.now())
@@ -55,6 +54,7 @@ class ForestClientMapperTest {
           .createdByUnit(1L)
           .updatedByUnit(1L)
           .revision(1L)
+          .wcbFirmNumber(" ")
           .clientAcronym(StringUtils.EMPTY)
           .build();
 
@@ -73,7 +73,9 @@ class ForestClientMapperTest {
   @Test
   @DisplayName("Should convert to dto")
   void shouldConvertToDto() {
-    assertEquals(dto, mapper.toDto(entity));
+    assertThat(mapper.toDto(entity))
+        .usingRecursiveComparison()
+        .isEqualTo(dto);
   }
 
 }
