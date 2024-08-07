@@ -15,10 +15,9 @@ import type {
   FormDataDto,
 } from "@/dto/ApplyClientNumberDto";
 import type {
-  BusinessSearchResult,
-  CodeNameType,
-  IdentificationCodeNameType,
+  BusinessSearchResult
 } from "@/dto/CommonTypesDto";
+import { exportAddress } from "@/helpers/DataConversors";
 // Importing validators
 import {
   getValidations,
@@ -56,14 +55,6 @@ const validation = reactive<Record<string, boolean>>({
   businessName: !!formData.value.businessInformation.businessName,
 });
 
-watch(
-  () => formData.value.businessInformation.firstName,
-  (value) => {
-    // copy the firstName into the first contact
-    //formData.value.location.contacts[0].firstName = value;
-  }
-);
-
 const checkValid = () =>
   Object.values(validation).reduce(
     (accumulator: boolean, currentValue: boolean) =>
@@ -94,7 +85,6 @@ const showDetailsLoading = ref<boolean>(false);
 
 watch([autoCompleteResult], () => {
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
-    console.log("Test " + JSON.stringify(autoCompleteResult.value));
     showDetailsLoading.value = true;
   }
   firstNationControl.value = false;
@@ -110,19 +100,18 @@ const parseSelectedNation = (
 ) => {
   if (selectedNation) {
     validation.businessName = true;
+    formData.value.location.addresses = exportAddress(
+      selectedNation.addresses
+    );
   }
   return selectedNation;
 };
 
-const mapFirstNationInfo = (firstNations: ForestClientDetailsDto[]) => {
-  let maapedFirstNations: any[];
-
-  maapedFirstNations = firstNations.map((v) => ({
+const mapFirstNationInfo = (firstNations: ForestClientDetailsDto[] = []) => {
+  return firstNations.map((v) => ({
     ...v,
     code: v.id,
   }));
-
-  return maapedFirstNations;
 };
 
 </script>
