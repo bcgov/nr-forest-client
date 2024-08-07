@@ -1,0 +1,33 @@
+{
+  "name": "The Great Pacific Forest Company",
+  "goodStanding": true,
+  "id": "{{request.path.[2]}}",
+  "addresses": [
+    {
+      "streetAddress": "6 Lakeland Crossing",
+      "country": {
+        "value": "US",
+        "text": "United States"
+      },
+      "province": {
+        "value": "CA",
+        "text": "California"
+      },
+      "city": "Los Angeles",
+      "postalCode": "90094",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "DI",
+        "text": null
+      },
+      "firstName": "Johnathan",
+      "lastName": "McCreedy",
+      "phoneNumber": null,
+      "email": null
+    }
+  ]
+}

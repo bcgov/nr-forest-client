@@ -55,7 +55,7 @@
       },
       "response": {
         "status": 200,
-        "body": "[{\"code\":\"P\",\"name\":\"Person\"}]"
+        "bodyFileName": "response-contact-types.json"
       }
     },
     {

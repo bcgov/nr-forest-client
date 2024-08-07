@@ -217,7 +217,8 @@ public class ClientService {
   public Mono<ClientDetailsDto> getClientDetails(
       String clientNumber,
       String userId,
-      String businessId
+      String businessId,
+      String provider
   ) {
     log.info("Loading details for {}", clientNumber);
     return
@@ -264,6 +265,10 @@ public class ClientService {
             .map(BcRegistryDocumentDto.class::cast)
 
             .flatMap(client -> {
+              // FSADT1-1388: Allow IDIR users to search for any client type
+              if(provider.equalsIgnoreCase("idir"))
+                return Mono.just(client);
+
               if (ApplicationConstant.AVAILABLE_CLIENT_TYPES.contains(
                   ClientValidationUtils.getClientType(
                           LegalTypeEnum.valueOf(client.business().legalType())
@@ -283,9 +288,12 @@ public class ClientService {
 
             //if document type is SP and party contains only one entry that is not a person, fail
             .filter(document ->
+                // FSADT1-1388: Allow IDIR users to search for any client type
+                provider.equalsIgnoreCase("idir") ||
                 !("SP".equalsIgnoreCase(document.business().legalType())
                   && document.parties().size() == 1
-                  && !document.parties().get(0).isPerson())
+                  && !document.parties().get(0).isPerson()
+                )
             )
             .flatMap(buildDetails())
             .switchIfEmpty(Mono.error(new UnableToProcessRequestException(

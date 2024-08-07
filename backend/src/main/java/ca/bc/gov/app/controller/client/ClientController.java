@@ -41,7 +41,8 @@ public class ClientController {
         .getClientDetails(
             clientNumber,
             JwtPrincipalUtil.getUserId(principal),
-            JwtPrincipalUtil.getBusinessId(principal)
+            JwtPrincipalUtil.getBusinessId(principal),
+            JwtPrincipalUtil.getProvider(principal)
         );
   }
 

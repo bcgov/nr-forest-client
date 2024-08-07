@@ -250,6 +250,25 @@ public class TestConstants {
         ]
       }""";
 
+  public static final String BCREG_RESPONSE_NOCONTACTOK = """
+      {
+        "name": "SAMPLE COMPANY",
+        "id": "AA0000001",
+        "goodStanding": true,
+        "addresses": [
+          {
+            "locationName": "MAILING ADDRESS",
+            "streetAddress": "501 Belleville Street",
+            "country": {"value":"CA","text":"Canada"},
+            "province": {"value":"BC","text":"British Columbia"},
+            "city": "VICTORIA",
+            "postalCode": "V8V1X4",
+            "index": 0
+          }
+        ],
+        "contacts": []
+      }""";
+
   public static final String BCREG_RESPONSE_NOK = "No data found for client number AA0000001";
 
   public static final String BCREG_400 = """

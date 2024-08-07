@@ -11,6 +11,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
@@ -176,6 +177,83 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                         claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
                     .authorities(new SimpleGrantedAuthority(
                         "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+            )
+            .get()
+            .uri("/api/clients/{clientNumber}", Map.of("clientNumber", clientNumber))
+            .exchange()
+            .expectStatus().isEqualTo(HttpStatus.valueOf(responseStatus))
+            .expectBody()
+            .consumeWith(System.out::println);
+
+    if (HttpStatus.valueOf(responseStatus).is2xxSuccessful()) {
+      response.json(responseContent);
+    } else {
+      response.equals(responseContent);
+    }
+
+  }
+
+  @ParameterizedTest
+  @MethodSource("clientDetailingStaff")
+  @DisplayName("Client details for staff")
+  void shouldGetClientDetailsForStaff(
+      String clientNumber,
+
+      int bcRegistryDocRequestStatus,
+      String bcRegistryDocRequestResponse,
+
+      int bcRegistryDocDetailsStatus,
+      String bcRegistryDocDetailsResponse,
+
+      String legacyResponse,
+
+      int responseStatus,
+      String responseContent
+  ) {
+
+    reset();
+
+    bcRegistryStub
+        .stubFor(post(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + clientNumber + "/documents/requests"))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .withRequestBody(equalToJson(TestConstants.BCREG_DOC_REQ))
+            .willReturn(
+                status(bcRegistryDocRequestStatus)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(bcRegistryDocRequestResponse)
+            )
+        );
+
+    bcRegistryStub
+        .stubFor(get(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + clientNumber + "/documents/aa0a00a0a"))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .willReturn(
+                status(bcRegistryDocDetailsStatus)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(bcRegistryDocDetailsResponse)
+            )
+        );
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/search/registrationOrName"))
+                .withQueryParam("registrationNumber", equalTo("AA0000001"))
+                .withQueryParam("companyName", equalTo("SAMPLE COMPANY"))
+                .willReturn(okJson(legacyResponse))
+        );
+
+    WebTestClient.BodyContentSpec response =
+        client
+            .mutateWith(csrf())
+            .mutateWith(mockUser().roles(ApplicationConstant.ROLE_EDITOR))
+            .mutateWith(
+                mockJwt()
+                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                    .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
             )
             .get()
             .uri("/api/clients/{clientNumber}", Map.of("clientNumber", clientNumber))
@@ -436,13 +514,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 TestConstants.LEGACY_EMPTY
             ),
 
-            Arguments.of(
-                "AA0000001",
-                200, TestConstants.BCREG_DOC_REQ_RES,
-                400, TestConstants.BCREG_400,
-                401, TestConstants.BCREG_RESPONSE_401,
-                TestConstants.LEGACY_EMPTY
-            ),
+
             Arguments.of(
                 "AA0000001",
                 200, TestConstants.BCREG_DOC_REQ_RES,
@@ -456,6 +528,95 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 TestConstants.LEGACY_EMPTY
             )
         );
+  }
+
+  private static Stream<Arguments> clientDetailingStaff() {
+    return
+    Stream.of(
+        Arguments.of(
+            "AA0000001",
+            200, TestConstants.BCREG_DOC_REQ_RES,
+            200, TestConstants.BCREG_DOC_DATA,
+            TestConstants.LEGACY_EMPTY,
+            200, TestConstants.BCREG_RESPONSE_OK
+        ),
+        Arguments.of(
+            "AA0000001",
+            200, TestConstants.BCREG_DOC_REQ_RES,
+            200, TestConstants.BCREG_DOC_DATA,
+            TestConstants.LEGACY_OK,
+            409, TestConstants.BCREG_RESPONSE_DUP
+        ),
+        Arguments.of(
+            "AA0000001",
+            200, TestConstants.BCREG_DOC_REQ_RES,
+            200, TestConstants.BCREG_DOC_DATA,
+            TestConstants.LEGACY_OK.replace("0000001", "0000002"),
+            200, TestConstants.BCREG_RESPONSE_OK
+        ),
+        Arguments.of(
+            "AA0000001",
+            404, TestConstants.BCREG_NOK,
+            404, TestConstants.BCREG_NOK,
+            TestConstants.LEGACY_EMPTY,
+            404, TestConstants.BCREG_RESPONSE_NOK
+        ),
+        Arguments.of(
+            "AA0000001",
+            200, TestConstants.BCREG_DOC_REQ_RES,
+            404, TestConstants.BCREG_NOK,
+            TestConstants.LEGACY_EMPTY,
+            404, TestConstants.BCREG_RESPONSE_NOK
+        ),
+        Arguments.of(
+            "AA0000001",
+            200, TestConstants.BCREG_DOC_REQ_RES,
+            401, TestConstants.BCREG_401,
+            TestConstants.LEGACY_EMPTY,
+            401, TestConstants.BCREG_RESPONSE_401
+        ),
+        Arguments.of(
+            "AA0000001",
+            401, TestConstants.BCREG_401,
+            401, TestConstants.BCREG_401,
+            TestConstants.LEGACY_EMPTY,
+            401, TestConstants.BCREG_RESPONSE_401
+        ),
+        Arguments.of(
+            "AA0000001",
+            400, TestConstants.BCREG_400,
+            400, TestConstants.BCREG_400,
+            TestConstants.LEGACY_EMPTY,
+            401, TestConstants.BCREG_RESPONSE_401
+        ),
+        Arguments.of(
+            "AA0000001",
+            200, TestConstants.BCREG_DOC_REQ_RES,
+            400, TestConstants.BCREG_400,
+            TestConstants.LEGACY_EMPTY,
+            401, TestConstants.BCREG_RESPONSE_401
+        ),
+        Arguments.of(
+            "AA0000001",
+            200, TestConstants.BCREG_DOC_REQ_RES,
+            200, TestConstants.BCREG_DOC_DATA
+                .replace("\"partyType\": \"person\"", "\"partyType\": \"organization\"")
+                .replace("\"firstName\": \"JAMES\",", "\"organizationName\": \"OWNER ORG\",")
+                .replace("\"lastName\": \"BAXTER\",", "\"identifier\": \"BB0000001\",")
+                .replace("\"middleInitial\": \"middleInitial\",", "\"id\": \"1234467\",")
+            ,
+            TestConstants.LEGACY_EMPTY,
+            200, TestConstants.BCREG_RESPONSE_NOCONTACTOK
+        ),
+        Arguments.of(
+            "AA0000001",
+            200, TestConstants.BCREG_DOC_REQ_RES,
+            200, TestConstants.BCREG_DOC_DATA
+                .replace("\"legalType\": \"SP\"", "\"legalType\": \"LP\""),
+            TestConstants.LEGACY_EMPTY,
+            200, TestConstants.BCREG_RESPONSE_OK
+        )
+    );
   }
 
 }

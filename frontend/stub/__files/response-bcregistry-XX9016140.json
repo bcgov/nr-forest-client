@@ -1,0 +1,33 @@
+{
+  "name": "Pacific Lumber Association",
+  "id": "{{request.path.[2]}}",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "44 Mesta Park",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "NS",
+        "text": "Nova Scotia"
+      },
+      "city": "Oxford",
+      "postalCode": "K7A7Z8",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "SP",
+        "text": null
+      },
+      "firstName": "Cordie",
+      "lastName": "Rubinchik",
+      "phoneNumber": null,
+      "email": "crubinchik0@virginia.edu"
+    }
+  ]
+}
