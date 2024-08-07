@@ -109,5 +109,4 @@ export const submissionValidation = (
 
 export const resetSubmissionValidators = (): void => {
   submissionValidators = [];
-  revalidateBus.emit();
 };
