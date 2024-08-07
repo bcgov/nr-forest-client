@@ -243,7 +243,7 @@ class LegacyIndividualPersistenceServiceTest {
                 "IDIR\\JWICK",
                 ApplicationConstant.ORG_UNIT,
                 null,
-                null
+                StringUtils.EMPTY
             )
         ),
         Arguments.of(
@@ -307,7 +307,7 @@ class LegacyIndividualPersistenceServiceTest {
                 "idir\\ottomated",
                 ApplicationConstant.ORG_UNIT,
                 null,
-                null
+                StringUtils.EMPTY
             )
         )
     );
