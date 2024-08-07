@@ -34,6 +34,7 @@ import ca.bc.gov.app.util.ClientValidationUtils;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -446,6 +447,7 @@ public class ClientService {
                 loadProvince(address.country().value(), address.province().value())
                     .map(address::withProvince)
             )
+            .sort(Comparator.comparing(ClientAddressDto::locationName).reversed())
             .collectList()
             .defaultIfEmpty(new ArrayList<>())
             .flatMap(addresses ->

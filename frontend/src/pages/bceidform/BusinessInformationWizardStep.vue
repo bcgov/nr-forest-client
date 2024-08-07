@@ -269,6 +269,11 @@ watch([detailsData], () => {
     const forestClientDetails: ForestClientDetailsDto = detailsData.value;
     
     if (!features.BCEID_MULTI_ADDRESS) {
+      // To prevent multiple addresses from breaking the validations
+      if (Array.isArray(forestClientDetails?.addresses) && forestClientDetails.addresses.length > 1) {
+        forestClientDetails.addresses.pop();
+      }
+      
       forestClientDetails?.contacts?.forEach((contact) => {
         contact.locationNames = [{ ...defaultLocation }];
       });
