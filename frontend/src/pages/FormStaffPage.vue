@@ -84,14 +84,6 @@ const { setScrollPoint } = useFocus();
 
 const formData = reactive<FormDataDto>({ ...newFormDataDto() });
 
-watch(formData, () => {
-  if (fuzzyError.value) {
-    resetSubmissionValidators();
-    revalidateBus.emit();
-    fuzzyError.value = false;
-  }
-});
-
 const locations = computed(() =>
   formData.location.addresses.map((address: any) => address.locationName)
 );
@@ -239,7 +231,16 @@ const onCancel = () => {
   router.push("/");
 };
 
-const fuzzyError = ref(false);
+const matchError = ref(false);
+const isExactMatch = ref(false);
+
+watch(formData, () => {
+  if (matchError.value) {
+    resetSubmissionValidators();
+    revalidateBus.emit();
+    matchError.value = false;
+  }
+});
 
 const lookForMatches = (onEmpty: () => void) => {
   overlayBus.emit({ isVisible: true, message: "", showLoading: true });
@@ -260,7 +261,7 @@ const lookForMatches = (onEmpty: () => void) => {
 
   watch([response], () => {
     if (response.value.status === 204) {
-      fuzzyError.value = false;
+      matchError.value = false;
       overlayBus.emit({ isVisible: false, message: "", showLoading: false });
       onEmpty();
     }
@@ -271,10 +272,14 @@ const lookForMatches = (onEmpty: () => void) => {
     overlayBus.emit({ isVisible: false, message: "", showLoading: false });
 
     if (error.value.response?.status === 409) {
-      fuzzyError.value = true;
+      const data: FuzzyMatchResult[] = error.value.response.data as FuzzyMatchResult[];
+
+      matchError.value = true;
+      isExactMatch.value = data.some((match) => match.fuzzy === false);
+
       fuzzyBus.emit({
         id: "global",
-        matches: error.value.response.data as FuzzyMatchResult[],
+        matches: data,
       });
     } else {
       handleErrorDefault();
@@ -468,6 +473,8 @@ const submit = () => {
     fetchSubmission();
   }
 };
+
+const reviewStatementChecked = ref(false);
 </script>
 
 <template>
@@ -596,6 +603,13 @@ const submit = () => {
       <div class="form-footer" role="footer">
         <div class="form-footer-group">
           <div class="form-footer-group-next">
+            <simple-checkbox-input-component
+              id="reviewStatement"
+              label="Review statement"
+              required-label
+              v-model="reviewStatementChecked"
+              checkbox-label="I've reviewed the possible matching records and they don't correspond to the client I'm creating."
+            />
             <span class="body-compact-01" v-if="!isLast && !progressData[currentTab].valid">
               All required fields must be filled out correctly to enable the "Next" button below
             </span>
