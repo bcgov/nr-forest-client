@@ -90,6 +90,7 @@ fieldValidations["businessInformation.doingBusinessAs"] = [
 
 fieldValidations["businessInformation.clientAcronym"] = [  
   optional(isMaxSizeMsg("acronym", 8)),
+  optional(isMinSizeMsg("acronym", 3)),
   optional(isAscii("acronym")),
 ];
 

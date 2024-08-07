@@ -103,7 +103,7 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         showBcRegDownNotification: false,
         showDuplicatedNotification: false,
         type: 'Corporation',
-        standing: 'Unknow',
+        standing: 'Unknown',
         dba: '',
       },
       {
@@ -130,7 +130,7 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         showNotGoodStandingNotification: false,
         showBcRegDownNotification: false,
         type: 'Limited liability partnership',
-        standing: 'Unknow',
+        standing: 'Unknown',
         dba: '',
       },
       {
@@ -158,7 +158,7 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         showBcRegDownNotification: false,
         showDuplicatedNotification: false,
         type: 'Corporation',
-        standing: 'Unknow',
+        standing: 'Unknown',
         dba: '',
       },
       {
@@ -186,7 +186,7 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         showBcRegDownNotification: false,
         showDuplicatedNotification: true,
         type: 'Corporation',
-        standing: 'Unknow',
+        standing: 'Unknown',
         dba: '',
       },
       {
@@ -535,8 +535,12 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
       cy.checkInputErrorMessage('#acronym','The acronym has a 8 character limit');
       
       cy.get('#acronym').shadow().find('input').clear();
-      cy.fillFormEntry('#acronym', 'lá');
+      cy.fillFormEntry('#acronym', 'láe');
       cy.checkInputErrorMessage('#acronym','The acronym can only contain: A-Z, a-z, 0-9, space or common symbols');
+
+      cy.get('#acronym').shadow().find('input').clear();
+      cy.fillFormEntry('#acronym', 'I');
+      cy.checkInputErrorMessage('#acronym','The acronym must contain at least 3 characters');
 
 
     });
