@@ -49,7 +49,7 @@ public interface ForestClientLocationMapper extends
   @Mapping(
       target = "hdbsCompanyCode",
       source = "clientNumber",
-      qualifiedByName = "EmptySpaceQualifier"
+      qualifiedByName = "AlwaysEmptySpaceQualifier"
   )
   @Mapping(
       source = "createdBy",

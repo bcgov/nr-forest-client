@@ -1,0 +1,14 @@
+[
+  {
+    "code": "C1234567",
+    "name": "Existing Corporation 1",
+    "status": "ACTIVE",
+    "legalType": "C"
+  },
+  {
+    "code": "FM123456",
+    "name": "Existing Sole Proprietorship 1",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  }
+]

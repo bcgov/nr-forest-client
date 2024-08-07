@@ -1,0 +1,33 @@
+{
+  "name": "Mitchell-Hettinger",
+  "id": "{{request.path.[2]}}",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "804 Forest Run Center",
+      "country": {
+        "value": "US",
+        "text": "United States"
+      },
+      "province": {
+        "value": "ID",
+        "text": "Idaho"
+      },
+      "city": "Boise",
+      "postalCode": "83727",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "SI",
+        "text": null
+      },
+      "firstName": "Skye",
+      "lastName": "Spadaro",
+      "phoneNumber": null,
+      "email": "sspadaro0@mtv.com"
+    }
+  ]
+}

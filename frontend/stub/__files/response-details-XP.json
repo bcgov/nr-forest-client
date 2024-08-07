@@ -1,0 +1,35 @@
+{
+  "name": "Thiel, Wintheiser and Vandervort",
+  "id": "{{request.path.[2]}}",  
+  "addresses": [
+    {
+      "streetAddress": "123 Fake DR",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "BC",
+        "text": "British Columbia"
+      },
+      "city": "Fakest City",
+      "postalCode": "A0A0A0",
+      "index": 0,
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "P",
+        "text": "Person"
+      },
+      "firstName": "Jhon",
+      "lastName": "Wick",
+      "phoneNumber": "",
+      "email": "",
+      "index": 1,
+      "locationNames": []
+    }
+  ]
+}

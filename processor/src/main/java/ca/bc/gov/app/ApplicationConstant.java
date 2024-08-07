@@ -34,6 +34,8 @@ public final class ApplicationConstant {
   public static final String MATCHING_REASON = "matching-reason";
   public static final String MATCHING_INFO = "info";
   public static final String MATCHED_USER = "matched-user";
+  public static final String IS_DOING_BUSINESS_AS = "isDoingBusinessAs";
+  public static final String DOING_BUSINESS_AS = "isDoingBusinessAs";
 
   public static final BcRegistryDocumentRequestBodyDto
       BUSINESS_SUMMARY_FILING_HISTORY =

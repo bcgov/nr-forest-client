@@ -69,7 +69,7 @@
         "method": "GET",
         "queryParameters": {
           "lastName": {
-            "equalTo": "Uat"
+            "matches": "(.*)"
           }
         }
       },

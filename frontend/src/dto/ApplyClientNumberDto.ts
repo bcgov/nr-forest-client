@@ -122,7 +122,16 @@ export const formDataDto: FormDataDto = {
     goodStandingInd: "",
     birthdate: "",
     notes: "",
-    identificationType: {value: "", text: "", countryCode: ""}
+    identificationType: {value: "", text: "", countryCode: ""},
+    workSafeBcNumber: "",
+    doingBusinessAs: "",
+    clientAcronym: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",    
+    clientIdentification: "",
+    identificationCountry: "",
+    identificationProvince: "",
   },
   location: {
     addresses: [emptyAddress()],

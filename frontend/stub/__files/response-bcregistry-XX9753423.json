@@ -1,0 +1,33 @@
+{
+  "name": "Pacific Forests Ltd",
+  "id": "{{request.path.[2]}}",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "931 American Ash Junction",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "BC",
+        "text": "British Columbia"
+      },
+      "city": "Ucluelet",
+      "postalCode": "G6E8B2",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "DI",
+        "text": null
+      },
+      "firstName": "Austin",
+      "lastName": "Ortner",
+      "phoneNumber": null,
+      "email": null
+    }
+  ]
+}

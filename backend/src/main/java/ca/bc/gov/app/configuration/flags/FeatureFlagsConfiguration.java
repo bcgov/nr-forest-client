@@ -22,23 +22,23 @@ public class FeatureFlagsConfiguration {
   @Bean
   @ConditionalOnProperty(name = "features.bcregistry.multiaddress", matchIfMissing = true)
   public Predicate<BcRegistryAddressDto> isMultiAddressEnabled() {
-    log.warn("Multi address feature is enabled due to missing property");
+    log.warn("Multi address feature is enabled");
     return addressDto -> true;
   }
 
+
   @Bean
-  @ConditionalOnProperty(name = "features.staff.match", havingValue = "true")
-  public Predicate<ClientSubmissionDto> isMatcherEnabled() {
-    log.warn("Staff match feature is enabled due to property set as true");
+  @ConditionalOnProperty(prefix = "features", name = "staff.match", matchIfMissing = true)
+  public Predicate<ClientSubmissionDto> isMatcherDisabled() {
+    log.warn("Staff match feature is enabled");
     return dto -> true;
   }
 
   @Bean
-  @ConditionalOnProperty(name = "features.staff.match", matchIfMissing = true)
-  public Predicate<ClientSubmissionDto> isMatcherDisabled() {
-    log.warn("Staff match feature is disabled due to missing property");
+  @ConditionalOnProperty(prefix = "features", name = "staff.match", havingValue = "false")
+  public Predicate<ClientSubmissionDto> isMatcherDisabledByValue() {
+    log.warn("Staff match feature is disabled due to property set as false");
     return dto -> false;
   }
-
 
 }
