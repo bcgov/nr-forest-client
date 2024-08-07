@@ -164,8 +164,35 @@ Cypress.Commands.add("selectFormEntry", (field: string, value: string, box: bool
   }
 });
 
-Cypress.Commands.add("selectAutocompleteEntry", (field: string, value: string, dataid: string) => {
-  cy.fillFormEntry(field, value);
-  cy.get(field).find("[part='trigger-button']").click();    
+Cypress.Commands.add("selectAutocompleteEntry", (field: string, value: string, dataid: string,delayTarget: string = '') => {
+  cy.get(field).should("exist").shadow().find("input").type(value);
+  if(delayTarget)
+    cy.wait(delayTarget);
+  else
+    cy.wait(10);
   cy.get(field).find(`cds-combo-box-item[data-id="${dataid}"]`).click();
+});
+
+Cypress.Commands.add("checkInputErrorMessage", (field: string, message: string) => {
+  cy.get(field)
+  .shadow()
+  .find('#invalid-text')
+  .invoke('text')
+  .should('contains',message);
+});
+
+Cypress.Commands.add("checkAutoCompleteErrorMessage", (field: string, message: string) => {
+  cy.get(field)          
+      .should('have.attr', 'aria-invalid', 'true')
+      .should('have.attr', 'invalid-text', message);
+
+      cy.get(field)
+      .shadow()
+      .find('svg').should('exist');
+
+      cy.get(field)
+      .shadow()
+      .find('div.cds--form__helper-text > slot#helper-text')
+      .invoke('text')
+      .should('contains', message);
 });

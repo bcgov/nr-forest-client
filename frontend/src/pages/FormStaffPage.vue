@@ -35,6 +35,7 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 
 // Imported Pages
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
+import BcRegisteredClientInformationWizardStep from "@/pages/staffform/BcRegisteredClientInformationWizardStep.vue";
 import LocationsWizardStep from "@/pages/staffform/LocationsWizardStep.vue";
 import ContactsWizardStep from "@/pages/staffform/ContactsWizardStep.vue";
 import ReviewWizardStep from "@/pages/staffform/ReviewWizardStep.vue";
@@ -221,7 +222,12 @@ const onCancel = () => {
 };
 
 const lookForMatches = (onEmpty: () => void) => {
-  /*overlayBus.emit({ isVisible: true, message: "", showLoading: true });
+
+  /*
+  Disabling for now, as this task wasn't supposed to have this yet
+
+  overlayBus.emit({ isVisible: true, message: "", showLoading: true });
+
   fuzzyBus.emit(undefined);
   errorBus.emit([]);
   notificationBus.emit(undefined);
@@ -258,7 +264,9 @@ const lookForMatches = (onEmpty: () => void) => {
     }
 
     setScrollPoint("top-notification");
-  });*/
+
+  });
+  */
 };
 
 const moveToNextStep = () => {
@@ -446,7 +454,7 @@ const submit = () => {
     </div>
 
     <div class="form-steps-staff" role="main">
-      <div class="errors-container hide-when-less-than-two-children">
+     <div class="errors-container hide-when-less-than-two-children">
         <!--
         The parent div is necessary to avoid the div.header-offset below from interfering in the flex flow.
         -->
@@ -481,6 +489,12 @@ const submit = () => {
           />
           <individual-client-information-wizard-step
             v-if="clientType?.code === 'I'"
+            :active="currentTab == 0"
+            :data="formData"
+            @valid="validateStep"
+          />
+          <bc-registered-client-information-wizard-step
+            v-if="clientType?.code === 'BCR'"
             :active="currentTab == 0"
             :data="formData"
             @valid="validateStep"

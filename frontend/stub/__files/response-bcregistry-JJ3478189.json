@@ -1,0 +1,33 @@
+{
+  "name": "Pacific Cultural Association",
+  "goodStanding": true,
+  "id": "{{request.path.[2]}}",
+  "addresses": [
+    {
+      "streetAddress": "53 Shopko Alley",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "BC",
+        "text": "British Columbia"
+      },
+      "city": "Oak Bay",
+      "postalCode": "V8S3A1",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "DI",
+        "text": null
+      },
+      "firstName": "Justina",
+      "lastName": "Scattergood",
+      "phoneNumber": null,
+      "email": null
+    }
+  ]
+}

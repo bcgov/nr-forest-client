@@ -1,0 +1,33 @@
+{
+  "name": "Schaefer Group",
+  "id": "{{request.path.[2]}}",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "75059 Welch Court",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "NB",
+        "text": "New Brunswick"
+      },
+      "city": "Bouctouche",
+      "postalCode": "E4S3Z8",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "DI",
+        "text": null
+      },
+      "firstName": "Corabelle",
+      "lastName": "Tant",
+      "phoneNumber": null,
+      "email": null
+    }
+  ]
+}
