@@ -31,7 +31,7 @@ import {
 // @ts-ignore
 import Information16 from "@carbon/icons-vue/es/information/16";
 
-// Defining the props and emiter to reveice the data and emit an update
+// Defining the props and emiter to receive the data and emit an update
 const props = defineProps<{
   data: FormDataDto;
   active: boolean;
@@ -53,6 +53,8 @@ watch(
 // -- Validation of the component --
 const validation = reactive<Record<string, boolean>>({
   businessName: !!formData.value.businessInformation.businessName,
+  workSafeBcNumber: true,
+  clientAcronym: true
 });
 
 const checkValid = () =>
@@ -148,5 +150,34 @@ const mapFirstNationInfo = (firstNations: ForestClientDetailsDto[] = []) => {
       <cds-inline-loading status="active" v-if="loading">Loading first nation details...</cds-inline-loading>
     </data-fetcher>
 
+    <text-input-component
+      id="workSafeBcNumber"
+      label="WorkSafeBC Number"
+      placeholder=""
+      autocomplete="off"
+      v-model="formData.businessInformation.workSafeBcNumber"
+      :validations="[
+        ...getValidations('businessInformation.workSafeBcNumber'),
+        submissionValidation(`businessInformation.workSafeBcNumber`),
+      ]"
+      enabled
+      @empty="validation.workSafeBcNumber = true"
+      @error="validation.workSafeBcNumber = !$event"
+    />
+
+    <text-input-component
+      id="clientAcronym"
+      label="Acronym"
+      placeholder=""
+      autocomplete="off"
+      v-model="formData.businessInformation.clientAcronym"
+      :validations="[
+        ...getValidations('businessInformation.clientAcronym'),
+        submissionValidation(`businessInformation.clientAcronym`),
+      ]"
+      enabled
+      @empty="validation.clientAcronym = true"
+      @error="validation.clientAcronym = !$event"
+    />
   </div>
 </template>

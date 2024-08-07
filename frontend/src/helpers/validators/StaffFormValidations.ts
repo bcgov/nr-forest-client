@@ -72,6 +72,16 @@ fieldValidations["businessInformation.lastName"] = [
   hasOnlyNamingCharacters("last name"),
 ];
 
+fieldValidations["businessInformation.workSafeBcNumber"] = [
+  optional(isOnlyNumbers("WorkSafeBC number should contain only numbers")),
+  optional(isMaxSizeMsg("WorkSafeBC", 6))
+];
+
+fieldValidations["businessInformation.clientAcronym"] = [  
+  optional(isMaxSizeMsg("acronym", 8)),
+  optional(isAscii("acronym")),
+];
+
 // For the input field.
 fieldValidations["identificationType.text"] = [isNotEmpty("You must select an ID type.")];
 

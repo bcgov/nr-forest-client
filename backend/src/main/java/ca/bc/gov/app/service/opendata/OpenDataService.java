@@ -43,7 +43,8 @@ public class OpenDataService {
                     openDataFeature.properties().addressLine2(),
                     openDataFeature.properties().addressLine1()
                 ),
-                StringUtils.EMPTY,
+                StringUtils.isNotBlank(openDataFeature.properties().addressLine2()) ? 
+                    openDataFeature.properties().addressLine1() : StringUtils.EMPTY,
                 null,
                 new ClientValueTextDto("CA", "Canada"),
                 provinceDto,
