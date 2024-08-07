@@ -147,8 +147,13 @@ Cypress.Commands.add("getMany", (names: string[]): Cypress.Chainable<any[]> => {
 });
 
 Cypress.Commands.add("fillFormEntry",(field: string, value: string, delayMS: number = 10, area: boolean = false) =>{
-  cy.get(field).should("exist").shadow().find(area ? "textarea" : "input").type(value,{ delay: delayMS });
-  cy.get(field).shadow().find(area ? "textarea" : "input").blur();
+  cy.get(field)
+  .should("exist")
+  .shadow()
+  .find(area ? "textarea" : "input")
+  .focus()
+  .type(value,{ delay: delayMS })
+  .blur();
 });
 
 Cypress.Commands.add("selectFormEntry", (field: string, value: string, box: boolean) => {
