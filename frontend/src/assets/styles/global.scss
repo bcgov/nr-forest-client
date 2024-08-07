@@ -236,11 +236,11 @@ cds-actionable-notification,
   box-shadow: none;
 }
 
-cds-radio-button-group {
+cds-radio-button-group, cds-checkbox-group {
   --cds-text-secondary: var(--light-theme-text-text-primary);
 }
 
-cds-radio-button-group[data-required-label="true"]::part(legend)::before {
+:is(cds-radio-button-group, cds-checkbox-group)[data-required-label="true"]::part(legend)::before {
   color: var(--light-theme-text-text-error, #b32001);
   content: '* ';
 }
