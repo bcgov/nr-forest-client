@@ -103,7 +103,7 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         showBcRegDownNotification: false,
         showDuplicatedNotification: false,
         type: 'Corporation',
-        standing: 'Unknow',
+        standing: 'Unknown',
         dba: '',
       },
       {
@@ -130,7 +130,7 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         showNotGoodStandingNotification: false,
         showBcRegDownNotification: false,
         type: 'Limited liability partnership',
-        standing: 'Unknow',
+        standing: 'Unknown',
         dba: '',
       },
       {
@@ -158,7 +158,7 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         showBcRegDownNotification: false,
         showDuplicatedNotification: false,
         type: 'Corporation',
-        standing: 'Unknow',
+        standing: 'Unknown',
         dba: '',
       },
       {
@@ -186,7 +186,7 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
         showBcRegDownNotification: false,
         showDuplicatedNotification: true,
         type: 'Corporation',
-        standing: 'Unknow',
+        standing: 'Unknown',
         dba: '',
       },
       {

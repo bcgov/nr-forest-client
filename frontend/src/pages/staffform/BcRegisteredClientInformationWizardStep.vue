@@ -80,7 +80,7 @@ const showFields = computed(() => {
 const standingMessage = computed(() =>{
   if(formData.value.businessInformation.goodStandingInd === 'Y') return 'Good standing'
   if(formData.value.businessInformation.goodStandingInd === 'N') return 'Not in good standing'
-  return 'Unknow'
+  return 'Unknown'
 });
 
 //TODO: Either load from BE or add to DataConversors.ts
