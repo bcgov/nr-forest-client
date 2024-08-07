@@ -223,10 +223,6 @@ const onCancel = () => {
 };
 
 const lookForMatches = (onEmpty: () => void) => {
-
-  /*
-  Disabling for now, as this task wasn't supposed to have this yet
-
   overlayBus.emit({ isVisible: true, message: "", showLoading: true });
 
   fuzzyBus.emit(undefined);
@@ -267,7 +263,6 @@ const lookForMatches = (onEmpty: () => void) => {
     setScrollPoint("top-notification");
 
   });
-  */
 };
 
 const moveToNextStep = () => {
@@ -285,8 +280,7 @@ const onNext = () => {
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
-      //lookForMatches(moveToNextStep);
-      moveToNextStep();
+      lookForMatches(moveToNextStep);
     } else {
       setScrollPoint("top-notification");
     }
