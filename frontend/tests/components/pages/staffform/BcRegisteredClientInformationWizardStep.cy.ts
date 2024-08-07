@@ -535,8 +535,12 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
       cy.checkInputErrorMessage('#acronym','The acronym has a 8 character limit');
       
       cy.get('#acronym').shadow().find('input').clear();
-      cy.fillFormEntry('#acronym', 'lá');
+      cy.fillFormEntry('#acronym', 'láe');
       cy.checkInputErrorMessage('#acronym','The acronym can only contain: A-Z, a-z, 0-9, space or common symbols');
+
+      cy.get('#acronym').shadow().find('input').clear();
+      cy.fillFormEntry('#acronym', 'I');
+      cy.checkInputErrorMessage('#acronym','The acronym must contain at least 3 characters');
 
 
     });
