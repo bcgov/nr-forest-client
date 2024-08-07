@@ -12,7 +12,7 @@ parameters:
     value: backend
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
-    required: true  
+    required: true
 objects:
   - kind: ConfigMap
     apiVersion: v1
