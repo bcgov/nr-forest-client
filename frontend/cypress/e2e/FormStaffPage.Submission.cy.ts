@@ -143,6 +143,13 @@ describe("Staff Form Submission", () => {
     cy.fixture(`staffSubmit/${testSubmissionFixture}`).then((fixtureData: any) => {
       cy.intercept("POST", "/api/clients/submissions/staff", fixtureData).as("submitForm");      
     });
+
+    cy.intercept("POST", '**/api/clients/matches',{
+      statusCode: 204,
+      headers:{
+        "content-type": "application/json;charset=UTF-8"
+      }
+    }).as("doMatch");
         
     cy.visit("/");
     
