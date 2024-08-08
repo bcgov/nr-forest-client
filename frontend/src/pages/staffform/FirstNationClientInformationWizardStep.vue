@@ -88,6 +88,8 @@ const parseSelectedNation = (
     formData.value.location.addresses = exportAddress(
       selectedNation.addresses
     );
+    //This will make the backend life way easier
+    formData.value.businessInformation.registrationNumber = `DINA${selectedNation.id}`;
   }
   return selectedNation;
 };
