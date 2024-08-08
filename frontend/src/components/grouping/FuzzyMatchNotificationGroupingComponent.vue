@@ -83,8 +83,7 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
               errorMsg: "Client already exists",
             },
           ];
-          const groupId = JSON.stringify(errorEvent);
-          errorBus.emit(errorEvent, { skipNotification: true, groupId });
+          errorBus.emit(errorEvent, { skipNotification: true });
         }
       }
     }
