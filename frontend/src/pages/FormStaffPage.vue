@@ -107,6 +107,7 @@ const progressData = reactive([
       "businessInformation.clientType",
     ],
     extraValidations: [],
+    reviewStatementChecked: false,
   },
   {
     title: "Locations",
@@ -133,6 +134,7 @@ const progressData = reactive([
       "location.addresses.*.notes",
     ],
     extraValidations: [],
+    reviewStatementChecked: false,
   },
   {
     title: "Contacts",
@@ -152,6 +154,7 @@ const progressData = reactive([
       "location.contacts.*.faxNumber",
     ],
     extraValidations: [],
+    reviewStatementChecked: false,
   },
   {
     title: "Review",
@@ -227,6 +230,12 @@ const validateStep = (valid: boolean) => {
   }
 };
 
+const setStepReviewed = (reviewed: boolean) => {
+  progressData[currentTab.value].reviewStatementChecked = reviewed;
+};
+
+const isStepReviewed = () => progressData[currentTab.value].reviewStatementChecked;
+
 const onCancel = () => {
   router.push("/");
 };
@@ -235,10 +244,26 @@ const matchError = ref(false);
 const isExactMatch = ref(false);
 
 watch(formData, () => {
+  setStepReviewed(false);
+
   if (matchError.value) {
     resetSubmissionValidators();
     revalidateBus.emit();
     matchError.value = false;
+    reviewStatementChecked.value = false;
+  }
+});
+
+const reviewStatementChecked = ref(false);
+
+watch(reviewStatementChecked, (reviewed) => {
+  /*
+  This if condition is important to prevent updating the information on the next or the previous
+  step when we move to it and we just want to reset the value of the checkbox.
+  */
+  if (matchError.value) {
+    setStepReviewed(reviewed);
+    validateStep(reviewed);
   }
 });
 
@@ -294,6 +319,14 @@ const moveToNextStep = () => {
   progressData[currentTab.value - 1].kind = "complete";
   progressData[currentTab.value].kind = "current";
   setScrollPoint("step-title");
+
+  // reset matcherError
+  matchError.value = false;
+
+  // reset reviewStatementChecked
+  reviewStatementChecked.value = false;
+
+  resetSubmissionValidators();
 };
 
 const onNext = () => {
@@ -304,7 +337,11 @@ const onNext = () => {
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
-      lookForMatches(moveToNextStep);
+      if (isStepReviewed()) {
+        moveToNextStep();
+      } else {
+        lookForMatches(moveToNextStep);
+      }
     } else {
       setScrollPoint("top-notification");
     }
@@ -473,8 +510,6 @@ const submit = () => {
     fetchSubmission();
   }
 };
-
-const reviewStatementChecked = ref(false);
 </script>
 
 <template>
@@ -604,6 +639,7 @@ const reviewStatementChecked = ref(false);
         <div class="form-footer-group">
           <div class="form-footer-group-next">
             <simple-checkbox-input-component
+              v-if="matchError && !isExactMatch"
               id="reviewStatement"
               label="Review statement"
               required-label
