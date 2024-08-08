@@ -1,35 +1,18 @@
 <script setup lang="ts">
 import { watch, computed, ref, reactive, onMounted } from "vue";
-// Carbon
 import "@carbon/web-components/es/components/inline-loading/index";
 import "@carbon/web-components/es/components/notification/index";
 import "@carbon/web-components/es/components/tooltip/index";
-// Importing composables
-import { useEventBus } from "@vueuse/core";
-import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
-// Importing types
 import type {
   FirstNationDetailsDto,
   ForestClientDetailsDto,
   FormDataDto,
 } from "@/dto/ApplyClientNumberDto";
-import type {
-  BusinessSearchResult
-} from "@/dto/CommonTypesDto";
+import type { BusinessSearchResult } from "@/dto/CommonTypesDto";
 import { exportAddress } from "@/helpers/DataConversors";
-// Importing validators
-import {
-  getValidations,
-  validate,
-} from "@/helpers/validators/StaffFormValidations";
+import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
-import {
-  clientIdentificationMaskParams,
-  getClientIdentificationValidations,
-} from "@/helpers/validators/StaffFormValidations";
-// @ts-ignore
-import Information16 from "@carbon/icons-vue/es/information/16";
 
 // Defining the props and emiter to receive the data and emit an update
 const props = defineProps<{
@@ -115,7 +98,6 @@ const mapFirstNationInfo = (firstNations: ForestClientDetailsDto[] = []) => {
     code: v.id,
   }));
 };
-
 </script>
 
 <template>

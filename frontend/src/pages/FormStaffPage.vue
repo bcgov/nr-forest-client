@@ -478,6 +478,7 @@ const submit = () => {
             <div data-scroll="step-title" class="header-offset"></div>
             {{ progressData[0].title}}
           </h2>
+          
           <dropdown-input-component
             id="clientType"
             label="Client type"
@@ -494,6 +495,7 @@ const submit = () => {
             @update:selected-value="updateClientType($event)"
             @empty="validation.type = !$event"
           />
+
           <individual-client-information-wizard-step
             v-if="clientType?.code === 'I'"
             :active="currentTab == 0"
