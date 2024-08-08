@@ -10,15 +10,20 @@ import static org.mockito.Mockito.when;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.entity.SubmissionDetailEntity;
+import ca.bc.gov.app.entity.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -145,6 +150,32 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .isInstanceOf(String.class)
               .isEqualTo("FM00184546");
         })
+        .verifyComplete();
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("generateForestClient")
+  @DisplayName("create forest client")
+  void shouldCreateForestClientFromParams(
+      String testName,
+      SubmissionDetailEntity entity,
+      MessagingWrapper<String> wrapper,
+      ForestClientDto dto
+  ) {
+
+    when(bcRegistryService.requestDocumentData(any(String.class)))
+        .thenReturn(Flux.just(TestConstants.BCREG_DOC_DATA));
+
+    when(submissionDetailRepository.findBySubmissionId(any()))
+        .thenReturn(Mono.just(entity));
+
+    when(contactRepository.findBySubmissionId(any()))
+        .thenReturn(Flux.empty());
+
+    service
+        .generateForestClient(wrapper)
+        .as(StepVerifier::create)
+        .expectNext(new MessagingWrapper<>(dto, wrapper.parameters()))
         .verifyComplete();
   }
 
@@ -296,6 +327,51 @@ class LegacyRegisteredSPPersistenceServiceTest {
 
   }
 
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("generateDoingBusinessAs")
+  @DisplayName("create all client with doing business")
+  void shouldCreateDBA(
+      String testTitle,
+      MessagingWrapper<ForestClientDto> wrapper
+  ) {
+
+    SubmissionDetailEntity detailEntity = SubmissionDetailEntity
+        .builder()
+        .submissionId(2)
+        .registrationNumber("XX0000000")
+        .organizationName("Sample test")
+        .clientTypeCode("RSP")
+        .clientNumber(wrapper.payload().clientNumber())
+        .build();
+
+    when(submissionDetailRepository.findBySubmissionId(any()))
+        .thenReturn(Mono.just(detailEntity));
+    when(submissionDetailRepository.save(any()))
+        .thenReturn(Mono.just(detailEntity));
+    when(legacyService.createDoingBusinessAs(any(), any(), any(), any()))
+        .thenReturn(Mono.just(wrapper.payload().clientNumber()));
+    when(legacyService.createClient(any()))
+        .thenReturn(Mono.just(wrapper.payload().clientNumber()));
+
+    service
+        .createForestClient(wrapper)
+        .as(StepVerifier::create)
+        .assertNext(message -> {
+          Assertions.assertThat(message)
+              .as("message")
+              .isNotNull()
+              .hasFieldOrPropertyWithValue("payload", 9999);
+
+          Assertions.assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
+              .as("forest client number")
+              .isNotNull()
+              .isInstanceOf(String.class)
+              .isEqualTo(wrapper.payload().clientNumber());
+        })
+        .verifyComplete();
+
+  }
+
   private static Stream<Arguments> byType() {
     return Stream.of(
         Arguments.of("I", false),
@@ -305,4 +381,316 @@ class LegacyRegisteredSPPersistenceServiceTest {
     );
   }
 
+  private static Stream<Arguments> generateForestClient() {
+    Integer submissionId = 9999;
+    String clientNumber = null;
+
+    return Stream.of(
+        Arguments.of(
+            "Staff-submitted registered sole proprietor",
+            SubmissionDetailEntity.builder()
+                .submissionId(submissionId)
+                .submissionDetailId(submissionId)
+                .organizationName("Baxter Corp")
+                .doingBusinessAs("Baxter Corp")
+                .firstName("James")
+                .lastName("Baxter")
+                .registrationNumber("FM00184546")
+                .businessTypeCode("R")
+                .clientTypeCode("RSP")
+                .goodStandingInd("Y")
+                .birthdate(LocalDate.of(1962, 3, 12))
+                .build(),
+            new MessagingWrapper<>(
+                clientNumber,
+                Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
+            )
+                .withParameter(ApplicationConstant.SUBMISSION_STARTER,
+                    SubmissionProcessTypeEnum.STAFF)
+                .withParameter(ApplicationConstant.MATCHING_INFO,
+                    Map.of(
+                        "name", "John Wick",
+                        "email", "jhon.wick@gov.bc.ca",
+                        "userId", "IDIR\\JWICK",
+                        "businessId", StringUtils.EMPTY,
+                        "businessName", StringUtils.EMPTY
+                    )
+                )
+                .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.A)
+                .withParameter(ApplicationConstant.SUBMISSION_CLIENTID, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.SUBMISSION_NAME,
+                    "Baxter Corp")
+                .withParameter(ApplicationConstant.MATCHING_REASON, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.CLIENT_TYPE_CODE, "RSP")
+                .withParameter(ApplicationConstant.MATCHED_USER, "IDIR\\JWICK")
+                .withParameter(ApplicationConstant.CLIENT_SUBMITTER_NAME,
+                    "James Baxter")
+                .withParameter(ApplicationConstant.CREATED_BY, "IDIR\\JWICK")
+                .withParameter(ApplicationConstant.UPDATED_BY, "IDIR\\JWICK")
+                .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
+                    "Baxter Corp")
+                .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "FM00184546")
+                .withParameter(ApplicationConstant.IS_DOING_BUSINESS_AS, true)
+                .withParameter(ApplicationConstant.DOING_BUSINESS_AS, "BAXTER CORP"),
+            new ForestClientDto(
+                clientNumber,
+                "BAXTER",
+                "JAMES",
+                StringUtils.EMPTY,
+                "ACT",
+                "I",
+                LocalDate.of(1962, 3, 12),
+                "BCRE",
+                "FM00184546",
+                "FM",
+                "00184546",
+                null, //clientComment
+                "IDIR\\JWICK",
+                "IDIR\\JWICK",
+                ApplicationConstant.ORG_UNIT,
+                null, //acronym
+                null //wsbn
+            )
+        ),
+        Arguments.of(
+            "Staff-submitted RSP with acronym and work safe bc",
+            SubmissionDetailEntity.builder()
+                .submissionId(submissionId)
+                .submissionDetailId(submissionId)
+                .organizationName("Baxter Corp")
+                .doingBusinessAs("Baxter Corp")
+                .firstName("James")
+                .lastName("Baxter")
+                .registrationNumber("FM00184546")
+                .businessTypeCode("R")
+                .clientTypeCode("RSP")
+                .goodStandingInd("Y")
+                .birthdate(LocalDate.of(1962, 3, 12))
+                .clientAcronym("BAXC")
+                .workSafeBCNumber("123456")
+                .build(),
+            new MessagingWrapper<>(
+                clientNumber,
+                Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
+            )
+                .withParameter(ApplicationConstant.SUBMISSION_STARTER,
+                    SubmissionProcessTypeEnum.STAFF)
+                .withParameter(ApplicationConstant.MATCHING_INFO,
+                    Map.of(
+                        "name", "John Wick",
+                        "email", "jhon.wick@gov.bc.ca",
+                        "userId", "IDIR\\JWICK",
+                        "businessId", StringUtils.EMPTY,
+                        "businessName", StringUtils.EMPTY
+                    )
+                )
+                .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.A)
+                .withParameter(ApplicationConstant.SUBMISSION_CLIENTID, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.SUBMISSION_NAME,
+                    "Baxter Corp")
+                .withParameter(ApplicationConstant.MATCHING_REASON, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.CLIENT_TYPE_CODE, "RSP")
+                .withParameter(ApplicationConstant.MATCHED_USER, "IDIR\\JWICK")
+                .withParameter(ApplicationConstant.CLIENT_SUBMITTER_NAME,
+                    "James Baxter")
+                .withParameter(ApplicationConstant.CREATED_BY, "IDIR\\JWICK")
+                .withParameter(ApplicationConstant.UPDATED_BY, "IDIR\\JWICK")
+                .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
+                    "Baxter Corp")
+                .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "FM00184546")
+                .withParameter(ApplicationConstant.IS_DOING_BUSINESS_AS, true)
+                .withParameter(ApplicationConstant.DOING_BUSINESS_AS, "BAXTER CORP"),
+            new ForestClientDto(
+                clientNumber,
+                "BAXTER",
+                "JAMES",
+                StringUtils.EMPTY,
+                "ACT",
+                "I",
+                LocalDate.of(1962, 3, 12),
+                "BCRE",
+                "FM00184546",
+                "FM",
+                "00184546",
+                null, //clientComment
+                "IDIR\\JWICK",
+                "IDIR\\JWICK",
+                ApplicationConstant.ORG_UNIT,
+                "BAXC", //acronym
+                "123456" //wsbn
+            )
+        ),
+        Arguments.of(
+            "External-submitted RSP",
+            SubmissionDetailEntity.builder()
+                .submissionId(submissionId)
+                .submissionDetailId(submissionId)
+                .organizationName("Baxter Corp")
+                .registrationNumber("FM00184546")
+                .businessTypeCode("R")
+                .clientTypeCode("RSP")
+                .goodStandingInd("Y")
+                .birthdate(LocalDate.of(1962, 3, 12))
+                .build(),
+            new MessagingWrapper<>(
+                clientNumber,
+                Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
+            )
+                .withParameter(ApplicationConstant.SUBMISSION_STARTER,
+                    SubmissionProcessTypeEnum.EXTERNAL)
+                .withParameter(ApplicationConstant.MATCHING_INFO, null)
+                .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.A)
+                .withParameter(ApplicationConstant.SUBMISSION_CLIENTID, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.SUBMISSION_NAME,
+                    "Baxter Corp")
+                .withParameter(ApplicationConstant.MATCHING_REASON, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.CLIENT_TYPE_CODE, "RSP")
+                .withParameter(ApplicationConstant.MATCHED_USER, "IDIR\\ottomated")
+                .withParameter(ApplicationConstant.CLIENT_SUBMITTER_NAME,
+                    "James Baxter")
+                .withParameter(ApplicationConstant.CREATED_BY, "BCEIDBUSINESS\\JWICK")
+                .withParameter(ApplicationConstant.UPDATED_BY, "BCEIDBUSINESS\\JWICK")
+                .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
+                    "BAXTER CORP")
+                .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "FM00184546")
+                .withParameter(ApplicationConstant.IS_DOING_BUSINESS_AS, true)
+                .withParameter(ApplicationConstant.DOING_BUSINESS_AS, "BAXTER CORP"),
+            new ForestClientDto(
+                clientNumber,
+                "BAXTER",
+                "JAMES",
+                StringUtils.EMPTY,
+                "ACT",
+                "I",
+                LocalDate.of(1962, 3, 12),
+                "BCRE",
+                "FM00184546",
+                "FM",
+                "00184546",
+                String.join(" ",
+                    "James Baxter of BCeID Business null submitted the",
+                    "sole proprietor registered on BC Registry with number",
+                    "FM00184546",
+                    "and company name",
+                    "BAXTER CORP"
+                ),
+                "BCEIDBUSINESS\\JWICK",
+                "BCEIDBUSINESS\\JWICK",
+                ApplicationConstant.ORG_UNIT,
+                null,
+                null
+            )
+        )
+    );
+  }
+
+  private static Stream<Arguments> generateDoingBusinessAs() {
+    Integer submissionId = 9999;
+    String clientNumber = "00100000";
+
+    return Stream.of(
+        Arguments.of(
+            "Staff-submitted registered sole proprietor",
+            new MessagingWrapper<>(
+                new ForestClientDto(
+                    clientNumber,
+                    "BAXTER",
+                    "JAMES",
+                    StringUtils.EMPTY,
+                    "ACT",
+                    "I",
+                    LocalDate.of(1962, 3, 12),
+                    "BCRE",
+                    "FM00184546",
+                    "FM",
+                    "00184546",
+                    null, //clientComment
+                    "IDIR\\JWICK",
+                    "IDIR\\JWICK",
+                    ApplicationConstant.ORG_UNIT,
+                    null, //acronym
+                    null //wsbn
+                ),
+                Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
+            )
+                .withParameter(ApplicationConstant.SUBMISSION_STARTER,
+                    SubmissionProcessTypeEnum.STAFF)
+                .withParameter(ApplicationConstant.MATCHING_INFO,
+                    Map.of(
+                        "name", "John Wick",
+                        "email", "jhon.wick@gov.bc.ca",
+                        "userId", "IDIR\\JWICK",
+                        "businessId", StringUtils.EMPTY,
+                        "businessName", StringUtils.EMPTY
+                    )
+                )
+                .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.A)
+                .withParameter(ApplicationConstant.SUBMISSION_CLIENTID, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.SUBMISSION_NAME,
+                    "Baxter Corp")
+                .withParameter(ApplicationConstant.MATCHING_REASON, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.CLIENT_TYPE_CODE, "RSP")
+                .withParameter(ApplicationConstant.MATCHED_USER, "IDIR\\JWICK")
+                .withParameter(ApplicationConstant.CLIENT_SUBMITTER_NAME,
+                    "James Baxter")
+                .withParameter(ApplicationConstant.CREATED_BY, "IDIR\\JWICK")
+                .withParameter(ApplicationConstant.UPDATED_BY, "IDIR\\JWICK")
+                .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
+                    "Baxter Corp")
+                .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "FM00184546")
+                .withParameter(ApplicationConstant.IS_DOING_BUSINESS_AS, true)
+                .withParameter(ApplicationConstant.DOING_BUSINESS_AS, "BAXTER CORP")
+            ),
+        Arguments.of(
+            "External-submitted RSP",
+            new MessagingWrapper<>(
+                new ForestClientDto(
+                    clientNumber,
+                    "BAXTER",
+                    "JAMES",
+                    StringUtils.EMPTY,
+                    "ACT",
+                    "I",
+                    LocalDate.of(1962, 3, 12),
+                    "BCRE",
+                    "FM00184546",
+                    "FM",
+                    "00184546",
+                    String.join(" ",
+                        "James Baxter of BCeID Business null submitted the",
+                        "sole proprietor registered on BC Registry with number",
+                        "FM00184546",
+                        "and company name",
+                        "BAXTER CORP"
+                    ),
+                    "BCEIDBUSINESS\\JWICK",
+                    "BCEIDBUSINESS\\JWICK",
+                    ApplicationConstant.ORG_UNIT,
+                    null,
+                    null
+                ),
+                Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
+            )
+                .withParameter(ApplicationConstant.SUBMISSION_STARTER,
+                    SubmissionProcessTypeEnum.EXTERNAL)
+                .withParameter(ApplicationConstant.MATCHING_INFO, null)
+                .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.A)
+                .withParameter(ApplicationConstant.SUBMISSION_CLIENTID, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.SUBMISSION_NAME,
+                    "Baxter Corp")
+                .withParameter(ApplicationConstant.MATCHING_REASON, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.CLIENT_TYPE_CODE, "RSP")
+                .withParameter(ApplicationConstant.MATCHED_USER, "IDIR\\ottomated")
+                .withParameter(ApplicationConstant.CLIENT_SUBMITTER_NAME,
+                    "James Baxter")
+                .withParameter(ApplicationConstant.CREATED_BY, "BCEIDBUSINESS\\JWICK")
+                .withParameter(ApplicationConstant.UPDATED_BY, "BCEIDBUSINESS\\JWICK")
+                .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
+                    "BAXTER CORP")
+                .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "FM00184546")
+                .withParameter(ApplicationConstant.IS_DOING_BUSINESS_AS, true)
+                .withParameter(ApplicationConstant.DOING_BUSINESS_AS, "BAXTER CORP")
+            )
+    );
+  }
 }

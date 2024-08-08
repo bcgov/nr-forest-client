@@ -1,0 +1,33 @@
+{
+  "name": "Jacobson, Tremblay and Ferry",
+  "id": "{{request.path.[2]}}",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "48719 Vera Lane",
+      "country": {
+        "value": "US",
+        "text": "United States"
+      },
+      "province": {
+        "value": "LA",
+        "text": "Louisiana"
+      },
+      "city": "Shreveport",
+      "postalCode": "71105",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "DI",
+        "text": null
+      },
+      "firstName": "Jandy",
+      "lastName": "Kegg",
+      "phoneNumber": "4236960592",
+      "email": null
+    }
+  ]
+}

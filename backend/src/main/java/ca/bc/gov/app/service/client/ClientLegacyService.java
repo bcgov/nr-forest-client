@@ -209,15 +209,54 @@ public class ClientLegacyService {
 
   }
 
+  /**
+   * Searches for a list of {@link ForestClientDto} in the legacy API based on the given search type
+   * and value. This method constructs a query parameter map using the provided search type and
+   * value, sends a GET request to the legacy API, and converts the response into a Flux of
+   * ForestClientDto objects. It also logs the search parameters and the results for debugging
+   * purposes.
+   *
+   * @param searchType The type of search to perform (e.g., "registrationNumber", "companyName").
+   * @param value      The value to search for.
+   * @return A Flux of ForestClientDto objects matching the search criteria.
+   */
   public Flux<ForestClientDto> searchGeneric(
       String searchType,
       String value
   ) {
+    return searchGeneric(searchType, searchType, value);
+  }
 
-    if (StringUtils.isBlank(value))
+  public Flux<ForestClientDto> searchGeneric(
+      String searchType,
+      String paramName,
+      String value
+  ) {
+
+    if (StringUtils.isAnyBlank(searchType, paramName, value)) {
       return Flux.empty();
+    }
 
-    Map<String, List<String>> parameters = Map.of(searchType, List.of(value));
+    Map<String, List<String>> parameters = Map.of(paramName, List.of(value));
+
+    return searchGeneric(searchType, parameters);
+  }
+
+  public Flux<ForestClientDto> searchGeneric(
+      String searchType,
+      Map<String, List<String>> parameters
+  ) {
+
+    if (
+        StringUtils.isBlank(searchType)
+            || parameters == null
+            || parameters.isEmpty()
+            || parameters.values().stream().anyMatch(CollectionUtils::isEmpty)
+            || parameters.values().stream().flatMap(List::stream).anyMatch(StringUtils::isBlank)
+            || parameters.keySet().stream().anyMatch(StringUtils::isBlank)
+    ) {
+      return Flux.empty();
+    }
 
     return
         legacyApi
@@ -251,7 +290,8 @@ public class ClientLegacyService {
             .body(BodyInserters.fromValue(dto))
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
             .doOnNext(
-                client -> log.info("Found Legacy data for location search with client number {}", client.clientNumber())
+                client -> log.info("Found Legacy data for location search with client number {}",
+                    client.clientNumber())
             );
   }
 
@@ -263,8 +303,10 @@ public class ClientLegacyService {
             .body(BodyInserters.fromValue(dto))
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
             .doOnNext(
-                client -> log.info("Found Legacy data for contact search with client number {}", client.clientNumber())
+                client -> log.info("Found Legacy data for contact search with client number {}",
+                    client.clientNumber())
             );
   }
+
 
 }

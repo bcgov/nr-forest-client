@@ -38,6 +38,7 @@ import {
 
 // Imported Pages
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
+import BcRegisteredClientInformationWizardStep from "@/pages/staffform/BcRegisteredClientInformationWizardStep.vue";
 import LocationsWizardStep from "@/pages/staffform/LocationsWizardStep.vue";
 import ContactsWizardStep from "@/pages/staffform/ContactsWizardStep.vue";
 import ReviewWizardStep from "@/pages/staffform/ReviewWizardStep.vue";
@@ -83,14 +84,6 @@ const router = useRouter();
 const { setScrollPoint } = useFocus();
 
 const formData = reactive<FormDataDto>({ ...newFormDataDto() });
-
-const locations = computed(() =>
-  formData.location.addresses.map((address: any) => address.locationName)
-);
-addValidation(
-  "location.contacts.*.locationNames.*.text",
-  isContainedIn(locations, "Location name must be one of the locations")
-);
 
 // Tab system
 const progressData = reactive([
@@ -269,6 +262,7 @@ watch(reviewStatementChecked, (reviewed) => {
 
 const lookForMatches = (onEmpty: () => void) => {
   overlayBus.emit({ isVisible: true, message: "", showLoading: true });
+
   fuzzyBus.emit(undefined);
   errorBus.emit([]);
   notificationBus.emit(undefined);
@@ -311,6 +305,7 @@ const lookForMatches = (onEmpty: () => void) => {
     }
 
     setScrollPoint("top-notification");
+
   });
 };
 
@@ -544,7 +539,7 @@ const submit = () => {
     </div>
 
     <div class="form-steps-staff" role="main">
-      <div class="errors-container hide-when-less-than-two-children">
+     <div class="errors-container hide-when-less-than-two-children">
         <!--
         The parent div is necessary to avoid the div.header-offset below from interfering in the flex flow.
         -->
@@ -579,6 +574,12 @@ const submit = () => {
           />
           <individual-client-information-wizard-step
             v-if="clientType?.code === 'I'"
+            :active="currentTab == 0"
+            :data="formData"
+            @valid="validateStep"
+          />
+          <bc-registered-client-information-wizard-step
+            v-if="clientType?.code === 'BCR'"
             :active="currentTab == 0"
             :data="formData"
             @valid="validateStep"

@@ -1,17 +1,22 @@
 /* eslint-disable no-undef */
 describe("General Form", () => {
   beforeEach(() => {
-    cy.intercept("GET", "/api/codes/districts?page=0&size=250", {
+    cy.intercept("GET", "**/api/codes/districts?page=0&size=250", {
       fixture: "districts.json",
     }).as("getDistricts");
 
-    cy.intercept("http://localhost:8080/api/clients/name/*", {
+    cy.intercept("**/api/clients/name/*", {
       fixture: "business.json",
     }).as("searchCompany");
 
     cy.intercept("GET", "/api/clients/XX9016140", {
       fixture: "example.json",
     }).as("selectCompany");
+
+    cy.intercept("GET","**/api/clients/individual/*",{
+      statusCode: 200,
+      body: {}
+    })
   });
 
   it("should render the component", () => {
@@ -70,9 +75,9 @@ describe("General Form", () => {
 
     cy.get("#birthdate").should("be.visible");
 
-    cy.get("#birthdateYear").shadow().find("input").should("have.value", "").type("2001");
-    cy.get("#birthdateMonth").shadow().find("input").should("have.value", "").type("05");
-    cy.get("#birthdateDay").shadow().find("input").should("have.value", "").type("30");
+    cy.fillFormEntry("#birthdateYear", "2001");
+    cy.fillFormEntry("#birthdateMonth", "05");
+    cy.fillFormEntry("#birthdateDay", "30");
 
     cy.get('[data-test="wizard-next-button"]').should("be.visible").click();
 

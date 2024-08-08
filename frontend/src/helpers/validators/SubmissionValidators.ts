@@ -50,13 +50,15 @@ let submissionValidators: ValidationMessageType[] = [];
  * When an error is received, update the submission validators array.
  */
 errorBus.on((errors, payload) => {
-  submissionValidators = errors.map((error: ValidationMessageType) => {
-    if (!payload.skipNotification) {
-      notificationBus.emit(error);
-    }
-    const { warning } = payload;
-    return { ...error, originalValue: "", warning };
-  });
+  if (errors) {
+    errors.forEach((error: ValidationMessageType) => {
+      if (!payload.skipNotification) {
+        notificationBus.emit(error);
+      }
+      const { warning } = payload;
+      submissionValidators.push({ ...error, originalValue: "", warning });
+    });
+  }
   revalidateBus.emit();
 });
 
@@ -66,19 +68,13 @@ errorBus.on((errors, payload) => {
  * @param fieldId - The fieldId of the validator to update.
  * @param value - The new value for the validator's originalValue property.
  */
-const updateValidators = (
-  fieldId: string,
-  originalValue: string,
-  warning?: boolean,
-): void => {
-  submissionValidators = submissionValidators.map(
-    (validator: ValidationMessageType) => {
-      if (validator.fieldId === fieldId) {
-        return { ...validator, originalValue, warning };
-      }
-      return validator;
+const updateValidators = (fieldId: string, originalValue: string, warning?: boolean): void => {
+  submissionValidators = submissionValidators.map((validator: ValidationMessageType) => {
+    if (validator.fieldId === fieldId) {
+      return { ...validator, originalValue, warning };
     }
-  );
+    return validator;
+  });
 };
 
 /**

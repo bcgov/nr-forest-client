@@ -72,6 +72,28 @@ fieldValidations["businessInformation.lastName"] = [
   hasOnlyNamingCharacters("last name"),
 ];
 
+fieldValidations["businessInformation.businessName"] = [
+  isNotEmpty("Client name cannot be empty"),
+  isMaxSizeMsg("client name", 60),
+  isAscii("client name"),
+];
+
+fieldValidations["businessInformation.workSafeBcNumber"] = [
+  optional(isOnlyNumbers("WorkSafeBC number should contain only numbers")),
+  optional(isMaxSizeMsg("WorkSafeBC", 6))
+];
+
+fieldValidations["businessInformation.doingBusinessAs"] = [  
+  optional(isMaxSizeMsg("doing business as", 120)),
+  optional(isAscii("doing business as")),
+];
+
+fieldValidations["businessInformation.clientAcronym"] = [  
+  optional(isMaxSizeMsg("acronym", 8)),
+  optional(isMinSizeMsg("acronym", 3)),
+  optional(isAscii("acronym")),
+];
+
 // For the input field.
 fieldValidations["identificationType.text"] = [isNotEmpty("You must select an ID type.")];
 

@@ -47,6 +47,7 @@ const props = withDefaults(
     autocomplete?: [string, string, string];
   }>(),
   {
+    enabled: true,
     yearValidations: () => [],
     monthValidations: () => [],
     dayValidations: () => [],

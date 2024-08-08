@@ -21,7 +21,10 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}-config
     data:
-      application.yml: |    
+      application.yml: |
+        features:
+          staff:
+            match: false
         info:
           app:
             component: ${COMPONENT}

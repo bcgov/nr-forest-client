@@ -38,8 +38,8 @@ const errorBus = useEventBus<ValidationMessageType[]>(
  */
 export const isNotEmpty =
   (message: string = "This field is required") =>
-  (value: string): string => {    
-    if (value && value.trim().length > 0) return "";
+  (value: string): string => {
+    if (value && (typeof value === "string") && value.trim().length > 0) return "";
     return message;
   };
 
@@ -466,8 +466,8 @@ export const validateSelection =
  */
 export const optional =
   (validator: (value: string) => string) =>
-  (value: string): string => {
-    return value === "" || value === null ? "" : validator(value);
+  (value: string): string => {    
+    return value === "" || value === null || value === undefined ? "" : validator(value);
   };
 
 /**

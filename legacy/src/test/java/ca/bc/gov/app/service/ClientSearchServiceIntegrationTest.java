@@ -153,7 +153,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
             emptyCases(), Stream
                 .of(
                     Arguments.of("1232504567", List.of(), null),
-                    Arguments.of("2502502550", List.of("00000001","00000003","00000004"), null),
+                    Arguments.of("2502502550", List.of("00000004"), null),
                     Arguments.of("2894837433", List.of("00000103"), null)
                 )
         );

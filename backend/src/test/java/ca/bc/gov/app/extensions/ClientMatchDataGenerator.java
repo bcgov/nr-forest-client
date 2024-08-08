@@ -9,8 +9,10 @@ import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientMatchDataGenerator {
@@ -33,12 +35,168 @@ public class ClientMatchDataGenerator {
                     .businessInformation()
                     .withBusinessName(lastName)
                     .withFirstName(firstName)
+                    .withBusinessType("U")
                     .withBirthdate(birthdate)
                     .withIdentificationType(new ClientValueTextDto(idType, idType))
                     .withIdentificationProvince(idProvince)
                     .withClientIdentification(idValue)
-                    .withClientType("I")
             );
+  }
+
+  public static ClientSubmissionDto getIndividualDto(
+      String firstName,
+      String lastName,
+      LocalDate birthdate,
+      String idType,
+      String idProvince,
+      String idValue,
+      ClientAddressDto addressDto,
+      ClientContactDto contactDto
+  ) {
+
+    ClientSubmissionDto dto = getDto(addressDto, contactDto);
+
+    return
+        dto
+            .withBusinessInformation(
+                dto
+                    .businessInformation()
+                    .withBusinessName(lastName)
+                    .withFirstName(firstName)
+                    .withBusinessType("U")
+                    .withClientType("I")
+                    .withBirthdate(birthdate)
+                    .withIdentificationType(new ClientValueTextDto(idType, idType))
+                    .withIdentificationProvince(idProvince)
+                    .withClientIdentification(idValue)
+            );
+  }
+
+  public static ClientSubmissionDto getRegistered(
+      String registrationNumber,
+      String businessName,
+      String legalType,
+      String workSafeBcNumber,
+      String doingBusinessAs,
+      String clientAcronym,
+      String clientType
+  ) {
+
+    ClientSubmissionDto dto = getDtoType(clientType);
+
+    return
+        dto
+            .withBusinessInformation(
+                dto
+                    .businessInformation()
+                    .withRegistrationNumber(registrationNumber)
+                    .withBusinessName(businessName)
+                    .withBusinessType("R")
+                    .withLegalType(legalType)
+                    .withWorkSafeBcNumber(workSafeBcNumber)
+                    .withDoingBusinessAs(doingBusinessAs)
+                    .withClientAcronym(clientAcronym)
+
+            );
+  }
+
+  public static ClientSubmissionDto getRegisteredSP(
+      String registrationNumber,
+      String businessName,
+      String workSafeBcNumber,
+      String doingBusinessAs,
+      String clientAcronym,
+      String firstName,
+      String lastName,
+      LocalDate birthdate
+  ) {
+
+    ClientSubmissionDto dto = getDtoType("RSP");
+
+    return
+        dto
+            .withBusinessInformation(
+                dto
+                    .businessInformation()
+                    .withRegistrationNumber(registrationNumber)
+                    .withBusinessName(businessName)
+                    .withBusinessType("R")
+                    .withLegalType("SP")
+                    .withWorkSafeBcNumber(workSafeBcNumber)
+                    .withDoingBusinessAs(doingBusinessAs)
+                    .withClientAcronym(clientAcronym)
+                    .withFirstName(firstName)
+                    .withLastName(lastName)
+                    .withBirthdate(birthdate)
+            );
+  }
+
+  public static ClientSubmissionDto getOther(
+      String businessName,
+      String legalType,
+      String workSafeBcNumber,
+      String clientAcronym,
+      String clientType
+  ) {
+
+    ClientSubmissionDto dto = getDtoType(clientType);
+
+    return
+        dto
+            .withBusinessInformation(
+                dto
+                    .businessInformation()
+                    .withBusinessName(businessName)
+                    .withBusinessType("U")
+                    .withLegalType(legalType)
+                    .withWorkSafeBcNumber(workSafeBcNumber)
+                    .withClientAcronym(clientAcronym)
+
+            );
+  }
+
+  public static ClientSubmissionDto getRandomData(String type) {
+    return getRandomData(type,null,null);
+  }
+
+  public static ClientSubmissionDto getRandomData(
+      String type,
+      ClientAddressDto addressDto,
+      ClientContactDto contactDto
+  ) {
+
+    return switch (type) {
+      case "I" -> getIndividualDto(
+          UUID.randomUUID().toString(),
+          UUID.randomUUID().toString(),
+          LocalDate.now(),
+          UUID.randomUUID().toString(),
+          UUID.randomUUID().toString(),
+          UUID.randomUUID().toString(),
+          addressDto,
+          contactDto
+      );
+      case "C", "RSP", "S", "A", "P", "L" -> getRegistered(
+          "C1234567",
+          UUID.randomUUID().toString(),
+          "C",
+          StringUtils.EMPTY,
+          StringUtils.EMPTY,
+          StringUtils.EMPTY,
+          type
+      )
+          .withLocation(getLocationDto(addressDto, contactDto));
+      case "G", "F", "U", "R" -> getOther(
+          UUID.randomUUID().toString(),
+          "C",
+          StringUtils.EMPTY,
+          StringUtils.EMPTY,
+          type
+      )
+          .withLocation(getLocationDto(addressDto, contactDto));
+      default -> getDtoType(type);
+    };
+
   }
 
   public static ClientSubmissionDto getAddress() {
@@ -151,10 +309,7 @@ public class ClientMatchDataGenerator {
             null,
             idProvince
         ),
-        new ClientLocationDto(
-            addressDto == null ? List.of() : List.of(addressDto),
-            contactDto == null ? List.of() : List.of(contactDto)
-        ),
+        getLocationDto(addressDto, contactDto),
         null,
         null
     );
@@ -176,6 +331,16 @@ public class ClientMatchDataGenerator {
         null,
         null,
         null
+    );
+  }
+
+  public static ClientLocationDto getLocationDto(
+      ClientAddressDto addressDto,
+      ClientContactDto contactDto
+  ) {
+    return new ClientLocationDto(
+        addressDto == null ? List.of() : List.of(addressDto),
+        contactDto == null ? List.of() : List.of(contactDto)
     );
   }
 
