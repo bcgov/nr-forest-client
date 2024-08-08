@@ -49,7 +49,7 @@ let submissionValidators: ValidationMessageType[] = [];
  * Register a listener for submission errors on the error bus.
  * When an error is received, update the submission validators array.
  */
-errorBus.on((errors, payload) => {
+errorBus.on((errors, payload = {}) => {
   if (errors) {
     errors.forEach((error: ValidationMessageType) => {
       if (!payload.skipNotification) {
