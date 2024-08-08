@@ -157,8 +157,10 @@ public class ForestClientConfiguration {
   @AllArgsConstructor
   public static class OpenDataConfiguration {
 
-    private String sacUrl;
-    private String bcMapsUrl;
+    private String sacBandUrl;
+    private String sacTribeUrl;
+    private String openMapsBandUrl;
+    private String openMapsTribeUrl;
   }
 
   public record NameSecretDto(String name, String secret) {}

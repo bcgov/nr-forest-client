@@ -20,13 +20,15 @@ import reactor.core.publisher.Mono;
 public class OpenDataService {
 
   private final BcMapsService bcMapsService;
-  private final SacService sacService;
+  private final SacFirstNationService sacFirstNationService;
+  private final SacFirstNationTribeService sacFirstNationTribeService;
   private final ProvinceCodeRepository provinceCodeRepository;
 
   public Flux<ClientDetailsDto> getFirstNationData(String nationName) {
     return bcMapsService
         .getFirstNationData(nationName)
-        .switchIfEmpty(sacService.getFirstNationData(nationName))
+        .switchIfEmpty(sacFirstNationService.getFirstNationData(nationName))
+        .switchIfEmpty(sacFirstNationTribeService.getFirstNationData(nationName))
         .flatMapIterable(OpenData::features)
         .doOnNext(openDataFeature ->
             log.info("Returning first nation data for nationName: {} {}", nationName,
@@ -66,6 +68,7 @@ public class OpenDataService {
                 openDataFeature.properties().getNationName(),
                 openDataFeature.properties().getNationId() + "",
                 true,
+                openDataFeature.properties().getFirstNationType().name(),
                 addressDto.isValid() ? List.of(addressDto) : List.of(),
                 List.of()
             );
