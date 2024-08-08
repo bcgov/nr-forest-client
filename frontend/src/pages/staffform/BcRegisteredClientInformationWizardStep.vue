@@ -143,13 +143,18 @@ const autoCompleteResult = ref<BusinessSearchResult>();
         validation.business = false;
         showOnError.value = true;
 
-        errorBus.emit([
+        errorBus.emit(
+          [
+            {
+              fieldId: "businessInformation.businessName",
+              fieldName: "Client name",
+              errorMsg: "Client already exists",
+            },
+          ],
           {
-            fieldId: "businessInformation.businessName", 
-            fieldName: "Client name",
-            errorMsg: 'Client already exists'
-          }
-        ]);
+            skipNotification: true,
+          },
+        );
 
         fuzzyBus.emit({
           id: 'global',
