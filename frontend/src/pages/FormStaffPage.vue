@@ -36,6 +36,7 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 // Imported Pages
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
 import FirstNationClientInformationWizardStep from "@/pages/staffform/FirstNationClientInformationWizardStep.vue";
+import CombinedClientInformationWizardStep from "@/pages/staffform/CombinedClientInformationWizardStep.vue";
 import BcRegisteredClientInformationWizardStep from "@/pages/staffform/BcRegisteredClientInformationWizardStep.vue";
 import LocationsWizardStep from "@/pages/staffform/LocationsWizardStep.vue";
 import ContactsWizardStep from "@/pages/staffform/ContactsWizardStep.vue";
@@ -478,7 +479,7 @@ const submit = () => {
             <div data-scroll="step-title" class="header-offset"></div>
             {{ progressData[0].title}}
           </h2>
-          
+
           <dropdown-input-component
             id="clientType"
             label="Client type"
@@ -512,6 +513,13 @@ const submit = () => {
 
           <first-nation-client-information-wizard-step
             v-if="clientType?.code === 'R'"
+            :active="currentTab == 0"
+            :data="formData"
+            @valid="validateStep"
+          />
+
+          <combined-client-information-wizard-step
+            v-if="clientType?.code === 'G' || clientType?.code === 'F' || clientType?.code === 'U'"
             :active="currentTab == 0"
             :data="formData"
             @valid="validateStep"
