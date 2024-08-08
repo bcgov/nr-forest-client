@@ -97,6 +97,8 @@ public class ProcessorUtil {
   }
 
   private static String getStringFromPattern(String input, Pattern pattern) {
+    if(StringUtils.isBlank(input))
+      return StringUtils.EMPTY;
     Matcher matcher = pattern.matcher(input);
     if (matcher.find()) {
       return matcher.group();
