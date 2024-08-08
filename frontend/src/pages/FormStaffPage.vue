@@ -27,10 +27,16 @@ import {
   type Address,
   type FormDataDto,
 } from "@/dto/ApplyClientNumberDto";
-import { getEnumKeyByEnumValue, convertFieldNameToSentence } from "@/services/ForestClientService";
+import {
+  getEnumKeyByEnumValue,
+  convertFieldNameToSentence,
+} from "@/services/ForestClientService";
 // Imported global validations
-import { validate, runValidation, addValidation, getValidations } from "@/helpers/validators/StaffFormValidations";
-import { isContainedIn } from "@/helpers/validators/GlobalValidators";
+import {
+  validate,
+  runValidation,
+  getValidations,
+} from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 
 // Imported Pages
@@ -41,9 +47,9 @@ import BcRegisteredClientInformationWizardStep from "@/pages/staffform/BcRegiste
 import LocationsWizardStep from "@/pages/staffform/LocationsWizardStep.vue";
 import ContactsWizardStep from "@/pages/staffform/ContactsWizardStep.vue";
 import ReviewWizardStep from "@/pages/staffform/ReviewWizardStep.vue";
+
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
-
 
 const clientTypesList: CodeNameType[] = [
   {
@@ -72,9 +78,13 @@ const clientTypesList: CodeNameType[] = [
   },
 ];
 
-const notificationBus = useEventBus<ValidationMessageType | undefined>("error-notification");
-const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
-const overlayBus = useEventBus<boolean>('overlay-event');
+const notificationBus = useEventBus<ValidationMessageType | undefined>(
+  "error-notification"
+);
+const errorBus = useEventBus<ValidationMessageType[]>(
+  "submission-error-notification"
+);
+const overlayBus = useEventBus<boolean>("overlay-event");
 const fuzzyBus = useEventBus<FuzzyMatcherEvent>("fuzzy-error-notification");
 
 // Route related
@@ -203,7 +213,13 @@ const checkStepValidity = (stepNumber: number): boolean => {
 
   if (
     !progressData[stepNumber].extraValidations.every((validation: any) =>
-      runValidation(validation.field, formData, validation.validation, true, true),
+      runValidation(
+        validation.field,
+        formData,
+        validation.validation,
+        true,
+        true
+      )
     )
   )
     return false;
@@ -214,7 +230,9 @@ const checkStepValidity = (stepNumber: number): boolean => {
 const validateStep = (valid: boolean) => {
   progressData[currentTab.value].valid = valid;
   if (valid) {
-    const nextStep = progressData.find((step: any) => step.step === currentTab.value + 1);
+    const nextStep = progressData.find(
+      (step: any) => step.step === currentTab.value + 1
+    );
     if (nextStep) nextStep.disabled = false;
   }
 };
@@ -238,7 +256,7 @@ const lookForMatches = (onEmpty: () => void) => {
       headers: {
         "X-STEP": `${currentTab.value + 1}`,
       },
-    },
+    }
   );
 
   watch([response], () => {
@@ -262,7 +280,6 @@ const lookForMatches = (onEmpty: () => void) => {
     }
 
     setScrollPoint("top-notification");
-
   });
 };
 
@@ -275,8 +292,12 @@ const moveToNextStep = () => {
 
 const onNext = () => {
   //This fixes the index
-  formData.location.addresses.forEach((address: Address, index: number) => (address.index = index));
-  formData.location.contacts.forEach((contact: Contact, index: number) => (contact.index = index));
+  formData.location.addresses.forEach(
+    (address: Address, index: number) => (address.index = index)
+  );
+  formData.location.contacts.forEach(
+    (contact: Contact, index: number) => (contact.index = index)
+  );
 
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
@@ -318,24 +339,29 @@ const updateClientType = (value: CodeNameType | undefined) => {
     switch (value.code) {
       case "I": {
         Object.assign(formData.businessInformation, {
-          businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
+          businessType: getEnumKeyByEnumValue(
+            BusinessTypeEnum,
+            BusinessTypeEnum.U
+          ),
           legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
           clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.I),
           goodStandingInd: "Y",
         });
 
-        formData.location.contacts[0] = applicantContact;                
+        formData.location.contacts[0] = applicantContact;
         break;
       }
       case "R": {
         Object.assign(formData.businessInformation, {
-          businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),//Verify this
-          legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),//Verify this
-          clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.B),//Verify this
+          businessType: getEnumKeyByEnumValue(
+            BusinessTypeEnum,
+            BusinessTypeEnum.U
+          ), //Verify this
+          legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
           goodStandingInd: "Y",
         });
 
-        formData.location.contacts[0] = applicantContact;                
+        formData.location.contacts[0] = applicantContact;
         break;
       }
       default:
@@ -376,15 +402,13 @@ const submit = () => {
   watch([response], () => {
     if (response.value.status === 201) {
       overlayBus.emit({ isVisible: false, message: "", showLoading: false });
-      router.push(
-        { 
-          name: "staff-confirmation", 
-          state: { 
-            clientNumber: response.value.headers['x-client-id'],
-            clientEmail: formData.location.contacts[0].email,
-          }
-        } 
-      );
+      router.push({
+        name: "staff-confirmation",
+        state: {
+          clientNumber: response.value.headers["x-client-id"],
+          clientEmail: formData.location.contacts[0].email,
+        },
+      });
     }
   });
 
@@ -394,27 +418,26 @@ const submit = () => {
     //Disable the overlay
     overlayBus.emit({ isVisible: false, message: "", showLoading: false });
 
-    if(error.value.response?.status === 400) {
-      const validationErrors: ValidationMessageType[] = error.value.response?.data;
+    if (error.value.response?.status === 400) {
+      const validationErrors: ValidationMessageType[] =
+        error.value.response?.data;
 
       validationErrors.forEach((errorItem: ValidationMessageType) =>
         notificationBus.emit({
           fieldId: "server.validation.error",
           fieldName: convertFieldNameToSentence(errorItem.fieldId),
           errorMsg: errorItem.errorMsg,
-        }),
+        })
       );
-    } else if(error.value.response?.status === 408) {      
-      router.push(
-        { 
-          name: "staff-processing", 
-          params: { 
-            submissionId: error.value.response.headers['x-sub-id'],
-            clientEmail: formData.location.contacts[0].email
-          }
-        } 
-      );
-    } else{
+    } else if (error.value.response?.status === 408) {
+      router.push({
+        name: "staff-processing",
+        params: {
+          submissionId: error.value.response.headers["x-sub-id"],
+          clientEmail: formData.location.contacts[0].email,
+        },
+      });
+    } else {
       handleErrorDefault();
     }
 

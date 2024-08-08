@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import { watch, computed, ref, reactive, onMounted } from "vue";
+import { watch, ref, reactive, onMounted } from "vue";
 import "@carbon/web-components/es/components/inline-loading/index";
 import "@carbon/web-components/es/components/notification/index";
 import "@carbon/web-components/es/components/tooltip/index";
 import { useFocus } from "@/composables/useFocus";
-import type {
-  FirstNationDetailsDto,
-  ForestClientDetailsDto,
-  FormDataDto,
-} from "@/dto/ApplyClientNumberDto";
-import type { BusinessSearchResult } from "@/dto/CommonTypesDto";
-import { exportAddress } from "@/helpers/DataConversors";
+import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 
