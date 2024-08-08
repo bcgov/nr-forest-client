@@ -4,6 +4,7 @@ import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -162,6 +163,119 @@ class ClientSearchControllerIntegrationTest extends
 
   }
 
+  @ParameterizedTest
+  @MethodSource("acronym")
+  @DisplayName("Search someone by acronym")
+  void shouldSearchAcronym(
+      String acronym,
+      String expected,
+      Class<RuntimeException> exception
+  ) {
+
+    ResponseSpec response =
+        client
+            .get()
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/api/search/acronym")
+                    .queryParam("acronym", Optional.ofNullable(acronym))
+                    .build(new HashMap<>())
+            )
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .exchange();
+
+    if (StringUtils.isNotBlank(expected)) {
+      response
+          .expectStatus().isOk()
+          .expectBody()
+          .jsonPath("$[0].clientNumber").isNotEmpty()
+          .jsonPath("$[0].clientNumber").isEqualTo(expected)
+          .jsonPath("$[0].clientName").isNotEmpty()
+          .consumeWith(System.out::println);
+    }
+
+    if (exception != null) {
+      response.expectStatus().is4xxClientError();
+    }
+
+  }
+
+  @ParameterizedTest
+  @MethodSource("doingBusinessAs")
+  @DisplayName("Search someone by doing business as")
+  void shouldSearchDoingBusinessAs(
+      String acronym,
+      boolean isFuzzy,
+      String expected,
+      Class<RuntimeException> exception
+  ) {
+
+    ResponseSpec response =
+        client
+            .get()
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/api/search/doingBusinessAs")
+                    .queryParam("dbaName", Optional.ofNullable(acronym))
+                    .queryParamIfPresent("isFuzzy", Optional.ofNullable(isFuzzy))
+                    .build(new HashMap<>())
+            )
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .exchange();
+
+    if (StringUtils.isNotBlank(expected)) {
+      response
+          .expectStatus().isOk()
+          .expectBody()
+          .jsonPath("$[0].clientNumber").isNotEmpty()
+          .jsonPath("$[0].clientNumber").isEqualTo(expected)
+          .jsonPath("$[0].clientName").isNotEmpty()
+          .consumeWith(System.out::println);
+    }
+
+    if (exception != null) {
+      response.expectStatus().is4xxClientError();
+    }
+
+  }
+
+  @ParameterizedTest
+  @MethodSource("clientName")
+  @DisplayName("Search someone by clientName with full match")
+  void shouldSearchClientName(
+      String clientName,
+      String expected,
+      Class<RuntimeException> exception
+  ) {
+
+    ResponseSpec response =
+        client
+            .get()
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/api/search/clientName")
+                    .queryParam("clientName", Optional.ofNullable(clientName))
+                    .build(new HashMap<>())
+            )
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .exchange();
+
+    if (StringUtils.isNotBlank(expected)) {
+      response
+          .expectStatus().isOk()
+          .expectBody()
+          .jsonPath("$[0].clientNumber").isNotEmpty()
+          .jsonPath("$[0].clientNumber").isEqualTo(expected)
+          .jsonPath("$[0].clientName").isNotEmpty()
+          .consumeWith(System.out::println);
+    }
+
+    if (exception != null) {
+      response.expectStatus().is4xxClientError();
+    }
+
+  }
+
   private static Stream<Arguments> byEmail() {
     return
         Stream.concat(
@@ -213,7 +327,7 @@ class ClientSearchControllerIntegrationTest extends
         );
   }
 
-  private static Stream<Arguments> byContact(){
+  private static Stream<Arguments> byContact() {
     return Stream
         .of(
             Arguments.of(new ContactSearchDto(
@@ -316,6 +430,59 @@ class ClientSearchControllerIntegrationTest extends
             Arguments.of(StringUtils.EMPTY, null, MissingRequiredParameterException.class),
             Arguments.of("  ", null, MissingRequiredParameterException.class)
         );
+  }
+
+  private static Stream<Arguments> acronym() {
+    return
+        Stream.concat(
+            emptyCases(),
+            Stream
+                .of(
+                    Arguments.of("SAMPLIBC", "00000004", null),
+                    Arguments.of("BCGOV", StringUtils.EMPTY, null)
+                )
+        );
+  }
+
+  private static Stream<Arguments> clientName() {
+    return
+        Stream.concat(
+            emptyCases(),
+            Stream
+                .of(
+                    Arguments.of("DOREEN FOREST PRODUCTS LTD.", "00000013", null),
+                    Arguments.of("REICHERT, KILBACK AND EMARD", "00000123", null),
+                    Arguments.of("THE MATRIX", StringUtils.EMPTY, null)
+                )
+        );
+  }
+
+  private static Stream<Arguments> doingBusinessAs() {
+    return
+          Stream
+              .of(
+                  Arguments.of(null,null, null, MissingRequiredParameterException.class),
+                  Arguments.of(null,false, null, MissingRequiredParameterException.class),
+                  Arguments.of(null,true, null, MissingRequiredParameterException.class),
+                  Arguments.of(StringUtils.EMPTY, null, null, MissingRequiredParameterException.class),
+                  Arguments.of(StringUtils.EMPTY, false, null, MissingRequiredParameterException.class),
+                  Arguments.of(StringUtils.EMPTY, true, null, MissingRequiredParameterException.class),
+                  Arguments.of("  ", null, null, MissingRequiredParameterException.class),
+                  Arguments.of("  ", false, null, MissingRequiredParameterException.class),
+                  Arguments.of("  ", true, null, MissingRequiredParameterException.class),
+
+                  Arguments.of("BORIS AND BORIS INC.", null, "00000003", null),
+                  Arguments.of("BORIS AND BORIS INC.", false, "00000003", null),
+                  Arguments.of("BORIS AND BORIS", true, "00000003", null),
+
+                  Arguments.of("ELARICHO", null, "00000005", null),
+                  Arguments.of("ELARICHO", false, "00000005", null),
+                  Arguments.of("ELARICHO", true, "00000005", null),
+
+                  Arguments.of("ELARICO", true, "00000005", null),
+                  Arguments.of("ELACHO", true, StringUtils.EMPTY, null),
+                  Arguments.of("ELARICO", false, StringUtils.EMPTY, null)
+              );
   }
 
 }
