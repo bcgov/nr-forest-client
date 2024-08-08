@@ -3,6 +3,7 @@
     "name": "Squamish Nation",
     "id": "555",
     "goodStanding": true,
+    "clientType": "B",
     "addresses": [
       {
         "streetAddress": "320 Seymour Boulevard",
@@ -33,6 +34,15 @@
     "name": "Webequie",
     "id": "240",
     "goodStanding": true,
+    "clientType": "B",
+    "addresses": [],
+    "contacts": []
+  },
+  {
+    "name": "Atikamekw Sipi - Conseil de la Nation Atikamekw",
+    "id": "272501",
+    "goodStanding": true,
+    "clientType": "T",
     "addresses": [],
     "contacts": []
   }

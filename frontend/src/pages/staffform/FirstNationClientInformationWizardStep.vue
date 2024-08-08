@@ -90,6 +90,7 @@ const parseSelectedNation = (
     );
     //This will make the backend life way easier
     formData.value.businessInformation.registrationNumber = `DINA${selectedNation.id}`;
+    formData.value.businessInformation.clientType = selectedNation.clientType;
   }
   return selectedNation;
 };

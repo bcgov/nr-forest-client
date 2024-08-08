@@ -69,6 +69,7 @@ export interface FirstNationDetailsDto {
   id: string;
   name: string;
   goodStanding: boolean;
+  clientType: string;
   addresses: Address[];
 }
 
