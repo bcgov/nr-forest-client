@@ -335,7 +335,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
 
   }
 
-  @DisplayName("Matching other types")
+  @DisplayName("Matching first nations")
   @ParameterizedTest(name = "[{index}] error {5} fuzzy {6} when provided with {1}, {2}, {3}, {4}")
   @MethodSource("firstNationsMatch")
   void shouldMatchFirstNations(
@@ -921,10 +921,10 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
         Arguments.of(
             ClientMatchDataGenerator
                 .getFirstNations(
-                    "Government",
+                    "First Nation Band",
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
-                    "G",
+                    "B",
                     "DINA123"
                 ),
             named("no fuzzy name", "[]"),
@@ -937,10 +937,10 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
         Arguments.of(
             ClientMatchDataGenerator
                 .getFirstNations(
-                    "Forest",
+                    "First Nation Tribe",
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
-                    "F",
+                    "T",
                     "DINA123"
                 ),
             named("fuzzy name matched",
@@ -954,10 +954,10 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
         Arguments.of(
             ClientMatchDataGenerator
                 .getFirstNations(
-                    "Unregistered",
+                    "First Nation",
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
-                    "U",
+                    "R",
                     "DINA123"
                 ),
             named("no fuzzy name", "[]"),
@@ -971,10 +971,10 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
         Arguments.of(
             ClientMatchDataGenerator
                 .getFirstNations(
-                    "Government2",
+                    "First Nation Band",
                     StringUtils.EMPTY,
-                    "ABC",
-                    "G",
+                    "TUPI",
+                    "B",
                     "DINA123"
                 ),
             named("no fuzzy name", "[]"),
@@ -988,10 +988,10 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
         Arguments.of(
             ClientMatchDataGenerator
                 .getFirstNations(
-                    "Government",
+                    "First Nation Band",
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
-                    "G",
+                    "B",
                     "DINA123"
                 ),
             named("no fuzzy name", "[]"),
@@ -1005,10 +1005,10 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
         Arguments.of(
             ClientMatchDataGenerator
                 .getFirstNations(
-                    "Government3",
+                    "First Nation Band",
                     StringUtils.EMPTY,
-                    "ABC",
-                    "G",
+                    "TUPI",
+                    "B",
                     "DINA123"
                 ),
             named("fuzzy name matched",
