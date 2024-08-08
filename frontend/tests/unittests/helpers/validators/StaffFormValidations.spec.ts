@@ -78,6 +78,36 @@ describe("validations", () => {
     });
   });
 
+  describe.each(["businessInformation.clientAcronym"])("%s", (key) => {
+    const formDataDto = newFormDataDto();
+    const setter = (value: string) => {
+      formDataDto.businessInformation.clientAcronym = value;
+    };
+    (<Scenario[]>[
+      ["", true, "not required"],
+      ["AT&T", true],
+      ["Acronym with more than 30 characters", false],
+      ["1", false],
+    ]).forEach((scenario) => {
+      test(formDataDto, key, setter, scenario);
+    });
+  });
+
+  describe.each(["businessInformation.workSafeBcNumber"])("%s", (key) => {
+    const formDataDto = newFormDataDto();
+    const setter = (value: string) => {
+      formDataDto.businessInformation.workSafeBcNumber = value;
+    };
+    (<Scenario[]>[
+      ["", true, "not required"],
+      ["123456", true],
+      ["0123456789", false],
+      ["Invalid Work Safe BC Number", false],
+    ]).forEach((scenario) => {
+      test(formDataDto, key, setter, scenario);
+    });
+  });
+
   describe.each(["businessInformation.lastName"])("%s", (key) => {
     const formDataDto = newFormDataDto();
     const setter = (value: string) => {

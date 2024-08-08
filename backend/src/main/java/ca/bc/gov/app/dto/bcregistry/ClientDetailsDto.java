@@ -13,6 +13,7 @@ public record ClientDetailsDto(
     String name,
     String id,
     Boolean goodStanding,
+    String clientType,
     List<ClientAddressDto> addresses,
     List<ClientContactDto> contacts
 ) {

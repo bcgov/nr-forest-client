@@ -3,6 +3,7 @@ package ca.bc.gov.app.service.opendata;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.opendata.OpenData;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -17,6 +18,10 @@ public abstract class AbstractOpenDataService {
 
 
   public Mono<OpenData> getFeature(String nationName) {
+
+    if(StringUtils.isBlank(nationName))
+      return Mono.empty();
+
     return getWebClient()
         .get()
         .uri(pathBuilder ->
@@ -29,7 +34,16 @@ public abstract class AbstractOpenDataService {
                 .queryParam("filter",
                     String.format(ApplicationConstant.OPENDATA_FILTER,
                         getSearchField(),
-                        nationName
+                        nationName,
+
+                        getSearchField(),
+                        nationName.toLowerCase(),
+
+                        getSearchField(),
+                        nationName.toUpperCase(),
+
+                        getSearchField(),
+                        StringUtils.capitalize(nationName)
                     )
                 )
                 .build()

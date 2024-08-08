@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
-public class SacService extends AbstractOpenDataService {
+public class SacFirstNationTribeService extends AbstractOpenDataService {
 
   public Mono<OpenData> getFirstNationData(String nationName) {
     return getFeature(nationName)
@@ -18,8 +18,8 @@ public class SacService extends AbstractOpenDataService {
 
   private final WebClient webClient;
 
-  public SacService(
-      @Qualifier("openDataSacApi") WebClient webClient) {
+  public SacFirstNationTribeService(
+      @Qualifier("openDataSacTribeApi") WebClient webClient) {
     this.webClient = webClient;
   }
 
@@ -30,7 +30,7 @@ public class SacService extends AbstractOpenDataService {
 
   @Override
   String getTypeName() {
-    return "Donnees_Ouvertes-Open_Data_Premiere_Nation_First_Nation:Première_Nation___First_Nation";
+    return "Donnees_Ouvertes-Open_Data_Conseil_Tribal_Tribal_Council:Conseil_tribal___Tribal_Council";
   }
 
   @Override
@@ -45,6 +45,6 @@ public class SacService extends AbstractOpenDataService {
 
   @Override
   String getSearchField() {
-    return "Donnees_Ouvertes-Open_Data_Premiere_Nation_First_Nation:Nom_de_bande___Band_Name";
+    return "Donnees_Ouvertes-Open_Data_Conseil_Tribal_Tribal_Council:Nom_du_conseil_tribal___Tribal_Council_Name";
   }
 }

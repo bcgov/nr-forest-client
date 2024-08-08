@@ -35,8 +35,10 @@ ca:
         frontend:
           url: http://localhost:1234
         openData:
-          sacUrl: http://127.0.0.1:11111/sac
-          bcMapsUrl: http://127.0.0.1:11112/bcmaps
+          sacBandUrl: http://127.0.0.1:11111/sac
+          sacTribeUrl: http://127.0.0.1:11113/sac
+          openMapsBandUrl: http://127.0.0.1:11112/bcmaps
+          openMapsTribeUrl: http://127.0.0.1:11114/bcmaps
 
 
 features:

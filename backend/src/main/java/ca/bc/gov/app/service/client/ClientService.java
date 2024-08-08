@@ -397,6 +397,7 @@ public class ClientService {
           "",
           "",
           false,
+          "",
           List.of(),
           List.of()
       );
@@ -408,6 +409,7 @@ public class ClientService {
             businessDto.legalName(),
             businessDto.identifier(),
             businessDto.goodStanding(),
+            businessDto.legalType(),
             List.of(),
             List.of()
         );
