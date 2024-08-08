@@ -356,7 +356,7 @@ const updateClientType = (value: CodeNameType | undefined) => {
           businessType: getEnumKeyByEnumValue(
             BusinessTypeEnum,
             BusinessTypeEnum.U
-          ), //Verify this
+          ),
           legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
           goodStandingInd: "Y",
         });
