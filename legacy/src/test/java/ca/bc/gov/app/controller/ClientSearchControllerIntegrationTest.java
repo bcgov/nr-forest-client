@@ -205,7 +205,7 @@ class ClientSearchControllerIntegrationTest extends
   @DisplayName("Search someone by doing business as")
   void shouldSearchDoingBusinessAs(
       String acronym,
-      boolean isFuzzy,
+      Boolean isFuzzy,
       String expected,
       Class<RuntimeException> exception
   ) {
