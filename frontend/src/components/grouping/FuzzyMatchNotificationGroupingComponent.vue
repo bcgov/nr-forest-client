@@ -43,60 +43,51 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
       }
       fuzzyMatchedError.value.matches.push(match);
 
-      const clientIdentificationGroup = (errorMsg) => [
-        {
-          fieldId: "businessInformation.clientIdentification",
-          errorMsg,
-        },
-        {
-          fieldId: "businessInformation.clientTypeOfId",
-          errorMsg,
-        },
-        {
-          fieldId: "businessInformation.clientIdNumber",
-          errorMsg,
-        },
+      const identificationTypeGroup = ["identificationType.text", "identificationProvince.text"];
+      const clientIdentificationGroup = [
+        "businessInformation.clientIdentification",
+        "businessInformation.clientTypeOfId",
+        "businessInformation.clientIdNumber",
       ];
 
+      const warning = rawMatch.fuzzy;
+      const createErrorEvent = (fieldList: string[]) =>
+        fieldList.map((fieldId) => ({
+          fieldId,
+          errorMsg: warning ? "There's already a client with this name" : "Client already exists",
+        }));
+      const emitFieldErrors = (fieldList: string[]) => {
+        const errorEvent = createErrorEvent(fieldList);
+        errorBus.emit(errorEvent, {
+          skipNotification: true,
+          warning,
+        });
+      };
+      const label = (matchedFieldsText) => {
+        const prefix = warning ? "Partial matching on" : "Matching on";
+        return `${prefix} ${matchedFieldsText}`;
+      }
       if (rawMatch.field === "businessInformation.businessName") {
         if (rawMatch.fuzzy) {
-          match.label = "Partial matching on name and date of birth";
-          errorBus.emit(
-            [
-              {
-                fieldId: "businessInformation.firstName",
-                errorMsg: "There's already a client with this name",
-              },
-              {
-                fieldId: "businessInformation.lastName",
-                errorMsg: "There's already a client with this name",
-              },
-              {
-                fieldId: "businessInformation.birthdate",
-                errorMsg: "There's already a client with this date of birth",
-              },
-            ],
-            { skipNotification: true, warning: true },
-          );
+          match.label = label("name and date of birth");
+          emitFieldErrors([
+            "businessInformation.firstName",
+            "businessInformation.lastName",
+            "businessInformation.birthdate",
+          ]);
         } else {
-          match.label = "Matching on name, date of birth and ID number";
-          const errorEvent = [
-            {
-              fieldId: "businessInformation.firstName",
-              errorMsg: "Client already exists",
-            },
-            {
-              fieldId: "businessInformation.lastName",
-              errorMsg: "Client already exists",
-            },
-            {
-              fieldId: "businessInformation.birthdate",
-              errorMsg: "Client already exists",
-            },
-            ...clientIdentificationGroup("Client already exists"),
-          ];
-          errorBus.emit(errorEvent, { skipNotification: true });
+          match.label = label("name, date of birth and ID number");
+          emitFieldErrors([
+            "businessInformation.firstName",
+            "businessInformation.lastName",
+            "businessInformation.birthdate",
+            ...clientIdentificationGroup,
+          ]);
         }
+      }
+      if (rawMatch.field === "businessInformation.identification") {
+        match.label = label("ID type and ID number");
+        emitFieldErrors([...identificationTypeGroup, ...clientIdentificationGroup]);
       }
     }
   } else {

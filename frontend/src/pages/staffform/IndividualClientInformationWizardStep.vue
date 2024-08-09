@@ -361,8 +361,8 @@ watch(combinedValue, (newValue) => {
         :enabled="true"
         tip=""
         :validations="[
-          ...getValidations('businessInformation.identificationType.text'),
-          submissionValidation('businessInformation.identificationType.text'),
+          ...getValidations('identificationType.text'),
+          submissionValidation('identificationType.text'),
         ]"
         @update:selected-value="updateIdentificationType($event)"
         @empty="validation.identificationType = !$event"

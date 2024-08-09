@@ -141,7 +141,13 @@
           {
             "matchesJsonPath": {
               "expression": "$.businessInformation.identificationType.value",
-              "equalTo": "BCDL"
+              "equalTo": "CDDL"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.identificationProvince",
+              "equalTo": "BC"
             }
           },
           {
@@ -202,7 +208,13 @@
           {
             "matchesJsonPath": {
               "expression": "$.businessInformation.identificationType.value",
-              "equalTo": "BCDL"
+              "equalTo": "CDDL"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.identificationProvince",
+              "equalTo": "BC"
             }
           },
           {
