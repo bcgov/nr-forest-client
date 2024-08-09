@@ -607,7 +607,8 @@ const submit = () => {
           <div class="form-footer-group-next">
             <simple-checkbox-input-component
               v-if="matchError && !isExactMatch"
-              id="reviewStatement"
+              groupId="reviewStatementGroup"
+              checkboxId="reviewStatement"
               label="Review statement"
               required-label
               v-model="reviewStatementChecked"

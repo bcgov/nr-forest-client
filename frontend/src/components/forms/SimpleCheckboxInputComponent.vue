@@ -3,7 +3,8 @@
 import "@carbon/web-components/es/components/checkbox/index";
 
 const props = defineProps<{
-  id: string;
+  groupId: string;
+  checkboxId?: string;
   label: string;
   checkboxLabel: string;
   tip?: string;
@@ -15,13 +16,14 @@ const model = defineModel<boolean>({ required: true });
 
 <template>
   <cds-checkbox-group
-    :id="id"
+    :id="groupId"
     :legend-text="label"
     :data-required-label="requiredLabel"
     :helper-text="tip"
     v-shadow="2"
   >
     <cds-checkbox
+      :id="checkboxId"
       v-shadow="1"
       :checked="model"
       @cds-checkbox-changed="model = $event.detail.checked"
