@@ -54,16 +54,31 @@ public class ClientValidationUtils {
   }
 
   public static Mono<ValidationError> validateNotes(String notes, String field) {
+    return validateBySize(notes, field, 4000, 0, "notes");
+  }
 
-    if (StringUtils.isEmpty(notes)) {
+  public static Mono<ValidationError> validateBySize(
+      String value,
+      String field,
+      int maxSize,
+      int minSize,
+      String name
+  ) {
+
+    if (StringUtils.isEmpty(value)) {
       return Mono.empty();
     }
 
-    if (StringUtils.length(notes) > 4000) {
-      return Mono.just(new ValidationError(field, "This field has a 4000 character limit."));
+    if (StringUtils.length(value) > maxSize) {
+      return Mono.just(new ValidationError(field, "This field has a "+maxSize+" character limit."));
     }
-    if (!US7ASCII_PATTERN.matcher(notes).matches()) {
-      return Mono.just(new ValidationError(field, "notes has an invalid character."));
+
+    if (StringUtils.length(value) < minSize) {
+      return Mono.just(new ValidationError(field, "This field should have at least "+minSize+" characters."));
+    }
+
+    if (!US7ASCII_PATTERN.matcher(value).matches()) {
+      return Mono.just(new ValidationError(field, name+" has an invalid character."));
     }
     return Mono.empty();
   }

@@ -84,23 +84,19 @@ public class ClientMatchService {
   private Mono<Void> matchStep1(ClientSubmissionDto dto) {
 
     switch (dto.businessInformation().clientType()) {
-      case "C", "RSP", "S", "A", "P", "L" -> {
-        return findAndRunMatcher(dto, StepMatchEnum.STEP1REGISTERED);
-      }
-      case "R" -> {
-        return findAndRunMatcher(dto, StepMatchEnum.STEP1FIRSTNATION);
-      }
-      case "G" -> {
-        return findAndRunMatcher(dto, StepMatchEnum.STEP1GOVERNMENT);
-      }
       case "I" -> {
         return findAndRunMatcher(dto, StepMatchEnum.STEP1INDIVIDUAL);
       }
-      case "F" -> {
-        return findAndRunMatcher(dto, StepMatchEnum.STEP1FORESTS);
+      case "C", "RSP", "S", "A", "P", "L" -> {
+        return findAndRunMatcher(dto, StepMatchEnum.STEP1REGISTERED);
       }
-      case "U" -> {
-        return findAndRunMatcher(dto, StepMatchEnum.STEP1UNREGISTERED);
+      //These are all first nations, almost the same as others, but with the check for the nation id
+      case "R","T","B" -> {
+        return findAndRunMatcher(dto, StepMatchEnum.STEP1FIRSTNATION);
+      }
+      //These share the same group of fields, thus same matcher
+      case "G", "F", "U" -> {
+        return findAndRunMatcher(dto, StepMatchEnum.STEP1OTHERS);
       }
       default -> {
         return Mono.error(new InvalidRequestObjectException("Invalid client type"));

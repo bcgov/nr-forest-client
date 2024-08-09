@@ -8,6 +8,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -107,5 +108,34 @@ public class ClientSearchController {
     log.info("Receiving request to search by contact {}", contact);
     return service.findByContact(contact);
   }
+
+  @GetMapping("/acronym")
+  public Flux<ForestClientDto> findByAcronym(
+      @RequestParam String acronym
+  ) {
+    log.info("Receiving request to search by acronym {}", acronym);
+    return service.findByAcronym(acronym);
+  }
+
+  @GetMapping("/doingBusinessAs")
+  public Flux<ForestClientDto> findByDoingBusinessAs(
+      @RequestParam String dbaName,
+      @RequestParam(required = false,defaultValue = "true") Boolean isFuzzy
+  ) {
+    log.info("Receiving request to search by doing business as name {} being a {} match",
+        dbaName, BooleanUtils.toString(isFuzzy,"fuzzy","full")
+    );
+    return service.findByDoingBusinessAs(dbaName,isFuzzy);
+  }
+
+  @GetMapping("/clientName")
+  public Flux<ForestClientDto> findByClientName(
+      @RequestParam String clientName
+  ) {
+    log.info("Receiving request to match by company name {}", clientName);
+    return service.findByClientName(clientName);
+  }
+
+
 
 }
