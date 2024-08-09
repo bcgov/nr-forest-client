@@ -1,3 +1,5 @@
+import type { StaticResponse } from "cypress/types/net-stubbing";
+
 /* eslint-disable no-undef */
 describe("Staff Form", () => {
   beforeEach(() => {
@@ -37,18 +39,18 @@ describe("Staff Form", () => {
   });
 
   it("CLIENT_ADMIN should be able to see the button", () => {
-    cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
-      given_name: "James",
-      family_name: "Baxter",
-      "cognito:groups": ["CLIENT_ADMIN"],
+      cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
+        given_name: "James",
+        family_name: "Baxter",
+        "cognito:groups": ["CLIENT_ADMIN"],
+      });
+  
+      // Check if the Create client button is visible
+      cy.get("#menu-list-staff-form")
+        .should("be.visible")
+        .find("span")
+        .should("contain", "Create client");
     });
-
-    // Check if the Create client button is visible
-    cy.get("#menu-list-staff-form")
-      .should("be.visible")
-      .find("span")
-      .should("contain", "Create client");
-  });
 
   it("CLIENT_VIEWER should not be able to see the button", () => {
     cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
@@ -117,6 +119,10 @@ describe("Staff Form", () => {
       cy.intercept("GET", "/api/codes/contact-types?page=0&size=250", {
         fixture: "roles.json",
       }).as("getContactTypes");
+
+      cy.intercept("GET", "/api/codes/identification-types", {
+        fixture: "identificationTypes.json",
+      }).as("getIdentificationTypes");
     });
 
     it("should display the Client type input field", () => {
@@ -268,6 +274,283 @@ describe("Staff Form", () => {
                     .find("input")
                     .should("have.value", data.clientIdentification);
                 });
+              });
+            });
+          });
+        });
+
+        /*
+        Helper function to help organize the test steps in a way that resembles the way you would
+        do with functions `it` and `describe` but without re-running all the `beforeEach`s.
+        CAUTION: the provided callbacks (and the test steps contained on them) will not be isolated
+        from each other.
+        */
+        const fake = (name: string, context: { level: number }) => {
+          const func = (title: string, cb: () => void) => {
+            cy.log(`${">".repeat(context.level)}${name}: ${title}`);
+            context.level++;
+            cb();
+            context.level--;
+          };
+
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          func.skip = (title: string, cb: () => void) => {
+            cy.log(`${">".repeat(context.level)}(skipped) ${name}: ${title}`);
+          };
+
+          return func;
+        };
+
+        const context = { level: 1 };
+        const fit = fake("it", context); // short for "fake it"
+        const fdescribe = fake("describe", context); // short for "fake describe"
+
+        const fuzzyScenarios = [
+          {
+            fuzzy: true,
+          },
+          {
+            fuzzy: false,
+          },
+        ];
+
+        let individualMatchCount = 0;
+
+        fuzzyScenarios.forEach(({ fuzzy }) => {
+          describe(`and there are ${fuzzy ? "non-exact" : "exact"} match errors`, () => {
+            beforeEach(() => {
+              cy.intercept("POST", "**/api/clients/matches", {
+                statusCode: 409,
+                headers: {
+                  "content-type": "application/json;charset=UTF-8",
+                },
+                body: [
+                  {
+                    field: "businessInformation.businessName",
+                    match: "00000001,00000009",
+                    fuzzy,
+                  },
+                ],
+              }).as("doMatch");
+
+              cy.intercept("POST", "**api/clients/matches", (req) => {
+                individualMatchCount++;
+                let response: StaticResponse = {
+                  statusCode: 204,
+                  headers: {
+                    "content-type": "application/json;charset=UTF-8",
+                  },
+                  delay: 100,
+                };
+                const { businessInformation } = req.body;
+                if (
+                  businessInformation.firstName === "John" &&
+                  businessInformation.lastName === "Silver"
+                ) {
+                  response = {
+                    statusCode: 409,
+                    headers: {
+                      "content-type": "application/json;charset=UTF-8",
+                    },
+                    body: [
+                      {
+                        field: "businessInformation.businessName",
+                        match: "00000001,00000009",
+                        fuzzy,
+                      },
+                    ],
+                    delay: 100,
+                  };
+                }
+                req.reply(response);
+              }).as("individualMatch");
+
+              fillIndividual({ ...individualBaseData });
+            });
+
+            const warningClass = "cds--text-input--warning";
+            const errorClass = "cds--text-input--invalid";
+
+            const testFieldErrorsDisplay = (expected: boolean) => {
+              const classname = fuzzy ? warningClass : errorClass;
+
+              if (expected) {
+                cy.get("#firstName").find("input").should("have.class", classname);
+                cy.get("#lastName").find("input").should("have.class", classname);
+
+                cy.get("#birthdateYear").find("input").should("have.class", classname);
+                cy.get("#birthdateMonth").find("input").should("have.class", classname);
+                cy.get("#birthdateDay").find("input").should("have.class", classname);
+
+                if (fuzzy) {
+                  // when it's fuzzy, do not highlight the ID number in any way
+                  cy.get("#clientIdentification")
+                    .find("input")
+                    .should("not.have.class", warningClass)
+                    .should("not.have.class", errorClass);
+                } else {
+                  // when it's not fuzzy, highlight the ID number as expected
+                  cy.get("#clientIdentification").find("input").should("have.class", classname);
+                }
+              } else {
+                cy.get("#firstName")
+                  .find("input")
+                  .should("not.have.class", warningClass)
+                  .should("not.have.class", errorClass);
+
+                cy.get("#lastName")
+                  .find("input")
+                  .should("not.have.class", warningClass)
+                  .should("not.have.class", errorClass);
+
+                cy.get("#birthdateYear")
+                  .find("input")
+                  .should("not.have.class", warningClass)
+                  .should("not.have.class", errorClass);
+                cy.get("#birthdateMonth")
+                  .find("input")
+                  .should("not.have.class", warningClass)
+                  .should("not.have.class", errorClass);
+                cy.get("#birthdateDay")
+                  .find("input")
+                  .should("not.have.class", warningClass)
+                  .should("not.have.class", errorClass);
+
+                cy.get("#clientIdentification")
+                  .find("input")
+                  .should("not.have.class", warningClass)
+                  .should("not.have.class", errorClass);
+              }
+            };
+
+            describe("and the button Next is clicked", () => {
+              beforeEach(() => {
+                cy.get("[data-test='wizard-next-button']").click();
+              });
+
+              // We need a root `it` to trigger the beforeEach chain once (only once).
+              it("displays the errors and controls properly", () => {
+                fit("displays an error notification", () => {
+                  cy.get("cds-actionable-notification")
+                    .should("be.visible")
+                    .contains(fuzzy ? "Possible matching records found" : "Client already exists");
+                });
+
+                fit("highlights the fields with error", () => {
+                  testFieldErrorsDisplay(true);
+                });
+
+                fit(`${fuzzy ? "displays" : "doesn't display"} the review statement checkbox`, () => {
+                  cy.get("#reviewStatement").should(fuzzy ? "be.visible" : "not.exist");
+                });
+
+                fit("disables the button Next", () => {
+                  cy.get("[data-test='wizard-next-button']")
+                    .shadow()
+                    .find("button")
+                    .should("be.disabled");
+                });
+              });
+
+              const descriptionComplement = fuzzy ? "and manages state properly" : "";
+              it(["revalidates properly", descriptionComplement].join(" "), () => {
+                fdescribe("when any field is changed", () => {
+                  cy.fillFormEntry("#middleName", "Random");
+                });
+                fit("removes the errors from the fields", () => {
+                  testFieldErrorsDisplay(false);
+                });
+                fit("re-enables the button Next", () => {
+                  cy.get("[data-test='wizard-next-button']")
+                    .shadow()
+                    .find("button")
+                    .should("be.enabled");
+                });
+
+                fit("shows the same errors when click Next", () => {
+                  cy.get("[data-test='wizard-next-button']").click();
+                  testFieldErrorsDisplay(true);
+                });
+
+                if (fuzzy) {
+                  fdescribe("when the review statement gets checked", () => {
+                    cy.get("#reviewStatement")
+                      .should("be.visible")
+                      .shadow()
+                      .find("input")
+                      .check({ force: true });
+                  });
+                  fit("re-enables the button Next", () => {
+                    cy.get("[data-test='wizard-next-button']")
+                      .shadow()
+                      .find("button")
+                      .should("be.enabled");
+                  });
+                  fdescribe("when any field is changed and click Next", () => {
+                    cy.fillFormEntry("#middleName", "More");
+                    cy.get("[data-test='wizard-next-button']").click();
+                  });
+                  fit("displays the review statement checkbox and it has been reset to unchecked", () => {
+                    cy.get("#reviewStatement").shadow().find("input").should("not.be.checked");
+                    cy.get("[data-test='wizard-next-button']")
+                      .shadow()
+                      .find("button")
+                      .should("be.disabled");
+                  });
+                  fit("goes to the next step after checking the review statement checkbox", () => {
+                    cy.get("#reviewStatement")
+                      .should("be.visible")
+                      .shadow()
+                      .find("input")
+                      .check({ force: true });
+                    cy.get("[data-test='wizard-next-button']").click();
+                    cy.contains("h2", "Locations");
+                  });
+                  fdescribe("when returned to that previous step", () => {
+                    cy.get("[data-test='wizard-back-button']").click();
+                  });
+                  fit("goes to the next step without hitting the matches endpoint", () => {
+                    let before: number;
+                    cy.then(() => {
+                      before = individualMatchCount;
+                    });
+                    cy.get("[data-test='wizard-next-button']").click();
+                    cy.contains("h2", "Locations");
+                    cy.then(() => {
+                      // No additional request has been made
+                      expect(individualMatchCount).to.equal(before);
+                    });
+                  });
+                  fdescribe("when returned and changed any field", () => {
+                    cy.get("[data-test='wizard-back-button']").click();
+                    cy.fillFormEntry("#middleName", "Again");
+                    cy.get("[data-test='wizard-next-button']").click();
+                  });
+                  fit("displays the review statement checkbox and it has been reset to unchecked again", () => {
+                    cy.get("#reviewStatement").shadow().find("input").should("not.be.checked");
+                    cy.get("[data-test='wizard-next-button']")
+                      .shadow()
+                      .find("button")
+                      .should("be.disabled");
+                  });
+                  fdescribe("when changed a field to a value that has no match in the database", () => {
+                    cy.fillFormEntry("#lastName", "Simon");
+                  });
+                  fit("still hits the matches endpoint but proceeds to next step automatically", () => {
+                    let before: number;
+                    cy.then(() => {
+                      before = individualMatchCount;
+                    });
+                    cy.get("[data-test='wizard-next-button']").click();
+
+                    cy.contains("h2", "Locations");
+
+                    cy.then(() => {
+                      // One additional request has been made
+                      expect(individualMatchCount).to.equal(before + 1);
+                    });
+                  });
+                }
               });
             });
           });
