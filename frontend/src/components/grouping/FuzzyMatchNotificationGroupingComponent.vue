@@ -43,6 +43,21 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
       }
       fuzzyMatchedError.value.matches.push(match);
 
+      const clientIdentificationGroup = (errorMsg) => [
+        {
+          fieldId: "businessInformation.clientIdentification",
+          errorMsg,
+        },
+        {
+          fieldId: "businessInformation.clientTypeOfId",
+          errorMsg,
+        },
+        {
+          fieldId: "businessInformation.clientIdNumber",
+          errorMsg,
+        },
+      ];
+
       if (rawMatch.field === "businessInformation.businessName") {
         if (rawMatch.fuzzy) {
           match.label = "Partial matching on name and date of birth";
@@ -78,10 +93,7 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
               fieldId: "businessInformation.birthdate",
               errorMsg: "Client already exists",
             },
-            {
-              fieldId: "businessInformation.clientIdentification",
-              errorMsg: "Client already exists",
-            },
+            ...clientIdentificationGroup("Client already exists"),
           ];
           errorBus.emit(errorEvent, { skipNotification: true });
         }
