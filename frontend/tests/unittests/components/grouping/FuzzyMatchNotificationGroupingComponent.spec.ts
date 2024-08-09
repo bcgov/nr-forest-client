@@ -134,6 +134,10 @@ describe("Fuzzy Match Notification Grouping Component", () => {
         field: "businessInformation.businessName",
         fuzzy: false,
       },
+      {
+        field: "businessInformation.identification",
+        fuzzy: false,
+      },
     ];
     it.each(scenarioList)(
       "emits validation messages for field: $field and fuzzy: $fuzzy ",
@@ -157,7 +161,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
         expect(errorPayload.skipNotification).toBe(true);
 
         // warning only when fuzzy is true
-        expect(errorPayload.warning).toBe(scenario.fuzzy ? true : undefined);
+        expect(errorPayload.warning).toBe(scenario.fuzzy);
       },
     );
     it("doesn't emit validation messages if not implemented for such field", () => {
