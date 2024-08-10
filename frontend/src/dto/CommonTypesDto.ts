@@ -84,6 +84,9 @@ export enum ClientTypeEnum {
   USP,
   B,
   T,
+  G,
+  F,
+  U
 }
 
 export enum IdentificationTypeEnum {

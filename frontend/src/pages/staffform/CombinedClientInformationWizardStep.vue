@@ -24,7 +24,18 @@ const emit = defineEmits<{
 const formData = ref<FormDataDto>(props.data);
 watch(
   () => formData.value,
-  () => emit("update:data", formData.value)
+  (newVal) => {
+    emit('update:data', newVal);
+  },
+  { deep: true }
+);
+
+watch(
+  () => props.data,
+  (newData) => {
+    formData.value = { ...newData };
+  },
+  { deep: true }
 );
 
 // -- Validation of the component --

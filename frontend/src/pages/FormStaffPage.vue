@@ -336,34 +336,36 @@ const updateClientType = (value: CodeNameType | undefined) => {
     // reset formData
     formData = newFormDataDto();
 
+    const commonBusinessInfo = {
+      businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
+      legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
+      goodStandingInd: "Y",
+    };
+
+    const updateFormData = (clientTypeEnum?: ClientTypeEnum) => {
+      Object.assign(formData.businessInformation, commonBusinessInfo);
+      if (clientTypeEnum) {
+        formData.businessInformation.clientType = getEnumKeyByEnumValue(ClientTypeEnum, clientTypeEnum);
+      }
+      formData.location.contacts[0] = applicantContact;
+    };
+
     switch (value.code) {
-      case "I": {
-        Object.assign(formData.businessInformation, {
-          businessType: getEnumKeyByEnumValue(
-            BusinessTypeEnum,
-            BusinessTypeEnum.U
-          ),
-          legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
-          clientType: getEnumKeyByEnumValue(ClientTypeEnum, ClientTypeEnum.I),
-          goodStandingInd: "Y",
-        });
-
-        formData.location.contacts[0] = applicantContact;
+      case "I":
+        updateFormData(ClientTypeEnum.I);
         break;
-      }
-      case "R": {
-        Object.assign(formData.businessInformation, {
-          businessType: getEnumKeyByEnumValue(
-            BusinessTypeEnum,
-            BusinessTypeEnum.U
-          ),
-          legalType: getEnumKeyByEnumValue(LegalTypeEnum, LegalTypeEnum.SP),
-          goodStandingInd: "Y",
-        });
-
-        formData.location.contacts[0] = applicantContact;
+      case "R":
+        updateFormData(undefined);
         break;
-      }
+      case "G":
+        updateFormData(ClientTypeEnum.G);
+        break;
+      case "F":
+        updateFormData(ClientTypeEnum.F);
+        break;
+      case "U":
+        updateFormData(ClientTypeEnum.U);
+        break;
       default:
         break;
     }
