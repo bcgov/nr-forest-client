@@ -179,8 +179,10 @@ ca:
               - DELETE
             age: 5m
         openData:
-          sacUrl: https://data.sac-isc.gc.ca/geomatics/services/Donnees_Ouvertes-Open_Data/Premiere_Nation_First_Nation/MapServer/WFSServer
-          bcMapsUrl: https://openmaps.gov.bc.ca/geo/pub/WHSE_HUMAN_CULTURAL_ECONOMIC.FN_COMMUNITY_LOCATIONS_SP/ows
+          sacBandUrl: https://data.sac-isc.gc.ca/geomatics/services/Donnees_Ouvertes-Open_Data/Premiere_Nation_First_Nation/MapServer/WFSServer
+          sacTribeUrl: https://data.sac-isc.gc.ca/geomatics/services/Donnees_Ouvertes-Open_Data/Conseil_Tribal_Tribal_Council/MapServer/WFSServer
+          openMapsBandUrl: https://openmaps.gov.bc.ca/geo/pub/WHSE_HUMAN_CULTURAL_ECONOMIC.FN_COMMUNITY_LOCATIONS_SP/ows
+          openMapsTribeUrl: https://openmaps.gov.bc.ca/geo/pub/WHSE_HUMAN_CULTURAL_ECONOMIC.FN_COMMUNITY_LOCATIONS_SP/ows
 
 logging:
   pattern:
