@@ -217,12 +217,21 @@ public class GlobalServiceConfiguration {
    * @return A WebClient instance configured for the Open Data SAC API.
    */
   @Bean
-  public WebClient openDataSacApi(
+  public WebClient openDataSacBandApi(
       ForestClientConfiguration configuration,
       WebClient.Builder webClientBuilder
   ) {
     return webClientBuilder
-        .baseUrl(configuration.getOpenData().getSacUrl()).build();
+        .baseUrl(configuration.getOpenData().getSacBandUrl()).build();
+  }
+
+  @Bean
+  public WebClient openDataSacTribeApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder
+        .baseUrl(configuration.getOpenData().getSacTribeUrl()).build();
   }
 
   /**
@@ -236,11 +245,19 @@ public class GlobalServiceConfiguration {
    * @return A WebClient instance configured for the Open Data BC Maps API.
    */
   @Bean
-  public WebClient openDataBcMapsApi(
+  public WebClient openDataBcMapsBandApi(
       ForestClientConfiguration configuration,
       WebClient.Builder webClientBuilder
   ) {
-    return webClientBuilder.baseUrl(configuration.getOpenData().getBcMapsUrl()).build();
+    return webClientBuilder.baseUrl(configuration.getOpenData().getOpenMapsBandUrl()).build();
+  }
+
+  @Bean
+  public WebClient openDataBcMapsTribeApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder.baseUrl(configuration.getOpenData().getOpenMapsTribeUrl()).build();
   }
 
   /**

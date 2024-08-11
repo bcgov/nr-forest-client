@@ -32,7 +32,7 @@ class OpenDataControllerIntegrationTest extends AbstractTestContainerIntegration
   protected WebTestClient client;
 
   @RegisterExtension
-  static WireMockExtension mockSac = WireMockExtension
+  static WireMockExtension mockSacBand = WireMockExtension
       .newInstance()
       .options(
           wireMockConfig()
@@ -45,7 +45,20 @@ class OpenDataControllerIntegrationTest extends AbstractTestContainerIntegration
       .build();
 
   @RegisterExtension
-  static WireMockExtension mockBcMap = WireMockExtension
+  static WireMockExtension mockSacTribe = WireMockExtension
+      .newInstance()
+      .options(
+          wireMockConfig()
+              .port(11113)
+              .notifier(new WiremockLogNotifier())
+              .asynchronousResponseEnabled(true)
+              .stubRequestLoggingDisabled(false)
+      )
+      .configureStaticDsl(true)
+      .build();
+
+  @RegisterExtension
+  static WireMockExtension mockBcMapBand = WireMockExtension
       .newInstance()
       .options(
           wireMockConfig()
@@ -59,8 +72,9 @@ class OpenDataControllerIntegrationTest extends AbstractTestContainerIntegration
 
   @BeforeEach
   public void reset() {
-    mockSac.resetAll();
-    mockBcMap.resetAll();
+    mockSacBand.resetAll();
+    mockSacTribe.resetAll();
+    mockBcMapBand.resetAll();
 
     client = client
         .mutateWith(csrf())
@@ -79,7 +93,7 @@ class OpenDataControllerIntegrationTest extends AbstractTestContainerIntegration
   @DisplayName("Should search and return BC Maps data")
   void shouldSearchAndReturnBcMapsData() {
 
-    mockBcMap
+    mockBcMapBand
         .stubFor(
             get(urlPathEqualTo("/bcmaps"))
                 .withQueryParam("service", equalTo("WFS"))
@@ -100,6 +114,7 @@ class OpenDataControllerIntegrationTest extends AbstractTestContainerIntegration
         .jsonPath("$.length()").isEqualTo(1)
         .jsonPath("$[0].name").isEqualTo("Squamish Nation")
         .jsonPath("$[0].id").isEqualTo(555)
+        .jsonPath("$[0].clientType").isEqualTo("B")
         .jsonPath("$[0].addresses[0].streetAddress").isEqualTo("320 Seymour Boulevard")
         .jsonPath("$[0].addresses[0].locationName").isEqualTo("Mailing Address")
         .consumeWith(System.out::println);
@@ -111,7 +126,7 @@ class OpenDataControllerIntegrationTest extends AbstractTestContainerIntegration
   @DisplayName("Should search and return Sac Maps data")
   void shouldSearchAndReturnSacMapsData() {
 
-    mockBcMap
+    mockBcMapBand
         .stubFor(
             get(urlPathEqualTo("/bcmaps"))
                 .withQueryParam("service", equalTo("WFS"))
@@ -123,7 +138,7 @@ class OpenDataControllerIntegrationTest extends AbstractTestContainerIntegration
                 .willReturn(okJson(TestConstants.OPENMAPS_BCMAPS_NODATA))
         );
 
-    mockSac
+    mockSacBand
         .stubFor(
             get(urlPathEqualTo("/sac"))
                 .withQueryParam("service", equalTo("WFS"))
@@ -145,15 +160,73 @@ class OpenDataControllerIntegrationTest extends AbstractTestContainerIntegration
         .jsonPath("$.length()").isEqualTo(1)
         .jsonPath("$[0].name").isEqualTo("Webequie")
         .jsonPath("$[0].id").isEqualTo(240)
+        .jsonPath("$[0].clientType").isEqualTo("B")
         .jsonPath("$[0].addresses.length()").isEqualTo(0)
         .consumeWith(System.out::println);
+  }
+
+  @Test
+  @DisplayName("Should search and return federal tribe data")
+  void shouldSearchAndReturnSacTribe() {
+
+    mockBcMapBand
+        .stubFor(
+            get(urlPathEqualTo("/bcmaps"))
+                .withQueryParam("service", equalTo("WFS"))
+                .withQueryParam("request", equalTo("GetFeature"))
+                .withQueryParam("typeName", equalTo("WHSE_HUMAN_CULTURAL_ECONOMIC.FN_COMMUNITY_LOCATIONS_SP"))
+                .withQueryParam("version", equalTo("1.0.0"))
+                .withQueryParam("outputFormat", equalTo("JSON"))
+                .withQueryParam("filter", containing("Atikamekw"))
+                .willReturn(okJson(TestConstants.OPENMAPS_BCMAPS_NODATA))
+        );
+
+    mockSacBand
+        .stubFor(
+            get(urlPathEqualTo("/sac"))
+                .withQueryParam("service", equalTo("WFS"))
+                .withQueryParam("request", equalTo("GetFeature"))
+                .withQueryParam("typeName", equalTo("Donnees_Ouvertes-Open_Data_Premiere_Nation_First_Nation:Première_Nation___First_Nation"))
+                .withQueryParam("version", equalTo("2.0.0"))
+                .withQueryParam("outputFormat", equalTo("GEOJSON"))
+                .withQueryParam("filter", containing("Atikamekw"))
+                .willReturn(okJson(TestConstants.OPENMAPS_SAC_NODATA))
+        );
+
+    mockSacTribe
+        .stubFor(
+            get(urlPathEqualTo("/sac"))
+                .withQueryParam("service", equalTo("WFS"))
+                .withQueryParam("request", equalTo("GetFeature"))
+                .withQueryParam("typeName", equalTo("Donnees_Ouvertes-Open_Data_Conseil_Tribal_Tribal_Council:Conseil_tribal___Tribal_Council"))
+                .withQueryParam("version", equalTo("2.0.0"))
+                .withQueryParam("outputFormat", equalTo("GEOJSON"))
+                .withQueryParam("filter", containing("Atikamekw"))
+                .willReturn(okJson(TestConstants.OPENMAPS_SACT_DATA))
+        );
+
+
+    client
+        .get()
+        .uri("/api/opendata/Atikamekw")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$.length()").isEqualTo(1)
+        .jsonPath("$[0].name").isEqualTo("ATIKAMEKW SIPI - CONSEIL DE LA NATION ATIKAMEKW")
+        .jsonPath("$[0].id").isEqualTo(1064)
+        .jsonPath("$[0].clientType").isEqualTo("T")
+        .jsonPath("$[0].addresses.length()").isEqualTo(0)
+        .consumeWith(System.out::println);
+
+
   }
 
   @Test
   @DisplayName("Should search and return no data")
   void shouldSearchAndReturnNoFirstNationData() {
 
-    mockBcMap
+    mockBcMapBand
         .stubFor(
             get(urlPathEqualTo("/bcmaps"))
                 .withQueryParam("service", equalTo("WFS"))
@@ -165,12 +238,24 @@ class OpenDataControllerIntegrationTest extends AbstractTestContainerIntegration
                 .willReturn(okJson(TestConstants.OPENMAPS_BCMAPS_NODATA))
         );
 
-    mockSac
+    mockSacBand
         .stubFor(
             get(urlPathEqualTo("/sac"))
                 .withQueryParam("service", equalTo("WFS"))
                 .withQueryParam("request", equalTo("GetFeature"))
                 .withQueryParam("typeName", equalTo("Donnees_Ouvertes-Open_Data_Premiere_Nation_First_Nation:Première_Nation___First_Nation"))
+                .withQueryParam("version", equalTo("2.0.0"))
+                .withQueryParam("outputFormat", equalTo("GEOJSON"))
+                .withQueryParam("filter", containing("Tupi"))
+                .willReturn(okJson(TestConstants.OPENMAPS_SAC_NODATA))
+        );
+
+    mockSacTribe
+        .stubFor(
+            get(urlPathEqualTo("/sac"))
+                .withQueryParam("service", equalTo("WFS"))
+                .withQueryParam("request", equalTo("GetFeature"))
+                .withQueryParam("typeName", equalTo("Donnees_Ouvertes-Open_Data_Conseil_Tribal_Tribal_Council:Conseil_tribal___Tribal_Council"))
                 .withQueryParam("version", equalTo("2.0.0"))
                 .withQueryParam("outputFormat", equalTo("GEOJSON"))
                 .withQueryParam("filter", containing("Tupi"))
