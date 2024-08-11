@@ -107,7 +107,7 @@ public final class ApplicationConstant {
   public static final String ROLE_EDITOR = "CLIENT_EDITOR";
   public static final String ROLE_ADMIN = "CLIENT_ADMIN";
 
-  public static final String OPENDATA_FILTER = "<Filter><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike></Filter>";
+  public static final String OPENDATA_FILTER = "<Filter><Or><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike></Or></Filter>";
 
   public static final String MDC_USERID = "X-USER";
 

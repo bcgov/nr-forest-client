@@ -155,6 +155,30 @@ public class ClientMatchDataGenerator {
             );
   }
 
+  public static ClientSubmissionDto getFirstNations(
+      String businessName,
+      String workSafeBcNumber,
+      String clientAcronym,
+      String clientType,
+      String registration
+  ) {
+
+    ClientSubmissionDto dto = getDtoType(clientType);
+
+    return
+        dto
+            .withBusinessInformation(
+                dto
+                    .businessInformation()
+                    .withBusinessName(businessName)
+                    .withRegistrationNumber(registration)
+                    .withBusinessType("U")
+                    .withWorkSafeBcNumber(workSafeBcNumber)
+                    .withClientAcronym(clientAcronym)
+
+            );
+  }
+
   public static ClientSubmissionDto getRandomData(String type) {
     return getRandomData(type,null,null);
   }

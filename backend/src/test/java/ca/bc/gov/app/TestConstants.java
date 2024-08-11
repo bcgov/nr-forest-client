@@ -863,6 +863,36 @@ public class TestConstants {
          "features": []
        }""";
 
+  public static final String OPENMAPS_SACT_DATA = """
+      {
+          "type": "FeatureCollection",
+          "crs": {
+              "type": "name",
+              "properties": {
+                  "name": "EPSG:4326"
+              }
+          },
+          "features": [
+              {
+                  "type": "Feature",
+                  "geometry": {
+                      "type": "Point",
+                      "coordinates": [
+                          -72.785381,
+                          47.44122729
+                      ]
+                  },
+                  "properties": {
+                      "GmlID": "Conseil_tribal___Tribal_Council.272501",
+                      "OBJECTID": 272501,
+                      "Numéro_du_conseil_tribal___Tribal_Council_Number": 1064,
+                      "Nom_du_conseil_tribal___Tribal_Council_Name": "ATIKAMEKW SIPI - CONSEIL DE LA NATION ATIKAMEKW",
+                      "CPC_CODE": "QC"
+                  }
+              }
+          ]
+      }""";
+
   public static final String OPENMAPS_BCMAPS_DATA = """
        {
           "type": "FeatureCollection",
