@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.legacy;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Named.named;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -140,7 +141,6 @@ class LegacyIndividualPersistenceServiceTest {
   @MethodSource("generateForestClient")
   @DisplayName("All kinds of forest clients")
   void shouldCreateIndividualFromStaff(
-      String testTitle,
       MessagingWrapper<String> wrapper,
       SubmissionDetailEntity entity,
       ForestClientDto dto
@@ -183,7 +183,7 @@ class LegacyIndividualPersistenceServiceTest {
 
     return Stream.of(
         Arguments.of(
-            "Staff-submitted Individual",
+            named("Staff-submitted Individual",
             new MessagingWrapper<>(
                 clientNumber,
                 Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
@@ -209,7 +209,8 @@ class LegacyIndividualPersistenceServiceTest {
                 .withParameter(ApplicationConstant.CREATED_BY, "IDIR\\JWICK")
                 .withParameter(ApplicationConstant.UPDATED_BY, "IDIR\\JWICK")
                 .withParameter(ApplicationConstant.FOREST_CLIENT_NAME, "JOHNATHAN WICK")
-                .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "not applicable"),
+                .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "not applicable")
+            ),
             SubmissionDetailEntity.builder()
                 .submissionId(submissionId)
                 .submissionDetailId(submissionId)
@@ -247,7 +248,7 @@ class LegacyIndividualPersistenceServiceTest {
             )
         ),
         Arguments.of(
-            "BCSC-submitted Individual",
+            named("BCSC-submitted Individual",
             new MessagingWrapper<>(
                 clientNumber,
                 Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
@@ -275,7 +276,8 @@ class LegacyIndividualPersistenceServiceTest {
                 .withParameter(ApplicationConstant.UPDATED_BY,
                     "idir\\ottomated")
                 .withParameter(ApplicationConstant.FOREST_CLIENT_NAME, "JOHNATHAN WICK")
-                .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "not applicable"),
+                .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "not applicable")
+            ),
             SubmissionDetailEntity.builder()
                 .submissionId(submissionId)
                 .submissionDetailId(submissionId)
