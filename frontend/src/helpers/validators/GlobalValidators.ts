@@ -278,7 +278,7 @@ export const isNoSpecialCharacters =
   };
 
 export const isIdCharacters =
-  (message: string = "This field can only contain: A-Z or 0-9") =>
+  (field: string = "field", message: string = `The ${field} can only contain: A-Z or 0-9`) =>
   (value: string): string => {
     if (idCharacters.test(value)) return "";
     return message;

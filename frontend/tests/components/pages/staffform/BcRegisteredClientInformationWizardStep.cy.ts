@@ -536,7 +536,7 @@ describe('<BcRegisteredClientInformationWizardStep />', () => {
       
       cy.get('#acronym').shadow().find('input').clear();
       cy.fillFormEntry('#acronym', 'láe');
-      cy.checkInputErrorMessage('#acronym','The acronym can only contain: A-Z, a-z, 0-9, space or common symbols');
+      cy.checkInputErrorMessage('#acronym','The acronym can only contain: A-Z or 0-9');
 
       cy.get('#acronym').shadow().find('input').clear();
       cy.fillFormEntry('#acronym', 'I');

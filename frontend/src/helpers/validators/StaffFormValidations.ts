@@ -91,7 +91,7 @@ fieldValidations["businessInformation.doingBusinessAs"] = [
 fieldValidations["businessInformation.clientAcronym"] = [  
   optional(isMaxSizeMsg("acronym", 8)),
   optional(isMinSizeMsg("acronym", 3)),
-  optional(isIdCharacters()),
+  optional(isIdCharacters("acronym")),
 ];
 
 // For the input field.
@@ -167,7 +167,7 @@ fieldValidations["businessInformation.clientIdentification-BCDL"] = [
 ];
 
 fieldValidations["businessInformation.clientIdentification-nonBCDL"] = [      
-  isIdCharacters(),
+  isIdCharacters("driver's licence"),
   isMinSizeMsg("driver's licence", 7),
   isMaxSizeMsg("driver's licence", clientIdentificationMaskParams.nonBCDL.maxSize),
 ];
@@ -179,12 +179,12 @@ fieldValidations["businessInformation.clientIdentification-BRTH"] = [
 ];
 
 fieldValidations["businessInformation.clientIdentification-PASS"] = [
-  isIdCharacters(),
+  isIdCharacters("Canadian passport"),
   isExactSizMsg("Canadian passport", clientIdentificationMaskParams.PASS.maxSize),
 ];
 
 fieldValidations["businessInformation.clientIdentification-CITZ"] = [
-  isIdCharacters(),
+  isIdCharacters("Canadian citizenship card"),
   isExactSizMsg("Canadian citizenship card", clientIdentificationMaskParams.CITZ.maxSize),
 ];
 
