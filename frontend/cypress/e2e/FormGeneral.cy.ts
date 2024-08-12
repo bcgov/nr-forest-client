@@ -13,15 +13,18 @@ describe("General Form", () => {
       fixture: "example.json",
     }).as("selectCompany");
 
-    cy.intercept("GET","**/api/clients/individual/*",{
+    cy.intercept("GET", "**/api/clients/individual/*", {
       statusCode: 200,
-      body: {}
-    })
+      body: {},
+    });
   });
 
   it("should render the component", () => {
     cy.visit("/");
-    cy.get("#landing-title").should("contain", "Forests Client Management System");
+    cy.get("#landing-title").should(
+      "contain",
+      "Forests Client Management System"
+    );
 
     cy.get("#landing-subtitle").should(
       "contain",
