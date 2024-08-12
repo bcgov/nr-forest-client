@@ -19,7 +19,7 @@ public abstract class AbstractOpenDataService {
 
   public Mono<OpenData> getFeature(String nationName) {
 
-    if(StringUtils.isBlank(nationName))
+    if (StringUtils.isBlank(nationName))
       return Mono.empty();
 
     return getWebClient()
