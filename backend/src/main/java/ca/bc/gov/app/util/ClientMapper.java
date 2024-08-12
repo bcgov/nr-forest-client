@@ -98,6 +98,8 @@ public class ClientMapper {
         .withSecondaryPhoneNumber(clientAddressDto.secondaryPhoneNumber())
         .withFaxNumber(clientAddressDto.faxNumber())
         .withEmailAddress(clientAddressDto.emailAddress())
+        .withComplementaryAddress1(clientAddressDto.complementaryAddressOne())
+        .withComplementaryAddress2(clientAddressDto.complementaryAddressTwo())
         .withNotes(clientAddressDto.notes());
   }
 
