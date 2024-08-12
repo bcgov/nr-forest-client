@@ -168,7 +168,7 @@
       }
     },
     {
-      "name": "Submission Match Stub for Individuals: Full Identification",
+      "name": "Submission Match Stub for Registered",
       "request": {
         "url": "/api/clients/matches",
         "method": "POST",
@@ -184,55 +184,440 @@
           {
             "matchesJsonPath": {
               "expression": "$.businessInformation.clientType",
-              "equalTo": "I"
+              "equalTo": "C"
             }
           },
           {
             "matchesJsonPath": {
-              "expression": "$.businessInformation.firstName",
-              "equalTo": "James"
-            }
-          },
-          {
-            "matchesJsonPath": {
-              "expression": "$.businessInformation.lastName",
-              "equalTo": "Baxter"
-            }
-          },
-          {
-            "matchesJsonPath": {
-              "expression": "$.businessInformation.birthdate",
-              "equalTo": "1970-01-01"
-            }
-          },
-          {
-            "matchesJsonPath": {
-              "expression": "$.businessInformation.identificationType.value",
-              "equalTo": "CDDL"
-            }
-          },
-          {
-            "matchesJsonPath": {
-              "expression": "$.businessInformation.identificationProvince",
-              "equalTo": "BC"
-            }
-          },
-          {
-            "matchesJsonPath": {
-              "expression": "$.businessInformation.clientIdentification",
-              "equalTo": "1234567"
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Legros, Rutherford and Runte (UT)"
             }
           }
         ]
       },
       "response": {
         "status": 409,
-        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\":false},{\"field\":\"businessInformation.identification\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\":false}]",
         "headers": {
           "Content-Type": "application/json"
         },
         "fixedDelayMilliseconds": 500
       }
-    }    
+    },
+    {
+      "name": "Submission Match Stub for First Nations",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "B"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Webequie"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for Others",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "matches": "G|F|U"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Failed"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for Acronym",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientAcronym",
+              "equalTo": "Fail"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"businessInformation.clientAcronym\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for Location email",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses[0].emailAddress",
+              "equalTo": "youshallnotpass@mail.ca"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"location.addresses[0].emailAddress\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for businessPhoneNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses[0].businessPhoneNumber",
+              "equalTo": "(222) 222-2222"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"location.addresses[0].businessPhoneNumber\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for secondaryPhoneNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses[0].secondaryPhoneNumber",
+              "equalTo": "(222) 222-2222"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"location.addresses[0].secondaryPhoneNumber\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for faxNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses[0].faxNumber",
+              "equalTo": "(222) 222-2222"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"location.addresses[0].faxNumber\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for street address",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses[0].streetAddress",
+              "equalTo": "6493 Maple Ave"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"location.addresses[0].streetAddress\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for Contact email",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts[0].email",
+              "equalTo": "youshallnotpass@mail.ca"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"location.contacts[0].email\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for contact phoneNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts[0].phoneNumber",
+              "equalTo": "(222) 222-2222"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"location.contacts[0].phoneNumber\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for contact secondaryPhoneNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts[0].secondaryPhoneNumber",
+              "equalTo": "(222) 222-2222"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"location.contacts[0].secondaryPhoneNumber\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for contact faxNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts[0].faxNumber",
+              "equalTo": "(222) 222-2222"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"location.contacts[0].faxNumber\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for contact info",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts[0].firstName",
+              "equalTo": "Duncan"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"location.contacts[0].firstName\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    }
   ]
 }
