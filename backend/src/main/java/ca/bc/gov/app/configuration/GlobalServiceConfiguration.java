@@ -37,6 +37,7 @@ import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
+import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
@@ -121,7 +122,8 @@ import org.springframework.web.reactive.function.client.WebClient;
     Feature.class,
     FeatureProperties.class,
     Geometry.class,
-    OpenData.class
+    OpenData.class,
+    MatchResult.class
 })
 public class GlobalServiceConfiguration {
 
