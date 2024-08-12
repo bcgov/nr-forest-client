@@ -41,4 +41,7 @@ public class SubmissionEntity extends BaseEntity {
   @Column("submission_date")
   private LocalDateTime submissionDate;
   
+  @Column("update_timestamp")
+  private LocalDateTime updateTimestamp;
+  
 }
