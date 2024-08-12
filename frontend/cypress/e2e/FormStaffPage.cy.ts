@@ -398,32 +398,6 @@ describe("Staff Form", () => {
           });
         });
 
-        /*
-        Helper function to help organize the test steps in a way that resembles the way you would
-        do with functions `it` and `describe` but without re-running all the `beforeEach`s.
-        CAUTION: the provided callbacks (and the test steps contained on them) will not be isolated
-        from each other.
-        */
-        const fake = (name: string, context: { level: number }) => {
-          const func = (title: string, cb: () => void) => {
-            cy.log(`${">".repeat(context.level)}${name}: ${title}`);
-            context.level++;
-            cb();
-            context.level--;
-          };
-
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          func.skip = (title: string, cb: () => void) => {
-            cy.log(`${">".repeat(context.level)}(skipped) ${name}: ${title}`);
-          };
-
-          return func;
-        };
-
-        const context = { level: 1 };
-        const fit = fake("it", context); // short for "fake it"
-        const fdescribe = fake("describe", context); // short for "fake describe"
-
         const fuzzyScenarios = [
           {
             fuzzy: true,
@@ -549,110 +523,103 @@ describe("Staff Form", () => {
 
               // We need a root `it` to trigger the beforeEach chain once (only once).
               it("displays the errors and controls properly", () => {
-                fit("displays an error notification", () => {
-                  cy.get("cds-actionable-notification")
-                    .should("be.visible")
-                    .contains(fuzzy ? "Possible matching records found" : "Client already exists");
-                });
+                // displays an error notification
+                cy.get("cds-actionable-notification")
+                  .should("be.visible")
+                  .contains(fuzzy ? "Possible matching records found" : "Client already exists");
 
-                fit("highlights the fields with error", () => {
-                  testFieldErrorsDisplay(true);
-                });
+                // highlights the fields with error
+                testFieldErrorsDisplay(true);
 
-                fit(`${fuzzy ? "displays" : "doesn't display"} the review statement checkbox`, () => {
-                  cy.get("#reviewStatement").should(fuzzy ? "be.visible" : "not.exist");
-                });
+                // displays the review statement checkbox only when fuzzy: true
+                cy.get("#reviewStatement").should(fuzzy ? "be.visible" : "not.exist");
 
-                fit("disables the button Next", () => {
-                  cy.get("[data-test='wizard-next-button']")
-                    .shadow()
-                    .find("button")
-                    .should("be.disabled");
-                });
+                // disables the button Next
+                cy.get("[data-test='wizard-next-button']")
+                  .shadow()
+                  .find("button")
+                  .should("be.disabled");
               });
 
               const descriptionComplement = fuzzy ? "and manages state properly" : "";
               it(["revalidates properly", descriptionComplement].join(" "), () => {
-                fdescribe("when any field is changed", () => {
-                  cy.fillFormEntry("#middleName", "Random");
-                });
-                fit("removes the errors from the fields", () => {
-                  testFieldErrorsDisplay(false);
-                });
-                fit("re-enables the button Next", () => {
+                // when any field is changed
+                cy.fillFormEntry("#middleName", "Random");
+
+                // removes the errors from the fields
+                testFieldErrorsDisplay(false);
+
+                // re-enables the button Next
+                cy.get("[data-test='wizard-next-button']")
+                  .shadow()
+                  .find("button")
+                  .should("be.enabled");
+
+                // shows the same errors when click Next"
+                cy.get("[data-test='wizard-next-button']").click();
+                testFieldErrorsDisplay(true);
+
+                if (fuzzy) {
+                  // when the review statement gets checked
+                  cy.get("#reviewStatement")
+                    .should("be.visible")
+                    .shadow()
+                    .find("input")
+                    .check({ force: true });
+
+                  // re-enables the button Next
                   cy.get("[data-test='wizard-next-button']")
                     .shadow()
                     .find("button")
                     .should("be.enabled");
-                });
 
-                fit("shows the same errors when click Next", () => {
+                  // when any field is changed and click Next
+                  cy.fillFormEntry("#middleName", "More");
                   cy.get("[data-test='wizard-next-button']").click();
-                  testFieldErrorsDisplay(true);
-                });
 
-                if (fuzzy) {
-                  fdescribe("when the review statement gets checked", () => {
-                    cy.get("#reviewStatement")
-                      .should("be.visible")
-                      .shadow()
-                      .find("input")
-                      .check({ force: true });
-                  });
-                  fit("re-enables the button Next", () => {
-                    cy.get("[data-test='wizard-next-button']")
-                      .shadow()
-                      .find("button")
-                      .should("be.enabled");
-                  });
-                  fdescribe("when any field is changed and click Next", () => {
-                    cy.fillFormEntry("#middleName", "More");
-                    cy.get("[data-test='wizard-next-button']").click();
-                  });
-                  fit("displays the review statement checkbox and it has been reset to unchecked", () => {
-                    cy.get("#reviewStatement").shadow().find("input").should("not.be.checked");
-                    cy.get("[data-test='wizard-next-button']")
-                      .shadow()
-                      .find("button")
-                      .should("be.disabled");
-                  });
-                  fit("goes to the next step after checking the review statement checkbox", () => {
-                    cy.get("#reviewStatement")
-                      .should("be.visible")
-                      .shadow()
-                      .find("input")
-                      .check({ force: true });
-                    cy.get("[data-test='wizard-next-button']").click();
-                    cy.contains("h2", "Locations");
-                  });
-                  fdescribe("when returned and changed any field", () => {
-                    cy.get("[data-test='wizard-back-button']").click();
-                    cy.fillFormEntry("#middleName", "Again");
-                    cy.get("[data-test='wizard-next-button']").click();
-                  });
-                  fit("displays the review statement checkbox and it has been reset to unchecked again", () => {
-                    cy.get("#reviewStatement").shadow().find("input").should("not.be.checked");
-                    cy.get("[data-test='wizard-next-button']")
-                      .shadow()
-                      .find("button")
-                      .should("be.disabled");
-                  });
-                  fdescribe("when changed a field to a value that has no match in the database", () => {
-                    cy.fillFormEntry("#lastName", "Simon");
-                  });
-                  fit("still hits the matches endpoint but proceeds to next step automatically", () => {
-                    let before: number;
-                    cy.then(() => {
-                      before = individualMatchCount;
-                    });
-                    cy.get("[data-test='wizard-next-button']").click();
+                  // displays the review statement checkbox and it has been reset to unchecked
+                  cy.get("#reviewStatement").shadow().find("input").should("not.be.checked");
+                  cy.get("[data-test='wizard-next-button']")
+                    .shadow()
+                    .find("button")
+                    .should("be.disabled");
 
-                    cy.contains("h2", "Locations");
+                  // goes to the next step after checking the review statement checkbox
+                  cy.get("#reviewStatement")
+                    .should("be.visible")
+                    .shadow()
+                    .find("input")
+                    .check({ force: true });
+                  cy.get("[data-test='wizard-next-button']").click();
+                  cy.contains("h2", "Locations");
 
-                    cy.then(() => {
-                      // One additional request has been made
-                      expect(individualMatchCount).to.equal(before + 1);
-                    });
+                  // when returned and changed any field
+                  cy.get("[data-test='wizard-back-button']").click();
+                  cy.fillFormEntry("#middleName", "Again");
+                  cy.get("[data-test='wizard-next-button']").click();
+
+                  // displays the review statement checkbox and it has been reset to unchecked again
+                  cy.get("#reviewStatement").shadow().find("input").should("not.be.checked");
+                  cy.get("[data-test='wizard-next-button']")
+                    .shadow()
+                    .find("button")
+                    .should("be.disabled");
+
+                  // when changed a field to a value that has no match in the database
+                  cy.fillFormEntry("#lastName", "Simon");
+
+                  // still hits the matches endpoint but proceeds to next step automatically
+                  let before: number;
+                  cy.then(() => {
+                    before = individualMatchCount;
+                  });
+                  cy.get("[data-test='wizard-next-button']").click();
+
+                  cy.contains("h2", "Locations");
+
+                  cy.then(() => {
+                    // One additional request has been made
+                    expect(individualMatchCount).to.equal(before + 1);
                   });
                 }
               });
