@@ -458,6 +458,7 @@ onMounted(() => {
       v-if="showFields || bcRegistryError || showOnError"
       label="Acronym"
       placeholder=""
+      mask="NNNNNNNN"
       autocomplete="off"
       v-model="formData.businessInformation.clientAcronym"
       :validations="[
