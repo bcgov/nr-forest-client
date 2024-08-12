@@ -112,7 +112,6 @@ const progressData = reactive([
       "businessInformation.clientType",
     ],
     extraValidations: [],
-    reviewStatementChecked: false,
   },
   {
     title: "Locations",
@@ -139,7 +138,6 @@ const progressData = reactive([
       "location.addresses.*.notes",
     ],
     extraValidations: [],
-    reviewStatementChecked: false,
   },
   {
     title: "Contacts",
@@ -159,7 +157,6 @@ const progressData = reactive([
       "location.contacts.*.faxNumber",
     ],
     extraValidations: [],
-    reviewStatementChecked: false,
   },
   {
     title: "Review",
@@ -243,12 +240,6 @@ const validateStep = (valid: boolean) => {
   }
 };
 
-const setStepReviewed = (reviewed: boolean) => {
-  progressData[currentTab.value].reviewStatementChecked = reviewed;
-};
-
-const isStepReviewed = () => progressData[currentTab.value].reviewStatementChecked;
-
 const onCancel = () => {
   router.push("/");
 };
@@ -257,27 +248,20 @@ const matchError = ref(false);
 const isExactMatch = ref(false);
 
 watch(formData, () => {
-  setStepReviewed(false);
+  reviewStatement.value = false;
 
   if (matchError.value) {
+    fuzzyBus.emit(undefined);
     resetSubmissionValidators();
     revalidateBus.emit();
     matchError.value = false;
-    reviewStatementChecked.value = false;
   }
 });
 
-const reviewStatementChecked = ref(false);
+const reviewStatement = ref(false);
 
-watch(reviewStatementChecked, (reviewed) => {
-  /*
-  This if condition is important to prevent updating the information on the next or the previous
-  step when we move to it and we just want to reset the value of the checkbox.
-  */
-  if (matchError.value) {
-    setStepReviewed(reviewed);
-    validateStep(reviewed);
-  }
+watch(reviewStatement, (reviewed) => {
+  validateStep(reviewed);
 });
 
 const lookForMatches = (onEmpty: () => void) => {
@@ -337,10 +321,12 @@ const moveToNextStep = () => {
   // reset matcherError
   matchError.value = false;
 
-  // reset reviewStatementChecked
-  reviewStatementChecked.value = false;
+  // reset reviewStatement
+  reviewStatement.value = false;
 
   resetSubmissionValidators();
+
+  fuzzyBus.emit(undefined);
 };
 
 const onNext = () => {
@@ -355,7 +341,7 @@ const onNext = () => {
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
-      if (isStepReviewed()) {
+      if (reviewStatement.value) {
         moveToNextStep();
       } else {
         lookForMatches(moveToNextStep);
@@ -667,7 +653,7 @@ const submit = () => {
               checkboxId="reviewStatement"
               label="Review statement"
               required-label
-              v-model="reviewStatementChecked"
+              v-model="reviewStatement"
               checkbox-label="I've reviewed the possible matching records and they don't correspond to the client I'm creating."
             />
             <span class="body-compact-01" v-if="!isLast && !progressData[currentTab].valid">
