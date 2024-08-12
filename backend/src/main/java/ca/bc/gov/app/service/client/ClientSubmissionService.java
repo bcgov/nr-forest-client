@@ -677,7 +677,7 @@ public class ClientSubmissionService {
                           .withHour(0)
                           .withMinute(0)
                           .withSecond(0),
-                      "submissionDate"
+                      "updateTimestamp"
                   )
                   .and(
                       QueryPredicates
