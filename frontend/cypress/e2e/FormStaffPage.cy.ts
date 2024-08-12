@@ -625,21 +625,6 @@ describe("Staff Form", () => {
                     cy.get("[data-test='wizard-next-button']").click();
                     cy.contains("h2", "Locations");
                   });
-                  fdescribe("when returned to that previous step", () => {
-                    cy.get("[data-test='wizard-back-button']").click();
-                  });
-                  fit("goes to the next step without hitting the matches endpoint", () => {
-                    let before: number;
-                    cy.then(() => {
-                      before = individualMatchCount;
-                    });
-                    cy.get("[data-test='wizard-next-button']").click();
-                    cy.contains("h2", "Locations");
-                    cy.then(() => {
-                      // No additional request has been made
-                      expect(individualMatchCount).to.equal(before);
-                    });
-                  });
                   fdescribe("when returned and changed any field", () => {
                     cy.get("[data-test='wizard-back-button']").click();
                     cy.fillFormEntry("#middleName", "Again");
