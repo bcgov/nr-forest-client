@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public enum ClientTypeEnum {
   // Enum constants representing client types
-  C, S, A, I, P, L, RSP, USP, B;
+  C, S, A, I, P, L, RSP, USP, B, G, F, U;
 
   // A map for reverse lookup of enum constants by their name
   private static final Map<String, ClientTypeEnum> CONSTANTS = new HashMap<>();
