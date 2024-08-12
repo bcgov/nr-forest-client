@@ -85,8 +85,12 @@ describe("validations", () => {
     };
     (<Scenario[]>[
       ["", true, "not required"],
-      ["AT&T", true],
-      ["Acronym with more than 30 characters", false],
+      ["AT&T", false, "special character"],
+      ["ATT", true],
+      ["ATT2", true],
+      ["att", false, "lower case character"],
+      ["AT T", false, "whitespace"],
+      ["TOOLONG89", false],
       ["1", false],
     ]).forEach((scenario) => {
       test(formDataDto, key, setter, scenario);
