@@ -9,12 +9,17 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
-public class BcMapsService extends AbstractOpenDataService {
+public class SacFirstNationService extends AbstractOpenDataService {
+
+  public Mono<OpenData> getFirstNationData(String nationName) {
+    return getFeature(nationName)
+        .doOnNext(openData -> log.info("SAC: {}", openData));
+  }
 
   private final WebClient webClient;
 
-  public BcMapsService(
-      @Qualifier("openDataBcMapsBandApi") WebClient webClient) {
+  public SacFirstNationService(
+      @Qualifier("openDataSacBandApi") WebClient webClient) {
     this.webClient = webClient;
   }
 
@@ -25,26 +30,21 @@ public class BcMapsService extends AbstractOpenDataService {
 
   @Override
   String getTypeName() {
-    return "WHSE_HUMAN_CULTURAL_ECONOMIC.FN_COMMUNITY_LOCATIONS_SP";
+    return "Donnees_Ouvertes-Open_Data_Premiere_Nation_First_Nation:Première_Nation___First_Nation";
   }
 
   @Override
   String getVersion() {
-    return "1.0.0";
+    return "2.0.0";
   }
 
   @Override
   String getOutputFormat() {
-    return "JSON";
+    return "GEOJSON";
   }
 
   @Override
   String getSearchField() {
-    return "pub:FIRST_NATION_BC_NAME";
-  }
-
-  public Mono<OpenData> getFirstNationData(String nationName) {
-    return getFeature(nationName)
-        .doOnNext(openData -> log.info("BC Maps: {}", openData));
+    return "Donnees_Ouvertes-Open_Data_Premiere_Nation_First_Nation:Nom_de_bande___Band_Name";
   }
 }

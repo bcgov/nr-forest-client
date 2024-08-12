@@ -42,7 +42,7 @@ class ClientContactControllerIntegrationTest extends
                     "00",
                     "BL",
                     "James Baxter",
-                    "2502502550",
+                    "2502502555",
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
                     "oknowwhat@mail.ca",
@@ -96,7 +96,7 @@ class ClientContactControllerIntegrationTest extends
         Arguments.of("James", "Baxter", "jbaxter@mail.ca", "6046666755", 3),
         Arguments.of("Nedad", "Kontic", "konticboss@kelpic.ca", "6046646755", 1),
         Arguments.of("Jack", "Ryan", "ryan.jack@tomclancy.ca", "6046666735", 2),
-        Arguments.of("Jack", "Ryan", "ryan.jack@tomclancy.ca", "2502502550", 2),
+        Arguments.of("Jack", "Ryan", "ryan.jack@tomclancy.ca", "2502502555", 2),
         Arguments.of("Domingos", "Chaves", "dingo@tomclancy.ca", "2554457789", 0)
     );
   }

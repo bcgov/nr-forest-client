@@ -123,6 +123,11 @@ describe("Staff Form", () => {
       cy.intercept("GET", "/api/codes/identification-types", {
         fixture: "identificationTypes.json",
       }).as("getIdentificationTypes");
+
+      cy.intercept("**/api/opendata/*", {
+        fixture: "firstNations.json",
+      }).as("getFirstNations");
+
     });
 
     it("should display the Client type input field", () => {
@@ -145,6 +150,12 @@ describe("Staff Form", () => {
       clientIdentification: "AB345678",
     };
 
+    const firstNationBaseData = {
+      businessName: "Squamish Nation",
+      workSafeBcNumber: "123456",
+      clientAcronym: "FFF"
+    };
+
     const fillIndividual = (data = individualBaseData) => {
       cy.fillFormEntry("#firstName", data.firstName);
       cy.fillFormEntry("#middleName", data.middleName);
@@ -158,10 +169,112 @@ describe("Staff Form", () => {
 
       cy.fillFormEntry("#clientIdentification", data.clientIdentification);
 
-      cy.fillFormEntry("#birthdateYear", data.birthdateYear);
+      cy.get("#birthdateYear").shadow().find("input").type(data.birthdateYear);
+      cy.get("#birthdateMonth").shadow().find("input").type(data.birthdateMonth);
+      cy.get("#birthdateDay").shadow().find("input").type(data.birthdateDay);
+
+      //This way of filling out data fails locally only with this component
+      /*cy.fillFormEntry("#birthdateYear", data.birthdateYear);
       cy.fillFormEntry("#birthdateMonth", data.birthdateMonth);
-      cy.fillFormEntry("#birthdateDay", data.birthdateDay);
+      cy.fillFormEntry("#birthdateDay", data.birthdateDay);*/
     };
+
+    const fillFirstNation = (data = firstNationBaseData) => {
+      cy.get("#clientName")
+        .should("be.visible")
+        .shadow()
+        .find("input")
+        .should("have.value", "")
+        .type(data.businessName);
+      cy.wait("@getFirstNations");
+      cy.get('cds-combo-box-item[data-id="555"]').click();
+
+      cy.fillFormEntry("#workSafeBcNumber", data.workSafeBcNumber);
+      cy.fillFormEntry("#clientAcronym", data.clientAcronym);
+    };
+
+    describe("when option First Nation gets selected", () => {
+      beforeEach(() => {
+        cy.get("#clientType")
+          .should("be.visible")
+          .and("have.value", "")
+          .find("[part='trigger-button']")
+          .click();
+
+        cy.get("#clientType")
+          .find('cds-combo-box-item[data-id="R"]')
+          .should("be.visible")
+          .click()
+          .and("have.value", "First Nation");
+      });
+
+      it("should display the First Nation information input fields", () => {
+        cy.contains("h2", "Client information");
+        cy.get("#clientName").should("be.visible");
+        cy.get("#workSafeBcNumber").should("be.visible");
+        cy.get("#clientAcronym").should("be.visible");
+      });
+
+      describe("when all the required information is filled in", () => {
+        const scenarios = [
+          {
+            name: "and the First Nation is selected",
+            data: {
+              ...firstNationBaseData,
+            },
+          },
+        ];
+        scenarios.forEach(({ name, data }) => {
+          describe(name, () => {
+            beforeEach(() => {
+              fillFirstNation(data);
+            });
+
+            it("enables the button Next", () => {
+              cy.get("[data-test='wizard-next-button']")
+                .shadow()
+                .find("button")
+                .should("be.enabled");
+            });
+
+            describe("and the button Next is clicked", () => {
+              beforeEach(() => {
+                cy.get("[data-test='wizard-next-button']").click();
+              });
+
+              it("hides the Client information section", () => {
+                cy.contains("h2", "Client information").should("not.exist");
+              });
+
+              describe("and the button Back is clicked", () => {
+                beforeEach(() => {
+                  cy.get("[data-test='wizard-back-button']").click();
+                });
+
+                it("renders the First Nation input fields with the same data", () => {
+                  cy.get("#clientName")
+                    .shadow()
+                    .find("input")
+                    .should("have.value", data.businessName);
+
+                  cy.get("#workSafeBcNumber")
+                    .shadow()
+                    .find("input")
+                    .should("have.value", data.workSafeBcNumber);
+
+                  cy.get("#clientAcronym")
+                    .shadow()
+                    .find("input")
+                    .should("have.value", data.clientAcronym);
+
+                });
+              });
+            });
+          });
+        });
+      });
+
+    });
 
     describe("when option Individual gets selected", () => {
       beforeEach(() => {
@@ -210,6 +323,7 @@ describe("Staff Form", () => {
             beforeEach(() => {
               fillIndividual(data);
             });
+
             it("enables the button Next", () => {
               cy.get("[data-test='wizard-next-button']")
                 .shadow()
@@ -221,13 +335,16 @@ describe("Staff Form", () => {
               beforeEach(() => {
                 cy.get("[data-test='wizard-next-button']").click();
               });
+
               it("hides the Client information section", () => {
                 cy.contains("h2", "Client information").should("not.exist");
               });
+
               describe("and the button Back is clicked", () => {
                 beforeEach(() => {
                   cy.get("[data-test='wizard-back-button']").click();
                 });
+
                 it("renders the Individual input fields with the same data", () => {
                   cy.get("#firstName")
                     .shadow()
@@ -248,10 +365,12 @@ describe("Staff Form", () => {
                     .shadow()
                     .find("input")
                     .should("have.value", data.birthdateYear);
+
                   cy.get("#birthdateMonth")
                     .shadow()
                     .find("input")
                     .should("have.value", data.birthdateMonth);
+
                   cy.get("#birthdateDay")
                     .shadow()
                     .find("input")
