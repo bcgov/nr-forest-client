@@ -56,6 +56,10 @@ import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 
 const clientTypesList: CodeNameType[] = [
   {
+    code: "I",
+    name: "Individual",
+  },
+  {
     code: "BCR",
     name: "BC registered business",
   },
@@ -66,10 +70,6 @@ const clientTypesList: CodeNameType[] = [
   {
     code: "G",
     name: "Government",
-  },
-  {
-    code: "I",
-    name: "Individual",
   },
   {
     code: "F",
