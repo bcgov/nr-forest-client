@@ -23,6 +23,7 @@ export interface ValidationMessageType {
   fieldName: string;
   errorMsg: string;
   originalValue?: string;
+  warning?: boolean;
 }
 
 export interface FuzzyMatchResult {
@@ -31,10 +32,15 @@ export interface FuzzyMatchResult {
   fuzzy: boolean;
 }
 
+export interface MiscFuzzyMatchResult {
+  label?: string;
+  result: FuzzyMatchResult;
+}
+
 export interface FuzzyMatcherData {
   show: boolean;
   fuzzy: boolean;
-  matches: FuzzyMatchResult[];
+  matches: MiscFuzzyMatchResult[];
 }
 
 export interface FuzzyMatcherEvent {

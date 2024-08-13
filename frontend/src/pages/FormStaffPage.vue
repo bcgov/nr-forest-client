@@ -37,7 +37,10 @@ import {
   runValidation,
   getValidations,
 } from "@/helpers/validators/StaffFormValidations";
-import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
+import {
+  submissionValidation,
+  resetSubmissionValidators,
+} from "@/helpers/validators/SubmissionValidators";
 
 // Imported Pages
 import IndividualClientInformationWizardStep from "@/pages/staffform/IndividualClientInformationWizardStep.vue";
@@ -92,7 +95,7 @@ const router = useRouter();
 
 const { setScrollPoint } = useFocus();
 
-let formData = reactive<FormDataDto>({ ...newFormDataDto() });
+const formData = reactive<FormDataDto>({ ...newFormDataDto() });
 
 // Tab system
 const progressData = reactive([
@@ -241,6 +244,26 @@ const onCancel = () => {
   router.push("/");
 };
 
+const matchError = ref(false);
+const isExactMatch = ref(false);
+
+watch(formData, () => {
+  reviewStatement.value = false;
+
+  if (matchError.value) {
+    fuzzyBus.emit(undefined);
+    resetSubmissionValidators();
+    revalidateBus.emit();
+    matchError.value = false;
+  }
+});
+
+const reviewStatement = ref(false);
+
+watch(reviewStatement, (reviewed) => {
+  validateStep(reviewed);
+});
+
 const lookForMatches = (onEmpty: () => void) => {
   overlayBus.emit({ isVisible: true, message: "", showLoading: true });
 
@@ -261,6 +284,7 @@ const lookForMatches = (onEmpty: () => void) => {
 
   watch([response], () => {
     if (response.value.status === 204) {
+      matchError.value = false;
       overlayBus.emit({ isVisible: false, message: "", showLoading: false });
       onEmpty();
     }
@@ -271,9 +295,14 @@ const lookForMatches = (onEmpty: () => void) => {
     overlayBus.emit({ isVisible: false, message: "", showLoading: false });
 
     if (error.value.response?.status === 409) {
+      const data: FuzzyMatchResult[] = error.value.response.data as FuzzyMatchResult[];
+
+      matchError.value = true;
+      isExactMatch.value = data.some((match) => match.fuzzy === false);
+
       fuzzyBus.emit({
         id: "global",
-        matches: error.value.response.data as FuzzyMatchResult[],
+        matches: data,
       });
     } else {
       handleErrorDefault();
@@ -288,6 +317,16 @@ const moveToNextStep = () => {
   progressData[currentTab.value - 1].kind = "complete";
   progressData[currentTab.value].kind = "current";
   setScrollPoint("step-title");
+
+  // reset matcherError
+  matchError.value = false;
+
+  // reset reviewStatement
+  reviewStatement.value = false;
+
+  resetSubmissionValidators();
+
+  fuzzyBus.emit(undefined);
 };
 
 const onNext = () => {
@@ -302,7 +341,11 @@ const onNext = () => {
   notificationBus.emit(undefined);
   if (currentTab.value + 1 < progressData.length) {
     if (checkStepValidity(currentTab.value)) {
-      lookForMatches(moveToNextStep);
+      if (reviewStatement.value) {
+        moveToNextStep();
+      } else {
+        lookForMatches(moveToNextStep);
+      }
     } else {
       setScrollPoint("top-notification");
     }
@@ -334,7 +377,7 @@ const updateClientType = (value: CodeNameType | undefined) => {
     clientType.value = value;
 
     // reset formData
-    formData = newFormDataDto();
+    Object.assign(formData, newFormDataDto());
 
     const commonBusinessInfo = {
       businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
@@ -604,6 +647,15 @@ const submit = () => {
       <div class="form-footer" role="footer">
         <div class="form-footer-group">
           <div class="form-footer-group-next">
+            <simple-checkbox-input-component
+              v-if="matchError && !isExactMatch"
+              groupId="reviewStatementGroup"
+              checkboxId="reviewStatement"
+              label="Review statement"
+              required-label
+              v-model="reviewStatement"
+              checkbox-label="I've reviewed the possible matching records and they don't correspond to the client I'm creating."
+            />
             <span class="body-compact-01" v-if="!isLast && !progressData[currentTab].valid">
               All required fields must be filled out correctly to enable the "Next" button below
             </span>

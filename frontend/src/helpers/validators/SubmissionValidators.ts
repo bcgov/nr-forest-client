@@ -49,9 +49,15 @@ let submissionValidators: ValidationMessageType[] = [];
  * Register a listener for submission errors on the error bus.
  * When an error is received, update the submission validators array.
  */
-errorBus.on((errors) => {  
-  if(errors){
-    errors.forEach((error: ValidationMessageType) => submissionValidators.push({...error, originalValue:""}));
+errorBus.on((errors, payload = {}) => {
+  if (errors) {
+    errors.forEach((error: ValidationMessageType) => {
+      if (!payload.skipNotification) {
+        notificationBus.emit(error);
+      }
+      const { warning } = payload;
+      submissionValidators.push({ ...error, originalValue: "", warning });
+    });
   }
   revalidateBus.emit();
 });
@@ -62,37 +68,41 @@ errorBus.on((errors) => {
  * @param fieldId - The fieldId of the validator to update.
  * @param value - The new value for the validator's originalValue property.
  */
-const updateValidators = (fieldId: string, value: string): void => {  
-  submissionValidators = submissionValidators.map(
-    (validator: ValidationMessageType) => {
-      if (validator.fieldId === fieldId) {
-        return { ...validator, originalValue: value };
-      }
-      return validator;
+const updateValidators = (fieldId: string, originalValue: string, warning?: boolean): void => {
+  submissionValidators = submissionValidators.map((validator: ValidationMessageType) => {
+    if (validator.fieldId === fieldId) {
+      return { ...validator, originalValue, warning };
     }
-  );
+    return validator;
+  });
 };
 
 /**
  * Create a submission validation function for the specified fieldName.
  * This function validates a value based on the submission validators array.
  * @param fieldName - The name of the field to validate.
- * @returns A function that takes a value and returns an error message if applicable.
+ * @returns A function that takes a value and returns an error (object or string) if applicable.
  */
 export const submissionValidation = (
-  fieldName: string
-): ((value: string) => string) => {
+  fieldName: string,
+): ((value: string) => string | ValidationMessageType) => {
   return (value: string) => {
     const foundError = submissionValidators.find(
       (validator: ValidationMessageType) => validator.fieldId === fieldName
     );
-    if (
-      foundError &&
-      (foundError.originalValue === value || foundError.originalValue === "")
-    ) {
-      updateValidators(fieldName, value);
-      return foundError.errorMsg;
+    if (foundError) {
+      if (foundError && (foundError.originalValue === value || foundError.originalValue === "")) {
+        updateValidators(fieldName, value, foundError.warning);
+        if (foundError.warning) {
+          return foundError;
+        }
+        return foundError.errorMsg;
+      }
     }
     return "";
   };
+};
+
+export const resetSubmissionValidators = (): void => {
+  submissionValidators = [];
 };
