@@ -53,8 +53,14 @@ import ReviewWizardStep from "@/pages/staffform/ReviewWizardStep.vue";
 
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
+// @ts-ignore
+import Check16 from "@carbon/icons-vue/es/checkmark/16";
 
 const clientTypesList: CodeNameType[] = [
+  {
+    code: "I",
+    name: "Individual",
+  },
   {
     code: "BCR",
     name: "BC registered business",
@@ -66,10 +72,6 @@ const clientTypesList: CodeNameType[] = [
   {
     code: "G",
     name: "Government",
-  },
-  {
-    code: "I",
-    name: "Individual",
   },
   {
     code: "F",
@@ -551,7 +553,7 @@ const submit = () => {
           <dropdown-input-component
             id="clientType"
             label="Client type"
-            :initial-value="clientType?.name"
+            :initial-value="clientType?.name || ''"
             required
             required-label
             :model-value="clientTypesList"

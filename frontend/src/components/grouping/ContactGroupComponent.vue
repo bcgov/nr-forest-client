@@ -10,9 +10,11 @@ import type { Contact } from "@/dto/ApplyClientNumberDto";
 // Importing validatons
 import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
+import { getContactDescription } from "@/services/ForestClientService";
 // @ts-ignore
 import Delete16 from "@carbon/icons-vue/es/trash-can/16";
-import { getContactDescription } from "@/services/ForestClientService";
+// @ts-ignore
+import Logout16 from "@carbon/icons-vue/es/logout/16";
 
 //Define the input properties for this component
 const props = defineProps<{
