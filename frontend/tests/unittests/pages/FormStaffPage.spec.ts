@@ -2,6 +2,10 @@ import { createRouter, createMemoryHistory } from 'vue-router';
 import { describe, it, expect } from "vitest";
 import { mount } from '@vue/test-utils';
 import FormStaffPage from '@/pages/FormStaffPage.vue';
+import ForestClientUserSession from '../../../src/helpers/ForestClientUserSession';
+
+
+const isAdminInd = ["CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
 
 describe('FormStaffPage', () => {
 
@@ -29,6 +33,12 @@ describe('FormStaffPage', () => {
     // Extract the text content from each dropdown item
     const dropdownValues = Array.from(dropdownItems).map(item => item.textContent.trim());
     
-    expect(dropdownValues).toEqual(['Individual','BC registered business','First Nation','Government','Ministry of Forests','Unregistered company']);
+    expect(dropdownValues).toEqual([
+      'Individual',
+      'BC registered business',
+      'First Nation','Government',
+      'Ministry of Forests',
+      ...(isAdminInd ? ['Unregistered company'] : [])
+    ])
   });
 });
