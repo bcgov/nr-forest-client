@@ -600,34 +600,21 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         },
       });
 
-      cy.selectAutocompleteEntry(
-        "#businessName",
-        "cor",
-        "C1234567",
-        "@clientSearchCOR"
-      );
-      cy.wait("@clientDetailsC1234567");
-      cy.get("#acronym").should("exist").and("have.value", "");
+      cy.selectAutocompleteEntry('#businessName', 'cor','C1234567','@clientSearchCOR');
+      cy.wait('@clientDetailsC1234567');
+      cy.get('#acronym').should('exist').and("have.value", "");
 
-      cy.fillFormEntry("#acronym", "1".repeat(10));
-      cy.checkInputErrorMessage(
-        "#acronym",
-        "The acronym has a 8 character limit"
-      );
+      cy.fillFormEntry('#acronym', '1'.repeat(10));
+      cy.checkInputErrorMessage('#acronym','The acronym has a 8 character limit');
+      
+      cy.get('#acronym').shadow().find('input').clear();
+      cy.fillFormEntry('#acronym', 'láe');
+      cy.checkInputErrorMessage('#acronym','The acronym can only contain: A-Z or 0-9');
 
-      cy.get("#acronym").shadow().find("input").clear();
-      cy.fillFormEntry("#acronym", "láe");
-      cy.checkInputErrorMessage(
-        "#acronym",
-        "The acronym can only contain: A-Z, a-z, 0-9, space or common symbols"
-      );
+      cy.get('#acronym').shadow().find('input').clear();
+      cy.fillFormEntry('#acronym', 'I');
+      cy.checkInputErrorMessage('#acronym','The acronym must contain at least 3 characters');
 
-      cy.get("#acronym").shadow().find("input").clear();
-      cy.fillFormEntry("#acronym", "I");
-      cy.checkInputErrorMessage(
-        "#acronym",
-        "The acronym must contain at least 3 characters"
-      );
     });
 
     it("should validate birthdate", () => {

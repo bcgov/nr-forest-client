@@ -8,7 +8,7 @@ import "@carbon/web-components/es/components/text-input/index";
 import { useEventBus } from "@vueuse/core";
 import { useFocus } from "@/composables/useFocus";
 // Types
-import { isEmpty } from "@/dto/CommonTypesDto";
+import { isEmpty, type ValidationMessageType } from "@/dto/CommonTypesDto";
 import { DatePart } from "./common";
 // Validators
 import {
@@ -89,11 +89,13 @@ const partError = reactive({
 
 const fullDateError = ref("");
 
+const warning = ref(false);
+
 /**
  * Sets the error and emits an error event.
- * @param errorMessage - the error message
+ * @param errorObject - the error object or string
  */
-const setError = (errorMessage: string | undefined, datePart?: DatePart) => {
+const setError = (errorObject: string | ValidationMessageType | undefined, datePart?: DatePart) => {
   /*
   The error should be emitted whenever it is found, instead of watching and emitting only when it
   changes.
@@ -101,6 +103,13 @@ const setError = (errorMessage: string | undefined, datePart?: DatePart) => {
   rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
   an empty one to allow subscribers to know in case the field still has the same error.
   */
+
+  const errorMessage = typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
+
+  warning.value = false;
+  if (typeof errorObject === "object") {
+    warning.value = errorObject.warning;
+  }
 
   if (datePart === undefined) {
     error.value = errorMessage;
@@ -409,12 +418,15 @@ const datePartComponentRefs = {
   gap: 1rem;
 }
 
-.grouping-02:has([invalid]) ~ .field-error {
+.grouping-02:has([invalid], [warn]) ~ .field-error {
   display: block;
   overflow: visible;
   max-height: 12.5rem;
   font-weight: 400;
-  color: var(--cds-text-error,#da1e28);
+}
+
+.grouping-02:has([invalid]) ~ .field-error {
+  color: var(--cds-text-error, #da1e28);
 }
 
 :deep([id$="Year"]) {
@@ -450,7 +462,8 @@ const datePartComponentRefs = {
         :datePart="DatePart.year"
         :selectedValue="selectedYear"
         :enabled="enabled"
-        :invalid="!!partError[DatePart.year] || !!fullDateError"
+        :invalid="!warning && (!!partError[DatePart.year] || !!fullDateError)"
+        :warning="warning"
         @blur="(event: any) => onBlurYear(event.target.value)"
         @input="selectYear"
         :required="required"
@@ -463,7 +476,8 @@ const datePartComponentRefs = {
         :datePart="DatePart.month"
         :selectedValue="selectedMonth"
         :enabled="enabled"
-        :invalid="!!partError[DatePart.month] || !!fullDateError"
+        :invalid="!warning && (!!partError[DatePart.month] || !!fullDateError)"
+        :warning="warning"
         @blur="(event: any) => onBlurMonth(event.target.value)"
         @input="selectMonth"
         :required="required"
@@ -476,7 +490,8 @@ const datePartComponentRefs = {
         :datePart="DatePart.day"
         :selectedValue="selectedDay"
         :enabled="enabled"
-        :invalid="!!partError[DatePart.day] || !!fullDateError"
+        :invalid="!warning && (!!partError[DatePart.day] || !!fullDateError)"
+        :warning="warning"
         @blur="(event: any) => onBlurDay(event.target.value)"
         @input="selectDay"
         :required="required"
