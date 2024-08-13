@@ -70,6 +70,17 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.ROLE_EDITOR,
             ApplicationConstant.ROLE_ADMIN);
 
+    // Added a separate rule for the districts endpoint due to the processor service
+    authorize
+        .pathMatchers(HttpMethod.GET, "/api/codes/districts/**")
+        .hasAnyRole(ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+            ApplicationConstant.USERTYPE_BCSC_USER,
+            ApplicationConstant.USERTYPE_SERVICE_USER
+        );
+
     // Viewer, editor, admin, BCeIDBusiness and BCSC users can GET from the codes endpoint
     authorize
         .pathMatchers(HttpMethod.GET, "/api/codes/**")
