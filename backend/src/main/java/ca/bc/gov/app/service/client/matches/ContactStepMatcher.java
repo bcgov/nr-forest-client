@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.client.matches;
 
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.dto.client.StepMatchEnum;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.exception.InvalidRequestObjectException;
@@ -93,64 +94,82 @@ public class ContactStepMatcher implements StepMatcher {
             .stream()
             // Fix nonexistent index
             .map(address -> address.withIndexed(indexCounter.getAndIncrement()))
-            .map(contact ->
-                //Concat all the results for each address
-                Flux.concat(
-                    processResult(
-                        legacyService
-                            .searchGeneric(
-                                "email",
-                                contact.email()
-                            ),
-                        FIELD_NAME_PREFIX + contact.index() + "].emailAddress",
-                        false
-                    ).as(Flux::from),
-                    processResult(
-                        legacyService
-                            .searchGeneric(
-                                PHONE_CONSTANT,
-                                contact.phoneNumber()
-                            ),
-                        FIELD_NAME_PREFIX + contact.index() + "].businessPhoneNumber",
-                        false
-                    ).as(Flux::from),
-                    processResult(
-                        legacyService
-                            .searchGeneric(
-                                PHONE_CONSTANT,
-                                contact.secondaryPhoneNumber()
-                            ),
-                        FIELD_NAME_PREFIX + contact.index() + "].secondaryPhoneNumber",
-                        false
-                    ).as(Flux::from),
-                    processResult(
-                        legacyService
-                            .searchGeneric(
-                                PHONE_CONSTANT,
-                                contact.faxNumber()
-                            ),
-                        FIELD_NAME_PREFIX + contact.index() + "].faxNumber",
-                        false
-                    ).as(Flux::from),
-                    processResult(
-                        legacyService
-                            .searchContact(
-                                new ContactSearchDto(
-                                    contact.firstName(),
-                                    null,
-                                    contact.lastName(),
-                                    contact.email(),
-                                    contact.phoneNumber(),
-                                    contact.secondaryPhoneNumber(),
-                                    contact.faxNumber()
-                                )
-                            ),
-                        FIELD_NAME_PREFIX + contact.index() + "].firstName",
-                        true
-                    ).as(Flux::from)
-                )
-            )
+            //Concat all the results for each address
+            .map(this::processSingleContact)
             .reduce(Flux.empty(), Flux::concat)
             .as(this::reduceMatchResults);
+  }
+
+  private Flux<MatchResult> processSingleContact(ClientContactDto contact) {
+
+    Mono<MatchResult> contactEmailFull = processResult(
+        legacyService
+            .searchGeneric(
+                "email",
+                contact.email()
+            ),
+        FIELD_NAME_PREFIX + contact.index() + "].email",
+        true,
+        false
+    );
+
+    Mono<MatchResult> businessPhoneFull = processResult(
+        legacyService
+            .searchGeneric(
+                PHONE_CONSTANT,
+                contact.phoneNumber()
+            ),
+        FIELD_NAME_PREFIX + contact.index() + "].phoneNumber",
+        true,
+        false
+    );
+
+    Mono<MatchResult> secondaryPhoneFull = processResult(
+        legacyService
+            .searchGeneric(
+                PHONE_CONSTANT,
+                contact.secondaryPhoneNumber()
+            ),
+        FIELD_NAME_PREFIX + contact.index() + "].secondaryPhoneNumber",
+        true,
+        false
+    );
+
+    Mono<MatchResult> faxPhoneFull = processResult(
+        legacyService
+            .searchGeneric(
+                PHONE_CONSTANT,
+                contact.faxNumber()
+            ),
+        FIELD_NAME_PREFIX + contact.index() + "].faxNumber",
+        true,
+        false
+    );
+
+    Mono<MatchResult> contactFull = processResult(
+        legacyService
+            .searchContact(
+                new ContactSearchDto(
+                    contact.firstName(),
+                    null,
+                    contact.lastName(),
+                    contact.email(),
+                    contact.phoneNumber(),
+                    contact.secondaryPhoneNumber(),
+                    contact.faxNumber()
+                )
+            ),
+        FIELD_NAME_PREFIX + contact.index() + "].firstName",
+        true,
+        true
+    );
+
+    return Flux.concat(
+            contactEmailFull,
+            businessPhoneFull,
+            secondaryPhoneFull,
+            faxPhoneFull,
+            contactFull
+        );
   }
 }

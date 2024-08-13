@@ -53,7 +53,8 @@ public interface StepMatcher {
   default Mono<MatchResult> processResult(
       Flux<ForestClientDto> response,
       String fieldName,
-      boolean isFuzzy
+      boolean isFuzzy,
+      boolean isPartial
   ) {
     return response
         .map(ForestClientDto::clientNumber)
@@ -63,7 +64,7 @@ public interface StepMatcher {
             clientNumbers -> getLogger().info("Matched client number(s) [{}] for field {}",
                 clientNumbers, fieldName)
         )
-        .map(clientNumbers -> new MatchResult(fieldName, clientNumbers, isFuzzy));
+        .map(clientNumbers -> new MatchResult(fieldName, clientNumbers, isFuzzy, isPartial));
   }
 
   /**

@@ -106,16 +106,19 @@ public Logger getLogger() {
                     processResult(
                         individualFuzzyMatch,
                         "businessInformation.businessName",
+                        true,
                         true
                     ),
                     processResult(
                         individualFullMatch,
                         "businessInformation.businessName",
+                        false,
                         false
                     ),
                     processResult(
                         documentFullMatch,
                         "businessInformation.identification",
+                        false,
                         false
                     )
                 )

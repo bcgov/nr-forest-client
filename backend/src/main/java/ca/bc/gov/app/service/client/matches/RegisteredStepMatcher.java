@@ -151,6 +151,7 @@ public class RegisteredStepMatcher implements StepMatcher {
             processResult(
                 clientNameFuzzyMatch,
                 BUSINESS_FIELD_NAME,
+                true,
                 true
             ),
 
@@ -158,6 +159,7 @@ public class RegisteredStepMatcher implements StepMatcher {
             processResult(
                 clientNameFullMatch,
                 BUSINESS_FIELD_NAME,
+                false,
                 false
             ),
 
@@ -166,6 +168,7 @@ public class RegisteredStepMatcher implements StepMatcher {
             processResult(
                 clientRegistrationFullMatch,
                 BUSINESS_FIELD_NAME,
+                false,
                 false
             ),
 
@@ -173,6 +176,7 @@ public class RegisteredStepMatcher implements StepMatcher {
             processResult(
                 dbaFuzzyMatch,
                 "businessInformation.doingBusinessAs",
+                true,
                 true
             ),
 
@@ -180,6 +184,7 @@ public class RegisteredStepMatcher implements StepMatcher {
             processResult(
                 dbaFullMatch,
                 "businessInformation.doingBusinessAs",
+                false,
                 false
             ),
 
@@ -187,6 +192,7 @@ public class RegisteredStepMatcher implements StepMatcher {
             processResult(
                 clientAcronymFullMatch,
                 "businessInformation.clientAcronym",
+                false,
                 false
             ),
 
@@ -195,6 +201,7 @@ public class RegisteredStepMatcher implements StepMatcher {
             processResult(
                 individualFuzzyMatch,
                 BUSINESS_FIELD_NAME,
+                true,
                 true
             )
         )
