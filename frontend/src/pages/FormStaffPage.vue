@@ -51,10 +51,14 @@ import LocationsWizardStep from "@/pages/staffform/LocationsWizardStep.vue";
 import ContactsWizardStep from "@/pages/staffform/ContactsWizardStep.vue";
 import ReviewWizardStep from "@/pages/staffform/ReviewWizardStep.vue";
 
+// Session
+import ForestClientUserSession from "@/helpers/ForestClientUserSession";
+
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
-// @ts-ignore
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
+
+const isAdminInd = ["CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
 
 const clientTypesList: CodeNameType[] = [
   {
@@ -77,10 +81,10 @@ const clientTypesList: CodeNameType[] = [
     code: "F",
     name: "Ministry of Forests",
   },
-  {
+  ...(isAdminInd ? [{
     code: "U",
     name: "Unregistered company",
-  },
+  }] : []),
 ];
 
 const notificationBus = useEventBus<ValidationMessageType | undefined>(
