@@ -199,7 +199,7 @@ public class RegisteredStepMatcher implements StepMatcher {
             //We point to the businessName as this is the only field the user has access to
             processResult(
                 individualFuzzyMatch,
-                BUSINESS_FIELD_NAME,
+                "businessInformation.individual",
                 true,
                 true
             )
