@@ -17,6 +17,9 @@ describe("General Form", () => {
       statusCode: 200,
       body: {},
     });
+    cy.intercept("GET", "**/api/codes/countries/CA/provinces?page=0&size=250", {
+      fixture: "provinces.json",
+    }).as("getProvinces");
   });
 
   it("should render the component", () => {
