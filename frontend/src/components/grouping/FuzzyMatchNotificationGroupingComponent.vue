@@ -31,71 +31,80 @@ const fuzzyMatchedError = ref<FuzzyMatcherData>(
   },
 );
 
-const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?: any) => {
-  if (event && event.matches.length > 0 && event.id === props.id) {
-    fuzzyMatchedError.value.show = true;
-    fuzzyMatchedError.value.fuzzy = true;
-    fuzzyMatchedError.value.matches = [];
-    for (const rawMatch of event.matches) {
-      const match: MiscFuzzyMatchResult = { result: rawMatch };
-      if (!rawMatch.fuzzy) {
-        fuzzyMatchedError.value.fuzzy = false;
-      }
-      fuzzyMatchedError.value.matches.push(match);
-
-      const identificationTypeGroup = ["identificationType.text", "identificationProvince.text"];
-      const clientIdentificationGroup = [
-        "businessInformation.clientIdentification",
-        "businessInformation.clientTypeOfId",
-        "businessInformation.clientIdNumber",
-      ];
-
-      const warning = rawMatch.fuzzy;
-      const createErrorEvent = (fieldList: string[]) =>
-        fieldList.map((fieldId) => ({
-          fieldId,
-          errorMsg: warning ? "There's already a client with this name" : "Client already exists",
-        }));
-      const emitFieldErrors = (fieldList: string[]) => {
-        const errorEvent = createErrorEvent(fieldList);
-        errorBus.emit(errorEvent, {
-          skipNotification: true,
-          warning,
-        });
-      };
-      const label = (matchedFieldsText) => {
-        const prefix = warning ? "Partial matching on" : "Matching on";
-        return `${prefix} ${matchedFieldsText}`;
-      }
-      if (rawMatch.field === "businessInformation.businessName") {
-        if (rawMatch.fuzzy) {
-          match.label = label("name and date of birth");
-          emitFieldErrors([
-            "businessInformation.firstName",
-            "businessInformation.lastName",
-            "businessInformation.birthdate",
-          ]);
-        } else {
-          match.label = label("name, date of birth and ID number");
-          emitFieldErrors([
-            "businessInformation.firstName",
-            "businessInformation.lastName",
-            "businessInformation.birthdate",
-            ...clientIdentificationGroup,
-          ]);
-        }
-      }
-      if (rawMatch.field === "businessInformation.identification") {
-        match.label = label("ID type and ID number");
-        emitFieldErrors([...identificationTypeGroup, ...clientIdentificationGroup]);
-      }
-    }
-  } else {
-    fuzzyMatchedError.value.show = false;
-    fuzzyMatchedError.value.fuzzy = false;
-    fuzzyMatchedError.value.matches = [];
-  }
+const fieldNameToDescription : Record<string, string> = {
+  "businessInformation.businessName": "client name",
+  "businessInformation.firstName": "name",
+  "businessInformation.lastName": "name",
+  "businessInformation.birthdate": "date of birth",
+  "businessInformation.clientIdentification": "identification type",
+  "businessInformation.clientTypeOfId": "identification type",
+  "businessInformation.clientIdNumber": "identification number",
+  "identificationType.text": "identification type",
+  "identificationProvince.text": "identification province",
+  "businessInformation.clientAcronym": "client acronym",
+  "businessInformation.doingBusinessAs": "doing business as",
+  "businessInformation.workSafeBcNumber": "WorkSafeBC number",
 };
+
+const fieldNameToNamingGroups : Record<string, string> = {
+  "businessInformation.businessName": ["businessInformation.businessName"],
+  "businessInformation.firstName": [
+      "businessInformation.firstName",
+      "businessInformation.lastName",
+      "businessInformation.birthdate"
+    ],
+  "businessInformation.lastName": [
+      "businessInformation.firstName",
+      "businessInformation.lastName",
+      "businessInformation.birthdate",
+      "businessInformation.identificationType",
+      "businessInformation.clientTypeOfId",
+      "businessInformation.clientIdNumber",
+      "identificationType.text", 
+      "identificationProvince.text",
+      "businessInformation.clientIdentification",
+    ],
+  "businessInformation.clientIdentification": [
+      "businessInformation.identificationType",
+      "businessInformation.clientTypeOfId",
+      "businessInformation.clientIdNumber",
+      "identificationType.text", 
+      "identificationProvince.text",
+      "businessInformation.clientIdentification",
+    ],
+    "businessInformation.doingBusinessAs": ["businessInformation.doingBusinessAs"],
+    "businessInformation.clientAcronym": ["businessInformation.clientAcronym"],
+};
+
+const fieldNameToLabel : Record<string, string> = {
+  "businessInformation.firstName": "name and date of birth",
+  "businessInformation.lastName": "name, date of birth and ID number",
+  "businessInformation.clientIdentification": "ID type and ID number",
+};
+
+const createErrorEvent = (fieldList: string[], warning: boolean) =>
+  fieldList.map((fieldId) => ({
+    fieldId,
+    errorMsg: warning ? `There's already a client with this "${fieldNameToDescription[fieldId]}"` : "Client already exists",
+  }));
+
+const emitFieldErrors = (fieldList: string[], warning: boolean) => {
+  const errorEvent = createErrorEvent(fieldList, warning);
+  errorBus.emit(errorEvent, {
+    skipNotification: true,
+    warning,
+  });
+};
+
+const label = (matchedFieldsText: string, warning: boolean) => {
+
+  if(!matchedFieldsText)
+  return '';
+
+  const prefix = warning ? "Partial matching on" : "Matching on";
+  return `${prefix} ${matchedFieldsText}`;
+}
+
 
 const getListItemContent = ref((match: MiscFuzzyMatchResult) => {
   return match && match.result?.match ? renderListItem(match) : "";
@@ -160,8 +169,38 @@ const getUniqueClientNumbers = (matches: MiscFuzzyMatchResult[]) => {
 
 const uniqueClientNumbers = computed(() => getUniqueClientNumbers(fuzzyMatchedError.value.matches));
 
+
+const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?: any) => {
+  if (event && event.matches.length > 0 && event.id === props.id) {
+        
+    fuzzyMatchedError.value.show = true;
+    fuzzyMatchedError.value.fuzzy = true;
+    fuzzyMatchedError.value.matches = [];
+
+    for (const rawMatch of event.matches) {
+
+      const match: MiscFuzzyMatchResult = { result: rawMatch,label: label(fieldNameToLabel[rawMatch.field], rawMatch.fuzzy) };
+      if (!rawMatch.fuzzy) {
+        fuzzyMatchedError.value.fuzzy = false;
+      }
+      
+      fuzzyMatchedError.value.matches.push(match);
+      emitFieldErrors(fieldNameToNamingGroups[rawMatch.field], rawMatch.fuzzy);
+    }
+  } else {
+    fuzzyMatchedError.value.show = false;
+    fuzzyMatchedError.value.fuzzy = false;
+    fuzzyMatchedError.value.matches = [];
+  }
+};
+
 // watch for fuzzy match error messages
 fuzzyBus.on(handleFuzzyErrorMessage);
+
+// just for debugs
+errorBus.on((errors,params) => {
+  console.log("errors", errors,"params", params);
+});
 </script>
 
 <template>

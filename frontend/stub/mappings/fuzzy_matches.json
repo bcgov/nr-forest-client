@@ -56,7 +56,7 @@
       },
       "response": {
         "status": 409,
-        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001,00000009\", \"fuzzy\":true}]",
+        "body": "[{\"field\":\"businessInformation.firstName\", \"match\":\"00000001,00000009\", \"fuzzy\":true,\"partialMatch\":true}]",
         "headers": {
           "Content-Type": "application/json"
         },
@@ -111,7 +111,7 @@
       },
       "response": {
         "status": 409,
-        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "body": "[{\"field\":\"businessInformation.lastName\", \"match\":\"00000001\", \"fuzzy\":false,\"partialMatch\":false}]",
         "headers": {
           "Content-Type": "application/json"
         },
@@ -189,6 +189,12 @@
           },
           {
             "matchesJsonPath": {
+              "expression": "$.businessInformation.legalType",
+              "equalTo": "BC"
+            }
+          },
+          {
+            "matchesJsonPath": {
               "expression": "$.businessInformation.businessName",
               "equalTo": "Legros, Rutherford and Runte (UT)"
             }
@@ -198,6 +204,49 @@
       "response": {
         "status": 409,
         "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for Registered",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "C"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.legalType",
+              "equalTo": "BC"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Botsford, McKenzie and Paucek (UT)"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\":true}]",
         "headers": {
           "Content-Type": "application/json"
         },
@@ -295,7 +344,7 @@
           {
             "matchesJsonPath": {
               "expression": "$.businessInformation.clientAcronym",
-              "equalTo": "Fail"
+              "equalTo": "FAIL"
             }
           }
         ]

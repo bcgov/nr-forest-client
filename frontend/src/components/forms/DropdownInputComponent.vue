@@ -7,7 +7,7 @@ import type { CDSComboBox } from "@carbon/web-components";
 import { useEventBus } from "@vueuse/core";
 // Types
 import type { CodeNameType } from "@/dto/CommonTypesDto";
-import { isEmpty } from "@/dto/CommonTypesDto";
+import { isEmpty, type ValidationMessageType } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -37,6 +37,8 @@ const error = ref<string | undefined>(props.errorMessage ?? "");
 
 const revalidateBus = useEventBus<void>("revalidate-bus");
 
+const warning = ref(false);
+
 //We set it as a separated ref due to props not being updatable
 const selectedValue = ref(props.initialValue);
 // This is to make the input list contains the selected value to show when component render
@@ -59,6 +61,30 @@ const emitValueChange = (newValue: string): void => {
   emit("empty", isEmpty(newValue));
 };
 
+
+/**
+ * Sets the error and emits an error event.
+ * @param errorObject - the error object or string
+ */
+const setError = (errorObject: string | ValidationMessageType | undefined) => {
+  const errorMessage = typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
+  error.value = errorMessage || "";
+
+  warning.value = false;
+  if (typeof errorObject === "object") {
+    warning.value = errorObject.warning;
+  }
+
+  /*
+  The error should be emitted whenever it is found, instead of watching and emitting only when it
+  changes.
+  Because the empty event is always emitted, even when it remains the same payload, and then we
+  rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
+  an empty one to allow subscribers to know in case the field still has the same error.
+  */
+  emit('error', error.value);
+}
+
 /**
  * Performs all validations and returns the first error message.
  * If there's no error from the validations, returns props.errorMessage.
@@ -75,14 +101,17 @@ const validatePurely = (newValue: string): string | undefined => {
           if (errorMessage) return true;
           return false;
         })
-        .shift() ?? props.errorMessage
+        .reduce(
+          (acc, errorMessage) => acc || errorMessage,
+          props.errorMessage
+        )
     );
   }
 }
 
 const validateInput = (newValue: any) => {
   if (props.validations) {
-    error.value = validatePurely(newValue);
+    setError(validatePurely(newValue));
   }
 };
 
@@ -133,10 +162,9 @@ watch([selectedValue], () => {
 watch(inputList, () => (selectedValue.value = props.initialValue));
 
 //We watch for error changes to emit events
-watch(error, () => emit("error", error.value));
 watch(
   () => props.errorMessage,
-  () => (error.value = props.errorMessage)
+  () => setError(props.errorMessage)
 );
 watch(
   () => props.initialValue,
@@ -203,6 +231,7 @@ const safeHelperText = computed(() => props.tip || " ");
         :autocomplete="autocomplete"
         :title-text="label"
         :aria-label="label"
+        :class="warning ? 'warning' : ''"
         :clear-selection-label="`Clear ${label}`"
         :required="required"
         :data-required-label="requiredLabel"
@@ -210,9 +239,11 @@ const safeHelperText = computed(() => props.tip || " ");
         :helper-text="safeHelperText"
         :label="placeholder"
         :value="selectedValue"
-        :invalid="error ? true : false"
+        :invalid="!warning && error ? true : false"
         :aria-invalid="ariaInvalidString"
-        :invalidText="error"
+        :invalid-text="!warning && error"
+        :warn="warning"
+        :warn-text="warning && error"
         @cds-combo-box-selected="selectItem"
         @focus="isFocused = true"
         @blur="
@@ -223,7 +254,7 @@ const safeHelperText = computed(() => props.tip || " ");
         "
         :data-focus="id"
         :data-scroll="id"
-        v-shadow="3"
+        v-shadow="4"
       >
         <cds-combo-box-item 
           v-for="option in inputList"
