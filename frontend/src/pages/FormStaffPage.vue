@@ -304,6 +304,8 @@ const lookForMatches = (onEmpty: () => void) => {
     // Disable the overlay
     overlayBus.emit({ isVisible: false, message: "", showLoading: false });
 
+    let firstNonGlobalId: string;
+
     if (error.value.response?.status === 409) {
       const data: FuzzyMatchResult[] = error.value.response.data as FuzzyMatchResult[];
 
@@ -329,12 +331,19 @@ const lookForMatches = (onEmpty: () => void) => {
       for (const id in fuzzyEventList) {
         const fuzzyEvent = fuzzyEventList[id];
         fuzzyBus.emit(fuzzyEvent);
+        if (!firstNonGlobalId && id !== "global") {
+          firstNonGlobalId = id;
+        }
       }
     } else {
       handleErrorDefault();
     }
 
-    setScrollPoint("top-notification");
+    if (firstNonGlobalId) {
+      setScrollPoint(firstNonGlobalId);
+    } else {
+      setScrollPoint("top-notification");
+    }
   });
 };
 
