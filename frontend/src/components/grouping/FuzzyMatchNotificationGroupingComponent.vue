@@ -33,8 +33,9 @@ const fuzzyMatchedError = ref<FuzzyMatcherData>(
 
 const fieldNameToDescription : Record<string, string> = {
   "businessInformation.businessName": "client name",
-  "businessInformation.firstName": "name",
-  "businessInformation.lastName": "name",
+  "businessInformation.registrationNumber": "registration number",
+  "businessInformation.individual": "name and birthdate",
+  "businessInformation.individualAndDocument": "name, birthdate and identification number",
   "businessInformation.birthdate": "date of birth",
   "businessInformation.clientIdentification": "identification type",
   "businessInformation.clientTypeOfId": "identification type",
@@ -48,12 +49,13 @@ const fieldNameToDescription : Record<string, string> = {
 
 const fieldNameToNamingGroups : Record<string, string> = {
   "businessInformation.businessName": ["businessInformation.businessName"],
-  "businessInformation.firstName": [
+  "businessInformation.registrationNumber": ["businessInformation.businessName"],
+  "businessInformation.individual": [
       "businessInformation.firstName",
       "businessInformation.lastName",
       "businessInformation.birthdate"
     ],
-  "businessInformation.lastName": [
+  "businessInformation.individualAndDocument": [
       "businessInformation.firstName",
       "businessInformation.lastName",
       "businessInformation.birthdate",
@@ -77,15 +79,15 @@ const fieldNameToNamingGroups : Record<string, string> = {
 };
 
 const fieldNameToLabel : Record<string, string> = {
-  "businessInformation.firstName": "name and date of birth",
-  "businessInformation.lastName": "name, date of birth and ID number",
+  "businessInformation.individual": "name and date of birth",
+  "businessInformation.individualAndDocument": "name, date of birth and ID number",
   "businessInformation.clientIdentification": "ID type and ID number",
 };
 
 const createErrorEvent = (fieldList: string[], warning: boolean) =>
   fieldList.map((fieldId) => ({
     fieldId,
-    errorMsg: warning ? `There's already a client with this "${fieldNameToDescription[fieldId]}"` : "Client already exists",
+    errorMsg: warning ? `There's already a client with this "${fieldNameToDescription[fieldId] || convertFieldNameToSentence(fieldId).toLowerCase()}"` : "Client already exists",
   }));
 
 const emitFieldErrors = (fieldList: string[], warning: boolean) => {
@@ -104,7 +106,6 @@ const label = (matchedFieldsText: string, warning: boolean) => {
   const prefix = warning ? "Partial matching on" : "Matching on";
   return `${prefix} ${matchedFieldsText}`;
 }
-
 
 const getListItemContent = ref((match: MiscFuzzyMatchResult) => {
   return match && match.result?.match ? renderListItem(match) : "";

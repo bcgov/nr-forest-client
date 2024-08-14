@@ -56,7 +56,7 @@
       },
       "response": {
         "status": 409,
-        "body": "[{\"field\":\"businessInformation.firstName\", \"match\":\"00000001,00000009\", \"fuzzy\":true,\"partialMatch\":true}]",
+        "body": "[{\"field\":\"businessInformation.individual\", \"match\":\"00000001,00000009\", \"fuzzy\":true,\"partialMatch\":true}]",
         "headers": {
           "Content-Type": "application/json"
         },
@@ -111,7 +111,7 @@
       },
       "response": {
         "status": 409,
-        "body": "[{\"field\":\"businessInformation.lastName\", \"match\":\"00000001\", \"fuzzy\":false,\"partialMatch\":false}]",
+        "body": "[{\"field\":\"businessInformation.individualAndDocument\", \"match\":\"00000001\", \"fuzzy\":false,\"partialMatch\":false},{\"field\":\"businessInformation.individual\", \"match\":\"00000001\", \"fuzzy\":true,\"partialMatch\":true}]",
         "headers": {
           "Content-Type": "application/json"
         },
@@ -153,7 +153,7 @@
           {
             "matchesJsonPath": {
               "expression": "$.businessInformation.clientIdentification",
-              "equalTo": "1234567"
+              "equalTo": "7654321"
             }
           }
         ]
@@ -247,6 +247,43 @@
       "response": {
         "status": 409,
         "body": "[{\"field\":\"businessInformation.businessName\", \"match\":\"00000001\", \"fuzzy\":true}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for Registered",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "C"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.registrationNumber",
+              "equalTo": "LP3983048"
+            }
+          }          
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"businessInformation.registrationNumber\", \"match\":\"00000001\", \"fuzzy\":false}]",
         "headers": {
           "Content-Type": "application/json"
         },
