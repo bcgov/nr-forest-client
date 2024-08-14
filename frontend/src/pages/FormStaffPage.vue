@@ -290,6 +290,16 @@ const lookForMatches = (onEmpty: () => void) => {
     }
   });
 
+  const getFuzzyNotificationId = (field: string) => {
+    let id = "global";
+    const parts = field.split(".");
+    if (parts[0] === "location") {
+      // Example: location.addresses[0]
+      id = parts[0] + "." + parts[1];
+    }
+    return id;
+  };
+
   watch([error], () => {
     // Disable the overlay
     overlayBus.emit({ isVisible: false, message: "", showLoading: false });
@@ -300,10 +310,26 @@ const lookForMatches = (onEmpty: () => void) => {
       matchError.value = true;
       isExactMatch.value = data.some((match) => match.fuzzy === false);
 
-      fuzzyBus.emit({
-        id: "global",
-        matches: data,
-      });
+      const fuzzyEventList: Record<string, FuzzyMatcherEvent> = {};
+      for (const result of data) {
+        const { field } = result;
+        const id = getFuzzyNotificationId(field);
+        let fuzzyEvent = fuzzyEventList[id];
+        if (!fuzzyEvent) {
+          fuzzyEvent = {
+            id,
+            matches: [],
+          };
+          fuzzyEventList[id] = fuzzyEvent;
+        }
+
+        // Results with the same derived id are grouped in the same event
+        fuzzyEvent.matches.push(result);
+      }
+      for (const id in fuzzyEventList) {
+        const fuzzyEvent = fuzzyEventList[id];
+        fuzzyBus.emit(fuzzyEvent);
+      }
     } else {
       handleErrorDefault();
     }

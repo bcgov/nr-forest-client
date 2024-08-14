@@ -17,7 +17,7 @@ import { convertFieldNameToSentence } from "@/services/ForestClientService";
 const props = defineProps<{
   id: string;
   error?: FuzzyMatcherData;
-  businessName: string;
+  businessName?: string;
 }>();
 
 const fuzzyBus = useEventBus<FuzzyMatcherEvent>("fuzzy-error-notification");
@@ -28,72 +28,123 @@ const fuzzyMatchedError = ref<FuzzyMatcherData>(
     show: false,
     fuzzy: false,
     matches: [],
+    description: "",
   },
 );
 
+const clearNotification = () => {
+  fuzzyMatchedError.value.show = false;
+  fuzzyMatchedError.value.fuzzy = false;
+  fuzzyMatchedError.value.matches = [];
+  fuzzyMatchedError.value.description = "";
+};
+
 const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?: any) => {
-  if (event && event.matches.length > 0 && event.id === props.id) {
-    fuzzyMatchedError.value.show = true;
-    fuzzyMatchedError.value.fuzzy = true;
-    fuzzyMatchedError.value.matches = [];
-    for (const rawMatch of event.matches) {
-      const match: MiscFuzzyMatchResult = { result: rawMatch };
-      if (!rawMatch.fuzzy) {
-        fuzzyMatchedError.value.fuzzy = false;
-      }
-      fuzzyMatchedError.value.matches.push(match);
+  if (!event) {
+    clearNotification();
+    return;
+  }
+  if (event.id === props.id) {
+    if (event.matches.length > 0) {
+      fuzzyMatchedError.value.show = true;
+      fuzzyMatchedError.value.fuzzy = true;
+      fuzzyMatchedError.value.matches = [];
+      for (const rawMatch of event.matches) {
+        const match: MiscFuzzyMatchResult = { result: rawMatch };
+        if (!rawMatch.fuzzy) {
+          fuzzyMatchedError.value.fuzzy = false;
+        }
+        fuzzyMatchedError.value.matches.push(match);
 
-      const identificationTypeGroup = ["identificationType.text", "identificationProvince.text"];
-      const clientIdentificationGroup = [
-        "businessInformation.clientIdentification",
-        "businessInformation.clientTypeOfId",
-        "businessInformation.clientIdNumber",
-      ];
+        const identificationTypeGroup = ["identificationType.text", "identificationProvince.text"];
+        const clientIdentificationGroup = [
+          "businessInformation.clientIdentification",
+          "businessInformation.clientTypeOfId",
+          "businessInformation.clientIdNumber",
+        ];
 
-      const warning = rawMatch.fuzzy;
-      const createErrorEvent = (fieldList: string[]) =>
-        fieldList.map((fieldId) => ({
-          fieldId,
-          errorMsg: warning ? "There's already a client with this name" : "Client already exists",
-        }));
-      const emitFieldErrors = (fieldList: string[]) => {
-        const errorEvent = createErrorEvent(fieldList);
-        errorBus.emit(errorEvent, {
-          skipNotification: true,
-          warning,
-        });
-      };
-      const label = (matchedFieldsText) => {
-        const prefix = warning ? "Partial matching on" : "Matching on";
-        return `${prefix} ${matchedFieldsText}`;
-      }
-      if (rawMatch.field === "businessInformation.businessName") {
-        if (rawMatch.fuzzy) {
-          match.label = label("name and date of birth");
+        const warning = rawMatch.fuzzy;
+        const createErrorEvent = (fieldList: string[]) =>
+          fieldList.map((fieldId) => ({
+            fieldId,
+            errorMsg: warning ? "There's already a client with this name" : "Client already exists",
+          }));
+        const emitFieldErrors = (fieldList: string[]) => {
+          const errorEvent = createErrorEvent(fieldList);
+          errorBus.emit(errorEvent, {
+            skipNotification: true,
+            warning,
+          });
+        };
+        const label = (matchedFieldsText) => {
+          const prefix = warning ? "Partial matching on" : "Matching on";
+          return `${prefix} ${matchedFieldsText}`;
+        };
+        if (rawMatch.field === "businessInformation.businessName") {
+          if (rawMatch.fuzzy) {
+            match.label = label("name and date of birth");
+            emitFieldErrors([
+              "businessInformation.firstName",
+              "businessInformation.lastName",
+              "businessInformation.birthdate",
+            ]);
+          } else {
+            match.label = label("name, date of birth and ID number");
+            emitFieldErrors([
+              "businessInformation.firstName",
+              "businessInformation.lastName",
+              "businessInformation.birthdate",
+              ...clientIdentificationGroup,
+            ]);
+          }
+        }
+        if (rawMatch.field === "businessInformation.identification") {
+          match.label = label("ID type and ID number");
+          emitFieldErrors([...identificationTypeGroup, ...clientIdentificationGroup]);
+        }
+
+        const streetAddressGroups = rawMatch.field.match(
+          /location\.addresses\[(\d+)\]\.streetAddress/,
+        );
+        if (streetAddressGroups) {
+          match.label = label("one or more locations");
+          const id = streetAddressGroups[1];
           emitFieldErrors([
-            "businessInformation.firstName",
-            "businessInformation.lastName",
-            "businessInformation.birthdate",
-          ]);
-        } else {
-          match.label = label("name, date of birth and ID number");
-          emitFieldErrors([
-            "businessInformation.firstName",
-            "businessInformation.lastName",
-            "businessInformation.birthdate",
-            ...clientIdentificationGroup,
+            `location.addresses[${id}].streetAddress`,
+            `location.addresses[${id}].city`,
+            `location.addresses[${id}].province`,
+            `location.addresses[${id}].country`,
+            `location.addresses[${id}].postalCode`,
           ]);
         }
+
+        const emailAddressGroups = rawMatch.field.match(/location\.addresses\[(\d+)\]\.emailAddress/);
+        if (emailAddressGroups) {
+          match.label = label("one or more locations");
+          const id = emailAddressGroups[1];
+          emitFieldErrors([`location.addresses[${id}].emailAddress`]);
+        }
       }
-      if (rawMatch.field === "businessInformation.identification") {
-        match.label = label("ID type and ID number");
-        emitFieldErrors([...identificationTypeGroup, ...clientIdentificationGroup]);
+
+      const fuzzySuffix =
+        "Review their information in the Client Management System to determine if you should create a new client:";
+
+      if (props.id === "global") {
+        fuzzyMatchedError.value.description = fuzzyMatchedError.value.fuzzy
+          ? `${uniqueClientNumbers.value.length} similar client
+            ${uniqueClientNumbers.value.length === 1 ? "record was" : "records were"}
+            found. ${fuzzySuffix}`
+          : `Looks like ”${props.businessName}” has a client number. Review their information in the
+            Management System if necessary:`;
       }
+      if (props.id.startsWith("location.addresses")) {
+        fuzzyMatchedError.value.description = `${uniqueClientNumbers.value.length} client
+            ${uniqueClientNumbers.value.length === 1 ? "record was" : "records were"}
+            found with locations similar to this one. ${fuzzySuffix}`;
+      }
+    } else {
+      fuzzyMatchedError.value.show = false;
     }
-  } else {
-    fuzzyMatchedError.value.show = false;
-    fuzzyMatchedError.value.fuzzy = false;
-    fuzzyMatchedError.value.matches = [];
   }
 };
 
@@ -176,17 +227,7 @@ fuzzyBus.on(handleFuzzyErrorMessage);
   >
     <div>
       <span class="body-compact-02">
-        <template v-if="fuzzyMatchedError.fuzzy">
-          {{ uniqueClientNumbers.length }} similar client
-          <span v-if="uniqueClientNumbers.length === 1">record was</span>
-          <span v-else>records were</span>
-          found. Review their information in the Client Management System to determine if you should
-          should create a new client:
-        </template>
-        <template v-else>
-          Looks like ”{{ businessName }}” has a client number. Review their information in the
-          Management System if necessary:
-        </template>
+        {{ fuzzyMatchedError.description }}
       </span>
       <ul>
         <!-- eslint-disable-next-line vue/no-v-html -->

@@ -209,6 +209,13 @@ const updateLocationName = (locationName: string, index: number) => {
       This is the address where the client receives mail.
     </p>
   </cds-inline-notification>
+  <div class="errors-container hide-when-less-than-two-children">
+    <!--
+    The parent div is necessary to avoid the div.header-offset below from interfering in the flex flow.
+    -->
+    <div data-scroll="location.addresses[0]" class="header-offset"></div>
+    <fuzzy-match-notification-grouping-component id="location.addresses[0]" />
+  </div>
   <staff-location-group-component
     :id="0"
     v-model="formData.location.addresses[0]"
@@ -232,6 +239,13 @@ const updateLocationName = (locationName: string, index: number) => {
         class="grouping-13"
         :data-focus="`address-${index + 1}-heading`"
       >
+        <div class="errors-container hide-when-less-than-two-children">
+          <!--
+          The parent div is necessary to avoid the div.header-offset below from interfering in the flex flow.
+          -->
+          <div :data-scroll="`location.addresses[${index + 1}]`" class="header-offset"></div>
+          <fuzzy-match-notification-grouping-component :id="`location.addresses[${index + 1}]`" />
+        </div>
         <staff-location-group-component
           :id="addressesIdMap.get(address)"
           v-bind:model-value="address"
