@@ -34,8 +34,7 @@ describe("General Form", () => {
 
   it("should render the form", () => {
     cy.visit("/");
-    cy.wait(500);
-
+    
     cy.login("uattest@forest.client", "Uat Test", "bceidbusiness");
 
     cy.wait("@getDistricts");
@@ -90,9 +89,7 @@ describe("General Form", () => {
   describe("Progress Indicator", () => {
     type Orientation = "horizontal" | "vertical";
     beforeEach(() => {
-      cy.visit("/");
-      cy.wait(500);
-
+      cy.visit("/");      
       cy.login("uattest@forest.client", "Uat Test", "bceidbusiness");
     });
     [

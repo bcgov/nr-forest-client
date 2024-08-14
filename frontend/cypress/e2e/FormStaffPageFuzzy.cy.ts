@@ -674,7 +674,7 @@ describe("Staff Form Fuzzy Matches", () => {
         data.identificationTypeValue,
         false
       );
-      cy.wait(200);
+      cy.wait(10);
 
       if (data.identificationProvinceValue) {
         cy.selectFormEntry(
@@ -682,7 +682,7 @@ describe("Staff Form Fuzzy Matches", () => {
           data.identificationProvinceValue,
           false
         );
-        cy.wait(200);
+        cy.wait(10);
       }
 
       cy.fillFormEntry("#clientIdentification", data.clientIdentification);
