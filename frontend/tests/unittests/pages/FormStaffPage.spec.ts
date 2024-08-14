@@ -2,10 +2,10 @@ import { createRouter, createMemoryHistory } from 'vue-router';
 import { describe, it, expect, vi } from "vitest";
 import { mount } from '@vue/test-utils';
 import FormStaffPage from '@/pages/FormStaffPage.vue';
-import ForestClientUserSession from '../../../src/helpers/ForestClientUserSession';
+import ForestClientUserSession from '@/helpers/ForestClientUserSession';
 
 // Mocking the ForestClientUserSession
-vi.mock('../../../src/helpers/ForestClientUserSession', () => ({
+vi.mock('@/helpers/ForestClientUserSession', () => ({
   default: {
     authorities: []
   }
