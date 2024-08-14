@@ -102,7 +102,7 @@ public class FirstNationsStepMatcher implements StepMatcher {
 
             processResult(
             clientRegistrationFullMatch,
-                "businessInformation.businessName",
+                "businessInformation.federalId",
                 false,
                 false
             ),
