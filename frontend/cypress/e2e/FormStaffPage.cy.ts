@@ -97,6 +97,14 @@ describe("Staff Form", () => {
   };
 
   beforeEach(() => {
+
+    cy.intercept("GET", '**/api/codes/client-types/I', {
+      fixture: "clientTypeIndividual.json",
+    }).as("getIndividual");
+    cy.intercept("GET", "**/api/codes/countries?page=0&size=250", {
+      fixture: "countries.json",
+    }).as("getCountries");
+
     cy.intercept("POST", '**/api/clients/matches',{
       statusCode: 204,
       headers:{
