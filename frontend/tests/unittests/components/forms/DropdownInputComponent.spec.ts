@@ -189,7 +189,7 @@ describe("DropdownInputComponent", () => {
     expect(wrapper.emitted("error")).toBeTruthy();
 
     // Error payload is empty - i.e. it is valid
-    expect(wrapper.emitted("error")![0][0]).toBe(undefined);
+    expect(wrapper.emitted("error")![0][0]).toBe("");
   });
 
   it.each([[""], [undefined], [null]])(
@@ -244,7 +244,7 @@ describe("DropdownInputComponent", () => {
     });
 
     expect(wrapper.emitted("error")).toBeTruthy();
-    expect(wrapper.emitted("error")![0][0]).toBe(undefined);
+    expect(wrapper.emitted("error")![0][0]).toBe("");
   });
 
   it("should reset selected to initial value when list change", async () => {

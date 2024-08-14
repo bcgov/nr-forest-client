@@ -150,7 +150,7 @@ watch([selectedValue], () => {
   error, since the type of error could have changed.
   */
   if (isUserEvent.value || !errorMessage || error.value) {
-    error.value = errorMessage
+    setError(errorMessage);
   }
 
   // resets variable

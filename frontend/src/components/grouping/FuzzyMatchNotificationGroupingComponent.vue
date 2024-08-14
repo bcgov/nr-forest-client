@@ -191,7 +191,7 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
       }
       
       fuzzyMatchedError.value.matches.push(match);
-      emitFieldErrors(fieldNameToNamingGroups[rawMatch.field], rawMatch.fuzzy);
+      emitFieldErrors(fieldNameToNamingGroups[rawMatch.field] || [rawMatch.field], rawMatch.fuzzy);
     }
   } else {
     fuzzyMatchedError.value.show = false;
