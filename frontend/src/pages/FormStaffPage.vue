@@ -80,12 +80,15 @@ const clientTypesList: CodeNameType[] = [
   {
     code: "F",
     name: "Ministry of Forests",
-  },
-  ...(isAdminInd ? [{
+  }
+];
+
+if (isAdminInd) {
+  clientTypesList.push({
     code: "U",
     name: "Unregistered company",
-  }] : []),
-];
+  });
+}
 
 const notificationBus = useEventBus<ValidationMessageType | undefined>(
   "error-notification"
