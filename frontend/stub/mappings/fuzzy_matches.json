@@ -160,7 +160,7 @@
       },
       "response": {
         "status": 409,
-        "body": "[{\"field\":\"businessInformation.identification\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "body": "[{\"field\":\"businessInformation.clientIdentification\", \"match\":\"00000001\", \"fuzzy\":false}]",
         "headers": {
           "Content-Type": "application/json"
         },
@@ -284,6 +284,43 @@
       "response": {
         "status": 409,
         "body": "[{\"field\":\"businessInformation.registrationNumber\", \"match\":\"00000001\", \"fuzzy\":false}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for Registered",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "RSP"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "British Columbia Forest Products (SP)"
+            }
+          }          
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{\"field\":\"businessInformation.individual\", \"match\":\"00000001\", \"fuzzy\":true,\"partialMatch\":true}]",
         "headers": {
           "Content-Type": "application/json"
         },

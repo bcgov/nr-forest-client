@@ -121,6 +121,9 @@ describe("Staff Form Fuzzy Matches", () => {
     cy.intercept("GET", "/api/clients/FM123456", {
       fixture: "clients/bcreg_FM123456.json",
     });
+    cy.intercept("GET", "**/api/opendata/**", {
+      fixture: "firstNations.json",
+    });
 
     cy.visit("/");
 
@@ -397,6 +400,257 @@ describe("Staff Form Fuzzy Matches", () => {
 
   });
 
+  describe('First Nations fuzzy matching',() =>{
+
+    it('should have first nations with fuzzy resulting in full fn federal id match',() =>{
+      fillFirstNations();
+
+      checkTopNotification('error', 'Matching on federal identification number');
+
+      checkDropdownError('#clientName');
+      checkInputClean('#workSafeBcNumber');
+      checkInputClean('#clientAcronym');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.enabled");
+
+      cy.get('#reviewStatement')
+      .should('not.exist');
+
+    });
+
+    it('should have first nations with fuzzy resulting in partial business name match',() =>{
+      fillFirstNations();
+
+      checkTopNotification('warning', 'Partial matching on client name');
+
+      checkDropdownWarning('#clientName');
+      checkInputClean('#workSafeBcNumber');
+      checkInputClean('#clientAcronym');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.enabled");
+
+      cy.get('#reviewStatement')
+      .should('be.visible');
+    });
+
+    it('should have first nations with fuzzy resulting in full business name match',() =>{
+      fillFirstNations();
+
+      checkTopNotification('error', 'Matching on client name');
+
+      checkDropdownError('#clientName');
+      checkInputClean('#workSafeBcNumber');
+      checkInputClean('#clientAcronym');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.enabled");
+
+      cy.get('#reviewStatement')
+      .should('not.exist');
+    });
+
+    it('should have registered data with fuzzy resulting in full acronym match',() =>{
+      fillFirstNations();
+
+      checkTopNotification('error', 'Matching on client acronym');
+
+      checkDropdownClean('#clientName');
+      checkInputClean('#workSafeBcNumber');
+      checkInputError('#clientAcronym');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.disabled");
+
+      cy.get('#reviewStatement')
+      .should('not.exist');
+    });
+
+  });
+
+  describe('Government fuzzy matching',() =>{
+
+    it('should have government with fuzzy resulting in partial business name match',() =>{
+      fillOthers({kind: 'Government'});
+
+      checkTopNotification('warning', 'Partial matching on client name');
+
+      checkInputWarning('#businessName');
+      checkInputClean('#workSafeBcNumber');
+      checkInputClean('#clientAcronym');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.disabled");
+
+      cy.get('#reviewStatement')
+      .should('be.visible');
+    });
+
+    it('should have government with fuzzy resulting in full business name match',() =>{
+      fillOthers({kind: 'Government'});
+
+      checkTopNotification('error', 'Matching on client name');
+
+      checkInputError('#businessName');
+      checkInputClean('#workSafeBcNumber');
+      checkInputClean('#clientAcronym');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.disabled");
+
+      cy.get('#reviewStatement')
+      .should('not.exist');
+    });
+
+    it('should have government data with fuzzy resulting in full acronym match',() =>{
+      fillOthers({kind: 'Government'});
+
+      checkTopNotification('error', 'Matching on client acronym');
+
+      checkInputClean('#businessName');
+      checkInputClean('#workSafeBcNumber');
+      checkInputError('#clientAcronym');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.disabled");
+
+      cy.get('#reviewStatement')
+      .should('not.exist');
+    });
+
+  });
+
+  describe('Ministry of Forests fuzzy matching',() =>{
+
+    it('should have forests with fuzzy resulting in partial business name match',() =>{
+      fillOthers({kind: 'Ministry of Forests'});
+
+      checkTopNotification('warning', 'Partial matching on client name');
+
+      checkInputWarning('#businessName');
+      checkInputClean('#workSafeBcNumber');
+      checkInputClean('#clientAcronym');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.disabled");
+
+      cy.get('#reviewStatement')
+      .should('be.visible');
+    });
+
+    it('should have forests with fuzzy resulting in full business name match',() =>{
+      fillOthers({kind: 'Ministry of Forests'});
+
+      checkTopNotification('error', 'Matching on client name');
+
+      checkInputError('#businessName');
+      checkInputClean('#workSafeBcNumber');
+      checkInputClean('#clientAcronym');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.disabled");
+
+      cy.get('#reviewStatement')
+      .should('not.exist');
+    });
+
+    it('should have forests data with fuzzy resulting in full acronym match',() =>{
+      fillOthers({kind: 'Ministry of Forests'});
+
+      checkTopNotification('error', 'Matching on client acronym');
+
+      checkInputClean('#businessName');
+      checkInputClean('#workSafeBcNumber');
+      checkInputError('#clientAcronym');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.disabled");
+
+      cy.get('#reviewStatement')
+      .should('not.exist');
+    });
+
+  });
+
+  describe('Unregistered company fuzzy matching',() =>{
+
+    it('should have unregistered data with fuzzy resulting in partial business name match',() =>{
+      fillOthers({kind: 'Unregistered company'});
+
+      checkTopNotification('warning', 'Partial matching on client name');
+
+      checkInputWarning('#businessName');
+      checkInputClean('#workSafeBcNumber');
+      checkInputClean('#clientAcronym');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.disabled");
+
+      cy.get('#reviewStatement')
+      .should('be.visible');
+    });
+
+    it('should have unregistered data with fuzzy resulting in full business name match',() =>{
+      fillOthers({kind: 'Unregistered company'});
+
+      checkTopNotification('error', 'Matching on client name');
+
+      checkInputError('#businessName');
+      checkInputClean('#workSafeBcNumber');
+      checkInputClean('#clientAcronym');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.disabled");
+
+      cy.get('#reviewStatement')
+      .should('not.exist');
+    });
+
+    it('should have unregistered data with fuzzy resulting in full acronym match',() =>{
+      fillOthers({kind: 'Unregistered company'});
+
+      checkTopNotification('error', 'Matching on client acronym');
+
+      checkInputClean('#businessName');
+      checkInputClean('#workSafeBcNumber');
+      checkInputError('#clientAcronym');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.disabled");
+
+      cy.get('#reviewStatement')
+      .should('not.exist');
+    });
+
+  });
+
   const clickNext = () => {
     cy.get("[data-test='wizard-next-button']")
       .shadow()
@@ -465,6 +719,48 @@ describe("Staff Form Fuzzy Matches", () => {
 
       if(data.clientAcronym){
         cy.fillFormEntry("#acronym", data.clientAcronym);
+      }
+    });
+
+    clickNext();
+  };
+
+  const fillFirstNations = (extraData: any = {}) => {
+    cy.fixture("testdata/firstNationsBaseData").then((fixtureData: any) => {
+      const data = { ...fixtureData, ...extraData };
+
+      cy.get("#clientType").should("be.visible").and("have.value", "");
+      cy.selectFormEntry("#clientType", "First Nation", false);
+
+      cy.selectAutocompleteEntry("#clientName", data.businessName, data.registrationNumber);
+    
+      if(data.workSafeBcNumber){
+        cy.fillFormEntry("#workSafeBcNumber", data.workSafeBcNumber);
+      }
+
+      if(data.clientAcronym){
+        cy.fillFormEntry("#clientAcronym", data.clientAcronym);
+      }
+    });
+
+    clickNext();
+  };
+
+  const fillOthers = (extraData: any = {}) => {
+    cy.fixture("testdata/otherBaseData").then((fixtureData: any) => {
+      const data = { ...fixtureData, ...extraData };
+
+      cy.get("#clientType").should("be.visible").and("have.value", "");
+      cy.selectFormEntry("#clientType", data.kind, false);
+
+      cy.fillFormEntry("#businessName", data.businessName);
+    
+      if(data.workSafeBcNumber){
+        cy.fillFormEntry("#workSafeBcNumber", data.workSafeBcNumber);
+      }
+
+      if(data.clientAcronym){
+        cy.fillFormEntry("#clientAcronym", data.clientAcronym);
       }
     });
 

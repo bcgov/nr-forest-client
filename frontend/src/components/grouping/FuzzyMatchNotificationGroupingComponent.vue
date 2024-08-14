@@ -45,15 +45,18 @@ const fieldNameToDescription : Record<string, string> = {
   "businessInformation.clientAcronym": "client acronym",
   "businessInformation.doingBusinessAs": "doing business as",
   "businessInformation.workSafeBcNumber": "WorkSafeBC number",
+  "businessInformation.federalId": "federal identification number",
 };
 
 const fieldNameToNamingGroups : Record<string, string> = {
   "businessInformation.businessName": ["businessInformation.businessName"],
   "businessInformation.registrationNumber": ["businessInformation.businessName"],
+  "businessInformation.federalId": ["businessInformation.businessName"],
   "businessInformation.individual": [
       "businessInformation.firstName",
       "businessInformation.lastName",
-      "businessInformation.birthdate"
+      "businessInformation.birthdate",
+      "businessInformation.businessName",
     ],
   "businessInformation.individualAndDocument": [
       "businessInformation.firstName",
@@ -82,6 +85,8 @@ const fieldNameToLabel : Record<string, string> = {
   "businessInformation.individual": "name and date of birth",
   "businessInformation.individualAndDocument": "name, date of birth and ID number",
   "businessInformation.clientIdentification": "ID type and ID number",
+  "businessInformation.businessName": "client name",
+  "businessInformation.federalId": "federal identification number",
 };
 
 const createErrorEvent = (fieldList: string[], warning: boolean) =>
@@ -207,6 +212,7 @@ errorBus.on((errors,params) => {
 <template>
   <cds-actionable-notification
     v-if="fuzzyMatchedError.show"
+    :id="`fuzzy-match-notification-${id}`"
     v-shadow="true"
     low-contrast="true"
     hide-close-button="true"
