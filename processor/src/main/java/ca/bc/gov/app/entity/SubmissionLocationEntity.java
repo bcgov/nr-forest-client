@@ -103,9 +103,9 @@ public class SubmissionLocationEntity {
 
   private String getAddressValue(int index){
     return Stream.of(
+            this.streetAddress,
             this.complementaryAddress1,
-            this.complementaryAddress2,
-            this.streetAddress
+            this.complementaryAddress2
         )
         .filter(StringUtils::isNotBlank)
         .skip(index)
