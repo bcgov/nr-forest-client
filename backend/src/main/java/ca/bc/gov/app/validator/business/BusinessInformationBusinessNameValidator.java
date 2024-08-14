@@ -5,6 +5,7 @@ import static ca.bc.gov.app.util.ClientValidationUtils.US7ASCII_PATTERN;
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.client.BusinessTypeEnum;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
+import ca.bc.gov.app.dto.client.ClientTypeEnum;
 import ca.bc.gov.app.dto.client.ValidationSourceEnum;
 import ca.bc.gov.app.validator.ForestClientValidator;
 import io.micrometer.observation.annotation.Observed;
@@ -44,8 +45,8 @@ public class BusinessInformationBusinessNameValidator implements
     }
 
     if (
-        BusinessTypeEnum.U.equals(
-            BusinessTypeEnum.fromValue(target.businessType())
+        ClientTypeEnum.USP.equals(
+            ClientTypeEnum.fromValue(target.clientType())
         ) && !target.businessName().matches(".*\\s+.*")
     ) {
       return Mono.just(

@@ -636,7 +636,7 @@ public class TestConstants {
               "",
               "forest1",
               "U",
-              "I",
+              "USP",
               "",
               "SP",
               LocalDate.of(1975, 1, 31),
