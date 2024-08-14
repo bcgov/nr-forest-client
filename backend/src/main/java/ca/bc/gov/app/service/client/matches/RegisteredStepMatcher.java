@@ -164,10 +164,9 @@ public class RegisteredStepMatcher implements StepMatcher {
             ),
 
             //A full match should happen for the Incorporation number
-            //We point to the businessName as this is the only field the user has access to
             processResult(
                 clientRegistrationFullMatch,
-                BUSINESS_FIELD_NAME,
+                "businessInformation.registrationNumber",
                 false,
                 false
             ),

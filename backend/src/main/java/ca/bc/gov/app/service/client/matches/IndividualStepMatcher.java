@@ -105,19 +105,23 @@ public Logger getLogger() {
                 .concat(
                     processResult(
                         individualFuzzyMatch,
-                        "businessInformation.businessName",
+                        //using this name for reference only to denote that is only the individual
+                        //information that was matched
+                        "businessInformation.individual",
                         true,
                         true
                     ),
                     processResult(
                         individualFullMatch,
-                        "businessInformation.businessName",
+                        //using this name for reference only to denote that is the individual data
+                        //plus the document id that was matched
+                        "businessInformation.individualAndDocument",
                         false,
                         false
                     ),
                     processResult(
                         documentFullMatch,
-                        "businessInformation.identification",
+                        "businessInformation.clientIdentification",
                         false,
                         false
                     )
