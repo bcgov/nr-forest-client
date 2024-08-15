@@ -139,6 +139,7 @@ const mapFirstNationInfo = (firstNations: ForestClientDetailsDto[] = []) => {
       label="WorkSafeBC Number"
       placeholder=""
       autocomplete="off"
+      mask="######"
       v-model="formData.businessInformation.workSafeBcNumber"
       :validations="[
         ...getValidations('businessInformation.workSafeBcNumber'),
@@ -154,6 +155,7 @@ const mapFirstNationInfo = (firstNations: ForestClientDetailsDto[] = []) => {
       label="Acronym"
       placeholder=""
       autocomplete="off"
+      mask="NNNNNNNN"
       v-model="formData.businessInformation.clientAcronym"
       :validations="[
         ...getValidations('businessInformation.clientAcronym'),
