@@ -188,8 +188,8 @@ describe("Staff Form Fuzzy Matches", () => {
       checkInputError('#birthdateYear');
       checkInputError('#birthdateMonth');
       checkInputError('#birthdateDay');
-      checkDropdownError('#identificationType');
-      checkDropdownError('#identificationProvince');
+      checkDropdownClean('#identificationType');
+      checkDropdownClean('#identificationProvince');
       checkInputError('#clientIdentification');
 
       cy.get("[data-test='wizard-next-button']")
