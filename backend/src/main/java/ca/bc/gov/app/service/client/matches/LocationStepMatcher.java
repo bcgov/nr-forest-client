@@ -1,7 +1,9 @@
 package ca.bc.gov.app.service.client.matches;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.dto.client.StepMatchEnum;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.exception.InvalidRequestObjectException;
@@ -72,12 +74,12 @@ public class LocationStepMatcher implements StepMatcher {
     // Check if any of the addresses are invalid
     if (
         BooleanUtils.isFalse(
-          dto
-            .location()
-            .addresses()
-            .stream()
-            .map(ClientAddressDto::isValid)
-            .reduce(true, Boolean::logicalAnd)
+            dto
+                .location()
+                .addresses()
+                .stream()
+                .map(ClientAddressDto::isValid)
+                .reduce(true, Boolean::logicalAnd)
         )
     ) {
       return Mono.error(new InvalidRequestObjectException("Invalid address information"));
@@ -94,62 +96,83 @@ public class LocationStepMatcher implements StepMatcher {
             .stream()
             // Fix nonexistent index
             .map(address -> address.withIndexed(indexCounter.getAndIncrement()))
-            .map(address ->
-                //Concat all the results for each address
-                Flux.concat(
-                    processResult(
-                        legacyService
-                            .searchGeneric(
-                                "email",
-                                address.emailAddress()
-                            ),
-                        FIELD_NAME_PREFIX + address.index() + "].emailAddress",
-                        false
-                    ).as(Flux::from),
-                    processResult(
-                        legacyService
-                            .searchGeneric(
-                                PHONE_CONSTANT,
-                                address.businessPhoneNumber()
-                            ),
-                        FIELD_NAME_PREFIX + address.index() + "].businessPhoneNumber",
-                        false
-                    ).as(Flux::from),
-                    processResult(
-                        legacyService
-                            .searchGeneric(
-                                PHONE_CONSTANT,
-                                address.secondaryPhoneNumber()
-                            ),
-                        FIELD_NAME_PREFIX + address.index() + "].secondaryPhoneNumber",
-                        false
-                    ).as(Flux::from),
-                    processResult(
-                        legacyService
-                            .searchGeneric(
-                                PHONE_CONSTANT,
-                                address.faxNumber()
-                            ),
-                        FIELD_NAME_PREFIX + address.index() + "].faxNumber",
-                        false
-                    ).as(Flux::from),
-                    processResult(
-                        legacyService
-                            .searchLocation(
-                                new AddressSearchDto(
-                                    address.streetAddress(),
-                                    address.city(),
-                                    address.province().value(),
-                                    address.postalCode(),
-                                    address.country().value()
-                                )
-                            ),
-                        FIELD_NAME_PREFIX + address.index() + "].streetAddress",
-                        false
-                    ).as(Flux::from)
-                )
-            )
+            //Concat all the results for each location
+            .map(this::processSingleLocation)
             .reduce(Flux.empty(), Flux::concat)
             .as(this::reduceMatchResults);
   }
+
+  private Flux<MatchResult> processSingleLocation(ClientAddressDto location) {
+
+    Mono<MatchResult> contactEmailFull = processResult(
+        legacyService
+            .searchGeneric(
+                "email",
+                location.emailAddress()
+            ),
+        FIELD_NAME_PREFIX + location.index() + "].emailAddress",
+        true,
+        false
+    );
+
+    Mono<MatchResult> businessPhoneFull = processResult(
+        legacyService
+            .searchGeneric(
+                PHONE_CONSTANT,
+                location.businessPhoneNumber()
+            ),
+        FIELD_NAME_PREFIX + location.index() + "].businessPhoneNumber",
+        true,
+        false
+    );
+
+    Mono<MatchResult> secondaryPhoneFull = processResult(
+        legacyService
+            .searchGeneric(
+                PHONE_CONSTANT,
+                location.secondaryPhoneNumber()
+            ),
+        FIELD_NAME_PREFIX + location.index() + "].secondaryPhoneNumber",
+        true,
+        false
+    );
+
+    Mono<MatchResult> faxPhoneFull = processResult(
+        legacyService
+            .searchGeneric(
+                PHONE_CONSTANT,
+                location.faxNumber()
+            ),
+        FIELD_NAME_PREFIX + location.index() + "].faxNumber",
+        true,
+        false
+    );
+
+    Mono<MatchResult> locationFull = processResult(
+        legacyService
+            .searchLocation(
+                new AddressSearchDto(
+                    location.streetAddress(),
+                    location.city(),
+                    location.province().value(),
+                    location.postalCode(),
+                    location.country().value()
+                )
+            ),
+        FIELD_NAME_PREFIX + location.index() + "].streetAddress",
+        true,
+        false
+    );
+
+    return Flux.concat(
+        contactEmailFull,
+        businessPhoneFull,
+        secondaryPhoneFull,
+        faxPhoneFull,
+        locationFull
+    );
+
+
+  }
+
 }

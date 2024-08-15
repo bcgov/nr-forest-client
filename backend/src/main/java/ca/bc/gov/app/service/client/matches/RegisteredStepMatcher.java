@@ -151,6 +151,7 @@ public class RegisteredStepMatcher implements StepMatcher {
             processResult(
                 clientNameFuzzyMatch,
                 BUSINESS_FIELD_NAME,
+                true,
                 true
             ),
 
@@ -158,14 +159,15 @@ public class RegisteredStepMatcher implements StepMatcher {
             processResult(
                 clientNameFullMatch,
                 BUSINESS_FIELD_NAME,
+                false,
                 false
             ),
 
             //A full match should happen for the Incorporation number
-            //We point to the businessName as this is the only field the user has access to
             processResult(
                 clientRegistrationFullMatch,
-                BUSINESS_FIELD_NAME,
+                "businessInformation.registrationNumber",
+                false,
                 false
             ),
 
@@ -173,6 +175,7 @@ public class RegisteredStepMatcher implements StepMatcher {
             processResult(
                 dbaFuzzyMatch,
                 "businessInformation.doingBusinessAs",
+                true,
                 true
             ),
 
@@ -180,6 +183,7 @@ public class RegisteredStepMatcher implements StepMatcher {
             processResult(
                 dbaFullMatch,
                 "businessInformation.doingBusinessAs",
+                false,
                 false
             ),
 
@@ -187,6 +191,7 @@ public class RegisteredStepMatcher implements StepMatcher {
             processResult(
                 clientAcronymFullMatch,
                 "businessInformation.clientAcronym",
+                false,
                 false
             ),
 
@@ -194,7 +199,8 @@ public class RegisteredStepMatcher implements StepMatcher {
             //We point to the businessName as this is the only field the user has access to
             processResult(
                 individualFuzzyMatch,
-                BUSINESS_FIELD_NAME,
+                "businessInformation.individual",
+                true,
                 true
             )
         )

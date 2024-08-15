@@ -1,0 +1,8 @@
+[
+  {
+    "field":"businessInformation.individual", 
+    "match":"00000001", 
+    "fuzzy":true,
+    "partialMatch":true
+  }
+]
