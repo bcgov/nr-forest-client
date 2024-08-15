@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.junit.jupiter.api.Named.named;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
@@ -69,7 +70,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
         .build();
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{0}")
   @MethodSource("individualMatch")
   @DisplayName("List and Search")
   void shouldRunMatch(
@@ -145,13 +146,15 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
   private static Stream<Arguments> individualMatch() {
     return Stream.of(
         Arguments.of(
-            ClientMatchDataGenerator.getIndividualDto(
-                "Jhon",
-                "Wick",
-                LocalDate.of(1970, 1, 1),
-                "CDDL",
-                "BC",
-                "1234567"
+            named("no match",
+                ClientMatchDataGenerator.getIndividualDto(
+                    "Jhon",
+                    "Wick",
+                    LocalDate.of(1970, 1, 1),
+                    "CDDL",
+                    "BC",
+                    "1234567"
+                )
             ),
             "[]",
             "[]",
@@ -160,13 +163,15 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             false
         ),
         Arguments.of(
-            ClientMatchDataGenerator.getIndividualDto(
-                "James",
-                "Wick",
-                LocalDate.of(1970, 1, 1),
-                "CDDL",
-                "AB",
-                "7654321"
+            named("document match",
+                ClientMatchDataGenerator.getIndividualDto(
+                    "James",
+                    "Wick",
+                    LocalDate.of(1970, 1, 1),
+                    "CDDL",
+                    "AB",
+                    "7654321"
+                )
             ),
             "[]",
             "[]",
@@ -175,13 +180,15 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             false
         ),
         Arguments.of(
-            ClientMatchDataGenerator.getIndividualDto(
-                "Valeria",
-                "Valid",
-                LocalDate.of(1970, 1, 1),
-                "CDDL",
-                "YK",
-                "1233210"
+            named("full match",
+                ClientMatchDataGenerator.getIndividualDto(
+                    "Valeria",
+                    "Valid",
+                    LocalDate.of(1970, 1, 1),
+                    "CDDL",
+                    "YK",
+                    "1233210"
+                )
             ),
             "[]",
             "[{\"clientNumber\":\"00000002\"}]",
@@ -190,13 +197,15 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             false
         ),
         Arguments.of(
-            ClientMatchDataGenerator.getIndividualDto(
-                "Papernon",
-                "Pompadour",
-                LocalDate.of(1970, 1, 1),
-                "CDDL",
-                "ON",
-                "9994545"
+            named("fuzzy match",
+                ClientMatchDataGenerator.getIndividualDto(
+                    "Papernon",
+                    "Pompadour",
+                    LocalDate.of(1970, 1, 1),
+                    "CDDL",
+                    "ON",
+                    "9994545"
+                )
             ),
             "[{\"clientNumber\":\"00000003\"}]",
             "[]",
@@ -205,34 +214,38 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             true
         ),
         Arguments.of(
-            ClientMatchDataGenerator.getIndividualDto(
-                "Karls",
-                "Enrikvinjon",
-                LocalDate.of(1970, 1, 1),
-                "CDDL",
-                "BC",
-                "3337474"
+            named("full and fuzzy match",
+                ClientMatchDataGenerator.getIndividualDto(
+                    "Karls",
+                    "Enrikvinjon",
+                    LocalDate.of(1970, 1, 1),
+                    "CDDL",
+                    "BC",
+                    "3337474"
+                )
             ),
             "[{\"clientNumber\":\"00000004\"}]",
             "[{\"clientNumber\":\"00000005\"}]",
             "[]",
             true,
-            false
+            true //It used to be false, but as now the fields have different values, it should be true
         ),
         Arguments.of(
-            ClientMatchDataGenerator.getIndividualDto(
-                "Palitz",
-                "Yelvengard",
-                LocalDate.of(1970, 1, 1),
-                "USDL",
-                "AZ",
-                "7433374"
+            named("all match",
+                ClientMatchDataGenerator.getIndividualDto(
+                    "Palitz",
+                    "Yelvengard",
+                    LocalDate.of(1970, 1, 1),
+                    "USDL",
+                    "AZ",
+                    "7433374"
+                )
             ),
             "[{\"clientNumber\":\"00000006\"}]",
             "[{\"clientNumber\":\"00000007\"}]",
             "[{\"clientNumber\":\"00000008\"}]",
             true,
-            false
+            true //It used to be false, but as now the fields have different values, it should be true
         )
     );
   }

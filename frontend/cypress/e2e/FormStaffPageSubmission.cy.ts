@@ -17,7 +17,7 @@ describe("Staff Form Submission", () => {
         data.identificationTypeValue,
         false
       );
-      cy.wait(200);
+      cy.wait(10);
 
       if (data.identificationProvinceValue) {
         cy.selectFormEntry(
@@ -25,7 +25,7 @@ describe("Staff Form Submission", () => {
           data.identificationProvinceValue,
           false
         );
-        cy.wait(200);
+        cy.wait(10);
       }
 
       cy.fillFormEntry("#clientIdentification", data.clientIdentification);

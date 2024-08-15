@@ -1,0 +1,14 @@
+[
+  {
+    "field":"businessInformation.individual", 
+    "match":"00000001", 
+    "fuzzy":true,
+    "partialMatch":true
+  },
+  {
+    "field":"businessInformation.individualAndDocument", 
+    "match":"00000001", 
+    "fuzzy":false,
+    "partialMatch":false
+  }  
+]

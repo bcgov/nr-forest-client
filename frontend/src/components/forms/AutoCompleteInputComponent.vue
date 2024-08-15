@@ -8,7 +8,7 @@ import type { CDSComboBox } from "@carbon/web-components";
 import { useEventBus } from "@vueuse/core";
 // Types
 import type { BusinessSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
-import { isEmpty } from "@/dto/CommonTypesDto";
+import { isEmpty, type ValidationMessageType } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
 const props = withDefaults(defineProps<{
@@ -43,6 +43,8 @@ const emit = defineEmits<{
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
 const revalidateBus = useEventBus<void>("revalidate-bus");
+
+const warning = ref(false);
 
 watch(
   () => props.errorMessage,
@@ -123,9 +125,27 @@ watch([inputValue], () => {
   emitValueChange(inputValue.value);
 });
 
-const setError = (errorMessage: string | undefined) => {
-  error.value = errorMessage;
-  emit("error", error.value);
+/**
+ * Sets the error and emits an error event.
+ * @param errorObject - the error object or string
+ */
+const setError = (errorObject: string | ValidationMessageType | undefined) => {
+  const errorMessage = typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
+  error.value = errorMessage || "";
+
+  warning.value = false;
+  if (typeof errorObject === "object") {
+    warning.value = errorObject.warning;
+  }
+
+  /*
+  The error should be emitted whenever it is found, instead of watching and emitting only when it
+  changes.
+  Because the empty event is always emitted, even when it remains the same payload, and then we
+  rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
+  an empty one to allow subscribers to know in case the field still has the same error.
+  */
+  emit('error', error.value);
 }
 
 //We call all the validations
@@ -138,7 +158,10 @@ const validateInput = (newValue: string) => {
           if (errorMessage) return true;
           return false;
         })
-        .shift() ?? props.errorMessage,
+        .reduce(
+          (acc, errorMessage) => acc || errorMessage,
+          props.errorMessage,
+        )
     );
   }
 };
@@ -221,6 +244,7 @@ const safeHelperText = computed(() => props.tip || " ");
       <cds-combo-box
         ref="cdsComboBoxRef"
         :id="id"
+        :class="warning ? 'warning' : ''"
         :autocomplete="autocomplete"
         :title-text="label"
         :aria-label="label"
@@ -231,9 +255,11 @@ const safeHelperText = computed(() => props.tip || " ");
         :label="placeholder"
         :value="inputValue"
         filterable
-        :invalid="error ? true : false"
+        :invalid="!warning && error ? true : false"
         :aria-invalid="ariaInvalidString"
-        :invalid-text="error"
+        :invalid-text="!warning && error"
+        :warn="warning"
+        :warn-text="warning && error"
         @cds-combo-box-selected="selectAutocompleteItem"
         v-on:input="onTyping"
         @focus="isFocused = true"
@@ -246,7 +272,7 @@ const safeHelperText = computed(() => props.tip || " ");
         :data-focus="id"
         :data-scroll="id"
         :data-id="'input-' + id"
-        v-shadow="3"
+        v-shadow="4"
       >
         <cds-combo-box-item
           v-for="item in inputList"

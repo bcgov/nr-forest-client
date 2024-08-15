@@ -92,6 +92,7 @@ public class OthersStepMatcher implements StepMatcher {
             processResult(
                 clientNameFuzzyMatch,
                 "businessInformation.businessName",
+                true,
                 true
             ),
 
@@ -99,6 +100,7 @@ public class OthersStepMatcher implements StepMatcher {
             processResult(
                 clientNameFullMatch,
                 "businessInformation.businessName",
+                false,
                 false
             ),
 
@@ -106,6 +108,7 @@ public class OthersStepMatcher implements StepMatcher {
             processResult(
                 clientAcronymFullMatch,
                 "businessInformation.clientAcronym",
+                false,
                 false
             )
         )

@@ -58,8 +58,6 @@ public class FirstNationsStepMatcher implements StepMatcher {
   @Override
   public Mono<Void> matchStep(ClientSubmissionDto dto) {
 
-    //TODO: appears to not being called
-    //TODO: Update the processor
     Flux<ForestClientDto> clientRegistrationFullMatch =
         legacyService
             .searchLegacy(
@@ -104,7 +102,8 @@ public class FirstNationsStepMatcher implements StepMatcher {
 
             processResult(
             clientRegistrationFullMatch,
-                "businessInformation.businessName",
+                "businessInformation.federalId",
+                false,
                 false
             ),
 
@@ -112,6 +111,7 @@ public class FirstNationsStepMatcher implements StepMatcher {
             processResult(
                 clientNameFuzzyMatch,
                 "businessInformation.businessName",
+                true,
                 true
             ),
 
@@ -119,6 +119,7 @@ public class FirstNationsStepMatcher implements StepMatcher {
             processResult(
                 clientNameFullMatch,
                 "businessInformation.businessName",
+                false,
                 false
             ),
 
@@ -126,6 +127,7 @@ public class FirstNationsStepMatcher implements StepMatcher {
             processResult(
                 clientAcronymFullMatch,
                 "businessInformation.clientAcronym",
+                false,
                 false
             )
         )
