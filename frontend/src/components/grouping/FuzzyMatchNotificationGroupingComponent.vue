@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, ref } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/notification/index";
 // Composables
@@ -62,8 +62,6 @@ const fieldNameToNamingGroups : Record<string, string> = {
       "businessInformation.firstName",
       "businessInformation.lastName",
       "businessInformation.birthdate",
-      "businessInformation.identificationType",
-      "identificationProvince.text",
       "businessInformation.clientIdNumber",
     ],
   "businessInformation.clientIdentification": [

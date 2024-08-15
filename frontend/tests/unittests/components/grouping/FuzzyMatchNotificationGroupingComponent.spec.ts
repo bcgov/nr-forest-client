@@ -184,14 +184,9 @@ describe("Fuzzy Match Notification Grouping Component", () => {
         fuzzy: false,
         expectedFieldIdList: [
           "businessInformation.firstName",
-          "businessInformation.lastName",
-          "businessInformation.birthdate",
-          "businessInformation.identificationType",
-          "businessInformation.clientTypeOfId",
-          "businessInformation.clientIdNumber",
-          "identificationType.text", 
-          "identificationProvince.text",
-          "businessInformation.clientIdentification",
+      "businessInformation.lastName",
+      "businessInformation.birthdate",
+      "businessInformation.clientIdNumber",
         ],
       },
       {
@@ -199,11 +194,8 @@ describe("Fuzzy Match Notification Grouping Component", () => {
         fuzzy: false,
         expectedFieldIdList: [
           "businessInformation.identificationType",
-          "businessInformation.clientTypeOfId",
-          "businessInformation.clientIdNumber",
-          "identificationType.text", 
           "identificationProvince.text",
-          "businessInformation.clientIdentification",
+          "businessInformation.clientIdNumber",
         ],
       },
     ];
