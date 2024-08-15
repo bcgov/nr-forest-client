@@ -89,19 +89,19 @@ public class SubmissionLocationEntity {
   @Size(max = 40)
   private String complementaryAddress2;
 
-  public String getAddressValue1(){
+  public String getAddressValue1() {
     return getAddressValue(0);
   }
 
-  public String getAddressValue2(){
+  public String getAddressValue2() {
     return getAddressValue(1);
   }
 
-  public String getAddressValue3(){
+  public String getAddressValue3() {
     return getAddressValue(2);
   }
 
-  private String getAddressValue(int index){
+  private String getAddressValue(int index) {
     return Stream.of(
             this.streetAddress,
             this.complementaryAddress1,
