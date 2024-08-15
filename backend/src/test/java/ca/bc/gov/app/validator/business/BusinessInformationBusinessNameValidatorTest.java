@@ -31,6 +31,7 @@ class BusinessInformationBusinessNameValidatorTest {
   void shouldValidate(
       String businessName,
       String businessType,
+      String clientType,
       String expectedMessage
   ) {
 
@@ -40,7 +41,7 @@ class BusinessInformationBusinessNameValidatorTest {
                     StringUtils.EMPTY,
                     businessName,
                     businessType,
-                    StringUtils.EMPTY,
+                    clientType,
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
                     null,
@@ -75,12 +76,12 @@ class BusinessInformationBusinessNameValidatorTest {
   private static Stream<Arguments> validation() {
     return
         Stream.of(
-            Arguments.of(StringUtils.EMPTY, StringUtils.EMPTY, "You must enter a business name."),
-            Arguments.of(StringUtils.EMPTY, "R", "You must select your B.C. registered business name from the list."),
-            Arguments.of("Mainé", StringUtils.EMPTY, "Mainé has an invalid character."),
-            Arguments.of("Corporation".repeat(6), StringUtils.EMPTY, "This field has a 60 character limit."),
-            Arguments.of("Corporation", "U", "Business name must be composed of first and last name"),
-            Arguments.of("Corporation", "R", StringUtils.EMPTY)
+            Arguments.of(StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, "You must enter a business name."),
+            Arguments.of(StringUtils.EMPTY, "R", StringUtils.EMPTY, "You must select your B.C. registered business name from the list."),
+            Arguments.of("Mainé", StringUtils.EMPTY, StringUtils.EMPTY, "Mainé has an invalid character."),
+            Arguments.of("Corporation".repeat(6), StringUtils.EMPTY, StringUtils.EMPTY, "This field has a 60 character limit."),
+            Arguments.of("Corporation", StringUtils.EMPTY, "USP", "Business name must be composed of first and last name"),
+            Arguments.of("Corporation", "R", StringUtils.EMPTY, StringUtils.EMPTY)
         );
   }
 
