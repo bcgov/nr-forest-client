@@ -20,6 +20,9 @@ describe("General Form", () => {
     cy.intercept("GET", "**/api/codes/countries/CA/provinces?page=0&size=250", {
       fixture: "provinces.json",
     }).as("getProvinces");
+    cy.intercept("GET", "**/api/codes/countries?page=0&size=250", {
+      fixture: "countries.json",
+    }).as("getCountries");
   });
 
   it("should render the component", () => {
