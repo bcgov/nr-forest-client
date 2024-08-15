@@ -1,0 +1,8 @@
+[
+  {
+    "field":"businessInformation.clientAcronym", 
+    "match":"00000001", 
+    "fuzzy":false,
+    "partialMatch":false
+  }
+]

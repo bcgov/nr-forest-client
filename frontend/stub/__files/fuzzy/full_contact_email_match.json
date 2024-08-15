@@ -1,0 +1,8 @@
+[
+  {
+    "field":"location.contacts[0].email", 
+    "match":"00000001", 
+    "fuzzy":true,
+    "partialMatch":false
+  }
+]
