@@ -321,7 +321,8 @@ public class ClientService {
                 entry.status(),
                 entry.legalType()
             )
-        );
+        )
+        .sort(Comparator.comparing(ClientLookUpDto::name));
   }
 
   /**
