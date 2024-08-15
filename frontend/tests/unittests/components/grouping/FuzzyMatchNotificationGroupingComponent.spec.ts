@@ -14,7 +14,9 @@ const defaultProps = {
 
 const fuzzyBus = useEventBus<FuzzyMatcherEvent>("fuzzy-error-notification");
 
-const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
+const errorBus = useEventBus<ValidationMessageType[]>(
+  "submission-error-notification"
+);
 
 let errorEvent: ValidationMessageType[];
 let errorPayload: any;
@@ -57,22 +59,37 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       });
       fuzzyBus.emit({
         id: "global",
-        matches: [{ field: "businessInformation.businessName", match: "00000001", fuzzy }],
+        matches: [
+          {
+            field: "businessInformation.businessName",
+            match: "00000001",
+            fuzzy,
+          },
+        ],
       });
 
       await nextTick();
 
-      const expectedTitle = fuzzy ? "Possible matching records found" : "Client already exists";
+      const expectedTitle = fuzzy
+        ? "Possible matching records found"
+        : "Client already exists";
       const expectedPrefix = fuzzy ? "Partial matching on" : "Matching on";
 
       expect(wrapper.find("cds-actionable-notification").exists()).toBe(true);
       expect(
-        wrapper.find<CDSActionableNotification>("cds-actionable-notification").element.title,
+        wrapper.find<CDSActionableNotification>("cds-actionable-notification")
+          .element.title
       ).toContain(expectedTitle);
-      expect(wrapper.find("cds-actionable-notification").text()).toContain(expectedPrefix);
-      expect(wrapper.find("cds-actionable-notification").text()).toContain("client name");
-      expect(wrapper.find("cds-actionable-notification").text()).toContain("00000001");
-    },
+      expect(wrapper.find("cds-actionable-notification").text()).toContain(
+        expectedPrefix
+      );
+      expect(wrapper.find("cds-actionable-notification").text()).toContain(
+        "client name"
+      );
+      expect(wrapper.find("cds-actionable-notification").text()).toContain(
+        "00000001"
+      );
+    }
   );
 
   it("renders as many field items as the number of different fields in the error message", async () => {
@@ -84,8 +101,16 @@ describe("Fuzzy Match Notification Grouping Component", () => {
     fuzzyBus.emit({
       id: "global",
       matches: [
-        { field: "businessInformation.businessName", match: "00000001", fuzzy: true },
-        { field: "businessInformation.federalId", match: "00000002", fuzzy: true },
+        {
+          field: "businessInformation.businessName",
+          match: "00000001",
+          fuzzy: true,
+        },
+        {
+          field: "businessInformation.federalId",
+          match: "00000002",
+          fuzzy: true,
+        },
       ],
     });
 
@@ -93,9 +118,12 @@ describe("Fuzzy Match Notification Grouping Component", () => {
 
     expect(wrapper.find("cds-actionable-notification").exists()).toBe(true);
     expect(
-      wrapper.find<CDSActionableNotification>("cds-actionable-notification").element.title,
+      wrapper.find<CDSActionableNotification>("cds-actionable-notification")
+        .element.title
     ).toContain("Possible matching records found");
-    const liList = wrapper.findAll<HTMLLIElement>("cds-actionable-notification li");
+    const liList = wrapper.findAll<HTMLLIElement>(
+      "cds-actionable-notification li"
+    );
     expect(liList).toHaveLength(2);
 
     expect(liList[0].text()).toContain("client name");
@@ -107,12 +135,14 @@ describe("Fuzzy Match Notification Grouping Component", () => {
 
   describe("when error message includes both fuzzy and exact matching errors", () => {
     let wrapper: VueWrapper;
+
     beforeEach(async () => {
       wrapper = mount(FuzzyMatchNotificationGroupingComponent, {
         props: {
           ...defaultProps,
         },
       });
+
       fuzzyBus.emit({
         id: "global",
         matches: [
@@ -122,11 +152,17 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       });
       await nextTick();
     });
+
     it("renders the exact matching title and all the errors", () => {
       expect(
-        wrapper.find<CDSActionableNotification>("cds-actionable-notification").element.title,
+        wrapper.find<CDSActionableNotification>("cds-actionable-notification")
+          .element.title
       ).toContain("Client already exists");
-      const liList = wrapper.findAll<HTMLLIElement>("cds-actionable-notification li");
+
+      const liList = wrapper.findAll<HTMLLIElement>(
+        "cds-actionable-notification li"
+      );
+
       expect(liList).toHaveLength(2);
 
       expect(liList[0].text()).toContain("foo");
@@ -149,7 +185,9 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       });
       fuzzyBus.emit({
         id: "global",
-        matches: [{ field: "businessInformation.foo", match: "00000001", fuzzy: true }],
+        matches: [
+          { field: "businessInformation.foo", match: "00000001", fuzzy: true },
+        ],
       });
 
       await nextTick();
@@ -224,12 +262,12 @@ describe("Fuzzy Match Notification Grouping Component", () => {
         expect(errorEvent).toMatchObject(
           scenario.expectedFieldIdList.map((fieldId) => ({
             fieldId,
-          })),
+          }))
         );
 
         // warning only when fuzzy is true
         expect(errorPayload.warning).toBe(scenario.fuzzy);
-      },
+      }
     );
   });
 
@@ -252,10 +290,14 @@ describe("Fuzzy Match Notification Grouping Component", () => {
 
     expect(errorPayload.skipNotification).toBe(true);
     expect(errorEvent).toHaveLength(1);
-    expect(errorEvent).toMatchObject([{fieldId: "randomName",errorMsg: `There's already a client with this "random name"`}]);
+    expect(errorEvent).toMatchObject([
+      {
+        fieldId: "randomName",
+        errorMsg: `There's already a client with this "random name"`,
+      },
+    ]);
 
     // warning only when fuzzy is true
     expect(errorPayload.warning).toBe(true);
   });
-
 });

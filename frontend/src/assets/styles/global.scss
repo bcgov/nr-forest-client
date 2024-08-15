@@ -48,7 +48,9 @@
 
   --cds-body-02-font-size: 0.875rem;
   --heading-compact-02-font-size-rem: 0.875; // This is used to perform calculations only.
-  --heading-compact-02-font-size: calc(var(--heading-compact-02-font-size-rem) * 1rem);
+  --heading-compact-02-font-size: calc(
+    var(--heading-compact-02-font-size-rem) * 1rem
+  );
 
   //Buttons
   --cds-button-disabled: #c6c6c8;
@@ -236,13 +238,17 @@ cds-actionable-notification,
   box-shadow: none;
 }
 
-cds-radio-button-group, cds-checkbox-group {
+cds-radio-button-group,
+cds-checkbox-group {
   --cds-text-secondary: var(--light-theme-text-text-primary);
 }
 
-:is(cds-radio-button-group, cds-checkbox-group)[data-required-label="true"]::part(legend)::before {
+:is(
+    cds-radio-button-group,
+    cds-checkbox-group
+  )[data-required-label="true"]::part(legend)::before {
   color: var(--light-theme-text-text-error, #b32001);
-  content: '* ';
+  content: "* ";
 }
 
 cds-radio-button:not(:last-child) {
@@ -253,9 +259,11 @@ cds-combo-box::part(title-text) {
   color: var(--light-theme-text-text-primary, #131315);
 }
 
-:is(cds-combo-box, cds-multi-select)[data-required-label="true"]::part(title-text)::before {
+:is(cds-combo-box, cds-multi-select)[data-required-label="true"]::part(
+    title-text
+  )::before {
   color: var(--light-theme-text-text-error, #b32001);
-  content: '* ';
+  content: "* ";
 }
 
 cds-combo-box::part(trigger-button) {
@@ -456,7 +464,8 @@ div#app {
   background-blend-mode: multiply;
 }
 
-.heading-compact-01, cds-accordion-item::part(title) {
+.heading-compact-01,
+cds-accordion-item::part(title) {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-compact-01 */
@@ -496,7 +505,8 @@ designed.
 Class names should be useful when the semantic of a specific tag level wouldn't make sense.
 */
 
-h5, .heading-07,
+h5,
+.heading-07,
 cds-accordion-item.grouping-05-internal::part(title) {
   color: var(--light-theme-text-text-primary, #131315);
   /* Fixed heading styles/heading-07 */
@@ -508,7 +518,8 @@ cds-accordion-item.grouping-05-internal::part(title) {
   letter-spacing: 0.01rem;
 }
 
-h4, .heading-06 {
+h4,
+.heading-06 {
   color: var(--light-theme-text-text-primary, #131315) !important;
 
   /* Fixed heading styles/heading-06 */
@@ -519,7 +530,8 @@ h4, .heading-06 {
   line-height: 1.5rem;
 }
 
-h3, .heading-05 {
+h3,
+.heading-05 {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-05 */
@@ -530,7 +542,8 @@ h3, .heading-05 {
   line-height: 1.75rem;
 }
 
-h2, .heading-04 {
+h2,
+.heading-04 {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-04 */
@@ -549,7 +562,8 @@ h2, .heading-04 {
   line-height: 1.5rem;
 }
 
-h1, .heading-03 {
+h1,
+.heading-03 {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-03 */
@@ -560,7 +574,8 @@ h1, .heading-03 {
   line-height: 2.5rem;
 }
 
-h2.fluid, .fluid-heading-04 {
+h2.fluid,
+.fluid-heading-04 {
   align-self: stretch;
   color: var(--light-theme-text-text-primary, #131315);
 
@@ -671,7 +686,8 @@ cds-actionable-notification * {
   align-items: flex-start;
 }
 
-.form-steps, .form-steps-staff {
+.form-steps,
+.form-steps-staff {
   flex-grow: 1;
   align-self: stretch;
   display: flex;
@@ -838,10 +854,7 @@ cds-actionable-notification * {
   width: 42.5rem;
 }
 
-.form-steps-staff :is(
-  .grouping-02,
-  .grouping-03
-) {
+.form-steps-staff :is(.grouping-02, .grouping-03) {
   width: 100%;
 }
 
@@ -1131,7 +1144,8 @@ cds-actionable-notification * {
   gap: 8px;
 }
 
-cds-text-input::part(label), .cds-text-input-label {
+cds-text-input::part(label),
+.cds-text-input-label {
   color: var(--light-theme-text-text-primary, #131315);
   font-family: BC Sans;
   font-size: 0.75rem;
@@ -1146,7 +1160,8 @@ cds-text-input::part(label) {
   padding-bottom: unset;
 }
 
-:is(cds-text-input, cds-textarea)::part(label)::before, .cds-text-input-required-label {
+:is(cds-text-input, cds-textarea)::part(label)::before,
+.cds-text-input-required-label {
   color: var(--light-theme-text-text-error, #b32001);
 }
 
@@ -1168,11 +1183,14 @@ children: Year, Month, Day.
   padding-bottom: 1rem;
 }
 
-:is(cds-text-input, cds-textarea)[data-required-label="true"]::part(label)::before {
-  content: '* ';
+:is(cds-text-input, cds-textarea)[data-required-label="true"]::part(
+    label
+  )::before {
+  content: "* ";
 }
 
-cds-textarea::part(label), .cds-text-input-label {
+cds-textarea::part(label),
+.cds-text-input-label {
   color: var(--light-theme-text-text-primary, #131315);
 }
 
@@ -1180,7 +1198,7 @@ cds-text-input.warning::part(input),
 cds-combo-box.warning::part(input),
 cds-textarea.warning::part(input),
 cds-multi-select.warning::part(input) {
-  outline: 2px solid var(--cds-support-warning,#ffc300)
+  outline: 2px solid var(--cds-support-warning, #ffc300);
 }
 
 cds-modal::part(dialog) {
@@ -1215,7 +1233,8 @@ cds-modal-footer-button::part(button) {
   --cds-button-danger-hover: var(--light-theme-button-danger-hover, #b32001);
 }
 
-cds-modal:is(#reject-modal, #approve-modal) cds-modal-footer-button::part(button) {
+cds-modal:is(#reject-modal, #approve-modal)
+  cds-modal-footer-button::part(button) {
   padding-bottom: 1rem;
 }
 
@@ -1532,19 +1551,17 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 }
 
 div.internal-grouping-01 span.body-compact-01 ~ svg.good {
-  fill: var(--cds-support-success)
+  fill: var(--cds-support-success);
 }
 
 div.internal-grouping-01 span.body-compact-01 ~ svg.warning {
   fill: var(--cds-support-warning);
 }
 
-
 div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   font-weight: 900;
   background-color: color-mix(in srgb, var(--cds-support-warning) 40%, white);
 }
-
 
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
@@ -1686,7 +1703,8 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     align-items: flex-start;
   }
 
-  h2.fluid, .fluid-heading-04 {
+  h2.fluid,
+  .fluid-heading-04 {
     /* Fluid styles/SM/fluid-heading-04 */
     font-size: 2rem;
     line-height: 2.5rem;
@@ -1815,7 +1833,8 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     align-items: flex-start;
   }
 
-  h2.fluid, .fluid-heading-04 {
+  h2.fluid,
+  .fluid-heading-04 {
     /* Fluid styles/MED/fluid-heading-04 */
     font-size: 2.25rem;
     line-height: 2.75rem;
@@ -1898,7 +1917,8 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     column-gap: 4.0625rem;
   }
 
-  h2.fluid, .fluid-heading-04 {
+  h2.fluid,
+  .fluid-heading-04 {
     /* Fluid styles/MED/fluid-heading-04 */
     font-size: 2.25rem;
     line-height: 2.75rem;
@@ -1927,7 +1947,10 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     --padding-right: 2rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
-    max-width: calc(100vw - (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width)));
+    max-width: calc(
+      100vw -
+        (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width))
+    );
   }
 
   #datatable {
@@ -1969,7 +1992,8 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     column-gap: 3.3125rem;
   }
 
-  h2.fluid, .fluid-heading-04 {
+  h2.fluid,
+  .fluid-heading-04 {
     /* Fluid styles/XLG/fluid-heading-04 */
     font-size: 3rem;
     line-height: 56px;
@@ -1998,7 +2022,10 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     --padding-right: 2rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
-    max-width: calc(100vw - (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width)));
+    max-width: calc(
+      100vw -
+        (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width))
+    );
   }
 }
 
@@ -2049,7 +2076,10 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     --padding-right: 2rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
-    max-width: calc(100vw - (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width)));
+    max-width: calc(
+      100vw -
+        (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width))
+    );
   }
 }
 
@@ -2086,6 +2116,9 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     --padding-right: 2.5rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
-    max-width: calc(100vw - (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width)));
+    max-width: calc(
+      100vw -
+        (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width))
+    );
   }
 }
