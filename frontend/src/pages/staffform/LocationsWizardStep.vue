@@ -2,6 +2,9 @@
 import { watch, ref, computed, reactive, onMounted } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
+import "@carbon/web-components/es/components/accordion/index";
+// Components
+import FuzzyMatchNotificationGroupingComponent from "@/components/grouping/FuzzyMatchNotificationGroupingComponent.vue";
 // Composables
 import { useEventBus } from "@vueuse/core";
 import { useFocus } from "@/composables/useFocus";
@@ -39,7 +42,7 @@ watch([formData], () => emit("update:data", formData));
 
 const updateAddress = (value: Address | undefined, index: number) => {
   if (index < formData.location.addresses.length) {
-    if (value) formData.location.addresses[index] = value;
+    if (value) Object.assign(formData.location.addresses[index], value);
     else {
       const addressesCopy: Address[] = [...formData.location.addresses];
       const removedAddressArray = addressesCopy.splice(index, 1);
@@ -88,6 +91,7 @@ const addressesIdMap = new Map<Address, number>(
 
 //New address being added
 const otherAddresses = computed(() => formData.location.addresses.slice(1));
+
 const addAddress = () => {
   const newLength = formData.location.addresses.push(
     indexedEmptyAddress(getNewAddressId())
@@ -96,12 +100,52 @@ const addAddress = () => {
   addressesIdMap.set(address, address.index);
   setScrollPoint(`address-${address.index}-heading`);
   setFocusedComponent(`address-${address.index}-heading`);
+  open[address.index] = true;
   return newLength;
 };
 
 //Validation
 const validation = reactive<Record<string, boolean>>({
   0: false,
+});
+
+const fuzzyNotification = reactive<Record<string, boolean>>({
+  0: false,
+});
+
+const open = reactive<Record<string, boolean>>(
+  formData.location.addresses.reduce(
+    (accumulator: Record<string, boolean>, currentValue: Address) => {
+      const addressId = addressesIdMap.get(currentValue);
+      accumulator[addressId] = true;
+      return accumulator;
+    },
+    {},
+  ),
+);
+
+const setFuzzyNotification = (index: number, show: boolean) => {
+  const addressId = addressesIdMap.get(formData.location.addresses[index]);
+  fuzzyNotification[addressId] = show;
+};
+
+const setFuzzyNotificationByElement = (
+  el: InstanceType<typeof FuzzyMatchNotificationGroupingComponent>,
+  index: number,
+) => {
+  if (el) {
+    setFuzzyNotification(index, el.fuzzyMatchedError.show);
+  }
+};
+
+watch(fuzzyNotification, () => {
+  const hasFuzzyNotification = Object.values(fuzzyNotification).some((value) => value);
+  if (hasFuzzyNotification) {
+    formData.location.addresses.forEach((address) => {
+      const id = addressesIdMap.get(address);
+      open[id] = fuzzyNotification[id];
+    });
+  }
 });
 
 const checkValid = () => {
@@ -190,6 +234,19 @@ const locationNames = ref<string[]>([]);
 const updateLocationName = (locationName: string, index: number) => {
   locationNames.value[index] = locationName;
 };
+
+const cdsAccordionItemBeingtoggled = (event: any, address: Address) => {
+  const id = addressesIdMap.get(address);
+  open[id] = event.detail.open;
+
+  /*
+  This somehow prevents some UI issues when there are manual expand/collapse by the user followed
+  by automatic expand/collapse or vice-versa.
+  */
+  if (event.detail.open) {
+    event.preventDefault();
+  }
+};
 </script>
 
 <template>
@@ -214,7 +271,10 @@ const updateLocationName = (locationName: string, index: number) => {
     The parent div is necessary to avoid the div.header-offset below from interfering in the flex flow.
     -->
     <div data-scroll="location.addresses[0]" class="header-offset"></div>
-    <fuzzy-match-notification-grouping-component id="location.addresses[0]" />
+    <fuzzy-match-notification-grouping-component
+      id="location.addresses[0]"
+      :ref="(el: any) => setFuzzyNotificationByElement(el, 0)"
+    />
   </div>
   <staff-location-group-component
     :id="0"
@@ -233,18 +293,24 @@ const updateLocationName = (locationName: string, index: number) => {
     <cds-accordion v-for="(address, index) in otherAddresses" :key="addressesIdMap.get(address)">
       <div :data-scroll="`address-${index + 1}-heading`" class="header-offset"></div>
       <cds-accordion-item
-        open
+        :open="open[addressesIdMap.get(address)]"
         :title="locationNames[index + 1] || 'Additional location'"
         size="lg"
         class="grouping-13"
         :data-focus="`address-${index + 1}-heading`"
+        @cds-accordion-item-beingtoggled="
+          (event: any) => cdsAccordionItemBeingtoggled(event, address)
+        "
       >
         <div class="errors-container hide-when-less-than-two-children">
           <!--
           The parent div is necessary to avoid the div.header-offset below from interfering in the flex flow.
           -->
           <div :data-scroll="`location.addresses[${index + 1}]`" class="header-offset"></div>
-          <fuzzy-match-notification-grouping-component :id="`location.addresses[${index + 1}]`" />
+          <fuzzy-match-notification-grouping-component
+            :id="`location.addresses[${index + 1}]`"
+            :ref="(el: any) => setFuzzyNotificationByElement(el, index + 1)"
+          />
         </div>
         <staff-location-group-component
           :id="addressesIdMap.get(address)"

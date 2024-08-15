@@ -431,6 +431,38 @@ const updateClientType = (value: CodeNameType | undefined) => {
     switch (value.code) {
       case "I":
         updateFormData(ClientTypeEnum.I);
+        formData.businessInformation = {
+            district: "",
+            businessType: "U",
+            legalType: "SP",
+            clientType: "I",
+            registrationNumber: "",
+            businessName: "Jhonny Baxter",
+            firstName: "Jhonny",
+            lastName: "Baxter",
+            goodStandingInd: "Y",
+            birthdate: "1970-01-02",
+            address: {
+              locationName: "",
+              complementaryAddressOne: "",
+              complementaryAddressTwo: null,
+              streetAddress: "",
+              country: {
+                value: "",
+                text: "",
+              },
+              province: {
+                value: "",
+                text: "",
+              },
+              city: "",
+              postalCode: "",
+            },
+            middleName: "Michael",
+            identificationType: { value: "PASS", text: "Canadian passport", countryCode: "CA" },
+            identificationProvince: null,
+            clientIdentification: "1W2E3R5T",
+        };
         break;
       case "R":
         updateFormData(undefined);

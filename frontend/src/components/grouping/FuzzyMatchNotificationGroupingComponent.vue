@@ -32,6 +32,10 @@ const fuzzyMatchedError = ref<FuzzyMatcherData>(
   },
 );
 
+defineExpose({
+  fuzzyMatchedError,
+});
+
 const clearNotification = () => {
   fuzzyMatchedError.value.show = false;
   fuzzyMatchedError.value.fuzzy = false;

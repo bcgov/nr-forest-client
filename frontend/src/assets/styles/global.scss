@@ -1488,9 +1488,14 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 }
 
 .errors-container {
+  --gap: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--gap);
+
+  &>.header-offset {
+    margin-bottom: calc(-1 * var(--gap));
+  }
 }
 
 .invisible {
