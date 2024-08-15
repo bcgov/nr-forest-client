@@ -334,7 +334,6 @@ describe("<AddressGroupComponent />", () => {
     ) => {
       const calls: boolean[] = [];
       const onValid = (valid: boolean) => {
-        console.log('Is this being called?', valid);
         calls.push(valid);
       };
       cy.get("@addressFixture").then((address) => {

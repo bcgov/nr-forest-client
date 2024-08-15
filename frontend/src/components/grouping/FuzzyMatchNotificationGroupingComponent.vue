@@ -194,11 +194,6 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
 
 // watch for fuzzy match error messages
 fuzzyBus.on(handleFuzzyErrorMessage);
-
-// just for debugs
-errorBus.on((errors,params) => {
-  console.log("errors", errors,"params", params);
-});
 </script>
 
 <template>
