@@ -2,5 +2,8 @@ FROM gvenzl/oracle-xe:21.3.0-slim-faststart
 
 HEALTHCHECK --interval=30s --timeout=10s --retries=10 CMD healthcheck.sh
 
+# Ensure the entrypoint script has execute permissions
+RUN chmod +x /opt/oracle/container-entrypoint.sh
+
 # Non-privileged user
 USER THE
