@@ -12,8 +12,6 @@ import {
   isIdCharacters,
   isExactSize,
   formFieldValidations as externalFormFieldValidations,
-  validate as globalValidate,
-  runValidation as globalRunValidation,
   isAscii,
   isEmail,
   isPhoneNumber,
@@ -64,8 +62,8 @@ fieldValidations["businessInformation.firstName"] = [
 ];
 
 fieldValidations["businessInformation.middleName"] = [
-  isMaxSizeMsg("middle name", 30),
-  hasOnlyNamingCharacters("middle name"),
+  optional(isMaxSizeMsg("middle name", 30)),
+  optional(hasOnlyNamingCharacters("middle name")),
 ];
 
 // use the same validations as lastName in contacts
@@ -326,15 +324,3 @@ export const addValidation = (key: string, validation: (value: string) => string
   if (!fieldValidations[key]) fieldValidations[key] = [];
   fieldValidations[key].push(validation);
 };
-
-const defaultGetValidations = getValidations;
-
-export const validate = (
-  ...args: Parameters<typeof globalValidate>
-): ReturnType<typeof globalValidate> => {  
-  const getValidations = args[3] || defaultGetValidations;
-  args[3] = getValidations;
-  return globalValidate.apply(this, args);
-};
-
-export const runValidation = globalRunValidation;

@@ -33,8 +33,6 @@ import {
 } from "@/services/ForestClientService";
 // Imported global validations
 import {
-  validate,
-  runValidation,
   getValidations,
 } from "@/helpers/validators/StaffFormValidations";
 import {
@@ -98,6 +96,7 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 );
 const overlayBus = useEventBus<boolean>("overlay-event");
 const fuzzyBus = useEventBus<FuzzyMatcherEvent>("fuzzy-error-notification");
+const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
 
 // Route related
 const router = useRouter();
@@ -119,8 +118,7 @@ const progressData = reactive([
       "businessInformation.businessType",
       "businessInformation.businessName",
       "businessInformation.clientType",
-    ],
-    extraValidations: [],
+    ]
   },
   {
     title: "Locations",
@@ -145,8 +143,7 @@ const progressData = reactive([
       "location.addresses.*.secondaryPhoneNumber",
       "location.addresses.*.faxNumber",
       "location.addresses.*.notes",
-    ],
-    extraValidations: [],
+    ]
   },
   {
     title: "Contacts",
@@ -164,8 +161,7 @@ const progressData = reactive([
       "location.contacts.*.phoneNumber",
       "location.contacts.*.secondaryPhoneNumber",
       "location.contacts.*.faxNumber",
-    ],
-    extraValidations: [],
+    ]
   },
   {
     title: "Review",
@@ -199,8 +195,7 @@ const progressData = reactive([
       "location.contacts.*.phoneNumber",
       "location.contacts.*.secondaryPhoneNumber",
       "location.contacts.*.faxNumber",
-    ],
-    extraValidations: [],
+    ]
   },
 ]);
 const currentTab = ref(0);
@@ -208,33 +203,7 @@ const currentTab = ref(0);
 const isLast = computed(() => currentTab.value === progressData.length - 1);
 const isFirst = computed(() => currentTab.value === 0);
 
-const checkStepValidity = (stepNumber: number): boolean => {
-  progressData.forEach((step: any) => {
-    if (step.step <= stepNumber) {
-      step.valid = validate(step.fields, formData, true);
-    }
-  });
-
-  if (!progressData[stepNumber].valid) {
-    // Stop here so the step basic validation messages don't get cleared.
-    return false;
-  }
-
-  if (
-    !progressData[stepNumber].extraValidations.every((validation: any) =>
-      runValidation(
-        validation.field,
-        formData,
-        validation.validation,
-        true,
-        true
-      )
-    )
-  )
-    return false;
-
-  return progressData[stepNumber].valid;
-};
+const checkStepValidity = (stepNumber: number): boolean => progressData[stepNumber].valid;
 
 const validateStep = (valid: boolean) => {
   progressData[currentTab.value].valid = valid;
@@ -259,7 +228,7 @@ watch(formData, () => {
   if (matchError.value) {
     fuzzyBus.emit(undefined);
     resetSubmissionValidators();
-    revalidateBus.emit();
+    revalidateBus.emit(progressData[currentTab.value].fields);
     matchError.value = false;
   }
 });
@@ -336,6 +305,7 @@ const moveToNextStep = () => {
 };
 
 const onNext = () => {
+  revalidateBus.emit(progressData[currentTab.value].fields);
   //This fixes the index
   formData.location.addresses.forEach(
     (address: Address, index: number) => (address.index = index)
@@ -365,7 +335,7 @@ const onBack = () => {
     progressData[currentTab.value + 1].kind = "incomplete";
     progressData[currentTab.value].kind = "current";
     setScrollPoint("step-title");
-    setTimeout(revalidateBus.emit, 1000);
+    setTimeout(() => revalidateBus.emit(progressData[currentTab.value].fields), 1000);
   }
 };
 
@@ -425,14 +395,16 @@ const updateClientType = (value: CodeNameType | undefined) => {
 
 const validation = reactive<Record<string, boolean>>({});
 
-const revalidateBus = useEventBus<void>("revalidate-bus");
-
 const goToStep = (index: number, skipCheck: boolean = false) => {
   if (skipCheck || (index <= currentTab.value && checkStepValidity(index)))
     currentTab.value = index;
   else notificationBus.emit({ fieldId: "missing.info", errorMsg: "" });
-  revalidateBus.emit();
+  revalidateBus.emit(progressData[currentTab.value].fields);
 };
+
+revalidateBus.on((fields: string[]|undefined) => {
+  console.log("Revalidating fields", fields);
+});
 
 const submitBtnDisabled = ref(false);
 

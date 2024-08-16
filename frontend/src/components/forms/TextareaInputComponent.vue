@@ -37,7 +37,7 @@ const emit = defineEmits<{
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
 
 const warning = ref(false);
 
@@ -108,8 +108,10 @@ const validateInput = (newValue: string) => {
   }
 };
 
-revalidateBus.on(() => {
-  validateInput(selectedValue.value);
+revalidateBus.on((keys: string[] | undefined) => {
+  if(keys === undefined || keys.includes(props.id)) {
+    validateInput(selectedValue.value);
+  }
 });
 
 watch(

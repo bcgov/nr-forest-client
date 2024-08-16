@@ -42,7 +42,7 @@ const emit = defineEmits<{
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
 
 const warning = ref(false);
 
@@ -179,7 +179,11 @@ const onTyping = (event: any) => {
   emit("update:model-value", inputValue.value);
 };
 
-revalidateBus.on(() => validateInput(inputValue.value));
+revalidateBus.on((keys: string[] | undefined) => {
+  if(keys === undefined || keys.includes(props.id)) {
+    validateInput(inputValue.value)
+  }
+});
 
 /*
 By applying a suffix which is impossible to be typed to the items' names, the search input will

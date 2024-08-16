@@ -79,7 +79,7 @@ const emit = defineEmits<{
 // We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
 
 const partError = reactive({
   [DatePart.year]: "",
@@ -339,11 +339,13 @@ const onBlurYear = onBlurPart(DatePart.year);
 const onBlurMonth = onBlurPart(DatePart.month);
 const onBlurDay = onBlurPart(DatePart.day);
 
-revalidateBus.on(() => {
-  validation[DatePart.year] = validatePart(DatePart.year);
-  validation[DatePart.month] = validatePart(DatePart.month);
-  validation[DatePart.day] = validatePart(DatePart.day);
-  validateFullDate(selectedValue.value);
+revalidateBus.on((keys: string[] | undefined) => {
+  if(keys === undefined || keys.includes(props.id)) {
+    validation[DatePart.year] = validatePart(DatePart.year);
+    validation[DatePart.month] = validatePart(DatePart.month);
+    validation[DatePart.day] = validatePart(DatePart.day);
+    validateFullDate(selectedValue.value);
+  }
 });
 
 watch(

@@ -52,7 +52,7 @@ const notificationBus = useEventBus<ValidationMessageType | undefined>(
 );
 const exitBus =
   useEventBus<Record<string, boolean | null>>("exit-notification");
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
 const progressIndicatorBus = useEventBus<ProgressNotification>(
   "progress-indicator-bus"
 );

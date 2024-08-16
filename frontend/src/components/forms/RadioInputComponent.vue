@@ -32,7 +32,7 @@ const selectedValue = ref<string>(props.initialValue);
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
 
 //We watch for error changes to emit events
 watch(error, () => emit("error", error.value));
@@ -70,7 +70,11 @@ watch(selectedValue, () => {
 
 const updateSelectedValue = (event: any) =>
   (selectedValue.value = event.detail.value);
-revalidateBus.on(() => validateInput());
+revalidateBus.on((keys: string[] | undefined) => {
+  if(keys === undefined || keys.includes(props.id)) {
+    validateInput()
+  }
+});
 
 const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
 

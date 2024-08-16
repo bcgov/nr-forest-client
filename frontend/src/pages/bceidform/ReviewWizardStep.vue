@@ -30,7 +30,7 @@ const emit = defineEmits<{
   (e: "valid", value: boolean): void;
 }>();
 
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
 
 //Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data);
