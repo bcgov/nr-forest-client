@@ -1,6 +1,6 @@
-FROM postgres:13
+FROM gvenzl/oracle-xe:21.3.0-slim-faststart
 
-HEALTHCHECK --interval=35s --timeout=4s CMD pg_isready -d db_prod
+HEALTHCHECK --interval=30s --timeout=10s --retries=10 CMD healthcheck.sh
 
 # Non-privileged user
-USER postgres
+USER THE

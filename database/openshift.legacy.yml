@@ -18,7 +18,7 @@ parameters:
     value: latest
   - name: PVC_MOUNT_PATH
     description: Where to mount the PVC, subpath (e.g. data/)
-    value: /var/lib/postgresql
+    value: /opt/oracle/oradata
   - name: DB_PVC_SIZE
     description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Database Volume Capacity
@@ -106,46 +106,37 @@ objects:
             - name: ${NAME}
               image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               ports:
-                - containerPort: 5432
+                - containerPort: 1521
                   protocol: TCP
               readinessProbe:
                 exec:
                   command:
-                    - /usr/bin/env
-                    - bash
-                    - -c
-                    - psql -q -U $POSTGRES_USER -d $POSTGRES_DB -c 'SELECT 1'
-                failureThreshold: 5
-                initialDelaySeconds: 30
-                periodSeconds: 15
-                timeoutSeconds: 1
+                    - healthcheck.sh
+                failureThreshold: 30
+                initialDelaySeconds: 90
+                periodSeconds: 30
+                timeoutSeconds: 5
               livenessProbe:
                 exec:
                   command:
-                    - /usr/bin/env
-                    - bash
-                    - -c
-                    - psql -q -U $POSTGRES_USER -d $POSTGRES_DB -c 'SELECT 1'
-                failureThreshold: 5
-                initialDelaySeconds: 30
-                periodSeconds: 15
-                timeoutSeconds: 1
+                    - healthcheck.sh
+                failureThreshold: 30
+                initialDelaySeconds: 90
+                periodSeconds: 30
+                timeoutSeconds: 5
               env:
-                - name: POSTGRES_DB
+                - name: ORACLE_RANDOM_PASSWORD
+                  value: "yes"
+                - name: APP_USER_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
-                      key: database-name
-                - name: POSTGRES_PASSWORD
+                      key: oracle-password-write
+                - name: APP_USER
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
-                      key: database-password
-                - name: POSTGRES_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: database-user
+                      key: oracle-user-write
               volumeMounts:
                 - name: ${NAME}-${ZONE}-${COMPONENT}
                   mountPath: ${PVC_MOUNT_PATH}
@@ -166,9 +157,9 @@ objects:
       ports:
         - name: legacydb
           nodePort: 0
-          port: 5432
+          port: 1521
           protocol: TCP
-          targetPort: 5432
+          targetPort: 1521
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
       sessionAffinity: None
