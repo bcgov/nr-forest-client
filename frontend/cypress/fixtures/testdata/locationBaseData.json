@@ -1,5 +1,5 @@
 {
-  "name_0": "Headquarters",
-  "addr_0": "297",
-  "postal_0": "V8T5J9"
+  "name": "Headquarters",
+  "addr": "297",
+  "addressId": "V8T5J9"
 }
