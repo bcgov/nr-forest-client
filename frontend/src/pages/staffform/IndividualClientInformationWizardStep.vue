@@ -18,7 +18,6 @@ import {
   getValidations,
   validate,
   clientIdentificationMaskParams,
-  getClientIdentificationValidations,
 } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // @ts-ignore
@@ -362,7 +361,7 @@ watch(combinedValue, (newValue) => {
         tip=""
         :validations="[
           ...getValidations('identificationType.text'),
-          submissionValidation('identificationType.text'),
+          submissionValidation('businessInformation.identificationType'),
         ]"
         @update:selected-value="updateIdentificationType($event)"
         @empty="validation.identificationType = !$event"

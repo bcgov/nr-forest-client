@@ -131,8 +131,7 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
         src="/img/BCID_H_rgb_rev.svg"
         alt="Go to the Government of British Columbia website"
         v-else
-      />
-      <logo />
+      />      
     </a>
     
     <cds-header-name @click.prevent>

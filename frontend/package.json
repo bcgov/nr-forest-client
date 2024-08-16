@@ -34,7 +34,7 @@
     "postcoverage": "npm run test:report:merge",
     "test:component": "VITE_MODE=test cypress run --component --headless",
     "posttest:component": "mv reports/.nyc_report reports/component",
-    "test:unit": "vitest run --coverage",
+    "test:unit": "cross-env VITE_NODE_ENV=test NODE_ENV=test vitest run --coverage",
     "posttest:unit": "mv reports/.vite_report reports/unit",
     "test:e2e": "cross-env VITE_NODE_ENV=test VITE_FEATURE_FLAGS={\\\"STAFF_CREATE\\\":true} start-server-and-test preview http://127.0.0.1:3000 'cypress run --headless'",
     "posttest:e2e": "mv reports/.nyc_report reports/e2e",

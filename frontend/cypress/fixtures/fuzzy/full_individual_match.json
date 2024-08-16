@@ -1,0 +1,14 @@
+{
+  "statusCode": 409,
+  "headers": {
+    "content-type": "application/json;charset=UTF-8"
+  },
+  "body":[
+    {
+      "field":"businessInformation.individualAndDocument", 
+      "match":"00000001", 
+      "fuzzy":false,
+      "partialMatch":false
+      }
+    ]
+}

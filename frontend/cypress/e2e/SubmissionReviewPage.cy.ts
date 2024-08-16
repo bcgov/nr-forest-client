@@ -25,8 +25,7 @@ describe("Submission Review Page", () => {
       }).as("loadSubmission");
   
       cy.visit("/");
-      cy.wait(500);
-  
+        
       cy.get("#landing-title").should("contain", "Forests Client Management System");
   
       cy.get("#landing-subtitle").should(

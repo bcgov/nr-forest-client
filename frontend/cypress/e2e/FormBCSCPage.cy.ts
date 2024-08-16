@@ -57,8 +57,7 @@ describe("BCSC Form", () => {
     }).as("getContactTypes");
 
     cy.visit("/");
-    cy.wait(500);
-
+    
     cy.get("#landing-title").should("contain", "Forests Client Management System");
 
     cy.get("#landing-subtitle").should(
@@ -276,7 +275,7 @@ describe("BCSC Form", () => {
 
     cy.get('#deleteContact_1').click();
 
-    cy.wait(150);
+    cy.wait(10);
 
     cy.get('#modal-global > cds-modal-footer > .cds--modal-submit-btn').click();
 
@@ -327,14 +326,14 @@ describe("BCSC Form", () => {
     });
     it("removes the intended contact from the DOM", () => {
       cy.get("#deleteContact_1").click();
-      cy.wait(150);
+      cy.wait(10);
       cy.get("#modal-global > cds-modal-footer > .cds--modal-submit-btn").click();
       cy.get("#firstName_1").should("not.exist");
       cy.get("#firstName_2").should("exist");
     });
     it("can submit the form (regardless of the deleted contact being invalid)", () => {
       cy.get("#deleteContact_1").click();
-      cy.wait(150);
+      cy.wait(10);
       cy.get("#modal-global > cds-modal-footer > .cds--modal-submit-btn").click();
 
       cy.get("#district")

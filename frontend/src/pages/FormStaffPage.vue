@@ -51,10 +51,20 @@ import LocationsWizardStep from "@/pages/staffform/LocationsWizardStep.vue";
 import ContactsWizardStep from "@/pages/staffform/ContactsWizardStep.vue";
 import ReviewWizardStep from "@/pages/staffform/ReviewWizardStep.vue";
 
+// Session
+import ForestClientUserSession from "@/helpers/ForestClientUserSession";
+
 // @ts-ignore
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
+import Check16 from "@carbon/icons-vue/es/checkmark/16";
+
+const isAdminInd = ["CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
 
 const clientTypesList: CodeNameType[] = [
+  {
+    code: "I",
+    name: "Individual",
+  },
   {
     code: "BCR",
     name: "BC registered business",
@@ -68,18 +78,17 @@ const clientTypesList: CodeNameType[] = [
     name: "Government",
   },
   {
-    code: "I",
-    name: "Individual",
-  },
-  {
     code: "F",
     name: "Ministry of Forests",
-  },
-  {
+  }
+];
+
+if (isAdminInd) {
+  clientTypesList.push({
     code: "U",
     name: "Unregistered company",
-  },
-];
+  });
+}
 
 const notificationBus = useEventBus<ValidationMessageType | undefined>(
   "error-notification"
@@ -177,9 +186,6 @@ const progressData = reactive([
       "location.addresses.*.province.text",
       "location.addresses.*.city",
       "location.addresses.*.streetAddress",
-      'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")',
-      'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")',
-      'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")',
       "location.addresses.*.emailAddress",
       "location.addresses.*.businessPhoneNumber",
       "location.addresses.*.secondaryPhoneNumber",
@@ -618,7 +624,7 @@ const submit = () => {
           <dropdown-input-component
             id="clientType"
             label="Client type"
-            :initial-value="clientType?.name"
+            :initial-value="clientType?.name || ''"
             required
             required-label
             :model-value="clientTypesList"

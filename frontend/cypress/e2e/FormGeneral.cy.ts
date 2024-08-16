@@ -17,6 +17,12 @@ describe("General Form", () => {
       statusCode: 200,
       body: {},
     });
+    cy.intercept("GET", "**/api/codes/countries/CA/provinces?page=0&size=250", {
+      fixture: "provinces.json",
+    }).as("getProvinces");
+    cy.intercept("GET", "**/api/codes/countries?page=0&size=250", {
+      fixture: "countries.json",
+    }).as("getCountries");
   });
 
   it("should render the component", () => {
@@ -34,8 +40,7 @@ describe("General Form", () => {
 
   it("should render the form", () => {
     cy.visit("/");
-    cy.wait(500);
-
+    
     cy.login("uattest@forest.client", "Uat Test", "bceidbusiness");
 
     cy.wait("@getDistricts");
@@ -90,9 +95,7 @@ describe("General Form", () => {
   describe("Progress Indicator", () => {
     type Orientation = "horizontal" | "vertical";
     beforeEach(() => {
-      cy.visit("/");
-      cy.wait(500);
-
+      cy.visit("/");      
       cy.login("uattest@forest.client", "Uat Test", "bceidbusiness");
     });
     [

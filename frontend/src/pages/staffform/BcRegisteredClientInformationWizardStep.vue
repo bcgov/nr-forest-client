@@ -41,11 +41,15 @@ const emit = defineEmits<{
 }>();
 
 //Defining the event bus to send notifications up
-const progressIndicatorBus = useEventBus<ProgressNotification>("progress-indicator-bus");
-const exitBus = useEventBus<Record<string, boolean | null>>("exit-notification");
+const progressIndicatorBus = useEventBus<ProgressNotification>(
+  "progress-indicator-bus"
+);
+const exitBus =
+  useEventBus<Record<string, boolean | null>>("exit-notification");
 const fuzzyBus = useEventBus<FuzzyMatcherEvent>("fuzzy-error-notification");
-const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
-
+const errorBus = useEventBus<ValidationMessageType[]>(
+  "submission-error-notification"
+);
 
 // Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data);
@@ -67,7 +71,6 @@ const soleProprietorOwner = ref<string>("");
 const bcRegistryError = ref<boolean>(false);
 const showOnError = ref<boolean>(false);
 
-
 const showFields = computed(() => {
   return (
     formData.value.businessInformation.clientType &&
@@ -77,10 +80,12 @@ const showFields = computed(() => {
   );
 });
 
-const standingMessage = computed(() =>{
-  if(formData.value.businessInformation.goodStandingInd === 'Y') return 'Good standing'
-  if(formData.value.businessInformation.goodStandingInd === 'N') return 'Not in good standing'
-  return 'Unknown'
+const standingMessage = computed(() => {
+  if (formData.value.businessInformation.goodStandingInd === "Y")
+    return "Good standing";
+  if (formData.value.businessInformation.goodStandingInd === "N")
+    return "Not in good standing";
+  return "Unknown";
 });
 
 //TODO: Either load from BE or add to DataConversors.ts
@@ -109,7 +114,7 @@ const standingValue = (goodStanding: boolean | null | undefined) => {
 };
 
 const autoCompleteResult = ref<BusinessSearchResult>();
-  watch([autoCompleteResult], () => {
+watch([autoCompleteResult], () => {
   // reset business validation state
   validation.business = false;
   detailsData.value = null;
@@ -117,15 +122,12 @@ const autoCompleteResult = ref<BusinessSearchResult>();
   showOnError.value = false;
 
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
-    
-    formData.value.businessInformation.registrationNumber =
-      autoCompleteResult.value.code;
-    formData.value.businessInformation.legalType =
-      autoCompleteResult.value.legalType;
+    formData.value.businessInformation.registrationNumber = autoCompleteResult.value.code;
+    formData.value.businessInformation.legalType = autoCompleteResult.value.legalType;
     formData.value.businessInformation.clientType = retrieveClientType(
       autoCompleteResult.value.legalType
     );
-    
+
     emit("update:data", formData.value);
 
     //Also, we will load the backend data to fill all the other information as well
@@ -133,9 +135,13 @@ const autoCompleteResult = ref<BusinessSearchResult>();
       error,
       loading: detailsLoading,
       handleErrorDefault,
-    } = useFetchTo(`/api/clients/${autoCompleteResult.value.code}`, detailsData, {
-      skipDefaultErrorHandling: true,
-    });
+    } = useFetchTo(
+      `/api/clients/${autoCompleteResult.value.code}`,
+      detailsData,
+      {
+        skipDefaultErrorHandling: true,
+      }
+    );
 
     showDetailsLoading.value = true;
     watch(error, () => {
@@ -153,22 +159,29 @@ const autoCompleteResult = ref<BusinessSearchResult>();
           ],
           {
             skipNotification: true,
-          },
+          }
         );
 
         fuzzyBus.emit({
-          id: 'global',
-          matches:[{
-            field: "businessInformation.clientName", 
-            match: (error.value.response.data as string).split('client number')[1], 
-            fuzzy: false
-          }]
+          id: "global",
+          matches: [
+            {
+              field: "businessInformation.clientName",
+              match: (error.value.response.data as string).split(
+                "client number"
+              )[1],
+              fuzzy: false,
+            },
+          ],
         });
         return;
       }
-    
+
       //Here we only care for 5xx and 408 errors
-      if (error.value.response?.status >= 500 || error.value.response?.status === 408) {
+      if (
+        error.value.response?.status >= 500 ||
+        error.value.response?.status === 408
+      ) {
         handleErrorDefault();
         bcRegistryError.value = true;
         return;
@@ -183,20 +196,23 @@ const autoCompleteResult = ref<BusinessSearchResult>();
       [detailsLoading],
       () => (showDetailsLoading.value = detailsLoading.value)
     );
-  }  
+  }
 });
 
 watch([detailsData], () => {
   if (detailsData.value) {
-    fuzzyBus.emit({id:'',matches:[]});    
+    fuzzyBus.emit({ id: "", matches: [] });
     const forestClientDetails: ForestClientDetailsDto = detailsData.value;
 
-    if(formData.value.businessInformation.clientType === 'RSP'){
-      formData.value.businessInformation.doingBusinessAs = forestClientDetails.name;
-      formData.value.businessInformation.firstName = forestClientDetails.contacts[0]?.firstName;
-      formData.value.businessInformation.lastName = forestClientDetails.contacts[0]?.lastName;
+    if (formData.value.businessInformation.clientType === "RSP") {
+      formData.value.businessInformation.doingBusinessAs =
+        forestClientDetails.name;
+      formData.value.businessInformation.firstName =
+        forestClientDetails.contacts[0]?.firstName;
+      formData.value.businessInformation.lastName =
+        forestClientDetails.contacts[0]?.lastName;
     }
-        
+
     const receivedContacts = forestClientDetails.contacts ?? [];
     receivedContacts.forEach((contact) => {
       contact.locationNames = [];
@@ -216,8 +232,10 @@ watch([detailsData], () => {
     });
     formData.value.location.addresses = exportAddress(receivedAddresses);
 
-    formData.value.businessInformation.goodStandingInd = standingValue(forestClientDetails.goodStanding);
-        
+    formData.value.businessInformation.goodStandingInd = standingValue(
+      forestClientDetails.goodStanding
+    );
+
     //FSADT1-1388 standing is not a factor that prevents a submission
     validation.business = true;
 
@@ -228,7 +246,7 @@ watch([detailsData], () => {
 
     if (forestClientDetails.contacts.length > 0) {
       soleProprietorOwner.value = forestClientDetails.contacts[0].lastName;
-    }    
+    }
   }
 });
 
@@ -242,7 +260,7 @@ const checkValid = () =>
 watch([validation], () => emit("valid", checkValid()));
 emit("valid", checkValid());
 
-if(formData.value.businessInformation.businessName){
+if (formData.value.businessInformation.businessName) {
   validation.business = true;
 }
 
@@ -252,8 +270,8 @@ onMounted(() => {
     setFocusedComponent("focus-0", 0);
   }
 });
-
 </script>
+
 <template>
   <div class="frame-01">
     <data-fetcher
@@ -276,8 +294,6 @@ onMounted(() => {
         :validations="[
           ...getValidations('businessInformation.businessName'),
           submissionValidation('businessInformation.businessName'),
-          submissionValidation('businessInformation.clientType'),
-          submissionValidation('businessInformation.legalType'),
           ]"
         :loading="loading"
         @update:selected-value="autoCompleteResult = $event"
@@ -296,8 +312,6 @@ onMounted(() => {
           title="BC Registries is down">
             <span class="body-compact-01"> You'll need to try again later.</span>      
         </cds-inline-notification>
-
-
     </data-fetcher>
 
     <cds-inline-notification
@@ -412,7 +426,10 @@ onMounted(() => {
         :autocomplete="['bday-year', 'bday-month', 'bday-day']"
         v-model="formData.businessInformation.birthdate"
         :enabled="true"
-        :validations="[...getValidations('businessInformation.birthdate')]"
+        :validations="[
+          ...getValidations('businessInformation.birthdate'),
+          submissionValidation('businessInformation.birthdate'),
+        ]"
         :year-validations="[...getValidations('businessInformation.birthdate.year')]"
         @error="validation.birthdate = !$event"
         @possibly-valid="validation.birthdate = $event"

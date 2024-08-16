@@ -72,7 +72,7 @@ class LocationStepMatcherTest {
                               matchResult
                                   .stream()
                                   .map(m -> (MatchResult) m)
-                                  .anyMatch(m -> m.fuzzy() == fuzzy),
+                                  .anyMatch(MatchResult::fuzzy),
                           "MatchResult with fuzzy value %s",
                           fuzzy
                       )

@@ -2,10 +2,13 @@ import {
   isNotEmpty,
   isMaxSize,
   isMinSize,
+  isCanadianPostalCode,
+  isUsZipCode,
   isOnlyNumbers,
   isMinimumYearsAgo,
   isDateInThePast,
   hasOnlyNamingCharacters,
+  isNoSpecialCharacters,
   isIdCharacters,
   isExactSize,
   formFieldValidations as externalFormFieldValidations,
@@ -228,6 +231,55 @@ fieldValidations["location.addresses.*.faxNumber"] = [...phoneValidations];
 fieldValidations["location.addresses.*.notes"] = [
   isMaxSizeMsg("notes", 4000),
   isAsciiLineBreak("notes"),
+];
+fieldValidations["location.addresses.*.locationName"] = [
+  isNotEmpty("You must provide a name for this location"),
+  isMinSize(
+    "The location name must be between 3 and 40 characters and cannot contain special characters"
+  )(3),
+  isMaxSize(
+    "The location name must be between 3 and 40 characters and cannot contain special characters"
+  )(40),
+  isNoSpecialCharacters(
+    "The location name must be between 3 and 40 characters and cannot contain special characters"
+  ),
+];
+fieldValidations["location.addresses.*.country.text"] = [
+  isNotEmpty("You must select a country"),
+];
+fieldValidations["location.addresses.*.province.text"] = [
+  isNotEmpty("You must select a value"),
+];
+fieldValidations["location.addresses.*.city"] = [
+  isNotEmpty("You must provide a city"),
+  isMinSize("The city name must be between 3 and 30 characters")(3),
+  isMaxSize("The city name must be between 3 and 30 characters")(30),
+  isAscii("city name"),
+];
+fieldValidations["location.addresses.*.streetAddress"] = [
+  isNotEmpty("Please provide a valid address or PO Box"),
+  isMinSize("The address must be between 5 and 40 characters")(5),
+  isMaxSize("The address must be between 5 and 40 characters")(40),
+  isAscii("address"),
+];
+fieldValidations[
+  'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'
+] = [isCanadianPostalCode];
+fieldValidations[
+  'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")'
+] = [isUsZipCode];
+fieldValidations[
+  'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")'
+] = [
+  isOnlyNumbers(
+    "Postal code should be composed of only numbers and should be between 5 and 10 characters"
+  ),
+  isMinSize(
+    "Postal code should be composed of only numbers and should be between 5 and 10 characters"
+  )(5),
+  isMaxSize(
+    "Postal code should be composed of only numbers and should be between 5 and 10 characters"
+  )(10),
 ];
 
 // Step 3: Contacts
