@@ -78,8 +78,6 @@ const checkValid = () =>
 watch([validation], () => {
   emit("valid", checkValid());
 });
-
-emit("valid", false);
 </script>
 
 <template>
