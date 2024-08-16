@@ -352,6 +352,7 @@ const goToStep = (index: number, skipCheck: boolean = false) => {
 const submitBtnDisabled = ref(false);
 
 const submit = () => {
+  revalidateBus.emit();
   errorBus.emit([]);
   notificationBus.emit(undefined);
 
@@ -410,11 +411,13 @@ const submit = () => {
     setScrollPoint("top-notification");
   });
 
-  if (checkStepValidity(currentTab.value)) {
+  setTimeout(() => {
+    if (checkStepValidity(currentTab.value)) {
     submitBtnDisabled.value = true;
     overlayBus.emit({ isVisible: true, message: "", showLoading: true });
     fetchSubmission();
   }
+  }, 1);
 };
 </script>
 
