@@ -52,6 +52,7 @@ const fieldNameToDescription : Record<string, string> = {
   "businessInformation.workSafeBcNumber": "WorkSafeBC number",
   "businessInformation.federalId": "federal identification number",
   "location.addresses[].businessPhoneNumber": "primary phone number",
+  "location.addresses[].faxNumber": "fax",
 };
 
 const fieldNameToNamingGroups: Record<string, string[]> = {
@@ -93,6 +94,7 @@ const fieldNameToLabel: Record<string, string> = {
   "businessInformation.businessName": "client name",
   "businessInformation.federalId": "federal identification number",
   "location.addresses[].businessPhoneNumber": "primary phone number",
+  "location.addresses[].faxNumber": "fax",
 };
 
 const arrayIndexRegex = /\[(\d+)\]/;
