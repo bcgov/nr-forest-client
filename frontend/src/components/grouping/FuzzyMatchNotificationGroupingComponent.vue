@@ -242,7 +242,7 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
       fuzzyMatchedError.value.matches.push(match);
       const arrayIndexRegex = /\[(\d+)\]/;
       const genericField = rawMatch.field.replace(arrayIndexRegex, "[]");
-      let fieldsList = fieldNameToNamingGroups[rawMatch.field];
+      let fieldsList = fieldNameToNamingGroups[genericField];
 
       if (genericField !== rawMatch.field && fieldsList) {
         const regexGroups = rawMatch.field.match(arrayIndexRegex);
