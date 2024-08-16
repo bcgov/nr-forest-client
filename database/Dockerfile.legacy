@@ -1,3 +1,16 @@
 FROM gvenzl/oracle-xe:21.3.0-slim-faststart
 
 HEALTHCHECK --interval=30s --timeout=10s --retries=10 CMD healthcheck.sh
+
+# Switch to root user to create a new non-privileged user
+#USER root
+
+# Create a new non-privileged user
+#RUN useradd -m oracle
+
+# Ensure the entire /opt/oracle folder has the correct permissions
+#RUN chmod -R +x /opt/oracle
+#RUN chown -R oracle:oracle /opt/oracle
+
+# Switch to the non-privileged user
+USER oracle
