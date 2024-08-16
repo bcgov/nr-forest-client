@@ -78,7 +78,7 @@ objects:
             - name: ${NAME}
               image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               securityContext:
-                runAsUser: oracle
+                runAsUser: 54321
                 runAsNonRoot: true
               ports:
                 - containerPort: 1521

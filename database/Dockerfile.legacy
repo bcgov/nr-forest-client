@@ -4,3 +4,4 @@ HEALTHCHECK --interval=30s --timeout=10s --retries=10 CMD healthcheck.sh
 
 # Switch to the non-privileged user
 USER oracle
+
