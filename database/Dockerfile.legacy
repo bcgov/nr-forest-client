@@ -2,7 +2,11 @@ FROM gvenzl/oracle-free:23.3-slim-faststart
 
 HEALTHCHECK --interval=30s --timeout=10s --retries=10 CMD healthcheck.sh
 
+USER root
+RUN usermod -u 1011300000 oracle
+
 RUN chmod -R 777 /opt/oracle
+RUN chown -R 1011300000:1011300000 /opt/oracle
 
 # Switch to the non-privileged user
 USER oracle
