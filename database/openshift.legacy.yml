@@ -16,40 +16,16 @@ parameters:
   - name: IMAGE_TAG
     description: Image tag to use
     value: latest
-  - name: PVC_MOUNT_PATH
-    description: Where to mount the PVC, subpath (e.g. data/)
-    value: /opt/oracle/oradata
-  - name: DB_PVC_SIZE
-    description: Volume space available for data, e.g. 512Mi, 2Gi.
-    displayName: Database Volume Capacity
-    required: true
-    value: 256Mi
   - name: REGISTRY
     description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
     value: ghcr.io
   - name: "DATABASE_DEFAULT_PORT"
     description: "The configured port for the database service"
-    value: "5432"
-  - description: Volume space available for data, e.g. 512Mi, 2Gi.
-    name: PVC_SIZE
-    value: 256Mi
+    value: "1521"
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     required: true
 objects:
-  - kind: PersistentVolumeClaim
-    apiVersion: v1
-    metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}
-      labels:
-        app: ${NAME}-${ZONE}
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: ${DB_PVC_SIZE}
-      storageClassName: netapp-file-standard
   - kind: ImageStream
     apiVersion: v1
     metadata:
@@ -101,6 +77,9 @@ objects:
           containers:
             - name: ${NAME}
               image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+              securityContext:
+                runAsUser: oracle
+                runAsNonRoot: true
               ports:
                 - containerPort: 1521
                   protocol: TCP
@@ -121,9 +100,12 @@ objects:
                 periodSeconds: 30
                 timeoutSeconds: 5
               env:
-                - name: ORACLE_RANDOM_PASSWORD
-                  value: "yes"
                 - name: APP_USER_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: oracle-password-write
+                - name: ORACLE_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
