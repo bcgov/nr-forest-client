@@ -402,10 +402,6 @@ const goToStep = (index: number, skipCheck: boolean = false) => {
   revalidateBus.emit(progressData[currentTab.value].fields);
 };
 
-revalidateBus.on((fields: string[]|undefined) => {
-  console.log("Revalidating fields", fields);
-});
-
 const submitBtnDisabled = ref(false);
 
 const submit = () => {
