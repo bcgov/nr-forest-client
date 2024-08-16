@@ -51,6 +51,7 @@ const fieldNameToDescription : Record<string, string> = {
   "businessInformation.doingBusinessAs": "doing business as",
   "businessInformation.workSafeBcNumber": "WorkSafeBC number",
   "businessInformation.federalId": "federal identification number",
+  "location.addresses[].businessPhoneNumber": "primary phone number",
 };
 
 const fieldNameToNamingGroups: Record<string, string[]> = {
@@ -91,13 +92,21 @@ const fieldNameToLabel: Record<string, string> = {
   "businessInformation.clientIdentification": "ID type and ID number",
   "businessInformation.businessName": "client name",
   "businessInformation.federalId": "federal identification number",
+  "location.addresses[].businessPhoneNumber": "primary phone number",
 };
 
+const arrayIndexRegex = /\[(\d+)\]/;
+
 const createErrorEvent = (fieldList: string[], warning: boolean) =>
-  fieldList.map((fieldId) => ({
-    fieldId,
-    errorMsg: warning ? `There's already a client with this "${fieldNameToDescription[fieldId] || convertFieldNameToSentence(fieldId).toLowerCase()}"` : "Client already exists",
-  }));
+  fieldList.map((fieldId) => {
+    const genericField = fieldId.replace(arrayIndexRegex, "[]");
+    return {
+      fieldId,
+      errorMsg: warning
+        ? `There's already a client with this "${fieldNameToDescription[genericField] || convertFieldNameToSentence(fieldId).toLowerCase()}"`
+        : "Client already exists",
+    };
+  });
 
 const emitFieldErrors = (fieldList: string[], warning: boolean) => {
   const errorEvent = createErrorEvent(fieldList, warning);
@@ -230,9 +239,11 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
     fuzzyMatchedError.value.matches = [];
 
     for (const rawMatch of event.matches) {
+      const genericField = rawMatch.field.replace(arrayIndexRegex, "[]");
+
       const match: MiscFuzzyMatchResult = {
         result: rawMatch,
-        label: label(fieldNameToLabel[rawMatch.field], rawMatch.partialMatch),
+        label: label(fieldNameToLabel[genericField], rawMatch.partialMatch),
       };
 
       if (!rawMatch.fuzzy) {
@@ -240,8 +251,6 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
       }
 
       fuzzyMatchedError.value.matches.push(match);
-      const arrayIndexRegex = /\[(\d+)\]/;
-      const genericField = rawMatch.field.replace(arrayIndexRegex, "[]");
       let fieldsList = fieldNameToNamingGroups[genericField];
 
       if (genericField !== rawMatch.field && fieldsList) {
