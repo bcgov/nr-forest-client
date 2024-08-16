@@ -18,6 +18,8 @@ import {
   optional,
   isAsciiLineBreak,
   isNotEmptyArray,
+  validate as globalValidate,
+  runValidation as globalRunValidation,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -324,3 +326,15 @@ export const addValidation = (key: string, validation: (value: string) => string
   if (!fieldValidations[key]) fieldValidations[key] = [];
   fieldValidations[key].push(validation);
 };
+
+const defaultGetValidations = getValidations;
+
+export const validate = (
+  ...args: Parameters<typeof globalValidate>
+): ReturnType<typeof globalValidate> => {  
+  const getValidations = args[3] || defaultGetValidations;
+  args[3] = getValidations;
+  return globalValidate.apply(this, args);
+};
+
+export const runValidation = globalRunValidation;
