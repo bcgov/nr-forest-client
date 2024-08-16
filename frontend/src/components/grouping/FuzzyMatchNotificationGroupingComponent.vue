@@ -107,12 +107,12 @@ const emitFieldErrors = (fieldList: string[], warning: boolean) => {
   });
 };
 
-const label = (matchedFieldsText: string, warning: boolean) => {
+const label = (matchedFieldsText: string, partialMatch: boolean) => {
 
   if(!matchedFieldsText)
   return '';
 
-  const prefix = warning ? "Partial matching on" : "Matching on";
+  const prefix = partialMatch ? "Partial matching on" : "Matching on";
   return `${prefix} ${matchedFieldsText}`;
 }
 
@@ -141,7 +141,7 @@ const renderListItem = (misc: MiscFuzzyMatchResult) => {
     finalLabel = "Matching one or more " + result.field + "s";
   } else {
     finalLabel =
-      (result.fuzzy ? "Partial m" : "M") +
+      (result.partialMatch ? "Partial m" : "M") +
       "atching on " +
       convertFieldNameToSentence(result.field).toLowerCase();
   }
@@ -230,7 +230,10 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
     fuzzyMatchedError.value.matches = [];
 
     for (const rawMatch of event.matches) {
-      const match: MiscFuzzyMatchResult = { result: rawMatch,label: label(fieldNameToLabel[rawMatch.field], rawMatch.fuzzy) };
+      const match: MiscFuzzyMatchResult = {
+        result: rawMatch,
+        label: label(fieldNameToLabel[rawMatch.field], rawMatch.partialMatch),
+      };
 
       if (!rawMatch.fuzzy) {
         fuzzyMatchedError.value.fuzzy = false;
