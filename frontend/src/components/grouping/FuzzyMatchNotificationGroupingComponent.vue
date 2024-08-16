@@ -93,6 +93,7 @@ const fieldNameToLabel: Record<string, string> = {
   "businessInformation.clientIdentification": "ID type and ID number",
   "businessInformation.businessName": "client name",
   "businessInformation.federalId": "federal identification number",
+  "location.addresses[].streetAddress": "address",
   "location.addresses[].businessPhoneNumber": "primary phone number",
   "location.addresses[].faxNumber": "fax",
 };
