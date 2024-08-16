@@ -71,7 +71,7 @@ watch(selectedValue, () => {
 const updateSelectedValue = (event: any) =>
   (selectedValue.value = event.detail.value);
 revalidateBus.on((keys: string[] | undefined) => {
-  if(keys === undefined || keys.includes(props.id)) {
+  if (keys === undefined || keys.includes(props.id)) {
     validateInput()
   }
 });

@@ -340,7 +340,7 @@ const onBlurMonth = onBlurPart(DatePart.month);
 const onBlurDay = onBlurPart(DatePart.day);
 
 revalidateBus.on((keys: string[] | undefined) => {
-  if(keys === undefined || keys.includes(props.id)) {
+  if (keys === undefined || keys.includes(props.id)) {
     validation[DatePart.year] = validatePart(DatePart.year);
     validation[DatePart.month] = validatePart(DatePart.month);
     validation[DatePart.day] = validatePart(DatePart.day);

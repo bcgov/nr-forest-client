@@ -172,7 +172,7 @@ watch(
 );
 
 revalidateBus.on((keys: string[] | undefined) => {
-  if(keys === undefined || keys.includes(props.id)) {
+  if (keys === undefined || keys.includes(props.id)) {
     validateInput(selectedValue.value)
   }
 });

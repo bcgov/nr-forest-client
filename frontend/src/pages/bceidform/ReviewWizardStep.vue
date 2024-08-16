@@ -9,10 +9,10 @@ import { useFocus } from "@/composables/useFocus";
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
 // @ts-ignore
 import Edit16 from "@carbon/icons-vue/es/edit/16";
-import Enterprise20 from "@carbon/icons-vue/es/enterprise/20"
-import LocationStar20 from "@carbon/icons-vue/es/location--star/20"
-import Location20 from "@carbon/icons-vue/es/location/20"
-import User20 from "@carbon/icons-vue/es/user/20"
+import Enterprise20 from "@carbon/icons-vue/es/enterprise/20";
+import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
+import Location20 from "@carbon/icons-vue/es/location/20";
+import User20 from "@carbon/icons-vue/es/user/20";
 import { useFetchTo } from "@/composables/useFetch";
 import { CodeNameType } from "@/dto/CommonTypesDto";
 import { codeConversionFn } from "@/services/ForestClientService";
@@ -30,7 +30,7 @@ const emit = defineEmits<{
   (e: "valid", value: boolean): void;
 }>();
 
-const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 //Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data);
@@ -38,8 +38,8 @@ watch([formData], () => emit("update:data", formData.value));
 
 const districtObject = computed(() =>
   props.districtsList.find(
-    (district) => district.code === formData.value.businessInformation.district,
-  ),
+    (district) => district.code === formData.value.businessInformation.district
+  )
 );
 
 const receviedClientType = ref({} as CodeNameType);
