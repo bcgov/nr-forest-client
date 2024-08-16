@@ -264,9 +264,9 @@ const cdsAccordionItemBeingtoggled = (event: any, address: Address) => {
     <!--
     The parent div is necessary to avoid the div.header-offset below from interfering in the flex flow.
     -->
-    <div data-scroll="location.addresses[0]" class="header-offset"></div>
+    <div data-scroll="location-addresses-0" class="header-offset"></div>
     <fuzzy-match-notification-grouping-component
-      id="location.addresses[0]"
+      id="location-addresses-0"
       :ref="(el: any) => setFuzzyNotificationByElement(el, 0)"
     />
   </div>
@@ -300,9 +300,9 @@ const cdsAccordionItemBeingtoggled = (event: any, address: Address) => {
           <!--
           The parent div is necessary to avoid the div.header-offset below from interfering in the flex flow.
           -->
-          <div :data-scroll="`location.addresses[${index + 1}]`" class="header-offset"></div>
+          <div :data-scroll="`location-addresses-${index + 1}`" class="header-offset"></div>
           <fuzzy-match-notification-grouping-component
-            :id="`location.addresses[${index + 1}]`"
+            :id="`location-addresses-${index + 1}`"
             :ref="(el: any) => setFuzzyNotificationByElement(el, index + 1)"
           />
         </div>

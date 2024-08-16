@@ -299,9 +299,13 @@ const lookForMatches = (onEmpty: () => void) => {
   const getFuzzyNotificationId = (field: string) => {
     let id = "global";
     const parts = field.split(".");
+
+    // Example: location.addresses[0]
     if (parts[0] === "location") {
-      // Example: location.addresses[0]
-      id = parts[0] + "." + parts[1];
+      id = parts[0] + "-" + parts[1];
+
+      // Result: location-addresses-0
+      id = id.replace("[", "-").replace("]", "");
     }
     return id;
   };
@@ -437,38 +441,6 @@ const updateClientType = (value: CodeNameType | undefined) => {
     switch (value.code) {
       case "I":
         updateFormData(ClientTypeEnum.I);
-        formData.businessInformation = {
-            district: "",
-            businessType: "U",
-            legalType: "SP",
-            clientType: "I",
-            registrationNumber: "",
-            businessName: "Jhonny Baxter",
-            firstName: "Jhonny",
-            lastName: "Baxter",
-            goodStandingInd: "Y",
-            birthdate: "1970-01-02",
-            address: {
-              locationName: "",
-              complementaryAddressOne: "",
-              complementaryAddressTwo: null,
-              streetAddress: "",
-              country: {
-                value: "",
-                text: "",
-              },
-              province: {
-                value: "",
-                text: "",
-              },
-              city: "",
-              postalCode: "",
-            },
-            middleName: "Michael",
-            identificationType: { value: "PASS", text: "Canadian passport", countryCode: "CA" },
-            identificationProvince: null,
-            clientIdentification: "1W2E3R5T",
-        };
         break;
       case "R":
         updateFormData(undefined);
