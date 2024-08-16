@@ -114,11 +114,6 @@ const progressData = reactive([
     disabled: false,
     valid: false,
     step: 0,
-    fields: [
-      "businessInformation.businessType",
-      "businessInformation.businessName",
-      "businessInformation.clientType",
-    ]
   },
   {
     title: "Locations",
@@ -127,23 +122,6 @@ const progressData = reactive([
     disabled: true,
     valid: false,
     step: 1,
-    fields: [
-      "location.addresses.*.locationName",
-      "location.addresses.*.complementaryAddressOne",
-      "location.addresses.*.complementaryAddressTwo",
-      "location.addresses.*.country.text",
-      "location.addresses.*.province.text",
-      "location.addresses.*.city",
-      "location.addresses.*.streetAddress",
-      'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")',
-      'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")',
-      'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")',
-      "location.addresses.*.emailAddress",
-      "location.addresses.*.businessPhoneNumber",
-      "location.addresses.*.secondaryPhoneNumber",
-      "location.addresses.*.faxNumber",
-      "location.addresses.*.notes",
-    ]
   },
   {
     title: "Contacts",
@@ -152,16 +130,6 @@ const progressData = reactive([
     disabled: true,
     valid: false,
     step: 2,
-    fields: [
-      "location.contacts.*.locationNames.*.text",
-      "location.contacts.*.contactType.text",
-      "location.contacts.*.firstName",
-      "location.contacts.*.lastName",
-      "location.contacts.*.email",
-      "location.contacts.*.phoneNumber",
-      "location.contacts.*.secondaryPhoneNumber",
-      "location.contacts.*.faxNumber",
-    ]
   },
   {
     title: "Review",
@@ -170,32 +138,6 @@ const progressData = reactive([
     disabled: true,
     valid: false,
     step: 3,
-    fields: [
-      "businessInformation.businessType",
-      "businessInformation.businessName",
-      "businessInformation.clientType",
-      "businessInformation.notes",
-      "location.addresses.*.locationName",
-      "location.addresses.*.complementaryAddressOne",
-      "location.addresses.*.complementaryAddressTwo",
-      "location.addresses.*.country.text",
-      "location.addresses.*.province.text",
-      "location.addresses.*.city",
-      "location.addresses.*.streetAddress",
-      "location.addresses.*.emailAddress",
-      "location.addresses.*.businessPhoneNumber",
-      "location.addresses.*.secondaryPhoneNumber",
-      "location.addresses.*.faxNumber",
-      "location.addresses.*.notes",
-      "location.contacts.*.locationNames.*.text",
-      "location.contacts.*.contactType.text",
-      "location.contacts.*.firstName",
-      "location.contacts.*.lastName",
-      "location.contacts.*.email",
-      "location.contacts.*.phoneNumber",
-      "location.contacts.*.secondaryPhoneNumber",
-      "location.contacts.*.faxNumber",
-    ]
   },
 ]);
 const currentTab = ref(0);
@@ -305,19 +247,23 @@ const moveToNextStep = () => {
 };
 
 const onNext = () => {
-  revalidateBus.emit(progressData[currentTab.value].fields);
-  //This fixes the index
-  formData.location.addresses.forEach(
-    (address: Address, index: number) => (address.index = index)
-  );
-  formData.location.contacts.forEach(
-    (contact: Contact, index: number) => (contact.index = index)
-  );
+  //This will trigger and force the validation of the current step
+  //We don't pass any field id here to force the validation of all fields
+  revalidateBus.emit();
 
-  notificationBus.emit(undefined);
-  if (currentTab.value + 1 < progressData.length) {
+  //This is now inside a setTimeout to allow the revalidateBus to finish
+  setTimeout(() => {    
+    notificationBus.emit(undefined);
+  if (currentTab.value + 1 < progressData.length) {      
     if (checkStepValidity(currentTab.value)) {
       if (reviewStatement.value) {
+        //This fixes the index
+        formData.location.addresses.forEach(
+          (address: Address, index: number) => (address.index = index)
+        );
+        formData.location.contacts.forEach(
+          (contact: Contact, index: number) => (contact.index = index)
+        );
         moveToNextStep();
       } else {
         lookForMatches(moveToNextStep);
@@ -326,6 +272,7 @@ const onNext = () => {
       setScrollPoint("top-notification");
     }
   }
+  }, 1);
 };
 
 const onBack = () => {
