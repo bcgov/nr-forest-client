@@ -170,7 +170,7 @@ watch(formData, () => {
   if (matchError.value) {
     fuzzyBus.emit(undefined);
     resetSubmissionValidators();
-    revalidateBus.emit(progressData[currentTab.value].fields);
+    revalidateBus.emit();
     matchError.value = false;
   }
 });
@@ -244,6 +244,14 @@ const moveToNextStep = () => {
   resetSubmissionValidators();
 
   fuzzyBus.emit(undefined);
+
+  //This fixes the index
+  formData.location.addresses.forEach(
+    (address: Address, index: number) => (address.index = index)
+  );
+  formData.location.contacts.forEach(
+    (contact: Contact, index: number) => (contact.index = index)
+  );
 };
 
 const onNext = () => {
@@ -257,13 +265,6 @@ const onNext = () => {
   if (currentTab.value + 1 < progressData.length) {      
     if (checkStepValidity(currentTab.value)) {
       if (reviewStatement.value) {
-        //This fixes the index
-        formData.location.addresses.forEach(
-          (address: Address, index: number) => (address.index = index)
-        );
-        formData.location.contacts.forEach(
-          (contact: Contact, index: number) => (contact.index = index)
-        );
         moveToNextStep();
       } else {
         lookForMatches(moveToNextStep);
@@ -282,7 +283,7 @@ const onBack = () => {
     progressData[currentTab.value + 1].kind = "incomplete";
     progressData[currentTab.value].kind = "current";
     setScrollPoint("step-title");
-    setTimeout(() => revalidateBus.emit(progressData[currentTab.value].fields), 1000);
+    setTimeout(revalidateBus.emit, 1000);
   }
 };
 
@@ -346,7 +347,7 @@ const goToStep = (index: number, skipCheck: boolean = false) => {
   if (skipCheck || (index <= currentTab.value && checkStepValidity(index)))
     currentTab.value = index;
   else notificationBus.emit({ fieldId: "missing.info", errorMsg: "" });
-  revalidateBus.emit(progressData[currentTab.value].fields);
+  revalidateBus.emit();
 };
 
 const submitBtnDisabled = ref(false);
