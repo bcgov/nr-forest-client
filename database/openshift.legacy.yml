@@ -98,10 +98,6 @@ objects:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
-          volumes:
-            - name: ${NAME}-${ZONE}-${COMPONENT}
-              persistentVolumeClaim:
-                claimName: ${NAME}-${ZONE}-${COMPONENT}
           containers:
             - name: ${NAME}
               image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
@@ -137,9 +133,6 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
                       key: oracle-user-write
-              volumeMounts:
-                - name: ${NAME}-${ZONE}-${COMPONENT}
-                  mountPath: ${PVC_MOUNT_PATH}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               imagePullPolicy: Always
