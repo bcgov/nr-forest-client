@@ -1,7 +1,6 @@
 name: Pull Request Open
 
 on:
-  pull_request:
   workflow_dispatch:
 
 concurrency:
@@ -234,8 +233,6 @@ jobs:
             -p COGNITO_ENVIRONMENT=DEV
             -p LANDING_URL=${{ needs.vars.outputs.url }}
             -p FRONTEND_URL=${{ needs.vars.outputs.url }}
-
-      
 
   cypress-run:
     name: "User flow test"
