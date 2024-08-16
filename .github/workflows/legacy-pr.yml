@@ -103,7 +103,7 @@ jobs:
       - name: Deploy Database Legacy
         uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
-          file: database/openshift.deploy.yml
+          file: database/openshift.legacy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
