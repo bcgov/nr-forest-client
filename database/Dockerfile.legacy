@@ -1,10 +1,9 @@
 FROM gvenzl/oracle-free:23.3-slim-faststart
 
-HEALTHCHECK --interval=30s --timeout=10s --retries=10 CMD healthcheck.sh
-
 USER root
 RUN usermod -u 1011300000 oracle
-
-# Switch to the non-privileged user
 USER oracle
 
+HEALTHCHECK CMD "${ORACLE_BASE}"/healthcheck.sh >/dev/null || exit 1
+
+ENTRYPOINT ["container-entrypoint.sh"]
