@@ -77,9 +77,6 @@ objects:
           containers:
             - name: ${NAME}
               image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
-              securityContext:
-                runAsUser: 54321
-                runAsNonRoot: true
               ports:
                 - containerPort: 1521
                   protocol: TCP
@@ -88,7 +85,7 @@ objects:
                   command:
                     - healthcheck.sh
                 failureThreshold: 30
-                initialDelaySeconds: 90
+                initialDelaySeconds: 120
                 periodSeconds: 30
                 timeoutSeconds: 5
               livenessProbe:
@@ -96,7 +93,7 @@ objects:
                   command:
                     - healthcheck.sh
                 failureThreshold: 30
-                initialDelaySeconds: 90
+                initialDelaySeconds: 130
                 periodSeconds: 30
                 timeoutSeconds: 5
               env:
