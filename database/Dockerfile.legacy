@@ -2,7 +2,7 @@ FROM gvenzl/oracle-free:23.3-slim-faststart
 
 USER root
 RUN usermod -u 1011300000 oracle
-RUN chmod -R 775 "${ORACLE_BASE}"
+RUN chmod -R 777 "${ORACLE_BASE}"
 USER oracle
 
 HEALTHCHECK CMD "${ORACLE_BASE}"/healthcheck.sh >/dev/null || exit 1
