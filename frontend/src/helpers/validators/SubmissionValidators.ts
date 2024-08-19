@@ -31,7 +31,7 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 /**
  * Event bus for revalidating the submission.
  */
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
 
 /**
  * Event bus for error notifications bar.

@@ -119,7 +119,7 @@ const mapFirstNationInfo = (firstNations: ForestClientDetailsDto[] = []) => {
         required
         required-label
         placeholder=""
-        tip="Start typing to search for your nation or band name"
+        tip="Start typing to search for the nation or band"
         v-model="formData.businessInformation.businessName"
         :contents="firstNationControl ? [] : mapFirstNationInfo(content)"
         :validations="[

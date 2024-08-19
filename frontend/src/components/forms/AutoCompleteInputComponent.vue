@@ -11,7 +11,8 @@ import type { BusinessSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
 import { isEmpty, type ValidationMessageType } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
-const props = withDefaults(defineProps<{
+const props = withDefaults(
+  defineProps<{
     id: string;
     label: string;
     tip?: string;
@@ -28,7 +29,7 @@ const props = withDefaults(defineProps<{
   }>(),
   {
     showLoadingAfterTime: 2000,
-  },
+  }
 );
 
 //Events we emit during component lifecycle
@@ -42,19 +43,19 @@ const emit = defineEmits<{
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const warning = ref(false);
 
 watch(
   () => props.errorMessage,
-  () => setError(props.errorMessage),
+  () => setError(props.errorMessage)
 );
 
 //We set the value prop as a reference for update reason
 const inputValue = ref(props.modelValue);
 
-const LOADING_NAME = "loading...";
+const loadingName = "loading...";
 
 const showLoadingTimer = ref<number>();
 
@@ -72,8 +73,8 @@ watch(
         showLoading.value = true;
       }, props.showLoadingAfterTime);
     }
-  },
-)
+  }
+);
 
 // This is to make the input list contains the selected value to show when component render
 const inputList = computed<Array<BusinessSearchResult>>(() => {
@@ -81,10 +82,10 @@ const inputList = computed<Array<BusinessSearchResult>>(() => {
     return props.contents.filter((entry) => entry.name);
   } else if (props.modelValue !== userValue.value) {
     // Needed when the component mounts with a pre-filled value.
-    return [{ name: props.modelValue, code: "", status: "", legalType: "" }]
+    return [{ name: props.modelValue, code: "", status: "", legalType: "" }];
   } else if (props.modelValue && showLoading.value) {
     // Just to give a "loading" feedback.
-    return [{ name: LOADING_NAME, code: "", status: "", legalType: "" }];
+    return [{ name: loadingName, code: "", status: "", legalType: "" }];
   }
   return [];
 });
@@ -93,9 +94,10 @@ let selectedValue: BusinessSearchResult | undefined = undefined;
 
 //This function emits the events on update
 const emitValueChange = (newValue: string): void => {
-
   // Prevent selecting the empty value included when props.contents is empty.
-  selectedValue = newValue ? inputList.value.find((entry) => entry.code === newValue) : undefined;
+  selectedValue = newValue
+    ? inputList.value.find((entry) => entry.code === newValue)
+    : undefined;
 
   emit("update:model-value", selectedValue?.name ?? newValue);
   emit("update:selected-value", selectedValue);
@@ -119,7 +121,7 @@ watch(
       validateInput(props.modelValue);
     }
     isUserEvent.value = false;
-  },
+  }
 );
 watch([inputValue], () => {
   emitValueChange(inputValue.value);
@@ -130,7 +132,8 @@ watch([inputValue], () => {
  * @param errorObject - the error object or string
  */
 const setError = (errorObject: string | ValidationMessageType | undefined) => {
-  const errorMessage = typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
+  const errorMessage =
+    typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
   error.value = errorMessage || "";
 
   warning.value = false;
@@ -145,8 +148,8 @@ const setError = (errorObject: string | ValidationMessageType | undefined) => {
   rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
   an empty one to allow subscribers to know in case the field still has the same error.
   */
-  emit('error', error.value);
-}
+  emit("error", error.value);
+};
 
 //We call all the validations
 const validateInput = (newValue: string) => {
@@ -158,10 +161,7 @@ const validateInput = (newValue: string) => {
           if (errorMessage) return true;
           return false;
         })
-        .reduce(
-          (acc, errorMessage) => acc || errorMessage,
-          props.errorMessage,
-        )
+        .reduce((acc, errorMessage) => acc || errorMessage, props.errorMessage)
     );
   }
 };
@@ -179,7 +179,11 @@ const onTyping = (event: any) => {
   emit("update:model-value", inputValue.value);
 };
 
-revalidateBus.on(() => validateInput(inputValue.value));
+revalidateBus.on((keys: string[] | undefined) => {
+  if (keys === undefined || keys.includes(props.id)) {
+    validateInput(inputValue.value);
+  }
+});
 
 /*
 By applying a suffix which is impossible to be typed to the items' names, the search input will
@@ -195,20 +199,30 @@ const nameSuffix = "\0";
 By checking the item has a code, we know this is a real option instead of a mock one.
 We need the mock one (with no suffix) when the component mounts with a pre-filled value.
 */
-const getComboBoxItemValue = (item: CodeNameType) => item.name + (item.code ? nameSuffix : "");
+const getComboBoxItemValue = (item: CodeNameType) =>
+  item.name + (item.code ? nameSuffix : "");
 
 const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
 const isFocused = ref(false);
 
 watch(
-  [cdsComboBoxRef, () => props.required, () => props.label, isFocused, ariaInvalidString],
+  [
+    cdsComboBoxRef,
+    () => props.required,
+    () => props.label,
+    isFocused,
+    ariaInvalidString,
+  ],
   async ([cdsComboBox]) => {
     if (cdsComboBox) {
       // wait for the DOM updates to complete
       await nextTick();
 
       const helperTextId = "helper-text";
-      const helperText = cdsComboBox.shadowRoot?.querySelector("[name='helper-text']");
+      const helperText = cdsComboBox.shadowRoot?.querySelector(
+        "[name='helper-text']"
+      );
+      
       if (helperText) {
         helperText.id = helperTextId;
 
@@ -216,7 +230,8 @@ watch(
         if (isFocused.value) {
           helperText.role = "generic";
         } else {
-          helperText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+          helperText.role =
+            ariaInvalidString.value === "true" ? "alert" : "generic";
         }
       }
 
@@ -231,7 +246,7 @@ watch(
         input.setAttribute("aria-describedby", helperTextId);
       }
     }
-  },
+  }
 );
 
 // For some reason, if helper-text is empty, invalid-text message doesn't work.
@@ -281,9 +296,9 @@ const safeHelperText = computed(() => props.tip || " ");
           :data-value="item.name"
           :value="getComboBoxItemValue(item)"
           v-shadow
-          :data-loading="item.name === LOADING_NAME"
+          :data-loading="item.name === loadingName"
         >
-          <template v-if="item.name === LOADING_NAME">
+          <template v-if="item.name === loadingName">
             <cds-inline-loading />
           </template>
           <template v-else>

@@ -16,7 +16,6 @@ import type {
 // Importing validators
 import {
   getValidations,
-  validate,
   clientIdentificationMaskParams,
 } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
@@ -132,9 +131,7 @@ watch(shouldDisplayProvince, (value) => {
 // -- Validation of the component --
 const validation = reactive<Record<string, boolean>>({
   firstName: false,
-  middleName:
-    !formData.value.businessInformation.middleName || // since middleName is not required
-    validate(["businessInformation.middleName"], formData.value),
+  middleName: true,
   lastName: false,
   birthdate: false,
   identificationType: false,

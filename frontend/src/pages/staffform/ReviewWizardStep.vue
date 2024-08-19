@@ -3,7 +3,6 @@ import { watch, ref, onMounted, computed, reactive } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/tooltip/index";
-
 // Composables
 import { useEventBus } from "@vueuse/core";
 import { useFocus } from "@/composables/useFocus";
@@ -12,10 +11,10 @@ import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
 import type { CodeNameType } from "@/dto/CommonTypesDto";
 // @ts-ignore
 import Edit16 from "@carbon/icons-vue/es/edit/16";
-import Enterprise20 from "@carbon/icons-vue/es/enterprise/20"
-import LocationStar20 from "@carbon/icons-vue/es/location--star/20"
-import Location20 from "@carbon/icons-vue/es/location/20"
-import User20 from "@carbon/icons-vue/es/user/20"
+import Enterprise20 from "@carbon/icons-vue/es/enterprise/20";
+import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
+import Location20 from "@carbon/icons-vue/es/location/20";
+import User20 from "@carbon/icons-vue/es/user/20";
 import Information16 from "@carbon/icons-vue/es/information/16";
 
 import { useFetchTo } from "@/composables/useFetch";
@@ -35,7 +34,7 @@ const emit = defineEmits<{
   (e: "valid", value: boolean): void;
 }>();
 
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 //Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data);
@@ -66,20 +65,19 @@ const nameError = ref<string | undefined>("");
 
 // Validations
 const validation = reactive<Record<string, boolean>>({
-  notes: true
+  notes: true,
 });
 
 const checkValid = () =>
   Object.values(validation).reduce(
-    (accumulator: boolean, currentValue: boolean) => accumulator && currentValue,
-    true,
+    (accumulator: boolean, currentValue: boolean) =>
+      accumulator && currentValue,
+    true
   );
 
 watch([validation], () => {
-  emit("valid", checkValid())
+  emit("valid", checkValid());
 });
-
-emit("valid", false);
 </script>
 
 <template>
