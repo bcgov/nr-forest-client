@@ -1,5 +1,9 @@
 {
   "name": "Headquarters",
   "addr": "297",
-  "addressId": "V8T5J9"
+  "addressId": "V8T5J9",
+  "emailAddress": "this@mail.com",
+  "businessPhoneNumber": "1234567890",
+  "secondaryPhoneNumber": "1234567891",
+  "faxNumber": "1234567892"
 }

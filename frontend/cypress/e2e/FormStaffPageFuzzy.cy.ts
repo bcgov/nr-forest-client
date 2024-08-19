@@ -689,7 +689,6 @@ describe("Staff Form Fuzzy Matches", () => {
   });
 
   describe('Locations fuzzy matching',() =>{
-
     beforeEach(function () {
       cy.intercept(
         {
@@ -707,58 +706,354 @@ describe("Staff Form Fuzzy Matches", () => {
         },
       ).as("dontMatch");
 
-      const testFixture = this.currentTest.title
-        .split("fuzzy resulting in ")[1]
-        .replaceAll(" ", "_");
-
-        cy.fixture(`fuzzy/${testFixture}`)
-        .then((fixtureData: any) => {
-          cy.intercept(
-            {
-              method: "POST",
-              url: "**/api/clients/matches",
-              headers: {
-                "X-STEP": "2",
-              },
-            },
-            {
-              ...fixtureData,
-              headers: {
-                "content-type": "application/json;charset=UTF-8",
-              },
-            },
-          ).as("doMatch");
-        })
-        .as("doMatchFixture");
-    });
-    it('should have location data with fuzzy resulting in full address match', () => {
       fillIndividual();
-      clickNext(false);
+      clickNext(false);  
+    });
+    describe("when there is only one location", () => {
+      beforeEach(function () {
+        const testFixture = this.currentTest.title
+          .split("fuzzy resulting in ")[1]
+          .replaceAll(" ", "_");
+  
+          cy.fixture(`fuzzy/${testFixture}`)
+          .then((fixtureData: any) => {
+            cy.intercept(
+              {
+                method: "POST",
+                url: "**/api/clients/matches",
+                headers: {
+                  "X-STEP": "2",
+                },
+              },
+              {
+                ...fixtureData,
+                headers: {
+                  "content-type": "application/json;charset=UTF-8",
+                },
+              },
+            ).as("doMatch");
+          })
+          .as("doMatchFixture");
+      });
+      it('should have location data with fuzzy resulting in full address match', () => {
+        fillLocations(0);
+        clickNext(true);
+  
+        checkNotification('location-addresses-0', 'warning', 'Matching on address');
+  
+        checkInputClean('#name_0');
+        checkInputClean('#complementaryAddressOne_0');
+        checkDropdownWarning('#addr_0');
+        checkInputWarning('#city_0');
+        checkDropdownWarning('#province_0');
+        checkDropdownWarning('#country_0');
+        checkInputWarning('#postalCode_0');
+        checkInputClean('#emailAddress_0');
+        checkInputClean('#businessPhoneNumber_0');
+        checkInputClean('#secondaryPhoneNumber_0');
+        checkInputClean('#faxNumber_0');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+      it('should have location data with fuzzy resulting in full address email match', () => {
+        fillLocations(0);
+        clickNext(true);
+  
+        checkNotification('location-addresses-0', 'warning', 'Matching on email address');
+  
+        checkInputClean('#name_0');
+        checkInputClean('#complementaryAddressOne_0');
+        checkDropdownClean('#addr_0');
+        checkInputClean('#city_0');
+        checkDropdownClean('#province_0');
+        checkDropdownClean('#country_0');
+        checkInputClean('#postalCode_0');
+        checkInputWarning('#emailAddress_0');
+        checkInputClean('#businessPhoneNumber_0');
+        checkInputClean('#secondaryPhoneNumber_0');
+        checkInputClean('#faxNumber_0');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+      it('should have location data with fuzzy resulting in full address business phone match', () => {
+        fillLocations(0);
+        clickNext(true);
+  
+        checkNotification('location-addresses-0', 'warning', 'Matching on primary phone number');
+  
+        checkInputClean('#name_0');
+        checkInputClean('#complementaryAddressOne_0');
+        checkDropdownClean('#addr_0');
+        checkInputClean('#city_0');
+        checkDropdownClean('#province_0');
+        checkDropdownClean('#country_0');
+        checkInputClean('#postalCode_0');
+        checkInputClean('#emailAddress_0');
+        checkInputWarning('#businessPhoneNumber_0');
+        checkInputClean('#secondaryPhoneNumber_0');
+        checkInputClean('#faxNumber_0');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+      it('should have location data with fuzzy resulting in full address secondary phone match', () => {
+        fillLocations(0);
+        clickNext(true);
+  
+        checkNotification('location-addresses-0', 'warning', 'Matching on secondary phone number');
+  
+        checkInputClean('#name_0');
+        checkInputClean('#complementaryAddressOne_0');
+        checkDropdownClean('#addr_0');
+        checkInputClean('#city_0');
+        checkDropdownClean('#province_0');
+        checkDropdownClean('#country_0');
+        checkInputClean('#postalCode_0');
+        checkInputClean('#emailAddress_0');
+        checkInputClean('#businessPhoneNumber_0');
+        checkInputWarning('#secondaryPhoneNumber_0');
+        checkInputClean('#faxNumber_0');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+      it('should have location data with fuzzy resulting in full address fax phone match', () => {
+        fillLocations(0);
+        clickNext(true);
+  
+        checkNotification('location-addresses-0', 'warning', 'Matching on fax');
+  
+        checkInputClean('#name_0');
+        checkInputClean('#complementaryAddressOne_0');
+        checkDropdownClean('#addr_0');
+        checkInputClean('#city_0');
+        checkDropdownClean('#province_0');
+        checkDropdownClean('#country_0');
+        checkInputClean('#postalCode_0');
+        checkInputClean('#emailAddress_0');
+        checkInputClean('#businessPhoneNumber_0');
+        checkInputClean('#secondaryPhoneNumber_0');
+        checkInputWarning('#faxNumber_0');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+    });
+    const createLocationMatch = (index: string) => ({
+      "field":`location.addresses[${index}].emailAddress`,
+      "match":`0000000${index}`,
+      "fuzzy":true,
+      "partialMatch":false
+    });
+    describe("multiple locations", () => {
+      beforeEach(function () {
+        const testIndexes = this.currentTest.title
+          .split("indexes:")[1]
+          .replaceAll(" ", "")
+          .split(",");
 
-      fillLocations(0);
-      clickNext(true);
+        const body = testIndexes.map(createLocationMatch);
 
-      checkNotification('location-addresses-0', 'warning', 'Matching on address');
+        // only to be served as a base
+        cy.fixture("fuzzy/full_address_email_match")
+          .then((fixtureData: any) => {
+            cy.intercept(
+              {
+                method: "POST",
+                url: "**/api/clients/matches",
+                headers: {
+                  "X-STEP": "2",
+                },
+              },
+              {
+                ...fixtureData,
+                body,
+                headers: {
+                  "content-type": "application/json;charset=UTF-8",
+                },
+              },
+            ).as("doMatch");
+          })
+          .as("doMatchFixture");
+      });
+      describe("when there are two locations", () => {
+        beforeEach(function () {
+          fillLocations(0);
 
-      checkInputClean('#name_0');
-      checkInputClean('#complementaryAddressOne_0');
-      checkDropdownWarning('#addr_0');
-      checkInputWarning('#city_0');
-      checkDropdownWarning('#province_0');
-      checkDropdownWarning('#country_0');
-      checkInputWarning('#postalCode_0');
-      checkInputClean('#emailAddress_0');
-      checkInputClean('#businessPhoneNumber_0');
-      checkInputClean('#secondaryPhoneNumber_0');
-      checkInputClean('#faxNumber_0');
+          clickAddLocation(1);
+          fillLocations(1, {
+            name: "Office 1",
+          });
+        });
+        it('should have location data with fuzzy resulting in full email match at indexes: 0', () => {
+          clickNext(true);
 
-      cy.get("[data-test='wizard-next-button']")
-      .shadow()
-      .find("button")
-      .should("be.disabled");
+          checkNotification('location-addresses-0', 'warning', 'Matching on email address');
+          checkNotificationToNotExist('location-addresses-1');
+          checkAddressAccordionState(1, false);
+  
+          checkInputWarning('#emailAddress_0');
 
-      cy.get('#reviewStatement')
-      .should('be.visible');
+          checkInputClean('#emailAddress_1');
+    
+          cy.get("[data-test='wizard-next-button']")
+          .shadow()
+          .find("button")
+          .should("be.disabled");
+    
+          cy.get('#reviewStatement')
+          .should('be.visible');
+        });
+        it('should have location data with fuzzy resulting in full email match at indexes: 1', () => {
+          clickNext(true);
+
+          checkNotificationToNotExist('location-addresses-0');
+          checkNotification('location-addresses-1', 'warning', 'Matching on email address');
+          checkAddressAccordionState(1, true);
+  
+          checkInputClean('#emailAddress_0');
+
+          checkInputWarning('#emailAddress_1');
+    
+          cy.get("[data-test='wizard-next-button']")
+          .shadow()
+          .find("button")
+          .should("be.disabled");
+    
+          cy.get('#reviewStatement')
+          .should('be.visible');
+        });
+        it('should have location data with fuzzy resulting in full email match at indexes: 0, 1', () => {
+          clickNext(true);
+
+          checkNotification('location-addresses-0', 'warning', 'Matching on email address');
+          checkNotification('location-addresses-1', 'warning', 'Matching on email address');
+          checkAddressAccordionState(1, true);
+  
+          checkInputWarning('#emailAddress_0');
+
+          checkInputWarning('#emailAddress_1');
+    
+          cy.get("[data-test='wizard-next-button']")
+          .shadow()
+          .find("button")
+          .should("be.disabled");
+    
+          cy.get('#reviewStatement')
+          .should('be.visible');
+        });
+      });
+      describe("when there are three locations", () => {
+        beforeEach(function () {
+          fillLocations(0);
+
+          clickAddLocation(1);
+          fillLocations(1, {
+            name: "Office 1",
+          });
+
+          clickAddLocation(2);
+          fillLocations(2, {
+            name: "Office 2",
+          });
+        });
+        it('should have location data with fuzzy resulting in full email match at indexes: 1', () => {
+          clickNext(true);
+
+          checkNotificationToNotExist('location-addresses-0');
+          checkNotification('location-addresses-1', 'warning', 'Matching on email address');
+          checkAddressAccordionState(1, true);
+          checkNotificationToNotExist('location-addresses-2')
+          checkAddressAccordionState(2, false);
+  
+          checkInputClean('#emailAddress_0');
+
+          checkInputWarning('#emailAddress_1');
+
+          checkInputClean('#emailAddress_2');
+    
+          cy.get("[data-test='wizard-next-button']")
+          .shadow()
+          .find("button")
+          .should("be.disabled");
+    
+          cy.get('#reviewStatement')
+          .should('be.visible');
+        });
+        it('should have location data with fuzzy resulting in full email match at indexes: 2', () => {
+          clickNext(true);
+
+          checkNotificationToNotExist('location-addresses-0');
+          checkNotificationToNotExist('location-addresses-1');
+          checkAddressAccordionState(1, false);
+          checkNotification('location-addresses-2', 'warning', 'Matching on email address');
+          checkAddressAccordionState(2, true);
+  
+          checkInputClean('#emailAddress_0');
+
+          checkInputClean('#emailAddress_1');
+
+          checkInputWarning('#emailAddress_2');
+    
+          cy.get("[data-test='wizard-next-button']")
+          .shadow()
+          .find("button")
+          .should("be.disabled");
+    
+          cy.get('#reviewStatement')
+          .should('be.visible');
+        });
+        it('should have location data with fuzzy resulting in full email match at indexes: 1, 2', () => {
+          clickNext(true);
+
+          checkNotificationToNotExist('location-addresses-0');
+          checkNotification('location-addresses-1', 'warning', 'Matching on email address');
+          checkAddressAccordionState(1, true);
+          checkNotification('location-addresses-2', 'warning', 'Matching on email address');
+          checkAddressAccordionState(2, true);
+  
+          checkInputClean('#emailAddress_0');
+
+          checkInputWarning('#emailAddress_1');
+
+          checkInputWarning('#emailAddress_2');
+    
+          cy.get("[data-test='wizard-next-button']")
+          .shadow()
+          .find("button")
+          .should("be.disabled");
+    
+          cy.get('#reviewStatement')
+          .should('be.visible');
+        });
+      });
     });
   });
 
@@ -773,6 +1068,11 @@ describe("Staff Form Fuzzy Matches", () => {
     } else {
       cy.wait('@dontMatch');
     }
+  };
+
+  const clickAddLocation = (index: number) => {
+    cy.contains("cds-button", "Add another location").should("be.visible").click();
+    cy.get(`cds-accordion-item[data-focus="address-${index}-heading"]`).focused();
   };
 
   const fillIndividual = (extraData: any = {}) => {
@@ -874,12 +1174,16 @@ describe("Staff Form Fuzzy Matches", () => {
     });
   };
 
-  const fillLocations = (index: 0, extraData: any = {}) => {
+  const fillLocations = (index: number, extraData: any = {}) => {
     cy.fixture("testdata/locationBaseData").then((fixtureData: any) => {
       const data = { ...fixtureData, ...extraData };
 
       cy.fillFormEntry(`#name_${index}`, data.name);
       cy.selectAutocompleteEntry(`#addr_${index}`, data.addr, data.addressId);
+      cy.fillFormEntry(`#emailAddress_${index}`, data.emailAddress);
+      cy.fillFormEntry(`#businessPhoneNumber_${index}`, data.businessPhoneNumber);
+      cy.fillFormEntry(`#secondaryPhoneNumber_${index}`, data.secondaryPhoneNumber);
+      cy.fillFormEntry(`#faxNumber_${index}`, data.faxNumber);
     });
   };
 
@@ -952,7 +1256,16 @@ describe("Staff Form Fuzzy Matches", () => {
       .and('contain', message);
   }
 
+  const checkNotificationToNotExist = (id: string) => {
+    cy.get(`#fuzzy-match-notification-${id}`)
+      .should("not.exist");
+  }
+
   const checkTopNotification = (kind: string, message: string) => {
     checkNotification('global', kind, message);
+  }
+
+  const checkAddressAccordionState = (index: number, open: boolean) => {
+    cy.checkAccordionItemState(`[data-focus="address-${index}-heading"]`, open);
   }
 });
