@@ -12,14 +12,14 @@ import {
   isIdCharacters,
   isExactSize,
   formFieldValidations as externalFormFieldValidations,
-  validate as globalValidate,
-  runValidation as globalRunValidation,
   isAscii,
   isEmail,
   isPhoneNumber,
   optional,
   isAsciiLineBreak,
   isNotEmptyArray,
+  validate as globalValidate,
+  runValidation as globalRunValidation,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -64,8 +64,8 @@ fieldValidations["businessInformation.firstName"] = [
 ];
 
 fieldValidations["businessInformation.middleName"] = [
-  isMaxSizeMsg("middle name", 30),
-  hasOnlyNamingCharacters("middle name"),
+  optional(isMaxSizeMsg("middle name", 30)),
+  optional(hasOnlyNamingCharacters("middle name")),
 ];
 
 // use the same validations as lastName in contacts

@@ -32,11 +32,7 @@ import {
   convertFieldNameToSentence,
 } from "@/services/ForestClientService";
 // Imported global validations
-import {
-  validate,
-  runValidation,
-  getValidations,
-} from "@/helpers/validators/StaffFormValidations";
+import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import {
   submissionValidation,
   resetSubmissionValidators,
@@ -58,7 +54,9 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 
-const isAdminInd = ["CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
+const isAdminInd = ["CLIENT_ADMIN"].some((authority) =>
+  ForestClientUserSession.authorities.includes(authority)
+);
 
 const clientTypesList: CodeNameType[] = [
   {
@@ -98,6 +96,7 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 );
 const overlayBus = useEventBus<boolean>("overlay-event");
 const fuzzyBus = useEventBus<FuzzyMatcherEvent>("fuzzy-error-notification");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 // Route related
 const router = useRouter();
@@ -115,12 +114,6 @@ const progressData = reactive([
     disabled: false,
     valid: false,
     step: 0,
-    fields: [
-      "businessInformation.businessType",
-      "businessInformation.businessName",
-      "businessInformation.clientType",
-    ],
-    extraValidations: [],
   },
   {
     title: "Locations",
@@ -129,24 +122,6 @@ const progressData = reactive([
     disabled: true,
     valid: false,
     step: 1,
-    fields: [
-      "location.addresses.*.locationName",
-      "location.addresses.*.complementaryAddressOne",
-      "location.addresses.*.complementaryAddressTwo",
-      "location.addresses.*.country.text",
-      "location.addresses.*.province.text",
-      "location.addresses.*.city",
-      "location.addresses.*.streetAddress",
-      'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")',
-      'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")',
-      'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")',
-      "location.addresses.*.emailAddress",
-      "location.addresses.*.businessPhoneNumber",
-      "location.addresses.*.secondaryPhoneNumber",
-      "location.addresses.*.faxNumber",
-      "location.addresses.*.notes",
-    ],
-    extraValidations: [],
   },
   {
     title: "Contacts",
@@ -155,17 +130,6 @@ const progressData = reactive([
     disabled: true,
     valid: false,
     step: 2,
-    fields: [
-      "location.contacts.*.locationNames.*.text",
-      "location.contacts.*.contactType.text",
-      "location.contacts.*.firstName",
-      "location.contacts.*.lastName",
-      "location.contacts.*.email",
-      "location.contacts.*.phoneNumber",
-      "location.contacts.*.secondaryPhoneNumber",
-      "location.contacts.*.faxNumber",
-    ],
-    extraValidations: [],
   },
   {
     title: "Review",
@@ -174,33 +138,6 @@ const progressData = reactive([
     disabled: true,
     valid: false,
     step: 3,
-    fields: [
-      "businessInformation.businessType",
-      "businessInformation.businessName",
-      "businessInformation.clientType",
-      "businessInformation.notes",
-      "location.addresses.*.locationName",
-      "location.addresses.*.complementaryAddressOne",
-      "location.addresses.*.complementaryAddressTwo",
-      "location.addresses.*.country.text",
-      "location.addresses.*.province.text",
-      "location.addresses.*.city",
-      "location.addresses.*.streetAddress",
-      "location.addresses.*.emailAddress",
-      "location.addresses.*.businessPhoneNumber",
-      "location.addresses.*.secondaryPhoneNumber",
-      "location.addresses.*.faxNumber",
-      "location.addresses.*.notes",
-      "location.contacts.*.locationNames.*.text",
-      "location.contacts.*.contactType.text",
-      "location.contacts.*.firstName",
-      "location.contacts.*.lastName",
-      "location.contacts.*.email",
-      "location.contacts.*.phoneNumber",
-      "location.contacts.*.secondaryPhoneNumber",
-      "location.contacts.*.faxNumber",
-    ],
-    extraValidations: [],
   },
 ]);
 const currentTab = ref(0);
@@ -208,33 +145,8 @@ const currentTab = ref(0);
 const isLast = computed(() => currentTab.value === progressData.length - 1);
 const isFirst = computed(() => currentTab.value === 0);
 
-const checkStepValidity = (stepNumber: number): boolean => {
-  progressData.forEach((step: any) => {
-    if (step.step <= stepNumber) {
-      step.valid = validate(step.fields, formData, true);
-    }
-  });
-
-  if (!progressData[stepNumber].valid) {
-    // Stop here so the step basic validation messages don't get cleared.
-    return false;
-  }
-
-  if (
-    !progressData[stepNumber].extraValidations.every((validation: any) =>
-      runValidation(
-        validation.field,
-        formData,
-        validation.validation,
-        true,
-        true
-      )
-    )
-  )
-    return false;
-
-  return progressData[stepNumber].valid;
-};
+const checkStepValidity = (stepNumber: number): boolean =>
+  progressData[stepNumber].valid;
 
 const validateStep = (valid: boolean) => {
   progressData[currentTab.value].valid = valid;
@@ -372,9 +284,7 @@ const moveToNextStep = () => {
   resetSubmissionValidators();
 
   fuzzyBus.emit(undefined);
-};
 
-const onNext = () => {
   //This fixes the index
   formData.location.addresses.forEach(
     (address: Address, index: number) => (address.index = index)
@@ -382,19 +292,28 @@ const onNext = () => {
   formData.location.contacts.forEach(
     (contact: Contact, index: number) => (contact.index = index)
   );
+};
 
-  notificationBus.emit(undefined);
-  if (currentTab.value + 1 < progressData.length) {
-    if (checkStepValidity(currentTab.value)) {
-      if (reviewStatement.value) {
-        moveToNextStep();
+const onNext = () => {
+  //This will trigger and force the validation of the current step
+  //We don't pass any field id here to force the validation of all fields
+  revalidateBus.emit();
+
+  //This is now inside a setTimeout to allow the revalidateBus to finish
+  setTimeout(() => {
+    notificationBus.emit(undefined);
+    if (currentTab.value + 1 < progressData.length) {
+      if (checkStepValidity(currentTab.value)) {
+        if (reviewStatement.value) {
+          moveToNextStep();
+        } else {
+          lookForMatches(moveToNextStep);
+        }
       } else {
-        lookForMatches(moveToNextStep);
+        setScrollPoint("top-notification");
       }
-    } else {
-      setScrollPoint("top-notification");
     }
-  }
+  }, 1);
 };
 
 const onBack = () => {
@@ -433,7 +352,10 @@ const updateClientType = (value: CodeNameType | undefined) => {
     const updateFormData = (clientTypeEnum?: ClientTypeEnum) => {
       Object.assign(formData.businessInformation, commonBusinessInfo);
       if (clientTypeEnum) {
-        formData.businessInformation.clientType = getEnumKeyByEnumValue(ClientTypeEnum, clientTypeEnum);
+        formData.businessInformation.clientType = getEnumKeyByEnumValue(
+          ClientTypeEnum,
+          clientTypeEnum
+        );
       }
       formData.location.contacts[0] = applicantContact;
     };
@@ -464,8 +386,6 @@ const updateClientType = (value: CodeNameType | undefined) => {
 
 const validation = reactive<Record<string, boolean>>({});
 
-const revalidateBus = useEventBus<void>("revalidate-bus");
-
 const goToStep = (index: number, skipCheck: boolean = false) => {
   if (skipCheck || (index <= currentTab.value && checkStepValidity(index)))
     currentTab.value = index;
@@ -476,6 +396,7 @@ const goToStep = (index: number, skipCheck: boolean = false) => {
 const submitBtnDisabled = ref(false);
 
 const submit = () => {
+  revalidateBus.emit();
   errorBus.emit([]);
   notificationBus.emit(undefined);
 
@@ -534,11 +455,13 @@ const submit = () => {
     setScrollPoint("top-notification");
   });
 
-  if (checkStepValidity(currentTab.value)) {
-    submitBtnDisabled.value = true;
-    overlayBus.emit({ isVisible: true, message: "", showLoading: true });
-    fetchSubmission();
-  }
+  setTimeout(() => {
+    if (checkStepValidity(currentTab.value)) {
+      submitBtnDisabled.value = true;
+      overlayBus.emit({ isVisible: true, message: "", showLoading: true });
+      fetchSubmission();
+    }
+  }, 1);
 };
 </script>
 
