@@ -1,7 +1,7 @@
 FROM gvenzl/oracle-free:23.3-slim-faststart
 
 USER root
-RUN usermod -u 1011300000 oracle
+RUN usermod -u 1011270000 oracle
 RUN chmod -R 777 "${ORACLE_BASE}"
 USER oracle
 
