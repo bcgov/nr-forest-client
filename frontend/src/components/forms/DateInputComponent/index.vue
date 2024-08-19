@@ -51,7 +51,7 @@ const props = withDefaults(
     yearValidations: () => [],
     monthValidations: () => [],
     dayValidations: () => [],
-  },
+  }
 );
 
 // Events we emit during component lifecycle
@@ -79,7 +79,7 @@ const emit = defineEmits<{
 // We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const partError = reactive({
   [DatePart.year]: "",
@@ -95,7 +95,10 @@ const warning = ref(false);
  * Sets the error and emits an error event.
  * @param errorObject - the error object or string
  */
-const setError = (errorObject: string | ValidationMessageType | undefined, datePart?: DatePart) => {
+const setError = (
+  errorObject: string | ValidationMessageType | undefined,
+  datePart?: DatePart
+) => {
   /*
   The error should be emitted whenever it is found, instead of watching and emitting only when it
   changes.
@@ -104,7 +107,8 @@ const setError = (errorObject: string | ValidationMessageType | undefined, dateP
   an empty one to allow subscribers to know in case the field still has the same error.
   */
 
-  const errorMessage = typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
+  const errorMessage =
+    typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
 
   warning.value = false;
   if (typeof errorObject === "object") {
@@ -124,7 +128,9 @@ const setError = (errorObject: string | ValidationMessageType | undefined, dateP
       other part contains error.
       */
       const newErrorMessage =
-        partError[DatePart.year] || partError[DatePart.month] || partError[DatePart.day];
+        partError[DatePart.year] ||
+        partError[DatePart.month] ||
+        partError[DatePart.day];
       error.value = newErrorMessage;
     } else {
       error.value = errorMessage;
@@ -147,8 +153,8 @@ const setError = (errorObject: string | ValidationMessageType | undefined, dateP
 
 watch(
   () => props.errorMessage,
-  () => setError(props.errorMessage),
-)
+  () => setError(props.errorMessage)
+);
 
 const datePartPositions = {
   [DatePart.year]: 1,
@@ -159,7 +165,9 @@ const datePartPositions = {
 const regex = /(.{0,4})-(.{0,2})-(.{0,2})/;
 
 const getDatePart = (datePart: DatePart) =>
-  props.modelValue ? regex.exec(props.modelValue)[datePartPositions[datePart]] : "";
+  props.modelValue
+    ? regex.exec(props.modelValue)[datePartPositions[datePart]]
+    : "";
 
 // We set it as a separated ref due to props not being updatable
 const selectedValue = ref<string | null>(props.modelValue);
@@ -168,13 +176,18 @@ const selectedYear = ref<string>(getDatePart(DatePart.year));
 const selectedMonth = ref<string>(getDatePart(DatePart.month));
 const selectedDay = ref<string>(getDatePart(DatePart.day));
 
-const buildFullDate = () => `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`
+const buildFullDate = () =>
+  `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`;
 
 const areAllPartsValid = () =>
-  validation[DatePart.year] && validation[DatePart.month] && validation[DatePart.day];
+  validation[DatePart.year] &&
+  validation[DatePart.month] &&
+  validation[DatePart.day];
 
 const isAnyPartEmpty = () =>
-  isEmpty(selectedYear.value) || isEmpty(selectedMonth.value) || isEmpty(selectedDay.value);
+  isEmpty(selectedYear.value) ||
+  isEmpty(selectedMonth.value) ||
+  isEmpty(selectedDay.value);
 
 // We set the value prop as a reference for update reason
 emit("empty", isAnyPartEmpty());
@@ -204,7 +217,7 @@ const emitValueChange = (newValue: string): void => {
 
 // Watch for changes on the input
 watch([selectedValue], () => {
-  emitValueChange(selectedValue.value)
+  emitValueChange(selectedValue.value);
 });
 
 // We call all the part validations
@@ -213,8 +226,8 @@ const validatePart = (datePart: DatePart) => {
   const error = partValidators.value[datePart]
     .map((validation) => validation(newValue))
     .filter((errorMessage) => {
-      if (errorMessage) return true
-      return false
+      if (errorMessage) return true;
+      return false;
     })
     .shift();
   setError(error, datePart);
@@ -228,8 +241,8 @@ const validateFullDate = (newValue: string) => {
       props.validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
-          if (errorMessage) return true
-          return false
+          if (errorMessage) return true;
+          return false;
         })
         .shift() ?? props.errorMessage;
     setError(error);
@@ -253,7 +266,8 @@ const validation = reactive({
 const validationFullDate = ref(false);
 
 const year4DigitsMessage = "Year must have 4 digits";
-const month2DigitsMessage = "Month must have 2 digits. For example, 01 for January";
+const month2DigitsMessage =
+  "Month must have 2 digits. For example, 01 for January";
 const day2DigitsMessage = "Day must have 2 digits";
 
 const partValidators = computed(() => ({
@@ -282,11 +296,13 @@ const partValidators = computed(() => ({
       if (!validation[DatePart.year] || !validation[DatePart.month]) {
         return "";
       }
-      const yearMonthDate = parseISO(`${selectedYear.value}-${selectedMonth.value}`);
+      const yearMonthDate = parseISO(
+        `${selectedYear.value}-${selectedMonth.value}`
+      );
       return isValidDayOfMonthYear(
         selectedYear.value,
         selectedMonth.value,
-        `Day can't be greater than ${getDaysInMonth(yearMonthDate)}`,
+        `Day can't be greater than ${getDaysInMonth(yearMonthDate)}`
       )(value);
     },
     (value: string) => {
@@ -294,11 +310,13 @@ const partValidators = computed(() => ({
         return "";
       }
       const arbitraryLeapYear = 2000;
-      const yearMonthDate = parseISO(`${arbitraryLeapYear}-${selectedMonth.value}`);
+      const yearMonthDate = parseISO(
+        `${arbitraryLeapYear}-${selectedMonth.value}`
+      );
       return isValidDayOfMonth(
         selectedMonth.value,
-        `Day can't be greater than ${getDaysInMonth(yearMonthDate)}`,
-      )(value)
+        `Day can't be greater than ${getDaysInMonth(yearMonthDate)}`
+      )(value);
     },
     isLessThan(32, "Day can't be greater than 31"),
     ...props.dayValidations,
@@ -365,13 +383,13 @@ watch(
       selectedValue.value = props.modelValue;
 
       if (areAllPartsValid()) {
-        validateFullDate(selectedValue.value)
+        validateFullDate(selectedValue.value);
       }
     }
 
     // resets variable
     isUserEvent.value = false;
-  },
+  }
 );
 
 // Tells whether the current change was done manually by the user.

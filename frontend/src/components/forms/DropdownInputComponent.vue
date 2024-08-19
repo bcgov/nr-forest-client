@@ -35,7 +35,7 @@ const emit = defineEmits<{
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const warning = ref(false);
 
@@ -54,20 +54,20 @@ emit("empty", isEmpty(props.initialValue));
 const emitValueChange = (newValue: string): void => {
   const reference = newValue
     ? props.modelValue.find((entry) => entry.name === newValue)
-    : { code: '', name: '' };
+    : { code: "", name: "" };
 
   emit("update:modelValue", reference?.name);
   emit("update:selectedValue", reference);
   emit("empty", isEmpty(newValue));
 };
 
-
 /**
  * Sets the error and emits an error event.
  * @param errorObject - the error object or string
  */
 const setError = (errorObject: string | ValidationMessageType | undefined) => {
-  const errorMessage = typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
+  const errorMessage =
+    typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
   error.value = errorMessage || "";
 
   warning.value = false;
@@ -82,8 +82,8 @@ const setError = (errorObject: string | ValidationMessageType | undefined) => {
   rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
   an empty one to allow subscribers to know in case the field still has the same error.
   */
-  emit('error', error.value);
-}
+  emit("error", error.value);
+};
 
 /**
  * Performs all validations and returns the first error message.
@@ -94,20 +94,15 @@ const setError = (errorObject: string | ValidationMessageType | undefined) => {
  */
 const validatePurely = (newValue: string): string | undefined => {
   if (props.validations) {
-    return (
-      props.validations
-        .map((validation) => validation(newValue))
-        .filter((errorMessage) => {
-          if (errorMessage) return true;
-          return false;
-        })
-        .reduce(
-          (acc, errorMessage) => acc || errorMessage,
-          props.errorMessage
-        )
-    );
+    return props.validations
+      .map((validation) => validation(newValue))
+      .filter((errorMessage) => {
+        if (errorMessage) return true;
+        return false;
+      })
+      .reduce((acc, errorMessage) => acc || errorMessage, props.errorMessage);
   }
-}
+};
 
 const validateInput = (newValue: any) => {
   if (props.validations) {
@@ -116,11 +111,11 @@ const validateInput = (newValue: any) => {
 };
 
 // Tells whether the current change was done manually by the user.
-const isUserEvent = ref(false)
+const isUserEvent = ref(false);
 
 const selectItem = (event: any) => {
   selectedValue.value = event?.detail?.item?.getAttribute("data-value");
-  isUserEvent.value = true
+  isUserEvent.value = true;
 };
 
 /**
@@ -173,7 +168,7 @@ watch(
 
 revalidateBus.on((keys: string[] | undefined) => {
   if (keys === undefined || keys.includes(props.id)) {
-    validateInput(selectedValue.value)
+    validateInput(selectedValue.value);
   }
 });
 
@@ -182,10 +177,18 @@ const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
 const isFocused = ref(false);
 
 // This is an array due to the v-for attribute.
-const cdsComboBoxArrayRef = ref<InstanceType<typeof CDSComboBox>[] | null>(null);
+const cdsComboBoxArrayRef = ref<InstanceType<typeof CDSComboBox>[] | null>(
+  null
+);
 
 watch(
-  [cdsComboBoxArrayRef, () => props.required, () => props.label, isFocused, ariaInvalidString],
+  [
+    cdsComboBoxArrayRef,
+    () => props.required,
+    () => props.label,
+    isFocused,
+    ariaInvalidString,
+  ],
   async ([cdsComboBoxArray]) => {
     if (cdsComboBoxArray) {
       // wait for the DOM updates to complete
@@ -195,7 +198,9 @@ watch(
       const input = combo?.shadowRoot?.querySelector("input");
 
       const helperTextId = "helper-text";
-      const helperText = combo.shadowRoot?.querySelector("[name='helper-text']");
+      const helperText = combo.shadowRoot?.querySelector(
+        "[name='helper-text']"
+      );
       if (helperText) {
         helperText.id = helperTextId;
 
@@ -203,7 +208,8 @@ watch(
         if (isFocused.value) {
           helperText.role = "generic";
         } else {
-          helperText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+          helperText.role =
+            ariaInvalidString.value === "true" ? "alert" : "generic";
         }
       }
 
@@ -217,7 +223,7 @@ watch(
         input.setAttribute("aria-describedby", helperTextId);
       }
     }
-  },
+  }
 );
 
 // For some reason, if helper-text is empty, invalid-text message doesn't work.

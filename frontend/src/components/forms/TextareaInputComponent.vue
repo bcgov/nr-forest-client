@@ -24,7 +24,7 @@ const props = withDefaults(
     enableCounter?: boolean;
     maxCount?: number;
   }>(),
-  {},
+  {}
 );
 
 //Events we emit during component lifecycle
@@ -37,7 +37,7 @@ const emit = defineEmits<{
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const warning = ref(false);
 
@@ -46,7 +46,8 @@ const warning = ref(false);
  * @param errorObject - the error object or string
  */
 const setError = (errorObject: string | ValidationMessageType | undefined) => {
-  const errorMessage = typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
+  const errorMessage =
+    typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
   error.value = errorMessage || "";
 
   warning.value = false;
@@ -61,12 +62,12 @@ const setError = (errorObject: string | ValidationMessageType | undefined) => {
   rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
   an empty one to allow subscribers to know in case the field still has the same error.
   */
-  emit('error', error.value);
-}
+  emit("error", error.value);
+};
 
 watch(
   () => props.errorMessage,
-  () => setError(props.errorMessage),
+  () => setError(props.errorMessage)
 );
 
 //We set it as a separated ref due to props not being updatable
@@ -103,7 +104,7 @@ const validateInput = (newValue: string) => {
           if (errorMessage) return true;
           return false;
         })
-        .shift() ?? props.errorMessage,
+        .shift() ?? props.errorMessage
     );
   }
 };
@@ -116,7 +117,7 @@ revalidateBus.on((keys: string[] | undefined) => {
 
 watch(
   () => props.modelValue,
-  () => (selectedValue.value = props.modelValue),
+  () => (selectedValue.value = props.modelValue)
 );
 
 // Tells whether the current change was done manually by the user.

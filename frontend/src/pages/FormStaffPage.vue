@@ -32,9 +32,7 @@ import {
   convertFieldNameToSentence,
 } from "@/services/ForestClientService";
 // Imported global validations
-import {
-  getValidations,
-} from "@/helpers/validators/StaffFormValidations";
+import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import {
   submissionValidation,
   resetSubmissionValidators,
@@ -56,7 +54,9 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 
-const isAdminInd = ["CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
+const isAdminInd = ["CLIENT_ADMIN"].some((authority) =>
+  ForestClientUserSession.authorities.includes(authority)
+);
 
 const clientTypesList: CodeNameType[] = [
   {
@@ -96,7 +96,7 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 );
 const overlayBus = useEventBus<boolean>("overlay-event");
 const fuzzyBus = useEventBus<FuzzyMatcherEvent>("fuzzy-error-notification");
-const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 // Route related
 const router = useRouter();
@@ -145,7 +145,8 @@ const currentTab = ref(0);
 const isLast = computed(() => currentTab.value === progressData.length - 1);
 const isFirst = computed(() => currentTab.value === 0);
 
-const checkStepValidity = (stepNumber: number): boolean => progressData[stepNumber].valid;
+const checkStepValidity = (stepNumber: number): boolean =>
+  progressData[stepNumber].valid;
 
 const validateStep = (valid: boolean) => {
   progressData[currentTab.value].valid = valid;
@@ -260,19 +261,19 @@ const onNext = () => {
   revalidateBus.emit();
 
   //This is now inside a setTimeout to allow the revalidateBus to finish
-  setTimeout(() => {    
+  setTimeout(() => {
     notificationBus.emit(undefined);
-  if (currentTab.value + 1 < progressData.length) {      
-    if (checkStepValidity(currentTab.value)) {
-      if (reviewStatement.value) {
-        moveToNextStep();
+    if (currentTab.value + 1 < progressData.length) {
+      if (checkStepValidity(currentTab.value)) {
+        if (reviewStatement.value) {
+          moveToNextStep();
+        } else {
+          lookForMatches(moveToNextStep);
+        }
       } else {
-        lookForMatches(moveToNextStep);
+        setScrollPoint("top-notification");
       }
-    } else {
-      setScrollPoint("top-notification");
     }
-  }
   }, 1);
 };
 
@@ -312,7 +313,10 @@ const updateClientType = (value: CodeNameType | undefined) => {
     const updateFormData = (clientTypeEnum?: ClientTypeEnum) => {
       Object.assign(formData.businessInformation, commonBusinessInfo);
       if (clientTypeEnum) {
-        formData.businessInformation.clientType = getEnumKeyByEnumValue(ClientTypeEnum, clientTypeEnum);
+        formData.businessInformation.clientType = getEnumKeyByEnumValue(
+          ClientTypeEnum,
+          clientTypeEnum
+        );
       }
       formData.location.contacts[0] = applicantContact;
     };
@@ -414,10 +418,10 @@ const submit = () => {
 
   setTimeout(() => {
     if (checkStepValidity(currentTab.value)) {
-    submitBtnDisabled.value = true;
-    overlayBus.emit({ isVisible: true, message: "", showLoading: true });
-    fetchSubmission();
-  }
+      submitBtnDisabled.value = true;
+      overlayBus.emit({ isVisible: true, message: "", showLoading: true });
+      fetchSubmission();
+    }
   }, 1);
 };
 </script>

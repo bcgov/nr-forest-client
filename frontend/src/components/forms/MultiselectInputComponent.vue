@@ -34,7 +34,7 @@ const emit = defineEmits<{
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const warning = ref(false);
 
@@ -58,7 +58,8 @@ const items = ref<string[]>([]);
  * @param errorObject - the error object or string
  */
 const setError = (errorObject: string | ValidationMessageType | undefined) => {
-  const errorMessage = typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
+  const errorMessage =
+    typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
   error.value = errorMessage || "";
 
   warning.value = false;
@@ -73,8 +74,8 @@ const setError = (errorObject: string | ValidationMessageType | undefined) => {
   rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
   an empty one to allow subscribers to know in case the field still has the same error.
   */
-  emit('error', error.value);
-}
+  emit("error", error.value);
+};
 
 //We call all the validations
 const validateInput = (newValue: any) => {
@@ -87,10 +88,7 @@ const validateInput = (newValue: any) => {
       props.validations
         .map((validation) => validation(value))
         .filter(hasError)
-        .reduce(
-          (acc, errorMessage) => acc || errorMessage,
-          props.errorMessage
-        );
+        .reduce((acc, errorMessage) => acc || errorMessage, props.errorMessage);
 
     setError(validate(items.value));
   }
@@ -141,7 +139,7 @@ watch(
 
 revalidateBus.on((keys: string[] | undefined) => {
   if (keys === undefined || keys.includes(props.id)) {
-    validateInput(selectedValue.value)
+    validateInput(selectedValue.value);
   }
 });
 
@@ -159,7 +157,9 @@ watch(
       await nextTick();
 
       const helperTextId = "helper-text";
-      const helperText = cdsMultiSelect.shadowRoot?.querySelector("[name='helper-text']");
+      const helperText = cdsMultiSelect.shadowRoot?.querySelector(
+        "[name='helper-text']"
+      );
       if (helperText) {
         helperText.id = helperTextId;
 
@@ -167,11 +167,13 @@ watch(
         if (isFocused.value) {
           helperText.role = "generic";
         } else {
-          helperText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+          helperText.role =
+            ariaInvalidString.value === "true" ? "alert" : "generic";
         }
       }
 
       const triggerDiv = cdsMultiSelect.shadowRoot?.querySelector("div[role='button']");
+      
       if (triggerDiv) {
         // Properly indicate as required.
         triggerDiv.ariaRequired = props.required ? "true" : "false";
@@ -181,7 +183,7 @@ watch(
         triggerDiv.setAttribute("aria-describedby", helperTextId);
       }
     }
-  },
+  }
 );
 </script>
 

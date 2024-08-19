@@ -2,7 +2,10 @@
 import { ref, watch, nextTick, computed } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/radio-button/index";
-import type { CDSRadioButtonGroup, CDSRadioButton } from "@carbon/web-components";
+import type {
+  CDSRadioButtonGroup,
+  CDSRadioButton,
+} from "@carbon/web-components";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
@@ -32,7 +35,7 @@ const selectedValue = ref<string>(props.initialValue);
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<string[]|undefined>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 //We watch for error changes to emit events
 watch(error, () => emit("error", error.value));
@@ -72,7 +75,7 @@ const updateSelectedValue = (event: any) =>
   (selectedValue.value = event.detail.value);
 revalidateBus.on((keys: string[] | undefined) => {
   if (keys === undefined || keys.includes(props.id)) {
-    validateInput()
+    validateInput();
   }
 });
 
@@ -80,68 +83,84 @@ const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
 
 const isFocused = ref(false);
 
-const cdsRadioButtonGroupRef = ref<InstanceType<typeof CDSRadioButtonGroup> | null>(null);
+const cdsRadioButtonGroupRef = ref<InstanceType<
+  typeof CDSRadioButtonGroup
+> | null>(null);
 
-watch([cdsRadioButtonGroupRef, isFocused, ariaInvalidString], async ([cdsRadioButtonGroup]) => {
-  if (cdsRadioButtonGroup) {
-    // wait for the DOM updates to complete
-    await nextTick();
+watch(
+  [cdsRadioButtonGroupRef, isFocused, ariaInvalidString],
+  async ([cdsRadioButtonGroup]) => {
+    if (cdsRadioButtonGroup) {
+      // wait for the DOM updates to complete
+      await nextTick();
 
-    const helperTextId = "helper-text";
-    const helperText = cdsRadioButtonGroup.shadowRoot?.querySelector(".cds--form__helper-text");
-    if (helperText) {
-      helperText.id = helperTextId;
-    }
-
-    const invalidTextId = "invalid-text";
-    const invalidText = cdsRadioButtonGroup.shadowRoot?.querySelector(".cds--form-requirement");
-    if (invalidText) {
-      invalidText.id = invalidTextId;
-
-      // For some reason the role needs to be dynamically changed to "alert" to announce.
-      if (isFocused.value) {
-        invalidText.role = "generic";
-      } else {
-        invalidText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
-      }
-    }
-
-    const fieldset = cdsRadioButtonGroup.shadowRoot?.querySelector("fieldset");
-    if (fieldset) {
-      fieldset.role = "radiogroup";
-      fieldset.setAttribute("aria-label", props.label);
-      fieldset.ariaInvalid = ariaInvalidString.value;
-
-      // Use the helper text as a field description
-      fieldset.setAttribute(
-        "aria-describedby",
-        ariaInvalidString.value === "true" ? invalidTextId : helperTextId,
+      const helperTextId = "helper-text";
+      const helperText = cdsRadioButtonGroup.shadowRoot?.querySelector(
+        ".cds--form__helper-text"
       );
+      if (helperText) {
+        helperText.id = helperTextId;
+      }
+
+      const invalidTextId = "invalid-text";
+      const invalidText = cdsRadioButtonGroup.shadowRoot?.querySelector(
+        ".cds--form-requirement"
+      );
+      if (invalidText) {
+        invalidText.id = invalidTextId;
+
+        // For some reason the role needs to be dynamically changed to "alert" to announce.
+        if (isFocused.value) {
+          invalidText.role = "generic";
+        } else {
+          invalidText.role =
+            ariaInvalidString.value === "true" ? "alert" : "generic";
+        }
+      }
+
+      const fieldset =
+        cdsRadioButtonGroup.shadowRoot?.querySelector("fieldset");
+      if (fieldset) {
+        fieldset.role = "radiogroup";
+        fieldset.setAttribute("aria-label", props.label);
+        fieldset.ariaInvalid = ariaInvalidString.value;
+
+        // Use the helper text as a field description
+        fieldset.setAttribute(
+          "aria-describedby",
+          ariaInvalidString.value === "true" ? invalidTextId : helperTextId
+        );
+      }
     }
   }
-});
+);
 
-const cdsRadioButtonArrayRef = ref<InstanceType<typeof CDSRadioButton>[] | null>(null);
+const cdsRadioButtonArrayRef = ref<
+  InstanceType<typeof CDSRadioButton>[] | null
+>(null);
 
-watch([cdsRadioButtonArrayRef, () => props.required], async (cdsRadioButtonArray) => {
-  if (cdsRadioButtonArray) {
-    // wait for the DOM updates to complete
-    await nextTick();
+watch(
+  [cdsRadioButtonArrayRef, () => props.required],
+  async (cdsRadioButtonArray) => {
+    if (cdsRadioButtonArray) {
+      // wait for the DOM updates to complete
+      await nextTick();
 
-    for (const radio of cdsRadioButtonArrayRef.value) {
-      const label = radio.shadowRoot?.querySelector("label");
-      if (label) {
-        // Fixes the association as it's wrong in the component.
-        label.htmlFor = "radio";
-      }
-      const input = radio.shadowRoot?.querySelector("input");
-      if (input) {
-        // Propagate attributes to the input
-        input.required = props.required;
+      for (const radio of cdsRadioButtonArrayRef.value) {
+        const label = radio.shadowRoot?.querySelector("label");
+        if (label) {
+          // Fixes the association as it's wrong in the component.
+          label.htmlFor = "radio";
+        }
+        const input = radio.shadowRoot?.querySelector("input");
+        if (input) {
+          // Propagate attributes to the input
+          input.required = props.required;
+        }
       }
     }
   }
-});
+);
 
 // For the radio-button component the Screen Reader has proved more responsive to alerts with aria-live set.
 const ariaLive = "polite";
