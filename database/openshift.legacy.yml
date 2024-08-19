@@ -28,6 +28,9 @@ parameters:
   - name: ORACLEDB_USER_W
     description: Oracle database user name with write permission
     required: true
+  - name: TEMP_TOKEN
+    description: Temporary token for deployment
+    required: true
   - name: ORACLEDB_PASSWORD_W
     description: Oracle database password with write permission
     required: true
@@ -48,7 +51,8 @@ objects:
         app: ${NAME}-${ZONE}
     stringData:      
       oracle-user-write: ${ORACLEDB_USER_W}
-      oracle-password-write: ${ORACLEDB_PASSWORD_W}      
+      oracle-password-write: ${ORACLEDB_PASSWORD_W}   
+      temp-token: ${TEMP_TOKEN}   
   - kind: ImageStream
     apiVersion: v1
     metadata:

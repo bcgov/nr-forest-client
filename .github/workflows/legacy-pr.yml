@@ -76,7 +76,7 @@ jobs:
         uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
           file: database/openshift.legacy.yml
-          oc_namespace: ${{ secrets.OC_TOOLS_NAMESPACE }}
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
@@ -85,3 +85,4 @@ jobs:
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
             -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
             -p PROMOTE=${{ github.repository }}/legacydb:${{ github.event.number }}
+            -p TEMP_TOKEN=${{ secrets.OC_TOKEN }}
