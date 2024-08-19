@@ -220,8 +220,9 @@ watch(
 
       const helperTextId = "helper-text";
       const helperText = cdsComboBox.shadowRoot?.querySelector(
-        "[name='helper-text']
+        "[name='helper-text']"
       );
+      
       if (helperText) {
         helperText.id = helperTextId;
 
