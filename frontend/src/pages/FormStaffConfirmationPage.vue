@@ -13,7 +13,7 @@ const SVG = useSvg(badgePictogram);
 </script>
 
 <template>
-  <div class="frame-03" role="status">
+  <div class="frame-03 staff" role="status">
     <SVG alt="Badge pictogram" class="submission-badge" role="presentation"></SVG>
     <div class="form-header form-header-application-submitted">
       <h1 class="fluid-heading-04">New client {{ clientNumber }} has been created!</h1>
