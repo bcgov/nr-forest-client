@@ -64,7 +64,7 @@ jobs:
   deploy:
     name: Deploy Application
     needs: [builds, vars]
-    environment: dev
+    environment: tools
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
       PREFIX: ${{ needs.vars.outputs.url }}
@@ -85,4 +85,3 @@ jobs:
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
             -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
             -p PROMOTE=${{ github.repository }}/legacydb:${{ github.event.number }}
-            -p TEMP_TOKEN=${{ secrets.OC_TOKEN }}
