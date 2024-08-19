@@ -1113,6 +1113,17 @@ cds-actionable-notification * {
   letter-spacing: 0.02rem;
 }
 
+.label-02 {
+  align-self: stretch;
+  padding-bottom: 0.25rem;
+  color: var(--light-theme-text-text-primary, #131315);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1rem;
+  letter-spacing: 0.02rem;
+}
+
 .text-01 {
   display: flex;
   width: 18rem;

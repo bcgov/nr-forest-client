@@ -40,16 +40,33 @@ const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 const formData = ref<FormDataDto>(props.data);
 watch([formData], () => emit("update:data", formData.value));
 
-const receviedClientType = ref({} as CodeNameType);
+const receivedClientType = ref({} as CodeNameType);
 
 useFetchTo(
   `/api/codes/client-types/${formData.value.businessInformation.clientType}`,
-  receviedClientType
+  receivedClientType
 );
 
 const clientType = computed(() => {
-  return codeConversionFn(receviedClientType.value);
+  return codeConversionFn(receivedClientType.value);
 });
+
+
+const receivedProvince = ref({} as CodeNameType);
+
+const province = computed(() => {
+  return codeConversionFn(receivedProvince.value);
+});
+
+if (
+  formData.value.businessInformation.identificationCountry &&
+  formData.value.businessInformation.identificationProvince
+) {
+  useFetchTo(
+    `/api/codes/countries/${formData.value.businessInformation.identificationCountry}/${formData.value.businessInformation.identificationProvince}`,
+    receivedProvince
+  );
+}
 
 //We emit valid here because there is nothing else to be done here apart from showing information
 emit("valid", true);
@@ -82,7 +99,7 @@ watch([validation], () => {
 
 <template>
   <div class="grouping-05">
-    <h3>Business information</h3>
+    <h3>Client information</h3>
     <div class="grouping-22">
       <div class="grouping-01">
         <h4 class="review-icon-title">
@@ -96,18 +113,21 @@ watch([validation], () => {
       <div class="grouping-22" 
           v-if="clientType.value === 'I'">
         <div class="grouping-22-item">
-          <p class="label-01">{{ formData.businessInformation.identificationType.text }}</p>
-          <p class="body-compact-01">{{ formData.businessInformation.clientIdentification }}</p>
+          <p class="label-02">{{ formData.businessInformation.identificationType.text }}</p>
+          <p class="body-compact-01">
+            {{ formData.businessInformation.clientIdentification }}
+            <span v-if="formData.businessInformation.identificationProvince.length"> | {{ province.text }}</span>
+          </p>
         </div>
         <div class="grouping-22-item">
-          <p class="label-01">Birthdate</p>
+          <p class="label-02">Birthdate</p>
           <p class="body-compact-01">{{ formData.businessInformation.birthdate }}</p>
         </div>
       </div>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(0)">
-        <span>Edit business information</span>
+        <span>Edit client information</span>
         <Edit16 slot="icon" />
       </cds-button>
     </div>

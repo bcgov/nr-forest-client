@@ -62,6 +62,7 @@ const updateIdentificationType = (
   formData.value.businessInformation.identificationCountry =
     formData.value.businessInformation.identificationType.countryCode;
   formData.value.businessInformation.clientIdentification = "";
+  formData.value.businessInformation.identificationProvince = "";
 
   if (formData.value.businessInformation.identificationType.countryCode)
     fetchProvinceList();
