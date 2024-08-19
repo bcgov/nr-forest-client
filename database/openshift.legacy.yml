@@ -25,6 +25,14 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     required: true
+  - name: CPU_REQUEST
+    value: 500m
+  - name: CPU_LIMIT
+    value: "1"
+  - name: MEMORY_REQUEST
+    value: 2Gi
+  - name: MEMORY_LIMIT
+    value: 2Gi
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -77,6 +85,13 @@ objects:
           containers:
             - name: ${NAME}
               image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+              resources:
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
               ports:
                 - containerPort: 1521
                   protocol: TCP
@@ -119,8 +134,8 @@ objects:
           terminationGracePeriodSeconds: 30
           dnsPolicy: ClusterFirst
           schedulerName: default-scheduler
-  - apiVersion: v1
-    kind: Service
+  - kind: Service
+    apiVersion: v1    
     metadata:
       labels:
         app: ${NAME}-${ZONE}
