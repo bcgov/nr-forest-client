@@ -52,7 +52,7 @@ const notificationBus = useEventBus<ValidationMessageType | undefined>(
 );
 const exitBus =
   useEventBus<Record<string, boolean | null>>("exit-notification");
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 const progressIndicatorBus = useEventBus<ProgressNotification>(
   "progress-indicator-bus"
 );
@@ -135,7 +135,7 @@ watch([error], () => {
         fieldId: "server.validation.error",
         fieldName: convertFieldNameToSentence(errorItem.fieldId),
         errorMsg: errorItem.errorMsg,
-      }),
+      })
     );
   } else {
     handleErrorDefault();
@@ -281,7 +281,6 @@ const goToStep = (index: number, skipCheck: boolean = false) => {
   revalidateBus.emit();
 };
 
-
 /*
 We do not auto focus the first step in the first rendering to prevent skipping form instructions.
 The differenct might only be noticeable when using a screen reader.
@@ -330,7 +329,9 @@ const processAndLogOut = () => {
       {
         registrationNumber: formData.businessInformation.registrationNumber,
         name: formData.businessInformation.businessName,
-        userName: `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}` ?? "",
+        userName:
+          `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}` ??
+          "",
         userId: ForestClientUserSession.user.userId ?? "",
         email: ForestClientUserSession.user.email ?? "",
       },
@@ -355,7 +356,9 @@ const submit = () => {
 exitBus.on((event: Record<string, boolean | null>) => {
   endAndLogOut.value = event.goodStanding ? event.goodStanding : false;
   mailAndLogOut.value = event.duplicated ? event.duplicated : false;
-  endAndLogOut.value = event.nonPersonSP ? event.nonPersonSP : endAndLogOut.value;
+  endAndLogOut.value = event.nonPersonSP
+    ? event.nonPersonSP
+    : endAndLogOut.value;
   endAndLogOut.value = event.unsupportedClientType || endAndLogOut.value;
 });
 
@@ -397,10 +400,12 @@ const formattedDistrictsList = computed(() =>
   districtsList.value.map((district) => ({
     ...district,
     name: `${district.code} - ${district.name}`,
-  })),
+  }))
 );
 
-const cdsProgressStepArray = ref<InstanceType<typeof CDSProgressStep>[] | null>(null);
+const cdsProgressStepArray = ref<InstanceType<typeof CDSProgressStep>[] | null>(
+  null
+);
 
 watch(cdsProgressStepArray, async (array) => {
   if (array) {
