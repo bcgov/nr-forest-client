@@ -124,6 +124,17 @@ watch([validation], () => {
           <p class="body-compact-01">{{ formData.businessInformation.birthdate }}</p>
         </div>
       </div>
+      <div class="grouping-22" 
+          v-if="clientType.value !== 'I'">
+        <div class="grouping-22-item">
+          <p class="label-02">WorkSafeBC Number</p>
+          <p class="body-compact-01">{{ formData.businessInformation.workSafeBcNumber }}</p>
+        </div>
+        <div class="grouping-22-item">
+          <p class="label-02">Acronym</p>
+          <p class="body-compact-01">{{ formData.businessInformation.clientAcronym }}</p>
+        </div>
+      </div>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(0)">
