@@ -25,6 +25,12 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     required: true
+  - name: ORACLEDB_USER_W
+    description: Oracle database user name with write permission
+    required: true
+  - name: ORACLEDB_PASSWORD_W
+    description: Oracle database password with write permission
+    required: true
   - name: CPU_REQUEST
     value: 500m
   - name: CPU_LIMIT
@@ -34,6 +40,15 @@ parameters:
   - name: MEMORY_LIMIT
     value: 2Gi
 objects:
+  - kind: Secret
+    apiVersion: v1    
+    metadata:
+      name: ${NAME}-${ZONE}
+      labels:
+        app: ${NAME}-${ZONE}
+    stringData:      
+      oracle-user-write: ${ORACLEDB_USER_W}
+      oracle-password-write: ${ORACLEDB_PASSWORD_W}      
   - kind: ImageStream
     apiVersion: v1
     metadata:

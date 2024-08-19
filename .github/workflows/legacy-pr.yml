@@ -55,7 +55,7 @@ jobs:
         with:
           package: legacydb
           build_file: ./database/Dockerfile.legacy
-          tag: ${{ github.event.number }}
+          tag: latest
           tag_fallback: test
           triggers: ('database/')
           build_args: |
@@ -75,39 +75,13 @@ jobs:
       - name: Initializing Deployment
         uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
-          file: common/openshift.init.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          parameters:
-            -p ZONE=${{ github.event.number }}
-            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
-            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
-            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
-            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
-            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
-            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
-            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
-            -p BCREGISTRY_KEY=${{ secrets.BCREGISTRY_KEY }}
-            -p BCREGISTRY_ACCOUNT=${{ secrets.BCREGISTRY_ACCOUNT }}
-            -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
-            -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
-            -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
-            -p DB_PASSWORD=$(echo ${{github.ref}}${{github.event.number}}|md5sum|cut -d' ' -f1)
-            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p COGNITO_ENVIRONMENT=DEV
-            -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
-
-      - name: Deploy Database Legacy
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
-        with:
           file: database/openshift.legacy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_namespace: ${{ secrets.OC_TOOLS_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: false
           parameters:
-            -p ZONE=${{ github.event.number }}
+            -p ZONE=tools            
+            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
+            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
             -p PROMOTE=${{ github.repository }}/legacydb:${{ github.event.number }}
