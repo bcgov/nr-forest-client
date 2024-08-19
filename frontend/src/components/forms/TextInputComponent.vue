@@ -31,8 +31,8 @@ const props = withDefaults(
   }>(),
   {
     type: "text",
-    enabled: true
-  },
+    enabled: true,
+  }
 );
 
 //Events we emit during component lifecycle
@@ -45,7 +45,7 @@ const emit = defineEmits<{
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const warning = ref(false);
 
@@ -54,7 +54,8 @@ const warning = ref(false);
  * @param errorObject - the error object or string
  */
 const setError = (errorObject: string | ValidationMessageType | undefined) => {
-  const errorMessage = typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
+  const errorMessage =
+    typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
   error.value = errorMessage || "";
 
   warning.value = false;
@@ -69,12 +70,12 @@ const setError = (errorObject: string | ValidationMessageType | undefined) => {
   rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
   an empty one to allow subscribers to know in case the field still has the same error.
   */
-  emit('error', error.value);
-}
+  emit("error", error.value);
+};
 
 watch(
   () => props.errorMessage,
-  () => setError(props.errorMessage),
+  () => setError(props.errorMessage)
 );
 
 //We set it as a separated ref due to props not being updatable
@@ -102,8 +103,8 @@ watch([selectedValue], () => {
 });
 
 //We call all the validations
-const validateInput = (newValue: string) => {  
-  if (props.validations) {    
+const validateInput = (newValue: string) => {
+  if (props.validations) {
     setError(
       props.validations
         .map((validation) => validation(newValue))
@@ -111,16 +112,15 @@ const validateInput = (newValue: string) => {
           if (errorMessage) return true;
           return false;
         })
-        .reduce(
-          (acc, errorMessage) => acc || errorMessage,
-          props.errorMessage,
-        )
+        .reduce((acc, errorMessage) => acc || errorMessage, props.errorMessage)
     );
   }
 };
 
-revalidateBus.on(() => {
-  validateInput(selectedValue.value);
+revalidateBus.on((keys: string[] | undefined) => {
+  if (keys === undefined || keys.includes(props.id)) {
+    validateInput(selectedValue.value);
+  }
 });
 
 watch(
@@ -133,7 +133,7 @@ const isUserEvent = ref(false);
 
 const selectValue = (event: any) => {
   selectedValue.value = event.target.value;
-  isUserEvent.value = true
+  isUserEvent.value = true;
 };
 
 const originalDescribedBy = ref<string>();
@@ -145,14 +145,22 @@ const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
 const cdsTextInputRef = ref<InstanceType<typeof CDSTextInput> | null>(null);
 
 watch(
-  [cdsTextInputRef, () => props.numeric, () => props.type, isFocused, ariaInvalidString],
+  [
+    cdsTextInputRef,
+    () => props.numeric,
+    () => props.type,
+    isFocused,
+    ariaInvalidString,
+  ],
   async ([cdsTextInput]) => {
     if (cdsTextInput) {
       // wait for the DOM updates to complete
       await nextTick();
 
       const invalidTextId = "invalid-text";
-      const invalidText = cdsTextInput.shadowRoot?.querySelector("[name='invalid-text']");
+      const invalidText = cdsTextInput.shadowRoot?.querySelector(
+        "[name='invalid-text']"
+      );
       if (invalidText) {
         invalidText.id = invalidTextId;
 
@@ -160,7 +168,8 @@ watch(
         if (isFocused.value) {
           invalidText.role = "generic";
         } else {
-          invalidText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+          invalidText.role =
+            ariaInvalidString.value === "true" ? "alert" : "generic";
         }
       }
 
@@ -181,11 +190,13 @@ watch(
         // Use the helper text as a field description
         input.setAttribute(
           "aria-describedby",
-          ariaInvalidString.value === "true" ? invalidTextId : originalDescribedBy.value,
+          ariaInvalidString.value === "true"
+            ? invalidTextId
+            : originalDescribedBy.value
         );
       }
     }
-  },
+  }
 );
 </script>
 
