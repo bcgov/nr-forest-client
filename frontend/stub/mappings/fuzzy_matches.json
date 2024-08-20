@@ -158,6 +158,58 @@
         "headers": { "Content-Type": "application/json" }
       }
     },
+    {
+      "name": "Submission Fuzzy for Individuals: Both Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "I"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.firstName",
+              "equalTo": "Jonas"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.lastName",
+              "equalTo": "Baxter"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.birthdate",
+              "equalTo": "1970-01-01"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientIdentification",
+              "equalTo": "4444444"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_individual_doc_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
 
     {
       "name": "Submission Fuzzy for BC Registered: Partial name Match",
