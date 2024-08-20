@@ -181,7 +181,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have individual data with fuzzy resulting in full individual match', () => {
       fillIndividual();
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkInputError('#firstName');
       checkInputError('#lastName');
@@ -204,7 +204,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have individual data with fuzzy resulting in document individual match', () => {
       fillIndividual();
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkInputClean('#firstName');
       checkInputClean('#lastName');
@@ -256,7 +256,7 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateDay: '',
       });
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkDropdownError('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -279,7 +279,7 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateDay: '',
       });
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkDropdownError('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -349,7 +349,7 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateDay: '',
       });
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkDropdownClean('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -371,7 +371,7 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateDay: '',
       });
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkDropdownClean('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -394,7 +394,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have first nations with fuzzy resulting in full fn federal id match',() =>{
       fillFirstNations();
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkDropdownError('#clientName');
       checkInputClean('#workSafeBcNumber');
@@ -432,7 +432,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have first nations with fuzzy resulting in full business name match',() =>{
       fillFirstNations();
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkDropdownError('#clientName');
       checkInputClean('#workSafeBcNumber');
@@ -450,7 +450,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have registered data with fuzzy resulting in full acronym match',() =>{
       fillFirstNations();
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkDropdownClean('#clientName');
       checkInputClean('#workSafeBcNumber');
@@ -491,7 +491,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have government with fuzzy resulting in full business name match',() =>{
       fillOthers({kind: 'Government'});
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkInputError('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -509,7 +509,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have government data with fuzzy resulting in full acronym match',() =>{
       fillOthers({kind: 'Government'});
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkInputClean('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -549,7 +549,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have forests with fuzzy resulting in full business name match',() =>{
       fillOthers({kind: 'Ministry of Forests'});
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkInputError('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -567,7 +567,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have forests data with fuzzy resulting in full acronym match',() =>{
       fillOthers({kind: 'Ministry of Forests'});
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkInputClean('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -608,7 +608,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have unregistered data with fuzzy resulting in full business name match',() =>{
       fillOthers({kind: 'Unregistered company'});
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkInputError('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -627,7 +627,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have unregistered data with fuzzy resulting in full acronym match',() =>{
       fillOthers({kind: 'Unregistered company'});
 
-      checkTopNotification('error', 'has a client number');
+      checkTopNotification('error', 'has client number');
 
       checkInputClean('#businessName');
       checkInputClean('#workSafeBcNumber');

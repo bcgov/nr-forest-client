@@ -118,10 +118,6 @@ const getErrorsItemContent = ref((matches: MiscFuzzyMatchResult[]) => {
     }) : "";
 });
 
-const getErrorItemContent = ref((match: MiscFuzzyMatchResult) => {
-  return match && match.result?.match ? renderErrorItem(match) : "";
-});
-
 const getListItemContent = ref((match: MiscFuzzyMatchResult) => {
   return match && match.result?.match ? renderListItem(match) : "";
 });
@@ -227,7 +223,7 @@ fuzzyBus.on(handleFuzzyErrorMessage);
           Review them in the Client Management System to determine if you should create a new client.
         </span>
         <span v-else class="body-compact-01">
-          It looks like ”{{ businessName }}” has a client number 
+          It looks like ”{{ businessName }}” has client number 
           <span v-dompurify-html="getErrorsItemContent(fuzzyMatchedError.matches)"></span>.
         </span >
       <span v-if="!fuzzyMatchedError.fuzzy" class="body-compact-02">
