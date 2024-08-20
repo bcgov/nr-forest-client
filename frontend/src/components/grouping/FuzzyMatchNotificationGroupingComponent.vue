@@ -46,6 +46,8 @@ const fieldNameToDescription : Record<string, string> = {
   "businessInformation.doingBusinessAs": "doing business as",
   "businessInformation.workSafeBcNumber": "WorkSafeBC number",
   "businessInformation.federalId": "federal identification number",
+  "businessInformation.firstName": "name",
+  "businessInformation.lastName": "name",
 };
 
 const fieldNameToNamingGroups : Record<string, string> = {
@@ -84,7 +86,7 @@ const fieldNameToLabel : Record<string, string> = {
 const createErrorEvent = (fieldList: string[], warning: boolean) =>
   fieldList.map((fieldId) => ({
     fieldId,
-    errorMsg: warning ? `There's already a client with this "${fieldNameToDescription[fieldId] || convertFieldNameToSentence(fieldId).toLowerCase()}"` : "Client already exists",
+    errorMsg: warning ? `There's already a client with this ${fieldNameToDescription[fieldId] || convertFieldNameToSentence(fieldId).toLowerCase()}` : "Client already exists",
   }));
 
 const emitFieldErrors = (fieldList: string[], warning: boolean) => {
@@ -104,11 +106,28 @@ const label = (matchedFieldsText: string, warning: boolean) => {
   return `${prefix} ${matchedFieldsText}`;
 }
 
+const getErrorsItemContent = ref((matches: MiscFuzzyMatchResult[]) => {
+
+  const matchValue = matches && matches.length > 0 ? getUniqueClientNumbers(matches) : [];    
+  const nonFuzzyMatch = matches.find((match) => !match.result?.fuzzy);
+
+  return nonFuzzyMatch && nonFuzzyMatch.result?.match ? renderErrorItem(
+    {
+      ...nonFuzzyMatch,
+      result: { ...nonFuzzyMatch.result, match: matchValue.join(",") },
+    }) : "";
+});
+
+const getErrorItemContent = ref((match: MiscFuzzyMatchResult) => {
+  return match && match.result?.match ? renderErrorItem(match) : "";
+});
+
 const getListItemContent = ref((match: MiscFuzzyMatchResult) => {
   return match && match.result?.match ? renderListItem(match) : "";
 });
 
 const getLegacyUrl = (duplicatedClient, label) => {
+  console.log('Duplicated Client:', duplicatedClient);
   const encodedClientNumber = encodeURIComponent(duplicatedClient.trim());
   switch (label) {
     case "contact":
@@ -120,35 +139,24 @@ const getLegacyUrl = (duplicatedClient, label) => {
   }
 };
 
+const mapNumberToUrl = (clientNumber: string, field: string) => {
+  return '<a target="_blank" href="' + getLegacyUrl(clientNumber, field) + '">' + clientNumber + "</a>";
+};
+
 const renderListItem = (misc: MiscFuzzyMatchResult) => {
   const { result } = misc;
-  let finalLabel = "";
-  if (misc.label) {
-    finalLabel = misc.label;
-  } else if (result.field === "contact" || result.field === "location") {
-    finalLabel = "Matching one or more " + result.field + "s";
-  } else {
-    finalLabel =
-      (result.fuzzy ? "Partial m" : "M") +
-      "atching on " +
-      convertFieldNameToSentence(result.field).toLowerCase();
-  }
-
-  finalLabel += " - Client number: ";
-
   const clients = [...new Set<string>(result.match.split(","))];
-  finalLabel += clients
-    .map(
-      (clientNumber) =>
-        '<a target="_blank" href="' +
-        getLegacyUrl(clientNumber, result.field) +
-        '">' +
-        clientNumber +
-        "</a>",
-    )
-    .join(", ");
-
+  const clientNumberLabel = clients.length > 1 ? "Client numbers" : "Client number";
+  const clientNumbers = clients.map(number => mapNumberToUrl(number, result.field)).join(", ");
+  const finalLabel = `${clientNumberLabel} ${clientNumbers} ${clients.length > 1 ? "were" : "was"} found with similar ${fieldNameToDescription[result.field]}.`;
   return finalLabel;
+};
+
+const renderErrorItem = (misc: MiscFuzzyMatchResult) => {
+  const { result } = misc;  
+  const clients = [...new Set<string>(result.match.split(","))];
+  const clientNumbers = clients.map(number => mapNumberToUrl(number, result.field)).join(", ");
+  return clientNumbers;
 };
 
 /**
@@ -175,7 +183,7 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
     fuzzyMatchedError.value.fuzzy = true;
     fuzzyMatchedError.value.matches = [];
 
-    for (const rawMatch of event.matches) {
+    for (const rawMatch of event.matches.sort((a, b) => a.fuzzy ? 1 : -1)) {
 
       const match: MiscFuzzyMatchResult = { result: rawMatch,label: label(fieldNameToLabel[rawMatch.field], rawMatch.fuzzy) };
       if (!rawMatch.fuzzy) {
@@ -183,7 +191,7 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
       }
       
       fuzzyMatchedError.value.matches.push(match);
-      emitFieldErrors(fieldNameToNamingGroups[rawMatch.field] || [rawMatch.field], rawMatch.fuzzy);
+      emitFieldErrors(fieldNameToNamingGroups[rawMatch.field] || [rawMatch.field], fuzzyMatchedError.value.fuzzy);
     }
   } else {
     fuzzyMatchedError.value.show = false;
@@ -208,27 +216,21 @@ fuzzyBus.on(handleFuzzyErrorMessage);
     :title="fuzzyMatchedError.fuzzy ? 'Possible matching records found' : 'Client already exists'"
   >
     <div>
-      <span class="body-compact-02">
-        <template v-if="fuzzyMatchedError.fuzzy">
-          {{ uniqueClientNumbers.length }} similar client
-          <span v-if="uniqueClientNumbers.length === 1">record was</span>
-          <span v-else>records were</span>
-          found. Review their information in the Client Management System to determine if you should
-          should create a new client:
-        </template>
-        <template v-else>
-          Looks like ”{{ businessName }}” has a client number. Review their information in the
-          Management System if necessary:
-        </template>
-      </span>
-      <ul>
-        <!-- eslint-disable-next-line vue/no-v-html -->
-        <li
-          v-for="match in fuzzyMatchedError.matches"
-          :key="match.result.field"
-          v-dompurify-html="getListItemContent(match)"
-        ></li>
-      </ul>
+      <!-- eslint-disable-next-line vue/no-v-html -->
+      <span 
+        class="body-compact-01"
+        v-if="fuzzyMatchedError.fuzzy"
+        v-for="match in fuzzyMatchedError.matches"
+        :key="match.result.field"
+        v-dompurify-html="getListItemContent(match)"
+      ></span>
+        <span class="body-compact-01" v-if="fuzzyMatchedError.fuzzy">
+          Review them in the Client Management System to determine if you should create a new client.
+        </span>
+        <span v-else class="body-compact-01">
+          It looks like ”{{ businessName }}” has a client number 
+          <span v-dompurify-html="getErrorsItemContent(fuzzyMatchedError.matches)"></span>.
+        </span >
       <span v-if="!fuzzyMatchedError.fuzzy" class="body-compact-02">
         You must inform the applicant of their number.
       </span>
