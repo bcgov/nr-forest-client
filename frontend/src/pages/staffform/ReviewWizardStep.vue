@@ -216,7 +216,8 @@ watch([validation], () => {
       </div>
 
       <div class="grouping-22-item"
-          v-if="address.notes.length">
+          v-if="address.notes !== null && 
+                address.notes.length">
         <p class="label-02">Notes</p>
         <p class="body-compact-01">{{ address.notes }}</p>
       </div>
