@@ -736,7 +736,7 @@ describe("Staff Form Fuzzy Matches", () => {
           .as("doMatchFixture");
       });
       it('should have location data with fuzzy resulting in full address match', () => {
-        fillLocations(0);
+        fillLocation(0);
         clickNext(true);
   
         checkNotification('location-addresses-0', 'warning', 'Matching on address');
@@ -762,7 +762,7 @@ describe("Staff Form Fuzzy Matches", () => {
         .should('be.visible');
       });
       it('should have location data with fuzzy resulting in full address email match', () => {
-        fillLocations(0);
+        fillLocation(0);
         clickNext(true);
   
         checkNotification('location-addresses-0', 'warning', 'Matching on email address');
@@ -788,7 +788,7 @@ describe("Staff Form Fuzzy Matches", () => {
         .should('be.visible');
       });
       it('should have location data with fuzzy resulting in full address business phone match', () => {
-        fillLocations(0);
+        fillLocation(0);
         clickNext(true);
   
         checkNotification('location-addresses-0', 'warning', 'Matching on primary phone number');
@@ -814,7 +814,7 @@ describe("Staff Form Fuzzy Matches", () => {
         .should('be.visible');
       });
       it('should have location data with fuzzy resulting in full address secondary phone match', () => {
-        fillLocations(0);
+        fillLocation(0);
         clickNext(true);
   
         checkNotification('location-addresses-0', 'warning', 'Matching on secondary phone number');
@@ -840,7 +840,7 @@ describe("Staff Form Fuzzy Matches", () => {
         .should('be.visible');
       });
       it('should have location data with fuzzy resulting in full address fax phone match', () => {
-        fillLocations(0);
+        fillLocation(0);
         clickNext(true);
   
         checkNotification('location-addresses-0', 'warning', 'Matching on fax');
@@ -905,10 +905,10 @@ describe("Staff Form Fuzzy Matches", () => {
       });
       describe("when there are two locations", () => {
         beforeEach(function () {
-          fillLocations(0);
+          fillLocation(0);
 
           clickAddLocation(1);
-          fillLocations(1, {
+          fillLocation(1, {
             name: "Office 1",
           });
         });
@@ -972,15 +972,15 @@ describe("Staff Form Fuzzy Matches", () => {
       });
       describe("when there are three locations", () => {
         beforeEach(function () {
-          fillLocations(0);
+          fillLocation(0);
 
           clickAddLocation(1);
-          fillLocations(1, {
+          fillLocation(1, {
             name: "Office 1",
           });
 
           clickAddLocation(2);
-          fillLocations(2, {
+          fillLocation(2, {
             name: "Office 2",
           });
         });
@@ -1174,7 +1174,7 @@ describe("Staff Form Fuzzy Matches", () => {
     });
   };
 
-  const fillLocations = (index: number, extraData: any = {}) => {
+  const fillLocation = (index: number, extraData: any = {}) => {
     cy.fixture("testdata/locationBaseData").then((fixtureData: any) => {
       const data = { ...fixtureData, ...extraData };
 
