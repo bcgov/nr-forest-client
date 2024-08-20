@@ -127,11 +127,13 @@ watch([validation], () => {
       </div>
       <div class="grouping-22" 
           v-if="clientType.value !== 'I'">
-        <div class="grouping-22-item">
+        <div class="grouping-22-item"
+            v-if="formData.businessInformation.workSafeBcNumber.length">
           <p class="label-02">WorkSafeBC Number</p>
           <p class="body-compact-01">{{ formData.businessInformation.workSafeBcNumber }}</p>
         </div>
-        <div class="grouping-22-item">
+        <div class="grouping-22-item"
+            v-if="formData.businessInformation.clientAcronym.length">
           <p class="label-02">Acronym</p>
           <p class="body-compact-01">{{ formData.businessInformation.clientAcronym }}</p>
         </div>
@@ -156,11 +158,13 @@ watch([validation], () => {
       </h4>
       <div class="grouping-23">
         <span class="body-compact-01"
-              v-if="address.complementaryAddressOne !== null && address.complementaryAddressOne.length">
+              v-if="address.complementaryAddressOne !== null && 
+                    address.complementaryAddressOne.length">
           {{ address.complementaryAddressOne }}
         </span>
         <span class="body-compact-01"
-              v-if="address.complementaryAddressTwo !== null && address.complementaryAddressTwo.length">
+              v-if="address.complementaryAddressTwo !== null && 
+                    address.complementaryAddressTwo.length">
           {{ address.complementaryAddressTwo }}
         </span>
         <span class="body-compact-01">{{ address.streetAddress }}</span>
@@ -194,7 +198,7 @@ watch([validation], () => {
       </div>
 
       <div class="grouping-22-item"
-        v-if="address.notes.length">
+          v-if="address.notes.length">
         <p class="label-02">Notes</p>
         <p class="body-compact-01">{{ address.notes }}</p>
       </div>
@@ -218,7 +222,7 @@ watch([validation], () => {
         <User20 />{{ contact.firstName }} {{ contact.lastName }}
       </h4>
       <div class="grouping-23">
-        <span class="body-compact-01" v-if="$features.BCEID_MULTI_ADDRESS">
+        <span class="body-compact-01">
           {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
         </span>
         <span class="body-compact-01">{{ contact.contactType.text }}</span>
