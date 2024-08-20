@@ -21,6 +21,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 import { codeConversionFn } from "@/services/ForestClientService";
+import { testGroup } from '../../../tests/unittests/TestConstant';
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
@@ -40,16 +41,33 @@ const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 const formData = ref<FormDataDto>(props.data);
 watch([formData], () => emit("update:data", formData.value));
 
-const receviedClientType = ref({} as CodeNameType);
+const receivedClientType = ref({} as CodeNameType);
 
 useFetchTo(
   `/api/codes/client-types/${formData.value.businessInformation.clientType}`,
-  receviedClientType
+  receivedClientType
 );
 
 const clientType = computed(() => {
-  return codeConversionFn(receviedClientType.value);
+  return codeConversionFn(receivedClientType.value);
 });
+
+
+const receivedProvince = ref({} as CodeNameType);
+
+const province = computed(() => {
+  return codeConversionFn(receivedProvince.value);
+});
+
+if (
+  formData.value.businessInformation.identificationCountry &&
+  formData.value.businessInformation.identificationProvince
+) {
+  useFetchTo(
+    `/api/codes/countries/${formData.value.businessInformation.identificationCountry}/${formData.value.businessInformation.identificationProvince}`,
+    receivedProvince
+  );
+}
 
 //We emit valid here because there is nothing else to be done here apart from showing information
 emit("valid", true);
@@ -82,7 +100,7 @@ watch([validation], () => {
 
 <template>
   <div class="grouping-05">
-    <h3>Business information</h3>
+    <h3>Client information</h3>
     <div class="grouping-22">
       <div class="grouping-01">
         <h4 class="review-icon-title">
@@ -96,65 +114,163 @@ watch([validation], () => {
       <div class="grouping-22" 
           v-if="clientType.value === 'I'">
         <div class="grouping-22-item">
-          <p class="label-01">{{ formData.businessInformation.identificationType.text }}</p>
-          <p class="body-compact-01">{{ formData.businessInformation.clientIdentification }}</p>
+          <p class="label-02">{{ formData.businessInformation.identificationType.text }}</p>
+          <p class="body-compact-01">
+            {{ formData.businessInformation.clientIdentification }}
+            <span v-if="formData.businessInformation.identificationProvince.length"> | {{ province.text }}</span>
+          </p>
         </div>
         <div class="grouping-22-item">
-          <p class="label-01">Birthdate</p>
+          <p class="label-02">Birthdate</p>
           <p class="body-compact-01">{{ formData.businessInformation.birthdate }}</p>
+        </div>
+      </div>
+      <div class="grouping-22" 
+          v-if="clientType.value !== 'I'">
+        <div class="grouping-22-item"
+            v-if="formData.businessInformation.clientType === 'RSP'">
+          <p class="label-02">Birthdate</p>
+          <p class="body-compact-01">{{ formData.businessInformation.birthdate }}</p>
+        </div>
+        <div class="grouping-22-item"
+            v-if="formData.businessInformation.workSafeBcNumber.length">
+          <p class="label-02">WorkSafeBC Number</p>
+          <p class="body-compact-01">{{ formData.businessInformation.workSafeBcNumber }}</p>
+        </div>
+        <div class="grouping-22-item"
+            v-if="formData.businessInformation.clientType !== 'RSP' && 
+                  formData.businessInformation.doingBusinessAs.length">
+          <p class="label-02">Doing business as</p>
+          <p class="body-compact-01">{{ formData.businessInformation.doingBusinessAs }}</p>
+        </div>
+        <div class="grouping-22-item"
+            v-if="formData.businessInformation.clientAcronym.length">
+          <p class="label-02">Acronym</p>
+          <p class="body-compact-01">{{ formData.businessInformation.clientAcronym }}</p>
         </div>
       </div>
     </div>
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(0)">
-        <span>Edit business information</span>
+        <span>Edit client information</span>
         <Edit16 slot="icon" />
       </cds-button>
     </div>
   </div>
+
   <div class="grouping-05">
-    <h3>Address</h3>
+    <h3>Locations</h3>
     <div v-for="(address, index) in formData.location.addresses" 
         :key="address.locationName" 
         class="grouping-07">
+
       <hr class="divider" v-if="index > 0" />
+
       <h4 class="review-icon-title">
         <LocationStar20 v-if="index === 0" />
         <Location20 v-else />{{ address.locationName }}
       </h4>
+
       <div class="grouping-23">
+        <span class="body-compact-01"
+              v-if="address.complementaryAddressOne !== null && 
+                    address.complementaryAddressOne.length">
+          {{ address.complementaryAddressOne }}
+        </span>
+        <span class="body-compact-01"
+              v-if="address.complementaryAddressTwo !== null && 
+                    address.complementaryAddressTwo.length">
+          {{ address.complementaryAddressTwo }}
+        </span>
         <span class="body-compact-01">{{ address.streetAddress }}</span>
         <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
         <span class="body-compact-01">{{ address.country.text }}</span>
         <span class="body-compact-01">{{ address.postalCode }}</span>
       </div>
+
+      <div class="grouping-22-item"
+          v-if="address.emailAddress !== null && 
+                address.emailAddress.length">
+        <p class="label-02">Email address</p>
+        <p class="body-compact-01">{{ address.emailAddress }}</p>
+      </div>
+
+      <div class="grouping-22-item horizontal-input-grouping"
+          v-if="(address.businessPhoneNumber !== null && address.businessPhoneNumber.length) || 
+                (address.secondaryPhoneNumber !== null && address.secondaryPhoneNumber.length) ||
+                (address.faxNumber !== null && address.faxNumber.length)">
+        <span v-if="address.businessPhoneNumber !== null && 
+                    address.businessPhoneNumber.length">
+          <p class="label-02">Primary phone number</p>
+          <p class="body-compact-01">{{ address.businessPhoneNumber }}</p>
+        </span>
+        <span v-if="address.secondaryPhoneNumber !== null && 
+                    address.secondaryPhoneNumber.length">
+          <p class="label-02">Secondary phone number</p>
+          <p class="body-compact-01">{{ address.secondaryPhoneNumber }}</p>
+        </span>
+        <span v-if="address.faxNumber !== null && 
+                    address.faxNumber.length">
+          <p class="label-02">Fax</p>
+          <p class="body-compact-01">{{ address.faxNumber }}</p>
+        </span>
+      </div>
+
+      <div class="grouping-22-item"
+          v-if="address.notes !== null && 
+                address.notes.length">
+        <p class="label-02">Notes</p>
+        <p class="body-compact-01">{{ address.notes }}</p>
+      </div>
     </div>
+
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(1)">
-        <span>Edit address</span>
+        <span>Edit locations</span>
         <Edit16 slot="icon" />
       </cds-button>
     </div>
   </div>
+
   <div class="grouping-05">
     <h3>Contacts</h3>
     <div v-for="(contact, index) in formData.location.contacts" 
         :key="contact.email" 
         class="grouping-07">
-      <hr class="divider" 
-          v-if="index > 0" />
+
+      <hr class="divider" v-if="index > 0" />
+
       <h4 class="review-icon-title">
         <User20 />{{ contact.firstName }} {{ contact.lastName }}
       </h4>
+
       <div class="grouping-23">
-        <span class="body-compact-01" v-if="$features.BCEID_MULTI_ADDRESS">
+        <span class="body-compact-01">
           {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
         </span>
         <span class="body-compact-01">{{ contact.contactType.text }}</span>
         <span class="body-compact-01">{{ contact.email }}</span>
-        <span class="body-compact-01">{{ contact.phoneNumber }}</span>
+      </div>
+
+      <div class="grouping-22-item horizontal-input-grouping"
+          v-if="contact.phoneNumber.length || 
+                contact.secondaryPhoneNumber.length ||
+                contact.faxNumber.length">
+        <span v-if="contact.phoneNumber.length">
+          <p class="label-02">Primary phone number</p>
+          <p class="body-compact-01">{{ contact.phoneNumber }}</p>
+        </span>
+        <span v-if="contact.secondaryPhoneNumber.length">
+          <p class="label-02">Secondary phone number</p>
+          <p class="body-compact-01">{{ contact.secondaryPhoneNumber }}</p>
+        </span>
+        <span v-if="contact.faxNumber.length">
+          <p class="label-02">Fax</p>
+          <p class="body-compact-01">{{ contact.faxNumber }}</p>
+        </span>
       </div>
     </div>
+
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(2)">
         <span>Edit contacts</span>

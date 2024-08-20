@@ -98,6 +98,16 @@ public class ClientCodesController {
         .listProvinces(countryCode, page, size);
   }
   
+  @GetMapping("/countries/{countryCode}/{provinceCode}")
+  public Mono<CodeNameDto> getProvinceByCountryAndProvinceCode(
+      @PathVariable String countryCode,
+      @PathVariable String provinceCode) {
+    log.info("Requesting a province by country and province code {} {} from the client service.",
+             countryCode, 
+             provinceCode);
+    return clientService.getProvinceByCountryAndProvinceCode(countryCode, provinceCode);
+  }
+  
   @GetMapping("/identification-types")
   public Flux<IdentificationTypeDto> identificationTypes() {
     log.info("Requesting a list of identification type codes.");

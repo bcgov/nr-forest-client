@@ -518,14 +518,14 @@ public class ClientService {
             .defaultIfEmpty(new ClientValueTextDto(StringUtils.EMPTY, countryCode));
   }
 
-  private Mono<ClientValueTextDto> loadProvince(String countryCode, String province) {
+  private Mono<ClientValueTextDto> loadProvince(String countryCode, String provinceCode) {
     return
         provinceCodeRepository
-            .findByCountryCodeAndProvinceCode(countryCode, province)
+            .findByCountryCodeAndProvinceCode(countryCode, provinceCode)
             .map(
                 entity -> new ClientValueTextDto(entity.getProvinceCode(), entity.getDescription())
             )
-            .defaultIfEmpty(new ClientValueTextDto(province, province));
+            .defaultIfEmpty(new ClientValueTextDto(provinceCode, provinceCode));
   }
 
   private Predicate<ForestClientDto> isMatchWith(BcRegistryDocumentDto document) {
@@ -613,6 +613,16 @@ public class ClientService {
     return identificationTypeCodeRepository
         .findByCode(idCode)
         .map(entity -> new CodeNameDto(entity.getCode(),
+                                       entity.getDescription()));
+  }
+
+  public Mono<CodeNameDto> getProvinceByCountryAndProvinceCode(
+      String countryCode,
+      String provinceCode) {
+    log.info("Loading province by country and province code {} {}", countryCode, provinceCode);
+    return provinceCodeRepository
+        .findByCountryCodeAndProvinceCode(countryCode, provinceCode)
+        .map(entity -> new CodeNameDto(entity.getProvinceCode(),
                                        entity.getDescription()));
   }
 
