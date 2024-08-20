@@ -71,7 +71,7 @@ public class IndividualStepMatcher implements StepMatcher {
         legacyService
             .searchIndividual(
                 dto.businessInformation().firstName(),
-                dto.businessInformation().businessName(),
+                dto.businessInformation().lastName(),
                 dto.businessInformation().birthdate(),
                 null
             )
@@ -84,7 +84,7 @@ public class IndividualStepMatcher implements StepMatcher {
         legacyService
             .searchIndividual(
                 dto.businessInformation().firstName(),
-                dto.businessInformation().businessName(),
+                dto.businessInformation().lastName(),
                 dto.businessInformation().birthdate(),
                 dto.businessInformation().clientIdentification()
             )
