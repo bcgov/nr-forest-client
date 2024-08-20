@@ -685,6 +685,36 @@
         }
       }
     },
+    {
+      "name": "Submission Match Stub for street address",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses[1].streetAddress",
+              "equalTo": "6493 Maple Ave"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_address_1_match.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
 
     {
       "name": "Submission Match Stub for Contact email",
