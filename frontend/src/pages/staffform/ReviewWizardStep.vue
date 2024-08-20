@@ -21,6 +21,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 import { codeConversionFn } from "@/services/ForestClientService";
+import { testGroup } from '../../../tests/unittests/TestConstant';
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
@@ -144,25 +145,64 @@ watch([validation], () => {
     </div>
   </div>
   <div class="grouping-05">
-    <h3>Address</h3>
+    <h3>Locations</h3>
     <div v-for="(address, index) in formData.location.addresses" 
         :key="address.locationName" 
-        class="grouping-07">
+        class="grouping-22">
       <hr class="divider" v-if="index > 0" />
       <h4 class="review-icon-title">
         <LocationStar20 v-if="index === 0" />
         <Location20 v-else />{{ address.locationName }}
       </h4>
       <div class="grouping-23">
+        <span class="body-compact-01"
+              v-if="address.complementaryAddressOne !== null && address.complementaryAddressOne.length">
+          {{ address.complementaryAddressOne }}
+        </span>
+        <span class="body-compact-01"
+              v-if="address.complementaryAddressTwo !== null && address.complementaryAddressTwo.length">
+          {{ address.complementaryAddressTwo }}
+        </span>
         <span class="body-compact-01">{{ address.streetAddress }}</span>
         <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
         <span class="body-compact-01">{{ address.country.text }}</span>
         <span class="body-compact-01">{{ address.postalCode }}</span>
       </div>
+
+      <div class="grouping-22-item"
+          v-if="address.emailAddress.length">
+        <p class="label-02">Email address</p>
+        <p class="body-compact-01">{{ address.emailAddress }}</p>
+      </div>
+
+      <div class="grouping-22-item horizontal-input-grouping"
+          v-if="address.businessPhoneNumber.length || 
+                address.secondaryPhoneNumber.length ||
+                address.faxNumber.length">
+        <span v-if="address.businessPhoneNumber.length">
+          <p class="label-02">Primary phone number</p>
+          <p class="body-compact-01">{{ address.businessPhoneNumber }}</p>
+        </span>
+        <span v-if="address.secondaryPhoneNumber.length">
+          <p class="label-02">Secondary phone number</p>
+          <p class="body-compact-01">{{ address.secondaryPhoneNumber }}</p>
+        </span>
+        <span v-if="address.faxNumber.length">
+          <p class="label-02">Fax</p>
+          <p class="body-compact-01">{{ address.faxNumber }}</p>
+        </span>
+      </div>
+
+      <div class="grouping-22-item"
+        v-if="address.notes.length">
+        <p class="label-02">Notes</p>
+        <p class="body-compact-01">{{ address.notes }}</p>
+      </div>
     </div>
+
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(1)">
-        <span>Edit address</span>
+        <span>Edit locations</span>
         <Edit16 slot="icon" />
       </cds-button>
     </div>
