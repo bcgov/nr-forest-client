@@ -53,8 +53,20 @@ const fieldNameToDescription : Record<string, string> = {
   "businessInformation.federalId": "federal identification number",
   "businessInformation.firstName": "name",
   "businessInformation.lastName": "name",
+  "location.addresses[].streetAddress": "address",
+  "location.addresses[].city": "address",
+  "location.addresses[].country": "address",
+  "location.addresses[].province": "address",
+  "location.addresses[].postalCode": "address",
   "location.addresses[].businessPhoneNumber": "primary phone number",
-  "location.addresses[].faxNumber": "fax",
+  "location.addresses[].secondaryPhoneNumber": "secondary phone number",
+  "location.addresses[].faxNumber": "fax number",
+  "location.addresses[].emailAddress": "email address",
+  "location.contacts[].firstName": "contact",
+  "location.contacts[].phoneNumber": "primary phone number",
+  "location.contacts[].secondaryPhoneNumber": "secondary phone number",
+  "location.contacts[].faxNumber": "fax number",
+  "location.contacts[].email": "email address",
 
 };
 
@@ -88,6 +100,14 @@ const fieldNameToNamingGroups: Record<string, string[]> = {
     "location.addresses[].country",
     "location.addresses[].postalCode",
   ],
+  "location.contacts[].firstName": [
+    "location.contacts[].firstName",
+    "location.contacts[].lastName",
+    "location.contacts[].email",
+    "location.contacts[].phoneNumber",
+    "location.contacts[].secondaryPhoneNumber",
+    "location.contacts[].faxNumber",
+  ],
 };
 
 const fieldNameToLabel: Record<string, string> = {
@@ -98,24 +118,26 @@ const fieldNameToLabel: Record<string, string> = {
   "businessInformation.federalId": "federal identification number",
   "location.addresses[].streetAddress": "address",
   "location.addresses[].businessPhoneNumber": "primary phone number",
+  "location.addresses[].secondaryPhoneNumber": "secondary phone number",
   "location.addresses[].faxNumber": "fax",
+  "location.addresses[].emailAddress": "email address",
+  "location.contacts[].firstName": "name",
+  "location.contacts[].lastName": "name",
+  "location.contacts[].businessPhoneNumber": "primary phone number",
+  "location.contacts[].secondaryPhoneNumber": "secondary phone number",  
+  "location.contacts[].faxNumber": "fax",
+  "location.contacts[].email": "email address",
 };
 
 const arrayIndexRegex = /\[(\d+)\]/;
 
 const createErrorEvent = (fieldList: string[], warning: boolean) =>
-// fix/FSADT1-1444
-  fieldList.map((fieldId) => ({
-    fieldId,
-    errorMsg: warning ? `There's already a client with this ${fieldNameToDescription[fieldId] || convertFieldNameToSentence(fieldId).toLowerCase()}` : "Client already exists",
-  }));
-// main
   fieldList.map((fieldId) => {
     const genericField = fieldId.replace(arrayIndexRegex, "[]");
     return {
       fieldId,
       errorMsg: warning
-        ? `There's already a client with this "${fieldNameToDescription[genericField] || convertFieldNameToSentence(fieldId).toLowerCase()}"`
+        ? `There's already a client with this ${fieldNameToDescription[genericField] || convertFieldNameToSentence(fieldId).toLowerCase()}`
         : "Client already exists",
     };
   });
@@ -172,25 +194,11 @@ const mapNumberToUrl = (clientNumber: string, field: string) => {
 
 const renderListItem = (misc: MiscFuzzyMatchResult) => {
   const { result } = misc;
-// main
-  let finalLabel = "";
-  if (misc.label) {
-    finalLabel = misc.label;
-  } else if (result.field === "contact" || result.field === "location") {
-    finalLabel = "Matching one or more " + result.field + "s";
-  } else {
-    finalLabel =
-      (result.partialMatch ? "Partial m" : "M") +
-      "atching on " +
-      convertFieldNameToSentence(result.field).toLowerCase();
-  }
-
-  finalLabel += " - Client number: ";
-
+  const cleanFieldName = result.field.replace(arrayIndexRegex, "[]");
   const clients = [...new Set<string>(result.match.split(","))];
-  const clientNumberLabel = clients.length > 1 ? "Client numbers" : "Client number";
+  const clientNumberLabel = "Client number" + (clients.length > 1 ? "s" : "");
   const clientNumbers = clients.map(number => mapNumberToUrl(number, result.field)).join(", ");
-  const finalLabel = `${clientNumberLabel} ${clientNumbers} ${clients.length > 1 ? "were" : "was"} found with similar ${fieldNameToDescription[result.field]}.`;
+  const finalLabel = `${clientNumberLabel} ${clientNumbers} ${clients.length > 1 ? "were" : "was"} found with similar ${fieldNameToDescription[cleanFieldName]}.`;
   return finalLabel;
 };
 
@@ -282,9 +290,7 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
       }
 
       fuzzyMatchedError.value.matches.push(match);
-      //1444
-      emitFieldErrors(fieldNameToNamingGroups[rawMatch.field] || [rawMatch.field], fuzzyMatchedError.value.fuzzy);
-      //main
+
       let fieldsList = fieldNameToNamingGroups[genericField];
 
       if (genericField !== rawMatch.field && fieldsList) {
@@ -297,7 +303,8 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
       Note: if the fieldsList is empty, it will use a single field with the same name returned from
       the API.
       */
-      emitFieldErrors(fieldsList || [rawMatch.field], rawMatch.fuzzy);
+     //if is better to let warning fields be colored as warning, change to rawMatch.fuzzy
+      emitFieldErrors(fieldsList || [rawMatch.field], fuzzyMatchedError.value.fuzzy);
     }
 
     // Setting the error description
@@ -331,7 +338,6 @@ fuzzyBus.on(handleFuzzyErrorMessage);
     :title="fuzzyMatchedError.fuzzy ? 'Possible matching records found' : 'Client already exists'"
   >
     <div>
-//1444
       <!-- eslint-disable-next-line vue/no-v-html -->
       <span 
         class="body-compact-01"
@@ -347,19 +353,6 @@ fuzzyBus.on(handleFuzzyErrorMessage);
           It looks like ”{{ businessName }}” has client number 
           <span v-dompurify-html="getErrorsItemContent(fuzzyMatchedError.matches)"></span>.
         </span >
-//main
-      <span class="body-compact-02">
-        {{ fuzzyMatchedError.description }}
-      </span>
-      <ul>
-        <!-- eslint-disable-next-line vue/no-v-html -->
-        <li
-          v-for="match in fuzzyMatchedError.matches"
-          :key="match.result.field"
-          v-dompurify-html="getListItemContent(match)"
-        ></li>
-      </ul>
-
       <span v-if="!fuzzyMatchedError.fuzzy" class="body-compact-02">
         You must inform the applicant of their number.
       </span>
