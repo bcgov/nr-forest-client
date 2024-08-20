@@ -1961,6 +1961,19 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   cds-table {
     min-width: 66rem;
   }
+
+  div.content:has(div.staff svg.submission-badge) {
+    margin-left: 16rem;
+  }
+
+  div.form-footer-group-buttons {
+    gap: 0.5rem;
+  }
+
+  div.form-footer-group-buttons cds-button {
+    margin-top: 1rem;
+  }
+
 }
 
 /* X-Large (from 1312px to 1583px) */
@@ -2027,6 +2040,12 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
         (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width))
     );
   }
+
+  div.content:has(div.frame-03 svg.submission-badge) {
+    margin-left: 12rem;
+  }
+
+  
 }
 
 /* XX-Large (from 1584px to 1783px) */
