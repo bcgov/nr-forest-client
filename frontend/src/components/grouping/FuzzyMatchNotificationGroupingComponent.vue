@@ -126,8 +126,7 @@ const getListItemContent = ref((match: MiscFuzzyMatchResult) => {
   return match && match.result?.match ? renderListItem(match) : "";
 });
 
-const getLegacyUrl = (duplicatedClient, label) => {
-  console.log('Duplicated Client:', duplicatedClient);
+const getLegacyUrl = (duplicatedClient, label) => {  
   const encodedClientNumber = encodeURIComponent(duplicatedClient.trim());
   switch (label) {
     case "contact":
