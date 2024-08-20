@@ -179,13 +179,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       );
 
       expect(liList).toHaveLength(2);
-
-      //expect(liList[0].text()).toContain("foo");
-      //expect(liList[0].text()).toContain("Partial matching on");
       expect(liList[0].text()).toContain("00000002");
-
-      //expect(liList[1].text()).toContain("bar");
-      //expect(liList[1].text()).toContain("Matching on");
       expect(liList[1].text()).toContain("00000001");
     });
   });
@@ -201,7 +195,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       fuzzyBus.emit({
         id: "global",
         matches: [
-          { field: "businessInformation.foo", match: "00000001", fuzzy: true },
+          { field: "businessInformation.foo", match: "00000001", fuzzy: true, partialMatch: true },
         ],
       });
 
@@ -225,6 +219,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       {
         field: "businessInformation.individual",
         fuzzy: true,
+        partialMatch: true,
         expectedFieldIdList: [
           "businessInformation.firstName",
           "businessInformation.lastName",
@@ -235,6 +230,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       {
         field: "businessInformation.individualAndDocument",
         fuzzy: false,
+        partialMatch: true,
         expectedFieldIdList: [
           "businessInformation.firstName",
           "businessInformation.lastName",
@@ -245,6 +241,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       {
         field: "businessInformation.clientIdentification",
         fuzzy: false,
+        partialMatch: false,
         expectedFieldIdList: [
           "businessInformation.identificationType",
           "identificationProvince.text",
@@ -299,6 +296,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
           field: "randomName",
           fuzzy: true,
           match: "00000001",
+          partialMatch: true
         },
       ],
     });
