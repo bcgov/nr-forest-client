@@ -157,7 +157,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have individual data with fuzzy resulting in partial individual match', () => {
       fillIndividual();
 
-      checkTopNotification('warning', 'Partial matching on name and date of birth');
+      checkTopNotification('warning', 'was found with similar name and birthdate');
 
       checkInputWarning('#firstName');
       checkInputWarning('#lastName');
@@ -181,7 +181,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have individual data with fuzzy resulting in full individual match', () => {
       fillIndividual();
 
-      checkTopNotification('error', 'Matching on name, date of birth and ID number');
+      checkTopNotification('error', 'has a client number');
 
       checkInputError('#firstName');
       checkInputError('#lastName');
@@ -204,7 +204,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have individual data with fuzzy resulting in document individual match', () => {
       fillIndividual();
 
-      checkTopNotification('error', 'Matching on ID type and ID number');
+      checkTopNotification('error', 'has a client number');
 
       checkInputClean('#firstName');
       checkInputClean('#lastName');
@@ -234,7 +234,7 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateDay: '',
       });
 
-      checkTopNotification('warning', 'Partial matching on client name');
+      checkTopNotification('warning', 'was found with similar client name');
 
       checkDropdownWarning('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -256,7 +256,7 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateDay: '',
       });
 
-      checkTopNotification('error', 'Matching on client name');
+      checkTopNotification('error', 'has a client number');
 
       checkDropdownError('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -279,7 +279,7 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateDay: '',
       });
 
-      checkTopNotification('error', 'Matching on registration number');
+      checkTopNotification('error', 'has a client number');
 
       checkDropdownError('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -301,18 +301,7 @@ describe("Staff Form Fuzzy Matches", () => {
         doingBusinessAs: '',
       });
 
-      cy.get('#fuzzy-match-notification-global')
-      .should("be.visible")
-      .and("have.attr", "kind", "warning")
-      .shadow()
-      .find(
-        "div.cds--actionable-notification__details div.cds--actionable-notification__text-wrapper div.cds--actionable-notification__content div.cds--actionable-notification__title"
-      )
-      .should("contain", "Possible matching records found");
-
-      cy.get('#fuzzy-match-notification-global > div > ul > li')      
-      .should('be.visible')
-      .and('contain', 'Partial matching on name and date of birth');
+      checkTopNotification('warning', 'was found with similar name and birthdate');
 
       checkDropdownWarning('#businessName');
       checkInputWarning('#birthdateYear');
@@ -337,7 +326,7 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateDay: '',
       });
 
-      checkTopNotification('warning', 'Partial matching on doing business as');
+      checkTopNotification('warning', 'was found with similar doing business as');
 
       checkDropdownClean('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -360,7 +349,7 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateDay: '',
       });
 
-      checkTopNotification('error', 'Matching on doing business as');
+      checkTopNotification('error', 'has a client number');
 
       checkDropdownClean('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -382,7 +371,7 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateDay: '',
       });
 
-      checkTopNotification('error', 'Matching on client acronym');
+      checkTopNotification('error', 'has a client number');
 
       checkDropdownClean('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -401,11 +390,11 @@ describe("Staff Form Fuzzy Matches", () => {
   });
 
   describe('First Nations fuzzy matching',() =>{
-
+    
     it('should have first nations with fuzzy resulting in full fn federal id match',() =>{
       fillFirstNations();
 
-      checkTopNotification('error', 'Matching on federal identification number');
+      checkTopNotification('error', 'has a client number');
 
       checkDropdownError('#clientName');
       checkInputClean('#workSafeBcNumber');
@@ -424,7 +413,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have first nations with fuzzy resulting in partial business name match',() =>{
       fillFirstNations();
 
-      checkTopNotification('warning', 'Partial matching on client name');
+      checkTopNotification('warning', 'was found with similar client name');
 
       checkDropdownWarning('#clientName');
       checkInputClean('#workSafeBcNumber');
@@ -439,10 +428,11 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('be.visible');
     });
 
+    
     it('should have first nations with fuzzy resulting in full business name match',() =>{
       fillFirstNations();
 
-      checkTopNotification('error', 'Matching on client name');
+      checkTopNotification('error', 'has a client number');
 
       checkDropdownError('#clientName');
       checkInputClean('#workSafeBcNumber');
@@ -460,7 +450,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have registered data with fuzzy resulting in full acronym match',() =>{
       fillFirstNations();
 
-      checkTopNotification('error', 'Matching on client acronym');
+      checkTopNotification('error', 'has a client number');
 
       checkDropdownClean('#clientName');
       checkInputClean('#workSafeBcNumber');
@@ -479,10 +469,11 @@ describe("Staff Form Fuzzy Matches", () => {
 
   describe('Government fuzzy matching',() =>{
 
+    
     it('should have government with fuzzy resulting in partial business name match',() =>{
       fillOthers({kind: 'Government'});
 
-      checkTopNotification('warning', 'Partial matching on client name');
+      checkTopNotification('warning', 'was found with similar client name');
 
       checkInputWarning('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -500,7 +491,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have government with fuzzy resulting in full business name match',() =>{
       fillOthers({kind: 'Government'});
 
-      checkTopNotification('error', 'Matching on client name');
+      checkTopNotification('error', 'has a client number');
 
       checkInputError('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -518,7 +509,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have government data with fuzzy resulting in full acronym match',() =>{
       fillOthers({kind: 'Government'});
 
-      checkTopNotification('error', 'Matching on client acronym');
+      checkTopNotification('error', 'has a client number');
 
       checkInputClean('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -540,7 +531,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have forests with fuzzy resulting in partial business name match',() =>{
       fillOthers({kind: 'Ministry of Forests'});
 
-      checkTopNotification('warning', 'Partial matching on client name');
+      checkTopNotification('warning', 'was found with similar client name');
 
       checkInputWarning('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -558,7 +549,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have forests with fuzzy resulting in full business name match',() =>{
       fillOthers({kind: 'Ministry of Forests'});
 
-      checkTopNotification('error', 'Matching on client name');
+      checkTopNotification('error', 'has a client number');
 
       checkInputError('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -576,7 +567,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have forests data with fuzzy resulting in full acronym match',() =>{
       fillOthers({kind: 'Ministry of Forests'});
 
-      checkTopNotification('error', 'Matching on client acronym');
+      checkTopNotification('error', 'has a client number');
 
       checkInputClean('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -598,7 +589,7 @@ describe("Staff Form Fuzzy Matches", () => {
     it('should have unregistered data with fuzzy resulting in partial business name match',() =>{
       fillOthers({kind: 'Unregistered company'});
 
-      checkTopNotification('warning', 'Partial matching on client name');
+      checkTopNotification('warning', 'was found with similar client name');
 
       checkInputWarning('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -613,10 +604,11 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('be.visible');
     });
 
+    
     it('should have unregistered data with fuzzy resulting in full business name match',() =>{
       fillOthers({kind: 'Unregistered company'});
 
-      checkTopNotification('error', 'Matching on client name');
+      checkTopNotification('error', 'has a client number');
 
       checkInputError('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -631,10 +623,11 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('not.exist');
     });
 
+    
     it('should have unregistered data with fuzzy resulting in full acronym match',() =>{
       fillOthers({kind: 'Unregistered company'});
 
-      checkTopNotification('error', 'Matching on client acronym');
+      checkTopNotification('error', 'has a client number');
 
       checkInputClean('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -830,8 +823,8 @@ describe("Staff Form Fuzzy Matches", () => {
         "div.cds--actionable-notification__details div.cds--actionable-notification__text-wrapper div.cds--actionable-notification__content div.cds--actionable-notification__title"
       )
       .should("contain", kind === 'warning' ? 'Possible matching records found' : 'Client already exists');
-
-      cy.get('#fuzzy-match-notification-global > div > ul > li')      
+      
+      cy.get('#fuzzy-match-notification-global > div > span.body-compact-01')
       .should('be.visible')
       .and('contain', message);
   }
