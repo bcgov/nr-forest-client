@@ -128,7 +128,7 @@ watch([validation], () => {
       <div class="grouping-22" 
           v-if="clientType.value !== 'I'">
         <div class="grouping-22-item"
-            v-if="formData.businessInformation.birthdate.length">
+            v-if="formData.businessInformation.clientType === 'RSP'">
           <p class="label-02">Birthdate</p>
           <p class="body-compact-01">{{ formData.businessInformation.birthdate }}</p>
         </div>
@@ -138,7 +138,8 @@ watch([validation], () => {
           <p class="body-compact-01">{{ formData.businessInformation.workSafeBcNumber }}</p>
         </div>
         <div class="grouping-22-item"
-            v-if="formData.businessInformation.doingBusinessAs.length">
+            v-if="formData.businessInformation.clientType !== 'RSP' && 
+                  formData.businessInformation.doingBusinessAs.length">
           <p class="label-02">Doing business as</p>
           <p class="body-compact-01">{{ formData.businessInformation.doingBusinessAs }}</p>
         </div>
