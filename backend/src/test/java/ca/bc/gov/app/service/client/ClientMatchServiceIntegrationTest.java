@@ -73,7 +73,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
   }
 
   @DisplayName("Matching individuals")
-  @ParameterizedTest
+  @ParameterizedTest(name = "{0}")
   @MethodSource("individualMatch")
   void shouldMatchIndividuals(
       ClientSubmissionDto dto,
@@ -90,7 +90,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
         .stubFor(
             get(urlPathEqualTo("/api/search/individual"))
                 .withQueryParam("firstName", equalTo(dto.businessInformation().firstName()))
-                .withQueryParam("lastName", equalTo(dto.businessInformation().businessName()))
+                .withQueryParam("lastName", equalTo(dto.businessInformation().lastName()))
                 .withQueryParam("dob", equalTo(dto.businessInformation().birthdate().format(
                     DateTimeFormatter.ISO_DATE))
                 )
@@ -101,7 +101,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
         .stubFor(
             get(urlPathEqualTo("/api/search/individual"))
                 .withQueryParam("firstName", equalTo(dto.businessInformation().firstName()))
-                .withQueryParam("lastName", equalTo(dto.businessInformation().businessName()))
+                .withQueryParam("lastName", equalTo(dto.businessInformation().lastName()))
                 .withQueryParam("dob", equalTo(dto.businessInformation().birthdate().format(
                     DateTimeFormatter.ISO_DATE))
                 )
@@ -520,13 +520,15 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
   private static Stream<Arguments> individualMatch() {
     return Stream.of(
         Arguments.of(
-            getIndividualDto(
-                "Jhon",
-                "Wick",
-                LocalDate.of(1970, 1, 1),
-                "CDDL",
-                "BC",
-                "1234567"
+            named("no matches",
+                getIndividualDto(
+                    "Jhon",
+                    "Wick",
+                    LocalDate.of(1970, 1, 1),
+                    "CDDL",
+                    "BC",
+                    "1234567"
+                )
             ),
             "[]",
             "[]",
@@ -535,13 +537,15 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             false
         ),
         Arguments.of(
-            getIndividualDto(
-                "James",
-                "Wick",
-                LocalDate.of(1970, 1, 1),
-                "CDDL",
-                "AB",
-                "7654321"
+            named("doc match",
+                getIndividualDto(
+                    "James",
+                    "Wick",
+                    LocalDate.of(1970, 1, 1),
+                    "CDDL",
+                    "AB",
+                    "7654321"
+                )
             ),
             "[]",
             "[]",
@@ -550,13 +554,15 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             false
         ),
         Arguments.of(
-            getIndividualDto(
-                "Valeria",
-                "Valid",
-                LocalDate.of(1970, 1, 1),
-                "CDDL",
-                "YK",
-                "1233210"
+            named("full match",
+                getIndividualDto(
+                    "Valeria",
+                    "Valid",
+                    LocalDate.of(1970, 1, 1),
+                    "CDDL",
+                    "YK",
+                    "1233210"
+                )
             ),
             "[]",
             "[{\"clientNumber\":\"00000002\"}]",
@@ -565,13 +571,15 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             false
         ),
         Arguments.of(
-            getIndividualDto(
-                "Papernon",
-                "Pompadour",
-                LocalDate.of(1970, 1, 1),
-                "CDDL",
-                "ON",
-                "9994545"
+            named("fuzzy match",
+                getIndividualDto(
+                    "Papernon",
+                    "Pompadour",
+                    LocalDate.of(1970, 1, 1),
+                    "CDDL",
+                    "ON",
+                    "9994545"
+                )
             ),
             "[{\"clientNumber\":\"00000003\"}]",
             "[]",
@@ -580,13 +588,15 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             true
         ),
         Arguments.of(
-            getIndividualDto(
-                "Karls",
-                "Enrikvinjon",
-                LocalDate.of(1970, 1, 1),
-                "CDDL",
-                "BC",
-                "3337474"
+            named("fuzzy and full",
+                getIndividualDto(
+                    "Karls",
+                    "Enrikvinjon",
+                    LocalDate.of(1970, 1, 1),
+                    "CDDL",
+                    "BC",
+                    "3337474"
+                )
             ),
             "[{\"clientNumber\":\"00000004\"}]",
             "[{\"clientNumber\":\"00000005\"}]",
@@ -595,13 +605,15 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             false
         ),
         Arguments.of(
-            getIndividualDto(
-                "Palitz",
-                "Yelvengard",
-                LocalDate.of(1970, 1, 1),
-                "USDL",
-                "AZ",
-                "7433374"
+            named("all matches",
+                getIndividualDto(
+                    "Palitz",
+                    "Yelvengard",
+                    LocalDate.of(1970, 1, 1),
+                    "USDL",
+                    "AZ",
+                    "7433374"
+                )
             ),
             "[{\"clientNumber\":\"00000006\"}]",
             "[{\"clientNumber\":\"00000007\"}]",
