@@ -128,9 +128,19 @@ watch([validation], () => {
       <div class="grouping-22" 
           v-if="clientType.value !== 'I'">
         <div class="grouping-22-item"
+            v-if="formData.businessInformation.birthdate.length">
+          <p class="label-02">Birthdate</p>
+          <p class="body-compact-01">{{ formData.businessInformation.birthdate }}</p>
+        </div>
+        <div class="grouping-22-item"
             v-if="formData.businessInformation.workSafeBcNumber.length">
           <p class="label-02">WorkSafeBC Number</p>
           <p class="body-compact-01">{{ formData.businessInformation.workSafeBcNumber }}</p>
+        </div>
+        <div class="grouping-22-item"
+            v-if="formData.businessInformation.doingBusinessAs.length">
+          <p class="label-02">Doing business as</p>
+          <p class="body-compact-01">{{ formData.businessInformation.doingBusinessAs }}</p>
         </div>
         <div class="grouping-22-item"
             v-if="formData.businessInformation.clientAcronym.length">
@@ -146,16 +156,20 @@ watch([validation], () => {
       </cds-button>
     </div>
   </div>
+
   <div class="grouping-05">
     <h3>Locations</h3>
     <div v-for="(address, index) in formData.location.addresses" 
         :key="address.locationName" 
-        class="grouping-22">
+        class="grouping-07">
+
       <hr class="divider" v-if="index > 0" />
+
       <h4 class="review-icon-title">
         <LocationStar20 v-if="index === 0" />
         <Location20 v-else />{{ address.locationName }}
       </h4>
+
       <div class="grouping-23">
         <span class="body-compact-01"
               v-if="address.complementaryAddressOne !== null && 
@@ -174,24 +188,28 @@ watch([validation], () => {
       </div>
 
       <div class="grouping-22-item"
-          v-if="address.emailAddress.length">
+          v-if="address.emailAddress !== null && 
+                address.emailAddress.length">
         <p class="label-02">Email address</p>
         <p class="body-compact-01">{{ address.emailAddress }}</p>
       </div>
 
       <div class="grouping-22-item horizontal-input-grouping"
-          v-if="address.businessPhoneNumber.length || 
-                address.secondaryPhoneNumber.length ||
-                address.faxNumber.length">
-        <span v-if="address.businessPhoneNumber.length">
+          v-if="(address.businessPhoneNumber !== null && address.businessPhoneNumber.length) || 
+                (address.secondaryPhoneNumber !== null && address.secondaryPhoneNumber.length) ||
+                (address.faxNumber !== null && address.faxNumber.length)">
+        <span v-if="address.businessPhoneNumber !== null && 
+                    address.businessPhoneNumber.length">
           <p class="label-02">Primary phone number</p>
           <p class="body-compact-01">{{ address.businessPhoneNumber }}</p>
         </span>
-        <span v-if="address.secondaryPhoneNumber.length">
+        <span v-if="address.secondaryPhoneNumber !== null && 
+                    address.secondaryPhoneNumber.length">
           <p class="label-02">Secondary phone number</p>
           <p class="body-compact-01">{{ address.secondaryPhoneNumber }}</p>
         </span>
-        <span v-if="address.faxNumber.length">
+        <span v-if="address.faxNumber !== null && 
+                    address.faxNumber.length">
           <p class="label-02">Fax</p>
           <p class="body-compact-01">{{ address.faxNumber }}</p>
         </span>
@@ -211,25 +229,46 @@ watch([validation], () => {
       </cds-button>
     </div>
   </div>
+
   <div class="grouping-05">
     <h3>Contacts</h3>
     <div v-for="(contact, index) in formData.location.contacts" 
         :key="contact.email" 
         class="grouping-07">
-      <hr class="divider" 
-          v-if="index > 0" />
+
+      <hr class="divider" v-if="index > 0" />
+
       <h4 class="review-icon-title">
         <User20 />{{ contact.firstName }} {{ contact.lastName }}
       </h4>
+
       <div class="grouping-23">
         <span class="body-compact-01">
           {{ contact.locationNames.map((codeDesc) => codeDesc.text).join(', ') }}
         </span>
         <span class="body-compact-01">{{ contact.contactType.text }}</span>
         <span class="body-compact-01">{{ contact.email }}</span>
-        <span class="body-compact-01">{{ contact.phoneNumber }}</span>
+      </div>
+
+      <div class="grouping-22-item horizontal-input-grouping"
+          v-if="contact.phoneNumber.length || 
+                contact.secondaryPhoneNumber.length ||
+                contact.faxNumber.length">
+        <span v-if="contact.phoneNumber.length">
+          <p class="label-02">Primary phone number</p>
+          <p class="body-compact-01">{{ contact.phoneNumber }}</p>
+        </span>
+        <span v-if="contact.secondaryPhoneNumber.length">
+          <p class="label-02">Secondary phone number</p>
+          <p class="body-compact-01">{{ contact.secondaryPhoneNumber }}</p>
+        </span>
+        <span v-if="contact.faxNumber.length">
+          <p class="label-02">Fax</p>
+          <p class="body-compact-01">{{ contact.faxNumber }}</p>
+        </span>
       </div>
     </div>
+
     <div class="grouping-06">
       <cds-button kind="tertiary" @click.prevent="goToStep(2)">
         <span>Edit contacts</span>
