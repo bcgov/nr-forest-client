@@ -165,13 +165,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       );
 
       expect(liList).toHaveLength(2);
-
-      //expect(liList[0].text()).toContain("foo");
-      //expect(liList[0].text()).toContain("Partial matching on");
       expect(liList[0].text()).toContain("00000002");
-
-      //expect(liList[1].text()).toContain("bar");
-      //expect(liList[1].text()).toContain("Matching on");
       expect(liList[1].text()).toContain("00000001");
     });
   });
