@@ -2,7 +2,7 @@
 // Composables
 import useSvg from "@/composables/useSvg";
 // @ts-ignore
-import badgePictogram from "@carbon/pictograms/es/badge";
+import badgePictogram from "@carbon/pictograms/es/time";
 
 defineProps<{  
   submissionId: number;
@@ -13,7 +13,7 @@ const SVG = useSvg(badgePictogram);
 </script>
 
 <template>
-  <div class="frame-03" role="status">
+  <div class="frame-03 staff" role="status">
     <SVG alt="Badge pictogram" class="submission-badge" role="presentation"></SVG>
     <div class="form-header form-header-application-submitted">
       <h1 class="fluid-heading-04">This submission is being processed</h1>
