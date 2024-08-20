@@ -533,11 +533,11 @@ const parseAggregatorCondition = (conditinal: string) : { value1: string, operat
 }
 
 /**
-* Parses an equality condition and returns an object with the parsed values.
-* @param condition - The condition to parse.
-* @returns An object with the parsed values: value1, operator, and value2.
-* @throws {Error} If the condition format is invalid.
-*/
+ * Parses an equality condition and returns an object with the parsed values.
+ * @param condition - The condition to parse.
+ * @returns An object with the parsed values: value1, operator, and value2.
+ * @throws {Error} If the condition format is invalid.
+ */
 const parseEqualityCondition = (condition: string): { value1: string, operator: string, value2: string } => {
   if(condition.includes("===") || condition.includes("!==")) {
       const regex = /(.+?)\s*(===|!==)\s*(?:"(.*?)"|\$(\..+?))$/;
@@ -556,13 +556,13 @@ const parseEqualityCondition = (condition: string): { value1: string, operator: 
 }
 
 /**
-* Evaluates a logical condition based on the provided values and operator.
-* @param value1 - The first value to be evaluated.
-* @param operator - The logical operator to be used ('&&' for AND, '||' for OR).
-* @param value2 - The second value to be evaluated.
-* @returns The result of the logical condition evaluation.
-* @throws {Error} If an invalid operator is provided.
-*/
+ * Evaluates a logical condition based on the provided values and operator.
+ * @param value1 - The first value to be evaluated.
+ * @param operator - The logical operator to be used ('&&' for AND, '||' for OR).
+ * @param value2 - The second value to be evaluated.
+ * @returns The result of the logical condition evaluation.
+ * @throws {Error} If an invalid operator is provided.
+ */
 const evaluateLogicalCondition = ({ value1, operator, value2 }: { value1: string, operator: string, value2: string }): boolean => {
   const boolValue1 = value1 === 'true';
   const boolValue2 = value2 === 'true';
@@ -578,11 +578,11 @@ const evaluateLogicalCondition = ({ value1, operator, value2 }: { value1: string
 }
 
 /**
-* Evaluates an entry against an item based on the provided values and operator.
-* @param item - The item to evaluate against.
-* @param entry - The entry containing the values and operator to evaluate.
-* @returns A boolean indicating whether the evaluation is true or false.
-*/
+ * Evaluates an entry against an item based on the provided values and operator.
+ * @param item - The item to evaluate against.
+ * @param entry - The entry containing the values and operator to evaluate.
+ * @returns A boolean indicating whether the evaluation is true or false.
+ */
 const evaluateEntry = (item: any, entry: { value1: string, operator: string, value2: string }): boolean => {
 
   if(entry.value1 === 'true' && entry.value2 === 'true')
@@ -609,11 +609,11 @@ const evaluateEntry = (item: any, entry: { value1: string, operator: string, val
 }
 
 /**
-* Evaluates a condition for a given item.
-* @param item - The item to evaluate the condition against.
-* @param condition - The condition to evaluate.
-* @returns A boolean indicating whether the condition is true or false.
-*/
+ * Evaluates a condition for a given item.
+ * @param item - The item to evaluate the condition against.
+ * @param condition - The condition to evaluate.
+ * @returns A boolean indicating whether the condition is true or false.
+ */
 const evaluateCondition = (item: any, condition: string): boolean => {
 
   if (condition === 'true') {

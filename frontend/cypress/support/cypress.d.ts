@@ -14,5 +14,6 @@ declare namespace Cypress {
     selectAutocompleteEntry(field: string, value: string, dataid: string, delayTarget: string =''): Chainable<void>;
     checkInputErrorMessage(field: string, message: string): Chainable<void>;
     checkAutoCompleteErrorMessage(field: string, message: string): Chainable<void>;
+    checkAccordionItemState(additionalSelector: string, open: boolean): Chainable<void>;
   }
 }

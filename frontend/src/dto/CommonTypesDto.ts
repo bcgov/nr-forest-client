@@ -30,6 +30,7 @@ export interface FuzzyMatchResult {
   field: string;
   match: string;
   fuzzy: boolean;
+  partialMatch: boolean;
 }
 
 export interface MiscFuzzyMatchResult {
@@ -41,6 +42,7 @@ export interface FuzzyMatcherData {
   show: boolean;
   fuzzy: boolean;
   matches: MiscFuzzyMatchResult[];
+  description: string;
 }
 
 export interface FuzzyMatcherEvent {

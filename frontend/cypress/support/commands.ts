@@ -201,3 +201,10 @@ Cypress.Commands.add("checkAutoCompleteErrorMessage", (field: string, message: s
       .invoke('text')
       .should('contains', message);
 });
+
+Cypress.Commands.add("checkAccordionItemState", (additionalSelector: string, open: boolean) => {
+  cy.get(`cds-accordion-item${additionalSelector}`).should(
+    `${open ? "" : "not."}have.attr`,
+    "open",
+  );
+});

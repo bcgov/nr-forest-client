@@ -17,7 +17,7 @@ import { convertFieldNameToSentence } from "@/services/ForestClientService";
 const props = defineProps<{
   id: string;
   error?: FuzzyMatcherData;
-  businessName: string;
+  businessName?: string;
 }>();
 
 const fuzzyBus = useEventBus<FuzzyMatcherEvent>("fuzzy-error-notification");
@@ -28,8 +28,13 @@ const fuzzyMatchedError = ref<FuzzyMatcherData>(
     show: false,
     fuzzy: false,
     matches: [],
+    description: "",
   },
 );
+
+defineExpose({
+  fuzzyMatchedError,
+});
 
 const fieldNameToDescription : Record<string, string> = {
   "businessInformation.businessName": "client name",
@@ -46,46 +51,65 @@ const fieldNameToDescription : Record<string, string> = {
   "businessInformation.doingBusinessAs": "doing business as",
   "businessInformation.workSafeBcNumber": "WorkSafeBC number",
   "businessInformation.federalId": "federal identification number",
+  "location.addresses[].businessPhoneNumber": "primary phone number",
+  "location.addresses[].faxNumber": "fax",
 };
 
-const fieldNameToNamingGroups : Record<string, string> = {
+const fieldNameToNamingGroups: Record<string, string[]> = {
   "businessInformation.businessName": ["businessInformation.businessName"],
   "businessInformation.registrationNumber": ["businessInformation.businessName"],
   "businessInformation.federalId": ["businessInformation.businessName"],
   "businessInformation.individual": [
-      "businessInformation.firstName",
-      "businessInformation.lastName",
-      "businessInformation.birthdate",
-      "businessInformation.businessName",
-    ],
+    "businessInformation.firstName",
+    "businessInformation.lastName",
+    "businessInformation.birthdate",
+    "businessInformation.businessName",
+  ],
   "businessInformation.individualAndDocument": [
-      "businessInformation.firstName",
-      "businessInformation.lastName",
-      "businessInformation.birthdate",
-      "businessInformation.clientIdentification",
-    ],
+    "businessInformation.firstName",
+    "businessInformation.lastName",
+    "businessInformation.birthdate",
+    "businessInformation.clientIdentification",
+  ],
   "businessInformation.clientIdentification": [
-      "businessInformation.identificationType",
-      "identificationProvince.text",
-      "businessInformation.clientIdentification",
-    ],
-    "businessInformation.doingBusinessAs": ["businessInformation.doingBusinessAs"],
-    "businessInformation.clientAcronym": ["businessInformation.clientAcronym"],
+    "businessInformation.identificationType",
+    "identificationProvince.text",
+    "businessInformation.clientIdentification",
+  ],
+  "businessInformation.doingBusinessAs": ["businessInformation.doingBusinessAs"],
+  "businessInformation.clientAcronym": ["businessInformation.clientAcronym"],
+  "location.addresses[].streetAddress": [
+    "location.addresses[].streetAddress",
+    "location.addresses[].city",
+    "location.addresses[].province",
+    "location.addresses[].country",
+    "location.addresses[].postalCode",
+  ],
 };
 
-const fieldNameToLabel : Record<string, string> = {
+const fieldNameToLabel: Record<string, string> = {
   "businessInformation.individual": "name and date of birth",
   "businessInformation.individualAndDocument": "name, date of birth and ID number",
   "businessInformation.clientIdentification": "ID type and ID number",
   "businessInformation.businessName": "client name",
   "businessInformation.federalId": "federal identification number",
+  "location.addresses[].streetAddress": "address",
+  "location.addresses[].businessPhoneNumber": "primary phone number",
+  "location.addresses[].faxNumber": "fax",
 };
 
+const arrayIndexRegex = /\[(\d+)\]/;
+
 const createErrorEvent = (fieldList: string[], warning: boolean) =>
-  fieldList.map((fieldId) => ({
-    fieldId,
-    errorMsg: warning ? `There's already a client with this "${fieldNameToDescription[fieldId] || convertFieldNameToSentence(fieldId).toLowerCase()}"` : "Client already exists",
-  }));
+  fieldList.map((fieldId) => {
+    const genericField = fieldId.replace(arrayIndexRegex, "[]");
+    return {
+      fieldId,
+      errorMsg: warning
+        ? `There's already a client with this "${fieldNameToDescription[genericField] || convertFieldNameToSentence(fieldId).toLowerCase()}"`
+        : "Client already exists",
+    };
+  });
 
 const emitFieldErrors = (fieldList: string[], warning: boolean) => {
   const errorEvent = createErrorEvent(fieldList, warning);
@@ -95,12 +119,12 @@ const emitFieldErrors = (fieldList: string[], warning: boolean) => {
   });
 };
 
-const label = (matchedFieldsText: string, warning: boolean) => {
+const label = (matchedFieldsText: string, partialMatch: boolean) => {
 
   if(!matchedFieldsText)
   return '';
 
-  const prefix = warning ? "Partial matching on" : "Matching on";
+  const prefix = partialMatch ? "Partial matching on" : "Matching on";
   return `${prefix} ${matchedFieldsText}`;
 }
 
@@ -129,7 +153,7 @@ const renderListItem = (misc: MiscFuzzyMatchResult) => {
     finalLabel = "Matching one or more " + result.field + "s";
   } else {
     finalLabel =
-      (result.fuzzy ? "Partial m" : "M") +
+      (result.partialMatch ? "Partial m" : "M") +
       "atching on " +
       convertFieldNameToSentence(result.field).toLowerCase();
   }
@@ -167,28 +191,95 @@ const getUniqueClientNumbers = (matches: MiscFuzzyMatchResult[]) => {
 
 const uniqueClientNumbers = computed(() => getUniqueClientNumbers(fuzzyMatchedError.value.matches));
 
+const clearNotification = () => {
+  fuzzyMatchedError.value.show = false;
+  fuzzyMatchedError.value.fuzzy = false;
+  fuzzyMatchedError.value.matches = [];
+  fuzzyMatchedError.value.description = "";
+};
+
+interface DescriptionOption {
+  condition: (id: string) => boolean;
+  getDescription: () => string;
+}
+
+const fuzzySuffix =
+  "Review their information in the Client Management System to determine if you should create a new client:";
+
+const descriptionOptionList: DescriptionOption[] = [
+  {
+    condition: (id: string) => id === "global" && fuzzyMatchedError.value.fuzzy,
+    getDescription: () => `${uniqueClientNumbers.value.length} similar client
+        ${uniqueClientNumbers.value.length === 1 ? "record was" : "records were"}
+        found. ${fuzzySuffix}`,
+  },
+  {
+    condition: (id: string) => id === "global" && !fuzzyMatchedError.value.fuzzy,
+    getDescription:
+      () => `Looks like ”${props.businessName}” has a client number. Review their information in the
+        Management System if necessary:`,
+  },
+  {
+    condition: (id: string) => id.startsWith("location.addresses"),
+    getDescription: () => `${uniqueClientNumbers.value.length} client
+        ${uniqueClientNumbers.value.length === 1 ? "record was" : "records were"}
+        found with locations similar to this one. ${fuzzySuffix}`,
+  },
+];
 
 const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?: any) => {
-  if (event && event.matches.length > 0 && event.id === props.id) {
-        
+  if (!event) {
+    clearNotification();
+    return;
+  }
+  if (event.id === props.id) {
+    if (!event.matches?.length) {
+      clearNotification();
+      return;
+    }
     fuzzyMatchedError.value.show = true;
     fuzzyMatchedError.value.fuzzy = true;
     fuzzyMatchedError.value.matches = [];
 
     for (const rawMatch of event.matches) {
+      const genericField = rawMatch.field.replace(arrayIndexRegex, "[]");
 
-      const match: MiscFuzzyMatchResult = { result: rawMatch,label: label(fieldNameToLabel[rawMatch.field], rawMatch.fuzzy) };
+      const match: MiscFuzzyMatchResult = {
+        result: rawMatch,
+        label: label(fieldNameToLabel[genericField], rawMatch.partialMatch),
+      };
+
       if (!rawMatch.fuzzy) {
         fuzzyMatchedError.value.fuzzy = false;
       }
-      
+
       fuzzyMatchedError.value.matches.push(match);
-      emitFieldErrors(fieldNameToNamingGroups[rawMatch.field] || [rawMatch.field], rawMatch.fuzzy);
+      let fieldsList = fieldNameToNamingGroups[genericField];
+
+      if (genericField !== rawMatch.field && fieldsList) {
+        const regexGroups = rawMatch.field.match(arrayIndexRegex);
+        const id = regexGroups[1];
+        fieldsList = fieldsList.map((field) => field.replace("[]", `[${id}]`));
+      }
+
+      /*
+      Note: if the fieldsList is empty, it will use a single field with the same name returned from
+      the API.
+      */
+      emitFieldErrors(fieldsList || [rawMatch.field], rawMatch.fuzzy);
     }
-  } else {
-    fuzzyMatchedError.value.show = false;
-    fuzzyMatchedError.value.fuzzy = false;
-    fuzzyMatchedError.value.matches = [];
+
+    // Setting the error description
+    const option = descriptionOptionList.find((option) => option.condition(props.id));
+    if (option) {
+      fuzzyMatchedError.value.description = option.getDescription();
+    } else {
+      console.warn(
+        `fuzzy description not found, using the global one (with fuzzy: ${fuzzyMatchedError.value.fuzzy})`,
+      );
+      const fallbackOption = descriptionOptionList.find((option) => option.condition("global"));
+      fuzzyMatchedError.value.description = fallbackOption.getDescription();
+    }
   }
 };
 
@@ -209,17 +300,7 @@ fuzzyBus.on(handleFuzzyErrorMessage);
   >
     <div>
       <span class="body-compact-02">
-        <template v-if="fuzzyMatchedError.fuzzy">
-          {{ uniqueClientNumbers.length }} similar client
-          <span v-if="uniqueClientNumbers.length === 1">record was</span>
-          <span v-else>records were</span>
-          found. Review their information in the Client Management System to determine if you should
-          should create a new client:
-        </template>
-        <template v-else>
-          Looks like ”{{ businessName }}” has a client number. Review their information in the
-          Management System if necessary:
-        </template>
+        {{ fuzzyMatchedError.description }}
       </span>
       <ul>
         <!-- eslint-disable-next-line vue/no-v-html -->

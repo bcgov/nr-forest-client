@@ -35,13 +35,16 @@ describe("Staff Form Submission", () => {
     });
   };
 
-  const fillLocation = (extraData: any = {}) => {
+  const fillLocation = (index: number, extraData: any = {}) => {
     cy.fixture("testdata/locationBaseData").then((fixtureData: any) => {
       const data = { ...fixtureData, ...extraData };
 
-      cy.fillFormEntry("#name_0", data.name_0, 0);
-      cy.selectAutocompleteEntry("#addr_0", data.addr_0, data.postal_0);
-      cy.wait("@getAddressValue");
+      cy.fillFormEntry(`#name_${index}`, data.name);
+      cy.selectAutocompleteEntry(`#addr_${index}`, data.addr, data.addressId);
+      cy.fillFormEntry(`#emailAddress_${index}`, data.emailAddress);
+      cy.fillFormEntry(`#businessPhoneNumber_${index}`, data.businessPhoneNumber);
+      cy.fillFormEntry(`#secondaryPhoneNumber_${index}`, data.secondaryPhoneNumber);
+      cy.fillFormEntry(`#faxNumber_${index}`, data.faxNumber);
     });
   };
 
@@ -206,7 +209,7 @@ describe("Staff Form Submission", () => {
     fillIndividual();
     clickNext();
     cy.contains("h2", "Locations");
-    fillLocation();
+    fillLocation(0);
     clickNext();
     cy.contains("h2", "Contacts");
     fillContact();
@@ -221,7 +224,7 @@ describe("Staff Form Submission", () => {
     fillIndividual();
     clickNext();
     cy.contains("h2", "Locations");
-    fillLocation();
+    fillLocation(0);
     clickNext();
     cy.contains("h2", "Contacts");
     fillContact();
@@ -246,7 +249,7 @@ describe("Staff Form Submission", () => {
     });
     clickNext();
     cy.contains("h2", "Locations");
-    fillLocation();
+    fillLocation(0);
     clickNext();
     cy.contains("h2", "Contacts");
     fillContact();
