@@ -98,19 +98,9 @@ describe("Staff Form Fuzzy Matches", () => {
       },
     }).as("getClientType");
 
-    const testFixture = this.currentTest.title
-      .split("fuzzy resulting in ")[1]
-      .replaceAll(" ", "_");
-    
-    cy.fixture(`fuzzy/${testFixture}`).then((fixtureData: any) => {
-      cy.intercept("POST", '**/api/clients/matches', {
-        ...fixtureData,
-        headers: {
-          "content-type": "application/json;charset=UTF-8",
-        },
-      }).as("doMatch");
-    })
-    .as("doMatchFixture");
+    interceptFuzzyMatch(1, this.currentTest.title);
+    interceptFuzzyMatch(2, this.currentTest.title);
+    interceptFuzzyMatch(3, this.currentTest.title);
 
     cy.intercept("GET", "**/api/clients/name/**", {
       fixture: "clients/bcreg_ac_list1.json",
@@ -154,7 +144,7 @@ describe("Staff Form Fuzzy Matches", () => {
 
   describe('Individuals fuzzy matching', () => {
 
-    it('should have individual data with fuzzy resulting in partial individual match', () => {
+    it('should have individual data with fuzzy resulting in Step 1: partial individual match', () => {
       fillIndividual();
 
       checkTopNotification('warning', 'was found with similar name and birthdate');
@@ -178,7 +168,7 @@ describe("Staff Form Fuzzy Matches", () => {
 
     });
 
-    it('should have individual data with fuzzy resulting in full individual match', () => {
+    it('should have individual data with fuzzy resulting in Step 1: full individual match', () => {
       fillIndividual();
 
       checkTopNotification('error', 'has client number');
@@ -201,7 +191,7 @@ describe("Staff Form Fuzzy Matches", () => {
 
     });
 
-    it('should have individual data with fuzzy resulting in document individual match', () => {
+    it('should have individual data with fuzzy resulting in Step 1: document individual match', () => {
       fillIndividual();
 
       checkTopNotification('error', 'has client number');
@@ -228,7 +218,7 @@ describe("Staff Form Fuzzy Matches", () => {
 
   describe('BC Registered fuzzy matching',() =>{
 
-    it('should have registered data with fuzzy resulting in partial business name match',() =>{
+    it('should have registered data with fuzzy resulting in Step 1: partial business name match',() =>{
       fillRegistered({ birthdateYear: '',
         birthdateMonth: '',
         birthdateDay: '',
@@ -250,7 +240,7 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('be.visible');
     })
 
-    it('should have registered data with fuzzy resulting in full business name match',() =>{
+    it('should have registered data with fuzzy resulting in Step 1: full business name match',() =>{
       fillRegistered({ birthdateYear: '',
         birthdateMonth: '',
         birthdateDay: '',
@@ -272,7 +262,7 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('not.exist');
     })
 
-    it('should have registered data with fuzzy resulting in full registered number match',() =>{
+    it('should have registered data with fuzzy resulting in Step 1: full registered number match',() =>{
 
       fillRegistered({ birthdateYear: '',
         birthdateMonth: '',
@@ -295,7 +285,7 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('not.exist');
     })
 
-    it('should have sole proprietorship data with fuzzy resulting in partial individual match',() =>{
+    it('should have sole proprietorship data with fuzzy resulting in Step 1: partial individual match',() =>{
       fillRegistered({ 
         registrationNumber:'FM123456',
         doingBusinessAs: '',
@@ -319,7 +309,7 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('be.visible');
     })
 
-    it('should have registered data with fuzzy resulting in partial dba match',() =>{
+    it('should have registered data with fuzzy resulting in Step 1: partial dba match',() =>{
 
       fillRegistered({ birthdateYear: '',
         birthdateMonth: '',
@@ -342,7 +332,7 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('be.visible');
     })
 
-    it('should have registered data with fuzzy resulting in full dba match',() =>{
+    it('should have registered data with fuzzy resulting in Step 1: full dba match',() =>{
 
       fillRegistered({ birthdateYear: '',
         birthdateMonth: '',
@@ -365,7 +355,7 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('not.exist');
     })
 
-    it('should have registered data with fuzzy resulting in full acronym match',() =>{
+    it('should have registered data with fuzzy resulting in Step 1: full acronym match',() =>{
       fillRegistered({ birthdateYear: '',
         birthdateMonth: '',
         birthdateDay: '',
@@ -391,7 +381,7 @@ describe("Staff Form Fuzzy Matches", () => {
 
   describe('First Nations fuzzy matching',() =>{
     
-    it('should have first nations with fuzzy resulting in full fn federal id match',() =>{
+    it('should have first nations with fuzzy resulting in Step 1: full fn federal id match',() =>{
       fillFirstNations();
 
       checkTopNotification('error', 'has client number');
@@ -410,7 +400,7 @@ describe("Staff Form Fuzzy Matches", () => {
 
     });
 
-    it('should have first nations with fuzzy resulting in partial business name match',() =>{
+    it('should have first nations with fuzzy resulting in Step 1: partial business name match',() =>{
       fillFirstNations();
 
       checkTopNotification('warning', 'was found with similar client name');
@@ -429,7 +419,7 @@ describe("Staff Form Fuzzy Matches", () => {
     });
 
     
-    it('should have first nations with fuzzy resulting in full business name match',() =>{
+    it('should have first nations with fuzzy resulting in Step 1: full business name match',() =>{
       fillFirstNations();
 
       checkTopNotification('error', 'has client number');
@@ -447,7 +437,7 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('not.exist');
     });
 
-    it('should have registered data with fuzzy resulting in full acronym match',() =>{
+    it('should have registered data with fuzzy resulting in Step 1: full acronym match',() =>{
       fillFirstNations();
 
       checkTopNotification('error', 'has client number');
@@ -470,7 +460,7 @@ describe("Staff Form Fuzzy Matches", () => {
   describe('Government fuzzy matching',() =>{
 
     
-    it('should have government with fuzzy resulting in partial business name match',() =>{
+    it('should have government with fuzzy resulting in Step 1: partial business name match',() =>{
       fillOthers({kind: 'Government'});
 
       checkTopNotification('warning', 'was found with similar client name');
@@ -488,7 +478,7 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('be.visible');
     });
 
-    it('should have government with fuzzy resulting in full business name match',() =>{
+    it('should have government with fuzzy resulting in Step 1: full business name match',() =>{
       fillOthers({kind: 'Government'});
 
       checkTopNotification('error', 'has client number');
@@ -506,7 +496,7 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('not.exist');
     });
 
-    it('should have government data with fuzzy resulting in full acronym match',() =>{
+    it('should have government data with fuzzy resulting in Step 1: full acronym match',() =>{
       fillOthers({kind: 'Government'});
 
       checkTopNotification('error', 'has client number');
@@ -528,7 +518,7 @@ describe("Staff Form Fuzzy Matches", () => {
 
   describe('Ministry of Forests fuzzy matching',() =>{
 
-    it('should have forests with fuzzy resulting in partial business name match',() =>{
+    it('should have forests with fuzzy resulting in Step 1: partial business name match',() =>{
       fillOthers({kind: 'Ministry of Forests'});
 
       checkTopNotification('warning', 'was found with similar client name');
@@ -546,7 +536,7 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('be.visible');
     });
 
-    it('should have forests with fuzzy resulting in full business name match',() =>{
+    it('should have forests with fuzzy resulting in Step 1: full business name match',() =>{
       fillOthers({kind: 'Ministry of Forests'});
 
       checkTopNotification('error', 'has client number');
@@ -564,7 +554,7 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('not.exist');
     });
 
-    it('should have forests data with fuzzy resulting in full acronym match',() =>{
+    it('should have forests data with fuzzy resulting in Step 1: full acronym match',() =>{
       fillOthers({kind: 'Ministry of Forests'});
 
       checkTopNotification('error', 'has client number');
@@ -586,7 +576,7 @@ describe("Staff Form Fuzzy Matches", () => {
 
   describe('Unregistered company fuzzy matching',() =>{
 
-    it('should have unregistered data with fuzzy resulting in partial business name match',() =>{
+    it('should have unregistered data with fuzzy resulting in Step 1: partial business name match',() =>{
       fillOthers({kind: 'Unregistered company'});
 
       checkTopNotification('warning', 'was found with similar client name');
@@ -605,7 +595,7 @@ describe("Staff Form Fuzzy Matches", () => {
     });
 
     
-    it('should have unregistered data with fuzzy resulting in full business name match',() =>{
+    it('should have unregistered data with fuzzy resulting in Step 1: full business name match',() =>{
       fillOthers({kind: 'Unregistered company'});
 
       checkTopNotification('error', 'has client number');
@@ -624,7 +614,7 @@ describe("Staff Form Fuzzy Matches", () => {
     });
 
     
-    it('should have unregistered data with fuzzy resulting in full acronym match',() =>{
+    it('should have unregistered data with fuzzy resulting in Step 1: full acronym match',() =>{
       fillOthers({kind: 'Unregistered company'});
 
       checkTopNotification('error', 'has client number');
@@ -644,13 +634,13 @@ describe("Staff Form Fuzzy Matches", () => {
 
   });
 
-  const clickNext = () => {
+  const clickNext = (step: number) => {
     cy.get("[data-test='wizard-next-button']")
       .shadow()
       .find("button")
       .should("be.enabled");
     cy.get("[data-test='wizard-next-button']").click();
-    cy.wait('@doMatch');
+    cy.wait(`@doMatch${step}`);
   };
 
   const fillIndividual = (extraData: any = {}) => {
@@ -684,7 +674,7 @@ describe("Staff Form Fuzzy Matches", () => {
       cy.fillFormEntry("#birthdateDay", data.birthdateDay);
     });
 
-    clickNext();
+    clickNext(1);
   };
 
   const fillRegistered = (extraData: any = {}) => {
@@ -715,7 +705,7 @@ describe("Staff Form Fuzzy Matches", () => {
       }
     });
 
-    clickNext();
+    clickNext(1);
   };
 
   const fillFirstNations = (extraData: any = {}) => {
@@ -736,7 +726,7 @@ describe("Staff Form Fuzzy Matches", () => {
       }
     });
 
-    clickNext();
+    clickNext(1);
   };
 
   const fillOthers = (extraData: any = {}) => {
@@ -757,7 +747,7 @@ describe("Staff Form Fuzzy Matches", () => {
       }
     });
 
-    clickNext();
+    clickNext(1);
   };
 
   const checkInputWarning = (element: string) => {
@@ -827,6 +817,50 @@ describe("Staff Form Fuzzy Matches", () => {
       cy.get('#fuzzy-match-notification-global > div > span.body-compact-01')
       .should('be.visible')
       .and('contain', message);
+  }
+
+  const extractStepFixture = (text: string, step: number) =>{
+    const regex = new RegExp(`Step\\s+${step}:\\s*([^S]*)`);
+    const match = regex.exec(text);
+    return match ? match[1].trim().replace(/\s/g, "_") : '';
+  }
+
+  const interceptFuzzyMatch = (step: number, fixture: string) => {
+
+    const stepMatchFixture = extractStepFixture(fixture, step);
+
+    if(stepMatchFixture){
+      cy.fixture(`fuzzy/${stepMatchFixture}`).then((fixtureData: any) => {
+        cy.intercept(
+          {
+            method: "POST",
+            url: "**/api/clients/matches",
+            headers: { "X-STEP": `${step}`, },
+          }, {
+          ...fixtureData,
+          headers: {
+            "content-type": "application/json;charset=UTF-8",
+          },
+        }).as(`doMatch${step}`);
+      })
+      .as(`doMatchFixture${step}`);
+    } else {
+      cy.fixture('fuzzy/no_match').then((fixtureData: any) => {
+        cy.intercept(
+          {
+            method: "POST",
+            url: "**/api/clients/matches",
+            headers: { "X-STEP": `${step}`, },
+          }, {
+          ...fixtureData,
+          headers: {
+            "content-type": "application/json;charset=UTF-8",
+          },
+        }).as(`doMatch${step}`);
+      })
+      .as(`doMatchFixture${step}`);
+    }
+
   }
 
 });
