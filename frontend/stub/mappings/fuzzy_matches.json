@@ -56,7 +56,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "partial_individual_match.json",
+        "bodyFileName": "fuzzy/partial_individual_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -108,7 +108,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_individual_match.json",
+        "bodyFileName": "fuzzy/full_individual_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -154,7 +154,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "document_individual_match.json",
+        "bodyFileName": "fuzzy/document_individual_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -195,7 +195,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "partial_business_name_match.json",
+        "bodyFileName": "fuzzy/partial_business_name_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -235,7 +235,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_business_name_match.json",
+        "bodyFileName": "fuzzy/full_business_name_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -275,7 +275,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_registered_number_match.json",
+        "bodyFileName": "fuzzy/full_registered_number_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -315,7 +315,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "partial_individual_match.json",
+        "bodyFileName": "fuzzy/partial_individual_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -344,7 +344,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_dba_match.json",
+        "bodyFileName": "fuzzy/full_dba_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -372,7 +372,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "partial_dba_match.json",
+        "bodyFileName": "fuzzy/partial_dba_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -401,7 +401,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_acronym_match.json",
+        "bodyFileName": "fuzzy/full_acronym_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -442,7 +442,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_fn_federal_id_match.json",
+        "bodyFileName": "fuzzy/full_fn_federal_id_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -471,7 +471,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "partial_business_name_match.json",
+        "bodyFileName": "fuzzy/partial_business_name_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -499,7 +499,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_business_name_match.json",
+        "bodyFileName": "fuzzy/full_business_name_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -528,7 +528,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_address_email_match.json",
+        "bodyFileName": "fuzzy/full_address_email_match.json",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -558,7 +558,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_address_business_phone_match.json",
+        "bodyFileName": "fuzzy/full_address_business_phone_match.json",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -588,7 +588,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_address_secondary_phone_match.json",
+        "bodyFileName": "fuzzy/full_address_secondary_phone_match.json",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -618,7 +618,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_address_fax_phone_match.json",
+        "bodyFileName": "fuzzy/full_address_fax_phone_match.json",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -648,7 +648,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_address_match.json",
+        "bodyFileName": "fuzzy/full_address_match.json",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -679,7 +679,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_contact_email_match.json",
+        "bodyFileName": "fuzzy/full_contact_email_match.json",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -709,7 +709,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_contact_business_phone_match.json",
+        "bodyFileName": "fuzzy/full_contact_business_phone_match.json",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -739,7 +739,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_contact_secondary_phone_match.json",
+        "bodyFileName": "fuzzy/full_contact_secondary_phone_match.json",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -769,7 +769,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_contact_fax_phone_match.json",
+        "bodyFileName": "fuzzy/full_contact_fax_phone_match.json",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -799,7 +799,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "full_contact_match.json",
+        "bodyFileName": "fuzzy/full_contact_match.json",
         "headers": {
           "Content-Type": "application/json"
         }
