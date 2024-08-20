@@ -101,7 +101,7 @@ describe("Staff Form Fuzzy Matches", () => {
     interceptFuzzyMatch(1, this.currentTest.title);
     interceptFuzzyMatch(2, this.currentTest.title);
     interceptFuzzyMatch(3, this.currentTest.title);
-
+    
     cy.intercept("GET", "**/api/clients/name/**", {
       fixture: "clients/bcreg_ac_list1.json",
     });
@@ -146,8 +146,9 @@ describe("Staff Form Fuzzy Matches", () => {
 
     it('should have individual data with fuzzy resulting in Step 1: partial individual match', () => {
       fillIndividual();
+      clickNext(1);
 
-      checkTopNotification('warning', 'was found with similar name and birthdate');
+      checkTopNotification('warning', 'Partial matching on name and date of birth');
 
       checkInputWarning('#firstName');
       checkInputWarning('#lastName');
@@ -170,8 +171,9 @@ describe("Staff Form Fuzzy Matches", () => {
 
     it('should have individual data with fuzzy resulting in Step 1: full individual match', () => {
       fillIndividual();
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on name, date of birth and ID number');
 
       checkInputError('#firstName');
       checkInputError('#lastName');
@@ -193,8 +195,9 @@ describe("Staff Form Fuzzy Matches", () => {
 
     it('should have individual data with fuzzy resulting in Step 1: document individual match', () => {
       fillIndividual();
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on ID type and ID number');
 
       checkInputClean('#firstName');
       checkInputClean('#lastName');
@@ -223,8 +226,9 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateMonth: '',
         birthdateDay: '',
       });
+      clickNext(1);
 
-      checkTopNotification('warning', 'was found with similar client name');
+      checkTopNotification('warning', 'Partial matching on client name');
 
       checkDropdownWarning('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -245,8 +249,9 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateMonth: '',
         birthdateDay: '',
       });
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on client name');
 
       checkDropdownError('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -268,8 +273,9 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateMonth: '',
         birthdateDay: '',
       });
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on registration number');
 
       checkDropdownError('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -290,8 +296,20 @@ describe("Staff Form Fuzzy Matches", () => {
         registrationNumber:'FM123456',
         doingBusinessAs: '',
       });
+      clickNext(1);
 
-      checkTopNotification('warning', 'was found with similar name and birthdate');
+      cy.get('#fuzzy-match-notification-global')
+      .should("be.visible")
+      .and("have.attr", "kind", "warning")
+      .shadow()
+      .find(
+        "div.cds--actionable-notification__details div.cds--actionable-notification__text-wrapper div.cds--actionable-notification__content div.cds--actionable-notification__title"
+      )
+      .should("contain", "Possible matching records found");
+
+      cy.get('#fuzzy-match-notification-global > div > ul > li')      
+      .should('be.visible')
+      .and('contain', 'Partial matching on name and date of birth');
 
       checkDropdownWarning('#businessName');
       checkInputWarning('#birthdateYear');
@@ -315,8 +333,9 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateMonth: '',
         birthdateDay: '',
       });
+      clickNext(1);
 
-      checkTopNotification('warning', 'was found with similar doing business as');
+      checkTopNotification('warning', 'Partial matching on doing business as');
 
       checkDropdownClean('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -338,8 +357,9 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateMonth: '',
         birthdateDay: '',
       });
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on doing business as');
 
       checkDropdownClean('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -360,8 +380,9 @@ describe("Staff Form Fuzzy Matches", () => {
         birthdateMonth: '',
         birthdateDay: '',
       });
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on client acronym');
 
       checkDropdownClean('#businessName');
       checkInputClean('#workSafeBCNumber');
@@ -380,11 +401,12 @@ describe("Staff Form Fuzzy Matches", () => {
   });
 
   describe('First Nations fuzzy matching',() =>{
-    
+
     it('should have first nations with fuzzy resulting in Step 1: full fn federal id match',() =>{
       fillFirstNations();
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on federal identification number');
 
       checkDropdownError('#clientName');
       checkInputClean('#workSafeBcNumber');
@@ -402,8 +424,9 @@ describe("Staff Form Fuzzy Matches", () => {
 
     it('should have first nations with fuzzy resulting in Step 1: partial business name match',() =>{
       fillFirstNations();
+      clickNext(1);
 
-      checkTopNotification('warning', 'was found with similar client name');
+      checkTopNotification('warning', 'Partial matching on client name');
 
       checkDropdownWarning('#clientName');
       checkInputClean('#workSafeBcNumber');
@@ -418,11 +441,11 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('be.visible');
     });
 
-    
     it('should have first nations with fuzzy resulting in Step 1: full business name match',() =>{
       fillFirstNations();
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on client name');
 
       checkDropdownError('#clientName');
       checkInputClean('#workSafeBcNumber');
@@ -439,8 +462,9 @@ describe("Staff Form Fuzzy Matches", () => {
 
     it('should have registered data with fuzzy resulting in Step 1: full acronym match',() =>{
       fillFirstNations();
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on client acronym');
 
       checkDropdownClean('#clientName');
       checkInputClean('#workSafeBcNumber');
@@ -459,11 +483,11 @@ describe("Staff Form Fuzzy Matches", () => {
 
   describe('Government fuzzy matching',() =>{
 
-    
     it('should have government with fuzzy resulting in Step 1: partial business name match',() =>{
       fillOthers({kind: 'Government'});
+      clickNext(1);
 
-      checkTopNotification('warning', 'was found with similar client name');
+      checkTopNotification('warning', 'Partial matching on client name');
 
       checkInputWarning('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -480,8 +504,9 @@ describe("Staff Form Fuzzy Matches", () => {
 
     it('should have government with fuzzy resulting in Step 1: full business name match',() =>{
       fillOthers({kind: 'Government'});
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on client name');
 
       checkInputError('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -498,8 +523,9 @@ describe("Staff Form Fuzzy Matches", () => {
 
     it('should have government data with fuzzy resulting in Step 1: full acronym match',() =>{
       fillOthers({kind: 'Government'});
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on client acronym');
 
       checkInputClean('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -520,8 +546,9 @@ describe("Staff Form Fuzzy Matches", () => {
 
     it('should have forests with fuzzy resulting in Step 1: partial business name match',() =>{
       fillOthers({kind: 'Ministry of Forests'});
+      clickNext(1);
 
-      checkTopNotification('warning', 'was found with similar client name');
+      checkTopNotification('warning', 'Partial matching on client name');
 
       checkInputWarning('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -538,8 +565,9 @@ describe("Staff Form Fuzzy Matches", () => {
 
     it('should have forests with fuzzy resulting in Step 1: full business name match',() =>{
       fillOthers({kind: 'Ministry of Forests'});
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on client name');
 
       checkInputError('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -556,8 +584,9 @@ describe("Staff Form Fuzzy Matches", () => {
 
     it('should have forests data with fuzzy resulting in Step 1: full acronym match',() =>{
       fillOthers({kind: 'Ministry of Forests'});
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on client acronym');
 
       checkInputClean('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -578,8 +607,9 @@ describe("Staff Form Fuzzy Matches", () => {
 
     it('should have unregistered data with fuzzy resulting in Step 1: partial business name match',() =>{
       fillOthers({kind: 'Unregistered company'});
+      clickNext(1);
 
-      checkTopNotification('warning', 'was found with similar client name');
+      checkTopNotification('warning', 'Partial matching on client name');
 
       checkInputWarning('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -594,11 +624,11 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('be.visible');
     });
 
-    
     it('should have unregistered data with fuzzy resulting in Step 1: full business name match',() =>{
       fillOthers({kind: 'Unregistered company'});
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on client name');
 
       checkInputError('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -613,11 +643,11 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('not.exist');
     });
 
-    
     it('should have unregistered data with fuzzy resulting in Step 1: full acronym match',() =>{
       fillOthers({kind: 'Unregistered company'});
+      clickNext(1);
 
-      checkTopNotification('error', 'has client number');
+      checkTopNotification('error', 'Matching on client acronym');
 
       checkInputClean('#businessName');
       checkInputClean('#workSafeBcNumber');
@@ -634,6 +664,313 @@ describe("Staff Form Fuzzy Matches", () => {
 
   });
 
+  describe('Locations fuzzy matching',() =>{
+    beforeEach(function () {
+      fillIndividual();
+      clickNext(1);  
+    });
+
+    describe("when there is only one location", () => {
+
+      it('should have location data with fuzzy resulting in Step 2: full address match', () => {
+        fillLocation(0);
+        clickNext(2);
+  
+        checkNotification('location-addresses-0', 'warning', 'Matching on address');
+  
+        checkInputClean('#name_0');
+        checkInputClean('#complementaryAddressOne_0');
+        checkDropdownWarning('#addr_0');
+        checkInputWarning('#city_0');
+        checkDropdownWarning('#province_0');
+        checkDropdownWarning('#country_0');
+        checkInputWarning('#postalCode_0');
+        checkInputClean('#emailAddress_0');
+        checkInputClean('#businessPhoneNumber_0');
+        checkInputClean('#secondaryPhoneNumber_0');
+        checkInputClean('#faxNumber_0');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+
+      it('should have location data with fuzzy resulting in Step 2: full address email match', () => {
+        fillLocation(0);
+        clickNext(2);
+  
+        checkNotification('location-addresses-0', 'warning', 'Matching on email address');
+  
+        checkInputClean('#name_0');
+        checkInputClean('#complementaryAddressOne_0');
+        checkDropdownClean('#addr_0');
+        checkInputClean('#city_0');
+        checkDropdownClean('#province_0');
+        checkDropdownClean('#country_0');
+        checkInputClean('#postalCode_0');
+        checkInputWarning('#emailAddress_0');
+        checkInputClean('#businessPhoneNumber_0');
+        checkInputClean('#secondaryPhoneNumber_0');
+        checkInputClean('#faxNumber_0');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+
+      it('should have location data with fuzzy resulting in Step 2: full address business phone match', () => {
+        fillLocation(0);
+        clickNext(2);
+  
+        checkNotification('location-addresses-0', 'warning', 'Matching on primary phone number');
+  
+        checkInputClean('#name_0');
+        checkInputClean('#complementaryAddressOne_0');
+        checkDropdownClean('#addr_0');
+        checkInputClean('#city_0');
+        checkDropdownClean('#province_0');
+        checkDropdownClean('#country_0');
+        checkInputClean('#postalCode_0');
+        checkInputClean('#emailAddress_0');
+        checkInputWarning('#businessPhoneNumber_0');
+        checkInputClean('#secondaryPhoneNumber_0');
+        checkInputClean('#faxNumber_0');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+
+      it('should have location data with fuzzy resulting in Step 2: full address secondary phone match', () => {
+        fillLocation(0);
+        clickNext(2);
+  
+        checkNotification('location-addresses-0', 'warning', 'Matching on secondary phone number');
+  
+        checkInputClean('#name_0');
+        checkInputClean('#complementaryAddressOne_0');
+        checkDropdownClean('#addr_0');
+        checkInputClean('#city_0');
+        checkDropdownClean('#province_0');
+        checkDropdownClean('#country_0');
+        checkInputClean('#postalCode_0');
+        checkInputClean('#emailAddress_0');
+        checkInputClean('#businessPhoneNumber_0');
+        checkInputWarning('#secondaryPhoneNumber_0');
+        checkInputClean('#faxNumber_0');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+
+      it('should have location data with fuzzy resulting in Step 2: full address fax phone match', () => {
+        fillLocation(0);
+        clickNext(2);
+  
+        checkNotification('location-addresses-0', 'warning', 'Matching on fax');
+  
+        checkInputClean('#name_0');
+        checkInputClean('#complementaryAddressOne_0');
+        checkDropdownClean('#addr_0');
+        checkInputClean('#city_0');
+        checkDropdownClean('#province_0');
+        checkDropdownClean('#country_0');
+        checkInputClean('#postalCode_0');
+        checkInputClean('#emailAddress_0');
+        checkInputClean('#businessPhoneNumber_0');
+        checkInputClean('#secondaryPhoneNumber_0');
+        checkInputWarning('#faxNumber_0');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+
+    });
+  
+    describe("when there are two locations", () => {
+      beforeEach(function () {
+        fillLocation(0);
+
+        clickAddLocation(1);
+        fillLocation(1, {
+          name: "Office 1",
+        });
+      });
+
+      it('should have location at indexes: 0 with fuzzy resulting in Step 2: full address email 0 match', () => {
+        clickNext(2);
+
+        checkNotification('location-addresses-0', 'warning', 'Matching on email address');
+        checkNotificationToNotExist('location-addresses-1');
+        checkAddressAccordionState(1, false);
+
+        checkInputWarning('#emailAddress_0');
+
+        checkInputClean('#emailAddress_1');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+
+      it('should have location at indexes: 1 with fuzzy resulting in Step 2: full address email 1 match', () => {
+        clickNext(2);
+
+        checkNotificationToNotExist('location-addresses-0');
+        checkNotification('location-addresses-1', 'warning', 'Matching on email address');
+        checkAddressAccordionState(1, true);
+
+        checkInputClean('#emailAddress_0');
+
+        checkInputWarning('#emailAddress_1');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+
+      it('should have location at indexes: 0, 1 with fuzzy resulting in Step 2: full address email 0 and 1 match', () => {
+        clickNext(2);
+
+        checkNotification('location-addresses-0', 'warning', 'Matching on email address');
+        checkNotification('location-addresses-1', 'warning', 'Matching on email address');
+        checkAddressAccordionState(1, true);
+
+        checkInputWarning('#emailAddress_0');
+
+        checkInputWarning('#emailAddress_1');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+    });
+
+    describe("when there are three locations", () => {
+      beforeEach(function () {
+        fillLocation(0);
+
+        clickAddLocation(1);
+        fillLocation(1, {
+          name: "Office 1",
+        });
+
+        clickAddLocation(2);
+        fillLocation(2, {
+          name: "Office 2",
+        });
+      });
+
+      it('should have location at indexes: 1 with fuzzy resulting in Step 2: full address email 1 match', () => {
+        clickNext(2);
+
+        checkNotificationToNotExist('location-addresses-0');
+        checkNotification('location-addresses-1', 'warning', 'Matching on email address');
+        checkAddressAccordionState(1, true);
+        checkNotificationToNotExist('location-addresses-2')
+        checkAddressAccordionState(2, false);
+
+        checkInputClean('#emailAddress_0');
+
+        checkInputWarning('#emailAddress_1');
+
+        checkInputClean('#emailAddress_2');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+
+      it('should have location at indexes: 2 with fuzzy resulting in Step 2: full address email 2 match', () => {
+        clickNext(2);
+
+        checkNotificationToNotExist('location-addresses-0');
+        checkNotificationToNotExist('location-addresses-1');
+        checkAddressAccordionState(1, false);
+        checkNotification('location-addresses-2', 'warning', 'Matching on email address');
+        checkAddressAccordionState(2, true);
+
+        checkInputClean('#emailAddress_0');
+
+        checkInputClean('#emailAddress_1');
+
+        checkInputWarning('#emailAddress_2');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+
+      it('should have location at indexes: 1, 2 with fuzzy resulting in Step 2: full address email 1 and 2 match', () => {
+        clickNext(2);
+
+        checkNotificationToNotExist('location-addresses-0');
+        checkNotification('location-addresses-1', 'warning', 'Matching on email address');
+        checkAddressAccordionState(1, true);
+        checkNotification('location-addresses-2', 'warning', 'Matching on email address');
+        checkAddressAccordionState(2, true);
+
+        checkInputClean('#emailAddress_0');
+
+        checkInputWarning('#emailAddress_1');
+
+        checkInputWarning('#emailAddress_2');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+
+    });
+
+  });
+
   const clickNext = (step: number) => {
     cy.get("[data-test='wizard-next-button']")
       .shadow()
@@ -641,6 +978,11 @@ describe("Staff Form Fuzzy Matches", () => {
       .should("be.enabled");
     cy.get("[data-test='wizard-next-button']").click();
     cy.wait(`@doMatch${step}`);
+  };
+
+  const clickAddLocation = (index: number) => {
+    cy.contains("cds-button", "Add another location").should("be.visible").click();
+    cy.get(`cds-accordion-item[data-focus="address-${index}-heading"]`).focused();
   };
 
   const fillIndividual = (extraData: any = {}) => {
@@ -673,8 +1015,6 @@ describe("Staff Form Fuzzy Matches", () => {
       cy.fillFormEntry("#birthdateMonth", data.birthdateMonth);
       cy.fillFormEntry("#birthdateDay", data.birthdateDay);
     });
-
-    clickNext(1);
   };
 
   const fillRegistered = (extraData: any = {}) => {
@@ -704,8 +1044,6 @@ describe("Staff Form Fuzzy Matches", () => {
         cy.fillFormEntry("#acronym", data.clientAcronym);
       }
     });
-
-    clickNext(1);
   };
 
   const fillFirstNations = (extraData: any = {}) => {
@@ -725,8 +1063,6 @@ describe("Staff Form Fuzzy Matches", () => {
         cy.fillFormEntry("#clientAcronym", data.clientAcronym);
       }
     });
-
-    clickNext(1);
   };
 
   const fillOthers = (extraData: any = {}) => {
@@ -746,8 +1082,19 @@ describe("Staff Form Fuzzy Matches", () => {
         cy.fillFormEntry("#clientAcronym", data.clientAcronym);
       }
     });
+  };
 
-    clickNext(1);
+  const fillLocation = (index: number, extraData: any = {}) => {
+    cy.fixture("testdata/locationBaseData").then((fixtureData: any) => {
+      const data = { ...fixtureData, ...extraData };
+
+      cy.fillFormEntry(`#name_${index}`, data.name);
+      cy.selectAutocompleteEntry(`#addr_${index}`, data.addr, data.addressId);
+      cy.fillFormEntry(`#emailAddress_${index}`, data.emailAddress);
+      cy.fillFormEntry(`#businessPhoneNumber_${index}`, data.businessPhoneNumber);
+      cy.fillFormEntry(`#secondaryPhoneNumber_${index}`, data.secondaryPhoneNumber);
+      cy.fillFormEntry(`#faxNumber_${index}`, data.faxNumber);
+    });
   };
 
   const checkInputWarning = (element: string) => {
@@ -804,8 +1151,8 @@ describe("Staff Form Fuzzy Matches", () => {
     .should('not.have.class', errorDropdownClass);
   }
 
-  const checkTopNotification = (kind: string, message: string) => {
-    cy.get('#fuzzy-match-notification-global')
+  const checkNotification = (id: string, kind: string, message: string) => {
+    cy.get(`#fuzzy-match-notification-${id}`)
       .should("be.visible")
       .and("have.attr", "kind", kind)
       .shadow()
@@ -813,10 +1160,23 @@ describe("Staff Form Fuzzy Matches", () => {
         "div.cds--actionable-notification__details div.cds--actionable-notification__text-wrapper div.cds--actionable-notification__content div.cds--actionable-notification__title"
       )
       .should("contain", kind === 'warning' ? 'Possible matching records found' : 'Client already exists');
-      
-      cy.get('#fuzzy-match-notification-global > div > span.body-compact-01')
+
+      cy.get(`#fuzzy-match-notification-${id} > div > ul > li`)
       .should('be.visible')
       .and('contain', message);
+  }
+
+  const checkNotificationToNotExist = (id: string) => {
+    cy.get(`#fuzzy-match-notification-${id}`)
+      .should("not.exist");
+  }
+
+  const checkTopNotification = (kind: string, message: string) => {
+    checkNotification('global', kind, message);
+  }
+
+  const checkAddressAccordionState = (index: number, open: boolean) => {
+    cy.checkAccordionItemState(`[data-focus="address-${index}-heading"]`, open);
   }
 
   const extractStepFixture = (text: string, step: number) =>{

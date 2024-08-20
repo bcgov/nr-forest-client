@@ -43,15 +43,22 @@ describe("Fuzzy Match Notification Grouping Component", () => {
   it.each([
     {
       fuzzy: true,
-      matchDescription: "a non-exact",
+      partialMatch: true,
+      matchDescription: "a non-exact, non-blocking",
+    },
+    {
+      fuzzy: true,
+      partialMatch: false,
+      matchDescription: "an exact but non-blocking",
     },
     {
       fuzzy: false,
-      matchDescription: "an exact",
+      partialMatch: false,
+      matchDescription: "an exact, blocking",
     },
   ])(
     "renders a notification when $matchDescription match error message arrives",
-    async ({ fuzzy }) => {
+    async ({ fuzzy, partialMatch }) => {
       const wrapper = mount(FuzzyMatchNotificationGroupingComponent, {
         props: {
           ...defaultProps,
@@ -64,6 +71,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
             field: "businessInformation.businessName",
             match: "00000001",
             fuzzy,
+            partialMatch,
           },
         ],
       });
@@ -73,6 +81,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       const expectedTitle = fuzzy
         ? "Possible matching records found"
         : "Client already exists";
+
       const expectedPrefix = fuzzy ? "Client number " : "It looks like";
 
       expect(wrapper.find("cds-actionable-notification").exists()).toBe(true);
@@ -147,8 +156,13 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       fuzzyBus.emit({
         id: "global",
         matches: [
-          { field: "businessInformation.foo", match: "00000001", fuzzy: true },
-          { field: "businessInformation.bar", match: "00000002", fuzzy: false },
+          { field: "businessInformation.foo", match: "00000001", fuzzy: true, partialMatch: true },
+          {
+            field: "businessInformation.bar",
+            match: "00000002",
+            fuzzy: false,
+            partialMatch: false,
+          },
         ],
       });
       await nextTick();
@@ -165,7 +179,13 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       );
 
       expect(liList).toHaveLength(2);
+
+      //expect(liList[0].text()).toContain("foo");
+      //expect(liList[0].text()).toContain("Partial matching on");
       expect(liList[0].text()).toContain("00000002");
+
+      //expect(liList[1].text()).toContain("bar");
+      //expect(liList[1].text()).toContain("Matching on");
       expect(liList[1].text()).toContain("00000001");
     });
   });
