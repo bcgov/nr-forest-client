@@ -208,9 +208,25 @@ const lookForMatches = (onEmpty: () => void) => {
     }
   });
 
+  const getFuzzyNotificationId = (field: string) => {
+    let id = "global";
+    const parts = field.split(".");
+
+    // Example: location.addresses[0]
+    if (parts[0] === "location") {
+      id = parts[0] + "-" + parts[1];
+
+      // Result: location-addresses-0
+      id = id.replace("[", "-").replace("]", "");
+    }
+    return id;
+  };
+
   watch([error], () => {
     // Disable the overlay
     overlayBus.emit({ isVisible: false, message: "", showLoading: false });
+
+    let firstNonGlobalId: string;
 
     if (error.value.response?.status === 409) {
       const data: FuzzyMatchResult[] = error.value.response.data as FuzzyMatchResult[];
@@ -218,15 +234,38 @@ const lookForMatches = (onEmpty: () => void) => {
       matchError.value = true;
       isExactMatch.value = data.some((match) => match.fuzzy === false);
 
-      fuzzyBus.emit({
-        id: "global",
-        matches: data,
-      });
+      const fuzzyEventList: Record<string, FuzzyMatcherEvent> = {};
+      for (const result of data) {
+        const { field } = result;
+        const id = getFuzzyNotificationId(field);
+        let fuzzyEvent = fuzzyEventList[id];
+        if (!fuzzyEvent) {
+          fuzzyEvent = {
+            id,
+            matches: [],
+          };
+          fuzzyEventList[id] = fuzzyEvent;
+        }
+
+        // Results with the same derived id are grouped in the same event
+        fuzzyEvent.matches.push(result);
+      }
+      for (const id in fuzzyEventList) {
+        const fuzzyEvent = fuzzyEventList[id];
+        fuzzyBus.emit(fuzzyEvent);
+        if (!firstNonGlobalId && id !== "global") {
+          firstNonGlobalId = id;
+        }
+      }
     } else {
       handleErrorDefault();
     }
 
-    setScrollPoint("top-notification");
+    if (firstNonGlobalId) {
+      setScrollPoint(firstNonGlobalId);
+    } else {
+      setScrollPoint("top-notification");
+    }
   });
 };
 
