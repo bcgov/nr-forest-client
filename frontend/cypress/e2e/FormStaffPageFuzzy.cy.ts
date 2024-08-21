@@ -1152,7 +1152,7 @@ describe("Staff Form Fuzzy Matches", () => {
   }
 
   const checkNotification = (id: string, kind: string, message: string) => {
-    cy.get('#fuzzy-match-notification-global')
+    cy.get(`#fuzzy-match-notification-${id}`)
       .should("be.visible")
       .and("have.attr", "kind", kind)
       .shadow()
