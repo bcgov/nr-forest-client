@@ -81,7 +81,8 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       const expectedTitle = fuzzy
         ? "Possible matching records found"
         : "Client already exists";
-      const expectedPrefix = partialMatch ? "Partial matching on" : "Matching on";
+
+      const expectedPrefix = fuzzy ? "Client number " : "It looks like";
 
       expect(wrapper.find("cds-actionable-notification").exists()).toBe(true);
       expect(
@@ -91,9 +92,10 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       expect(wrapper.find("cds-actionable-notification").text()).toContain(
         expectedPrefix
       );
-      expect(wrapper.find("cds-actionable-notification").text()).toContain(
-        "client name"
-      );
+      if(fuzzy)
+        expect(wrapper.find("cds-actionable-notification").text()).toContain(
+          "client name"
+        );
       expect(wrapper.find("cds-actionable-notification").text()).toContain(
         "00000001"
       );
@@ -130,9 +132,9 @@ describe("Fuzzy Match Notification Grouping Component", () => {
         .element.title
     ).toContain("Possible matching records found");
     const liList = wrapper.findAll<HTMLLIElement>(
-      "cds-actionable-notification li"
+      "cds-actionable-notification span"
     );
-    expect(liList).toHaveLength(2);
+    expect(liList).toHaveLength(3);
 
     expect(liList[0].text()).toContain("client name");
     expect(liList[0].text()).toContain("00000001");
@@ -173,18 +175,12 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       ).toContain("Client already exists");
 
       const liList = wrapper.findAll<HTMLLIElement>(
-        "cds-actionable-notification li"
+        "cds-actionable-notification span a"
       );
 
       expect(liList).toHaveLength(2);
-
-      expect(liList[0].text()).toContain("foo");
-      expect(liList[0].text()).toContain("Partial matching on");
-      expect(liList[0].text()).toContain("00000001");
-
-      expect(liList[1].text()).toContain("bar");
-      expect(liList[1].text()).toContain("Matching on");
-      expect(liList[1].text()).toContain("00000002");
+      expect(liList[0].text()).toContain("00000002");
+      expect(liList[1].text()).toContain("00000001");
     });
   });
 
@@ -199,7 +195,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       fuzzyBus.emit({
         id: "global",
         matches: [
-          { field: "businessInformation.foo", match: "00000001", fuzzy: true },
+          { field: "businessInformation.foo", match: "00000001", fuzzy: true, partialMatch: true },
         ],
       });
 
@@ -223,6 +219,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       {
         field: "businessInformation.individual",
         fuzzy: true,
+        partialMatch: true,
         expectedFieldIdList: [
           "businessInformation.firstName",
           "businessInformation.lastName",
@@ -233,6 +230,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       {
         field: "businessInformation.individualAndDocument",
         fuzzy: false,
+        partialMatch: true,
         expectedFieldIdList: [
           "businessInformation.firstName",
           "businessInformation.lastName",
@@ -243,6 +241,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       {
         field: "businessInformation.clientIdentification",
         fuzzy: false,
+        partialMatch: false,
         expectedFieldIdList: [
           "businessInformation.identificationType",
           "identificationProvince.text",
@@ -297,6 +296,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
           field: "randomName",
           fuzzy: true,
           match: "00000001",
+          partialMatch: true
         },
       ],
     });
@@ -306,7 +306,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
     expect(errorEvent).toMatchObject([
       {
         fieldId: "randomName",
-        errorMsg: `There's already a client with this "random name"`,
+        errorMsg: "There's already a client with this random name",
       },
     ]);
 
