@@ -253,18 +253,18 @@ watch([validation], () => {
       </div>
 
       <div class="grouping-22-item horizontal-input-grouping"
-          v-if="contact.phoneNumber.length || 
-                contact.secondaryPhoneNumber.length ||
-                contact.faxNumber.length">
-        <span v-if="contact.phoneNumber.length">
+          v-if="contact.phoneNumber?.length || 
+                contact.secondaryPhoneNumber?.length ||
+                contact.faxNumber?.length">
+        <span v-if="contact.phoneNumber?.length">
           <p class="label-02">Primary phone number</p>
           <p class="body-compact-01">{{ contact.phoneNumber }}</p>
         </span>
-        <span v-if="contact.secondaryPhoneNumber.length">
+        <span v-if="contact.secondaryPhoneNumber?.length">
           <p class="label-02">Secondary phone number</p>
           <p class="body-compact-01">{{ contact.secondaryPhoneNumber }}</p>
         </span>
-        <span v-if="contact.faxNumber.length">
+        <span v-if="contact.faxNumber?.length">
           <p class="label-02">Fax</p>
           <p class="body-compact-01">{{ contact.faxNumber }}</p>
         </span>
