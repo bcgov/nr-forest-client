@@ -223,43 +223,11 @@ const getUniqueClientNumbers = (matches: MiscFuzzyMatchResult[]) => {
   return [...new Set(results)];
 };
 
-const uniqueClientNumbers = computed(() => getUniqueClientNumbers(fuzzyMatchedError.value.matches));
-
 const clearNotification = () => {
   fuzzyMatchedError.value.show = false;
   fuzzyMatchedError.value.fuzzy = false;
   fuzzyMatchedError.value.matches = [];
-  fuzzyMatchedError.value.description = "";
 };
-
-interface DescriptionOption {
-  condition: (id: string) => boolean;
-  getDescription: () => string;
-}
-
-const fuzzySuffix =
-  "Review their information in the Client Management System to determine if you should create a new client:";
-
-const descriptionOptionList: DescriptionOption[] = [
-  {
-    condition: (id: string) => id === "global" && fuzzyMatchedError.value.fuzzy,
-    getDescription: () => `${uniqueClientNumbers.value.length} similar client
-        ${uniqueClientNumbers.value.length === 1 ? "record was" : "records were"}
-        found. ${fuzzySuffix}`,
-  },
-  {
-    condition: (id: string) => id === "global" && !fuzzyMatchedError.value.fuzzy,
-    getDescription:
-      () => `Looks like ”${props.businessName}” has a client number. Review their information in the
-        Management System if necessary:`,
-  },
-  {
-    condition: (id: string) => id.startsWith("location-addresses"),
-    getDescription: () => `${uniqueClientNumbers.value.length} client
-        ${uniqueClientNumbers.value.length === 1 ? "record was" : "records were"}
-        found with locations similar to this one. ${fuzzySuffix}`,
-  },
-];
 
 const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?: any) => {
   if (!event) {
@@ -305,19 +273,6 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
       */
      //if is better to let warning fields be colored as warning, change to rawMatch.fuzzy
       emitFieldErrors(fieldsList || [rawMatch.field], fuzzyMatchedError.value.fuzzy);
-    }
-
-    // Setting the error description
-    const option = descriptionOptionList.find((option) => option.condition(props.id));
-    if (option) {
-      fuzzyMatchedError.value.description = option.getDescription();
-    } else {
-      console.warn(
-        `fuzzy description not found, using the global one (with fuzzy: ${fuzzyMatchedError.value.fuzzy})`,
-      );
-      const fallbackOption = descriptionOptionList.find((option) => option.condition("global"));
-      fuzzyMatchedError.value.description = fallbackOption.getDescription();
-
     }
   }
 };
