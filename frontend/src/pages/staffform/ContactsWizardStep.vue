@@ -2,6 +2,7 @@
 import { watch, ref, computed, reactive, onMounted } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
+import "@carbon/web-components/es/components/accordion/index";
 // Composables
 import { useEventBus } from "@vueuse/core";
 import { useFocus } from "@/composables/useFocus";
@@ -41,7 +42,7 @@ watch([formData], () => emit("update:data", formData));
 const updateContact = (value: Contact | undefined, index: number) => {
   if (index < formData.location.contacts.length) {
     if (value) {
-      formData.location.contacts[index] = value;
+      Object.assign(formData.location.contacts[index], value);
     } else {
       const contactsCopy: Contact[] = [...formData.location.contacts];
       contactsCopy.splice(index, 1);
@@ -71,18 +72,8 @@ const addresses = computed<CodeNameType[]>(() =>
   })
 );
 
-let lastContactId = -1; // The first contactId to be generated minus 1.
+let lastContactId = formData.location.contacts.length - 1; // The first contactId to be generated minus 1.
 const getNewContactId = () => ++lastContactId;
-
-// Associate each contacts to a unique id, permanent for the lifecycle of this component.
-const contactsIdMap = new Map<Contact, number>(
-  formData.location.contacts.map((contact) => {
-    const contactId = getNewContactId();
-    if (contactId !== contact.index) contact.index = contactId;
-    contact.index = contactId;
-    return [contact, contactId];
-  })
-);
 
 //New contact being added
 const otherContacts = computed(() => formData.location.contacts.slice(1));
@@ -91,7 +82,6 @@ const addContact = () => {
     indexedEmptyContact(getNewContactId())
   );
   const contact = formData.location.contacts[newLength - 1];
-  contactsIdMap.set(contact, contact.index);
   setScrollPoint(`contact-${contact.index}-heading`);
   setFocusedComponent(`contact-${contact.index}-heading`);
   return newLength;
@@ -114,7 +104,8 @@ watch([validation], () => emit("valid", checkValid()));
 emit("valid", false);
 
 const updateValidState = (index: number, valid: boolean) => {
-  const contactId = contactsIdMap.get(formData.location.contacts[index]);
+  const contact = formData.location.contacts[index];
+  const contactId = contact.index;
   if (validation[contactId] !== valid) {
     validation[contactId] = valid;
   }
@@ -124,8 +115,7 @@ const uniqueValues = isUniqueDescriptive();
 
 const removeContact = (index: number) => () => {
   const contact = formData.location.contacts[index];
-  const contactId = contactsIdMap.get(contact);
-  contactsIdMap.delete(contact);
+  const contactId = contact.index;
 
   updateContact(undefined, index);
   delete validation[contactId];
@@ -196,7 +186,7 @@ const contactName = (contact: Contact) => {
   <hr />
   <h3>Additional contacts</h3>
   <div class="frame-01" v-if="otherContacts.length > 0" aria-live="off">
-    <cds-accordion v-for="(contact, index) in otherContacts" :key="contactsIdMap.get(contact)">
+    <cds-accordion v-for="(contact, index) in otherContacts" :key="contact.index">
       <div :data-scroll="`contact-${index + 1}-heading`" class="header-offset"></div>
       <cds-accordion-item
         open
@@ -206,7 +196,7 @@ const contactName = (contact: Contact) => {
         :data-focus="`contact-${index + 1}-heading`"
       >
         <staff-contact-group-component
-          :id="contactsIdMap.get(contact)"
+          :id="contact.index"
           v-bind:model-value="contact"
           :role-list="roleList"
           :address-list="addresses"
