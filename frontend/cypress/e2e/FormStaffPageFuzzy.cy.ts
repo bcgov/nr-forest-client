@@ -291,7 +291,7 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('not.exist');
     })
 
-    it.only('should have sole proprietorship data with fuzzy resulting in Step 1: partial individual match',() =>{
+    it('should have sole proprietorship data with fuzzy resulting in Step 1: partial individual match',() =>{
       fillRegistered({ 
         registrationNumber:'FM123456',
         doingBusinessAs: '',
