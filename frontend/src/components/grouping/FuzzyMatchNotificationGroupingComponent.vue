@@ -60,12 +60,13 @@ const fieldNameToDescription : Record<string, string> = {
   "location.addresses[].postalCode": "address",
   "location.addresses[].businessPhoneNumber": "primary phone number",
   "location.addresses[].secondaryPhoneNumber": "secondary phone number",
-  "location.addresses[].faxNumber": "fax number",
+  "location.addresses[].faxNumber": "fax",
   "location.addresses[].emailAddress": "email address",
   "location.contacts[].firstName": "contact",
+  "location.contacts[].lastName": "contact",
   "location.contacts[].phoneNumber": "primary phone number",
   "location.contacts[].secondaryPhoneNumber": "secondary phone number",
-  "location.contacts[].faxNumber": "fax number",
+  "location.contacts[].faxNumber": "fax",
   "location.contacts[].email": "email address",
 
 };
@@ -121,10 +122,9 @@ const fieldNameToLabel: Record<string, string> = {
   "location.addresses[].secondaryPhoneNumber": "secondary phone number",
   "location.addresses[].faxNumber": "fax",
   "location.addresses[].emailAddress": "email address",
-  "location.contacts[].firstName": "name",
-  "location.contacts[].lastName": "name",
+  "location.contacts[].firstName": "contact",
   "location.contacts[].businessPhoneNumber": "primary phone number",
-  "location.contacts[].secondaryPhoneNumber": "secondary phone number",  
+  "location.contacts[].secondaryPhoneNumber": "secondary phone number",
   "location.contacts[].faxNumber": "fax",
   "location.contacts[].email": "email address",
 };
