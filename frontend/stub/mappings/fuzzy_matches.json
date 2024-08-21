@@ -602,7 +602,7 @@
         "bodyPatterns": [
           {
             "matchesJsonPath": {
-              "expression": "$.location.addresses..emailAddress",
+              "expression": "$.location.addresses..[?(@.emailAddress)]",
               "contains": "match"
             }
           }
