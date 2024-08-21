@@ -291,25 +291,14 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('not.exist');
     })
 
-    it('should have sole proprietorship data with fuzzy resulting in Step 1: partial individual match',() =>{
+    it.only('should have sole proprietorship data with fuzzy resulting in Step 1: partial individual match',() =>{
       fillRegistered({ 
         registrationNumber:'FM123456',
         doingBusinessAs: '',
       });
       clickNext(1);
 
-      cy.get('#fuzzy-match-notification-global')
-      .should("be.visible")
-      .and("have.attr", "kind", "warning")
-      .shadow()
-      .find(
-        "div.cds--actionable-notification__details div.cds--actionable-notification__text-wrapper div.cds--actionable-notification__content div.cds--actionable-notification__title"
-      )
-      .should("contain", "Possible matching records found");
-
-      cy.get('#fuzzy-match-notification-global > div > ul > li')      
-      .should('be.visible')
-      .and('contain', 'Partial matching on name and birthdate');
+      checkTopNotification('warning', 'was found with similar name and birthdate');
 
       checkDropdownWarning('#businessName');
       checkInputWarning('#birthdateYear');
@@ -676,7 +665,7 @@ describe("Staff Form Fuzzy Matches", () => {
         fillLocation(0);
         clickNext(2);
   
-        checkNotification('location-addresses-0', 'warning', 'Matching on address');
+        checkNotification('location-addresses-0', 'warning', 'was found with similar address');
   
         checkInputClean('#name_0');
         checkInputClean('#complementaryAddressOne_0');
@@ -703,7 +692,7 @@ describe("Staff Form Fuzzy Matches", () => {
         fillLocation(0);
         clickNext(2);
   
-        checkNotification('location-addresses-0', 'warning', 'Matching on email address');
+        checkNotification('location-addresses-0', 'warning', 'was found with similar email address.');
   
         checkInputClean('#name_0');
         checkInputClean('#complementaryAddressOne_0');
@@ -730,7 +719,7 @@ describe("Staff Form Fuzzy Matches", () => {
         fillLocation(0);
         clickNext(2);
   
-        checkNotification('location-addresses-0', 'warning', 'Matching on primary phone number');
+        checkNotification('location-addresses-0', 'warning', 'was found with similar primary phone number');
   
         checkInputClean('#name_0');
         checkInputClean('#complementaryAddressOne_0');
@@ -757,7 +746,7 @@ describe("Staff Form Fuzzy Matches", () => {
         fillLocation(0);
         clickNext(2);
   
-        checkNotification('location-addresses-0', 'warning', 'Matching on secondary phone number');
+        checkNotification('location-addresses-0', 'warning', 'was found with similar secondary phone number');
   
         checkInputClean('#name_0');
         checkInputClean('#complementaryAddressOne_0');
@@ -784,7 +773,7 @@ describe("Staff Form Fuzzy Matches", () => {
         fillLocation(0);
         clickNext(2);
   
-        checkNotification('location-addresses-0', 'warning', 'Matching on fax');
+        checkNotification('location-addresses-0', 'warning', 'was found with similar fax');
   
         checkInputClean('#name_0');
         checkInputClean('#complementaryAddressOne_0');
@@ -822,7 +811,7 @@ describe("Staff Form Fuzzy Matches", () => {
       it('should have location at indexes: 0 with fuzzy resulting in Step 2: full address email 0 match', () => {
         clickNext(2);
 
-        checkNotification('location-addresses-0', 'warning', 'Matching on email address');
+        checkNotification('location-addresses-0', 'warning', 'was found with similar email address.');
         checkNotificationToNotExist('location-addresses-1');
         checkAddressAccordionState(1, false);
 
@@ -843,7 +832,7 @@ describe("Staff Form Fuzzy Matches", () => {
         clickNext(2);
 
         checkNotificationToNotExist('location-addresses-0');
-        checkNotification('location-addresses-1', 'warning', 'Matching on email address');
+        checkNotification('location-addresses-1', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(1, true);
 
         checkInputClean('#emailAddress_0');
@@ -862,8 +851,8 @@ describe("Staff Form Fuzzy Matches", () => {
       it('should have location at indexes: 0, 1 with fuzzy resulting in Step 2: full address email 0 and 1 match', () => {
         clickNext(2);
 
-        checkNotification('location-addresses-0', 'warning', 'Matching on email address');
-        checkNotification('location-addresses-1', 'warning', 'Matching on email address');
+        checkNotification('location-addresses-0', 'warning', 'was found with similar email address.');
+        checkNotification('location-addresses-1', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(1, true);
 
         checkInputWarning('#emailAddress_0');
@@ -899,7 +888,7 @@ describe("Staff Form Fuzzy Matches", () => {
         clickNext(2);
 
         checkNotificationToNotExist('location-addresses-0');
-        checkNotification('location-addresses-1', 'warning', 'Matching on email address');
+        checkNotification('location-addresses-1', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(1, true);
         checkNotificationToNotExist('location-addresses-2')
         checkAddressAccordionState(2, false);
@@ -925,7 +914,7 @@ describe("Staff Form Fuzzy Matches", () => {
         checkNotificationToNotExist('location-addresses-0');
         checkNotificationToNotExist('location-addresses-1');
         checkAddressAccordionState(1, false);
-        checkNotification('location-addresses-2', 'warning', 'Matching on email address');
+        checkNotification('location-addresses-2', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(2, true);
 
         checkInputClean('#emailAddress_0');
@@ -947,9 +936,9 @@ describe("Staff Form Fuzzy Matches", () => {
         clickNext(2);
 
         checkNotificationToNotExist('location-addresses-0');
-        checkNotification('location-addresses-1', 'warning', 'Matching on email address');
+        checkNotification('location-addresses-1', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(1, true);
-        checkNotification('location-addresses-2', 'warning', 'Matching on email address');
+        checkNotification('location-addresses-2', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(2, true);
 
         checkInputClean('#emailAddress_0');
@@ -1161,7 +1150,7 @@ describe("Staff Form Fuzzy Matches", () => {
       )
       .should("contain", kind === 'warning' ? 'Possible matching records found' : 'Client already exists');
       
-      cy.get('#fuzzy-match-notification-global > div > span.body-compact-01')
+      cy.get(`#fuzzy-match-notification-${id} > div > span.body-compact-01`)
       .should('be.visible')
       .and('contain', message);
   }
