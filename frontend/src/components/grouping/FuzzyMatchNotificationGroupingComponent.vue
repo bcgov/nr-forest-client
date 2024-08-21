@@ -254,7 +254,7 @@ const descriptionOptionList: DescriptionOption[] = [
         Management System if necessary:`,
   },
   {
-    condition: (id: string) => id.startsWith("location.addresses"),
+    condition: (id: string) => id.startsWith("location-addresses"),
     getDescription: () => `${uniqueClientNumbers.value.length} client
         ${uniqueClientNumbers.value.length === 1 ? "record was" : "records were"}
         found with locations similar to this one. ${fuzzySuffix}`,
