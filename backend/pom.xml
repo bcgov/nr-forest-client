@@ -464,7 +464,17 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <dependencyConvergence/>
+                                <dependencyConvergence>
+                                    <excludedScopes>
+                                        <scope>runtime</scope>
+                                    </excludedScopes>
+                                    <excludes>
+                                        <!-- Excluding opentelemetry due to the use of an alpha version that does not match the rest of the versions -->
+                                        <exclude>io.opentelemetry:opentelemetry-api-incubator</exclude>
+                                        <!-- Excluding jetbrains annotations due to the requirement on kotlin dependencies -->
+                                        <exclude>org.jetbrains:annotations</exclude>
+                                    </excludes>
+                                </dependencyConvergence>
                                 <requireMavenVersion>
                                     <version>[3.2,)</version>
                                     <message>Invalid Maven version. It should be at least 3.2</message>
