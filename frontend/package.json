@@ -52,7 +52,7 @@
     "@carbon/pictograms": "^12.37.0",
     "@carbon/styles": "^1.59.0",
     "@carbon/web-components": "^2.9.0",
-    "@vueuse/core": "^10.2.0",
+    "@vueuse/core": "^11.0.0",
     "aws-amplify": "^6.3.5",
     "axios": "^1.7.2",
     "date-fns": "^3.0.0",
