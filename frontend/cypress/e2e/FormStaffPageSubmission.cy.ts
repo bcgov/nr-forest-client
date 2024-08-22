@@ -48,16 +48,30 @@ describe("Staff Form Submission", () => {
     });
   };
 
-  const fillContact = (extraData: any = {}) => {
+  /**
+   * This function should be used only when Business type is Individual, since input fields First
+   * and Last names are not displayed in this case.
+   *
+   * @param extraData
+   */
+  const fillContactWithoutName = (extraData: any = {}) => {
+    fillContact(0, extraData, true);
+  };
+
+  const fillContact = (index: number, extraData: any = {}, skipName = false) => {
     cy.fixture("testdata/contactBaseData").then((fixtureData: any) => {
       const data = { ...fixtureData, ...extraData };
-      cy.fillFormEntry("#emailAddress_0", data.mail);
-      cy.fillFormEntry("#businessPhoneNumber_0", data.phone1);
-      cy.fillFormEntry("#secondaryPhoneNumber_0", data.phone2);
-      cy.fillFormEntry("#faxNumber_0", data.fax);
+      if (!skipName) {
+        cy.fillFormEntry(`#firstName_${index}`, data.firstName);
+        cy.fillFormEntry(`#lastName_${index}`, data.lastName);
+      }
+      cy.fillFormEntry(`#emailAddress_${index}`, data.emailAddress);
+      cy.fillFormEntry(`#businessPhoneNumber_${index}`, data.businessPhoneNumber);
+      cy.fillFormEntry(`#secondaryPhoneNumber_${index}`, data.secondaryPhoneNumber);
+      cy.fillFormEntry(`#faxNumber_${index}`, data.faxNumber);
       cy.wait("@getRoles");
-      cy.selectFormEntry("#role_0", data.role, false);
-      cy.selectFormEntry("#addressname_0", data.address, true);
+      cy.selectFormEntry(`#role_${index}`, data.role, false);
+      cy.selectFormEntry(`#addressname_${index}`, data.addressname, true);
     });
   };
 
@@ -212,7 +226,7 @@ describe("Staff Form Submission", () => {
     fillLocation(0);
     clickNext();
     cy.contains("h2", "Contacts");
-    fillContact();
+    fillContactWithoutName();
     clickNext();
     cy.contains("h2", "Review");
 
@@ -227,7 +241,7 @@ describe("Staff Form Submission", () => {
     fillLocation(0);
     clickNext();
     cy.contains("h2", "Contacts");
-    fillContact();
+    fillContactWithoutName();
     clickNext();
     cy.contains("h2", "Review");
 
@@ -252,7 +266,7 @@ describe("Staff Form Submission", () => {
     fillLocation(0);
     clickNext();
     cy.contains("h2", "Contacts");
-    fillContact();
+    fillContactWithoutName();
     clickNext();
     cy.contains("h2", "Review");
 
