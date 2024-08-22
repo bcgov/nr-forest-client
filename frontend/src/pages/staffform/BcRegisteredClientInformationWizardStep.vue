@@ -18,6 +18,8 @@ import type {
   FormDataDto,
   ForestClientDetailsDto,
 } from "@/dto/ApplyClientNumberDto";
+import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
+import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
 // Importing helper functions
 import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
 // Importing validators
@@ -127,6 +129,7 @@ watch([autoCompleteResult], () => {
     formData.value.businessInformation.clientType = retrieveClientType(
       autoCompleteResult.value.legalType
     );
+    formData.value.businessInformation.businessType = getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.R);
 
     emit("update:data", formData.value);
 

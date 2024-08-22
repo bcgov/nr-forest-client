@@ -210,7 +210,8 @@ watch([validation], () => {
           </span>
         </span>
         <span v-if="address.notes  && 
-                  address.notes.length">
+                    address.notes.length"
+              class="body-compact-01">
           {{ address.notes }}
         </span>
       </div>
