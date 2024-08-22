@@ -97,7 +97,7 @@ public class ForestClientLocationEntity {
   private String locnExpiredInd;
   
   @Column("returned_mail_date")
-  private LocalDate returnedMailDate;
+  private LocalDateTime returnedMailDate;
   
   @Column("trust_location_ind")
   @NotNull
