@@ -173,12 +173,12 @@ watch([validation], () => {
 
       <div class="grouping-23">
         <span class="body-compact-01"
-              v-if="address.complementaryAddressOne !== null && 
+              v-if="address.complementaryAddressOne  && 
                     address.complementaryAddressOne.length">
           {{ address.complementaryAddressOne }}
         </span>
         <span class="body-compact-01"
-              v-if="address.complementaryAddressTwo !== null && 
+              v-if="address.complementaryAddressTwo  && 
                     address.complementaryAddressTwo.length">
           {{ address.complementaryAddressTwo }}
         </span>
@@ -186,41 +186,33 @@ watch([validation], () => {
         <span class="body-compact-01">{{ address.city }}, {{ address.province.text }}</span>
         <span class="body-compact-01">{{ address.country.text }}</span>
         <span class="body-compact-01">{{ address.postalCode }}</span>
-      </div>
-
-      <div class="grouping-22-item"
-          v-if="address.emailAddress !== null && 
-                address.emailAddress.length">
-        <p class="label-02">Email address</p>
-        <p class="body-compact-01">{{ address.emailAddress }}</p>
-      </div>
-
-      <div class="grouping-22-item horizontal-input-grouping"
-          v-if="(address.businessPhoneNumber !== null && address.businessPhoneNumber.length) || 
-                (address.secondaryPhoneNumber !== null && address.secondaryPhoneNumber.length) ||
-                (address.faxNumber !== null && address.faxNumber.length)">
-        <span v-if="address.businessPhoneNumber !== null && 
-                    address.businessPhoneNumber.length">
-          <p class="label-02">Primary phone number</p>
-          <p class="body-compact-01">{{ address.businessPhoneNumber }}</p>
+        <span v-if="address.emailAddress && address.emailAddress.length"
+              class="body-compact-01">
+          {{ address.emailAddress }}
         </span>
-        <span v-if="address.secondaryPhoneNumber !== null && 
-                    address.secondaryPhoneNumber.length">
-          <p class="label-02">Secondary phone number</p>
-          <p class="body-compact-01">{{ address.secondaryPhoneNumber }}</p>
+        <span v-if="(address.businessPhoneNumber && address.businessPhoneNumber.length) || 
+                    (address.secondaryPhoneNumber && address.secondaryPhoneNumber.length) ||
+                    (address.faxNumber && address.faxNumber.length)">
+          <span v-if="address.businessPhoneNumber && 
+                      address.businessPhoneNumber.length"
+                class="body-compact-01">
+            {{ address.businessPhoneNumber }}
+          </span>
+          <span v-if="address.secondaryPhoneNumber  && 
+                      address.secondaryPhoneNumber.length"
+                class="body-compact-01">
+            | {{ address.secondaryPhoneNumber }}
+          </span>
+          <span v-if="address.faxNumber  && 
+                      address.faxNumber.length"
+                class="body-compact-01">
+            | {{ address.faxNumber }}
+          </span>
         </span>
-        <span v-if="address.faxNumber !== null && 
-                    address.faxNumber.length">
-          <p class="label-02">Fax</p>
-          <p class="body-compact-01">{{ address.faxNumber }}</p>
+        <span v-if="address.notes  && 
+                  address.notes.length">
+          {{ address.notes }}
         </span>
-      </div>
-
-      <div class="grouping-22-item"
-          v-if="address.notes !== null && 
-                address.notes.length">
-        <p class="label-02">Notes</p>
-        <p class="body-compact-01">{{ address.notes }}</p>
       </div>
     </div>
 
@@ -250,23 +242,24 @@ watch([validation], () => {
         </span>
         <span class="body-compact-01">{{ contact.contactType.text }}</span>
         <span class="body-compact-01">{{ contact.email }}</span>
-      </div>
-
-      <div class="grouping-22-item horizontal-input-grouping"
-          v-if="contact.phoneNumber.length || 
-                contact.secondaryPhoneNumber.length ||
-                contact.faxNumber.length">
-        <span v-if="contact.phoneNumber.length">
-          <p class="label-02">Primary phone number</p>
-          <p class="body-compact-01">{{ contact.phoneNumber }}</p>
-        </span>
-        <span v-if="contact.secondaryPhoneNumber.length">
-          <p class="label-02">Secondary phone number</p>
-          <p class="body-compact-01">{{ contact.secondaryPhoneNumber }}</p>
-        </span>
-        <span v-if="contact.faxNumber.length">
-          <p class="label-02">Fax</p>
-          <p class="body-compact-01">{{ contact.faxNumber }}</p>
+        <span v-if="(contact.phoneNumber && contact.phoneNumber.length) || 
+                    (contact.secondaryPhoneNumber && contact.secondaryPhoneNumber.length) ||
+                    (contact.faxNumber && contact.faxNumber.length)">
+          <span v-if="contact.phoneNumber && 
+                      contact.phoneNumber.length"
+                class="body-compact-01">
+            {{ contact.phoneNumber }}
+          </span>
+          <span v-if="contact.secondaryPhoneNumber  && 
+                      contact.secondaryPhoneNumber.length"
+                class="body-compact-01">
+            | {{ contact.secondaryPhoneNumber }}
+          </span>
+          <span v-if="contact.faxNumber  && 
+                      contact.faxNumber.length"
+                class="body-compact-01">
+            | {{ contact.faxNumber }}
+          </span>
         </span>
       </div>
     </div>
