@@ -1516,9 +1516,22 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   top: calc(-1 * var(--header-height));
 }
 
-.hide-when-less-than-two-children:not(:has(:nth-child(2))) {
+.hide-when-less-than-two-children {
   display: none;
+
+  &:has(:nth-child(2)) {
+    display: flex;
+    flex-direction: column;
+  }
 }
+
+/*
+I wish we could define .hide-when-less-than-two-children simply like this.
+But it doesn't work in Safari with dynamic updates.
+*/
+// .hide-when-less-than-two-children:not(:has(:nth-child(2))) {
+//   display: none;
+// }
 
 .errors-container {
   --gap: 1rem;
