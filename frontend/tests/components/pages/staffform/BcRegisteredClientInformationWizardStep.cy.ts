@@ -103,6 +103,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         showNotGoodStandingNotification: false,
         showBcRegDownNotification: false,
         showDuplicatedNotification: true,
+        showNotOwnedByPersonError: false,
         type: "Corporation",
         standing: "Unknown",
         dba: "",
@@ -117,6 +118,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         showNotGoodStandingNotification: false,
         showBcRegDownNotification: true,
         showDuplicatedNotification: false,
+        showNotOwnedByPersonError: false,
         type: "Corporation",
         standing: "Good Standing",
         dba: "",
@@ -144,6 +146,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         showNotGoodStandingNotification: false,
         showBcRegDownNotification: false,
         showDuplicatedNotification: false,
+        showNotOwnedByPersonError: false,
         type: "Corporation",
         standing: "Good standing",
         dba: "",
@@ -158,6 +161,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         showNotGoodStandingNotification: false,
         showBcRegDownNotification: false,
         showDuplicatedNotification: false,
+        showNotOwnedByPersonError: false,
         type: "Corporation",
         standing: "Unknown",
         dba: "",
@@ -172,6 +176,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         showNotGoodStandingNotification: false,
         showBcRegDownNotification: false,
         showDuplicatedNotification: false,
+        showNotOwnedByPersonError: false,
         type: "Sole proprietorship",
         standing: "Good standing",
         dba: "Soleprop",
@@ -190,20 +195,6 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         dba: "",
       },
       {
-        scenarioName: "OK State - SP not owned by person",
-        companySearch: "spw",
-        companyCode: "FM7715744",
-        showData: true,
-        showBirthdate: true,
-        showUnknowNotification: false,
-        showNotGoodStandingNotification: false,
-        showBcRegDownNotification: false,
-        showDuplicatedNotification: false,
-        type: "Sole proprietorship",
-        standing: "Good standing",
-        dba: "Soleprop",
-      },
-      {
         scenarioName: "Failed state - Unknown standing",
         companySearch: "uks",
         companyCode: "C4566541",
@@ -213,9 +204,25 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         showNotGoodStandingNotification: false,
         showBcRegDownNotification: false,
         showDuplicatedNotification: false,
+        showNotOwnedByPersonError: false,
         type: "Corporation",
         standing: "Unknown",
         dba: "",
+      },
+      {
+        scenarioName: "OK State - SP not owned by person",
+        companySearch: "spw",
+        companyCode: "FM7715744",
+        showData: true,
+        showBirthdate: true,
+        showUnknowNotification: false,
+        showNotGoodStandingNotification: false,
+        showBcRegDownNotification: false,
+        showDuplicatedNotification: false,
+        showNotOwnedByPersonError: true,
+        type: "Sole proprietorship",
+        standing: "Good standing",
+        dba: "Soleprop",
       },
     ];
 
@@ -382,6 +389,14 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
 
         if (scenario.showBirthdate) {
           cy.get("#birthdate").should("be.visible");
+        }
+
+        if(scenario.showNotOwnedByPersonError){
+          cy.get("#businessName")
+            .should("have.attr", "aria-invalid", "true")
+            .should("have.attr", "invalid-text", "This sole proprietor is not owned by a person");
+
+          cy.get("#businessName").shadow().find("svg").should("exist");
         }
 
         cy.get("#workSafeBCNumber").should("exist").and("have.value", "");
