@@ -8,7 +8,7 @@ import { useFocus } from "@/composables/useFocus";
 import type { CodeDescrType, CodeNameType } from "@/dto/CommonTypesDto";
 import type { Contact } from "@/dto/ApplyClientNumberDto";
 // Importing validatons
-import { getValidations } from "@/helpers/validators/GlobalValidators";
+import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // @ts-ignore
 import Delete16 from "@carbon/icons-vue/es/trash-can/16";
@@ -64,7 +64,16 @@ watch(
 );
 
 //Validations
-const validation = reactive<Record<string, boolean>>({});
+const validation = reactive<Record<string, boolean>>({
+  contactType: false,
+  firstName: !!selectedValue.firstName,
+  lastName: !!selectedValue.lastName,
+  phoneNumber: false,
+  secondaryPhoneNumber: true,
+  faxNumber: true,
+  email: false,
+  locationNames: false,
+});
 
 const checkValid = () =>
   Object.values(validation).reduce(
