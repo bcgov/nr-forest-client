@@ -121,7 +121,7 @@ public class ClientMatchDataGenerator {
                     .businessInformation()
                     .withRegistrationNumber(registrationNumber)
                     .withBusinessName(businessName)
-                    .withBusinessType("R")
+                    .withBusinessType("")
                     .withLegalType("SP")
                     .withWorkSafeBcNumber(workSafeBcNumber)
                     .withDoingBusinessAs(doingBusinessAs)

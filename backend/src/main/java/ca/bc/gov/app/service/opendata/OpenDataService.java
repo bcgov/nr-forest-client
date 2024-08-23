@@ -70,7 +70,8 @@ public class OpenDataService {
                 true,
                 openDataFeature.properties().getFirstNationType().name(),
                 addressDto.isValid() ? List.of(addressDto) : List.of(),
-                List.of()
+                List.of(),
+                false
             );
         });
   }
