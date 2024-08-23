@@ -1090,6 +1090,36 @@ describe("Staff Form Fuzzy Matches", () => {
         .should('be.visible');
       });
 
+      // test with 2 matches
+      it('should have contact data with fuzzy resulting in Step 3: full contact and full contact secondary phone matches', () => {
+        fillContactWithoutName();
+
+        clickNext(3);
+  
+        checkNotification('location-contacts-0', 'warning', 'was found with similar contact');
+  
+        // from the full contact info
+        checkInputWarning('#firstName_0');
+        checkInputWarning('#lastName_0');
+        checkInputWarning('#emailAddress_0');
+
+        checkInputClean('#businessPhoneNumber_0');
+
+        // from the full contact secondary phone 
+        checkInputWarning('#secondaryPhoneNumber_0');
+
+        checkInputClean('#faxNumber_0');
+        checkDropdownClean('#role_0');
+  
+        cy.get("[data-test='wizard-next-button']")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+  
+        cy.get('#reviewStatement')
+        .should('be.visible');
+      });
+
     });
   
     describe("when there are two contacts", () => {

@@ -920,7 +920,37 @@
       }
     },
     {
-      "name": "Submission Match Stub for contact info",
+      "name": "Submission Match Stub for contact info and secondaryPhoneNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "3"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts[0].secondaryPhoneNumber",
+              "equalTo": "(777) 777-7777"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_contact_and_full_contact_secondary_phone_matches.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for contact info and secondaryPhoneNumber",
       "request": {
         "url": "/api/clients/matches",
         "method": "POST",
