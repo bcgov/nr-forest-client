@@ -3,6 +3,6 @@
     "field":"location.contacts[0].firstName",
     "match":"00000001", 
     "fuzzy":true,
-    "partialMatch":true
+    "partialMatch":false
   }
 ]

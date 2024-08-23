@@ -48,12 +48,6 @@ describe("Staff Form Submission", () => {
     });
   };
 
-  /**
-   * This function should be used only when Business type is Individual, since input fields First
-   * and Last names are not displayed in this case.
-   *
-   * @param extraData
-   */
   const fillContactWithoutName = (extraData: any = {}) => {
     fillContact(0, extraData, true);
   };
