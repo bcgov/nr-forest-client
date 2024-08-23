@@ -207,6 +207,38 @@ watch([detailsData], () => {
     fuzzyBus.emit({ id: "", matches: [] });
     const forestClientDetails: ForestClientDetailsDto = detailsData.value;
 
+    if(formData.value.businessInformation.clientType === "RSP" && !forestClientDetails.isOwnedByPerson){
+      errorBus.emit(
+          [
+            {
+              fieldId: "businessInformation.businessName",
+              fieldName: "Client name",
+              errorMsg: "This sole proprietor is not owned by a person",
+            },
+          ],
+          {
+            skipNotification: true,
+          }
+        );
+
+      fuzzyBus.emit({
+          id: "global",
+          matches: [
+            {
+              field: "businessInformation.notOwnedByPerson",
+              match: "",
+              fuzzy: false,
+            },
+          ],
+        },{
+          title: "Sole proprietor not owned by a person",
+          message: 'This sole proprietor is not owned by a person. Please select the "Unregistered company" client type to proceed.',
+        });
+      validation.soleproprietor = false;
+    }else{
+      validation.soleproprietor = true;
+    }
+
     if (formData.value.businessInformation.clientType === "RSP") {
       formData.value.businessInformation.doingBusinessAs =
         forestClientDetails.name;
