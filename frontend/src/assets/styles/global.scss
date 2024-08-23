@@ -1527,7 +1527,7 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 
 /*
 I wish we could define .hide-when-less-than-two-children simply like this.
-But it doesn't work in Safari with dynamic updates.
+But it's not working on Safari with dynamic updates.
 */
 // .hide-when-less-than-two-children:not(:has(:nth-child(2))) {
 //   display: none;
