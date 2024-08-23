@@ -105,9 +105,11 @@ const fieldNameToNamingGroups: Record<string, string[]> = {
     "location.contacts[].firstName",
     "location.contacts[].lastName",
     "location.contacts[].email",
-    "location.contacts[].phoneNumber",
-    "location.contacts[].secondaryPhoneNumber",
-    "location.contacts[].faxNumber",
+    /*
+    Phone numbers are not included here because the error does not specify which phone matched.
+    However the application should still be able to tell which phone matched since a specific rule
+    for the specific phone should be matched at the same time.
+    */
   ],
 };
 
