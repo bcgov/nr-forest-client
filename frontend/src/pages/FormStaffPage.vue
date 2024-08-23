@@ -330,8 +330,6 @@ const onBack = () => {
 // Initialize the "primary" contact - the individual him/herself
 const applicantContact: Contact = {
   ...emptyContact,
-  locationNames: [defaultLocation],
-  contactType: { value: "BL", text: "Billing" },
 };
 
 const clientType = ref<CodeNameType>();
