@@ -12,6 +12,23 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
     cy.intercept("GET", "/api/clients/C1234567", {
       fixture: "clients/bcreg_C1234567.json",
     });
+    cy.fixture("clients/bcreg_ac_list2.json").then((data) =>
+      data.forEach(element => cy.intercept("GET",`**/api/clients/name/${encodeURIComponent(element.name)}`,
+          {
+            fixture: "clients/bcreg_ac_list2.json",
+          }
+        )
+      )
+    );
+
+    cy.fixture("clients/bcreg_ac_list3.json").then((data) =>
+      data.forEach(element => cy.intercept("GET",`**/api/clients/name/${encodeURIComponent(element.name)}`,
+          {
+            fixture: "clients/bcreg_ac_list3.json",
+          }
+        )
+      )
+    );
   });
 
   it("should render the component", () => {
@@ -76,6 +93,47 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
 
   describe("Scenario combinations", () => {
     const scenarios = [
+      {
+        scenarioName: "Failed state - Duplicated entry",
+        companySearch: "dup",
+        companyCode: "C7775745",
+        showData: true,
+        showBirthdate: false,
+        showUnknowNotification: true,
+        showNotGoodStandingNotification: false,
+        showBcRegDownNotification: false,
+        showDuplicatedNotification: true,
+        type: "Corporation",
+        standing: "Unknown",
+        dba: "",
+      },
+      {
+        scenarioName: "Failed state - BC Registry down",
+        companySearch: "bcd",
+        companyCode: "C7745745",
+        showData: false,
+        showBirthdate: false,
+        showUnknowNotification: false,
+        showNotGoodStandingNotification: false,
+        showBcRegDownNotification: true,
+        showDuplicatedNotification: false,
+        type: "Corporation",
+        standing: "Good Standing",
+        dba: "",
+      },      
+      {
+        scenarioName: "Failed state - Not in good standing",
+        companySearch: "ngs",
+        companyCode: "C4443332",
+        showData: true,
+        showBirthdate: false,
+        showUnknowNotification: false,
+        showNotGoodStandingNotification: true,
+        showBcRegDownNotification: false,
+        type: "Corporation",
+        standing: "Not in good standing",
+        dba: "",
+      },
       {
         scenarioName: "OK State - Corporation",
         companySearch: "cmp",
@@ -159,47 +217,6 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         standing: "Unknown",
         dba: "",
       },
-      {
-        scenarioName: "Failed state - BC Registry down",
-        companySearch: "bcd",
-        companyCode: "C7745745",
-        showData: false,
-        showBirthdate: false,
-        showUnknowNotification: false,
-        showNotGoodStandingNotification: false,
-        showBcRegDownNotification: true,
-        showDuplicatedNotification: false,
-        type: "Corporation",
-        standing: "Good Standing",
-        dba: "",
-      },
-      {
-        scenarioName: "Failed state - Duplicated entry",
-        companySearch: "dup",
-        companyCode: "C7775745",
-        showData: true,
-        showBirthdate: false,
-        showUnknowNotification: true,
-        showNotGoodStandingNotification: false,
-        showBcRegDownNotification: false,
-        showDuplicatedNotification: true,
-        type: "Corporation",
-        standing: "Unknown",
-        dba: "",
-      },
-      {
-        scenarioName: "Failed state - Not in good standing",
-        companySearch: "ngs",
-        companyCode: "C4443332",
-        showData: true,
-        showBirthdate: false,
-        showUnknowNotification: false,
-        showNotGoodStandingNotification: true,
-        showBcRegDownNotification: false,
-        type: "Corporation",
-        standing: "Not in good standing",
-        dba: "",
-      },
     ];
 
     beforeEach(function () {
@@ -211,13 +228,16 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         .split(" ");
 
       const detailsCode = (code: string) => {
-        return code === "bcd"
-          ? 408
-          : code === "dup"
-          ? 409
-          : code === "cnf"
-          ? 404
-          : 200;
+        switch (code) {
+          case "bcd":
+        return 408;
+          case "dup":
+        return 409;
+          case "cnf":
+        return 404;
+          default:
+        return 200;
+        }
       };
 
       //We need to intercept the client search for the scenario, as param 1
@@ -225,42 +245,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         statusCode: 200,
         fixture: "clients/bcreg_ac_list2.json",
       }).as("clientSearch");
-
-      //If the search is successful, we need to intercept the subsequent search that happens when the clie8nt is selected
-      if (detailsCode(params[0]) === 200) {
-        cy.fixture(`clients/bcreg_${params[1]}.json`, "utf-8")
-          .then((data) => {
-            cy.intercept(
-              "GET",
-              `**/api/clients/name/${encodeURIComponent(data.name)}`,
-              {
-                fixture: "clients/bcreg_ac_list2.json",
-              }
-            ).as("clientSearchEncoded");
-          })
-          .as("responseData");
-      }
-
-      if (detailsCode(params[0]) === 409) {
-        cy.intercept(
-          "GET",
-          `**/api/clients/name/${encodeURIComponent("Corporation 5")}`,
-          {
-            fixture: "clients/bcreg_ac_list2.json",
-          }
-        ).as("clientSearchEncodedToo");
-      }
-
-      if (detailsCode(params[0]) === 404) {
-        cy.intercept(
-          "GET",
-          `**/api/clients/name/${encodeURIComponent("Corporation 6")}`,
-          {
-            fixture: "clients/bcreg_ac_list2.json",
-          }
-        ).as("clientSearchEncodedToo");
-      }
-
+      
       //We load the fixture beforehand due to the different content types and extensions based on the response
       cy.fixture(
         `clients/bcreg_${params[1]}.${
@@ -414,14 +399,6 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         fixture: "clients/bcreg_ac_list3.json",
       }).as("clientSearchCOR");
 
-      cy.intercept(
-        "GET",
-        `**/api/clients/name/${encodeURIComponent("Existing Corporation 1")}`,
-        {
-          fixture: "clients/bcreg_ac_list3.json",
-        }
-      ).as("clientSearchEncodedCOR");
-
       cy.intercept("GET", `**/api/clients/C1234567`, {
         fixture: "clients/bcreg_C1234567.json",
       }).as("clientDetailsC1234567");
@@ -451,17 +428,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         statusCode: 200,
         fixture: "clients/bcreg_ac_list3.json",
       }).as("clientSearchSOL");
-
-      cy.intercept(
-        "GET",
-        `**/api/clients/name/${encodeURIComponent(
-          "Existing Sole Proprietorship 1"
-        )}`,
-        {
-          fixture: "clients/bcreg_ac_list3.json",
-        }
-      ).as("clientSearchEncodedSOL");
-
+  
       cy.intercept("GET", `**/api/clients/FM123456`, {
         fixture: "clients/bcreg_FM123456.json",
       }).as("clientDetailsFM123456");
@@ -494,6 +461,8 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         "Client name cannot be empty"
       );
 
+      cy.wait(2)
+
       cy.selectAutocompleteEntry(
         "#businessName",
         "lon",
@@ -505,9 +474,13 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         "The client name has a 60 character limit"
       );
 
+      cy.wait(2)
+
       cy.get("#businessName").shadow().find("div#selection-button").click();
+      cy.wait(2)
 
       cy.fillFormEntry("#businessName", "lá");
+      cy.wait(2)
       cy.get("div.frame-01").should("exist").click();
       cy.checkAutoCompleteErrorMessage(
         "#businessName",
