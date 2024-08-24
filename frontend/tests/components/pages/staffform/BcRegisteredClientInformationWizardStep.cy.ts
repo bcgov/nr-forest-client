@@ -109,6 +109,21 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         dba: "",
       },
       {
+        scenarioName: "OK State - Sole Proprietorship, show birthdate",
+        companySearch: "spp",
+        companyCode: "FM123123",
+        showData: true,
+        showBirthdate: true,
+        showUnknowNotification: false,
+        showNotGoodStandingNotification: false,
+        showBcRegDownNotification: false,
+        showDuplicatedNotification: false,
+        showNotOwnedByPersonError: false,
+        type: "Sole proprietorship",
+        standing: "Good standing",
+        dba: "Soleprop",
+      },
+      {
         scenarioName: "Failed state - BC Registry down",
         companySearch: "bcd",
         companyCode: "C7745745",
@@ -165,22 +180,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         type: "Corporation",
         standing: "Unknown",
         dba: "",
-      },
-      {
-        scenarioName: "OK State - Sole Proprietorship, show birthdate",
-        companySearch: "spp",
-        companyCode: "FM123123",
-        showData: true,
-        showBirthdate: true,
-        showUnknowNotification: false,
-        showNotGoodStandingNotification: false,
-        showBcRegDownNotification: false,
-        showDuplicatedNotification: false,
-        showNotOwnedByPersonError: false,
-        type: "Sole proprietorship",
-        standing: "Good standing",
-        dba: "Soleprop",
-      },
+      },      
       {
         scenarioName: "OK State - Unsuported types for external",
         companySearch: "llp",
@@ -209,21 +209,6 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         standing: "Unknown",
         dba: "",
       },
-      {
-        scenarioName: "OK State - SP not owned by person",
-        companySearch: "spw",
-        companyCode: "FM7715744",
-        showData: true,
-        showBirthdate: true,
-        showUnknowNotification: false,
-        showNotGoodStandingNotification: false,
-        showBcRegDownNotification: false,
-        showDuplicatedNotification: false,
-        showNotOwnedByPersonError: true,
-        type: "Sole proprietorship",
-        standing: "Good standing",
-        dba: "Soleprop",
-      },
     ];
 
     beforeEach(function () {
@@ -251,7 +236,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
       cy.intercept("GET", `**/api/clients/name/${params[0]}`, {
         statusCode: 200,
         fixture: "clients/bcreg_ac_list2.json",
-      }).as("clientSearch");
+      }).as(`clientSearch${params[0]}`);
       
       //We load the fixture beforehand due to the different content types and extensions based on the response
       cy.fixture(
@@ -270,8 +255,52 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
                 ? "text/plain"
                 : "application/json",
           },
-        }).as("clientDetails");
+        }).as(`clientDetails${params[0]}`);
       });
+    });
+
+    it('Failed state - SP not owned by person : spw should return FM7715744', () => {
+
+      const formContent: FormDataDto = newFormDataDto();
+        formContent.businessInformation.businessName = "";
+        formContent.businessInformation.businessType = "BCR";
+
+        cy.mount(BcRegisteredClientInformationWizardStep, {
+          props: {
+            data: formContent,
+            active: true,
+            autofocus: false,
+          },
+        });
+        
+        // Initially, only the client name and the info notification should exist
+        cy.get("#businessName").should("exist");
+        cy.get("cds-inline-notification").should("exist");
+
+        //Just a check to make sure the fields are not visible
+        cy.get(".read-only-box").should("not.exist");
+
+        cy.get("cds-inline-notification#bcRegistrySearchNotification").should(
+          "exist"
+        );
+
+        // Then, when a client is selected, the rest of the form should appear
+        cy.selectAutocompleteEntry(
+          "#businessName",
+          "spw",
+          "FM7715744",
+          "@clientSearchspw"
+        );
+
+        cy.wait("@clientDetailsspw")
+
+        cy.get("#businessName")
+          .should("have.attr", "aria-invalid", "true")
+          .should("have.attr", "invalid-text", "This sole proprietor is not owned by a person");
+
+        cy.get("#businessName").shadow().find("svg").should("exist");
+      
+
     });
 
     scenarios.forEach((scenario) => {
@@ -287,7 +316,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
             autofocus: false,
           },
         });
-
+        
         // Initially, only the client name and the info notification should exist
         cy.get("#businessName").should("exist");
         cy.get("cds-inline-notification").should("exist");
@@ -304,8 +333,10 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
           "#businessName",
           scenario.companySearch,
           scenario.companyCode,
-          "@clientSearch"
+          `@clientSearch${scenario.companySearch}`
         );
+
+        cy.wait(`@clientDetails${scenario.companySearch}`);
 
         if (scenario.showDuplicatedNotification) {
           cy.get("#businessName")
@@ -391,7 +422,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
           cy.get("#birthdate").should("be.visible");
         }
 
-        if(scenario.showNotOwnedByPersonError){
+        if(scenario.showNotOwnedByPersonError){          
           cy.get("#businessName")
             .should("have.attr", "aria-invalid", "true")
             .should("have.attr", "invalid-text", "This sole proprietor is not owned by a person");
@@ -404,6 +435,8 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         cy.get("#acronym").should("exist").and("have.value", "");
       });
     });
+
+
   });
 
   describe("Validation", () => {
