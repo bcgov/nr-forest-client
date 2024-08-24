@@ -300,7 +300,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
 
         cy.get("#businessName").shadow().find("svg").should("exist");
       
-
+        cy.wait(5);
     });
 
     scenarios.forEach((scenario) => {
@@ -351,7 +351,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         );
 
         if (scenario.showBcRegDownNotification) {
-          cy.wait("@clientDetails");
+          cy.wait(`@clientDetails${scenario.companySearch}`);
           cy.wait(5000);
           cy.get("cds-inline-notification#bcRegistryDownNotification").should(
             "exist"
@@ -433,6 +433,7 @@ describe("<BcRegisteredClientInformationWizardStep />", () => {
         cy.get("#workSafeBCNumber").should("exist").and("have.value", "");
         cy.get("#doingBusinessAs").should(scenario.dba ? "not.exist" : "exist");
         cy.get("#acronym").should("exist").and("have.value", "");
+        cy.wait(5);
       });
     });
 
