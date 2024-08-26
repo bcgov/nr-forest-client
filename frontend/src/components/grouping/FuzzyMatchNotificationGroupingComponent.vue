@@ -63,12 +63,13 @@ const fieldNameToDescription : Record<string, string> = {
   "location.addresses[].postalCode": "address",
   "location.addresses[].businessPhoneNumber": "primary phone number",
   "location.addresses[].secondaryPhoneNumber": "secondary phone number",
-  "location.addresses[].faxNumber": "fax number",
+  "location.addresses[].faxNumber": "fax",
   "location.addresses[].emailAddress": "email address",
   "location.contacts[].firstName": "contact",
+  "location.contacts[].lastName": "contact",
   "location.contacts[].phoneNumber": "primary phone number",
   "location.contacts[].secondaryPhoneNumber": "secondary phone number",
-  "location.contacts[].faxNumber": "fax number",
+  "location.contacts[].faxNumber": "fax",
   "location.contacts[].email": "email address",
 
 };
@@ -108,9 +109,11 @@ const fieldNameToNamingGroups: Record<string, string[]> = {
     "location.contacts[].firstName",
     "location.contacts[].lastName",
     "location.contacts[].email",
-    "location.contacts[].phoneNumber",
-    "location.contacts[].secondaryPhoneNumber",
-    "location.contacts[].faxNumber",
+    /*
+    Phone numbers are not included here because the error does not specify which phone matched.
+    However the application should still be able to tell which phone matched since a specific rule
+    for the specific phone should be matched at the same time.
+    */
   ],
 };
 
@@ -126,10 +129,9 @@ const fieldNameToLabel: Record<string, string> = {
   "location.addresses[].secondaryPhoneNumber": "secondary phone number",
   "location.addresses[].faxNumber": "fax",
   "location.addresses[].emailAddress": "email address",
-  "location.contacts[].firstName": "name",
-  "location.contacts[].lastName": "name",
+  "location.contacts[].firstName": "contact",
   "location.contacts[].businessPhoneNumber": "primary phone number",
-  "location.contacts[].secondaryPhoneNumber": "secondary phone number",  
+  "location.contacts[].secondaryPhoneNumber": "secondary phone number",
   "location.contacts[].faxNumber": "fax",
   "location.contacts[].email": "email address",
 };
@@ -228,44 +230,12 @@ const getUniqueClientNumbers = (matches: MiscFuzzyMatchResult[]) => {
   return [...new Set(results)];
 };
 
-const uniqueClientNumbers = computed(() => getUniqueClientNumbers(fuzzyMatchedError.value.matches));
-
 const clearNotification = () => {
   fuzzyMatchedError.value.show = false;
   fuzzyMatchedError.value.fuzzy = false;
   fuzzyMatchedError.value.matches = [];
-  fuzzyMatchedError.value.description = "";
   customError.value = {};
 };
-
-interface DescriptionOption {
-  condition: (id: string) => boolean;
-  getDescription: () => string;
-}
-
-const fuzzySuffix =
-  "Review their information in the Client Management System to determine if you should create a new client:";
-
-const descriptionOptionList: DescriptionOption[] = [
-  {
-    condition: (id: string) => id === "global" && fuzzyMatchedError.value.fuzzy,
-    getDescription: () => `${uniqueClientNumbers.value.length} similar client
-        ${uniqueClientNumbers.value.length === 1 ? "record was" : "records were"}
-        found. ${fuzzySuffix}`,
-  },
-  {
-    condition: (id: string) => id === "global" && !fuzzyMatchedError.value.fuzzy,
-    getDescription:
-      () => `Looks like ”${props.businessName}” has a client number. Review their information in the
-        Management System if necessary:`,
-  },
-  {
-    condition: (id: string) => id.startsWith("location.addresses"),
-    getDescription: () => `${uniqueClientNumbers.value.length} client
-        ${uniqueClientNumbers.value.length === 1 ? "record was" : "records were"}
-        found with locations similar to this one. ${fuzzySuffix}`,
-  },
-];
 
 const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?: any) => {
   if (!event) {
@@ -314,19 +284,6 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
       */
      //if is better to let warning fields be colored as warning, change to rawMatch.fuzzy
       emitFieldErrors(fieldsList || [rawMatch.field], fuzzyMatchedError.value.fuzzy);
-    }
-
-    // Setting the error description
-    const option = descriptionOptionList.find((option) => option.condition(props.id));
-    if (option) {
-      fuzzyMatchedError.value.description = option.getDescription();
-    } else {
-      console.warn(
-        `fuzzy description not found, using the global one (with fuzzy: ${fuzzyMatchedError.value.fuzzy})`,
-      );
-      const fallbackOption = descriptionOptionList.find((option) => option.condition("global"));
-      fuzzyMatchedError.value.description = fallbackOption.getDescription();
-
     }
   }
 };

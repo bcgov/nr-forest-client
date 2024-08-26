@@ -111,6 +111,8 @@ export const indexedEmptyContact = (index: number): Contact =>
     }),
   );
 
+export const emptyContact: Contact = indexedEmptyContact(0);
+
 export const locationName = { value: "0", text: "Mailing address" };
 
 export const formDataDto: FormDataDto = {
@@ -139,18 +141,6 @@ export const formDataDto: FormDataDto = {
     addresses: [emptyAddress()],
     contacts: [],
   },
-};
-
-export const emptyContact: Contact = {
-  locationNames: [],
-  contactType: { value: "", text: "" },
-  firstName: "",
-  lastName: "",
-  phoneNumber: "",
-  secondaryPhoneNumber: "",
-  faxNumber: "",
-  email: "",
-  index: 0,
 };
 
 export const newFormDataDto = (): FormDataDto => JSON.parse(JSON.stringify(formDataDto));

@@ -97,18 +97,19 @@ describe("<ContactsWizardStep />", () => {
     }
   };
 
-  const addContact = (addressId: number, name: string) => {
+  const addContact = (contactId: number, name: string) => {
     cy.get(".body-02").should(
       "have.text",
       "Contacts can be added to the applicant's account"
     );
     cy.contains("Add another contact").should("be.visible").click();
+    cy.get(`cds-accordion-item[data-focus='contact-${contactId}-heading']`).focused();
 
     // Focus accordion title
     // TODO: uncomment next line when the following issue is fixed: https://github.com/cypress-io/cypress/issues/26383
     // cy.focused().should("contain.text", "Additional contact");
 
-    cy.get(`#firstName_${addressId}`)
+    cy.get(`#firstName_${contactId}`)
       .should("be.visible")
       .shadow()
       .find("input")
