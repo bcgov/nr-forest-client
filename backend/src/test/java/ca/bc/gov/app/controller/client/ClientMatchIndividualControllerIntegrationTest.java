@@ -87,7 +87,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
         .stubFor(
             get(urlPathEqualTo("/api/search/individual"))
                 .withQueryParam("firstName", equalTo(dto.businessInformation().firstName()))
-                .withQueryParam("lastName", equalTo(dto.businessInformation().businessName()))
+                .withQueryParam("lastName", equalTo(dto.businessInformation().lastName()))
                 .withQueryParam("dob", equalTo(dto.businessInformation().birthdate().format(
                     DateTimeFormatter.ISO_DATE))
                 )
@@ -98,7 +98,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
         .stubFor(
             get(urlPathEqualTo("/api/search/individual"))
                 .withQueryParam("firstName", equalTo(dto.businessInformation().firstName()))
-                .withQueryParam("lastName", equalTo(dto.businessInformation().businessName()))
+                .withQueryParam("lastName", equalTo(dto.businessInformation().lastName()))
                 .withQueryParam("dob", equalTo(dto.businessInformation().birthdate().format(
                     DateTimeFormatter.ISO_DATE))
                 )

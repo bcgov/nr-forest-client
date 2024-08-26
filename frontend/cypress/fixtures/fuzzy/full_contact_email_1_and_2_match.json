@@ -1,0 +1,20 @@
+{
+  "statusCode": 409,
+  "headers": {
+    "content-type": "application/json;charset=UTF-8"
+  },
+  "body":[
+    {
+      "field":"location.contacts[1].email", 
+      "match":"00000001", 
+      "fuzzy":true,
+      "partialMatch":false
+      },
+      {
+        "field":"location.contacts[2].email", 
+        "match":"00000001", 
+        "fuzzy":true,
+        "partialMatch":false
+        }
+    ]
+}

@@ -1,8 +1,10 @@
 {
-  "mail": "contact1@mail.ca",
-  "phone1": "1234567890",
-  "phone2": "1234567890",
-  "fax": "1234567890",
+  "firstName": "John",
+  "lastName": "Doe",
+  "emailAddress": "contact1@mail.ca",
+  "businessPhoneNumber": "1234567890",
+  "secondaryPhoneNumber": "1234567890",
+  "faxNumber": "1234567890",
   "role": "Person",
-  "address": "Headquarters"
+  "addressname": "Mailing address"
 }

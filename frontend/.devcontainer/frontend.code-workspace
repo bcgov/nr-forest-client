@@ -38,6 +38,7 @@
     "eslint.ignoreUntitled": true,
     "eslint.options": {
       "configFile": "./.eslintrc.js"
-    }
+    },
+    "scm.showHistoryGraph": false
   }
 }

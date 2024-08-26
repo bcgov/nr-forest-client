@@ -1113,6 +1113,17 @@ cds-actionable-notification * {
   letter-spacing: 0.02rem;
 }
 
+.label-02 {
+  align-self: stretch;
+  padding-bottom: 0.25rem;
+  color: var(--light-theme-text-text-primary, #131315);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1rem;
+  letter-spacing: 0.02rem;
+}
+
 .text-01 {
   display: flex;
   width: 18rem;
@@ -1505,14 +1516,32 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   top: calc(-1 * var(--header-height));
 }
 
-.hide-when-less-than-two-children:not(:has(:nth-child(2))) {
+.hide-when-less-than-two-children {
   display: none;
+
+  &:has(:nth-child(2)) {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
+/*
+I wish we could define .hide-when-less-than-two-children simply like this.
+But it's not working on Safari with dynamic updates.
+*/
+// .hide-when-less-than-two-children:not(:has(:nth-child(2))) {
+//   display: none;
+// }
+
 .errors-container {
+  --gap: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--gap);
+
+  &>.header-offset {
+    margin-bottom: calc(-1 * var(--gap));
+  }
 }
 
 .invisible {

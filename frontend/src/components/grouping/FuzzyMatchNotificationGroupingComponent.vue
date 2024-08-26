@@ -17,7 +17,7 @@ import { convertFieldNameToSentence } from "@/services/ForestClientService";
 const props = defineProps<{
   id: string;
   error?: FuzzyMatcherData;
-  businessName: string;
+  businessName?: string;
 }>();
 
 const fuzzyBus = useEventBus<FuzzyMatcherEvent>("fuzzy-error-notification");
@@ -28,8 +28,13 @@ const fuzzyMatchedError = ref<FuzzyMatcherData>(
     show: false,
     fuzzy: false,
     matches: [],
+    description: "",
   },
 );
+
+defineExpose({
+  fuzzyMatchedError,
+});
 
 const fieldNameToDescription : Record<string, string> = {
   "businessInformation.businessName": "client name",
@@ -46,46 +51,99 @@ const fieldNameToDescription : Record<string, string> = {
   "businessInformation.doingBusinessAs": "doing business as",
   "businessInformation.workSafeBcNumber": "WorkSafeBC number",
   "businessInformation.federalId": "federal identification number",
+  "businessInformation.firstName": "name",
+  "businessInformation.lastName": "name",
+  "location.addresses[].streetAddress": "address",
+  "location.addresses[].city": "address",
+  "location.addresses[].country": "address",
+  "location.addresses[].province": "address",
+  "location.addresses[].postalCode": "address",
+  "location.addresses[].businessPhoneNumber": "primary phone number",
+  "location.addresses[].secondaryPhoneNumber": "secondary phone number",
+  "location.addresses[].faxNumber": "fax",
+  "location.addresses[].emailAddress": "email address",
+  "location.contacts[].firstName": "contact",
+  "location.contacts[].lastName": "contact",
+  "location.contacts[].phoneNumber": "primary phone number",
+  "location.contacts[].secondaryPhoneNumber": "secondary phone number",
+  "location.contacts[].faxNumber": "fax",
+  "location.contacts[].email": "email address",
+
 };
 
-const fieldNameToNamingGroups : Record<string, string> = {
+const fieldNameToNamingGroups: Record<string, string[]> = {
   "businessInformation.businessName": ["businessInformation.businessName"],
   "businessInformation.registrationNumber": ["businessInformation.businessName"],
   "businessInformation.federalId": ["businessInformation.businessName"],
   "businessInformation.individual": [
-      "businessInformation.firstName",
-      "businessInformation.lastName",
-      "businessInformation.birthdate",
-      "businessInformation.businessName",
-    ],
+    "businessInformation.firstName",
+    "businessInformation.lastName",
+    "businessInformation.birthdate",
+    "businessInformation.businessName",
+  ],
   "businessInformation.individualAndDocument": [
-      "businessInformation.firstName",
-      "businessInformation.lastName",
-      "businessInformation.birthdate",
-      "businessInformation.clientIdentification",
-    ],
+    "businessInformation.firstName",
+    "businessInformation.lastName",
+    "businessInformation.birthdate",
+    "businessInformation.clientIdentification",
+  ],
   "businessInformation.clientIdentification": [
-      "businessInformation.identificationType",
-      "identificationProvince.text",
-      "businessInformation.clientIdentification",
-    ],
-    "businessInformation.doingBusinessAs": ["businessInformation.doingBusinessAs"],
-    "businessInformation.clientAcronym": ["businessInformation.clientAcronym"],
+    "businessInformation.identificationType",
+    "identificationProvince.text",
+    "businessInformation.clientIdentification",
+  ],
+  "businessInformation.doingBusinessAs": ["businessInformation.doingBusinessAs"],
+  "businessInformation.clientAcronym": ["businessInformation.clientAcronym"],
+  "location.addresses[].streetAddress": [
+    "location.addresses[].streetAddress",
+    "location.addresses[].city",
+    "location.addresses[].province",
+    "location.addresses[].country",
+    "location.addresses[].postalCode",
+  ],
+  "location.contacts[].firstName": [
+    "location.contacts[].firstName",
+    "location.contacts[].lastName",
+    "location.contacts[].email",
+    /*
+    Phone numbers are not included here because the error does not specify which phone matched.
+    However the application should still be able to tell which phone matched since a specific rule
+    for the specific phone should be matched at the same time.
+    */
+  ],
 };
 
-const fieldNameToLabel : Record<string, string> = {
+const fieldNameToLabel: Record<string, string> = {
   "businessInformation.individual": "name and date of birth",
   "businessInformation.individualAndDocument": "name, date of birth and ID number",
   "businessInformation.clientIdentification": "ID type and ID number",
   "businessInformation.businessName": "client name",
   "businessInformation.federalId": "federal identification number",
+  "location.addresses[].streetAddress": "address",
+  "location.addresses[].businessPhoneNumber": "primary phone number",
+  "location.addresses[].secondaryPhoneNumber": "secondary phone number",
+  "location.addresses[].faxNumber": "fax",
+  "location.addresses[].emailAddress": "email address",
+  "location.contacts[].firstName": "contact",
+  "location.contacts[].businessPhoneNumber": "primary phone number",
+  "location.contacts[].secondaryPhoneNumber": "secondary phone number",
+  "location.contacts[].faxNumber": "fax",
+  "location.contacts[].email": "email address",
 };
 
+const arrayIndexRegex = /\[(\d+)\]/;
+
 const createErrorEvent = (fieldList: string[], warning: boolean) =>
-  fieldList.map((fieldId) => ({
-    fieldId,
-    errorMsg: warning ? `There's already a client with this "${fieldNameToDescription[fieldId] || convertFieldNameToSentence(fieldId).toLowerCase()}"` : "Client already exists",
-  }));
+  fieldList.map((fieldId) => {
+    const genericField = fieldId.replace(arrayIndexRegex, "[]");
+    return {
+      fieldId,
+      errorMsg: warning
+        ? `There's already a client with this ${fieldNameToDescription[genericField] || convertFieldNameToSentence(fieldId).toLowerCase()}`
+        : "Client already exists",
+    };
+  });
+
 
 const emitFieldErrors = (fieldList: string[], warning: boolean) => {
   const errorEvent = createErrorEvent(fieldList, warning);
@@ -95,20 +153,32 @@ const emitFieldErrors = (fieldList: string[], warning: boolean) => {
   });
 };
 
-const label = (matchedFieldsText: string, warning: boolean) => {
+const label = (matchedFieldsText: string, partialMatch: boolean) => {
 
   if(!matchedFieldsText)
   return '';
 
-  const prefix = warning ? "Partial matching on" : "Matching on";
+  const prefix = partialMatch ? "Partial matching on" : "Matching on";
   return `${prefix} ${matchedFieldsText}`;
 }
+
+const getErrorsItemContent = ref((matches: MiscFuzzyMatchResult[]) => {
+
+  const matchValue = matches && matches.length > 0 ? getUniqueClientNumbers(matches) : [];    
+  const nonFuzzyMatch = matches.find((match) => !match.result?.fuzzy);
+
+  return nonFuzzyMatch && nonFuzzyMatch.result?.match ? renderErrorItem(
+    {
+      ...nonFuzzyMatch,
+      result: { ...nonFuzzyMatch.result, match: matchValue.join(",") },
+    }) : "";
+});
 
 const getListItemContent = ref((match: MiscFuzzyMatchResult) => {
   return match && match.result?.match ? renderListItem(match) : "";
 });
 
-const getLegacyUrl = (duplicatedClient, label) => {
+const getLegacyUrl = (duplicatedClient, label) => {  
   const encodedClientNumber = encodeURIComponent(duplicatedClient.trim());
   switch (label) {
     case "contact":
@@ -120,35 +190,25 @@ const getLegacyUrl = (duplicatedClient, label) => {
   }
 };
 
+const mapNumberToUrl = (clientNumber: string, field: string) => {
+  return '<a target="_blank" href="' + getLegacyUrl(clientNumber, field) + '">' + clientNumber + "</a>";
+};
+
 const renderListItem = (misc: MiscFuzzyMatchResult) => {
   const { result } = misc;
-  let finalLabel = "";
-  if (misc.label) {
-    finalLabel = misc.label;
-  } else if (result.field === "contact" || result.field === "location") {
-    finalLabel = "Matching one or more " + result.field + "s";
-  } else {
-    finalLabel =
-      (result.fuzzy ? "Partial m" : "M") +
-      "atching on " +
-      convertFieldNameToSentence(result.field).toLowerCase();
-  }
-
-  finalLabel += " - Client number: ";
-
+  const cleanFieldName = result.field.replace(arrayIndexRegex, "[]");
   const clients = [...new Set<string>(result.match.split(","))];
-  finalLabel += clients
-    .map(
-      (clientNumber) =>
-        '<a target="_blank" href="' +
-        getLegacyUrl(clientNumber, result.field) +
-        '">' +
-        clientNumber +
-        "</a>",
-    )
-    .join(", ");
-
+  const clientNumberLabel = "Client number" + (clients.length > 1 ? "s" : "");
+  const clientNumbers = clients.map(number => mapNumberToUrl(number, result.field)).join(", ");
+  const finalLabel = `${clientNumberLabel} ${clientNumbers} ${clients.length > 1 ? "were" : "was"} found with similar ${fieldNameToDescription[cleanFieldName]}.`;
   return finalLabel;
+};
+
+const renderErrorItem = (misc: MiscFuzzyMatchResult) => {
+  const { result } = misc;  
+  const clients = [...new Set<string>(result.match.split(","))];
+  const clientNumbers = clients.map(number => mapNumberToUrl(number, result.field)).join(", ");
+  return clientNumbers;
 };
 
 /**
@@ -165,30 +225,57 @@ const getUniqueClientNumbers = (matches: MiscFuzzyMatchResult[]) => {
   return [...new Set(results)];
 };
 
-const uniqueClientNumbers = computed(() => getUniqueClientNumbers(fuzzyMatchedError.value.matches));
-
+const clearNotification = () => {
+  fuzzyMatchedError.value.show = false;
+  fuzzyMatchedError.value.fuzzy = false;
+  fuzzyMatchedError.value.matches = [];
+};
 
 const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?: any) => {
-  if (event && event.matches.length > 0 && event.id === props.id) {
-        
+  if (!event) {
+    clearNotification();
+    return;
+  }
+  if (event.id === props.id) {
+    if (!event.matches?.length) {
+      clearNotification();
+      return;
+    }
     fuzzyMatchedError.value.show = true;
     fuzzyMatchedError.value.fuzzy = true;
     fuzzyMatchedError.value.matches = [];
 
-    for (const rawMatch of event.matches) {
 
-      const match: MiscFuzzyMatchResult = { result: rawMatch,label: label(fieldNameToLabel[rawMatch.field], rawMatch.fuzzy) };
+    for (const rawMatch of event.matches.sort((a, b) => a.fuzzy ? 1 : -1)) {
+
+      const genericField = rawMatch.field.replace(arrayIndexRegex, "[]");
+
+      const match: MiscFuzzyMatchResult = {
+        result: rawMatch,
+        label: label(fieldNameToLabel[genericField], rawMatch.partialMatch),
+      };
+
       if (!rawMatch.fuzzy) {
         fuzzyMatchedError.value.fuzzy = false;
       }
-      
+
       fuzzyMatchedError.value.matches.push(match);
-      emitFieldErrors(fieldNameToNamingGroups[rawMatch.field] || [rawMatch.field], rawMatch.fuzzy);
+
+      let fieldsList = fieldNameToNamingGroups[genericField];
+
+      if (genericField !== rawMatch.field && fieldsList) {
+        const regexGroups = rawMatch.field.match(arrayIndexRegex);
+        const id = regexGroups[1];
+        fieldsList = fieldsList.map((field) => field.replace("[]", `[${id}]`));
+      }
+
+      /*
+      Note: if the fieldsList is empty, it will use a single field with the same name returned from
+      the API.
+      */
+     //if is better to let warning fields be colored as warning, change to rawMatch.fuzzy
+      emitFieldErrors(fieldsList || [rawMatch.field], fuzzyMatchedError.value.fuzzy);
     }
-  } else {
-    fuzzyMatchedError.value.show = false;
-    fuzzyMatchedError.value.fuzzy = false;
-    fuzzyMatchedError.value.matches = [];
   }
 };
 
@@ -208,27 +295,21 @@ fuzzyBus.on(handleFuzzyErrorMessage);
     :title="fuzzyMatchedError.fuzzy ? 'Possible matching records found' : 'Client already exists'"
   >
     <div>
-      <span class="body-compact-02">
-        <template v-if="fuzzyMatchedError.fuzzy">
-          {{ uniqueClientNumbers.length }} similar client
-          <span v-if="uniqueClientNumbers.length === 1">record was</span>
-          <span v-else>records were</span>
-          found. Review their information in the Client Management System to determine if you should
-          should create a new client:
-        </template>
-        <template v-else>
-          Looks like ”{{ businessName }}” has a client number. Review their information in the
-          Management System if necessary:
-        </template>
-      </span>
-      <ul>
-        <!-- eslint-disable-next-line vue/no-v-html -->
-        <li
-          v-for="match in fuzzyMatchedError.matches"
-          :key="match.result.field"
-          v-dompurify-html="getListItemContent(match)"
-        ></li>
-      </ul>
+      <!-- eslint-disable-next-line vue/no-v-html -->
+      <span 
+        class="body-compact-01"
+        v-if="fuzzyMatchedError.fuzzy"
+        v-for="match in fuzzyMatchedError.matches"
+        :key="match.result.field"
+        v-dompurify-html="getListItemContent(match)"
+      ></span>
+        <span class="body-compact-01" v-if="fuzzyMatchedError.fuzzy">
+          Review them in the Client Management System to determine if you should create a new client.
+        </span>
+        <span v-else class="body-compact-01">
+          It looks like ”{{ businessName }}” has client number 
+          <span v-dompurify-html="getErrorsItemContent(fuzzyMatchedError.matches)"></span>.
+        </span >
       <span v-if="!fuzzyMatchedError.fuzzy" class="body-compact-02">
         You must inform the applicant of their number.
       </span>

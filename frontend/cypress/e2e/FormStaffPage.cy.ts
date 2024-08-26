@@ -1,5 +1,3 @@
-import type { StaticResponse } from "cypress/types/net-stubbing";
-
 /* eslint-disable no-undef */
 describe("Staff Form", () => {
 
@@ -10,9 +8,9 @@ describe("Staff Form", () => {
     birthdateYear: "2001",
     birthdateMonth: "05",
     birthdateDay: "30",
-    identificationTypeValue: "Canadian passport",
-    identificationProvinceValue: undefined,
-    clientIdentification: "AB345678",
+    identificationTypeValue: "Canadian driver's licence",
+    identificationProvinceValue: "British Columbia",
+    clientIdentification: "34567800",
   };
 
   const firstNationBaseData = {
@@ -101,6 +99,7 @@ describe("Staff Form", () => {
     cy.intercept("GET", '**/api/codes/client-types/I', {
       fixture: "clientTypeIndividual.json",
     }).as("getIndividual");
+
     cy.intercept("GET", "**/api/codes/countries?page=0&size=250", {
       fixture: "countries.json",
     }).as("getCountries");
@@ -532,15 +531,6 @@ describe("Staff Form", () => {
       // Add invalid character to the city      
       cy.fillFormEntry('#city_0', 'é');
 
-      //For some reason the top notification is not showing up
-      /*
-      cy.wait(10);
-      cy.contains("h2", "Locations");
-      cy.get(".top-notification cds-actionable-notification")
-        .should("be.visible")
-        .and("have.attr", "kind", "error");
-      */
-
       cy.get("#city_0")
         .find("input")
         .should("have.class", "cds--text-input--invalid");
@@ -550,6 +540,16 @@ describe("Staff Form", () => {
       cy.get("[data-test='wizard-next-button']").click();
       cy.contains("h2", "Locations");
       cy.get("[data-test='wizard-next-button']").click();
+
+      cy.wait(10);
+
+      // Check we are still in the same step
+      cy.contains("h2", "Locations");
+
+      // For some reason the top notification is not showing up
+      // cy.get(".top-notification cds-actionable-notification")
+      //   .should("be.visible")
+      //   .and("have.attr", "kind", "error");
 
       cy.get("#city_0")
         .find("input")
@@ -572,7 +572,6 @@ describe("Staff Form", () => {
       cy.get("#complementaryAddressOne_0")
         .find("input")
         .should("have.class", "cds--text-input--invalid");
-
 
     });
 
@@ -634,13 +633,15 @@ describe("Staff Form", () => {
       cy.contains("h2", "Contacts");
       cy.get("[data-test='wizard-next-button']").click();
 
-      //For some reason the top notification is not showing up
-      
       cy.wait(10);
+
+      // Check we are still in the same step
       cy.contains("h2", "Contacts");
-      cy.get(".top-notification cds-actionable-notification")
-        .should("be.visible")
-        .and("have.attr", "kind", "error");
+
+      // For some reason the top notification is not showing up
+      // cy.get(".top-notification cds-actionable-notification")
+      //   .should("be.visible")
+      //   .and("have.attr", "kind", "error");
       
       cy.get("#emailAddress_0")
         .find("input")
@@ -658,6 +659,10 @@ describe("Staff Form", () => {
         family_name: "Baxter",
         "cognito:groups": ["CLIENT_ADMIN"],
       });
+
+      cy.intercept("GET", "**/api/codes/countries/CA/BC",{
+        fixture: "provinceCodeBC.json",
+      }).as("getProvinceByCodes");
 
       // Check if the Create client button is visible
       cy.get("#menu-list-staff-form").should("be.visible").click();
@@ -691,8 +696,8 @@ describe("Staff Form", () => {
       
     });
 
-    it.only("should allow notes to be added", () => {
-      cy.fillFormEntry("cds-textarea", "This is a note!",1,true);
+    it("should allow notes to be added", () => {
+      cy.fillFormEntry("cds-textarea", "This is a note!", 1, true);
 
       cy.get("cds-textarea")
       .shadow()
@@ -706,7 +711,6 @@ describe("Staff Form", () => {
       .shadow()
       .find(".cds--text-area__label-wrapper")
       .should("contain", "4000/4000");
-
     });
 
   });

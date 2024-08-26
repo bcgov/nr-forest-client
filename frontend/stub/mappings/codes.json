@@ -73,6 +73,20 @@
       }
     },
     {
+      "name": "Get Province by CountryCode and ProvinceCode",
+      "request": {
+        "urlPattern": "/api/codes/countries/([A-Z]+)/([A-Z]+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-province-{{request.path.[3]}}-{{request.path.[4]}}.json"
+      }
+    },
+    {
       "name": "Get ClientType by Code",
       "request": {
         "urlPattern": "/api/codes/client-types/(.*)",

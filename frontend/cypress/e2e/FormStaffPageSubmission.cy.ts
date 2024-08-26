@@ -35,26 +35,37 @@ describe("Staff Form Submission", () => {
     });
   };
 
-  const fillLocation = (extraData: any = {}) => {
+  const fillLocation = (index: number, extraData: any = {}) => {
     cy.fixture("testdata/locationBaseData").then((fixtureData: any) => {
       const data = { ...fixtureData, ...extraData };
 
-      cy.fillFormEntry("#name_0", data.name_0, 0);
-      cy.selectAutocompleteEntry("#addr_0", data.addr_0, data.postal_0);
-      cy.wait("@getAddressValue");
+      cy.fillFormEntry(`#name_${index}`, data.name);
+      cy.selectAutocompleteEntry(`#addr_${index}`, data.addr, data.addressId);
+      cy.fillFormEntry(`#emailAddress_${index}`, data.emailAddress);
+      cy.fillFormEntry(`#businessPhoneNumber_${index}`, data.businessPhoneNumber);
+      cy.fillFormEntry(`#secondaryPhoneNumber_${index}`, data.secondaryPhoneNumber);
+      cy.fillFormEntry(`#faxNumber_${index}`, data.faxNumber);
     });
   };
 
-  const fillContact = (extraData: any = {}) => {
+  const fillContactWithoutName = (extraData: any = {}) => {
+    fillContact(0, extraData, true);
+  };
+
+  const fillContact = (index: number, extraData: any = {}, skipName = false) => {
     cy.fixture("testdata/contactBaseData").then((fixtureData: any) => {
       const data = { ...fixtureData, ...extraData };
-      cy.fillFormEntry("#emailAddress_0", data.mail);
-      cy.fillFormEntry("#businessPhoneNumber_0", data.phone1);
-      cy.fillFormEntry("#secondaryPhoneNumber_0", data.phone2);
-      cy.fillFormEntry("#faxNumber_0", data.fax);
+      if (!skipName) {
+        cy.fillFormEntry(`#firstName_${index}`, data.firstName);
+        cy.fillFormEntry(`#lastName_${index}`, data.lastName);
+      }
+      cy.fillFormEntry(`#emailAddress_${index}`, data.emailAddress);
+      cy.fillFormEntry(`#businessPhoneNumber_${index}`, data.businessPhoneNumber);
+      cy.fillFormEntry(`#secondaryPhoneNumber_${index}`, data.secondaryPhoneNumber);
+      cy.fillFormEntry(`#faxNumber_${index}`, data.faxNumber);
       cy.wait("@getRoles");
-      cy.selectFormEntry("#role_0", data.role, false);
-      cy.selectFormEntry("#addressname_0", data.address, true);
+      cy.selectFormEntry(`#role_${index}`, data.role, false);
+      cy.selectFormEntry(`#addressname_${index}`, data.addressname, true);
     });
   };
 
@@ -206,10 +217,10 @@ describe("Staff Form Submission", () => {
     fillIndividual();
     clickNext();
     cy.contains("h2", "Locations");
-    fillLocation();
+    fillLocation(0);
     clickNext();
     cy.contains("h2", "Contacts");
-    fillContact();
+    fillContactWithoutName();
     clickNext();
     cy.contains("h2", "Review");
 
@@ -221,10 +232,10 @@ describe("Staff Form Submission", () => {
     fillIndividual();
     clickNext();
     cy.contains("h2", "Locations");
-    fillLocation();
+    fillLocation(0);
     clickNext();
     cy.contains("h2", "Contacts");
-    fillContact();
+    fillContactWithoutName();
     clickNext();
     cy.contains("h2", "Review");
 
@@ -246,10 +257,10 @@ describe("Staff Form Submission", () => {
     });
     clickNext();
     cy.contains("h2", "Locations");
-    fillLocation();
+    fillLocation(0);
     clickNext();
     cy.contains("h2", "Contacts");
-    fillContact();
+    fillContactWithoutName();
     clickNext();
     cy.contains("h2", "Review");
 

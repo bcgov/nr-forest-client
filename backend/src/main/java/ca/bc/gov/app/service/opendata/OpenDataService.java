@@ -2,10 +2,12 @@ package ca.bc.gov.app.service.opendata;
 
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
+import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.opendata.Feature;
 import ca.bc.gov.app.dto.opendata.OpenData;
 import ca.bc.gov.app.repository.client.ProvinceCodeRepository;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +36,8 @@ public class OpenDataService {
             log.info("Returning first nation data for nationName: {} {}", nationName,
                 openDataFeature)
         )
-        .flatMap(this::convertToDto);
+        .flatMap(this::convertToDto)
+        .sort(Comparator.comparing(ClientDetailsDto::name));
   }
 
   private Mono<ClientDetailsDto> convertToDto(Feature openDataFeature) {

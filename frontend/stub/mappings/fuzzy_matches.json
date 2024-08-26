@@ -158,6 +158,58 @@
         "headers": { "Content-Type": "application/json" }
       }
     },
+    {
+      "name": "Submission Fuzzy for Individuals: Both Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "I"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.firstName",
+              "equalTo": "Jonas"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.lastName",
+              "equalTo": "Baxter"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.birthdate",
+              "equalTo": "1970-01-01"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientIdentification",
+              "equalTo": "4444444"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_individual_doc_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
 
     {
       "name": "Submission Fuzzy for BC Registered: Partial name Match",
@@ -535,6 +587,37 @@
       }
     },
     {
+      "name": "Submission Dynamic Match Stub for Location email",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses..[?(@.emailAddress)]",
+              "contains": "match"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{{val (array) assign='indexList'}}{{#each (jsonPath request.body '$.location.addresses') as |address|}}{{#if (contains address.emailAddress 'match')}}{{val (arrayAdd indexList @index) assign='indexList'}}{{/if}}{{/each}}{{#arrayJoin ',' indexList as |index|}}{\"field\":\"location.addresses[{{index}}].emailAddress\", \"match\":\"0000000{{index}}\", \"fuzzy\":true, \"partialMatch\":false}{{/arrayJoin}}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
       "name": "Submission Match Stub for businessPhoneNumber",
       "request": {
         "url": "/api/clients/matches",
@@ -654,6 +737,36 @@
         }
       }
     },
+    {
+      "name": "Submission Match Stub for street address",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses[1].streetAddress",
+              "equalTo": "6493 Maple Ave"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_address_1_match.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
 
     {
       "name": "Submission Match Stub for Contact email",
@@ -683,6 +796,37 @@
         "headers": {
           "Content-Type": "application/json"
         }
+      }
+    },
+    {
+      "name": "Submission Dynamic Match Stub for Contact email",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "3"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts..[?(@.email)]",
+              "contains": "match"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{{val (array) assign='indexList'}}{{#each (jsonPath request.body '$.location.contacts') as |contact|}}{{#if (contains contact.email 'match')}}{{val (arrayAdd indexList @index) assign='indexList'}}{{/if}}{{/each}}{{#arrayJoin ',' indexList as |index|}}{\"field\":\"location.contacts[{{index}}].email\", \"match\":\"0000000{{index}}\", \"fuzzy\":true, \"partialMatch\":false}{{/arrayJoin}}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
       }
     },
     {
@@ -776,7 +920,37 @@
       }
     },
     {
-      "name": "Submission Match Stub for contact info",
+      "name": "Submission Match Stub for contact info and secondaryPhoneNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "3"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts[0].secondaryPhoneNumber",
+              "equalTo": "(777) 777-7777"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_contact_and_full_contact_secondary_phone_matches.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for contact info and secondaryPhoneNumber",
       "request": {
         "url": "/api/clients/matches",
         "method": "POST",

@@ -145,6 +145,7 @@ describe("<LocationsWizardStep />", () => {
 
   const addAddress = (addressId: number, name: string) => {
     cy.contains("Add another location").should("be.visible").click();
+    cy.get(`cds-accordion-item[data-focus='address-${addressId}-heading']`).focused();
 
     // Focus accordion title
     // TODO: uncomment next line when the following issue is fixed: https://github.com/cypress-io/cypress/issues/26383
@@ -204,11 +205,13 @@ describe("<LocationsWizardStep />", () => {
                   province: { value: "BC", text: "British Columbia" },
                   city: "Victoria",
                   postalCode: "A0A0A0",
+                  index: 0,
                 } as Address,
                 ...(includeOtherAddressesInProps ? otherAddressNames : []).map(
-                  (locationName) => ({
+                  (locationName, index) => ({
                     ...emptyAddress(),
                     locationName,
+                    index: index + 1,
                   }),
                 ),
               ],
@@ -299,6 +302,7 @@ describe("<LocationsWizardStep />", () => {
     });
 
     cy.contains("Add another location").should("be.visible").click();
+    cy.get("cds-accordion-item[data-focus='address-1-heading']").focused();
 
     cy.get("#name_1").should("be.visible").find("input").type("my office");
 
@@ -324,12 +328,14 @@ describe("<LocationsWizardStep />", () => {
                 complementaryAddressOne: "",
                 complementaryAddressTwo: null,
                 ...address,
+                index: 0,
               } as Address,
               {
                 locationName: "My Store",
                 complementaryAddressOne: "",
                 complementaryAddressTwo: null,
                 ...address,
+                index: 1,
               } as Address,
             ],
             contacts: [],
