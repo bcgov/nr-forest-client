@@ -28,5 +28,6 @@
       "phoneNumber": null,
       "email": null
     }
-  ]
+  ],
+  "isOwnedByPerson": false
 }

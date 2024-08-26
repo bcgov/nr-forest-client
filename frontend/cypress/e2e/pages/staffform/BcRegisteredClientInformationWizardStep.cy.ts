@@ -1,0 +1,503 @@
+import testCases from "../../../fixtures/staff/bcregisteredscenarios.json";
+
+/* eslint-disable no-undef */
+describe("Bc Registered Staff Wizard Step", () => {
+
+  beforeEach(() => {
+    cy.viewport(1920, 1080);
+
+    cy.intercept("GET", '/api/clients/submissions?page=0&size=10', {
+      fixture: "submissions.json",
+      headers: {
+        "x-total-count": "1",
+        "content-type": "application/json;charset=UTF-8",
+        "Access-Control-Expose-Headers": "x-total-count",
+      },
+    }).as("getSubmissions");
+
+    cy.intercept("GET", "/api/clients/name/exi", {
+      fixture: "clients/bcreg_ac_list1.json",
+    });
+    cy.intercept("GET", "/api/clients/C1234567", {
+      fixture: "clients/bcreg_C1234567.json",
+    });
+    cy.fixture("clients/bcreg_ac_list2.json").then((data) =>
+      data.forEach(element => cy.intercept("GET",`**/api/clients/name/${encodeURIComponent(element.name)}`,
+          {
+            fixture: "clients/bcreg_ac_list2.json",
+          }
+        )
+      )
+    );
+
+    cy.fixture("clients/bcreg_ac_list3.json").then((data) =>
+      data.forEach(element => cy.intercept("GET",`**/api/clients/name/${encodeURIComponent(element.name)}`,
+          {
+            fixture: "clients/bcreg_ac_list3.json",
+          }
+        )
+      )
+    );
+  });
+
+  it('should render the component', () => {
+    loginAndNativateToStaffForm();
+  });
+
+  describe("Validation", () => {
+    beforeEach(() => {
+      // Existing Corporation 1
+      cy.intercept("GET", "**/api/clients/name/cor", {
+        statusCode: 200,
+        fixture: "clients/bcreg_ac_list3.json",
+      }).as("clientSearchCOR");
+
+      cy.intercept("GET", `**/api/clients/C1234567`, {
+        fixture: "clients/bcreg_C1234567.json",
+      }).as("clientDetailsC1234567");
+
+      // Long name corporation
+      cy.intercept("GET", "**/api/clients/name/lon", {
+        statusCode: 200,
+        fixture: "clients/bcreg_ac_list4.json",
+      }).as("clientSearchLON");
+
+      cy.intercept(
+        "GET",
+        `**/api/clients/name/${encodeURIComponent(
+          "Existing Corporation with a super long name that should not be allowed here"
+        )}`,
+        {
+          fixture: "clients/bcreg_ac_list4.json",
+        }
+      ).as("clientSearchEncodedLON");
+
+      cy.intercept("GET", "**/api/clients/name/all", {
+        statusCode: 200,
+        fixture: "clients/bcreg_ac_list4.json",
+      }).as("clientSearchALLLA1");
+      cy.intercept("GET", "**/api/clients/name/alll", {
+        statusCode: 200,
+        fixture: "clients/bcreg_ac_list4.json",
+      }).as("clientSearchALLLA2");
+      cy.intercept("GET", "**/api/clients/name/alllá", {
+        statusCode: 200,
+        fixture: "clients/bcreg_ac_list4.json",
+      }).as("clientSearchALLLA3");
+
+      cy.intercept(
+        "GET",
+        `**/api/clients/name/${encodeURIComponent("alllá")}`,
+        {
+          fixture: "clients/bcreg_ac_list4.json",
+        }
+      ).as("clientSearchEncodedALLLA4");
+
+      cy.intercept("GET", `**/api/clients/C1231231`, {
+        fixture: "clients/bcreg_C1231231.json",
+      }).as("clientDetailsC1231231");
+
+      // Existing Sole Proprietorship
+      cy.intercept("GET", "**/api/clients/name/sol", {
+        statusCode: 200,
+        fixture: "clients/bcreg_ac_list4.json",
+      }).as("clientSearchSOL");
+  
+      cy.intercept("GET", `**/api/clients/FM123456`, {
+        fixture: "clients/bcreg_FM123456.json",
+      }).as("clientDetailsFM123456");
+      loginAndNativateToStaffForm();
+    });
+
+    it("should validate the client name", () => {      
+
+      cy.selectAutocompleteEntry(
+        "#businessName",
+        "cor",
+        "C1234567",
+        "@clientSearchCOR"
+      );
+
+      cy.get("#businessName").shadow().find("div#selection-button").click();
+
+      cy.checkAutoCompleteErrorMessage(
+        "#businessName",
+        "Client name cannot be empty"
+      );
+
+      cy.wait(2)
+
+      cy.selectAutocompleteEntry(
+        "#businessName",
+        "lon",
+        "C1231231",
+        "@clientSearchLON"
+      );
+      cy.checkAutoCompleteErrorMessage(
+        "#businessName",
+        "The client name has a 60 character limit"
+      );
+      
+      cy.wait(2)
+
+      cy.get("#businessName").shadow().find("div#selection-button").click();
+
+      cy.checkAutoCompleteErrorMessage(
+        "#businessName",
+        "Client name cannot be empty"
+      );
+      cy.wait(2)
+      
+      cy.selectAutocompleteEntry(
+        "#businessName",
+        "alllá",
+        "FM999457",
+        "@clientSearchEncodedALLLA4"
+      );      
+      cy.wait(2)
+      cy.checkAutoCompleteErrorMessage(
+        "#businessName",
+        "The client name can only contain: A-Z, a-z, 0-9, space or common symbols"
+      );
+
+    });
+
+    it("should validate work safe bc number", () => {
+
+      cy.selectAutocompleteEntry(
+        "#businessName",
+        "cor",
+        "C1234567",
+        "@clientSearchCOR"
+      );
+      cy.wait("@clientDetailsC1234567");
+      cy.get("#workSafeBCNumber").should("exist").and("have.value", "");
+
+      cy.get("#workSafeBCNumber").shadow().find("input").clear();
+      cy.fillFormEntry("#workSafeBCNumber", "potato");
+      cy.checkInputErrorMessage(
+        "#workSafeBCNumber",
+        "WorkSafeBC number should contain only numbers"
+      );
+      
+      cy.wait(2)
+
+      cy.get("#workSafeBCNumber").shadow().find("input").clear();
+      cy.fillFormEntry("#workSafeBCNumber", "234567");
+      cy.fillFormEntry("#doingBusinessAs", "Doing");
+      cy.fillFormEntry("#workSafeBCNumber", "1");      
+      cy.checkInputErrorMessage(
+        "#workSafeBCNumber",
+        "The WorkSafeBC has a 6 character limit"
+      );
+            
+    });
+
+    it("should validate doing business as", () => {
+
+      cy.selectAutocompleteEntry(
+        "#businessName",
+        "cor",
+        "C1234567",
+        "@clientSearchCOR"
+      );
+      cy.wait("@clientDetailsC1234567");
+      cy.get("#doingBusinessAs").should("exist").and("have.value", "");
+
+      cy.fillFormEntry("#doingBusinessAs", "1".repeat(200));
+      cy.checkInputErrorMessage(
+        "#doingBusinessAs",
+        "The doing business as has a 120 character limit"
+      );
+
+      cy.get("#doingBusinessAs").shadow().find("input").clear();
+      cy.fillFormEntry("#doingBusinessAs", "lá");
+      cy.checkInputErrorMessage(
+        "#doingBusinessAs",
+        "The doing business as can only contain: A-Z, a-z, 0-9, space or common symbols"
+      );
+    });
+
+    it("should validate acronym", () => {
+
+      cy.selectAutocompleteEntry('#businessName', 'cor','C1234567','@clientSearchCOR');
+      cy.wait('@clientDetailsC1234567');
+      cy.get('#acronym').should('exist').and("have.value", "");
+
+      cy.fillFormEntry('#acronym', '1'.repeat(10));
+      cy.checkInputErrorMessage('#acronym','The acronym has a 8 character limit');
+      
+      cy.get('#acronym').shadow().find('input').clear();
+      cy.fillFormEntry('#acronym', 'láe');
+      cy.checkInputErrorMessage('#acronym','The acronym can only contain: A-Z or 0-9');
+
+      cy.get('#acronym').shadow().find('input').clear();
+      cy.fillFormEntry('#acronym', 'I');
+      cy.checkInputErrorMessage('#acronym','The acronym must contain at least 3 characters');
+
+    });
+
+    it("should validate birthdate", () => {
+
+      cy.selectAutocompleteEntry(
+        "#businessName",
+        "sol",
+        "FM123456",
+        "@clientSearchSOL"
+      );
+      cy.wait("@clientDetailsFM123456");
+
+      cy.get("#birthdateYear").should("exist").and("have.value", "");
+      cy.get("#birthdateMonth").should("exist").and("have.value", "");
+      cy.get("#birthdateDay").should("exist").and("have.value", "");
+
+      cy.fillFormEntry("#birthdateYear", "2021");
+      cy.fillFormEntry("#birthdateMonth", "12");
+      cy.fillFormEntry("#birthdateDay", "12");
+
+      cy.get(".cds--form-requirement")
+        .should("exist")
+        .and("have.class", "field-error")
+        .and(
+          "include.text",
+          "The applicant must be at least 19 years old to apply"
+        );
+
+      cy.wait(15);
+
+      cy.get("#birthdateYear").shadow().find("input").clear();
+      cy.get("div.frame-01").should("exist").click();
+      cy.wait(15);
+
+      cy.get(".cds--form-requirement")
+        .should("exist")
+        .and("have.class", "field-error")
+        .and("include.text", "Date of birth must include a year");
+
+      cy.fillFormEntry("#birthdateYear", "1970");
+      cy.get("#birthdateMonth").shadow().find("input").clear();
+      cy.get("div.frame-01").should("exist").click();
+      cy.wait(15);
+
+      cy.get(".cds--form-requirement")
+        .should("exist")
+        .and("have.class", "field-error")
+        .and("include.text", "Date of birth must include a month");
+
+      cy.fillFormEntry("#birthdateMonth", "12");
+      cy.get("#birthdateDay").shadow().find("input").clear();
+      cy.get("div.frame-01").should("exist").click();
+      cy.wait(15);
+
+      cy.get(".cds--form-requirement")
+        .should("exist")
+        .and("have.class", "field-error")
+        .and("include.text", "Date of birth must include a day");
+    });
+  });
+
+  describe("Scenario combinations", () => {
+
+    beforeEach(function () {
+      //The title contains some parameters that we need to extract
+      const params: string[] = this.currentTest.title
+        .split(":")[1]
+        .trim()
+        .replace(" should return ", " ")
+        .split(" ");
+
+      const detailsCode = (code: string) => {
+        switch (code) {
+          case "bcd":
+        return 408;
+          case "dup":
+        return 409;
+          case "cnf":
+        return 404;
+          default:
+        return 200;
+        }
+      };
+
+      //We need to intercept the client search for the scenario, as param 1
+      cy.intercept("GET", `**/api/clients/name/${params[0]}`, {
+        statusCode: 200,
+        fixture: "clients/bcreg_ac_list2.json",
+      }).as(`clientSearch${params[0]}`);
+      
+      //We load the fixture beforehand due to the different content types and extensions based on the response
+      cy.fixture(
+        `clients/bcreg_${params[1]}.${
+          detailsCode(params[0]) === 200 ? "json" : "txt"
+        }`,
+        "utf-8"
+      ).then((data) => {
+        cy.log("data", data);
+        cy.intercept("GET", `**/api/clients/${params[1]}`, {
+          statusCode: detailsCode(params[0]),
+          body: data,
+          headers: {
+            "content-type":
+              detailsCode(params[0]) !== 200
+                ? "text/plain"
+                : "application/json",
+          },
+        }).as(`clientDetails${params[0]}`);
+      });
+      loginAndNativateToStaffForm();
+    });
+  
+    testCases.forEach((scenario) => {
+      it(`${scenario.scenarioName} : ${scenario.companySearch} should return ${scenario.companyCode}`, () => {
+        // Initially, only the client name and the info notification should exist
+        cy.get("#businessName").should("exist");
+        cy.get("cds-inline-notification").should("exist");
+
+        //Just a check to make sure the fields are not visible
+        cy.get(".read-only-box").should("not.exist");
+
+        cy.get("cds-inline-notification#bcRegistrySearchNotification").should(
+          "exist"
+        );
+
+        // Then, when a client is selected, the rest of the form should appear
+        cy.selectAutocompleteEntry(
+          "#businessName",
+          scenario.companySearch,
+          scenario.companyCode,
+          `@clientSearch${scenario.companySearch}`
+        );
+
+        cy.wait(`@clientDetails${scenario.companySearch}`);
+
+        if (scenario.showDuplicatedNotification) {
+          cy.get("#businessName")
+            .should("have.attr", "aria-invalid", "true")
+            .should("have.attr", "invalid-text", "Client already exists");
+
+          cy.get("#businessName").shadow().find("svg").should("exist");
+        }
+
+        cy.get("cds-inline-notification#bcRegistrySearchNotification").should(
+          "not.exist"
+        );
+
+        if (scenario.showBcRegDownNotification) {
+          cy.wait(`@clientDetails${scenario.companySearch}`);
+          cy.wait(5000);
+          cy.get("cds-inline-notification#bcRegistryDownNotification").should(
+            "exist"
+          );
+        }
+
+        if (scenario.showData) {
+          const success = Object.entries(scenario)
+            .filter(
+              ([key, value]) =>
+                key.startsWith("show") && key.endsWith("Notification")
+            )
+            .map(([key, value]) => value)
+            .every((value) => value === false);
+
+          cy.get(
+            ".read-only-box > cds-inline-notification#readOnlyNotification"
+          ).should(
+            success || scenario.showDuplicatedNotification
+              ? "exist"
+              : "not.exist"
+          );
+
+          cy.get(`.read-only-box > #legalType > .title-group-01 > .label-01`)
+            .should("exist")
+            .and("have.text", "Type");
+
+          cy.get(`.read-only-box > #legalType > .body-compact-01`)
+            .should("exist")
+            .and("have.text", scenario.type);
+
+          cy.get(
+            `.read-only-box > #registrationNumber > .title-group-01 > .label-01`
+          )
+            .should("exist")
+            .and("have.text", "Registration number");
+
+          cy.get(`.read-only-box > #registrationNumber > .body-compact-01`)
+            .should("exist")
+            .and("have.text", scenario.companyCode);
+
+          if (scenario.showUnknowNotification) {
+            cy.get(
+              ".read-only-box > cds-inline-notification#unknownStandingNotification"
+            ).should("exist");
+            //TODO: check the text and style maybe?!
+          }
+
+          if (scenario.showNotGoodStandingNotification) {
+            cy.get(
+              ".read-only-box > cds-inline-notification#notGoodStandingNotification"
+            ).should("exist");
+            //TODO: check the text and style maybe?!
+          }
+
+          cy.get(`.read-only-box > #goodStanding > .title-group-01 > .label-01`)
+            .should("exist")
+            .and("have.text", "BC Registries standing");
+
+          cy.get(
+            `.read-only-box > #goodStanding > div.internal-grouping-01 > .body-compact-01`
+          )
+            .should("exist")
+            .and("have.text", scenario.standing);
+        }
+
+        if (scenario.showBirthdate) {
+          cy.get("#birthdate").should("be.visible");
+        }
+
+        if(scenario.showNotOwnedByPersonError){          
+          cy.get("#businessName")
+            .should("have.attr", "aria-invalid", "true")
+            .should("have.attr", "invalid-text", "This sole proprietor is not owned by a person");
+
+          cy.get("#businessName").shadow().find("svg").should("exist");
+        }
+
+        cy.get("#workSafeBCNumber").should("exist").and("have.value", "");
+        cy.get("#doingBusinessAs").should(scenario.dba ? "not.exist" : "exist");
+        cy.get("#acronym").should("exist").and("have.value", "");        
+      });
+    });
+    
+  });
+
+  const loginAndNativateToStaffForm = () => {
+    cy.visit("/");
+
+    cy.get("#landing-title").should(
+      "contain",
+      "Forests Client Management System"
+    );
+
+    cy.get("#landing-subtitle").should(
+      "contain",
+      "Create and manage client accounts"
+    );
+
+    cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
+      given_name: "James",
+      family_name: "Baxter",
+      "cognito:groups": ["CLIENT_ADMIN"],
+    });
+
+    cy.wait("@getSubmissions");
+
+    // Check if the Create client button is visible
+    cy.get("#menu-list-staff-form").should("be.visible").click();
+
+    cy.get("h1").should("be.visible").should("contain", " Create client ");
+
+    cy.get("#clientType").should("be.visible").and("have.value", "");
+      cy.selectFormEntry("#clientType", "BC registered business", false);
+  };
+
+});

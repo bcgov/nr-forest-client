@@ -36,8 +36,11 @@ defineExpose({
   fuzzyMatchedError,
 });
 
+const customError = ref<{title?:string, message?: string}>({});
+
 const fieldNameToDescription : Record<string, string> = {
   "businessInformation.businessName": "client name",
+  "businessInformation.notOwnedByPerson": "client name",
   "businessInformation.registrationNumber": "registration number",
   "businessInformation.individual": "name and birthdate",
   "businessInformation.individualAndDocument": "name, birthdate and identification number",
@@ -72,6 +75,7 @@ const fieldNameToDescription : Record<string, string> = {
 };
 
 const fieldNameToNamingGroups: Record<string, string[]> = {
+  "businessInformation.notOwnedByPerson": ["businessInformation.businessName"],
   "businessInformation.businessName": ["businessInformation.businessName"],
   "businessInformation.registrationNumber": ["businessInformation.businessName"],
   "businessInformation.federalId": ["businessInformation.businessName"],
@@ -114,6 +118,7 @@ const fieldNameToNamingGroups: Record<string, string[]> = {
 };
 
 const fieldNameToLabel: Record<string, string> = {
+  "businessInformation.notOwnedByPerson": "client",
   "businessInformation.individual": "name and date of birth",
   "businessInformation.individualAndDocument": "name, date of birth and ID number",
   "businessInformation.clientIdentification": "ID type and ID number",
@@ -229,9 +234,10 @@ const clearNotification = () => {
   fuzzyMatchedError.value.show = false;
   fuzzyMatchedError.value.fuzzy = false;
   fuzzyMatchedError.value.matches = [];
+  customError.value = {};
 };
 
-const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?: any) => {
+const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, payload?: any) => {
   if (!event) {
     clearNotification();
     return;
@@ -245,6 +251,9 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
     fuzzyMatchedError.value.fuzzy = true;
     fuzzyMatchedError.value.matches = [];
 
+    if(payload && payload.title && payload.message){
+      customError.value = payload;
+    }
 
     for (const rawMatch of event.matches.sort((a, b) => a.fuzzy ? 1 : -1)) {
 
@@ -292,25 +301,26 @@ fuzzyBus.on(handleFuzzyErrorMessage);
     hide-close-button="true"
     open="true"
     :kind="fuzzyMatchedError.fuzzy ? 'warning' : 'error'"
-    :title="fuzzyMatchedError.fuzzy ? 'Possible matching records found' : 'Client already exists'"
+    :title="customError.title || (fuzzyMatchedError.fuzzy ? 'Possible matching records found' : 'Client already exists')"
   >
     <div>
       <!-- eslint-disable-next-line vue/no-v-html -->
+      <span class="body-compact-01" v-if="customError.message">{{ customError.message }}</span>
       <span 
         class="body-compact-01"
-        v-if="fuzzyMatchedError.fuzzy"
+        v-if="fuzzyMatchedError.fuzzy && !customError.message"
         v-for="match in fuzzyMatchedError.matches"
         :key="match.result.field"
         v-dompurify-html="getListItemContent(match)"
       ></span>
-        <span class="body-compact-01" v-if="fuzzyMatchedError.fuzzy">
+        <span class="body-compact-01" v-if="fuzzyMatchedError.fuzzy && !customError.message">
           Review them in the Client Management System to determine if you should create a new client.
         </span>
-        <span v-else class="body-compact-01">
+        <span v-if="!fuzzyMatchedError.fuzzy && !customError.message" class="body-compact-01">
           It looks like ”{{ businessName }}” has client number 
           <span v-dompurify-html="getErrorsItemContent(fuzzyMatchedError.matches)"></span>.
         </span >
-      <span v-if="!fuzzyMatchedError.fuzzy" class="body-compact-02">
+      <span v-if="!fuzzyMatchedError.fuzzy && !customError.message" class="body-compact-02">
         You must inform the applicant of their number.
       </span>
     </div>

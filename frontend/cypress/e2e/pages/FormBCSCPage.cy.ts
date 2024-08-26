@@ -1,5 +1,3 @@
-import { delay } from "cypress/types/bluebird";
-
 /* eslint-disable no-undef */
 describe("BCSC Form", () => {
   

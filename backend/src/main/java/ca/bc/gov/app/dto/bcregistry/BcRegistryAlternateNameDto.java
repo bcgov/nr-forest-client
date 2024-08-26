@@ -1,19 +1,19 @@
 package ca.bc.gov.app.dto.bcregistry;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import lombok.With;
 
 @With
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record BcRegistryFacetSearchResultEntryDto(
-    String bn,
+public record BcRegistryAlternateNameDto(
+    String entityType,
     String identifier,
-    String legalType,
     String name,
-    String status,
-    Boolean goodStanding,
-    List<BcRegistryFacetPartyDto> parties
+    ZonedDateTime registeredDate,
+    LocalDate startDate
 ) {
 
 }

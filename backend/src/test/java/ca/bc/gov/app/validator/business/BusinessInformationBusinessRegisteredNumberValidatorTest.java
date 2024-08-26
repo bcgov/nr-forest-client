@@ -54,6 +54,7 @@ class BusinessInformationBusinessRegisteredNumberValidatorTest {
           .thenReturn(Flux.just(
                   new BcRegistryDocumentDto(
                       new BcRegistryBusinessDto(
+                          List.of(),
                           isGoodStanding,
                           false,
                           false,

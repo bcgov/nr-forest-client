@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -70,7 +71,16 @@ public class RegisteredStepMatcher implements StepMatcher {
     Flux<ForestClientDto> individualFuzzyMatch =
         Mono
             .just(dto.businessInformation())
+            //If it's a Registered Sole Proprietorship
             .filter(businessInformation -> businessInformation.clientType().equals("RSP"))
+            //And we have First and Last name
+            .filter(businessInformation -> !StringUtils.isAllBlank(
+                    businessInformation.firstName(),
+                    businessInformation.lastName()
+                )
+            )
+            //And we have a birthdate
+            .filter(businessInformation -> businessInformation.birthdate() != null)
             .flatMapMany(businessInformation ->
                 legacyService.searchIndividual(
                     businessInformation.firstName(),
@@ -126,7 +136,7 @@ public class RegisteredStepMatcher implements StepMatcher {
         legacyService
             .searchGeneric(
                 "doingBusinessAs",
-                    "dbaName",
+                "dbaName",
                 dto.businessInformation().doingBusinessAs()
             ).doOnNext(client -> log.info("Match found for doing business as fuzzy match: {}",
                 client.clientNumber())
