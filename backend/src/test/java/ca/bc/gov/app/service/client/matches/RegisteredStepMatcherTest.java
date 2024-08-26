@@ -31,6 +31,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
+@SuppressWarnings("ALL")
 @DisplayName("Unit Test | Registered Step Matcher")
 @Slf4j
 class RegisteredStepMatcherTest {
@@ -339,6 +340,28 @@ class RegisteredStepMatcherTest {
             named("dba fuzzy matched", Flux.just(ClientMatchDataGenerator.getForestClientDto("00000006"))),
             named("dba full matched", Flux.just(ClientMatchDataGenerator.getForestClientDto("00000007"))),
             true,
+            false
+        ),
+        Arguments.of(
+            ClientMatchDataGenerator
+                .getRegisteredSP(
+                    "FM123456",
+                    "Santa Marta Corp",
+                    StringUtils.EMPTY,
+                    "Santa Marta Corp",
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    LocalDate.of(1970, 1, 12)
+                ),
+            named("no individual request done", Flux.empty()),
+            named("no fuzzy name", Flux.empty()),
+            named("no registration", Flux.empty()),
+            named("no full name", Flux.empty()),
+            named("no acronym", Flux.empty()),
+            named("no dba fuzzy", Flux.empty()),
+            named("no dba full", Flux.empty()),
+            false,
             false
         )
     );

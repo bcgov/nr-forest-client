@@ -228,14 +228,14 @@ public class ClientService {
             .doOnNext(document ->
                 log.info("Searching on Oracle legacy db for {} {}",
                     document.business().identifier(),
-                    document.business().legalName()
+                    document.business().getResolvedLegalName()
                 )
             )
             .flatMap(document ->
                 legacyService
                     .searchLegacy(
                         document.business().identifier(),
-                        document.business().legalName(),
+                        document.business().getResolvedLegalName(),
                         userId,
                         businessId
                     )
@@ -244,7 +244,7 @@ public class ClientService {
                     .doOnNext(legacy ->
                         log.info("Found legacy entry for {} {}",
                             document.business().identifier(),
-                            document.business().legalName()
+                            document.business().getResolvedLegalName()
                         )
                     )
                     .flatMap(legacy -> Mono
@@ -252,13 +252,14 @@ public class ClientService {
                             new ClientAlreadyExistException(
                                 legacy.clientNumber(),
                                 document.business().identifier(),
-                                document.business().legalName())
+                                document.business().getResolvedLegalName())
                         )
                     )
                     .defaultIfEmpty(document)
                     .doOnNext(value ->
                         log.info("No entry found on legacy for {} {}",
-                            document.business().identifier(), document.business().legalName()
+                            document.business().identifier(),
+                            document.business().getResolvedLegalName()
                         )
                     )
             )
@@ -385,12 +386,13 @@ public class ClientService {
     return document ->
         buildAddress(
             document,
-            buildSimpleClientDetails(document.business())
+            buildSimpleClientDetails(document.business(),document.isOwnedByPerson())
         );
   }
 
   private ClientDetailsDto buildSimpleClientDetails(
-      BcRegistryBusinessDto businessDto
+      BcRegistryBusinessDto businessDto,
+      boolean isOwnedByPerson
   ) {
 
     if (businessDto == null) {
@@ -400,19 +402,21 @@ public class ClientService {
           false,
           "",
           List.of(),
-          List.of()
+          List.of(),
+          isOwnedByPerson
       );
     }
     log.info("Building simple client details for {} with standing {}", businessDto.identifier(),
         businessDto.goodStanding());
     return
         new ClientDetailsDto(
-            businessDto.legalName(),
+            businessDto.getResolvedLegalName(),
             businessDto.identifier(),
             businessDto.goodStanding(),
             businessDto.legalType(),
             List.of(),
-            List.of()
+            List.of(),
+            isOwnedByPerson
         );
   }
 
