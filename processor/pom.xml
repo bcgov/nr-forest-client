@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.2</version>
+    <version>3.3.3</version>
     <relativePath/>
     <!-- lookup parent from repository -->
   </parent>
@@ -46,7 +46,7 @@
     <assertj.version>3.24.2</assertj.version>
     <netty.version>4.1.112.Final</netty.version>
     <oci.revision>${project.version}</oci.revision>
-    <flyway.version>10.17.1</flyway.version>
+    <flyway.version>10.17.2</flyway.version>
   </properties>
 
 	<dependencies>
