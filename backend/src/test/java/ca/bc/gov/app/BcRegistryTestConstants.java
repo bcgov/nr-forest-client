@@ -229,6 +229,8 @@ public class BcRegistryTestConstants {
                   null,
                   null,
                   null,
+                  "BC0123456",
+                  "EXAMPLE COMPANY LTD.",
                   "organization"
               ),
               List.of(
@@ -422,6 +424,8 @@ public class BcRegistryTestConstants {
                   "JOHNATHAN",
                   "WICK",
                   null,
+                  null,
+                  null,
                   "person"
               ),
               List.of(
@@ -557,6 +561,8 @@ public class BcRegistryTestConstants {
                   "JOHNATHAN",
                   "WICK",
                   "VALELONG",
+                  null,
+                  null,
                   "person"
               ),
               List.of(
@@ -572,6 +578,8 @@ public class BcRegistryTestConstants {
                   StringUtils.EMPTY,
                   "RUSKA",
                   "ROMA",
+                  null,
+                  null,
                   null,
                   "person"
               ),
