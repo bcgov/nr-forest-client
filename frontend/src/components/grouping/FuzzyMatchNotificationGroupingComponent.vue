@@ -237,7 +237,7 @@ const clearNotification = () => {
   customError.value = {};
 };
 
-const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?: any) => {
+const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, payload?: any) => {
   if (!event) {
     clearNotification();
     return;
@@ -251,8 +251,8 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, _payload?
     fuzzyMatchedError.value.fuzzy = true;
     fuzzyMatchedError.value.matches = [];
 
-    if(_payload && _payload.title && _payload.message){
-      customError.value = _payload;
+    if(payload && payload.title && payload.message){
+      customError.value = payload;
     }
 
     for (const rawMatch of event.matches.sort((a, b) => a.fuzzy ? 1 : -1)) {
