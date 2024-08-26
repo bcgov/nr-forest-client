@@ -384,6 +384,94 @@ public class TestConstants {
               "title": "Registrar of Companies"
           }
       }""";
+
+  public static final String BCREG_DOC_DATA_SPORG = """
+      {
+         "business": {
+           "alternateNames": [
+             {
+               "entityType": "SP",
+               "identifier": "FM00004455",
+               "name": "JAMES BAXTER WOOD HANDCRAFTED FURNITURE",
+               "registeredDate": "2009-11-30T08:00:00+00:00",
+               "startDate": "2009-10-01"
+             }
+           ],
+           "goodStanding": true,
+           "identifier": "FM00004455",
+           "legalName": "SAMPLE HOLDINGS LTD.",
+           "legalType": "SP",
+           "state": "ACTIVE"
+         },
+         "offices": {
+           "businessOffice": {
+             "deliveryAddress": {
+               "addressCity": "VICTORIA",
+               "addressCountry": "Canada",
+               "addressCountryDescription": "Canada",
+               "addressRegion": "BC",
+               "deliveryInstructions": "",
+               "postalCode": "V8V1X4",
+               "streetAddress": "501 Belleville Street",
+               "streetAddressAdditional": ""
+             },
+             "mailingAddress": {
+               "addressCity": "VICTORIA",
+               "addressCountry": "Canada",
+               "addressCountryDescription": "Canada",
+               "addressRegion": "BC",
+               "deliveryInstructions": "",
+               "postalCode": "V8V1X4",
+               "streetAddress": "501 Belleville Street",
+               "streetAddressAdditional": ""
+             }
+           }
+         },
+         "parties": [
+           {
+             "deliveryAddress": {
+               "addressCity": "VICTORIA",
+               "addressCountry": "Canada",
+               "addressCountryDescription": "Canada",
+               "addressRegion": "BC",
+               "deliveryInstructions": "",
+               "postalCode": "V8V1X4",
+               "streetAddress": "501 Belleville Street",
+               "streetAddressAdditional": ""
+             },
+             "mailingAddress": {
+               "addressCity": "VICTORIA",
+               "addressCountry": "Canada",
+               "addressCountryDescription": "Canada",
+               "addressRegion": "BC",
+               "deliveryInstructions": "",
+               "postalCode": "V8V1X4",
+               "streetAddress": "501 Belleville Street",
+               "streetAddressAdditional": ""
+             },
+             "officer": {
+               "email": "",
+               "identifier": "BC0000001",
+               "organizationName": "SAMPLE HOLDINGS LTD.",
+               "partyType": "organization"
+             },
+             "roles": [
+               {
+                 "appointmentDate": "1985-07-23",
+                 "cessationDate": null,
+                 "roleType": "Proprietor"
+               }
+             ]
+           }
+         ],
+         "registrarInfo": {
+           "endDate": null,
+           "name": "Wattles",
+           "startDate": "2022-06-01T00:00:00",
+           "title": "Registrar of Companies"
+         }
+       }""";
+
   public static final String SUBMISSION_LIST_CONTENT = """
       [
         {
@@ -969,6 +1057,77 @@ public class TestConstants {
               "clientType": "I",
               "registrationNumber": "",
               "businessName": "John Wick",
+              "goodStandingInd": "Y",
+              "birthdate": "1974-08-12",
+              "firstName": "John",
+              "lastName": "Wick",
+              "identificationType": {
+                  "value": "CDDL",
+                  "text": "Canadian driver's licence",
+                  "countryCode": "CA"
+              },
+              "identificationCountry": "CA",
+              "clientIdentification": "54621654",
+              "identificationProvince": "BC"
+          },
+          "location": {
+              "addresses": [
+                  {
+                      "locationName": "Hangar",
+                      "complementaryAddressOne": "",
+                      "complementaryAddressTwo": null,
+                      "streetAddress": "1234 Nowhere St",
+                      "country": {
+                          "value": "CA",
+                          "text": "Canada"
+                      },
+                      "province": {
+                          "value": "BC",
+                          "text": "British Columbia"
+                      },
+                      "city": "Victoria",
+                      "postalCode": "V8V8V8",
+                      "businessPhoneNumber": "",
+                      "secondaryPhoneNumber": "",
+                      "faxNumber": "",
+                      "emailAddress": "",
+                      "notes": "",
+                      "index": 0
+                  }
+              ],
+              "contacts": [
+                  {
+                      "locationNames": [
+                          {
+                              "value": "0",
+                              "text": "Hangar"
+                          }
+                      ],
+                      "contactType": {
+                          "value": "BL",
+                          "text": "Billing"
+                      },
+                      "firstName": "John",
+                      "lastName": "Wick",
+                      "phoneNumber": "(250) 445-4540",
+                      "secondaryPhoneNumber": "",
+                      "faxNumber": "",
+                      "email": "thatmail@maila.ca",
+                      "index": 0
+                  }
+              ]
+          }
+      }""";
+
+  public static final String STAFF_SUBMITTED_SPORG_JSON = """
+      {
+          "businessInformation": {
+              "district": "",
+              "businessType": "R",
+              "legalType": "SP",
+              "clientType": "RSP",
+              "registrationNumber": "FM00004455",
+              "businessName": "JAMES BAXTER WOOD HANDCRAFTED FURNITURE",
               "goodStandingInd": "Y",
               "birthdate": "1974-08-12",
               "firstName": "John",
