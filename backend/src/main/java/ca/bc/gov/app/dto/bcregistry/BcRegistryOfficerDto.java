@@ -9,6 +9,8 @@ public record BcRegistryOfficerDto(
     String firstName,
     String lastName,
     String middleInitial,
+    String identifier,
+    String organizationName,
     String partyType
 ) {
 

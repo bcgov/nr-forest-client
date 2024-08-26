@@ -307,6 +307,8 @@ public class BcRegistryService {
             naming.get("firstName"),
             naming.get("lastName"),
             null,
+            StringUtils.EMPTY,
+            StringUtils.EMPTY,
             party.partyType()
         ),
         roles
