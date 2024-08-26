@@ -42,7 +42,6 @@ export interface FuzzyMatcherData {
   show: boolean;
   fuzzy: boolean;
   matches: MiscFuzzyMatchResult[];
-  description: string;
 }
 
 export interface FuzzyMatcherEvent {

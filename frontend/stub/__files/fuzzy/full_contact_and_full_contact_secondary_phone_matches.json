@@ -1,0 +1,14 @@
+[
+  {
+    "field":"location.contacts[0].firstName", 
+    "match":"00000001", 
+    "fuzzy":true,
+    "partialMatch":false
+  },
+  {
+    "field":"location.contacts[0].secondaryPhoneNumber", 
+    "match":"00000001", 
+    "fuzzy":true,
+    "partialMatch":false
+  }
+]

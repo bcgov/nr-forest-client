@@ -2,8 +2,11 @@
   "mappings": [    
     {
       "name": "BC Registry Details OK",
+      "metadata": {
+        "comment": "using [A-Z] to prevent matching 'submissions'"
+      },
       "request": {
-        "urlPattern": "/api/clients/(.*)",
+        "urlPattern": "/api/clients/[A-Z](.*)",
         "method": "GET"
       },
       "response": {
