@@ -63,6 +63,7 @@ export interface ForestClientDetailsDto {
   goodStanding: boolean;
   addresses: Address[];
   contacts: Contact[];
+  isOwnedByPerson: boolean;
 }
 
 export interface FirstNationDetailsDto {

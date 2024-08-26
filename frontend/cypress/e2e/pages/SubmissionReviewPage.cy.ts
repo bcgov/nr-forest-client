@@ -1,4 +1,4 @@
-import testCases from "../fixtures/test-cases-review-submissions.json";
+import testCases from "../../fixtures/test-cases-review-submissions.json";
 
 /* eslint-disable no-undef */
 describe("Submission Review Page", () => {

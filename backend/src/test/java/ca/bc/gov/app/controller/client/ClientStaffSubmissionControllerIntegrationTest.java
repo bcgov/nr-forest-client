@@ -4,6 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.created;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
@@ -58,7 +59,7 @@ class ClientStaffSubmissionControllerIntegrationTest
       .options(
           wireMockConfig()
               .port(10010)
-              .notifier(new WiremockLogNotifier())
+              //.notifier(new WiremockLogNotifier())
               .asynchronousResponseEnabled(true)
               .stubRequestLoggingDisabled(false)
       )
@@ -71,6 +72,19 @@ class ClientStaffSubmissionControllerIntegrationTest
       .options(
           wireMockConfig()
               .port(10070)
+              .notifier(new WiremockLogNotifier())
+              .asynchronousResponseEnabled(true)
+              .stubRequestLoggingDisabled(false)
+      )
+      .configureStaticDsl(true)
+      .build();
+
+  @RegisterExtension
+  static WireMockExtension bcRegistryStub = WireMockExtension
+      .newInstance()
+      .options(
+          wireMockConfig()
+              .port(10040)
               .notifier(new WiremockLogNotifier())
               .asynchronousResponseEnabled(true)
               .stubRequestLoggingDisabled(false)
@@ -196,6 +210,52 @@ class ClientStaffSubmissionControllerIntegrationTest
         .expectHeader().valueEquals("Location", "/api/clients/details/00123456")
         .expectHeader().valueEquals("x-client-id", "00123456")
         .expectBody().isEmpty();
+
+  }
+
+  @Test
+  @DisplayName("Sole proprietorship not owner by person is not allowed")
+  @Order(3)
+  void shouldNotAllowSubmissionFromNonPersonProprietor() throws JsonProcessingException {
+
+    bcRegistryStub
+        .stubFor(
+            post("/registry-search/api/v1/businesses/FM00004455/documents/requests")
+                .willReturn(
+                    status(201)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBody(TestConstants.BCREG_DOC_REQ_RES)
+                )
+        );
+
+    bcRegistryStub
+        .stubFor(
+            get("/registry-search/api/v1/businesses/FM00004455/documents/aa0a00a0a")
+                .willReturn(
+                    status(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBody(TestConstants.BCREG_DOC_DATA_SPORG)
+                )
+        );
+
+    ClientSubmissionDto dto = mapper.readValue(
+        TestConstants.STAFF_SUBMITTED_SPORG_JSON,
+        ClientSubmissionDto.class
+    );
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_EDITOR))
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+        )
+        .post()
+        .uri("/api/clients/submissions/staff")
+        .body(Mono.just(dto), ClientSubmissionDto.class)
+        .exchange()
+        .expectStatus().isBadRequest();
 
   }
 

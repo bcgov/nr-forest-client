@@ -15,7 +15,8 @@ public record ClientDetailsDto(
     Boolean goodStanding,
     String clientType,
     List<ClientAddressDto> addresses,
-    List<ClientContactDto> contacts
+    List<ClientContactDto> contacts,
+    boolean isOwnedByPerson
 ) {
 
 }
