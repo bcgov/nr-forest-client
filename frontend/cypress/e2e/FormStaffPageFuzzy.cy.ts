@@ -958,6 +958,19 @@ describe("Staff Form Fuzzy Matches", () => {
 
     });
 
+    describe("when we go back to the previous step", () => {
+      beforeEach(function () {
+        interceptFuzzyMatch(2, "Step 2: full address email match");
+        fillLocation(0);
+        clickNext(2);
+        cy.get('#reviewStatement').should('be.visible');
+        clickBack();
+      });
+      it("does not display the review statement checkbox", () => {
+        cy.get('#reviewStatement').should('not.exist');
+      });
+    });
+
   });
 
   describe('Contacts fuzzy matching',() =>{
@@ -1279,6 +1292,19 @@ describe("Staff Form Fuzzy Matches", () => {
 
     });
 
+    describe("when we go back to the previous step", () => {
+      beforeEach(function () {
+        interceptFuzzyMatch(3, "Step 3: full contact email match");
+        fillContactWithoutName();
+        clickNext(3);
+        cy.get('#reviewStatement').should('be.visible');
+        clickBack();
+      });
+      it("does not display the review statement checkbox", () => {
+        cy.get('#reviewStatement').should('not.exist');
+      });
+    });
+
   });
 
   const clickNext = (step: number) => {
@@ -1288,6 +1314,10 @@ describe("Staff Form Fuzzy Matches", () => {
       .should("be.enabled");
     cy.get("[data-test='wizard-next-button']").click();
     cy.wait(`@doMatch${step}`);
+  };
+
+  const clickBack = () => {
+    cy.get("[data-test='wizard-back-button']").click();
   };
 
   const clickAddLocation = (index: number) => {
