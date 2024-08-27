@@ -91,4 +91,20 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
           # This creates a new pluggable database for the PR
-          oc exec $(oc get pods -l app=nr-forest-client-${{ secrets.OC_NAMESPACE }} -o jsonpath='{.items[0].metadata.name}') -- /opt/oracle/createDatabase PR_${{ github.event.number }}
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec nr-forest-client -- /opt/oracle/createDatabase PR_${{ github.event.number }}
+              oc exec nr-forest-client -- /opt/oracle/createAppUser "${{ secrets.ORACLEDB_USERNAME_W }}" "${{ secrets.ORACLEDB_PASSWORD_W }}" "PR_${{ github.event.number }}"
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
+          
