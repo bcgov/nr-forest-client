@@ -115,11 +115,13 @@ describe("Fuzzy Match Notification Grouping Component", () => {
           field: "businessInformation.businessName",
           match: "00000001",
           fuzzy: true,
+          partialMatch: true,
         },
         {
           field: "businessInformation.federalId",
           match: "00000002",
           fuzzy: true,
+          partialMatch: true,
         },
       ],
     });
@@ -136,11 +138,11 @@ describe("Fuzzy Match Notification Grouping Component", () => {
     );
     expect(liList).toHaveLength(3);
 
-    expect(liList[0].text()).toContain("client name");
-    expect(liList[0].text()).toContain("00000001");
+    expect(liList[1].text()).toContain("client name");
+    expect(liList[1].text()).toContain("00000001");
 
-    expect(liList[1].text()).toContain("federal identification number");
-    expect(liList[1].text()).toContain("00000002");
+    expect(liList[0].text()).toContain("federal identification number");
+    expect(liList[0].text()).toContain("00000002");
   });
 
   describe("when error message includes both fuzzy and exact matching errors", () => {
@@ -179,8 +181,8 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       );
 
       expect(liList).toHaveLength(2);
-      expect(liList[0].text()).toContain("00000002");
-      expect(liList[1].text()).toContain("00000001");
+      expect(liList[1].text()).toContain("00000002");
+      expect(liList[0].text()).toContain("00000001");
     });
   });
 

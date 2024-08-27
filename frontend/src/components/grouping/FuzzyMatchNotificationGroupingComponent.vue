@@ -255,7 +255,7 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, payload?:
       customError.value = payload;
     }
 
-    for (const rawMatch of event.matches.sort((a, b) => a.fuzzy ? 1 : -1)) {
+    for (const rawMatch of event.matches.sort((a, b) => a.fuzzy ? -1 : 1)) {
 
       const genericField = rawMatch.field.replace(arrayIndexRegex, "[]");
 
