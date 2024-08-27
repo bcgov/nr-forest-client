@@ -20,7 +20,6 @@ import {
   type FuzzyMatchResult,
 } from "@/dto/CommonTypesDto";
 import {
-  locationName as defaultLocation,
   emptyContact,
   newFormDataDto,
   type Contact,
@@ -324,6 +323,12 @@ const onBack = () => {
     progressData[currentTab.value].kind = "current";
     setScrollPoint("step-title");
     setTimeout(revalidateBus.emit, 1000);
+
+    // reset matcherError
+    matchError.value = false;
+
+    // reset reviewStatement
+    reviewStatement.value = false;
   }
 };
 
@@ -335,6 +340,7 @@ const applicantContact: Contact = {
 const clientType = ref<CodeNameType>();
 
 const updateClientType = (value: CodeNameType | undefined) => {
+  fuzzyBus.emit(undefined);
   if (value) {
     clientType.value = value;
 

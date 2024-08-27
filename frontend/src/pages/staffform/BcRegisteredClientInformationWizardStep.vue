@@ -14,9 +14,11 @@ import type {
   FuzzyMatcherEvent,
   ValidationMessageType
 } from "@/dto/CommonTypesDto";
-import type {
-  FormDataDto,
-  ForestClientDetailsDto,
+import {
+  type FormDataDto,
+  type ForestClientDetailsDto,
+  indexedEmptyAddress,
+  indexedEmptyContact
 } from "@/dto/ApplyClientNumberDto";
 import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
 import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
@@ -174,6 +176,7 @@ watch([autoCompleteResult], () => {
                 "client number"
               )[1],
               fuzzy: false,
+              partialMatch: false,
             },
           ],
         });
@@ -232,6 +235,7 @@ watch([detailsData], () => {
               field: "businessInformation.notOwnedByPerson",
               match: "",
               fuzzy: false,
+              partialMatch: false,
             },
           ],
         },
@@ -255,14 +259,18 @@ watch([detailsData], () => {
         forestClientDetails.contacts[0]?.lastName;
     }
 
-    const receivedContacts = forestClientDetails.contacts ?? [];
+    const receivedContacts = forestClientDetails.contacts ?? [ indexedEmptyContact(0) ];
     receivedContacts.forEach((contact) => {
       contact.locationNames = [];
     });
 
-    formData.value.location.contacts = forestClientDetails.contacts;
+    formData.value.location.contacts = receivedContacts;
 
-    const receivedAddresses = forestClientDetails.addresses ?? [];
+    if(formData.value.location.contacts.length == 0){
+      formData.value.location.contacts = [ indexedEmptyContact(0) ];
+    }
+
+    const receivedAddresses = forestClientDetails.addresses ?? [ indexedEmptyAddress(0) ];
     receivedAddresses.forEach((address) => {
       address.complementaryAddressOne = null;
       address.complementaryAddressTwo = null;
@@ -273,7 +281,7 @@ watch([detailsData], () => {
       address.notes = null;
     });
     formData.value.location.addresses = exportAddress(receivedAddresses);
-
+    
     formData.value.businessInformation.goodStandingInd = standingValue(
       forestClientDetails.goodStanding
     );
@@ -305,6 +313,18 @@ emit("valid", checkValid());
 if (formData.value.businessInformation.businessName) {
   validation.business = true;
 }
+watch(
+  () => formData.value.businessInformation.businessName,
+  () => {
+    fuzzyBus.emit(undefined);
+
+    formData.value.businessInformation.registrationNumber = "";
+    formData.value.businessInformation.legalType = "";
+    formData.value.businessInformation.clientType = "";
+
+    showOnError.value = false;
+  },
+);
 
 const { setFocusedComponent } = useFocus();
 onMounted(() => {
