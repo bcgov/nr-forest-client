@@ -1,0 +1,37 @@
+{
+  "name": "WeLove Forest",
+  "id": "FM0471371",
+  "goodStanding": true,
+  "isOwnedByPerson": false,
+  "addresses": [
+    {
+      "streetAddress": "8 Bonner Court",
+      "country": {
+        "value": "US",
+        "text": "United States"
+      },
+      "province": {
+        "value": "KY",
+        "text": "Kentucky"
+      },
+      "city": "Lexington",
+      "postalCode": "40510",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "DI",
+        "text": null
+      },
+      "firstName": null,
+      "lastName": null,
+      "identifier": "BC0123456",
+      "organizationName": "EXAMPLE COMPANY LTD.",
+      "partyType": "organization",
+      "phoneNumber": null,
+      "email": null
+    }
+  ]
+}

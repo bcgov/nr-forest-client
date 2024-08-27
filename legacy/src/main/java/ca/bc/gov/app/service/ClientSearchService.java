@@ -14,6 +14,7 @@ import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.repository.ForestClientContactRepository;
+import ca.bc.gov.app.repository.ForestClientLocationRepository;
 import ca.bc.gov.app.repository.ForestClientRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
@@ -49,6 +50,7 @@ public class ClientSearchService {
   private final ClientDoingBusinessAsRepository doingBusinessAsRepository;
   private final ForestClientRepository clientRepository;
   private final ForestClientContactRepository contactRepository;
+  private final ForestClientLocationRepository locationRepository;
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> forestClientMapper;
   private final R2dbcEntityTemplate template;
 
@@ -380,32 +382,29 @@ public class ClientSearchService {
       return Flux.error(new MissingRequiredParameterException("address"));
     }
 
-    Criteria queryCriteria =
-        where("city").is(address.city()).ignoreCase(true)
-            .and("province").is(address.province()).ignoreCase(true)
-            .and("postalCode").is(address.postalCode()).ignoreCase(true)
-            .and("country").is(address.country()).ignoreCase(true)
-            .and(
-                where("addressOne").is(address.address()).ignoreCase(true)
-                    .or("addressTwo").is(address.address()).ignoreCase(true)
-                    .or("addressThree").is(address.address()).ignoreCase(true)
-            );
-
-    return searchClientByQuery(queryCriteria, ForestClientLocationEntity.class)
-        .flatMap(entity ->
-            searchClientByQuery(
-                where(ApplicationConstants.CLIENT_NUMBER_LITERAL).is(entity.getClientNumber()),
-                ForestClientEntity.class
+    return
+        locationRepository
+            .matchaddress(
+                address.address(),
+                address.postalCode(),
+                address.city(),
+                address.province(),
+                address.country()
             )
-        )
-        .map(forestClientMapper::toDto)
-        .distinct(ForestClientDto::clientNumber)
-        .sort(Comparator.comparing(ForestClientDto::clientNumber))
-        .doOnNext(
-            dto -> log.info("Found client with address {} as [{}] {}",
-                address,
-                dto.clientNumber(), dto.clientName())
-        );
+            .flatMap(entity ->
+                searchClientByQuery(
+                    where(ApplicationConstants.CLIENT_NUMBER_LITERAL).is(entity.getClientNumber()),
+                    ForestClientEntity.class
+                )
+            )
+            .map(forestClientMapper::toDto)
+            .distinct(ForestClientDto::clientNumber)
+            .sort(Comparator.comparing(ForestClientDto::clientNumber))
+            .doOnNext(
+                dto -> log.info("Found client with address {} as [{}] {}",
+                    address,
+                    dto.clientNumber(), dto.clientName())
+            );
   }
 
   /**

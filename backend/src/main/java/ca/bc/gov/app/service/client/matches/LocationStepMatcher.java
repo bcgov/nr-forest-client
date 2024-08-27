@@ -156,7 +156,7 @@ public class LocationStepMatcher implements StepMatcher {
                     location.city(),
                     location.province().value(),
                     location.postalCode(),
-                    location.country().value()
+                    location.country().text()
                 )
             ),
         FIELD_NAME_PREFIX + location.index() + "].streetAddress",
