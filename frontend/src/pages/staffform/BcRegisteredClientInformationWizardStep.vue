@@ -305,6 +305,18 @@ emit("valid", checkValid());
 if (formData.value.businessInformation.businessName) {
   validation.business = true;
 }
+watch(
+  () => formData.value.businessInformation.businessName,
+  () => {
+    fuzzyBus.emit(undefined);
+
+    formData.value.businessInformation.registrationNumber = "";
+    formData.value.businessInformation.legalType = "";
+    formData.value.businessInformation.clientType = "";
+
+    showOnError.value = false;
+  },
+);
 
 const { setFocusedComponent } = useFocus();
 onMounted(() => {
