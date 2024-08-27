@@ -105,10 +105,10 @@ public class ClientService {
     return districtCodeRepository
         .findAllBy(PageRequest.of(page, size, Sort.by("description")))
         .filter(entity -> (currentDate.isBefore(entity.getExpiredAt())
-                           || currentDate.isEqual(entity.getExpiredAt()))
-                          &&
-                          (currentDate.isAfter(entity.getEffectiveAt())
-                           || currentDate.isEqual(entity.getEffectiveAt())))
+            || currentDate.isEqual(entity.getExpiredAt()))
+            &&
+            (currentDate.isAfter(entity.getEffectiveAt())
+                || currentDate.isEqual(entity.getEffectiveAt())))
         .map(entity -> new CodeNameDto(entity.getCode(), entity.getDescription()));
   }
 
@@ -127,10 +127,10 @@ public class ClientService {
     return countryCodeRepository
         .findAllBy(PageRequest.of(page, size, Sort.by("order", "description")))
         .filter(entity -> (currentDate.isBefore(entity.getExpiredAt())
-                           || currentDate.isEqual(entity.getExpiredAt()))
-                          &&
-                          (currentDate.isAfter(entity.getEffectiveAt())
-                           || currentDate.isEqual(entity.getEffectiveAt())))
+            || currentDate.isEqual(entity.getExpiredAt()))
+            &&
+            (currentDate.isAfter(entity.getEffectiveAt())
+                || currentDate.isEqual(entity.getEffectiveAt())))
         .map(entity -> new CodeNameDto(entity.getCountryCode(), entity.getDescription()));
   }
 
@@ -267,8 +267,9 @@ public class ClientService {
 
             .flatMap(client -> {
               // FSADT1-1388: Allow IDIR users to search for any client type
-              if(provider.equalsIgnoreCase("idir"))
+              if (provider.equalsIgnoreCase("idir")) {
                 return Mono.just(client);
+              }
 
               if (ApplicationConstant.AVAILABLE_CLIENT_TYPES.contains(
                   ClientValidationUtils.getClientType(
@@ -291,10 +292,10 @@ public class ClientService {
             .filter(document ->
                 // FSADT1-1388: Allow IDIR users to search for any client type
                 provider.equalsIgnoreCase("idir") ||
-                !("SP".equalsIgnoreCase(document.business().legalType())
-                  && document.parties().size() == 1
-                  && !document.parties().get(0).isPerson()
-                )
+                    !("SP".equalsIgnoreCase(document.business().legalType())
+                        && document.parties().size() == 1
+                        && !document.parties().get(0).isPerson()
+                    )
             )
             .flatMap(buildDetails())
             .switchIfEmpty(Mono.error(new UnableToProcessRequestException(
@@ -315,7 +316,7 @@ public class ClientService {
   public Flux<ClientLookUpDto> findByClientNameOrIncorporation(String value) {
     log.info("Searching for {}", value);
     return bcRegistryService
-        .searchByFacets(value)
+        .searchByFacets(value, null)
         .map(entry -> new ClientLookUpDto(
                 entry.identifier(),
                 entry.name(),
@@ -373,7 +374,7 @@ public class ClientService {
             .error(new ClientAlreadyExistException(legacy.clientNumber()))
         );
   }
-  
+
   public Mono<String> findByUserIdAndLastName(String userId, String lastName) {
     return legacyService
         .searchIdAndLastName(userId, lastName)
@@ -381,12 +382,12 @@ public class ClientService {
         .next()
         .map(ForestClientDto::clientNumber);
   }
-  
+
   private Function<BcRegistryDocumentDto, Mono<ClientDetailsDto>> buildDetails() {
     return document ->
         buildAddress(
             document,
-            buildSimpleClientDetails(document.business(),document.isOwnedByPerson())
+            buildSimpleClientDetails(document.business(), document.isOwnedByPerson())
         );
   }
 
@@ -536,13 +537,13 @@ public class ClientService {
     return legacy ->
         StringUtils.equals(
             StringUtils.defaultString(legacy.registryCompanyTypeCode()) +
-            StringUtils.defaultString(legacy.corpRegnNmbr()),
+                StringUtils.defaultString(legacy.corpRegnNmbr()),
             document.business().identifier()
         ) &&
-        StringUtils.equals(
-            document.business().legalName(),
-            legacy.legalName()
-        );
+            StringUtils.equals(
+                document.business().legalName(),
+                legacy.legalName()
+            );
   }
 
   private Function<ForestClientDto, Mono<ForestClientDto>> triggerEmailDuplicatedClient(
@@ -594,30 +595,32 @@ public class ClientService {
    * Retrieves all active identification types as of the specified target date.
    *
    * @param targetDate the date to check for active identification types.
-   * @return a Flux stream of IdentificationTypeDto containing the code, description, and country code of each active identification type.
+   * @return a Flux stream of IdentificationTypeDto containing the code, description, and country
+   * code of each active identification type.
    */
   public Flux<IdentificationTypeDto> getAllActiveIdentificationTypes(LocalDate targetDate) {
     log.info("Loading active identification type codes by {}", targetDate);
     return identificationTypeCodeRepository
         .findActiveAt(targetDate)
         .map(entity -> new IdentificationTypeDto(
-                             entity.getCode(), 
-                             entity.getDescription(),
-                             entity.getCountryCode()));
+            entity.getCode(),
+            entity.getDescription(),
+            entity.getCountryCode()));
   }
 
   /**
    * Retrieves an identification type by its code.
    *
    * @param idCode the code of the identification type to retrieve.
-   * @return a Mono containing a CodeNameDto with the code and description of the identification type, or an empty Mono if not found.
+   * @return a Mono containing a CodeNameDto with the code and description of the identification
+   * type, or an empty Mono if not found.
    */
   public Mono<CodeNameDto> getIdentificationTypeByCode(String idCode) {
     log.info("Loading identification type by {}", idCode);
     return identificationTypeCodeRepository
         .findByCode(idCode)
         .map(entity -> new CodeNameDto(entity.getCode(),
-                                       entity.getDescription()));
+            entity.getDescription()));
   }
 
   public Mono<CodeNameDto> getProvinceByCountryAndProvinceCode(
@@ -627,7 +630,7 @@ public class ClientService {
     return provinceCodeRepository
         .findByCountryCodeAndProvinceCode(countryCode, provinceCode)
         .map(entity -> new CodeNameDto(entity.getProvinceCode(),
-                                       entity.getDescription()));
+            entity.getDescription()));
   }
 
 }

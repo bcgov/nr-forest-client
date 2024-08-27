@@ -110,7 +110,7 @@ class BcRegistryServiceIntegrationTest extends AbstractTestContainerIntegrationT
 
     FirstStep<BcRegistryFacetSearchResultEntryDto> step =
         service
-            .searchByFacets(data)
+            .searchByFacets(data,null)
             .as(StepVerifier::create);
 
     if (responseStatus != 200) {
