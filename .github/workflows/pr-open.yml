@@ -48,7 +48,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend, common, database, frontend, legacy, processor]
+        package: [backend, database, frontend, legacy, processor]
     steps:
       - uses: actions/checkout@v4
 
