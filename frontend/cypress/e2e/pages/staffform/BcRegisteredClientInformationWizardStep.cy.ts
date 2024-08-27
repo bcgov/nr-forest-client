@@ -6,6 +6,10 @@ describe("Bc Registered Staff Wizard Step", () => {
   beforeEach(() => {
     cy.viewport(1920, 1080);
 
+    cy.intercept("GET", "**/api/codes/identification-types", {
+      fixture: "identificationTypes.json",
+    }).as("getIdentificationTypes");
+
     cy.intercept("GET", '/api/clients/submissions?page=0&size=10', {
       fixture: "submissions.json",
       headers: {
@@ -17,6 +21,9 @@ describe("Bc Registered Staff Wizard Step", () => {
 
     cy.intercept("GET", "/api/clients/name/exi", {
       fixture: "clients/bcreg_ac_list1.json",
+    });
+    cy.intercept("GET", "/api/clients/name/Koalll%C3%A1", {
+      fixture: "clients/bcreg_ac_list4.json",
     });
     cy.intercept("GET", "/api/clients/C1234567", {
       fixture: "clients/bcreg_C1234567.json",
@@ -38,6 +45,10 @@ describe("Bc Registered Staff Wizard Step", () => {
         )
       )
     );
+    cy.intercept("GET", "**/api/clients/name/Corporation", {
+      statusCode: 200,
+      fixture: "clients/bcreg_ac_list3.json",
+    }).as("clientSearchCORPORATION");
   });
 
   it('should render the component', () => {
@@ -84,6 +95,14 @@ describe("Bc Registered Staff Wizard Step", () => {
         statusCode: 200,
         fixture: "clients/bcreg_ac_list4.json",
       }).as("clientSearchALLLA3");
+
+      cy.intercept(
+        "GET",
+        `**/api/clients/name/Koalll%C3%A1}`,
+        {
+          fixture: "clients/bcreg_ac_list4.json",
+        }
+      ).as("clientSearchEncoded");
 
       cy.intercept(
         "GET",
