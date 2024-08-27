@@ -6,5 +6,3 @@ RUN chmod -R 777 "${ORACLE_BASE}"
 USER oracle
 
 HEALTHCHECK CMD "${ORACLE_BASE}"/healthcheck.sh >/dev/null || exit 1
-
-ENTRYPOINT ["container-entrypoint.sh"]

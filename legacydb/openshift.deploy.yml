@@ -157,11 +157,8 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
                       key: oracle-password-write
-                - name: ORACLE_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: oracle-password-write
+                - name: ORACLE_RANDOM_PASSWORD
+                  value: "true"
                 - name: APP_USER
                   valueFrom:
                     secretKeyRef:
@@ -245,9 +242,9 @@ objects:
                   - |
                     # Step 3: Run Flyway migration                  
                     flyway migrate -url=jdbc:oracle:thin:@${HOSTNAME}:1521/FREEPDB1 -user=${APP_USER} -password=${APP_USER_PASSWORD} -connectRetries=60
-                volumeMounts:
-                - name: sql-volume
-                  mountPath: /flyway/sql  # Mount the volume where Flyway looks for SQL scripts
+                  volumeMounts:
+                    - name: sql-volume
+                      mountPath: /flyway/sql  # Mount the volume where Flyway looks for SQL scripts
               restartPolicy: OnFailure
               volumes:
                 - name: sql-volume
