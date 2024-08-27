@@ -323,6 +323,12 @@ const onBack = () => {
     progressData[currentTab.value].kind = "current";
     setScrollPoint("step-title");
     setTimeout(revalidateBus.emit, 1000);
+
+    // reset matcherError
+    matchError.value = false;
+
+    // reset reviewStatement
+    reviewStatement.value = false;
   }
 };
 
