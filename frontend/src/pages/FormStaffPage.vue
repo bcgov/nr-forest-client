@@ -20,7 +20,6 @@ import {
   type FuzzyMatchResult,
 } from "@/dto/CommonTypesDto";
 import {
-  locationName as defaultLocation,
   emptyContact,
   newFormDataDto,
   type Contact,
@@ -341,6 +340,7 @@ const applicantContact: Contact = {
 const clientType = ref<CodeNameType>();
 
 const updateClientType = (value: CodeNameType | undefined) => {
+  fuzzyBus.emit(undefined);
   if (value) {
     clientType.value = value;
 
