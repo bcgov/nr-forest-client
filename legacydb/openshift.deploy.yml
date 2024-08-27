@@ -136,7 +136,7 @@ objects:
                   command:
                     - healthcheck.sh
                 failureThreshold: 30
-                initialDelaySeconds: 240
+                initialDelaySeconds: 60
                 periodSeconds: 30
                 timeoutSeconds: 5
               livenessProbe:
@@ -144,7 +144,7 @@ objects:
                   command:
                     - healthcheck.sh
                 failureThreshold: 30
-                initialDelaySeconds: 250
+                initialDelaySeconds: 120
                 periodSeconds: 30
                 timeoutSeconds: 5
               env:
@@ -187,7 +187,9 @@ objects:
   - kind: CronJob
     apiVersion: batch/v1
     metadata:
-      name: flyway-migration-job
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}-migrate
     spec:
       schedule: "0 0 31 2 *" # Never runs, will be triggered manually
       jobTemplate:

@@ -84,3 +84,11 @@ jobs:
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
             -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
             -p PROMOTE=${{ github.repository }}/legacydb:latest
+
+      - name: Create the PR database
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This creates a new pluggable database for the PR
+          oc exec $(oc get pods -l app=nr-forest-client-${{ secrets.OC_NAMESPACE }} -o jsonpath='{.items[0].metadata.name}') -- /opt/oracle/createDatabase PR_${{ github.event.number }}
