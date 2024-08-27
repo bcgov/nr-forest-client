@@ -2,9 +2,8 @@ FROM gvenzl/oracle-free:23.3-slim-faststart
 
 USER root
 RUN usermod -u 1011270000 oracle
-#RUN chmod -R 777 "${ORACLE_BASE}"
 USER oracle
 
-HEALTHCHECK CMD "${ORACLE_BASE}"/healthcheck.sh >/dev/null || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD ["sh", "-c", "${ORACLE_BASE}/healthcheck.sh >/dev/null || exit 1"]
 
 ENTRYPOINT ["container-entrypoint.sh"]
