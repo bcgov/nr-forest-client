@@ -65,20 +65,21 @@ public class BcRegistryService {
    * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances matching
    * the given value.
    *
-   * @param value the value to search for
+   * @param name       the name value to search for
+   * @param identifier the identifier value to search for
    * @return a {@link Flux} of matching {@link BcRegistryFacetSearchResultEntryDto} instances
    * @throws NoClientDataFound           if no matching data is found
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
-  public Flux<BcRegistryFacetSearchResultEntryDto> searchByFacets(String value) {
-    log.info("Searching BC Registry for {}", value);
+  public Flux<BcRegistryFacetSearchResultEntryDto> searchByFacets(String name, String identifier) {
+    log.info("Searching BC Registry for {}", name);
     return
         bcRegistryApi
             .post()
             .uri("/registry-search/api/v2/search/businesses")
             .body(BodyInserters.fromValue(
                     new BcRegistryFacetRequestBodyDto(
-                        new BcRegistryFacetRequestQueryDto(value, value, null),
+                        new BcRegistryFacetRequestQueryDto(Objects.toString(name,identifier), name, identifier),
                         Map.of("status", List.of("ACTIVE")),
                         100,
                         0
@@ -190,7 +191,7 @@ public class BcRegistryService {
             .flatMap(documentKey -> getDocumentData(value, documentKey))
             //This will try to load the standing and business data for entries with no documents
             .onErrorResume(NoClientDataFound.class, exception ->
-                searchByFacets(value).next().map(this::buildDocumentData)
+                searchByFacets(null, value).next().map(this::buildDocumentData)
             );
   }
 

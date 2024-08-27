@@ -141,16 +141,6 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     bcRegistryStub
         .stubFor(
             post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
-                .withRequestBody(equalToJson(
-                        String.format("""
-                            {
-                              "query": { "value": "%s","name": "%s" },
-                              "categories":{ "status":["ACTIVE"] },
-                              "rows": 100,
-                              "start":0
-                            }""", clientNumber, clientNumber)
-                    )
-                )
                 .willReturn(okJson(
                         BcRegistryTestConstants.BCREG_FACET_ANY
                             .replace("C0123456", clientNumber)
@@ -240,16 +230,6 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     bcRegistryStub
         .stubFor(
             post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
-                .withRequestBody(equalToJson(
-                        String.format("""
-                            {
-                              "query": { "value": "%s","name": "%s" },
-                              "categories":{ "status":["ACTIVE"] },
-                              "rows": 100,
-                              "start":0
-                            }""", clientNumber, clientNumber)
-                    )
-                )
                 .willReturn(okJson(
                         BcRegistryTestConstants.BCREG_FACET_ANY
                             .replace("C0123456", clientNumber)

@@ -2,6 +2,7 @@
   "name": "The Great Pacific Forest Company",
   "goodStanding": true,
   "id": "{{request.path.[2]}}",
+  "isOwnedByPerson": true,
   "addresses": [
     {
       "streetAddress": "6 Lakeland Crossing",
