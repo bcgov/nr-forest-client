@@ -16,6 +16,14 @@ parameters:
   - name: IMAGE_TAG
     description: Image tag to use
     value: latest
+  - name: PVC_MOUNT_PATH
+    description: Where to mount the PVC, subpath (e.g. data/)
+    value: /opt/oracle/oradata
+  - name: DB_PVC_SIZE
+    description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Database Volume Capacity
+    required: true
+    value: 256Mi
   - name: REGISTRY
     description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
     value: ghcr.io
@@ -49,6 +57,19 @@ objects:
     stringData:      
       oracle-user-write: ${ORACLEDB_USER_W}
       oracle-password-write: ${ORACLEDB_PASSWORD_W}
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+      labels:
+        app: ${NAME}-${ZONE}
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${DB_PVC_SIZE}
+      storageClassName: netapp-file-standard
   - kind: ImageStream
     apiVersion: v1
     metadata:
@@ -97,6 +118,10 @@ objects:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
+          volumes:
+            - name: ${NAME}-${ZONE}-${COMPONENT}
+              persistentVolumeClaim:
+                claimName: ${NAME}-${ZONE}-${COMPONENT}
           containers:
             - name: ${NAME}
               image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
@@ -142,6 +167,9 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
                       key: oracle-user-write
+              volumeMounts:
+                - name: ${NAME}-${ZONE}-${COMPONENT}
+                  mountPath: ${PVC_MOUNT_PATH}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               imagePullPolicy: Always
@@ -166,3 +194,61 @@ objects:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
       sessionAffinity: None
       type: ClusterIP
+  - kind: CronJob
+    apiVersion: batch/v1
+    metadata:
+      name: flyway-migration-job
+    spec:
+      schedule: "0 0 31 2 *" # Never runs, will be triggered manually
+      jobTemplate:
+        spec:
+          template:
+            spec:
+              volumes:
+                - name: sql-volume
+                  emptyDir: {}
+              initContainers:
+                - name: setup-sql-scripts
+                  image: curlimages/curl:latest  # Use an image that has curl and unzip
+                  command: ["/bin/sh", "-c"]
+                  args:                  
+                  - |
+                    # Step 1: Download the SQL scripts from your GitHub repo
+                    # TODO: Replace the main with the current branch
+                    curl -L https://github.com/bcgov/nr-forest-client/archive/refs/heads/main.zip -o /tmp/sql-scripts.zip
+                    
+                    # Step 2: Unzip and prepare the scripts                  
+                    unzip /tmp/sql-scripts.zip -d /tmp/sql/
+                    # Move the SQL scripts to Flyway's location
+                    mv /tmp/sql/nr-forest-client-main/legacy/src/test/resources/db/migration/* /flyway/sql/
+                  volumeMounts:
+                    - name: sql-volume
+                      mountPath: /flyway/sql  # Share the same volume as Flyway          
+              containers:
+                - name: flyway
+                  image: flyway/flyway:latest
+                  env:
+                    - name: HOSTNAME
+                      value: ${NAME}-${ZONE}-${COMPONENT}
+                    - name: APP_USER_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          name: ${NAME}-${ZONE}
+                          key: oracle-password-write
+                    - name: APP_USER
+                      valueFrom:
+                        secretKeyRef:
+                          name: ${NAME}-${ZONE}
+                          key: oracle-user-write
+                  command: ["/bin/sh", "-c"]
+                  args:                    
+                  - |
+                    # Step 3: Run Flyway migration                  
+                    flyway migrate -url=jdbc:oracle:thin:@${HOSTNAME}:1521/FREEPDB1 -user=${APP_USER} -password=${APP_USER_PASSWORD} -connectRetries=60
+                volumeMounts:
+                - name: sql-volume
+                  mountPath: /flyway/sql  # Mount the volume where Flyway looks for SQL scripts
+              restartPolicy: OnFailure
+              volumes:
+                - name: sql-volume
+                  emptyDir: {}
