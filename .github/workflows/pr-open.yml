@@ -83,7 +83,7 @@ jobs:
             APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
 
   deploy-tools:
-    name: Deploy Application
+    name: Deploy Tools
     needs: [build-legacydb, vars]
     environment: tools
     env:
