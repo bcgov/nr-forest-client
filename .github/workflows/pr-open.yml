@@ -132,7 +132,7 @@ jobs:
             
   deploy:
     name: Deploy Application
-    needs: [builds, vars]
+    needs: [deploy-tools, builds, vars]
     environment: dev
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
