@@ -16,11 +16,32 @@ public interface ForestClientLocationRepository
       from the.client_location
       where
       (
-          upper(address_1) like upper(concat(:address, '%'))
-          or upper(address_2) like upper(concat(:address, '%'))
-          or upper(address_3) like upper(concat(:address, '%'))
+       upper(replace(replace(address_1,'-',' '),'   ',' ')) like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
+       or upper(replace(replace(address_2,'-',' '),'   ',' ')) like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
+       or upper(replace(replace(address_3,'-',' '),'   ',' ')) like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
       )
       and upper(postal_code) = upper(replace(:postalCode, ' ', ''))""")
   Flux<ForestClientLocationEntity> matchBy(String address, String postalCode);
+
+  @Query("""
+      select *
+      from the.client_location
+      where
+      (
+       upper(replace(replace(address_1,'-',' '),'   ',' ')) like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
+       or upper(replace(replace(address_2,'-',' '),'   ',' ')) like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
+       or upper(replace(replace(address_3,'-',' '),'   ',' ')) like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
+      )
+      and upper(city) = upper(:city)
+      and upper(province) = upper(:province)
+      and upper(country) = upper(:country)
+      and upper(postal_code) = upper(replace(:postalCode, ' ', ''))""")
+  Flux<ForestClientLocationEntity> matchaddress(
+      String address,
+      String postalCode,
+      String city,
+      String province,
+      String country
+  );
 
 }
