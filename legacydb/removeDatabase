@@ -1,0 +1,32 @@
+#!/bin/bash
+set -Eeuo pipefail
+
+APP_USER="${1}"
+PDB_TO_REMOVE="${2:-}"
+
+# Remove the user first
+if [ -n "${APP_USER}" ]; then
+  sqlplus -s / as sysdba <<EOF
+     -- Exit on any errors
+     WHENEVER SQLERROR EXIT SQL.SQLCODE
+
+     ALTER SESSION SET CONTAINER=${PDB_TO_REMOVE};
+     DROP USER ${APP_USER} CASCADE;
+     exit;
+EOF
+fi;
+
+# Then remove the PDB
+if [ -n "${PDB_TO_REMOVE}" ]; then
+  sqlplus -s / as sysdba <<EOF
+     -- Exit on any errors
+     WHENEVER SQLERROR EXIT SQL.SQLCODE
+
+     ALTER PLUGGABLE DATABASE ${PDB_TO_REMOVE} CLOSE IMMEDIATE;
+     DROP PLUGGABLE DATABASE ${PDB_TO_REMOVE} INCLUDING DATAFILES;
+
+     -- Register changes with listener
+     ALTER SYSTEM REGISTER;
+     exit;
+EOF
+fi;

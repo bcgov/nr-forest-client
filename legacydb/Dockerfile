@@ -1,5 +1,8 @@
 FROM gvenzl/oracle-free:23.3-slim-faststart
 
+COPY --chown=oracle:oracle removeDatabase ${ORACLE_BASE}/removeDatabase
+RUN chmod +x ${ORACLE_BASE}/removeDatabase
+
 USER root
 RUN usermod -u 1011270000 oracle
 USER oracle

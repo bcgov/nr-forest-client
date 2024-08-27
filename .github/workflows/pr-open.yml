@@ -1,6 +1,7 @@
 name: Pull Request Open
 
 on:
+  pull_request:
   workflow_dispatch:
 
 concurrency:
@@ -62,6 +63,73 @@ jobs:
           build_args: |
             APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
 
+  build-legacydb:
+    name: Build Legacydb
+    runs-on: ubuntu-22.04
+    needs: [vars]
+    permissions:
+      packages: write    
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: bcgov-nr/action-builder-ghcr@v2.1.0
+        name: Build (Legacy db)
+        with:
+          package: legacydb
+          tag: latest
+          tag_fallback: test
+          triggers: ('legacydb/')
+          build_args: |
+            APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
+
+  deploy-tools:
+    name: Deploy Application
+    needs: [build-legacydb, vars]
+    environment: tools
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ needs.vars.outputs.url }}
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initializing Deployment
+        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        with:
+          file: legacydb/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          parameters:
+            -p ZONE=tools            
+            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
+            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
+            -p PROMOTE=${{ github.repository }}/legacydb:latest
+
+      - name: Create the PR database
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This creates a new pluggable database for the PR
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec $POD_NAME -- /opt/oracle/createDatabase PR_${{ github.event.number }}
+              oc exec $POD_NAME -- /opt/oracle/createAppUser "${{ secrets.ORACLEDB_USERNAME_W }}_${{ github.event.number }}" "${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}" "PR_${{ github.event.number }}"
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
+            
   deploy:
     name: Deploy Application
     needs: [builds, vars]
@@ -85,11 +153,11 @@ jobs:
             -p ZONE=${{ github.event.number }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
-            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
-            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
+            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}_${{ github.event.number }}
+            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
-            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p ORACLEDB_HOST=nr-forest-client-tools-legacydb
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}
             -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
             -p BCREGISTRY_KEY=${{ secrets.BCREGISTRY_KEY }}
             -p BCREGISTRY_ACCOUNT=${{ secrets.BCREGISTRY_ACCOUNT }}
