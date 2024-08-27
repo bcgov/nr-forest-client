@@ -41,7 +41,7 @@ describe("Bc Registered Staff Wizard Step", () => {
   });
 
   it('should render the component', () => {
-    loginAndNativateToStaffForm();
+    loginAndNavigateToStaffForm();
   });
 
   describe("Validation", () => {
@@ -106,7 +106,7 @@ describe("Bc Registered Staff Wizard Step", () => {
       cy.intercept("GET", `**/api/clients/FM123456`, {
         fixture: "clients/bcreg_FM123456.json",
       }).as("clientDetailsFM123456");
-      loginAndNativateToStaffForm();
+      loginAndNavigateToStaffForm();
     });
 
     it("should validate the client name", () => {      
@@ -296,6 +296,47 @@ describe("Bc Registered Staff Wizard Step", () => {
     });
   });
 
+  const interceptClientsApi = (companySearch: string, companyCode: string) => {
+    const detailsCode = (code: string) => {
+      switch (code) {
+        case "bcd":
+      return 408;
+        case "dup":
+      return 409;
+        case "cnf":
+      return 404;
+        default:
+      return 200;
+      }
+    };
+
+    //We need to intercept the client search for the scenario, as param 1
+    cy.intercept("GET", `**/api/clients/name/${companySearch}`, {
+      statusCode: 200,
+      fixture: "clients/bcreg_ac_list2.json",
+    }).as(`clientSearch${companySearch}`);
+    
+    //We load the fixture beforehand due to the different content types and extensions based on the response
+    cy.fixture(
+      `clients/bcreg_${companyCode}.${
+        detailsCode(companySearch) === 200 ? "json" : "txt"
+      }`,
+      "utf-8"
+    ).then((data) => {
+      cy.log("data", data);
+      cy.intercept("GET", `**/api/clients/${companyCode}`, {
+        statusCode: detailsCode(companySearch),
+        body: data,
+        headers: {
+          "content-type":
+            detailsCode(companySearch) !== 200
+              ? "text/plain"
+              : "application/json",
+        },
+      }).as(`clientDetails${companySearch}`);
+    });
+  };
+
   describe("Scenario combinations", () => {
 
     beforeEach(function () {
@@ -306,45 +347,8 @@ describe("Bc Registered Staff Wizard Step", () => {
         .replace(" should return ", " ")
         .split(" ");
 
-      const detailsCode = (code: string) => {
-        switch (code) {
-          case "bcd":
-        return 408;
-          case "dup":
-        return 409;
-          case "cnf":
-        return 404;
-          default:
-        return 200;
-        }
-      };
-
-      //We need to intercept the client search for the scenario, as param 1
-      cy.intercept("GET", `**/api/clients/name/${params[0]}`, {
-        statusCode: 200,
-        fixture: "clients/bcreg_ac_list2.json",
-      }).as(`clientSearch${params[0]}`);
-      
-      //We load the fixture beforehand due to the different content types and extensions based on the response
-      cy.fixture(
-        `clients/bcreg_${params[1]}.${
-          detailsCode(params[0]) === 200 ? "json" : "txt"
-        }`,
-        "utf-8"
-      ).then((data) => {
-        cy.log("data", data);
-        cy.intercept("GET", `**/api/clients/${params[1]}`, {
-          statusCode: detailsCode(params[0]),
-          body: data,
-          headers: {
-            "content-type":
-              detailsCode(params[0]) !== 200
-                ? "text/plain"
-                : "application/json",
-          },
-        }).as(`clientDetails${params[0]}`);
-      });
-      loginAndNativateToStaffForm();
+      interceptClientsApi(params[0], params[1]);
+      loginAndNavigateToStaffForm();
     });
   
     testCases.forEach((scenario) => {
@@ -470,7 +474,95 @@ describe("Bc Registered Staff Wizard Step", () => {
     
   });
 
-  const loginAndNativateToStaffForm = () => {
+  describe("Synchronize rendered data with business name input value", () => {
+    const scenarios = [
+      {
+        name: "the client type gets changed",
+        action: () => {
+          cy.selectFormEntry("#clientType", "Individual", false);
+        },
+        clientTypeChanged: true,
+      },
+      {
+        name: "the business name gets manually changed",
+        action: () => {
+          cy.get("#businessName").shadow().find("input").type("{backspace}");
+        },
+      },
+      {
+        name: "the business name gets cleared",
+        action: () => {
+          cy.get("#businessName")
+            .shadow()
+            .find("#selection-button") // The X clear button
+            .click();
+        },
+      },
+    ];
+    beforeEach(() => {
+      const companySearch = "dup";
+      const companyCode = "C7775745";
+      interceptClientsApi(companySearch, companyCode);
+
+      loginAndNavigateToStaffForm();
+
+      // When a client is selected, the rest of the form should appear
+      cy.selectAutocompleteEntry(
+        "#businessName",
+        companySearch,
+        companyCode,
+        `@clientSearch${companySearch}`,
+      );
+
+      cy.get("cds-inline-notification#bcRegistrySearchNotification").should("not.exist");
+
+      cy.get("#fuzzy-match-notification-global").should("be.visible");
+
+      cy.get(".read-only-box > cds-inline-notification#readOnlyNotification").should("exist");
+
+      cy.get(".read-only-box > #legalType > .title-group-01 > .label-01")
+        .should("exist")
+        .and("have.text", "Type");
+
+      cy.get(".read-only-box > #registrationNumber > .title-group-01 > .label-01")
+        .should("exist")
+        .and("have.text", "Registration number");
+
+      cy.get(".read-only-box > #goodStanding > .title-group-01 > .label-01")
+        .should("exist")
+        .and("have.text", "BC Registries standing");
+
+      cy.get("#workSafeBCNumber").should("exist").and("have.value", "");
+      cy.get("#acronym").should("exist").and("have.value", "");
+    });
+
+    scenarios.forEach((scenario) => {
+      it(`resets the form when ${scenario.name}`, () => {
+        scenario.action();
+
+        if (!scenario.clientTypeChanged) {
+          cy.get("cds-inline-notification#bcRegistrySearchNotification").should("be.visible");
+        }
+
+        cy.get("#fuzzy-match-notification-global").should("not.exist");
+
+        cy.get(".read-only-box > cds-inline-notification#readOnlyNotification").should("not.exist");
+
+        cy.get(".read-only-box > #legalType > .title-group-01 > .label-01").should("not.exist");
+
+        cy.get(".read-only-box > #registrationNumber > .title-group-01 > .label-01").should(
+          "not.exist",
+        );
+
+        cy.get(".read-only-box > #goodStanding > .title-group-01 > .label-01").should("not.exist");
+
+        cy.get("#workSafeBCNumber").should("not.exist");
+        cy.get("#acronym").should("not.exist");
+      });
+    });
+  });
+
+  const loginAndNavigateToStaffForm = () => {
     cy.visit("/");
 
     cy.get("#landing-title").should(
