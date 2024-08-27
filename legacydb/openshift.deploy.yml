@@ -40,11 +40,11 @@ parameters:
     description: Oracle database password with write permission
     required: true
   - name: CPU_REQUEST
-    value: 500m
+    value: 125m
   - name: CPU_LIMIT
-    value: "1"
+    value: 500m
   - name: MEMORY_REQUEST
-    value: 2Gi
+    value: 1Gi
   - name: MEMORY_LIMIT
     value: 2Gi
 objects:
@@ -140,7 +140,7 @@ objects:
                   command:
                     - healthcheck.sh
                 failureThreshold: 30
-                initialDelaySeconds: 120
+                initialDelaySeconds: 240
                 periodSeconds: 30
                 timeoutSeconds: 5
               livenessProbe:
@@ -148,7 +148,7 @@ objects:
                   command:
                     - healthcheck.sh
                 failureThreshold: 30
-                initialDelaySeconds: 130
+                initialDelaySeconds: 250
                 periodSeconds: 30
                 timeoutSeconds: 5
               env:
