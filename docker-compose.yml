@@ -22,7 +22,9 @@ services:
       POSTGRES_USER: *POSTGRES_USER
       POSTGRES_PASSWORD: *POSTGRES_PASSWORD
       POSTGRES_DB: *POSTGRES_DATABASE
-    image: postgres:15
+    build:
+      context: database
+      dockerfile: Dockerfile
     ports: [5432:5432]
     volumes: ["/pgdata"]
     healthcheck:
@@ -34,20 +36,28 @@ services:
 
   legacydb:
     container_name: oracle
-    build:
-      context: legacydb
-      dockerfile: Dockerfile
+    #build:
+    #  context: legacydb
+    #  dockerfile: Dockerfile
     environment:
       APP_USER_PASSWORD: default
       APP_USER: THE
       ORACLE_RANDOM_PASSWORD: yes
     platform: "linux/amd64"
-    # image: gvenzl/oracle-xe:21.3.0-slim-faststart
+    image: gvenzl/oracle-free:23.3-slim-faststart
     ports: [1521:1521]
-    volumes: [/opt/oracle/oradata gvenzl/oracle-xe]
+    volumes: [/opt/oracle/oradata]
     healthcheck:
       test: [ "CMD-SHELL", "healthcheck.sh" ]
       interval: 5s
       timeout: 10s
       retries: 10
+    <<: *defaults
+
+  legacyflyway:
+    container_name: flyway
+    image: flyway/flyway
+    command: -url=jdbc:oracle:thin:@legacydb:1521/FREEPDB1 -user=THE -password=default -connectRetries=60 migrate    
+    volumes: [./legacy/src/test/resources/db/migration:/flyway/sql]
+    depends_on: [legacydb]
     <<: *defaults
