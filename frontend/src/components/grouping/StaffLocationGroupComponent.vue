@@ -514,7 +514,6 @@ const getLocationDescription = (address: Address, index: number): string =>
         ...getValidations('location.addresses.*.notes'),
         submissionValidation(`location.addresses[${id}].notes`),
       ]"
-      :error-message="nameError"
       @empty="validation.notes = true"
       @error="validation.notes = !$event"
     >
