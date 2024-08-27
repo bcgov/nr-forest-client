@@ -264,7 +264,6 @@ const updateContactType = (value: CodeNameType | undefined) => {
       ]"
       required
       required-label
-      :error-message="error"
       @update:selected-value="
         selectedValue.locationNames = nameTypesToCodeDescr($event)
       "
