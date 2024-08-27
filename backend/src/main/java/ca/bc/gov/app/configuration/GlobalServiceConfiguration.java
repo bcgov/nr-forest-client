@@ -13,6 +13,8 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryExceptionMessageDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetPartyDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetRequestBodyDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetRequestQueryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
@@ -127,7 +129,9 @@ import org.springframework.web.reactive.function.client.WebClient;
     OpenData.class,
     MatchResult.class,
     BcRegistryAlternateNameDto.class,
-    BcRegistryFacetPartyDto.class
+    BcRegistryFacetPartyDto.class,
+    BcRegistryFacetRequestBodyDto.class,
+    BcRegistryFacetRequestQueryDto.class
 })
 public class GlobalServiceConfiguration {
 
