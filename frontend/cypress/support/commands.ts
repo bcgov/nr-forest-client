@@ -156,6 +156,16 @@ Cypress.Commands.add("fillFormEntry",(field: string, value: string, delayMS: num
   .blur();
 });
 
+Cypress.Commands.add("clearFormEntry",(field: string, area: boolean = false) =>{
+  cy.get(field)
+  .should("exist")
+  .shadow()
+  .find(area ? "textarea" : "input")
+  .focus()
+  .clear()
+  .blur();
+});
+
 Cypress.Commands.add("selectFormEntry", (field: string, value: string, box: boolean) => {
   cy.get(field).find("[part='trigger-button']").click();
 

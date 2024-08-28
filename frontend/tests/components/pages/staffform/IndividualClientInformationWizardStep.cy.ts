@@ -468,6 +468,74 @@ describe("<individual-client-information-wizard-step />", () => {
           });
         });
       });
+
+      describe("and the ID number gets filled in", () => {
+        beforeEach(() => {
+          cy.clearFormEntry("#clientIdentification");
+          cy.fillFormEntry("#clientIdentification", "1234567");
+          cy.wait(1);
+        });
+
+        describe("and the Issuing province is changed", () => {
+          beforeEach(() => {
+            cy.selectFormEntry("#identificationProvince", "Manitoba", false);
+            cy.wait(1);
+          });
+
+          it("should emit valid true", () => {
+            /*
+            This test makes sure the impact of clearing the province (and thus making the
+            province field invalid) does not matter anymore after we get to a situation where the
+            province field is not used.
+            */
+            cy.get("@vueWrapper").should((vueWrapper) => {
+              const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
+
+              // Last event (in)"valid" emitted
+              expect(lastValid[0]).to.equal(true);
+            });
+          });
+        });
+      });
+
+      describe("and the Issuing province is changed to Manitoba", () => {
+        beforeEach(() => {
+          cy.selectFormEntry("#identificationProvince", "Manitoba", false);
+        });
+
+        describe("and the ID number gets filled in with numbers and letters", () => {
+          beforeEach(() => {
+            cy.clearFormEntry("#clientIdentification");
+            cy.fillFormEntry("#clientIdentification", "1234567A");
+            cy.wait(1);
+          });
+
+          it("should emit valid true", () => {
+            cy.get("@vueWrapper").should((vueWrapper) => {
+              const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
+
+              // Last event (in)"valid" emitted
+              expect(lastValid[0]).to.equal(true);
+            });
+          });
+
+          describe("and the Issuing province is changed to BC", () => {
+            beforeEach(() => {
+              cy.selectFormEntry("#identificationProvince", "British Columbia", false);
+              cy.wait(1);
+            });
+
+            it("should emit valid false because letters are not allowed for BC driver's licence", () => {
+              cy.get("@vueWrapper").should((vueWrapper) => {
+                const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
+
+                // Last event (in)"valid" emitted
+                expect(lastValid[0]).to.equal(false);
+              });
+            });
+          });
+        });
+      });
     });
   });
 });
