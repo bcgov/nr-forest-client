@@ -37,7 +37,7 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.component }}
-          target: ${{ needs.vars.outputs.pr}}
+          target: ${{ needs.vars.outputs.pr }}
           tags: test
 
   test-init:
@@ -61,7 +61,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
@@ -146,7 +146,7 @@ jobs:
           overwrite: false
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
 
       - name: Deploy Legacy
@@ -161,7 +161,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
             -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
 
@@ -191,7 +191,7 @@ jobs:
           overwrite: true          
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
 
       - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -205,7 +205,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
             -p PROMOTE=${{ github.repository }}/backend:${{ env.ZONE }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
@@ -224,7 +224,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
 
       - name: Deploy Frontend ConfigMap
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -237,7 +237,7 @@ jobs:
           overwrite: true          
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -250,7 +250,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.ZONE }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
@@ -303,7 +303,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
@@ -386,7 +386,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}    
             
       - name: Deploy Processor
@@ -401,7 +401,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
             -p PROMOTE=${{ github.repository }}/processor:${{ env.PREV }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
@@ -416,7 +416,7 @@ jobs:
           overwrite: true          
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
 
       - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -430,7 +430,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
             -p PROMOTE=${{ github.repository }}/backend:${{ env.PREV }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
@@ -449,7 +449,7 @@ jobs:
           overwrite: true          
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -462,7 +462,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ github.event.number }}
+            -p TAG=${{ env.ZONE }}
             -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
