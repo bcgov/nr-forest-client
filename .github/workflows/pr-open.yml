@@ -178,7 +178,7 @@ jobs:
             -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
             -p ORACLEDB_HOST=nr-forest-client-tools-legacydb
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}
+            -p ORACLEDB_SERVICENAME=PR_${{ github.event.number }}
             -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
             -p BCREGISTRY_KEY=${{ secrets.BCREGISTRY_KEY }}
             -p BCREGISTRY_ACCOUNT=${{ secrets.BCREGISTRY_ACCOUNT }}
@@ -237,7 +237,7 @@ jobs:
             -p ZONE=${{ github.event.number }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
             -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
-            -p ORACLEDB_PORT="1521"
+            -p ORACLEDB_PORT=1521
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
