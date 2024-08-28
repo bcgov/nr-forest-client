@@ -26,7 +26,7 @@ objects:
           name: ${NAME}-${ZONE}-${COMPONENT}
           labels:
             app: ${NAME}-${ZONE}
-            deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+            deployment: ${NAME}-${ZONE}-${COMPONENT}
         spec:          
           containers:
             - name: ${NAME}

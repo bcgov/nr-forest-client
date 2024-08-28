@@ -111,28 +111,19 @@ objects:
         window.localStorage.setItem('VITE_LOGOUT_BCSC_URL','${LANDING_URL}');
         window.localStorage.setItem('VITE_LOGOUT_BCEIDBUSINESS_URL','${LANDING_URL}');
         window.localStorage.setItem('VITE_LOGOUT_IDIR_URL','https://${URL}');
-  - kind: DeploymentConfig
-    apiVersion: v1    
+  - kind: Deployment
+    apiVersion: apps/v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       replicas: 1
-      triggers:
-        - type: ConfigChange
-        - type: ImageChange
-          imageChangeParams:
-            automatic: true
-            containerNames:
-              - ${NAME}
-            from:
-              kind: ImageStreamTag
-              name: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
       selector:
-        deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+        matchLabels:
+          deployment: ${NAME}-${ZONE}-${COMPONENT}
       strategy:
-        type: Rolling
+        type: RollingUpdate
       template:
         metadata:
           annotations:
@@ -141,7 +132,7 @@ objects:
             prometheus.io/path: "/metrics"
           labels:
             app: ${NAME}-${ZONE}
-            deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+            deployment: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           volumes:
             - name: app-config
@@ -216,7 +207,7 @@ objects:
           port: 80
           targetPort: 3000
       selector:
-        deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
   - kind: Route
     apiVersion: route.openshift.io/v1    
     metadata:
