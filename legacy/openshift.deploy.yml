@@ -31,7 +31,7 @@ parameters:
     description: Oracle database keystore file
   - name: ORACLEDB_PORT
     description: Oracle database port
-    value: 1543
+    value: "1543"
   - name: CPU_REQUEST
     value: 75m
   - name: CPU_LIMIT
