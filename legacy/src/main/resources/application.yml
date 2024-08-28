@@ -21,13 +21,6 @@ spring:
       maxIdleTime: 45000
       maxCreateConnectionTime: 90000
       poolName: FsaLegacyClientConPool
-  flyway:
-    enabled: true
-    validate-on-migrate: true
-    baseline-on-migrate: true
-    user: ${ca.bc.gov.nrs.oracle.username}
-    password: ${ca.bc.gov.nrs.oracle.password}
-    url: jdbc:oracle:thin:@${ca.bc.gov.nrs.oracle.host}:${ca.bc.gov.nrs.oracle.port}/${ca.bc.gov.nrs.oracle.service}
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
@@ -106,3 +99,23 @@ ca:
 logging:
   pattern:
     correlation: "[${spring.application.name:},%X{${X-TRACE-ID:traceId}:-},%X{spanId:-}] "
+
+# Profile Specific Properties
+---
+spring:
+  config:
+    activate:
+      on-profile: container
+  sleuth:
+    propagation-keys:
+      - X-TRACE-ID
+    baggage-keys:
+      - X-TRACE-ID
+    log:
+      slf4j:
+        whitelisted-mdc-keys:
+          - X-TRACE-ID
+
+logging:
+  pattern:
+    console: "{\"time\": \"%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}\", \"level\": \"${LOG_LEVEL:%5p}\", \"app\":\"${spring.application.name:-}\", \"traceId\":\"%X{${X-TRACE-ID:traceId}:-}\", \"spanId\":\"%X{spanId:-}\", \"pid\": \"${PID: }\", \"thread\": \"%t\", \"source\": \"%logger{63}:%L\", \"message\": \"%m${LOG_EXCEPTION_CONVERSION_WORD:%wEx}\"}%n"
