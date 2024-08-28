@@ -119,3 +119,4 @@ spring:
 logging:
   pattern:
     console: "{\"time\": \"%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}\", \"level\": \"${LOG_LEVEL:%5p}\", \"app\":\"${spring.application.name:-}\", \"traceId\":\"%X{${X-TRACE-ID:traceId}:-}\", \"spanId\":\"%X{spanId:-}\", \"pid\": \"${PID: }\", \"thread\": \"%t\", \"source\": \"%logger{63}:%L\", \"message\": \"%m${LOG_EXCEPTION_CONVERSION_WORD:%wEx}\"}%n"
+
