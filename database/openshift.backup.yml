@@ -13,9 +13,15 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
-  - name: IMAGE_TAG
-    description: Image tag to use
-    value: latest
+  - name: TAG
+    description: Image tag; e.g. PR number, latest or prod
+    required: true
+  - name: REGISTRY
+    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
+    value: ghcr.io
+  - name: ORG
+    description: Organization name
+    value: bcgov
   - name: RESTORE_DIR
     description: Folder that contains initialization scripts
     value: /tmp/restore
