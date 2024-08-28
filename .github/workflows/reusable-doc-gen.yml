@@ -83,6 +83,7 @@ jobs:
         run: ./mvnw clean javadoc:javadoc
 
       - name: Copy Backend docs to output
+        continue-on-error: true
         run: mv backend/target/site/apidocs/ output/backend/
 
       - name: Generate docs for Legacy
@@ -91,6 +92,7 @@ jobs:
         run: ./mvnw clean javadoc:javadoc
 
       - name: Copy Legacy docs to output
+        continue-on-error: true
         run: mv legacy/target/site/apidocs/ output/legacy/
 
       - name: Generate docs for Processor
@@ -99,6 +101,7 @@ jobs:
         run: ./mvnw clean javadoc:javadoc
 
       - name: Copy Legacy docs to output
+        continue-on-error: true
         run: mv processor/target/site/apidocs/ output/processor/
 
       - name: Deploy to Pages
