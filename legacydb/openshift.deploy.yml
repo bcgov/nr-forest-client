@@ -96,15 +96,7 @@ objects:
     spec:
       replicas: 1
       triggers:
-        - type: ConfigChange
-        - type: ImageChange
-          imageChangeParams:
-            automatic: true
-            containerNames:
-              - ${NAME}
-            from:
-              kind: ImageStreamTag
-              name: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+        - type: ConfigChange        
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
       strategy:
