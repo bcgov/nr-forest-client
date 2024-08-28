@@ -447,6 +447,7 @@ describe("<individual-client-information-wizard-step />", () => {
           });
           describe("and the ID number is properly filled in", () => {
             beforeEach(() => {
+              cy.clearFormEntry("#clientIdentification");
               cy.get("#clientIdentification").shadow().find("input").type("12345678");
 
               cy.get("#clientIdentification").shadow().find("input").blur();
