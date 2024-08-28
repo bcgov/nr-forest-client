@@ -99,6 +99,18 @@
       <artifactId>oracle-r2dbc</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-oracle</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -156,21 +168,6 @@
       <version>1.20.1</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-database-oracle</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-jdbc</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <dependencyManagement>
@@ -215,6 +212,7 @@
         <filtering>true</filtering>
         <directory>src/main/resources</directory>
         <includes>
+          <include>db/**</include>
           <include>application*</include>
         </includes>
       </resource>

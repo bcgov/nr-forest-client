@@ -13,6 +13,9 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
+  - name: ENVIRONMENT
+    description: Environment name used by the application
+    value: prod
   - name: IMAGE_TAG
     description: Image tag to use
     value: latest
@@ -25,7 +28,10 @@ parameters:
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-forest-client-legacy:prod
   - name: ORACLEDB_KEYSTORE
-    description: Oracle database keystore file  
+    description: Oracle database keystore file
+  - name: ORACLEDB_PORT
+    description: Oracle database port
+    value: 1543
   - name: CPU_REQUEST
     value: 75m
   - name: CPU_LIMIT
@@ -119,7 +125,7 @@ objects:
                       name: ${NAME}-${ZONE}
                       key: oracle-secret
                 - name: ORACLEDB_PORT
-                  value: "1543"
+                  value: ${ORACLEDB_PORT}
               volumeMounts:
                 - name: ${NAME}-${ZONE}-certs
                   mountPath: /cert
@@ -161,7 +167,9 @@ objects:
                       name: ${NAME}-${ZONE}
                       key: oracle-service
                 - name: ORACLEDB_PORT
-                  value: "1543"
+                  value: ${ORACLEDB_PORT}
+                - name: SPRING_PROFILES_ACTIVE
+                  value: "container,${ENVIRONMENT}"
                 - name: ORACLEDB_SECRET
                   valueFrom:
                     secretKeyRef:
