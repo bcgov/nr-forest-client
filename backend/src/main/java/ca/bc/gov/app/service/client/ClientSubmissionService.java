@@ -503,12 +503,20 @@ public class ClientSubmissionService {
                     .flatMap(submissionMatchDetailRepository::save)
                     .map(SubmissionMatchDetailEntity::getSubmissionId)
             )
-            .flatMap(submissionId -> sendEmail(
-                    submissionId,
-                    clientSubmissionDto,
-                    JwtPrincipalUtil.getEmail(principal),
-                    JwtPrincipalUtil.getName(principal)
-                )
+            .flatMap(submissionId ->
+                Mono
+                    .just(submissionId)
+                    //Only external submissions require this first email
+                    .filter(subId -> SubmissionTypeCodeEnum.SPP.equals(submissionType))
+                    .flatMap(subId ->
+                        sendEmail(
+                            subId,
+                            clientSubmissionDto,
+                            JwtPrincipalUtil.getEmail(principal),
+                            JwtPrincipalUtil.getName(principal)
+                        )
+                    )
+                    .defaultIfEmpty(submissionId)
             );
   }
 

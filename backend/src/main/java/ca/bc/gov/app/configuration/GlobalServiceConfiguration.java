@@ -2,6 +2,7 @@ package ca.bc.gov.app.configuration;
 
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryAlternateNameDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentAccessRequestDto;
@@ -11,6 +12,9 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestBodyDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryExceptionMessageDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetPartyDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetRequestBodyDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetRequestQueryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
@@ -123,7 +127,11 @@ import org.springframework.web.reactive.function.client.WebClient;
     FeatureProperties.class,
     Geometry.class,
     OpenData.class,
-    MatchResult.class
+    MatchResult.class,
+    BcRegistryAlternateNameDto.class,
+    BcRegistryFacetPartyDto.class,
+    BcRegistryFacetRequestBodyDto.class,
+    BcRegistryFacetRequestQueryDto.class
 })
 public class GlobalServiceConfiguration {
 
