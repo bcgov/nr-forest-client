@@ -260,7 +260,8 @@ objects:
       - from:
         - namespaceSelector:
             matchLabels:
-              name: d2723f-dev  # Restrict to namespace d2723f-dev
+              environment: dev  # Restrict to namespace d2723f-dev
+              name: d2723f  # Restrict to namespace d2723f-dev
           podSelector:
             matchLabels:
               appkind: legacy  # Further restrict to pods with appkind=legacy
