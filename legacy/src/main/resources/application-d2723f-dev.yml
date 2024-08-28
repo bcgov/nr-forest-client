@@ -1,4 +1,7 @@
 spring:
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
   flyway:
     enabled: true
     locations: classpath:dbmigrations
