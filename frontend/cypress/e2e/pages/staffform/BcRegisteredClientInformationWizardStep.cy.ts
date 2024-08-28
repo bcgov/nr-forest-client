@@ -2,7 +2,6 @@ import testCases from "../../../fixtures/staff/bcregisteredscenarios.json";
 
 /* eslint-disable no-undef */
 describe("Bc Registered Staff Wizard Step", () => {
-
   beforeEach(() => {
     cy.viewport(1920, 1080);
 
@@ -10,7 +9,7 @@ describe("Bc Registered Staff Wizard Step", () => {
       fixture: "identificationTypes.json",
     }).as("getIdentificationTypes");
 
-    cy.intercept("GET", '/api/clients/submissions?page=0&size=10', {
+    cy.intercept("GET", "/api/clients/submissions?page=0&size=10", {
       fixture: "submissions.json",
       headers: {
         "x-total-count": "1",
@@ -22,14 +21,20 @@ describe("Bc Registered Staff Wizard Step", () => {
     cy.intercept("GET", "/api/clients/name/exi", {
       fixture: "clients/bcreg_ac_list1.json",
     });
+    
     cy.intercept("GET", "/api/clients/name/Koalll%C3%A1", {
       fixture: "clients/bcreg_ac_list4.json",
     });
+
     cy.intercept("GET", "/api/clients/C1234567", {
       fixture: "clients/bcreg_C1234567.json",
     });
+
     cy.fixture("clients/bcreg_ac_list2.json").then((data) =>
-      data.forEach(element => cy.intercept("GET",`**/api/clients/name/${encodeURIComponent(element.name)}`,
+      data.forEach((element) =>
+        cy.intercept(
+          "GET",
+          `**/api/clients/name/${encodeURIComponent(element.name)}`,
           {
             fixture: "clients/bcreg_ac_list2.json",
           }
@@ -38,7 +43,10 @@ describe("Bc Registered Staff Wizard Step", () => {
     );
 
     cy.fixture("clients/bcreg_ac_list3.json").then((data) =>
-      data.forEach(element => cy.intercept("GET",`**/api/clients/name/${encodeURIComponent(element.name)}`,
+      data.forEach((element) =>
+        cy.intercept(
+          "GET",
+          `**/api/clients/name/${encodeURIComponent(element.name)}`,
           {
             fixture: "clients/bcreg_ac_list3.json",
           }
@@ -51,7 +59,7 @@ describe("Bc Registered Staff Wizard Step", () => {
     }).as("clientSearchCORPORATION");
   });
 
-  it('should render the component', () => {
+  it("should render the component", () => {
     loginAndNavigateToStaffForm();
   });
 
@@ -87,22 +95,20 @@ describe("Bc Registered Staff Wizard Step", () => {
         statusCode: 200,
         fixture: "clients/bcreg_ac_list4.json",
       }).as("clientSearchALLLA1");
+
       cy.intercept("GET", "**/api/clients/name/alll", {
         statusCode: 200,
         fixture: "clients/bcreg_ac_list4.json",
       }).as("clientSearchALLLA2");
+
       cy.intercept("GET", "**/api/clients/name/alllá", {
         statusCode: 200,
         fixture: "clients/bcreg_ac_list4.json",
       }).as("clientSearchALLLA3");
 
-      cy.intercept(
-        "GET",
-        `**/api/clients/name/Koalll%C3%A1}`,
-        {
-          fixture: "clients/bcreg_ac_list4.json",
-        }
-      ).as("clientSearchEncoded");
+      cy.intercept("GET", `**/api/clients/name/Koalll%C3%A1}`, {
+        fixture: "clients/bcreg_ac_list4.json",
+      }).as("clientSearchEncoded");
 
       cy.intercept(
         "GET",
@@ -121,15 +127,14 @@ describe("Bc Registered Staff Wizard Step", () => {
         statusCode: 200,
         fixture: "clients/bcreg_ac_list4.json",
       }).as("clientSearchSOL");
-  
+
       cy.intercept("GET", `**/api/clients/FM123456`, {
         fixture: "clients/bcreg_FM123456.json",
       }).as("clientDetailsFM123456");
       loginAndNavigateToStaffForm();
     });
 
-    it("should validate the client name", () => {      
-
+    it("should validate the client name", () => {
       cy.selectAutocompleteEntry(
         "#businessName",
         "cor",
@@ -144,7 +149,7 @@ describe("Bc Registered Staff Wizard Step", () => {
         "Client name cannot be empty"
       );
 
-      cy.wait(2)
+      cy.wait(2);
 
       cy.selectAutocompleteEntry(
         "#businessName",
@@ -152,12 +157,13 @@ describe("Bc Registered Staff Wizard Step", () => {
         "C1231231",
         "@clientSearchLON"
       );
+
       cy.checkAutoCompleteErrorMessage(
         "#businessName",
         "The client name has a 60 character limit"
       );
-      
-      cy.wait(2)
+
+      cy.wait(2);
 
       cy.get("#businessName").shadow().find("div#selection-button").click();
 
@@ -165,72 +171,80 @@ describe("Bc Registered Staff Wizard Step", () => {
         "#businessName",
         "Client name cannot be empty"
       );
-      cy.wait(2)
-      
+      cy.wait(2);
+
       cy.selectAutocompleteEntry(
         "#businessName",
         "alllá",
         "FM999457",
         "@clientSearchEncodedALLLA4"
-      );      
-      cy.wait(2)
+      );
+      cy.wait(2);
+
       cy.checkAutoCompleteErrorMessage(
         "#businessName",
         "The client name can only contain: A-Z, a-z, 0-9, space or common symbols"
       );
-
     });
 
     it("should validate work safe bc number", () => {
-
       cy.selectAutocompleteEntry(
         "#businessName",
         "cor",
         "C1234567",
         "@clientSearchCOR"
       );
+
       cy.wait("@clientDetailsC1234567");
+
       cy.get("#workSafeBCNumber").should("exist").and("have.value", "");
 
       cy.get("#workSafeBCNumber").shadow().find("input").clear();
+
       cy.fillFormEntry("#workSafeBCNumber", "potato");
+
       cy.checkInputErrorMessage(
         "#workSafeBCNumber",
         "WorkSafeBC number should contain only numbers"
       );
-      
-      cy.wait(2)
+
+      cy.wait(2);
 
       cy.get("#workSafeBCNumber").shadow().find("input").clear();
+
       cy.fillFormEntry("#workSafeBCNumber", "234567");
       cy.fillFormEntry("#doingBusinessAs", "Doing");
-      cy.fillFormEntry("#workSafeBCNumber", "1");      
+      cy.fillFormEntry("#workSafeBCNumber", "1");
+
       cy.checkInputErrorMessage(
         "#workSafeBCNumber",
         "The WorkSafeBC has a 6 character limit"
       );
-            
     });
 
     it("should validate doing business as", () => {
-
       cy.selectAutocompleteEntry(
         "#businessName",
         "cor",
         "C1234567",
         "@clientSearchCOR"
       );
+
       cy.wait("@clientDetailsC1234567");
+
       cy.get("#doingBusinessAs").should("exist").and("have.value", "");
 
       cy.fillFormEntry("#doingBusinessAs", "1".repeat(200));
+
       cy.checkInputErrorMessage(
         "#doingBusinessAs",
         "The doing business as has a 120 character limit"
       );
 
       cy.get("#doingBusinessAs").shadow().find("input").clear();
+
       cy.fillFormEntry("#doingBusinessAs", "lá");
+
       cy.checkInputErrorMessage(
         "#doingBusinessAs",
         "The doing business as can only contain: A-Z, a-z, 0-9, space or common symbols"
@@ -238,26 +252,44 @@ describe("Bc Registered Staff Wizard Step", () => {
     });
 
     it("should validate acronym", () => {
+      cy.selectAutocompleteEntry(
+        "#businessName",
+        "cor",
+        "C1234567",
+        "@clientSearchCOR"
+      );
 
-      cy.selectAutocompleteEntry('#businessName', 'cor','C1234567','@clientSearchCOR');
-      cy.wait('@clientDetailsC1234567');
-      cy.get('#acronym').should('exist').and("have.value", "");
+      cy.wait("@clientDetailsC1234567");
 
-      cy.fillFormEntry('#acronym', '1'.repeat(10));
-      cy.checkInputErrorMessage('#acronym','The acronym has a 8 character limit');
+      cy.get("#acronym").should("exist").and("have.value", "");
+
+      cy.fillFormEntry("#acronym", "1".repeat(10));
+
+      cy.checkInputErrorMessage(
+        "#acronym",
+        "The acronym has a 8 character limit"
+      );
+
+      cy.get("#acronym").shadow().find("input").clear();
+
+      cy.fillFormEntry("#acronym", "láe");
+
+      cy.checkInputErrorMessage(
+        "#acronym",
+        "The acronym can only contain: A-Z or 0-9"
+      );
+
+      cy.get("#acronym").shadow().find("input").clear();
+
+      cy.fillFormEntry("#acronym", "I");
       
-      cy.get('#acronym').shadow().find('input').clear();
-      cy.fillFormEntry('#acronym', 'láe');
-      cy.checkInputErrorMessage('#acronym','The acronym can only contain: A-Z or 0-9');
-
-      cy.get('#acronym').shadow().find('input').clear();
-      cy.fillFormEntry('#acronym', 'I');
-      cy.checkInputErrorMessage('#acronym','The acronym must contain at least 3 characters');
-
+      cy.checkInputErrorMessage(
+        "#acronym",
+        "The acronym must contain at least 3 characters"
+      );
     });
 
     it("should validate birthdate", () => {
-
       cy.selectAutocompleteEntry(
         "#businessName",
         "sol",
@@ -319,13 +351,13 @@ describe("Bc Registered Staff Wizard Step", () => {
     const detailsCode = (code: string) => {
       switch (code) {
         case "bcd":
-      return 408;
+          return 408;
         case "dup":
-      return 409;
+          return 409;
         case "cnf":
-      return 404;
+          return 404;
         default:
-      return 200;
+          return 200;
       }
     };
 
@@ -334,7 +366,7 @@ describe("Bc Registered Staff Wizard Step", () => {
       statusCode: 200,
       fixture: "clients/bcreg_ac_list2.json",
     }).as(`clientSearch${companySearch}`);
-    
+
     //We load the fixture beforehand due to the different content types and extensions based on the response
     cy.fixture(
       `clients/bcreg_${companyCode}.${
@@ -357,7 +389,6 @@ describe("Bc Registered Staff Wizard Step", () => {
   };
 
   describe("Scenario combinations", () => {
-
     beforeEach(function () {
       //The title contains some parameters that we need to extract
       const params: string[] = this.currentTest.title
@@ -369,7 +400,7 @@ describe("Bc Registered Staff Wizard Step", () => {
       interceptClientsApi(params[0], params[1]);
       loginAndNavigateToStaffForm();
     });
-  
+
     testCases.forEach((scenario) => {
       it(`${scenario.scenarioName} : ${scenario.companySearch} should return ${scenario.companyCode}`, () => {
         // Initially, only the client name and the info notification should exist
@@ -477,20 +508,23 @@ describe("Bc Registered Staff Wizard Step", () => {
           cy.get("#birthdate").should("be.visible");
         }
 
-        if(scenario.showNotOwnedByPersonError){          
+        if (scenario.showNotOwnedByPersonError) {
           cy.get("#businessName")
             .should("have.attr", "aria-invalid", "true")
-            .should("have.attr", "invalid-text", "This sole proprietor is not owned by a person");
+            .should(
+              "have.attr",
+              "invalid-text",
+              "This sole proprietor is not owned by a person"
+            );
 
           cy.get("#businessName").shadow().find("svg").should("exist");
         }
 
         cy.get("#workSafeBCNumber").should("exist").and("have.value", "");
         cy.get("#doingBusinessAs").should(scenario.dba ? "not.exist" : "exist");
-        cy.get("#acronym").should("exist").and("have.value", "");        
+        cy.get("#acronym").should("exist").and("have.value", "");
       });
     });
-    
   });
 
   describe("Synchronize rendered data with business name input value", () => {
@@ -530,20 +564,26 @@ describe("Bc Registered Staff Wizard Step", () => {
         "#businessName",
         companySearch,
         companyCode,
-        `@clientSearch${companySearch}`,
+        `@clientSearch${companySearch}`
       );
 
-      cy.get("cds-inline-notification#bcRegistrySearchNotification").should("not.exist");
+      cy.get("cds-inline-notification#bcRegistrySearchNotification").should(
+        "not.exist"
+      );
 
       cy.get("#fuzzy-match-notification-global").should("be.visible");
 
-      cy.get(".read-only-box > cds-inline-notification#readOnlyNotification").should("exist");
+      cy.get(
+        ".read-only-box > cds-inline-notification#readOnlyNotification"
+      ).should("exist");
 
       cy.get(".read-only-box > #legalType > .title-group-01 > .label-01")
         .should("exist")
         .and("have.text", "Type");
 
-      cy.get(".read-only-box > #registrationNumber > .title-group-01 > .label-01")
+      cy.get(
+        ".read-only-box > #registrationNumber > .title-group-01 > .label-01"
+      )
         .should("exist")
         .and("have.text", "Registration number");
 
@@ -560,20 +600,28 @@ describe("Bc Registered Staff Wizard Step", () => {
         scenario.action();
 
         if (!scenario.clientTypeChanged) {
-          cy.get("cds-inline-notification#bcRegistrySearchNotification").should("be.visible");
+          cy.get("cds-inline-notification#bcRegistrySearchNotification").should(
+            "be.visible"
+          );
         }
 
         cy.get("#fuzzy-match-notification-global").should("not.exist");
 
-        cy.get(".read-only-box > cds-inline-notification#readOnlyNotification").should("not.exist");
+        cy.get(
+          ".read-only-box > cds-inline-notification#readOnlyNotification"
+        ).should("not.exist");
 
-        cy.get(".read-only-box > #legalType > .title-group-01 > .label-01").should("not.exist");
+        cy.get(
+          ".read-only-box > #legalType > .title-group-01 > .label-01"
+        ).should("not.exist");
 
-        cy.get(".read-only-box > #registrationNumber > .title-group-01 > .label-01").should(
-          "not.exist",
-        );
+        cy.get(
+          ".read-only-box > #registrationNumber > .title-group-01 > .label-01"
+        ).should("not.exist");
 
-        cy.get(".read-only-box > #goodStanding > .title-group-01 > .label-01").should("not.exist");
+        cy.get(
+          ".read-only-box > #goodStanding > .title-group-01 > .label-01"
+        ).should("not.exist");
 
         cy.get("#workSafeBCNumber").should("not.exist");
         cy.get("#acronym").should("not.exist");
@@ -608,7 +656,6 @@ describe("Bc Registered Staff Wizard Step", () => {
     cy.get("h1").should("be.visible").should("contain", " Create client ");
 
     cy.get("#clientType").should("be.visible").and("have.value", "");
-      cy.selectFormEntry("#clientType", "BC registered business", false);
+    cy.selectFormEntry("#clientType", "BC registered business", false);
   };
-
 });

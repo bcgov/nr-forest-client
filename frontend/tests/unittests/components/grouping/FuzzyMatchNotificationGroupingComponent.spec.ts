@@ -92,7 +92,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       expect(wrapper.find("cds-actionable-notification").text()).toContain(
         expectedPrefix
       );
-      if(fuzzy)
+      if (fuzzy)
         expect(wrapper.find("cds-actionable-notification").text()).toContain(
           "client name"
         );
@@ -158,7 +158,12 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       fuzzyBus.emit({
         id: "global",
         matches: [
-          { field: "businessInformation.foo", match: "00000001", fuzzy: true, partialMatch: true },
+          {
+            field: "businessInformation.foo",
+            match: "00000001",
+            fuzzy: true,
+            partialMatch: true,
+          },
           {
             field: "businessInformation.bar",
             match: "00000002",
@@ -197,7 +202,12 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       fuzzyBus.emit({
         id: "global",
         matches: [
-          { field: "businessInformation.foo", match: "00000001", fuzzy: true, partialMatch: true },
+          {
+            field: "businessInformation.foo",
+            match: "00000001",
+            fuzzy: true,
+            partialMatch: true,
+          },
         ],
       });
 
@@ -298,7 +308,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
           field: "randomName",
           fuzzy: true,
           match: "00000001",
-          partialMatch: true
+          partialMatch: true,
         },
       ],
     });
