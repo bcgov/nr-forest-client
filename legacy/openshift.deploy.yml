@@ -44,8 +44,8 @@ parameters:
     description: The amount of storage the cert PVC should have
     value: 25Mi
 objects:  
-  - apiVersion: v1
-    kind: ImageStream
+  - kind: ImageStream
+    apiVersion: v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}
@@ -60,8 +60,8 @@ objects:
             name: ${REGISTRY}/${PROMOTE}
           referencePolicy:
             type: Local
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}
@@ -73,11 +73,12 @@ objects:
         requests:
           storage: ${CERT_PVC_SIZE}
       storageClassName: netapp-file-standard
-  - apiVersion: v1
-    kind: DeploymentConfig
+  - kind: DeploymentConfig
+    apiVersion: v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}
+        appkind: ${COMPONENT}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       replicas: 1
@@ -212,8 +213,8 @@ objects:
               volumeMounts:
                 - mountPath: /cert
                   name: ${NAME}-${ZONE}-certs
-  - apiVersion: v1
-    kind: Service
+  - kind: Service
+    apiVersion: v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}

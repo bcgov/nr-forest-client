@@ -92,6 +92,7 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
         app: ${NAME}-${ZONE}
+        appkind: ${NAME}-${COMPONENT}
     spec:
       replicas: 1
       triggers:
@@ -244,3 +245,22 @@ objects:
               volumes:
                 - name: sql-volume
                   emptyDir: {}
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: allow-d2723f-dev-legacy-access
+      namespace: d2723f-tools
+    spec:
+      podSelector: 
+        matchLabels:
+          appkind: ${NAME}-${COMPONENT}  # Only apply to pods with this label in d2723f-tools
+      policyTypes:
+      - Ingress
+      ingress:
+      - from:
+        - namespaceSelector:
+            matchLabels:
+              name: d2723f-dev  # Restrict to namespace d2723f-dev
+          podSelector:
+            matchLabels:
+              appkind: legacy  # Further restrict to pods with appkind=legacy
