@@ -142,9 +142,7 @@ objects:
       name: allow-d2723f-dev-legacy-access
       namespace: d2723f-tools
     spec:
-      podSelector: 
-        matchLabels:
-          appkind: ${NAME}-${COMPONENT}  # Only apply to pods with this label in d2723f-tools
+      podSelector: {}
       policyTypes:
       - Ingress
       ingress:
@@ -153,6 +151,3 @@ objects:
             matchLabels:
               environment: dev  # Restrict to namespace d2723f-dev
               name: d2723f  # Restrict to namespace d2723f-dev
-          podSelector:
-            matchLabels:
-              appkind: legacy  # Further restrict to pods with appkind=legacy
