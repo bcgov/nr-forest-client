@@ -13,26 +13,15 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
-  - name: IMAGE_TAG
+  - name: TAG
     description: Image tag to use
     value: latest
-  - name: PVC_MOUNT_PATH
-    description: Where to mount the PVC, subpath (e.g. data/)
-    value: /opt/oracle/oradata
-  - name: DB_PVC_SIZE
-    description: Volume space available for data, e.g. 512Mi, 2Gi.
-    displayName: Database Volume Capacity
-    required: true
-    value: 256Mi
   - name: REGISTRY
     description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
     value: ghcr.io
-  - name: "DATABASE_DEFAULT_PORT"
-    description: "The configured port for the database service"
-    value: "1521"
-  - name: PROMOTE
-    description: Image (namespace/name:tag) to promote/import
-    required: true
+  - name: ORG
+    description: Organization name
+    value: bcgov
   - name: ORACLEDB_USER_W
     description: Oracle database user name with write permission
     required: true
@@ -57,48 +46,17 @@ objects:
     stringData:      
       oracle-user-write: ${ORACLEDB_USER_W}
       oracle-password-write: ${ORACLEDB_PASSWORD_W}
-  - kind: PersistentVolumeClaim
-    apiVersion: v1
-    metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}
-      labels:
-        app: ${NAME}-${ZONE}
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: ${DB_PVC_SIZE}
-      storageClassName: netapp-file-standard
-  - kind: ImageStream
-    apiVersion: v1
-    metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}
-      labels:
-        app: ${NAME}-${ZONE}
-    spec:
-      lookupPolicy:
-        local: false
-      tags:
-        - name: ${IMAGE_TAG}
-          from:
-            kind: DockerImage
-            name: ${REGISTRY}/${PROMOTE}
-          referencePolicy:
-            type: Local
-  - kind: DeploymentConfig
-    apiVersion: v1
+  - kind: Deployment
+    apiVersion: apps/v1
     metadata:
       name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
         app: ${NAME}-${ZONE}
         appkind: ${NAME}-${COMPONENT}
     spec:
-      replicas: 1
-      triggers:
-        - type: ConfigChange        
+      replicas: 1        
       selector:
-        deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
       strategy:
         type: Recreate
         recreateParams:
@@ -109,11 +67,11 @@ objects:
           name: ${NAME}-${ZONE}-${COMPONENT}
           labels:
             app: ${NAME}-${ZONE}
-            deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+            deployment: ${NAME}-${ZONE}-${COMPONENT}
         spec:          
           containers:
             - name: ${NAME}
-              image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+              image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${TAG}
               resources:
                 limits:
                   cpu: ${CPU_LIMIT}
@@ -129,7 +87,7 @@ objects:
                   command:
                     - healthcheck.sh
                 failureThreshold: 30
-                initialDelaySeconds: 60
+                initialDelaySeconds: 90
                 periodSeconds: 30
                 timeoutSeconds: 5
               livenessProbe:
@@ -174,7 +132,7 @@ objects:
           protocol: TCP
           targetPort: 1521
       selector:
-        deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
       sessionAffinity: None
       type: ClusterIP
   - kind: NetworkPolicy

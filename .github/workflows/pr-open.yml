@@ -105,7 +105,7 @@ jobs:
             -p ZONE=tools            
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
             -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
-            -p PROMOTE=${{ github.repository }}/legacydb:latest
+            -p TAG=latest
 
       - name: Create the PR database
         continue-on-error: true
