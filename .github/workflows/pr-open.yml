@@ -253,6 +253,7 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }}
             -p TAG=${{ github.event.number }}
+            
       - name: Install CLI tools from OpenShift Mirror
         uses: redhat-actions/openshift-tools-installer@v1
         with:        
