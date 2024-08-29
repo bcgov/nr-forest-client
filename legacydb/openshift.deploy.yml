@@ -151,3 +151,99 @@ objects:
             matchLabels:
               environment: dev  # Restrict to namespace d2723f-dev
               name: d2723f  # Restrict to namespace d2723f-dev
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1    
+    metadata:
+      name: allow-same-namespace
+      labels:
+        template: quickstart-network-security-policy
+    spec:
+      podSelector: {}
+      ingress:
+        - from:
+            - podSelector: {}
+      policyTypes:
+        - Ingress
+  - kind: CronJob
+    apiVersion: batch/v1
+    metadata:
+      name: ${NAME}-${ZONE}-migratedb
+      labels:
+        app: ${NAME}-${ZONE}
+        cronjob: ${NAME}-${ZONE}
+    spec:
+      schedule: "0 0 31 2 *"
+      concurrencyPolicy: "Replace"
+      jobTemplate:
+        metadata:
+          labels:
+            app: ${NAME}-${ZONE}
+            cronjob: ${NAME}-${ZONE}
+        spec:
+          template:
+            metadata:
+              labels:
+                app: ${NAME}-${ZONE}
+                cronjob: ${NAME}-${ZONE}
+            spec:
+              initContainers:
+                - name: curl-container
+                  image: curlimages/curl
+                  command: ["/bin/sh", "-c"]
+                  args:
+                  - |
+                    echo "Downloading zip file from GitHub repository bcgov/nr-forest-client/ branch ${BRANCH_NAME}"
+                    curl -L https://github.com/bcgov/nr-forest-client/archive/refs/heads/${BRANCH_NAME}.zip -o /data/nr-forest-client.zip
+                    
+                    unzip -q /data/nr-forest-client.zip -d /data
+                    MIGRATION_DIR=$(find "/data" -type d -path "*/legacy/src/test/resources/db/migration" -print -quit)
+
+                    # Check if migration directory was found
+                    if [ -z "$MIGRATION_DIR" ]; then
+                      echo "Migration directory not found!"
+                      exit 1
+                    fi
+
+                    # Move the contents to the target directory
+                    mkdir -p "/data/sql"
+                    mv "$MIGRATION_DIR"/* "/data/sql"
+
+                    # Clean up
+                    rm -rf "nr-forest-client*"
+
+                    echo "Migration files moved to /data/sql"              
+                  env:
+                    - name: BRANCH_NAME
+                      value: "main"
+                  volumeMounts:
+                  - name: data-volume
+                    mountPath: /data
+              containers:
+                - name: flyway
+                  image: flyway/flyway
+                  command: ["/bin/sh", "-c"]
+                  args: 
+                  - |
+                    flyway -url=${FLYWAY_URL}_${PR_NUMBER} -user=${FLYWAY_USER}_${PR_NUMBER} -password=${FLYWAY_PASSWORD}_${PR_NUMBER} -locations=filesystem:/data/sql migrate
+                  env:
+                    - name: FLYWAY_URL
+                      value: "jdbc:oracle:thin:@nr-forest-client-tools-legacydb.d2723f-tools.svc.cluster.local:1521/PR"
+                    - name: FLYWAY_USER
+                      valueFrom:
+                        secretKeyRef:
+                          name: ${NAME}-${ZONE}
+                          key: oracle-user-write    
+                    - name: FLYWAY_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          name: ${NAME}-${ZONE}
+                          key: oracle-password-write
+                    - name: PR_NUMBER
+                      value: "0"
+                  volumeMounts:
+                  - name: data-volume
+                    mountPath: /data
+              restartPolicy: OnFailure
+              volumes:
+                - name: data-volume
+                  emptyDir: {}
