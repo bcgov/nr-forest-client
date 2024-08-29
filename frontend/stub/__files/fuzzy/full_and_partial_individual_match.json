@@ -1,5 +1,6 @@
 [
   {
+    "comment":"it seems like the partial one is always the first returned by the real API",
     "field":"businessInformation.individual", 
     "match":"00000001", 
     "fuzzy":true,
@@ -10,5 +11,5 @@
     "match":"00000001", 
     "fuzzy":false,
     "partialMatch":false
-  }  
+  }
 ]
