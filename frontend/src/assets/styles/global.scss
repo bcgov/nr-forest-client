@@ -2129,6 +2129,10 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
         (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width))
     );
   }
+
+  div.content:has(div.frame-03 svg.submission-badge) {
+    margin-left: 12rem;
+  }
 }
 
 /* XXX-Large (1784px and above) */
@@ -2168,5 +2172,9 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
       100vw -
         (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width))
     );
+  }
+
+  div.content:has(div.frame-03 svg.submission-badge) {
+    margin-left: 12rem;
   }
 }
