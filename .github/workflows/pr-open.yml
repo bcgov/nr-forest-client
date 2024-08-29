@@ -114,7 +114,7 @@ jobs:
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
           # This creates a new pluggable database for the PR
           for i in {1..5}; do
-            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools  -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
             if [ -n "$POD_NAME" ]; then
               echo "Pod found: $POD_NAME"
               oc exec $POD_NAME -- /opt/oracle/createDatabase PR_${{ github.event.number }}
@@ -136,7 +136,7 @@ jobs:
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
           # This creates a new pluggable database for the PR
           for i in {1..5}; do
-            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
             if [ -n "$POD_NAME" ]; then
               echo "Pod found: $POD_NAME"
               oc exec $POD_NAME -- /opt/oracle/createAppUser "THE" "${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}" "PR_${{ github.event.number }}"
