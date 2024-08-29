@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/notification/index";
 // Composables
@@ -270,7 +270,18 @@ const handleFuzzyErrorMessage = (
       customError.value = payload;
     }
 
-    for (const rawMatch of event.matches.sort((a, b) => (a.fuzzy ? -1 : 1))) {
+    /*
+    By having the errors emitted before the warnings we ensure that input fields with both error
+    and warning get rendered as error.
+    And this works because the input components only consider the first captured event, be it an
+    error or a warning.
+    */
+    const sortedMatches = event.matches.sort((a, b) => {
+      if (a.fuzzy === b.fuzzy) return 0;
+      return a.fuzzy ? 1 : -1;
+    });
+
+    for (const rawMatch of sortedMatches) {
       const genericField = rawMatch.field.replace(arrayIndexRegex, "[]");
 
       const match: MiscFuzzyMatchResult = {
@@ -296,11 +307,7 @@ const handleFuzzyErrorMessage = (
       Note: if the fieldsList is empty, it will use a single field with the same name returned from
       the API.
       */
-      //if is better to let warning fields be colored as warning, change to rawMatch.fuzzy
-      emitFieldErrors(
-        fieldsList || [rawMatch.field],
-        fuzzyMatchedError.value.fuzzy
-      );
+      emitFieldErrors(fieldsList || [rawMatch.field], rawMatch.fuzzy);
     }
   }
 };
