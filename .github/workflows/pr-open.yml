@@ -151,7 +151,7 @@ jobs:
             echo "Failed to find the pod after 5 attempts."
           fi
 
-      - name: Migrate the database
+      - name: Migrate the PR database
         continue-on-error: true
         run: |
           BRANCH_NAME="${{ github.head_ref }}"
