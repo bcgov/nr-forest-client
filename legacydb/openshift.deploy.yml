@@ -224,15 +224,12 @@ objects:
                   command: ["/bin/sh", "-c"]
                   args: 
                   - |
-                    flyway -url=${FLYWAY_URL}_${PR_NUMBER} -user=${FLYWAY_USER}_${PR_NUMBER} -password=${FLYWAY_PASSWORD}_${PR_NUMBER} -locations=filesystem:/data/sql migrate
+                    flyway -url=${FLYWAY_URL}_${PR_NUMBER} -user=${FLYWAY_USER} -password=${FLYWAY_PASSWORD}_${PR_NUMBER} -locations=filesystem:/data/sql migrate
                   env:
                     - name: FLYWAY_URL
                       value: "jdbc:oracle:thin:@nr-forest-client-tools-legacydb.d2723f-tools.svc.cluster.local:1521/PR"
                     - name: FLYWAY_USER
-                      valueFrom:
-                        secretKeyRef:
-                          name: ${NAME}-${ZONE}
-                          key: oracle-user-write    
+                      value: THE   
                     - name: FLYWAY_PASSWORD
                       valueFrom:
                         secretKeyRef:
