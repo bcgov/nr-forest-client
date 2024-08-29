@@ -483,12 +483,7 @@ describe("<individual-client-information-wizard-step />", () => {
             cy.wait(1);
           });
 
-          it("should emit valid true", () => {
-            /*
-            This test makes sure the impact of clearing the province (and thus making the
-            province field invalid) does not matter anymore after we get to a situation where the
-            province field is not used.
-            */
+          it("should emit valid true since the supplied driver's licence ID is also valid for Manitoba", () => {
             cy.get("@vueWrapper").should((vueWrapper) => {
               const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
 
