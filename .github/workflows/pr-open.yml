@@ -114,7 +114,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ github.event.number }}
-            -p TAG=${{ needs.vars.outputs.pr }}
+            -p TAG=${{ github.event.number }}
 
       - name: Backup database before update
         continue-on-error: true
