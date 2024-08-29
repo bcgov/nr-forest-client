@@ -64,7 +64,7 @@ jobs:
             APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
 
   build-legacydb:
-    name: Build Legacydb
+    name: Build (legacydb)
     runs-on: ubuntu-22.04
     needs: [vars]
     permissions:
