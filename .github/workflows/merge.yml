@@ -27,7 +27,7 @@ jobs:
 
   test-init:
     name: TEST Init
-    needs: [images-test]
+    needs: [vars]
     env:
       ZONE: test
       URL: forestclient-tst.nrs.gov.bc.ca
@@ -45,7 +45,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
@@ -89,7 +89,7 @@ jobs:
 
   test-deploy:
     name: TEST Deployment
-    needs: [test-init]
+    needs: [vars, test-init]
     env:
       URL: forestclient-tst.nrs.gov.bc.ca
       ZONE: test
@@ -108,7 +108,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Backup database before update
         continue-on-error: true
@@ -128,7 +128,7 @@ jobs:
           overwrite: false
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -141,7 +141,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -154,6 +154,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p TAG=${{ needs.vars.outputs.pr }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
       - name: Deploy Backend ConfigMap
@@ -166,7 +167,7 @@ jobs:
           overwrite: true          
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -179,7 +180,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
@@ -196,7 +197,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Deploy Frontend ConfigMap
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -208,7 +209,7 @@ jobs:
           overwrite: true          
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -220,7 +221,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
             -p URL=${{ env.URL }}
@@ -238,7 +239,7 @@ jobs:
 
   prod-init:
     name: PROD Init
-    needs: [images-prod]
+    needs: [vars, test-deploy]
     env:
       URL: forestclient.nrs.gov.bc.ca
       ZONE: prod
@@ -256,7 +257,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
@@ -277,7 +278,7 @@ jobs:
 
   prod-deploy:
     name: PROD Deployment
-    needs: [prod-init]
+    needs: [vars, prod-init]
     env:
       PREV: test
       ZONE: prod
@@ -297,7 +298,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Backup database before update
         continue-on-error: true
@@ -318,7 +319,7 @@ jobs:
           overwrite: false
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -331,7 +332,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
             
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -344,7 +345,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
       - name: Deploy Backend ConfigMap
@@ -357,7 +358,7 @@ jobs:
           overwrite: true          
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -370,7 +371,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
@@ -387,7 +388,7 @@ jobs:
           overwrite: true          
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -399,7 +400,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
             -p URL=${{ env.URL }}
