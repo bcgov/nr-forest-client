@@ -107,6 +107,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Backup database before update
         continue-on-error: true
@@ -292,6 +293,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Backup database before update
         continue-on-error: true
