@@ -27,9 +27,6 @@ parameters:
   - name: REGISTRY
     description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
     value: ghcr.io
-  - name: PROMOTE
-    description: Image (namespace/name:tag) to promote/import
-    value: bcgov/nr-old-growth:prod-backend
   - name: CPU_REQUEST
     value: 75m
   - name: CPU_LIMIT
