@@ -150,6 +150,16 @@ jobs:
           if [ -z "$POD_NAME" ]; then
             echo "Failed to find the pod after 5 attempts."
           fi
+
+      - name: Migrate the database
+        continue-on-error: true
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          # Escape slashes and other special characters
+          ESCAPED_BRANCH_NAME=$(echo "$BRANCH_NAME" | sed 's/[\/&]/\\&/g')
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          oc create job --from=cronjob/nr-forest-client-tools-migratedb migrate-$(date +%s) --dry-run=client -o yaml | sed "s/value: main/value: ${ESCAPED_BRANCH_NAME}/" | sed "s/value: \"0\"/value: \"${{ github.event.number }}\"/" | oc apply -f -
             
   deploy:
     name: Deploy Application
