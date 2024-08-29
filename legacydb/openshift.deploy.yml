@@ -33,9 +33,9 @@ parameters:
   - name: CPU_LIMIT
     value: 500m
   - name: MEMORY_REQUEST
-    value: 2Gi
+    value: 3.5Gi
   - name: MEMORY_LIMIT
-    value: 2Gi
+    value: 4Gi
 objects:
   - kind: Secret
     apiVersion: v1    
