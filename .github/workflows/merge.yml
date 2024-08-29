@@ -46,7 +46,6 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ needs.vars.outputs.pr }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
@@ -110,7 +109,6 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Backup database before update
         continue-on-error: true
@@ -204,7 +202,6 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Deploy Frontend ConfigMap
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -266,7 +263,6 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ needs.vars.outputs.pr }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
