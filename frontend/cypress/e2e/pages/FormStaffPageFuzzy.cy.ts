@@ -217,6 +217,62 @@ describe("Staff Form Fuzzy Matches", () => {
 
     });
 
+    it('should have individual data with fuzzy resulting in Step 1: full and partial individual match', () => {
+      fillIndividual();
+      clickNext(1);
+
+      checkTopNotification('error', 'has client number');
+
+      /*
+      The following group of fields has both warning and error.
+      In this case they are displayed as error.
+      They are from both the full and the partial matches.
+      */
+      checkInputError('#firstName');
+      checkInputError('#lastName');
+      checkInputError('#birthdateYear');
+      checkInputError('#birthdateMonth');
+      checkInputError('#birthdateDay');
+
+      checkDropdownClean('#identificationType');
+      checkDropdownClean('#identificationProvince');
+
+      // From the full match
+      checkInputError('#clientIdentification');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.disabled");
+
+      cy.get('#reviewStatement').should('not.exist');
+    });
+
+    it('should have individual data with fuzzy resulting in Step 1: document and partial individual match', () => {
+      fillIndividual();
+      clickNext(1);
+
+      checkTopNotification('error', 'has client number');
+
+      // The partial match (warning)
+      checkInputWarning('#firstName');
+      checkInputWarning('#lastName');
+      checkInputWarning('#birthdateYear');
+      checkInputWarning('#birthdateMonth');
+      checkInputWarning('#birthdateDay');
+
+      // The document match (error)
+      checkDropdownError('#identificationType');
+      checkDropdownError('#identificationProvince');
+      checkInputError('#clientIdentification');
+
+      cy.get("[data-test='wizard-next-button']")
+      .shadow()
+      .find("button")
+      .should("be.disabled");
+
+      cy.get('#reviewStatement').should('not.exist');
+    });
   });
 
   describe('BC Registered fuzzy matching',() =>{
