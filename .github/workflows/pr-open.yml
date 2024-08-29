@@ -42,50 +42,32 @@ jobs:
           echo "semver=${{ steps.semver.outputs.tag }}"
           echo "url=${{ steps.calculate.outputs.url }}"
 
-  builds:
-    name: Builds
-    runs-on: ubuntu-24.04
+  # builds:
+  #   name: Builds
+  #   runs-on: ubuntu-22.04
+  #   needs: [vars]
+  #   permissions:
+  #     packages: write
+  #   strategy:
+  #     matrix:
+  #       package: [backend, common, database, frontend, legacy, processor]
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - uses: bcgov-nr/action-builder-ghcr@v2.2.0
+  #       name: Build (${{ matrix.package }})
+  #       with:
+  #         package: ${{ matrix.package }}
+  #         tag: ${{ github.event.number }}
+  #         tag_fallback: test
+  #         triggers: ('${{ matrix.package }}/')
+  #         build_args: |
+  #           APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
+
+  deploy:
+    name: Deploy Application
+    # needs: [builds, vars]
     needs: [vars]
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        package: [backend, database, frontend, legacy, processor]
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: bcgov-nr/action-builder-ghcr@v2.2.0
-        name: Build (${{ matrix.package }})
-        with:
-          package: ${{ matrix.package }}
-          tag: ${{ github.event.number }}
-          tag_fallback: test
-          triggers: ('${{ matrix.package }}/')
-          build_args: |
-            APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
-
-  build-legacydb:
-    name: Builds (legacydb)
-    runs-on: ubuntu-24.04
-    needs: [vars]
-    permissions:
-      packages: write    
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: bcgov-nr/action-builder-ghcr@v2.2.0
-        name: Build (Legacy db)
-        with:
-          package: legacydb
-          tag: latest
-          tag_fallback: test
-          triggers: ('legacydb/')
-          build_args: |
-            APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
-
-  pre-tools:
-    name: Pre Deploy Tools
-    needs: [build-legacydb, vars]
     environment: dev
     runs-on: ubuntu-24.04
     steps:
@@ -337,7 +319,6 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ github.event.number }}
-            -p TAG=${{ github.event.number }}
 
       - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -382,7 +363,6 @@ jobs:
           overwrite: true          
           parameters:
             -p ZONE=${{ github.event.number }}
-            -p TAG=${{ github.event.number }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v3.0.1

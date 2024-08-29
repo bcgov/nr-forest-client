@@ -173,7 +173,6 @@ jobs:
           overwrite: true          
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -218,7 +217,6 @@ jobs:
           overwrite: true          
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -379,7 +377,6 @@ jobs:
           overwrite: true          
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Deploy Backend
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -411,7 +408,6 @@ jobs:
           overwrite: true          
           parameters:
             -p ZONE=${{ env.ZONE }}
-            -p TAG=${{ needs.vars.outputs.pr }}
 
       - name: Deploy Frontend
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
