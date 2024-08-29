@@ -87,9 +87,6 @@ parameters:
     description: Random number, 0-60, for scheduling cronjobs
     from: "[0-5]{1}[0-9]{1}"
     generate: expression
-  - name: PROMOTE
-    description: Image (namespace/name:tag) to promote/import
-    required: true
 objects:
   - kind: PersistentVolumeClaim
     apiVersion: v1

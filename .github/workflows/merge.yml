@@ -25,21 +25,6 @@ jobs:
         id: pr
         uses: bcgov-nr/action-get-pr@v0.0.1
 
-  images-test:
-    name: Promote images to TEST
-    needs: [vars]
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        component: [backend, common, database, frontend, legacy, processor]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v4
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: ${{ needs.vars.outputs.pr }}
-          tags: test
-
   test-init:
     name: TEST Init
     needs: [images-test]
@@ -124,7 +109,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p TAG=${{ env.ZONE }}
-            -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
 
       - name: Backup database before update
         continue-on-error: true
@@ -145,7 +129,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p TAG=${{ env.ZONE }}
-            -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -159,7 +142,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p TAG=${{ env.ZONE }}
-            -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -172,7 +154,6 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/processor:${{ env.ZONE }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
       - name: Deploy Backend ConfigMap
@@ -199,7 +180,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p TAG=${{ env.ZONE }}
-            -p PROMOTE=${{ github.repository }}/backend:${{ env.ZONE }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
@@ -241,7 +221,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p TAG=${{ env.ZONE }}
-            -p PROMOTE=${{ github.repository }}/frontend:${{ env.ZONE }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
             -p URL=${{ env.URL }}
@@ -256,21 +235,6 @@ jobs:
   documentation:
     name: Generating Documentation
     uses: ./.github/workflows/reusable-doc-gen.yml
-
-  images-prod:
-    name: Promote images to PROD
-    needs: [test-deploy]
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        component: [backend, frontend, legacy, database, common, processor]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v4
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: test
-          tags: prod
 
   prod-init:
     name: PROD Init
@@ -334,7 +298,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p TAG=${{ env.ZONE }}
-            -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
 
       - name: Backup database before update
         continue-on-error: true
@@ -356,7 +319,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p TAG=${{ env.ZONE }}
-            -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -370,7 +332,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p TAG=${{ env.ZONE }}
-            -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}    
             
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -384,7 +345,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p TAG=${{ env.ZONE }}
-            -p PROMOTE=${{ github.repository }}/processor:${{ env.PREV }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
       - name: Deploy Backend ConfigMap
@@ -411,7 +371,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p TAG=${{ env.ZONE }}
-            -p PROMOTE=${{ github.repository }}/backend:${{ env.PREV }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
@@ -441,7 +400,6 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p TAG=${{ env.ZONE }}
-            -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
             -p URL=${{ env.URL }}
@@ -452,3 +410,18 @@ jobs:
             -p COGNITO_ENVIRONMENT=PROD
             -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
             -p FRONTEND_URL=${{ env.URL }}
+
+  promote-images:
+    name: Promote images to PROD
+    needs: [prod-deploy]
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [backend, frontend, legacy, database, common, processor]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v4
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: test
+          tags: prod
