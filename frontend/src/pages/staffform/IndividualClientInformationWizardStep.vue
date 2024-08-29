@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, computed, ref, reactive, onMounted } from "vue";
+import { watch, computed, ref, reactive, onMounted, nextTick } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/inline-loading/index";
 import "@carbon/web-components/es/components/notification/index";
@@ -7,6 +7,7 @@ import "@carbon/web-components/es/components/tooltip/index";
 // Importing composables
 import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
+import { useEventBus } from "@vueuse/core";
 // Importing types
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
 import type {
@@ -41,6 +42,8 @@ watch(
   () => emit("update:data", formData.value)
 );
 
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
+
 const identificationTypeList = ref([]);
 useFetchTo("/api/codes/identification-types", identificationTypeList);
 
@@ -61,7 +64,6 @@ const updateIdentificationType = (
   };
   formData.value.businessInformation.identificationCountry =
     formData.value.businessInformation.identificationType.countryCode;
-  formData.value.businessInformation.clientIdentification = "";
   formData.value.businessInformation.identificationProvince = "";
 
   if (formData.value.businessInformation.identificationType.countryCode)
@@ -151,6 +153,10 @@ watch(
     clientIdentificationValidationExtras.value = "";
     clientIdentificationMask.value = undefined;
     validation.clientIdentification = false;
+
+    if (formData.value.businessInformation.clientIdentification) {
+      nextTick(() => revalidateBus.emit(["clientIdentification"]));
+    }
 
     if (identificationType) {
       if (identificationType.value === "OTHR") {
