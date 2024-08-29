@@ -43,7 +43,8 @@
     "test:report:clean": "rm -rf reports && mkdir -p reports/.nyc_output/processinfo && mkdir -p coverage",
     "test:build": "cross-env VITE_MODE=test VITE_NODE_ENV=test VITE_FEATURE_FLAGS={\\\"STAFF_CREATE\\\":true} start-server-and-test preview http://127.0.0.1:3000 'cypress open'",
     "test:flush": "rm -rf reports && rm -rf .nyc_output && rm -rf coverage && rm -rf reports-merge",
-    "posttest:flush": "npm run coverage"
+    "posttest:flush": "npm run coverage",
+    "test:unit:devtools": "cross-env VITE_NODE_ENV=test NODE_ENV=test vitest run --inspect-brk --pool threads --poolOptions.threads.singleThread"
   },
   "dependencies": {
     "@bcgov-nr/nr-fsa-theme": "^1.1.3",

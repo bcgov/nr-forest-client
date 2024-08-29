@@ -61,7 +61,7 @@
       }
     },
     {
-      "name": "Submission Fuzzy for Individuals: Full Match",
+      "name": "Submission Fuzzy for Individuals: Full and Partial Match",
       "request": {
         "url": "/api/clients/matches",
         "method": "POST",
@@ -108,7 +108,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "fuzzy/full_individual_match.json",
+        "bodyFileName": "fuzzy/full_and_partial_individual_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },
@@ -159,7 +159,7 @@
       }
     },
     {
-      "name": "Submission Fuzzy for Individuals: Both Match",
+      "name": "Submission Fuzzy for Individuals: Document and Partial Match",
       "request": {
         "url": "/api/clients/matches",
         "method": "POST",
@@ -206,7 +206,7 @@
       },
       "response": {
         "status": 409,
-        "bodyFileName": "fuzzy/full_individual_doc_match.json",
+        "bodyFileName": "fuzzy/document_and_partial_individual_match.json",
         "headers": { "Content-Type": "application/json" }
       }
     },

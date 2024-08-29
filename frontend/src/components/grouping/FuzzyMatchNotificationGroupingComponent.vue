@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/notification/index";
 // Composables
@@ -29,16 +29,16 @@ const fuzzyMatchedError = ref<FuzzyMatcherData>(
     fuzzy: false,
     matches: [],
     description: "",
-  },
+  }
 );
 
 defineExpose({
   fuzzyMatchedError,
 });
 
-const customError = ref<{title?:string, message?: string}>({});
+const customError = ref<{ title?: string; message?: string }>({});
 
-const fieldNameToDescription : Record<string, string> = {
+const fieldNameToDescription: Record<string, string> = {
   "businessInformation.businessName": "client name",
   "businessInformation.notOwnedByPerson": "client name",
   "businessInformation.registrationNumber": "registration number",
@@ -71,14 +71,21 @@ const fieldNameToDescription : Record<string, string> = {
   "location.contacts[].secondaryPhoneNumber": "secondary phone number",
   "location.contacts[].faxNumber": "fax",
   "location.contacts[].email": "email address",
-
 };
 
 const fieldNameToNamingGroups: Record<string, string[]> = {
-  "businessInformation.notOwnedByPerson": ["businessInformation.businessName"],
-  "businessInformation.businessName": ["businessInformation.businessName"],
-  "businessInformation.registrationNumber": ["businessInformation.businessName"],
-  "businessInformation.federalId": ["businessInformation.businessName"],
+  "businessInformation.notOwnedByPerson": [
+    "businessInformation.businessName"
+  ],
+  "businessInformation.businessName": [
+    "businessInformation.businessName"
+  ],
+  "businessInformation.registrationNumber": [
+    "businessInformation.businessName"
+  ],
+  "businessInformation.federalId": [
+    "businessInformation.businessName"
+  ],
   "businessInformation.individual": [
     "businessInformation.firstName",
     "businessInformation.lastName",
@@ -96,8 +103,12 @@ const fieldNameToNamingGroups: Record<string, string[]> = {
     "identificationProvince.text",
     "businessInformation.clientIdentification",
   ],
-  "businessInformation.doingBusinessAs": ["businessInformation.doingBusinessAs"],
-  "businessInformation.clientAcronym": ["businessInformation.clientAcronym"],
+  "businessInformation.doingBusinessAs": [
+    "businessInformation.doingBusinessAs",
+  ],
+  "businessInformation.clientAcronym": [
+    "businessInformation.clientAcronym"
+  ],
   "location.addresses[].streetAddress": [
     "location.addresses[].streetAddress",
     "location.addresses[].city",
@@ -144,11 +155,13 @@ const createErrorEvent = (fieldList: string[], warning: boolean) =>
     return {
       fieldId,
       errorMsg: warning
-        ? `There's already a client with this ${fieldNameToDescription[genericField] || convertFieldNameToSentence(fieldId).toLowerCase()}`
+        ? `There's already a client with this ${
+            fieldNameToDescription[genericField] ||
+            convertFieldNameToSentence(fieldId).toLowerCase()
+          }`
         : "Client already exists",
     };
   });
-
 
 const emitFieldErrors = (fieldList: string[], warning: boolean) => {
   const errorEvent = createErrorEvent(fieldList, warning);
@@ -159,31 +172,30 @@ const emitFieldErrors = (fieldList: string[], warning: boolean) => {
 };
 
 const label = (matchedFieldsText: string, partialMatch: boolean) => {
-
-  if(!matchedFieldsText)
-  return '';
+  if (!matchedFieldsText) return "";
 
   const prefix = partialMatch ? "Partial matching on" : "Matching on";
   return `${prefix} ${matchedFieldsText}`;
-}
+};
 
 const getErrorsItemContent = ref((matches: MiscFuzzyMatchResult[]) => {
-
-  const matchValue = matches && matches.length > 0 ? getUniqueClientNumbers(matches) : [];    
+  const matchValue =
+    matches && matches.length > 0 ? getUniqueClientNumbers(matches) : [];
   const nonFuzzyMatch = matches.find((match) => !match.result?.fuzzy);
 
-  return nonFuzzyMatch && nonFuzzyMatch.result?.match ? renderErrorItem(
-    {
-      ...nonFuzzyMatch,
-      result: { ...nonFuzzyMatch.result, match: matchValue.join(",") },
-    }) : "";
+  return nonFuzzyMatch && nonFuzzyMatch.result?.match
+    ? renderErrorItem({
+        ...nonFuzzyMatch,
+        result: { ...nonFuzzyMatch.result, match: matchValue.join(",") },
+      })
+    : "";
 });
 
 const getListItemContent = ref((match: MiscFuzzyMatchResult) => {
   return match && match.result?.match ? renderListItem(match) : "";
 });
 
-const getLegacyUrl = (duplicatedClient, label) => {  
+const getLegacyUrl = (duplicatedClient, label) => {
   const encodedClientNumber = encodeURIComponent(duplicatedClient.trim());
   switch (label) {
     case "contact":
@@ -237,7 +249,10 @@ const clearNotification = () => {
   customError.value = {};
 };
 
-const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, payload?: any) => {
+const handleFuzzyErrorMessage = (
+  event: FuzzyMatcherEvent | undefined,
+  payload?: any
+) => {
   if (!event) {
     clearNotification();
     return;
@@ -251,12 +266,22 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, payload?:
     fuzzyMatchedError.value.fuzzy = true;
     fuzzyMatchedError.value.matches = [];
 
-    if(payload && payload.title && payload.message){
+    if (payload && payload.title && payload.message) {
       customError.value = payload;
     }
 
-    for (const rawMatch of event.matches.sort((a, b) => a.fuzzy ? 1 : -1)) {
+    /*
+    By having the errors emitted before the warnings we ensure that input fields with both error
+    and warning get rendered as error.
+    And this works because the input components only consider the first captured event, be it an
+    error or a warning.
+    */
+    const sortedMatches = event.matches.sort((a, b) => {
+      if (a.fuzzy === b.fuzzy) return 0;
+      return a.fuzzy ? 1 : -1;
+    });
 
+    for (const rawMatch of sortedMatches) {
       const genericField = rawMatch.field.replace(arrayIndexRegex, "[]");
 
       const match: MiscFuzzyMatchResult = {
@@ -282,8 +307,7 @@ const handleFuzzyErrorMessage = (event: FuzzyMatcherEvent | undefined, payload?:
       Note: if the fieldsList is empty, it will use a single field with the same name returned from
       the API.
       */
-     //if is better to let warning fields be colored as warning, change to rawMatch.fuzzy
-      emitFieldErrors(fieldsList || [rawMatch.field], fuzzyMatchedError.value.fuzzy);
+      emitFieldErrors(fieldsList || [rawMatch.field], rawMatch.fuzzy);
     }
   }
 };

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 
 import { VueWrapper, mount } from "@vue/test-utils";
 import FuzzyMatchNotificationGroupingComponent from "@/components/grouping/FuzzyMatchNotificationGroupingComponent.vue";
@@ -18,17 +18,22 @@ const errorBus = useEventBus<ValidationMessageType[]>(
   "submission-error-notification"
 );
 
-let errorEvent: ValidationMessageType[];
-let errorPayload: any;
-errorBus.on((_event: ValidationMessageType[], _payload) => {
-  errorEvent = _event;
-  errorPayload = _payload;
+interface EmittedEvent {
+  event: ValidationMessageType[];
+  payload: any;
+}
+let emittedEvents: EmittedEvent[];
+errorBus.on((event, payload) => {
+  emittedEvents.push({ event, payload });
 });
 
 describe("Fuzzy Match Notification Grouping Component", () => {
   beforeEach(() => {
-    errorEvent = undefined;
-    errorPayload = undefined;
+    emittedEvents = [];
+  });
+
+  afterEach(() => {
+    fuzzyBus.reset();
   });
 
   it("renders no error by default", () => {
@@ -92,7 +97,7 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       expect(wrapper.find("cds-actionable-notification").text()).toContain(
         expectedPrefix
       );
-      if(fuzzy)
+      if (fuzzy)
         expect(wrapper.find("cds-actionable-notification").text()).toContain(
           "client name"
         );
@@ -115,11 +120,13 @@ describe("Fuzzy Match Notification Grouping Component", () => {
           field: "businessInformation.businessName",
           match: "00000001",
           fuzzy: true,
+          partialMatch: true,
         },
         {
           field: "businessInformation.federalId",
           match: "00000002",
           fuzzy: true,
+          partialMatch: true,
         },
       ],
     });
@@ -156,7 +163,12 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       fuzzyBus.emit({
         id: "global",
         matches: [
-          { field: "businessInformation.foo", match: "00000001", fuzzy: true, partialMatch: true },
+          {
+            field: "businessInformation.foo",
+            match: "00000001",
+            fuzzy: true,
+            partialMatch: true,
+          },
           {
             field: "businessInformation.bar",
             match: "00000002",
@@ -182,6 +194,18 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       expect(liList[0].text()).toContain("00000002");
       expect(liList[1].text()).toContain("00000001");
     });
+
+    it("emits the error before the warning", () => {
+      expect(emittedEvents).toHaveLength(2);
+
+      expect(emittedEvents[0].event).toHaveLength(1);
+      expect(emittedEvents[0].event[0].fieldId).toBe("businessInformation.bar");
+      expect(emittedEvents[0].payload.warning).toBeFalsy(); // It's not a warning, so it's the error.
+
+      expect(emittedEvents[1].event).toHaveLength(1);
+      expect(emittedEvents[1].event[0].fieldId).toBe("businessInformation.foo");
+      expect(emittedEvents[1].payload.warning).toBe(true); // It's the warning.
+    });
   });
 
   describe("when there is a rendered notification", () => {
@@ -195,7 +219,12 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       fuzzyBus.emit({
         id: "global",
         matches: [
-          { field: "businessInformation.foo", match: "00000001", fuzzy: true, partialMatch: true },
+          {
+            field: "businessInformation.foo",
+            match: "00000001",
+            fuzzy: true,
+            partialMatch: true,
+          },
         ],
       });
 
@@ -267,18 +296,18 @@ describe("Fuzzy Match Notification Grouping Component", () => {
           ],
         });
 
-        expect(errorPayload.skipNotification).toBe(true);
+        expect(emittedEvents[0].payload.skipNotification).toBe(true);
 
-        expect(errorEvent).toHaveLength(scenario.expectedFieldIdList.length);
+        expect(emittedEvents[0].event).toHaveLength(scenario.expectedFieldIdList.length);
 
-        expect(errorEvent).toMatchObject(
+        expect(emittedEvents[0].event).toMatchObject(
           scenario.expectedFieldIdList.map((fieldId) => ({
             fieldId,
           }))
         );
 
         // warning only when fuzzy is true
-        expect(errorPayload.warning).toBe(scenario.fuzzy);
+        expect(emittedEvents[0].payload.warning).toBe(scenario.fuzzy);
       }
     );
   });
@@ -296,14 +325,14 @@ describe("Fuzzy Match Notification Grouping Component", () => {
           field: "randomName",
           fuzzy: true,
           match: "00000001",
-          partialMatch: true
+          partialMatch: true,
         },
       ],
     });
 
-    expect(errorPayload.skipNotification).toBe(true);
-    expect(errorEvent).toHaveLength(1);
-    expect(errorEvent).toMatchObject([
+    expect(emittedEvents[0].payload.skipNotification).toBe(true);
+    expect(emittedEvents[0].event).toHaveLength(1);
+    expect(emittedEvents[0].event).toMatchObject([
       {
         fieldId: "randomName",
         errorMsg: "There's already a client with this random name",
@@ -311,6 +340,6 @@ describe("Fuzzy Match Notification Grouping Component", () => {
     ]);
 
     // warning only when fuzzy is true
-    expect(errorPayload.warning).toBe(true);
+    expect(emittedEvents[0].payload.warning).toBe(true);
   });
 });
