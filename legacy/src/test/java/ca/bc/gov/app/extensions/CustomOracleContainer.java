@@ -7,7 +7,7 @@ import org.testcontainers.containers.OracleContainer;
 public class CustomOracleContainer extends OracleContainer {
 
   public CustomOracleContainer() {
-    super("gvenzl/oracle-xe:21.3.0-slim-faststart");
+    super("gvenzl/oracle-free:23.5-slim-faststart");
 
     this.withDatabaseName("legacyfsa")
         .withUsername("THE")
