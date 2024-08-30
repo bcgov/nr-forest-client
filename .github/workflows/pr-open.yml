@@ -72,7 +72,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: bcgov-nr/action-builder-ghcr@v2.1.0
+      - uses: bcgov-nr/action-builder-ghcr@v2.2.0
         name: Build (Legacy db)
         with:
           package: legacydb
