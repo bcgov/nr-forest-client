@@ -156,6 +156,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
+            -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -356,7 +357,8 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}    
+            -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
+            -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
             
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v3.0.0

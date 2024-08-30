@@ -49,7 +49,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend, common, database, frontend, legacy, processor]
+        package: [backend, database, frontend, legacy, processor]
     steps:
       - uses: actions/checkout@v4
 
@@ -63,9 +63,107 @@ jobs:
           build_args: |
             APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
 
+  build-legacydb:
+    name: Builds (legacydb)
+    runs-on: ubuntu-22.04
+    needs: [vars]
+    permissions:
+      packages: write    
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: bcgov-nr/action-builder-ghcr@v2.1.0
+        name: Build (Legacy db)
+        with:
+          package: legacydb
+          tag: latest
+          tag_fallback: test
+          triggers: ('legacydb/')
+          build_args: |
+            APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
+
+  deploy-tools:
+    name: Deploy Tools
+    needs: [build-legacydb, vars]
+    environment: tools
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ needs.vars.outputs.url }}
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initializing Deployment
+        uses: bcgov-nr/action-deployer-openshift@v3.0.0
+        with:
+          file: legacydb/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          parameters:
+            -p ZONE=tools            
+            -p ORACLEDB_USER_W=THE
+            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
+            -p TAG=latest
+
+      - name: Create the PR database
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This creates a new pluggable database for the PR
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools  -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec $POD_NAME -- /opt/oracle/createDatabase PR_${{ github.event.number }}
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
+
+      - name: Create the PR user
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This creates a new pluggable database for the PR
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec $POD_NAME -- /opt/oracle/createAppUser "THE" "${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}" "PR_${{ github.event.number }}"
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
+
+      - name: Migrate the PR database
+        continue-on-error: true
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          # Escape slashes and other special characters
+          ESCAPED_BRANCH_NAME=$(echo "$BRANCH_NAME" | sed 's/[\/&]/\\&/g')
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          oc create job --from=cronjob/nr-forest-client-tools-migratedb migrate-$(date +%s) --dry-run=client -o yaml | sed "s/value: main/value: ${ESCAPED_BRANCH_NAME}/" | sed "s/value: \"0\"/value: \"${{ github.event.number }}\"/" | oc apply -f -
+            
   deploy:
     name: Deploy Application
-    needs: [builds, vars]
+    needs: [deploy-tools, builds, vars]
     environment: dev
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -86,11 +184,11 @@ jobs:
             -p ZONE=${{ github.event.number }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
-            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
-            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
+            -p ORACLEDB_USER_W=THE
+            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
-            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p ORACLEDB_HOST="nr-forest-client-tools-legacydb.d2723f-tools.svc.cluster.local"
+            -p ORACLEDB_SERVICENAME=PR_${{ github.event.number }}
             -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
             -p BCREGISTRY_KEY=${{ secrets.BCREGISTRY_KEY }}
             -p BCREGISTRY_ACCOUNT=${{ secrets.BCREGISTRY_ACCOUNT }}
@@ -148,6 +246,8 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ github.event.number }}
+            -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
+            -p ORACLEDB_PORT=1521
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v3.0.0
@@ -234,8 +334,6 @@ jobs:
             -p COGNITO_ENVIRONMENT=DEV
             -p LANDING_URL=${{ needs.vars.outputs.url }}
             -p FRONTEND_URL=${{ needs.vars.outputs.url }}
-
-      
 
   cypress-run:
     name: "User flow test"

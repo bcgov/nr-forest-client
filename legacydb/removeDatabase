@@ -1,0 +1,62 @@
+#!/bin/bash
+set -Eeuo pipefail
+
+APP_USER="${1}"
+PDB_TO_REMOVE="${2:-}"
+
+# Kill any sessions connected to the user
+if [ -n "${APP_USER}" ]; then
+  sqlplus -s / as sysdba <<EOF
+     -- Exit on any errors
+     WHENEVER SQLERROR EXIT SQL.SQLCODE
+
+     ALTER SESSION SET CONTAINER=${PDB_TO_REMOVE};
+
+     -- Identify and kill sessions for the user
+     BEGIN
+       FOR session IN (SELECT sid, serial# FROM v\$session WHERE username = UPPER('${APP_USER}')) LOOP
+         EXECUTE IMMEDIATE 'ALTER SYSTEM KILL SESSION ''' || session.sid || ',' || session.serial# || ''' IMMEDIATE';
+       END LOOP;
+     END;
+     /
+
+     -- Drop the user after sessions are killed
+     DROP USER ${APP_USER} CASCADE;
+     exit;
+EOF
+fi;
+
+# Drop services for the PDB
+if [ -n "${PDB_TO_REMOVE}" ]; then
+  sqlplus -s / as sysdba <<EOF
+     -- Exit on any errors
+     WHENEVER SQLERROR EXIT SQL.SQLCODE
+
+     -- Check and drop services
+     DECLARE
+       srv_name VARCHAR2(255);
+     BEGIN
+       FOR service IN (SELECT name FROM dba_services WHERE pdb = '${PDB_TO_REMOVE}') LOOP
+         srv_name := service.name;
+         EXECUTE IMMEDIATE 'DBMS_SERVICE.DELETE_SERVICE(''' || srv_name || ''')';
+       END LOOP;
+     END;
+     /
+     exit;
+EOF
+fi;
+
+# Then remove the PDB
+if [ -n "${PDB_TO_REMOVE}" ]; then
+  sqlplus -s / as sysdba <<EOF
+     -- Exit on any errors
+     WHENEVER SQLERROR EXIT SQL.SQLCODE
+
+     ALTER PLUGGABLE DATABASE ${PDB_TO_REMOVE} CLOSE IMMEDIATE;
+     DROP PLUGGABLE DATABASE ${PDB_TO_REMOVE} INCLUDING DATAFILES;
+
+     -- Register changes with listener
+     ALTER SYSTEM REGISTER;
+     exit;
+EOF
+fi;
