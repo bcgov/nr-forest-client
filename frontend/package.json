@@ -51,7 +51,7 @@
     "@bcgov/bc-sans": "^2.0.0",
     "@carbon/icons-vue": "^10.92.0",
     "@carbon/pictograms": "^12.37.0",
-    "@carbon/styles": "^1.63.1",
+    "@carbon/styles": "^1.64.0",
     "@carbon/web-components": "^2.9.0",
     "@vueuse/core": "^11.0.0",
     "aws-amplify": "^6.3.5",
