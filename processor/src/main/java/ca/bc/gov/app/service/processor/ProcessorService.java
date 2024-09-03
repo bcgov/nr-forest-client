@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.processor;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.SubmissionProcessKindEnum;
 import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
 import ca.bc.gov.app.entity.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.SubmissionRepository;
@@ -188,6 +189,10 @@ public class ProcessorService {
         //Little wrapper to make it easier to pass around
         Mono
             .just(submissionWrapper)
+            //Only process HOT submissions, see ClientSubmissionAutoProcessingService.loadMatchingInfo for info
+            .filter(submission -> submission.getParameter(ApplicationConstant.MATCHING_KIND,
+                SubmissionProcessKindEnum.class) == SubmissionProcessKindEnum.HOT
+            )
             .doOnNext(submission -> log.info("Loaded submission for processing {}", submission))
             //Process the submission by loading some information
             .flatMap(submissionProcessingService::processSubmission)
