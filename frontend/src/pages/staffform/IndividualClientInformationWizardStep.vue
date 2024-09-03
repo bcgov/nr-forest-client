@@ -339,7 +339,7 @@ watch(combinedValue, (newValue) => {
       <date-input-component
         id="birthdate"
         title="Date of birth"
-        :autocomplete="['bday-year', 'bday-month', 'bday-day']"
+        :autocomplete="['off', 'off', 'off']"
         v-model="formData.businessInformation.birthdate"
         :enabled="true"
         :validations="[
