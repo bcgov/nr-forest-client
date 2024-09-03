@@ -48,7 +48,11 @@ async function setupNodeEvents(
 
 export default defineConfig({
   e2e: {
+    reporter: require.resolve("@badeball/cypress-cucumber-preprocessor/pretty-reporter"),
     specPattern: "**/*.feature",
     setupNodeEvents,
   },
+  includeShadowDom: true,
+  viewportHeight: 1080,
+  viewportWidth: 1920
 });

@@ -2,70 +2,89 @@
 /// <reference types="cypress" />
 
 
-const generateRandomHex = (length: number): string => {
-  const characters = '0123456789abcdef'
-  let result = ''
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length)
-    result += characters.charAt(randomIndex)
+Cypress.Commands.add("logout", () => {
+  cy.get("[data-id=logout-btn]").should("be.visible");
+});
+
+Cypress.Commands.add("getMany", (names: string[]): Cypress.Chainable<any[]> => {
+  const values: any[] = [];
+
+  for (const arg of names) {
+    cy.get(arg).then((value) => values.push(value));
   }
-  return result
-}
 
-Cypress.Commands.add('addCookie', (name: string, value: string) => {
-  cy.setCookie(name, value, {
-    domain: 'localhost',
-    path: '/',
-    httpOnly: true,
-    secure: true,
-    expiry: Date.now() + 86400000
-  })
-})
+  return cy.wrap(values);
+});
 
-Cypress.Commands.add('expireCookie', (name: string) => {
-  cy.setCookie(name, '', {
-    domain: 'localhost',
-    path: '/',
-    httpOnly: true,
-    secure: true,
-    expiry: Date.now() - 86400000 * 2
-  })
-})
+Cypress.Commands.add("fillFormEntry",(field: string, value: string, delayMS: number = 10, area: boolean = false) =>{
+  cy.get(field)
+  .should("exist")
+  .shadow()
+  .find(area ? "textarea" : "input")
+  .focus()
+  .type(value,{ delay: delayMS })
+  .blur();
+});
 
-Cypress.Commands.add('addToSessionStorage', (key: string, value: any) => {
-  cy.window().then((win) => {
-    win.sessionStorage.setItem(key, JSON.stringify(value))
-  })
-})
+Cypress.Commands.add("clearFormEntry",(field: string, area: boolean = false) =>{
+  cy.get(field)
+  .should("exist")
+  .shadow()
+  .find(area ? "textarea" : "input")
+  .focus()
+  .clear()
+  .blur();
+});
 
-Cypress.Commands.add('expireSessionStorage', (key: string) => {
-  cy.window().then((win) => {
-    win.sessionStorage.removeItem(key)
-  })
-})
+Cypress.Commands.add("selectFormEntry", (field: string, value: string, box: boolean) => {
+  cy.get(field).find("[part='trigger-button']").click();
 
-Cypress.Commands.add('addToLocalStorage', (key: string, value: any) => {
-  cy.window().then((win) => {
-    win.localStorage.setItem(key, JSON.stringify(value))
-  })
-})
+  if (!box) {
+    cy.get(field).find(`cds-combo-box-item[data-value="${value}"]`).click();
+  } else {
+    cy.get(field)
+      .find(`cds-multi-select-item[data-value="${value}"]`)
+      .click();
+    cy.get(field).click();
+  }
+});
 
-Cypress.Commands.add('expireLocalStorage', (key: string) => {
-  cy.window().then((win) => {
-    win.localStorage.removeItem(key)
-  })
-})
+Cypress.Commands.add("selectAutocompleteEntry", (field: string, value: string, dataid: string,delayTarget: string = '') => {
+  cy.get(field).should("exist").shadow().find("input").type(value);
+  if(delayTarget)
+    cy.wait(delayTarget);
+  else
+    cy.wait(10);
+  cy.get(field).find(`cds-combo-box-item[data-id="${dataid}"]`).click();
+});
 
-Cypress.Commands.add('login', (email: string, name: string) => {
-  cy.get('.landing-button').should('be.visible')
-  cy.addToSessionStorage('user', {
-    name,
-    provider: 'idir',
-    userId: generateRandomHex(32),
-    email,
-    firstName: 'UAT',
-    lastName: 'Test'
-  })
-  cy.reload()
-  cy.wait(1000)
-})
+Cypress.Commands.add("checkInputErrorMessage", (field: string, message: string) => {
+  cy.get(field)
+  .shadow()
+  .find('#invalid-text')
+  .invoke('text')
+  .should('contains',message);
+});
+
+Cypress.Commands.add("checkAutoCompleteErrorMessage", (field: string, message: string) => {
+  cy.get(field)          
+      .should('have.attr', 'aria-invalid', 'true')
+      .should('have.attr', 'invalid-text', message);
+
+      cy.get(field)
+      .shadow()
+      .find('svg').should('exist');
+
+      cy.get(field)
+      .shadow()
+      .find('div.cds--form__helper-text > slot#helper-text')
+      .invoke('text')
+      .should('contains', message);
+});
+
+Cypress.Commands.add("checkAccordionItemState", (additionalSelector: string, open: boolean) => {
+  cy.get(`cds-accordion-item${additionalSelector}`).should(
+    `${open ? "" : "not."}have.attr`,
+    "open",
+  );
+});
