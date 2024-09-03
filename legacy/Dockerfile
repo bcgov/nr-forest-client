@@ -30,7 +30,6 @@ RUN mvn versions:set -DnewVersion=${APP_VERSION} -f pom.xml -DskipTests -Dtests.
 # Build
 RUN mvn -Pnative native:compile
 
-
 ### Deployer
 FROM gcr.io/distroless/java-base:nonroot AS deploy
 ARG PORT=9000

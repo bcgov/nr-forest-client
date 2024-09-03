@@ -1,4 +1,4 @@
-FROM gvenzl/oracle-free:23.3-slim-faststart
+FROM gvenzl/oracle-free:23.5-slim-faststart
 
 COPY --chown=oracle:oracle removeDatabase ${ORACLE_BASE}/removeDatabase
 RUN chmod +x ${ORACLE_BASE}/removeDatabase
