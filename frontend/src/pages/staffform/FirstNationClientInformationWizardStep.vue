@@ -115,7 +115,7 @@ const mapFirstNationInfo = (firstNations: ForestClientDetailsDto[] = []) => {
     <AutoCompleteInputComponent
         id="clientName"
         label="Client name"
-        autocomplete="clientName firstNation"
+        autocomplete="off"
         required
         required-label
         placeholder=""
