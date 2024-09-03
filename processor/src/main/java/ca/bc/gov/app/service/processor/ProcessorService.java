@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.processor;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.SubmissionProcessKindEnum;
 import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
 import ca.bc.gov.app.entity.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.SubmissionRepository;
@@ -80,34 +81,85 @@ public class ProcessorService {
   }
 
   /**
-   * Process external approved and rejected submissions each 30 seconds,
-   * but with an initial delay after the application starts of 10 seconds
+   * Process external approved and rejected submissions each 30 seconds, but with an initial delay
+   * after the application starts of 10 seconds
    */
   @Scheduled(fixedDelay = 30_000, initialDelay = 10_000)
   public void processedMessages() {
     //Load the submissions that were processed
     submissionRepository
         .loadProcessedSubmissions()
+        .map(submissionId ->
+            new MessagingWrapper<>(
+                submissionId,
+                Map.of(
+                    ApplicationConstant.SUBMISSION_ID, submissionId,
+                    ApplicationConstant.SUBMISSION_STARTER, SubmissionProcessTypeEnum.EXTERNAL
+                )
+            )
+        )
+        .flatMap(autoProcessingService::loadMatchingInfo)
         //Call the processedMessage method
-        .flatMap(submissionId -> processedMessage(submissionId, SubmissionProcessTypeEnum.EXTERNAL))
+        .flatMap(this::processedMessage)
         .subscribe();
   }
 
   /**
-   * Process staff submitted submissions that failed to complete each 10 seconds,
-   * but with an initial delay after the application starts of 5 seconds.
+   * Process staff submitted submissions that failed to complete each 10 seconds, but with an
+   * initial delay after the application starts of 5 seconds.
    * <p>The failed to complete part here is important</p>
-   * It means that the submission was processed, but failed in the middle of the process,
-   * so it needs to be reprocessed.
+   * It means that the submission was processed, but failed in the middle of the process, so it
+   * needs to be reprocessed.
    */
   @Scheduled(fixedDelay = 10_000, initialDelay = 5_000)
   public void processStaffSubmitted() {
     //Load the submissions that were processed
     submissionRepository
         .loadStaffSubmissions()
+        .map(submissionId ->
+            new MessagingWrapper<>(
+                submissionId,
+                Map.of(
+                    ApplicationConstant.SUBMISSION_ID, submissionId,
+                    ApplicationConstant.SUBMISSION_STARTER, SubmissionProcessTypeEnum.STAFF
+                )
+            )
+        )
+        .flatMap(autoProcessingService::loadMatchingInfo)
         //Call the processedMessage method
-        .flatMap(submissionId -> processedMessage(submissionId, SubmissionProcessTypeEnum.STAFF))
+        .flatMap(this::processedMessage)
         .subscribe();
+  }
+
+  /**
+   * Processes a submission message based on its ID and type.
+   * <p>
+   * This method wraps the submission ID and type into a {@link MessagingWrapper} object, then calls
+   * the overloaded {@code processedMessage} method to handle the processing.
+   * </p>
+   *
+   * @param submissionId   the ID of the submission to be processed
+   * @param submissionType the type of the submission process, indicating the origin or nature of
+   *                       the submission
+   * @return a {@link Mono<String>} that completes when the processing is done. The Mono emits the
+   * ID of the processed submission or an error signal if an error occurs during processing.
+   */
+  public Mono<String> processedMessage(
+      Integer submissionId,
+      SubmissionProcessTypeEnum submissionType
+  ) {
+    return Mono.just(
+            new MessagingWrapper<>(
+                submissionId,
+                Map.of(
+                    ApplicationConstant.SUBMISSION_ID, submissionId,
+                    ApplicationConstant.SUBMISSION_STARTER, submissionType
+                )
+            )
+        )
+        .flatMap(autoProcessingService::loadMatchingInfo)
+        //Call the processedMessage method
+        .flatMap(this::processedMessage);
   }
 
   /**
@@ -123,30 +175,24 @@ public class ProcessorService {
    * If any error occurs during the processing, it logs the error and continues with the next
    * operations.
    *
-   * @param submissionId   the ID of the submission to be processed
-   * @param submissionType the type of the submission process, indicating the origin or nature of
-   *                       the submission
+   * @param submissionWrapper a {@link MessagingWrapper} object containing the submission ID and
+   *                          type
    * @return a {@link Mono<String>} that completes when the processing is done. The Mono emits the
    * ID of the processed submission or an error signal if an error occurs during processing.
    */
-  public Mono<String> processedMessage(
-      Integer submissionId,
-      SubmissionProcessTypeEnum submissionType
-  ) {
-    log.info("Processing submission {} of type {}", submissionId, submissionType);
+  private Mono<String> processedMessage(MessagingWrapper<Integer> submissionWrapper) {
+    log.info("Processing submission {} of type {}",
+        submissionWrapper.payload(),
+        submissionWrapper.getParameter(ApplicationConstant.SUBMISSION_STARTER, String.class)
+    );
     return
         //Little wrapper to make it easier to pass around
         Mono
-            .just(
-                new MessagingWrapper<>(
-                    submissionId,
-                    Map.of(
-                        ApplicationConstant.SUBMISSION_ID, submissionId,
-                        ApplicationConstant.SUBMISSION_STARTER, submissionType
-                    )
-                )
+            .just(submissionWrapper)
+            //Only process HOT submissions, see ClientSubmissionAutoProcessingService.loadMatchingInfo for info
+            .filter(submission -> submission.getParameter(ApplicationConstant.MATCHING_KIND,
+                SubmissionProcessKindEnum.class) == SubmissionProcessKindEnum.HOT
             )
-            .flatMap(autoProcessingService::loadMatchingInfo)
             .doOnNext(submission -> log.info("Loaded submission for processing {}", submission))
             //Process the submission by loading some information
             .flatMap(submissionProcessingService::processSubmission)
