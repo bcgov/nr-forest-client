@@ -11,6 +11,7 @@ import { useFocus } from "@/composables/useFocus";
 import {
   BusinessSearchResult,
   ClientTypeEnum,
+  LegalTypeEnum,
   ProgressNotification,
 } from "@/dto/CommonTypesDto";
 import { BusinessTypeEnum, CodeNameType } from "@/dto/CommonTypesDto";
@@ -344,6 +345,11 @@ watch([selectedOption], () => {
       ClientTypeEnum,
       ClientTypeEnum.USP
     );
+    formData.value.businessInformation.legalType = getEnumKeyByEnumValue(
+      LegalTypeEnum,
+      LegalTypeEnum.SP
+    );
+
     formData.value.businessInformation.businessName = ForestClientUserSession
       .user?.businessName
       ? ForestClientUserSession.user?.businessName
