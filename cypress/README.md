@@ -11,24 +11,28 @@ The below sections are intended to explain how the framework works, along with a
 
 [Cucumber](https://cucumber.io/) is a popular tool used for behavior-driven development (BDD) in software testing. It allows you to write executable specifications in a natural language format called Gherkin. Gherkin is a plain-text language that is easy to understand and can be used by non-technical stakeholders as well. In this tutorial, we will guide you through the basics of writing a Cucumber/Gherkin file for end-to-end tests. To learn more about Cucumber, Gherking and BDD, you can enroll on a [free course](https://school.cucumber.io/courses/bdd-overview-for-business-analysts-and-product-owners).
 
-It is always good to read about Gherkin language format before start but in summary, Gherkin is a writing format that leverages plain english to allow users to describe the expected behavior in simple steps that is simple to understand by non-technical persons, but also makes sense to be executed in that specific order. Think of it like a set of steps in a cake recipe. Each test is written in a file with the `.feature` extension and is saved inside [cypress/e2e](cypress/e2e) folder on this repo, you can check some of the existing files for reference. 
+It is always good to read about Gherkin language format before start but in summary, Gherkin is a writing format that leverages plain english to allow users to describe the expected behavior in simple steps that is simple to understand by non-technical persons, but also makes sense to be executed in that specific order. Think of it like a set of steps in a cake recipe.
 
-    Avoid using names with spaces or special characters. Replace spaces with `_` and special characters for it's non-special character counterpart
+To make things easier for non-technical team members, we developed a strategy to leverage the use of [github issues](https://github.com/bcgov/nr-forest-client/issues), something that is quite similar to Jira Tickets. Click on `New issue` and a list of possible issue types will appear, select the `User provided automated test-case` one, and a form will appear. Follow the instructions on it on how to fill up the form with the appropriate data. This will then be automatically converted to a `feature file` that will be used for test.
 
-Here is how to get started:
+    Pay attention to the format of the test description. Gherkin feature files are sensitive to spacing and the keywords are really picky when it comes to casing (uppercase x lowercase).
 
-### Step 1: Creating a Feature File
+Another thing that the development team did to facilitate the usage of Gherkin is the ready-to-use collection of instructions that can be used to speed up the writing of test cases. Check the [existing step instructions](#existing-step-instructions) topic for a list of steps already implemented.
 
-Create a new file with the `.feature` extension inside the [cypress/e2e](cypress/e2e) folder. This file will contain your Gherkin scenarios. Start by writing a short description of the feature you are testing, preceded by the Feature keyword. For example:
+Without further ado, let's get started:
+
+### Creating a Feature
+
+Every test group is called a `Feature` on Gherkin. This is the first keyword here and it will have a meaningful name. This will contain your scenarios and it can include a short description of the feature you are testing, preceded by the Feature keyword. For example:
 
 ```gherkin
 Feature: User Registration
-  As a new user
-  I want to register on the website
-  So that I can access exclusive content
+  As a new user I want to register on the website so that I can access exclusive content
 ```
 
-### Step 2: Writing Scenarios
+    Be aware that the description should be a level deeper than the Feature itself. You can use tab or two spaces
+
+### Creating Scenarios
 
 Scenarios represent specific test cases. Each scenario consists of a series of steps. Steps can be one of the following: **Given**, **When**, **Then**, **And**, or **But**. Here's an example scenario for our user registration feature:
 
@@ -40,14 +44,76 @@ Scenario: Successful user registration
   Then I should see a success message
 ```
 
-Congratulations! You have successfully written a basic Cucumber/Gherkin file for end-to-end tests. You can continue adding more scenarios and step definitions to cover different test cases in the application.
+    Be aware that each step should be a level deeper than the Scenario itself. You can use tab or two spaces
+    Also, keep in mind that this should be at least one level deeper than the scenario above it.
+
+Here's the final product of the above feature and scenario combined.
+
+```gherkin
+Feature: User Registration
+  As a new user I want to register on the website so that I can access exclusive content
+    
+  Scenario: Successful user registration
+    Given I am on the registration page
+    When I fill in the registration form with valid information
+    And I click the "Register" button
+    Then I should see a success message
+```
+
+Congratulations! You have successfully written a basic Cucumber/Gherkin end-to-end tests. You can continue adding more scenarios and step definitions to cover different test cases in the application.
 
 Remember, the power of Cucumber lies in its ability to bridge the communication gap between technical and non-technical team members, enabling collaboration and providing a common language for defining software behavior.
 
+### Existing step instructions
+
+The development team created a set of pre-defined step definitions that can be used to leverage the use of Gherkin tests and speed up the adoption of it with non-technical team members. The below steps should be used `as-is`, without changing the case of any letter, except for `variables`.
+
+A variable is a piece of information that will be used to pass down a information. Every variable should be wrapped in double quotes (`"`). We will have two distinc group of variables described below, and they will be defined as `input` and `field name`. **Input** variables are the actual data that you want to select or insert in the form, such as the first name `James` or the `Individual` type of user. **Field name** is a type of variable used to identify a field in the form based on it's label name. Some examples are `First name` and `Client type`. They should have the exact name and casing as the form, otherwise the test won't be able to find the input to fill the data in.
+
+Here's a list of instructions that are already implemented and can be used:
+
+| Step            | Variables          | Description                     | Example            |
+| --------------- | ------------------ | ------------------------------- | ------------------ |
+| I visit {input} | `input` as the URL | Navigate to a specific URL path | I visit "/landing" |
+| I can read {input} | `input` as the text on the screen | Look up for a specific text on the screen | I can read "Create new client" |
+| I click on the {field name} button | `field name` as the text/name of the button to be clicked | Finds and click a button | I click on the "Next" button |
+| I cannot see {input} | `input` as the content of something that should not be on the screen | Look up for a specific text or component that should not be on the screen | I cannot see "Error" |
+| I clear the {field name} form input area | `field name` as the field name, based on a label | Clear the content of a input area | I clear the "First name" form input area |
+| I clear the {field name} form input | `field name` as the field name, based on a label | Clear the content of a input text field | I clear the "First name" form input |
+| I type {input} into the {field name} form input area | `input` as the data to be inserted and `field name` as the field name, based on a label | Insert data into a input area | I type "All good" into the "Notes" form input area |
+| I type {input} into the {field name} form input | `input` as the data to be inserted and `field name` as the field name, based on a label | Insert data into a input text field | I type "James" into the "First name" form input |
+| I select {input} from the {field name} form input | `input` as the data to be selected and `field name` as the field name, based on a label | Select a option from a dropdown | I select "Individual" from the "Client type" form input |
+| I type {input} and select {input} from the {field name} form autocomplete | `input` as the data to be inserted, being the first one the text to be typed and the second one the text to be selected and `field name` as the field name, based on a label | Type into the autocomplete and selects one of the possible results | I type "James" and select "James Bond" from the "Client name" form autocomplete |
+| I wait for the text {input} to appear | `input` as the text to be waited to appear on the screen | Wait for a specific text to appear on the screen | I wait for the text "Success" to appear |
 
 ## For Developers
 
-The developer will implement one `.ts` file for each `.feature` file, using the same name. Ex: `sample.feature` will have a corresponding `sample.ts` file.
+Each test is written in a file with the `.feature` extension and is saved inside [cypress/e2e](cypress/e2e) folder on this repo, you can check some of the existing files for reference. The developer will implement one `.ts` file for each `.feature` file, using the same name. Ex: `sample.feature` will have a corresponding `sample.ts` file. This `.ts` file is only required if the `.feature` file has any instruction that is too specific to be implemented as a common step verbate.
+
+    Avoid using names with spaces or special characters. Replace spaces with `_` and special characters for it's non-special character counterpart
+
+### Creating a Feature File
+
+Create a new file with the `.feature` extension inside the [cypress/e2e](cypress/e2e) folder. This file will contain your Gherkin scenarios. Start by writing a short description of the feature you are testing, preceded by the Feature keyword. For example:
+
+```gherkin
+Feature: User Registration
+  As a new user
+  I want to register on the website
+  So that I can access exclusive content
+```
+
+### Writing Scenarios
+
+Scenarios represent specific test cases. Each scenario consists of a series of steps. Steps can be one of the following: **Given**, **When**, **Then**, **And**, or **But**. Here's an example scenario for our user registration feature:
+
+```gherkin
+Scenario: Successful user registration
+  Given I am on the registration page
+  When I fill in the registration form with valid information
+  And I click the "Register" button
+  Then I should see a success message
+```
 
 ### Writing Step Definitions
 
@@ -81,4 +147,4 @@ You can use the deployed application for the test, or the local environment. Ide
 
 After the tests are executed, it will generate a few artefacts as proof of execution, such as screenshots and videos. This is good for reference, in case of an error, or to validate a scenario with the rest of the team.
 
-When a feature file exists without the corresponding implementation, it will make the automated test fail. **DON'T PANIC**. This is the expected behavior if you're adding a new scenario. One of the developers will be notified when new things are created so they can deal with the implementation of that scenario.
+When a feature file has a instruction without the corresponding implementation step, it will make the automated test fail. **DON'T PANIC**. This is a expected behavior if you're adding a new instruction. One of the developers will be notified when new things are created so they can deal with the implementation of that specific step.

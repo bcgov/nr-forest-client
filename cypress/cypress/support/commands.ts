@@ -20,10 +20,8 @@ Cypress.Commands.add("fillFormEntry",(field: string, value: string, delayMS: num
   cy.get(field)
   .should("exist")
   .shadow()
-  .find(area ? "textarea" : "input")
-  .focus()
-  .type(value,{ delay: delayMS })
-  .blur();
+  .find(area ? "textarea" : "input")  
+  .type(value,{ delay: delayMS });
 });
 
 Cypress.Commands.add("clearFormEntry",(field: string, area: boolean = false) =>{
@@ -87,4 +85,10 @@ Cypress.Commands.add("checkAccordionItemState", (additionalSelector: string, ope
     `${open ? "" : "not."}have.attr`,
     "open",
   );
+});
+
+Cypress.Commands.add('waitForPageLoad', (element: string) => {
+  cy.get(element).should('be.visible').then(() => {
+    cy.log('Page loaded');
+  });
 });
