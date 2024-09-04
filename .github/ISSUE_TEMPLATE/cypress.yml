@@ -1,0 +1,38 @@
+name: User provided automated test-case
+description: Please provide a Gherkin scenario for your issue.
+title: '[Test Case]: '
+labels: gherkin
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Please provide the Gherkin Scenario below:
+
+        Paste your Gherkin scenario between the following blocks:
+        \`\`\`gherkin and \`\`\`
+
+        Here's an example:
+        
+        ```gherkin
+        Feature: [Feature Name]
+          Scenario: [Scenario Name]
+            Given [some initial context]
+            When [some event occurs]
+            Then [some outcome should occur]
+        ```        
+  - type: textarea
+    id: gherkin_scenario
+    attributes:
+      label: Test Scenario Scenario
+      description: 'Paste your Gherkin feature between the comment blocks.'
+      render: shell
+      placeholder: |
+        ```gherkin
+        Feature: [Feature Name]
+          Scenario: [Scenario Name]
+            Given [some initial context]
+            When [some event occurs]
+            Then [some outcome should occur]
+        ```
+    validations:
+      required: true
