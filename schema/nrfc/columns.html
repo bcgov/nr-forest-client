@@ -139,46 +139,46 @@
         "comments": "<p>The user or proxy account that created or last updated the record.<\/p>"
     },
     {
-        "tableName": "submission",
-        "tableFileName": "submission",
-        "tableType": "Table",
-        "keyClass": "foreignKey",
-        "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_status_code",
-        "type": "varchar",
-        "length": 5,
-        "nullable": "√",
-        "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>TBD.<\/p>"
-    },
-    {
         "tableName": "submission_location",
         "tableFileName": "submission_location",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "postal_code",
-        "type": "varchar",
-        "length": 10,
-        "nullable": "",
-        "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": ""
-    },
-    {
-        "tableName": "submission_location",
-        "tableFileName": "submission_location",
-        "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "fax_number",
+        "name": "secondary_phone_number",
         "type": "varchar",
         "length": 14,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The fax number of a client&rsquo;s specific location.<\/p>"
+        "comments": "<p>A secondary phone number of a client&rsquo;s specific location.<\/p>"
+    },
+    {
+        "tableName": "submission",
+        "tableFileName": "submission",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "update_user",
+        "type": "varchar",
+        "length": 60,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The user or proxy account that created or last updated the record.<\/p>"
+    },
+    {
+        "tableName": "submission_location",
+        "tableFileName": "submission_location",
+        "tableType": "Table",
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>country_code",
+        "type": "varchar",
+        "length": 2,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>A code representing the code of a country.<\/p>"
     },
     {
         "tableName": "identification_type_code",
@@ -223,18 +223,18 @@
         "comments": "<p>A code representing the type of a client.<\/p>"
     },
     {
-        "tableName": "submission_matching_detail",
-        "tableFileName": "submission_matching_detail",
+        "tableName": "submission_location_contact_xref",
+        "tableFileName": "submission_location_contact_xref",
         "tableType": "Table",
-        "keyClass": "foreignKey",
-        "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_id",
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_contact_id",
         "type": "int4",
         "length": 10,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Incremental id generated for a submission of a client.<\/p>"
+        "comments": "<p>Incremental id generated for the contact details of a client.<\/p>"
     },
     {
         "tableName": "client_type_code",
@@ -363,18 +363,18 @@
         "comments": "<p>The date and time the record was created.<\/p>"
     },
     {
-        "tableName": "submission_location",
-        "tableFileName": "submission_location",
+        "tableName": "submission",
+        "tableFileName": "submission",
         "tableType": "Table",
-        "keyClass": "foreignKey",
-        "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>province_code",
-        "type": "varchar",
-        "length": 2,
-        "nullable": "",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "update_timestamp",
+        "type": "timestamp",
+        "length": 29,
+        "nullable": "√",
         "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>A code representing the code of a province, state, department or territory.<\/p>"
+        "defaultValue": "CURRENT_TIMESTAMP",
+        "comments": "<p>The date and time the record was created or last updated.<\/p>"
     },
     {
         "tableName": "identification_type_code",
@@ -461,32 +461,18 @@
         "comments": "<p>The date on which the code value has expired or is expected to expire.  Default 9999-12-31.<\/p>"
     },
     {
-        "tableName": "submission",
-        "tableFileName": "submission",
-        "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "update_user",
-        "type": "varchar",
-        "length": 60,
-        "nullable": "√",
-        "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>The user or proxy account that created or last updated the record.<\/p>"
-    },
-    {
         "tableName": "submission_location",
         "tableFileName": "submission_location",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "notes",
+        "name": "email_address",
         "type": "varchar",
-        "length": 4000,
+        "length": 100,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Any additional information about the client&rsquo;s location or specific instructions for contacting them.<\/p>"
+        "comments": "<p>The email address of the client&rsquo;s location.<\/p>"
     },
     {
         "tableName": "submission_location",
@@ -494,13 +480,27 @@
         "tableType": "Table",
         "keyClass": "foreignKey",
         "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_id",
-        "type": "int4",
-        "length": 10,
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>province_code",
+        "type": "varchar",
+        "length": 2,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Incremental id generated for a submission of a client.<\/p>"
+        "comments": "<p>A code representing the code of a province, state, department or territory.<\/p>"
+    },
+    {
+        "tableName": "submission",
+        "tableFileName": "submission",
+        "tableType": "Table",
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_status_code",
+        "type": "varchar",
+        "length": 5,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>TBD.<\/p>"
     },
     {
         "tableName": "country_code",
@@ -620,13 +620,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "submission_matching_processed_time",
-        "type": "timestamp",
-        "length": 29,
+        "name": "confirmed_match_userid",
+        "type": "varchar",
+        "length": 60,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The timestamp of when the processor started to process this specific entry<\/p>"
+        "comments": "<p>The ID of the user submitting the changes.<\/p>"
     },
     {
         "tableName": "flyway_schema_history",
@@ -814,15 +814,15 @@
         "tableName": "submission_location",
         "tableFileName": "submission_location",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "business_phone_number",
-        "type": "varchar",
-        "length": 14,
-        "nullable": "√",
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_id",
+        "type": "int4",
+        "length": 10,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The phone number of a client&rsquo;s specific location.<\/p>"
+        "comments": "<p>Incremental id generated for a submission of a client.<\/p>"
     },
     {
         "tableName": "submission_detail",
@@ -970,13 +970,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "email_address",
+        "name": "location_name",
         "type": "varchar",
-        "length": 100,
-        "nullable": "√",
+        "length": 40,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The email address of the client&rsquo;s location.<\/p>"
+        "comments": "<p>The location name of an address. Examples of location names include, but are not limited to, Mailing Address, Billing Address among others.<\/p>"
     },
     {
         "tableName": "submission_status_code",
@@ -998,13 +998,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "confirmed_match_timestamp",
-        "type": "timestamp",
-        "length": 29,
+        "name": "confirmed_match_status_ind",
+        "type": "varchar",
+        "length": 1,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The timestamp when the changes happened.<\/p>"
+        "comments": "<p>An indicator that determines whether a specific match has been approved, allowing the processing to continue, or denied, requiring immediate action to be taken during the submission process.<\/p>"
     },
     {
         "tableName": "client_type_code",
@@ -1119,18 +1119,18 @@
         "comments": "<p>The user or proxy account that created or last updated the record.<\/p>"
     },
     {
-        "tableName": "submission_location",
-        "tableFileName": "submission_location",
+        "tableName": "submission",
+        "tableFileName": "submission",
         "tableType": "Table",
         "keyClass": "primaryKey",
         "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_location_id",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_id",
         "type": "serial",
         "length": 10,
         "nullable": "",
         "autoUpdated": "√",
-        "defaultValue": "nextval('nrfc.submission_location_seq'::regclass)",
-        "comments": "<p>Incremental id generated for a location of a client.<\/p>"
+        "defaultValue": "nextval('nrfc.submission_id_seq'::regclass)",
+        "comments": "<p>Incremental id generated for a submission of a client.<\/p>"
     },
     {
         "tableName": "email_log",
@@ -1287,18 +1287,18 @@
         "comments": "<p>The date that the code value has become or is expected to become effective. Default is the data that the code value is created.<\/p>"
     },
     {
-        "tableName": "submission",
-        "tableFileName": "submission",
+        "tableName": "submission_location",
+        "tableFileName": "submission_location",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "create_user",
+        "name": "complementary_address_2",
         "type": "varchar",
-        "length": 60,
-        "nullable": "",
+        "length": 40,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The user or proxy account that created the record.<\/p>"
+        "comments": "<p>A second complementary address line of a client<\/p>"
     },
     {
         "tableName": "district_code",
@@ -1320,13 +1320,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "confirmed_match_userid",
+        "name": "confirmed_match_message",
         "type": "varchar",
-        "length": 60,
+        "length": 1000,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The ID of the user submitting the changes.<\/p>"
+        "comments": "<p>A field with the reason for the denial of the submission.<\/p>"
     },
     {
         "tableName": "client_type_code",
@@ -1376,27 +1376,27 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "submission_matching_processed",
-        "type": "bool",
-        "length": 1,
-        "nullable": "",
-        "autoUpdated": "",
-        "defaultValue": "false",
-        "comments": "<p>A flag to indicate that the submission was finally processed.<\/p>"
-    },
-    {
-        "tableName": "submission_location",
-        "tableFileName": "submission_location",
-        "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "street_address",
-        "type": "varchar",
-        "length": 40,
-        "nullable": "",
+        "name": "confirmed_match_timestamp",
+        "type": "timestamp",
+        "length": 29,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The address of a client, including the street number and street name.<\/p>"
+        "comments": "<p>The timestamp when the changes happened.<\/p>"
+    },
+    {
+        "tableName": "submission",
+        "tableFileName": "submission",
+        "tableType": "Table",
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_type_code",
+        "type": "varchar",
+        "length": 5,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>A code indicating the status of a submission request. Examples include, but are not limited to: New, Approved, Rejected, and others.<\/p>"
     },
     {
         "tableName": "identification_type_code",
@@ -1444,15 +1444,15 @@
         "tableName": "submission_location",
         "tableFileName": "submission_location",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "location_name",
-        "type": "varchar",
-        "length": 40,
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_location_id",
+        "type": "serial",
+        "length": 10,
         "nullable": "",
-        "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>The location name of an address. Examples of location names include, but are not limited to, Mailing Address, Billing Address among others.<\/p>"
+        "autoUpdated": "√",
+        "defaultValue": "nextval('nrfc.submission_location_seq'::regclass)",
+        "comments": "<p>Incremental id generated for a location of a client.<\/p>"
     },
     {
         "tableName": "submission_status_code",
@@ -1469,18 +1469,18 @@
         "comments": "<p>The date and time the record was created or last updated.<\/p>"
     },
     {
-        "tableName": "submission_location_contact_xref",
-        "tableFileName": "submission_location_contact_xref",
+        "tableName": "submission_matching_detail",
+        "tableFileName": "submission_matching_detail",
         "tableType": "Table",
-        "keyClass": "primaryKey",
-        "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_contact_id",
-        "type": "int4",
-        "length": 10,
-        "nullable": "",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "submission_matching_processed_time",
+        "type": "timestamp",
+        "length": 29,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Incremental id generated for the contact details of a client.<\/p>"
+        "comments": "<p>The timestamp of when the processor started to process this specific entry<\/p>"
     },
     {
         "tableName": "identification_type_code",
@@ -1528,43 +1528,43 @@
         "tableName": "submission_matching_detail",
         "tableFileName": "submission_matching_detail",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "matching_fields",
-        "type": "jsonb",
-        "length": 2147483647,
-        "nullable": "√",
-        "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>A JSON object provides information about matches found in the existing database. The matches can result from fuzzy search, like matching a name pattern, or from exact equality, such as matching incorporation number or good standing status.<\/p>"
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_matching_detail_id",
+        "type": "serial",
+        "length": 10,
+        "nullable": "",
+        "autoUpdated": "√",
+        "defaultValue": "nextval('nrfc.submission_matching_detail_id_seq'::regclass)",
+        "comments": "<p>Incremental id generated for a submission matching detail of a client.<\/p>"
     },
     {
-        "tableName": "submission",
-        "tableFileName": "submission",
+        "tableName": "submission_location",
+        "tableFileName": "submission_location",
         "tableType": "Table",
-        "keyClass": "foreignKey",
-        "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_type_code",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "fax_number",
         "type": "varchar",
-        "length": 5,
+        "length": 14,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>A code indicating the status of a submission request. Examples include, but are not limited to: New, Approved, Rejected, and others.<\/p>"
+        "comments": "<p>The fax number of a client&rsquo;s specific location.<\/p>"
     },
     {
-        "tableName": "submission",
-        "tableFileName": "submission",
+        "tableName": "submission_location",
+        "tableFileName": "submission_location",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "submission_date",
-        "type": "timestamp",
-        "length": 29,
+        "name": "notes",
+        "type": "varchar",
+        "length": 4000,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The date and time the record was created.<\/p>"
+        "comments": "<p>Any additional information about the client&rsquo;s location or specific instructions for contacting them.<\/p>"
     },
     {
         "tableName": "business_type_code",
@@ -1609,18 +1609,18 @@
         "comments": ""
     },
     {
-        "tableName": "submission",
-        "tableFileName": "submission",
+        "tableName": "submission_location",
+        "tableFileName": "submission_location",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "update_timestamp",
-        "type": "timestamp",
-        "length": 29,
+        "name": "complementary_address_1",
+        "type": "varchar",
+        "length": 40,
         "nullable": "√",
         "autoUpdated": "",
-        "defaultValue": "CURRENT_TIMESTAMP",
-        "comments": "<p>The date and time the record was created or last updated.<\/p>"
+        "defaultValue": "null",
+        "comments": "<p>A complementary address line of a client<\/p>"
     },
     {
         "tableName": "business_type_code",
@@ -1665,32 +1665,32 @@
         "comments": ""
     },
     {
-        "tableName": "submission",
-        "tableFileName": "submission",
+        "tableName": "submission_location",
+        "tableFileName": "submission_location",
         "tableType": "Table",
-        "keyClass": "primaryKey",
-        "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_id",
-        "type": "serial",
-        "length": 10,
-        "nullable": "",
-        "autoUpdated": "√",
-        "defaultValue": "nextval('nrfc.submission_id_seq'::regclass)",
-        "comments": "<p>Incremental id generated for a submission of a client.<\/p>"
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "business_phone_number",
+        "type": "varchar",
+        "length": 14,
+        "nullable": "√",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The phone number of a client&rsquo;s specific location.<\/p>"
     },
     {
         "tableName": "submission_matching_detail",
         "tableFileName": "submission_matching_detail",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "confirmed_match_status_ind",
-        "type": "varchar",
-        "length": 1,
-        "nullable": "√",
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_id",
+        "type": "int4",
+        "length": 10,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>An indicator that determines whether a specific match has been approved, allowing the processing to continue, or denied, requiring immediate action to be taken during the submission process.<\/p>"
+        "comments": "<p>Incremental id generated for a submission of a client.<\/p>"
     },
     {
         "tableName": "submission_detail",
@@ -1763,32 +1763,32 @@
         "comments": "<p>A code representing the type of a client.<\/p>"
     },
     {
-        "tableName": "submission_matching_detail",
-        "tableFileName": "submission_matching_detail",
+        "tableName": "submission_location_contact_xref",
+        "tableFileName": "submission_location_contact_xref",
         "tableType": "Table",
         "keyClass": "primaryKey",
         "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_matching_detail_id",
-        "type": "serial",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_location_id",
+        "type": "int4",
         "length": 10,
-        "nullable": "",
-        "autoUpdated": "√",
-        "defaultValue": "nextval('nrfc.submission_matching_detail_id_seq'::regclass)",
-        "comments": "<p>Incremental id generated for a submission matching detail of a client.<\/p>"
-    },
-    {
-        "tableName": "submission_location",
-        "tableFileName": "submission_location",
-        "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "city_name",
-        "type": "varchar",
-        "length": 30,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The name of the city of the location.<\/p>"
+        "comments": "<p>Incremental id generated for a location of a client.<\/p>"
+    },
+    {
+        "tableName": "submission",
+        "tableFileName": "submission",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "create_user",
+        "type": "varchar",
+        "length": 60,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>The user or proxy account that created the record.<\/p>"
     },
     {
         "tableName": "email_log",
@@ -1810,13 +1810,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "complementary_address_1",
+        "name": "city_name",
         "type": "varchar",
-        "length": 40,
-        "nullable": "√",
+        "length": 30,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>A complementary address line of a client<\/p>"
+        "comments": "<p>The name of the city of the location.<\/p>"
     },
     {
         "tableName": "province_code",
@@ -1903,18 +1903,18 @@
         "comments": "<p>The date that the code value has become or is expected to become effective. Default is the data that the code value is created.<\/p>"
     },
     {
-        "tableName": "submission_location_contact_xref",
-        "tableFileName": "submission_location_contact_xref",
+        "tableName": "submission_matching_detail",
+        "tableFileName": "submission_matching_detail",
         "tableType": "Table",
-        "keyClass": "primaryKey",
-        "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>submission_location_id",
-        "type": "int4",
-        "length": 10,
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "submission_matching_processed",
+        "type": "bool",
+        "length": 1,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>Incremental id generated for a location of a client.<\/p>"
+        "defaultValue": "false",
+        "comments": "<p>A flag to indicate that the submission was finally processed.<\/p>"
     },
     {
         "tableName": "submission_detail",
@@ -2076,13 +2076,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "complementary_address_2",
+        "name": "postal_code",
         "type": "varchar",
-        "length": 40,
-        "nullable": "√",
+        "length": 10,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>A second complementary address line of a client<\/p>"
+        "comments": ""
     },
     {
         "tableName": "submission_detail",
@@ -2118,13 +2118,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "secondary_phone_number",
+        "name": "street_address",
         "type": "varchar",
-        "length": 14,
-        "nullable": "√",
+        "length": 40,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>A secondary phone number of a client&rsquo;s specific location.<\/p>"
+        "comments": "<p>The address of a client, including the street number and street name.<\/p>"
     },
     {
         "tableName": "submission_contact",
@@ -2239,18 +2239,18 @@
         "comments": "<p>The date on which the code value has expired or is expected to expire.  Default 9999-12-31.<\/p>"
     },
     {
-        "tableName": "submission_location",
-        "tableFileName": "submission_location",
+        "tableName": "submission",
+        "tableFileName": "submission",
         "tableType": "Table",
-        "keyClass": "foreignKey",
-        "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>country_code",
-        "type": "varchar",
-        "length": 2,
-        "nullable": "",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "submission_date",
+        "type": "timestamp",
+        "length": 29,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>A code representing the code of a country.<\/p>"
+        "comments": "<p>The date and time the record was created.<\/p>"
     },
     {
         "tableName": "submission_type_code",
@@ -2272,13 +2272,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "confirmed_match_message",
-        "type": "varchar",
-        "length": 1000,
+        "name": "matching_fields",
+        "type": "jsonb",
+        "length": 2147483647,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>A field with the reason for the denial of the submission.<\/p>"
+        "comments": "<p>A JSON object provides information about matches found in the existing database. The matches can result from fuzzy search, like matching a name pattern, or from exact equality, such as matching incorporation number or good standing status.<\/p>"
     },
     {
         "tableName": "submission_type_code",
