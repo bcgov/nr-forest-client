@@ -1,7 +1,7 @@
 package ca.bc.gov.app.validator;
 
 import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
-
+import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
@@ -10,11 +10,15 @@ import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ValidationSourceEnum;
 import ca.bc.gov.app.exception.ValidationException;
+import ca.bc.gov.app.repository.client.SubmissionRepository;
+import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -30,7 +34,9 @@ public class SubmissionValidatorService {
   private final List<ForestClientValidator<ClientAddressDto>> addressValidators;
   private final List<ForestClientValidator<ClientContactDto>> contactValidators;
   private final List<ForestClientValidator<ClientLocationDto>> locationValidators;
-
+  private final SubmissionRepository submissionRepository;
+  private final ForestClientConfiguration configuration;
+  
   /**
    * Validates the overall submission data and structure of a {@link ClientSubmissionDto} object.
    * <p>
@@ -68,6 +74,51 @@ public class SubmissionValidatorService {
     return validateSubmissionDto(request).switchIfEmpty(validateSubmissionData(request, source));
   }
 
+  public Mono<Void> validateSubmissionLimit(JwtAuthenticationToken principal) {
+    String userId = JwtPrincipalUtil.getUserId(principal);
+    return checkSubmissionLimit(userId);
+  }
+
+  public Mono<Void> checkSubmissionLimit(String userId) {
+    String provider = extractPrefix(userId);
+    LocalDateTime endTime = LocalDateTime.now();
+    LocalDateTime startTime;
+    long maxSubmissions;
+
+    if ("IDIR".equalsIgnoreCase(provider)) {
+      startTime = endTime.minus(configuration.getIdirSubmissionTimeWindow());
+      maxSubmissions = configuration.getIdirMaxSubmissions();
+    } 
+    else if ("BCSC".equalsIgnoreCase(provider) || "BCEIDBUSINESS".equalsIgnoreCase(provider)) {
+      startTime = endTime.minus(configuration.getOtherSubmissionTimeWindow());
+      maxSubmissions = configuration.getOtherMaxSubmissions();
+    } 
+    else {
+        throw new IllegalArgumentException("Invalid provider " + provider);
+    }
+
+    return submissionRepository.countSubmissionsByTimeRangeAndCreatedBy(startTime, endTime, userId)
+        .flatMap(count -> {
+            if (count >= maxSubmissions) {
+                return Mono.error(
+                        new ValidationException(
+                              List.of(new ValidationError("submissionLimit", "Submission limit exceeded")))
+                        );
+            }
+            return Mono.empty();
+        });
+  }
+  
+  private String extractPrefix(String input) {
+      int backslashIndex = input.indexOf('\\');
+      if (backslashIndex != -1) {
+          return input.substring(0, backslashIndex);
+      } else {
+          return input;
+      }
+  }
+
+  
   /**
    * Validates the comprehensive data of a {@link ClientSubmissionDto} against various validation
    * rules.
@@ -209,8 +260,9 @@ public class SubmissionValidatorService {
           )
       );
     }
-
-    return Mono.empty();
+    
+    return checkSubmissionLimit(request.userId())
+            .then(Mono.just(request)); 
   }
 
   /**

@@ -37,6 +37,10 @@ public class ForestClientConfiguration {
   @NestedConfigurationProperty
   private SecurityConfiguration security;
   private Duration submissionLimit;
+  private Duration idirSubmissionTimeWindow;
+  private int idirMaxSubmissions;
+  private Duration otherSubmissionTimeWindow;
+  private int otherMaxSubmissions;
   @NestedConfigurationProperty
   private OpenDataConfiguration openData;
 

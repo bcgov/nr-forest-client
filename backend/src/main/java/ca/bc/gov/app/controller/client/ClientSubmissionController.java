@@ -107,8 +107,7 @@ public class ClientSubmissionController {
             new ClientSubmissionDto(
                 request.businessInformation(),
                 request.location(),
-                JwtPrincipalUtil.getUserId(principal).replaceFirst("^BCSC\\\\", ""),
-                JwtPrincipalUtil.getLastName(principal)
+                JwtPrincipalUtil.getUserId(principal)
             )
         )
         .switchIfEmpty(
@@ -158,8 +157,21 @@ public class ClientSubmissionController {
         request.businessInformation().businessName()
     );
 
-    return
-        validator.validate(request, ValidationSourceEnum.STAFF)
+    return Mono.just(
+                new ClientSubmissionDto(
+                    request.businessInformation(),
+                    request.location(),
+                    JwtPrincipalUtil.getUserId(principal)
+                )
+            )
+            .switchIfEmpty(
+                Mono.error(new InvalidRequestObjectException("no request body was provided"))
+            )
+            .doOnNext(sub -> log.info("Staff {} submitting request for: {}",
+                JwtPrincipalUtil.getUserId(principal),
+                sub.businessInformation().businessName()
+            ))
+            .flatMap(sub -> validator.validate(sub, ValidationSourceEnum.STAFF))
             .doOnNext(sub -> log.info("Staff submission is valid: {}",
                 sub.businessInformation().businessName()))
             .doOnError(e -> log.error("Staff submission is invalid: {}", e.getMessage()))
