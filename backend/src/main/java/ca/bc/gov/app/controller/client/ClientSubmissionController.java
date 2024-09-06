@@ -157,7 +157,7 @@ public class ClientSubmissionController {
         request.businessInformation().businessName()
     );
 
-    return Mono.just(
+    return Mono.defer(() -> Mono.just(
                 new ClientSubmissionDto(
                     request.businessInformation(),
                     request.location(),
@@ -190,7 +190,7 @@ public class ClientSubmissionController {
                             )
                     )
             )
-            .then();
+            .then());
   }
 
 
