@@ -157,7 +157,6 @@ class ClientStaffSubmissionControllerIntegrationTest
     dto = dto.withBusinessInformation(
         dto.businessInformation().withLegalType("J")
     );
-    dto = dto.withUserId("IDIR\\ABC123");
 
     client
         .mutateWith(csrf())
