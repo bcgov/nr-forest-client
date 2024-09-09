@@ -4,5 +4,6 @@ declare namespace Cypress {
     checkAutoCompleteErrorMessage(field: string, message: string): Chainable<void>;
     checkAccordionItemState(additionalSelector: string, open: boolean): Chainable<void>;
     waitForPageLoad(element: string): Chainable<void>;
+    logAndScreenshot(message: string): Chainable<void>;
   }
 }
