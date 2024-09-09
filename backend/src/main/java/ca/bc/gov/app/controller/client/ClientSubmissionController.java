@@ -157,42 +157,31 @@ public class ClientSubmissionController {
         request.businessInformation().businessName()
     );
 
-    return Mono.just(
-                new ClientSubmissionDto(
-                    request.businessInformation(),
-                    request.location(),
-                    JwtPrincipalUtil.getUserId(principal)
+    return Mono.justOrEmpty(request)
+        .switchIfEmpty(
+            Mono.error(new InvalidRequestObjectException("no request body was provided")))
+        .map(req -> new ClientSubmissionDto(
+                          req.businessInformation(), 
+                          req.location(), 
+                          JwtPrincipalUtil.getUserId(principal)))
+        .flatMap(sub -> validator.validate(sub, ValidationSourceEnum.STAFF))
+        .doOnNext(sub -> log.info("Staff submission is valid: {}", 
+                                  sub.businessInformation().businessName()))
+        .doOnError(e -> log.error("Staff submission is invalid: {}", 
+                                  e.getMessage()))
+        .flatMap(submission -> clientService.staffSubmit(submission, principal))
+        .doOnNext(clientId -> serverResponse
+            .getHeaders()
+            .addAll(CollectionUtils.toMultiValueMap(
+                Map.of(
+                    "Location", List.of(String.format("/api/clients/details/%s", clientId)),
+                    "x-client-id", List.of(String.valueOf(clientId))
                 )
-            )
-            .switchIfEmpty(
-                Mono.error(new InvalidRequestObjectException("no request body was provided"))
-            )
-            .doOnNext(sub -> log.info("Staff {} submitting request for: {}",
-                JwtPrincipalUtil.getUserId(principal),
-                sub.businessInformation().businessName()
             ))
-            .flatMap(sub -> validator.validate(sub, ValidationSourceEnum.STAFF))
-            .doOnNext(sub -> log.info("Staff submission is valid: {}",
-                sub.businessInformation().businessName()))
-            .doOnError(e -> log.error("Staff submission is invalid: {}", e.getMessage()))
-            .flatMap(submission -> clientService.staffSubmit(submission, principal))
-            .doOnNext(clientId ->
-                serverResponse
-                    .getHeaders()
-                    .addAll(
-                        CollectionUtils
-                            .toMultiValueMap(
-                                Map.of(
-                                    "Location",
-                                    List.of(String.format("/api/clients/details/%s", clientId)),
-                                    "x-client-id", List.of(String.valueOf(clientId))
-                                )
-                            )
-                    )
-            )
-            .then();
-  }
+        )
+        .then();
 
+  }
 
   @GetMapping("/{id}")
   public Mono<SubmissionDetailsDto> getSubmissionDetail(
