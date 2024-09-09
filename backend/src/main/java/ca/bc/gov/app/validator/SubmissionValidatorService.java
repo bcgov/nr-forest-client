@@ -110,7 +110,7 @@ public class SubmissionValidatorService {
                               List.of(new ValidationError("submissionLimit", "Submission limit exceeded")))
                         );
             }
-            return Mono.empty();
+            return Mono.justOrEmpty((Void) null);
         });
   }
   
