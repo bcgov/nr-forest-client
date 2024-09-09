@@ -399,7 +399,7 @@ jobs:
         id: check_artifacts
 
       - uses: actions/upload-artifact@v4
-        name: Upload Cypress Screenshots with error
+        name: Upload Cypress Screenshots
         if: steps.check_artifacts.outputs.screenshots == 'true'
         with:
           name: cypress-screenshots
@@ -407,7 +407,7 @@ jobs:
           retention-days: 7
 
       - uses: actions/upload-artifact@v4
-        name: Upload Cypress Videos with error
+        name: Upload Cypress Videos
         if: steps.check_artifacts.outputs.videos == 'true'
         with:
           name: cypress-videos
