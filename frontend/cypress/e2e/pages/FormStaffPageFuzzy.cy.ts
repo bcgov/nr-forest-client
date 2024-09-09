@@ -273,6 +273,30 @@ describe("Staff Form Fuzzy Matches", () => {
 
       cy.get('#reviewStatement').should('not.exist');
     });
+
+    describe('when we check the Review statement', () => {
+      beforeEach(function () {
+        interceptFuzzyMatch(1, "Step 1: partial individual match");
+        fillIndividual();
+        clickNext(1);
+
+        checkTopNotification('warning', 'was found with similar name and birthdate');
+        cy.get('#reviewStatement').should('be.visible');
+
+        cy.get("[data-test='wizard-next-button']")
+          .shadow()
+          .find("button")
+          .should("be.disabled");
+
+        cy.markCheckbox("#reviewStatement");
+      });
+
+      it("should reach the next step", () => {
+        clickNext(null);
+
+        cy.contains("h2", "Locations");
+      });
+    });
   });
 
   describe('BC Registered fuzzy matching',() =>{
@@ -443,6 +467,34 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('not.exist');
     })
 
+    describe('when we check the Review statement', () => {
+      beforeEach(function () {
+        interceptFuzzyMatch(1, "Step 1: partial business name match");
+        fillRegistered({ birthdateYear: '',
+          birthdateMonth: '',
+          birthdateDay: '',
+        });
+        clickNext(1);
+
+        checkTopNotification('warning', 'was found with similar client name');
+        cy.get('#reviewStatement').should('be.visible');
+
+        // TODO: fix form validation so the button gets properly disabled
+        // cy.get("[data-test='wizard-next-button']")
+        //   .shadow()
+        //   .find("button")
+        //   .should("be.disabled");
+
+        cy.markCheckbox("#reviewStatement");
+      });
+
+      it("should reach the next step", () => {
+        clickNext(null);
+
+        cy.contains("h2", "Locations");
+      });
+    });
+
   });
 
   describe('First Nations fuzzy matching',() =>{
@@ -524,6 +576,31 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('not.exist');
     });
 
+    describe('when we check the Review statement', () => {
+      beforeEach(function () {
+        interceptFuzzyMatch(1, "Step 1: partial business name match");
+        fillFirstNations();
+        clickNext(1);
+
+        checkTopNotification('warning', 'was found with similar client name');
+        cy.get('#reviewStatement').should('be.visible');
+
+        // TODO: fix form validation so the button gets properly disabled
+        // cy.get("[data-test='wizard-next-button']")
+        //   .shadow()
+        //   .find("button")
+        //   .should("be.disabled");
+
+        cy.markCheckbox("#reviewStatement");
+      });
+
+      it("should reach the next step", () => {
+        clickNext(null);
+
+        cy.contains("h2", "Locations");
+      });
+    });
+
   });
 
   describe('Government fuzzy matching',() =>{
@@ -583,6 +660,30 @@ describe("Staff Form Fuzzy Matches", () => {
 
       cy.get('#reviewStatement')
       .should('not.exist');
+    });
+
+    describe('when we check the Review statement', () => {
+      beforeEach(function () {
+        interceptFuzzyMatch(1, "Step 1: partial business name match");
+        fillOthers({kind: 'Government'});
+        clickNext(1);
+
+        checkTopNotification('warning', 'was found with similar client name');
+        cy.get('#reviewStatement').should('be.visible');
+
+        cy.get("[data-test='wizard-next-button']")
+          .shadow()
+          .find("button")
+          .should("be.disabled");
+
+        cy.markCheckbox("#reviewStatement");
+      });
+
+      it("should reach the next step", () => {
+        clickNext(null);
+
+        cy.contains("h2", "Locations");
+      });
     });
 
   });
@@ -646,6 +747,30 @@ describe("Staff Form Fuzzy Matches", () => {
       .should('not.exist');
     });
 
+    describe('when we check the Review statement', () => {
+      beforeEach(function () {
+        interceptFuzzyMatch(1, "Step 1: partial business name match");
+        fillOthers({kind: 'Ministry of Forests'});
+        clickNext(1);
+
+        checkTopNotification('warning', 'was found with similar client name');
+        cy.get('#reviewStatement').should('be.visible');
+
+        cy.get("[data-test='wizard-next-button']")
+          .shadow()
+          .find("button")
+          .should("be.disabled");
+
+        cy.markCheckbox("#reviewStatement");
+      });
+
+      it("should reach the next step", () => {
+        clickNext(null);
+
+        cy.contains("h2", "Locations");
+      });
+    });
+
   });
 
   describe('Unregistered company fuzzy matching',() =>{
@@ -705,6 +830,30 @@ describe("Staff Form Fuzzy Matches", () => {
 
       cy.get('#reviewStatement')
       .should('not.exist');
+    });
+
+    describe('when we check the Review statement', () => {
+      beforeEach(function () {
+        interceptFuzzyMatch(1, "Step 1: partial business name match");
+        fillOthers({kind: 'Unregistered company'});
+        clickNext(1);
+
+        checkTopNotification('warning', 'was found with similar client name');
+        cy.get('#reviewStatement').should('be.visible');
+
+        cy.get("[data-test='wizard-next-button']")
+          .shadow()
+          .find("button")
+          .should("be.disabled");
+
+        cy.markCheckbox("#reviewStatement");
+      });
+
+      it("should reach the next step", () => {
+        clickNext(null);
+
+        cy.contains("h2", "Locations");
+      });
     });
 
   });
@@ -1024,6 +1173,30 @@ describe("Staff Form Fuzzy Matches", () => {
       });
       it("does not display the review statement checkbox", () => {
         cy.get('#reviewStatement').should('not.exist');
+      });
+    });
+
+    describe('when we check the Review statement', () => {
+      beforeEach(function () {
+        interceptFuzzyMatch(2, "Step 2: full address email match");
+        fillLocation(0);
+        clickNext(2);
+
+        checkNotification('location-addresses-0', 'warning', 'was found with similar email address.');
+        cy.get('#reviewStatement').should('be.visible');
+
+        cy.get("[data-test='wizard-next-button']")
+          .shadow()
+          .find("button")
+          .should("be.disabled");
+
+        cy.markCheckbox("#reviewStatement");
+      });
+
+      it("should reach the next step", () => {
+        clickNext(null);
+
+        cy.contains("h2", "Contacts");
       });
     });
 
@@ -1361,15 +1534,41 @@ describe("Staff Form Fuzzy Matches", () => {
       });
     });
 
+    describe('when we check the Review statement', () => {
+      beforeEach(function () {
+        interceptFuzzyMatch(3, "Step 3: full contact email match");
+        fillContactWithoutName();
+        clickNext(3);
+
+        checkNotification('location-contacts-0', 'warning', 'was found with similar email address.');
+        cy.get('#reviewStatement').should('be.visible');
+
+        cy.get("[data-test='wizard-next-button']")
+          .shadow()
+          .find("button")
+          .should("be.disabled");
+
+        cy.markCheckbox("#reviewStatement");
+      });
+
+      it("should reach the next step", () => {
+        clickNext(null);
+
+        cy.contains("h2", "Review");
+      });
+    });
+
   });
 
-  const clickNext = (step: number) => {
+  const clickNext = (matchedStep: number | null) => {
     cy.get("[data-test='wizard-next-button']")
       .shadow()
       .find("button")
       .should("be.enabled");
     cy.get("[data-test='wizard-next-button']").click();
-    cy.wait(`@doMatch${step}`);
+    if (matchedStep) {
+      cy.wait(`@doMatch${matchedStep}`);
+    }
   };
 
   const clickBack = () => {
