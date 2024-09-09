@@ -113,6 +113,7 @@ public class ClientSubmissionController {
         .switchIfEmpty(
             Mono.error(new InvalidRequestObjectException("no request body was provided"))
         )
+        .log("Submitting...")
         .doOnNext(sub -> log.info("Submitting request: {}",
             Optional
                 .ofNullable(
@@ -121,11 +122,13 @@ public class ClientSubmissionController {
                 .map(ClientBusinessInformationDto::businessName)
                 .orElse("No Business Name")
         ))
+        .log("Validating...")
         .flatMap(sub -> validator.validate(sub, ValidationSourceEnum.EXTERNAL))
         .doOnNext(sub -> log.info("External submission is valid: {}",
             sub.businessInformation().businessName()))
         .doOnError(e -> log.error("External submission is invalid: {}", e.getMessage()))
         .flatMap(submissionDto -> clientService.submit(submissionDto, principal))
+        .log("Persisting...")
         .doOnNext(submissionId -> log.info("Submission persisted: {}", submissionId))
         .doOnNext(submissionId ->
             serverResponse
