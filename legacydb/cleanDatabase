@@ -1,0 +1,88 @@
+#!/bin/bash
+set -Eeuo pipefail
+
+PDB="${1:-}"
+USER="${2:-}"
+
+# Check if PDB variable is set
+if [ -n "${PDB}" ]; then
+  sqlplus -s / as sysdba <<EOF
+     -- Exit on any errors
+     WHENEVER SQLERROR EXIT SQL.SQLCODE
+
+     ALTER SESSION SET CONTAINER=${PDB};
+
+     -- Remove the UAT created data
+     BEGIN
+       DELETE FROM THE.CLIENT_CONTACT WHERE THE.CLIENT_CONTACT.ADD_USERID = '${USER}';
+       DELETE FROM THE.CLIENT_LOCATION WHERE THE.CLIENT_LOCATION.ADD_USERID = '${USER}';
+       DELETE FROM THE.CLIENT_DOING_BUSINESS_AS WHERE THE.CLIENT_DOING_BUSINESS_AS.ADD_USERID = '${USER}';
+       DELETE FROM THE.FOREST_CLIENT WHERE THE.FOREST_CLIENT.ADD_USERID ='${USER}';
+     END;
+     /
+
+     exit;
+EOF
+fi
+
+
+
+
+
+
+
+if [ -n "${APP_USER}" ]; then
+  sqlplus -s / as sysdba <<EOF
+     -- Exit on any errors
+     WHENEVER SQLERROR EXIT SQL.SQLCODE
+
+     ALTER SESSION SET CONTAINER=${PDB_TO_REMOVE};
+
+     -- Identify and kill sessions for the user
+     BEGIN
+       FOR session IN (SELECT sid, serial# FROM v\$session WHERE username = UPPER('${APP_USER}')) LOOP
+         EXECUTE IMMEDIATE 'ALTER SYSTEM KILL SESSION ''' || session.sid || ',' || session.serial# || ''' IMMEDIATE';
+       END LOOP;
+     END;
+     /
+
+     -- Drop the user after sessions are killed
+     DROP USER ${APP_USER} CASCADE;
+     exit;
+EOF
+fi;
+
+# Drop services for the PDB
+if [ -n "${PDB_TO_REMOVE}" ]; then
+  sqlplus -s / as sysdba <<EOF
+     -- Exit on any errors
+     WHENEVER SQLERROR EXIT SQL.SQLCODE
+
+     -- Check and drop services
+     DECLARE
+       srv_name VARCHAR2(255);
+     BEGIN
+       FOR service IN (SELECT name FROM dba_services WHERE pdb = '${PDB_TO_REMOVE}') LOOP
+         srv_name := service.name;
+         EXECUTE IMMEDIATE 'DBMS_SERVICE.DELETE_SERVICE(''' || srv_name || ''')';
+       END LOOP;
+     END;
+     /
+     exit;
+EOF
+fi;
+
+# Then remove the PDB
+if [ -n "${PDB_TO_REMOVE}" ]; then
+  sqlplus -s / as sysdba <<EOF
+     -- Exit on any errors
+     WHENEVER SQLERROR EXIT SQL.SQLCODE
+
+     ALTER PLUGGABLE DATABASE ${PDB_TO_REMOVE} CLOSE IMMEDIATE;
+     DROP PLUGGABLE DATABASE ${PDB_TO_REMOVE} INCLUDING DATAFILES;
+
+     -- Register changes with listener
+     ALTER SYSTEM REGISTER;
+     exit;
+EOF
+fi;
