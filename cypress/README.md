@@ -72,6 +72,8 @@ A variable is a piece of information that will be used to pass down a informatio
 
     The below list of instructions can be used in any of the steps, such as `Given`, `When`, `Then`, `And` or `But`. They are case sensitive and should be used as they are.
 
+Also, to speed up the process and avoid credentials being leaked everywhere, we have a special instruction that will be used to login using some specific user types. This instruction uses the `annotation` and it should be used at the `scenario` level. For more information, please refer to the [credentials](#credentials) topic below.
+
 Here's a list of instructions that are already implemented and can be used:
 
 | Step            | Variables          | Description                     | Example            |
@@ -97,6 +99,9 @@ Here's a list of instructions that are already implemented and can be used:
 | I add a new location called {input} | `input` as the name of the location to be added | Add a new location to the list | I add a new location called "New York Office" |
 | I should see the {input} message {input} on the {field name} | `input` as the type of message, being **error** or **warning**, `input` as the text of the message (can be partial) and `field name` as the location/group where the notification should appear, such as the **top**, **Primary contact** or **Office** | Check if a specific message is displayed on the screen | I should see the "error" message "Invalid email" on the "top" |
 | The field {field name} should have the {input} message {input} | `field name` as the field name, based on a label, `input` as the type of message, being **error** or **warning**, `input` as the text of the message (can be partial) | Check if a specific message is displayed on a specific field | The field "Email" should have the "error" message "Invalid email" |
+| I fill the form as follows | - | This is a special instruction that will be followed by a table with the data to be inserted in the form. More on the [data tables](#data-tables) topic below | I fill the form as follows |
+| I fill the {input} address with the following | `input` as the location name value, or `Primary location` for the primary location | This is a special instruction that will be followed by a table with the data to be inserted in the form. More on the [data tables](#data-tables) topic below | I fill the "Primary location" address with the following |
+| I fill the {input} information with the following | `input` as the location or contact name value, or `Primary contact` for the primary contact | This is a special instruction that will be followed by a table with the data to be inserted in the form. More on the [data tables](#data-tables) topic below | I fill the "Johnathan Wick" information with the following |
 
 
 ## For Developers
@@ -161,3 +166,56 @@ You can use the deployed application for the test, or the local environment. Ide
 After the tests are executed, it will generate a few artefacts as proof of execution, such as screenshots and videos. This is good for reference, in case of an error, or to validate a scenario with the rest of the team.
 
 When a feature file has a instruction without the corresponding implementation step, it will make the automated test fail. **DON'T PANIC**. This is a expected behavior if you're adding a new instruction. One of the developers will be notified when new things are created so they can deal with the implementation of that specific step.
+
+## Data tables
+
+Data tables makes the form filling process way easier and faster. It allows you to insert multiple data at once, without the need to write each step individually. The data table should be inserted after the `I fill the form as follows` instruction, and it should have 3 columns, the first one being the field name, the second one the data to be inserted and the third one the kind of field.
+
+The kind of field is a special instruction that will be used to identify the type of field that is being filled. The possible values are `text`, `select`, `multiselect`, `autocomplete` and `textbox`.
+
+Here's an example of a data table:
+
+```gherkin
+Scenario: Submit individuals
+  When I click on the "Create client" button
+  And I can read "Create client"
+  Then I select "Individual" from the "Client type" form input
+  And I fill the form as follows
+    | Field name | Value                     | Type   |
+    | First name | James                     | text   |
+    | Last name  | Baxter                    | text   |
+    | Year       | 1990                      | text   |
+    | Month      | 01                        | text   |
+    | Day        | 01                        | text   |
+    | ID type    | Canadian driver's licence | select |
+    | ID number  | 4417845                   | text   |
+```
+
+Pay attention to the way the data table is structured, as it is very sensitive to spacing and the number of columns. The `Type` column should be written in lowercase, the `Field name` should be the exact name of the field in the form and the `Value` should be the data to be inserted or selected. The table itself is composed by the `|` character to separate the columns and the rows, it is required to have a `|` at the beginning and at the end of each row. Also pay attention to the spacing required to make the table work, as this follows the Gherkin language format.
+
+One important case here to note is that for the `address` and `contact` information groups, the `contact` or `address` should be created/enabled first. If you declare a `contact` information before the `contact` group is created, the test will fail. The same applies for the `address` group.
+
+For `address` and `contact` we have a special instruction that can reduce the amount of steps required to start the new group.
+
+## Credentials
+
+To avoid credentials being leaked everywhere, we have a special instruction that will be used to login using some specific user types. This instruction uses the `annotation` and it should be used at the `scenario` level. The annotation should be written in the following format:
+
+```gherkin
+@loginAsEditor
+Scenario: Submit individuals
+  When I click on the "Create client" button
+  And I can read "Create client"
+```
+
+The `@loginAsEditor` is a special instruction that will be used to login as a specific user type. The `@` symbol is required to be used before the instruction, and it should be placed at the beginning of the scenario. The instruction itself should be written in camelCase, with the first letter of each word in uppercase. The instruction should be written right above the `Scenario` keyword. The possible values for it can be found down below. Keep in mind that it will only login and it will stop right after the login is done, on the expected page.
+
+Here's a list of possible instructions that can be used:
+
+| Instruction      | Description                           |
+| ---------------- | --------------------------------------|
+| @loginAsEditor   | Login as a staff editor user type     |
+| @loginAsViewer   | Login as a staff viewer user type     |
+| @loginAsAdmin    | Login as a staff admin user type      |
+| @loginAsBCeID    | Login as a BCeID user type            |
+| @loginAsBCSC     | Login as a BC Services Card user type |
