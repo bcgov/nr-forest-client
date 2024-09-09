@@ -44,7 +44,7 @@ jobs:
   cypress-run:
     name: "User flow test"
     runs-on: ubuntu-22.04
-    needs: [vars]
+    needs: [ vars]
     environment: dev
     env:
       URL: ${{ needs.vars.outputs.url }}
@@ -62,8 +62,6 @@ jobs:
         with:
           working-directory: cypress
         env:
-          DEBUG: "cypress:*"
-          CYPRESS_DEBUG: "cypress:*"
           CYPRESS_baseUrl: https://${{ env.URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_editor_password: ${{ secrets.UAT_EDITOR_PASSWORD }}
