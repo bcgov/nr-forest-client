@@ -13,7 +13,6 @@ import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
