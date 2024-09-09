@@ -358,6 +358,13 @@ jobs:
         env:
           CYPRESS_baseUrl: https://${{ env.URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_editor_password: ${{ secrets.UAT_EDITOR_PASSWORD }}
+          CYPRESS_editor_username: ${{ secrets.UAT_EDITOR_USERNAME }}
+          CYPRESS_admin_password: ${{ secrets.UAT_ADMIN_PASSWORD }}
+          CYPRESS_admin_username: ${{ secrets.UAT_ADMIN_USERNAME }}
+          CYPRESS_viewer_password: ${{ secrets.UAT_VIEWER_PASSWORD }}
+          CYPRESS_viewer_username: ${{ secrets.UAT_VIEWER_USERNAME }}
+          CYPRESS_random_var: ${{ env.URL }}
 
       - name: Publish Cypress Results
         uses: mikepenz/action-junit-report@v4
