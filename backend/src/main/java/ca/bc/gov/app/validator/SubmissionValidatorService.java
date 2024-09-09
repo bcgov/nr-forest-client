@@ -13,6 +13,7 @@ import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,14 +85,17 @@ public class SubmissionValidatorService {
     LocalDateTime endTime = LocalDateTime.now();
     LocalDateTime startTime;
     long maxSubmissions;
+    String submissionTimeWindow;
 
     if ("IDIR".equalsIgnoreCase(provider)) {
       startTime = endTime.minus(configuration.getIdirSubmissionTimeWindow());
       maxSubmissions = configuration.getIdirMaxSubmissions();
+      submissionTimeWindow = configuration.getIdirSubmissionTimeWindow().toHours() + " hours";
     } 
     else if ("BCSC".equalsIgnoreCase(provider) || "BCEIDBUSINESS".equalsIgnoreCase(provider)) {
       startTime = endTime.minus(configuration.getOtherSubmissionTimeWindow());
       maxSubmissions = configuration.getOtherMaxSubmissions();
+      submissionTimeWindow = configuration.getOtherSubmissionTimeWindow().toDays() + " days";
     } 
     else {
       return Mono.error(new IllegalArgumentException("Invalid provider " + provider));
@@ -107,7 +111,11 @@ public class SubmissionValidatorService {
             if (count >= maxSubmissions) {
                 return Mono.error(
                         new ValidationException(
-                              List.of(new ValidationError("submissionLimit", "Submission limit exceeded")))
+                              List.of(new ValidationError(
+                                            "submissionLimit", 
+                                            "You can make up to " + maxSubmissions + " submissions in " + submissionTimeWindow +
+                                            ". Resubmit this application in " + submissionTimeWindow + "."))
+                              )
                         );
             }
             return Mono.justOrEmpty((Void) null);
