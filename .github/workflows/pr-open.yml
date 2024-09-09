@@ -377,9 +377,30 @@ jobs:
           detailed_summary: true
           job_name: User Journeys
 
+      - name: Check for Cypress Screenshots and Videos
+        run: |
+          if [ -d "cypress/cypress/screenshots" ] && [ "$(ls -A cypress/cypress/screenshots)" ]; then
+            echo "Screenshots folder is not empty, uploading artifacts."            
+            echo "screenshots=true" >> $GITHUB_OUTPUT
+
+          else
+            echo "Screenshots folder is empty or does not exist."
+            echo "screenshots=false" >> $GITHUB_OUTPUT
+          fi
+
+          if [ -d "cypress/cypress/videos" ] && [ "$(ls -A cypress/cypress/videos)" ]; then
+            echo "Videos folder is not empty, uploading artifacts."            
+            echo "videos=true" >> $GITHUB_OUTPUT
+
+          else
+            echo "Videos folder is empty or does not exist."
+            echo "videos=false" >> $GITHUB_OUTPUT
+          fi
+        id: check_artifacts
+
       - uses: actions/upload-artifact@v4
         name: Upload Cypress Screenshots with error
-        if: failure()
+        if: steps.check_artifacts.outputs.screenshots == 'true'
         with:
           name: cypress-screenshots
           path: cypress/cypress/screenshots
@@ -387,7 +408,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         name: Upload Cypress Videos with error
-        if: failure()
+        if: steps.check_artifacts.outputs.videos == 'true'
         with:
           name: cypress-videos
           path: cypress/cypress/videos
