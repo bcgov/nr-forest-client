@@ -262,6 +262,8 @@ public class SubmissionValidatorService {
     }
     
     return checkSubmissionLimit(request.userId())
+            .doOnNext(v -> log.info("Submission limit check passed for user: {}", request.userId()))
+            .doOnError(e -> log.error("Error during submission limit check: {}", e.getMessage()))
             .then(Mono.just(request)); 
   }
 
