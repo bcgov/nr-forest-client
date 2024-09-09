@@ -8,7 +8,7 @@ Cypress.on('window:before:load', (win) => {
     // Pass logs to Cypress terminal
     Cypress.log({
       name: 'console.log',
-      message: [...args,'YOLO'],
+      message: [...args],
     });
   };
 });

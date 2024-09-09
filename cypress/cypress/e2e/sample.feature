@@ -5,4 +5,3 @@ Feature: Form screen loads correctly
   Scenario: Screen loads
     Given I visit "/"
     Then I can read "Client Management System"
-    And I car read an env var
