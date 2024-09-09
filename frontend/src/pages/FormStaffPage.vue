@@ -302,7 +302,7 @@ const onNext = () => {
   setTimeout(() => {
     notificationBus.emit(undefined);
     if (currentTab.value + 1 < progressData.length) {
-      if (checkStepValidity(currentTab.value)) {
+      if (reviewStatement.value || checkStepValidity(currentTab.value)) {
         if (reviewStatement.value) {
           moveToNextStep();
         } else {

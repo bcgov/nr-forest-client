@@ -188,6 +188,20 @@ Cypress.Commands.add("selectAutocompleteEntry", (field: string, value: string, d
   cy.get(field).find(`cds-combo-box-item[data-id="${dataid}"]`).click();
 });
 
+Cypress.Commands.add("markCheckbox", (field: string) => {
+  cy.get(field)
+    .shadow()
+    .find("input")
+    .check({ force: true });
+});
+
+Cypress.Commands.add("unmarkCheckbox", (field: string) => {
+  cy.get(field)
+    .shadow()
+    .find("input")
+    .uncheck({ force: true });
+});
+
 Cypress.Commands.add("checkInputErrorMessage", (field: string, message: string) => {
   cy.get(field)
   .shadow()
