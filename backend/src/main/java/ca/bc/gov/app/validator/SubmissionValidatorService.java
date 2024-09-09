@@ -94,7 +94,7 @@ public class SubmissionValidatorService {
       maxSubmissions = configuration.getOtherMaxSubmissions();
     } 
     else {
-        throw new IllegalArgumentException("Invalid provider " + provider);
+      return Mono.error(new IllegalArgumentException("Invalid provider " + provider));
     }
 
     return submissionRepository.countSubmissionsByTimeRangeAndCreatedBy(startTime, endTime, userId)
