@@ -98,7 +98,7 @@ public class SubmissionValidatorService {
     }
 
     return submissionRepository
-        .countBySubmissionDateBetweenAndCreateUserIgnoreCase(
+        .countBySubmissionDateBetweenAndCreatedByIgnoreCase(
           startTime, 
           endTime, 
           userId

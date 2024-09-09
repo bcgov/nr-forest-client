@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SubmissionRepository extends ReactiveCrudRepository<SubmissionEntity, Integer> {
 
-  Mono<Long> countBySubmissionDateBetweenAndCreateUserIgnoreCase(
+  Mono<Long> countBySubmissionDateBetweenAndCreatedByIgnoreCase(
               LocalDateTime startTime, 
               LocalDateTime endTime, 
               String createdBy);
