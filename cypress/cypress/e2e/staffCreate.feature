@@ -53,7 +53,11 @@ Feature: Staff Screens
       | Primary phone number            | 2501234568      | text          |
       | Secondary phone number          | 2501234568      | text          |
       | Fax                             | 2501234568      | text          |
-      | Notes                           | This is a test  | textbox       |    
+      | Notes                           | This is a test  | textbox       |
+    And I add a new location called "Home"
+    And I fill the "Home" address with the following
+      | Field name                      | Value           | Type          |      
+      | Street address or PO box        | 1515 Blanshard  | autocomplete  |
     Then I click on next
     And I fill the "Primary contact" information with the following
       | Field name                      | Value           | Type          |      
