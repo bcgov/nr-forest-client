@@ -34,8 +34,12 @@ When('I click on the {string} button', (name: string) => {
   buttonClick(name, ['input', 'button', 'cds-button', 'cds-side-nav-link']);
 });
 
+When('I click on next', () => {
+  buttonClick('Next', ['input', 'button', 'cds-button', 'cds-side-nav-link']);
+});
+
 When('I submit', () => {
-  buttonClick('Create client', ['input', 'button', 'cds-button', 'cds-side-nav-link'],'div.form-footer-group-buttons');
+  buttonClick('Create client', ['input', 'button', 'cds-button', 'cds-side-nav-link'],false,'div.form-footer-group-buttons');
 });
 
 /* Text Input Steps */
@@ -172,12 +176,21 @@ Then(
 /* Autocomplete Input Steps */
 
 Then('I type {string} and select {string} from the {string} form autocomplete', (search: string, value: string, input: string) => {
+
+  if(input === 'Client name') {
+    cy.intercept('GET',  `**/api/clients/**`).as('autocomplete');
+    cy.intercept('GET',  `**/api/opendata/**`).as('autocomplete');
+  } else if(input === 'Street address or PO box') {
+    cy.intercept('GET',  `**/api/address**`).as('autocomplete');
+  }
+
   cy.contains('label', input).then(($label) => {
     const parentShadow = $label[0].getRootNode();
     cy.wrap(parentShadow)
       .find('input')
       .type(search, { delay: 0 })
       .then(() => {
+        cy.wait('@autocomplete');
         cy.wrap(parentShadow)
           .parent()
           .find(`cds-combo-box-item[data-value="${value}"], cds-combo-box-item[data-value^="${value}"]`)
@@ -189,7 +202,7 @@ Then('I type {string} and select {string} from the {string} form autocomplete', 
             }
           })
           .then(() => {
-            cy.wait(2000);
+            cy.wait('@autocomplete');
           });
       });
   });
@@ -264,9 +277,9 @@ Then('I fill the {string} information with the following', (contactName: string,
 
 Then('I add a new location called {string}', (location: string) => {
   Step(this,'I click on the "Add another location" button');
-  cy.wait(10);
+  cy.wait(100);
   Step(this,`I type "${location}" into the "Location name" form input for the "Additional location"`);
-  cy.wait(10);
+  cy.wait(100);
 });
 
 /* Error messages */
@@ -299,10 +312,13 @@ Then(
 
 /* This block is dedicated to the actual code */
 
-const buttonClick = (name: string, kinds: string[], selector: string = 'body') => {
+const buttonClick = (name: string, kinds: string[], waitForMatch: boolean = false,  selector: string = 'body') => {
   if (kinds.length === 0) {
     throw new Error(`Button with label "${name}" not found.`);
   }
+
+  if(waitForMatch)
+    cy.intercept('POST',  `**/api/clients/matches`).as('matches');
 
   let targetElement: JQuery<HTMLElement> = null;
 
@@ -318,7 +334,10 @@ const buttonClick = (name: string, kinds: string[], selector: string = 'body') =
       if (targetElement.length > 0) {
         // If a matching element with the correct text is found, click it
         cy.wrap(targetElement).click();
-        cy.wait(15);
+        if(waitForMatch)
+          cy.wait('@matches');
+        else
+          cy.wait(15);
       }
     })
 
