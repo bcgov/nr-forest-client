@@ -51,6 +51,7 @@ export default defineConfig({
     reporter: require.resolve("@badeball/cypress-cucumber-preprocessor/pretty-reporter"),
     specPattern: "**/*.feature",
     setupNodeEvents,
+    defaultCommandTimeout: 61000, // Set the timeout as 61 seconds due to slow submissions we need to test
   },
   includeShadowDom: true,
   viewportHeight: 1080,

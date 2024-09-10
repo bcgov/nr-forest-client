@@ -1,7 +1,6 @@
 Feature: Staff Screens
 
   This feature file is to test staff screen use cases
-
   
   @loginAsEditor
   Scenario: Submit individuals
@@ -20,23 +19,24 @@ Feature: Staff Screens
     Then I click on next
     And I fill the "Primary location" address with the following
       | Field name                      | Value           | Type          |
-      | Email address                   | mail2@mail.ca   | text          |
-      | Primary phone number            | 2501234568      | text          |
-      | Secondary phone number          | 2501234568      | text          |
-      | Fax                             | 2501234568      | text          |
+      | Location name                   | Office          | text          |
+      | Email address                   | jamesbaxter@mail.ca   | text          |
+      | Primary phone number            | 2501231568      | text          |
+      | Secondary phone number          | 2501233568      | text          |
+      | Fax                             | 2501239568      | text          |
       | Street address or PO box        | 2975 Jutland Rd | autocomplete  |
     Then I add a new location called "Home"
     And I fill the "Home" address with the following
       | Field name                      | Value           | Type          |
-      | Street address or PO box        | 2972 Jutland Rd | autocomplete  |
+      | Street address or PO box        | 2975 Jutland Rd | autocomplete  |
       | Notes                           | Don't mail this address  | textbox       |
     Then I click on next
     And I fill the "Primary contact" information with the following
       | Field name                      | Value           | Type          |      
-      | Email address                   | mail@mail.ca    | text          |
-      | Primary phone number            | 2501234567      | text          |
-      | Secondary phone number          | 2501234567      | text          |
-      | Fax                             | 2501234567      | text          |
+      | Email address                   | baxter.james@mail.ca    | text          |
+      | Primary phone number            | 2501237567      | text          |
+      | Secondary phone number          | 2501232567      | text          |
+      | Fax                             | 2501444567      | text          |
       | Contact type                    | Billing         | select        |
       | Location name                   | Office          | multiselect   |
     Then I click on next
@@ -53,7 +53,7 @@ Feature: Staff Screens
     Then I click on next
     And I fill the "Primary location" address with the following
       | Field name                      | Value           | Type          |      
-      | Street address or PO box        | 2970 Jutland Rd | autocomplete  |
+      | Street address or PO box        | 1515 Blanshard  | autocomplete  |
       | Email address                   | mail2@mail.ca   | text          |
       | Primary phone number            | 2501234568      | text          |
       | Secondary phone number          | 2501234568      | text          |
@@ -62,7 +62,7 @@ Feature: Staff Screens
     Then I add a new location called "Home"
     And I fill the "Home" address with the following
       | Field name                      | Value           | Type          |
-      | Street address or PO box        | 2970 Jutland Rd | autocomplete  |
+      | Street address or PO box        | 1515 Blanshard  | autocomplete  |
     Then I click on next
     And I fill the "Primary contact" information with the following
       | Field name                      | Value           | Type          |      
@@ -71,7 +71,35 @@ Feature: Staff Screens
       | Secondary phone number          | 2501234568      | text          |
       | Fax                             | 2501234568      | text          |
       | Contact type                    | Billing         | select        |
-      | Location name                   | Office          | multiselect   |
+      | Location name                   | Home            | multiselect   |
+      | Location name                   | Mailing address | multiselect   |
+    And I fill the "MARCEL ST. AMANT" information with the following
+      | Field name                      | Value           | Type          |      
+      | Email address                   | mail3@mail.ca   | text          |
+      | Primary phone number            | 2501234568      | text          |
+      | Secondary phone number          | 2501234568      | text          |
+      | Fax                             | 2501234568      | text          |
+      | Contact type                    | Billing         | select        |
+      | Location name                   | Home            | multiselect   |
+      | Last name                       | ST AMANT        | textreplace   |
     And I click on next
     Then I submit
     And I wait for the text "has been created!" to appear
+
+  @loginAsEditor
+  Scenario: Already exists and has fuzzy match
+    When I click on the "Create client" button
+    And I can read "Create client"
+    Then I select "Individual" from the "Client type" form input
+    And I fill the form as follows
+      | Field name | Value                     | Type   |
+      | First name | James                     | text   |
+      | Last name  | Baxter                    | text   |
+      | Year       | 1959                      | text   |
+      | Month      | 05                        | text   |
+      | Day        | 18                        | text   |
+      | ID type    | Canadian driver's licence | select |
+      | ID number  | 1234567                   | text   |
+    Then I click on next
+    And I should see the "warning" message "was found with similar name and birthdate" on the "top"
+    And The field "First name" should have the "warning" message "There's already a client with this name"

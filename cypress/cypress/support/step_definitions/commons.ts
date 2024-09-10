@@ -34,12 +34,14 @@ When('I click on the {string} button', (name: string) => {
   buttonClick(name, ['input', 'button', 'cds-button', 'cds-side-nav-link']);
 });
 
-When('I click on next', () => {
-  buttonClick('Next', ['input', 'button', 'cds-button', 'cds-side-nav-link']);
+When('I click on next', () => {  
+  cy.intercept('POST',  `**/api/clients/matches`).as('matches');
+  buttonClick('Next', ['input', 'button', 'cds-button', 'cds-side-nav-link'],'matches');
 });
 
 When('I submit', () => {
-  buttonClick('Create client', ['input', 'button', 'cds-button', 'cds-side-nav-link'],false,'div.form-footer-group-buttons');
+  cy.intercept('POST',  `**/api/clients/submissions/staff`).as('submit');
+  buttonClick('Create client', ['input', 'button', 'cds-button', 'cds-side-nav-link'],'submit',61,'div.form-footer-group-buttons');
 });
 
 /* Text Input Steps */
@@ -80,7 +82,37 @@ Then(
         Step(this, `I type "${value}" into the "${fieldLabel}" form input`);        
       });
     }
+});
 
+Then('I replace the {string} with {string} form input', (input: string, text: string) => {
+  cy.contains('label', input).then(($label) => {
+    cy.wrap($label.parent().parent())
+      .find('input[id*="input"]')
+      .then(($input) => {
+        cy.wrap($input)
+          .clear()
+          .type(text)
+          .should('have.value', text)
+          .focus();
+      });
+  });
+});
+
+Then(
+  'I replace the {string} with {string} form input for the {string}',
+  (fieldLabel: string, value: string, sectionTitle: string) => {
+
+    if (sectionTitle === 'Primary location' || sectionTitle === 'Primary contact') {      
+      cy.get('div.frame-01:first').within(() => {
+        Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
+      });
+    } else {      
+      cy.get('cds-accordion cds-accordion-item')
+      .shadow()
+      .contains('div', sectionTitle).parent().parent().within(() => {
+        Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
+      });
+    }
 });
 
 /* Area Input Steps */
@@ -188,12 +220,13 @@ Then('I type {string} and select {string} from the {string} form autocomplete', 
     const parentShadow = $label[0].getRootNode();
     cy.wrap(parentShadow)
       .find('input')
-      .type(search, { delay: 0 })
+      .type(search, { delay: 150 })
       .then(() => {
         cy.wait('@autocomplete');
         cy.wrap(parentShadow)
           .parent()
           .find(`cds-combo-box-item[data-value="${value}"], cds-combo-box-item[data-value^="${value}"]`)
+          .first()
           .then(($item) => {
             if ($item.length) {
               cy.wrap($item).click();
@@ -233,6 +266,8 @@ Then('I fill the form as follows', (table: DataTable) => {
     const [fieldName, value, kind] = row;
     if (kind === 'text') {
       Step(this, `I type "${value}" into the "${fieldName.trim()}" form input`);
+    }else if (kind === 'textreplace') {
+      Step(this, `I replace the "${fieldName.trim()}" with "${value}" form input`);
     } else if (kind === 'select') {
       Step(this, `I select "${value}" from the "${fieldName.trim()}" form input`);
     } else if (kind === 'autocomplete') {
@@ -248,6 +283,8 @@ Then('I fill the {string} address with the following', (location: string, table:
     const [fieldName, value, kind] = row;
     if (kind === 'text') {
       Step(this, `I type "${value}" into the "${fieldName.trim()}" form input for the "${location}"`);
+    } else if (kind === 'textreplace') {
+      Step(this, `I replace the "${fieldName.trim()}" with "${value}" form input for the "${location}"`);
     } else if (kind === 'select') {
       Step(this, `I select "${value}" from the "${fieldName.trim()}" form input for the "${location}"`);
     } else if (kind === 'autocomplete') {
@@ -263,12 +300,14 @@ Then('I fill the {string} information with the following', (contactName: string,
     const [fieldName, value, kind] = row;
     if (kind === 'text') {
       Step(this, `I type "${value}" into the "${fieldName.trim()}" form input for the "${contactName.trim()}"`);
+    } else if (kind === 'textreplace') {
+      Step(this, `I replace the "${fieldName.trim()}" with "${value}" form input for the "${contactName}"`);
     } else if (kind === 'select') {
       Step(this, `I select "${value}" from the "${fieldName.trim()}" form input for the "${contactName.trim()}"`);
     } else if (kind === 'autocomplete') {
       Step(this, `I type "${value}" and select "${value}" from the "${fieldName.trim()}" form autocomplete for the "${contactName.trim()}"`);
     } else if (kind === 'multiselect') {
-      Step(this, `I select "${value}" from the "${fieldName.trim()}" multiselect`);
+      Step(this, `I select "${value}" from the "${fieldName.trim()}" multiselect for the "${contactName.trim()}"`);
     }
   });
 });
@@ -312,13 +351,10 @@ Then(
 
 /* This block is dedicated to the actual code */
 
-const buttonClick = (name: string, kinds: string[], waitForMatch: boolean = false,  selector: string = 'body') => {
+const buttonClick = (name: string, kinds: string[], waitForIntercept: string = null, waitForTime : number = 15,  selector: string = 'body') => {
   if (kinds.length === 0) {
     throw new Error(`Button with label "${name}" not found.`);
   }
-
-  if(waitForMatch)
-    cy.intercept('POST',  `**/api/clients/matches`).as('matches');
 
   let targetElement: JQuery<HTMLElement> = null;
 
@@ -333,11 +369,12 @@ const buttonClick = (name: string, kinds: string[], waitForMatch: boolean = fals
 
       if (targetElement.length > 0) {
         // If a matching element with the correct text is found, click it
-        cy.wrap(targetElement).click();
-        if(waitForMatch)
-          cy.wait('@matches');
-        else
-          cy.wait(15);
+        cy.wrap(targetElement).click();        
+        
+        if(waitForIntercept)
+          cy.wait(`@${waitForIntercept}`,{ timeout: waitForTime * 1000 });
+        else if(waitForTime)
+          cy.wait(waitForTime);
       }
     })
 
