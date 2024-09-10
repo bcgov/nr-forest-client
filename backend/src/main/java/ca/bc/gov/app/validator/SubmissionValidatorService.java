@@ -36,7 +36,7 @@ public class SubmissionValidatorService {
   private final List<ForestClientValidator<ClientLocationDto>> locationValidators;
   private final SubmissionRepository submissionRepository;
   private final ForestClientConfiguration configuration;
-  
+
   /**
    * Validates the overall submission data and structure of a {@link ClientSubmissionDto} object.
    * <p>
@@ -90,37 +90,39 @@ public class SubmissionValidatorService {
       startTime = endTime.minus(configuration.getIdirSubmissionTimeWindow());
       maxSubmissions = configuration.getIdirMaxSubmissions();
       submissionTimeWindow = configuration.getIdirSubmissionTimeWindow().toHours() + " hours";
-    } 
+    }
     else if ("BCSC".equalsIgnoreCase(provider) || "BCEIDBUSINESS".equalsIgnoreCase(provider)) {
       startTime = endTime.minus(configuration.getOtherSubmissionTimeWindow());
       maxSubmissions = configuration.getOtherMaxSubmissions();
       submissionTimeWindow = configuration.getOtherSubmissionTimeWindow().toDays() + " days";
-    } 
+    }
     else {
       return Mono.error(new IllegalArgumentException("Invalid provider " + provider));
     }
 
     return submissionRepository
         .countBySubmissionDateBetweenAndCreatedByIgnoreCase(
-          startTime, 
-          endTime, 
+          startTime,
+          endTime,
           userId
         )
-        .flatMap(count -> {
-            if (count >= maxSubmissions) {
-                return Mono.error(
-                        new ValidationException(
-                              List.of(new ValidationError(
-                                            "submissionLimit", 
-                                            "You can make up to " + maxSubmissions + " submissions in " + submissionTimeWindow +
-                                            ". Resubmit this application in " + submissionTimeWindow + "."))
-                              )
-                        );
-            }
-            return Mono.justOrEmpty((Void) null);
-        });
+        .doOnNext(count -> log.info("User {} has made {} submissions in the last {}", userId, count, submissionTimeWindow))
+        .filter(count -> count >= maxSubmissions)
+        .flatMap(count -> Mono.error(
+                new ValidationException(
+                    List.of(
+                        new ValidationError(
+                            "submissionLimit",
+                            "You can make up to " + maxSubmissions + " submissions in "
+                                + submissionTimeWindow +
+                                ". Resubmit this application in " + submissionTimeWindow + "."
+                        )
+                    )
+                )
+            )
+        );
   }
-  
+
   private String extractPrefix(String input) {
       int backslashIndex = input.indexOf('\\');
       if (backslashIndex != -1) {
@@ -130,7 +132,7 @@ public class SubmissionValidatorService {
       }
   }
 
-  
+
   /**
    * Validates the comprehensive data of a {@link ClientSubmissionDto} against various validation
    * rules.
@@ -272,11 +274,8 @@ public class SubmissionValidatorService {
           )
       );
     }
-    
-    return checkSubmissionLimit(request.userId())
-            .doOnNext(v -> log.info("Submission limit check passed for user: {}", request.userId()))
-            .doOnError(e -> log.error("Error during submission limit check: {}", e.getMessage()))
-            .thenReturn(request);
+
+    return checkSubmissionLimit(request.userId()).then().cast(ClientSubmissionDto.class);
   }
 
   /**

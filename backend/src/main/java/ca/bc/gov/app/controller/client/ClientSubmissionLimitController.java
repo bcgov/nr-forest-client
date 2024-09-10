@@ -1,5 +1,6 @@
 package ca.bc.gov.app.controller.client;
 
+import ca.bc.gov.app.exception.ValidationException;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
