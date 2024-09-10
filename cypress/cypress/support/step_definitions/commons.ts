@@ -316,9 +316,15 @@ Then('I fill the {string} information with the following', (contactName: string,
 
 Then('I add a new location called {string}', (location: string) => {
   Step(this,'I click on the "Add another location" button');
-  cy.wait(100);
+
+  cy.get('cds-accordion cds-accordion-item')
+  .shadow()
+  .contains('div', "Additional location").should('be.visible');
+
   Step(this,`I type "${location}" into the "Location name" form input for the "Additional location"`);
-  cy.wait(100);
+  cy.get('cds-accordion cds-accordion-item')
+  .shadow()
+  .contains('div', location).should('be.visible');
 });
 
 /* Error messages */
