@@ -24,12 +24,7 @@ Feature: Staff Screens
       | Primary phone number            | 2501231568      | text          |
       | Secondary phone number          | 2501233568      | text          |
       | Fax                             | 2501239568      | text          |
-      | Street address or PO box        | 2975 Jutland Rd | autocomplete  |
-    Then I add a new location called "Home"
-    And I fill the "Home" address with the following
-      | Field name                      | Value           | Type          |
-      | Street address or PO box        | 2975 Jutland Rd | autocomplete  |
-      | Notes                           | Don't mail this address  | textbox       |
+      | Street address or PO box        | 2975 Jutland Rd | autocomplete  |    
     Then I click on next
     And I fill the "Primary contact" information with the following
       | Field name                      | Value           | Type          |      
@@ -58,11 +53,7 @@ Feature: Staff Screens
       | Primary phone number            | 2501234568      | text          |
       | Secondary phone number          | 2501234568      | text          |
       | Fax                             | 2501234568      | text          |
-      | Notes                           | This is a test  | textbox       |
-    Then I add a new location called "Home"
-    And I fill the "Home" address with the following
-      | Field name                      | Value           | Type          |
-      | Street address or PO box        | 1515 Blanshard  | autocomplete  |
+      | Notes                           | This is a test  | textbox       |    
     Then I click on next
     And I fill the "Primary contact" information with the following
       | Field name                      | Value           | Type          |      
