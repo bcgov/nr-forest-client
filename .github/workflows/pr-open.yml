@@ -438,3 +438,102 @@ jobs:
           name: cypress-videos
           path: cypress/cypress/videos
           retention-days: 7
+
+  clean-tools:
+    name: Clean Tools after tests
+    needs: [cypress-run]
+    environment: dev
+    if: always()    
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stop the Legacy Service
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=0
+
+      - name: Remove the PR database
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This removes a new pluggable database, user and service for the PR
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec $POD_NAME -- /opt/oracle/removeDatabase "THE" "PR_${{ github.event.number }}"
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
+
+      - name: Create the PR database
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This creates a new pluggable database for the PR
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools  -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec $POD_NAME -- /opt/oracle/createDatabase PR_${{ github.event.number }}
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
+
+      - name: Create the PR user
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This creates a new pluggable database for the PR
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec $POD_NAME -- /opt/oracle/createAppUser "THE" "${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}" "PR_${{ github.event.number }}"
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
+
+      - name: Migrate the PR database
+        continue-on-error: true
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          # Escape slashes and other special characters
+          ESCAPED_BRANCH_NAME=$(echo "$BRANCH_NAME" | sed 's/[\/&]/\\&/g')
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          oc create job --from=cronjob/nr-forest-client-tools-migratedb migrate-pr${{ github.event.number }}-${{ github.run_attempt }}-$(date +%s) --dry-run=client -o yaml | sed "s/value: main/value: ${ESCAPED_BRANCH_NAME}/" | sed "s/value: \"0\"/value: \"${{ github.event.number }}\"/" | oc apply -f -
+
+      - name: Start the Legacy Service
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=1

@@ -28,6 +28,11 @@ Then('I wait for the text {string} to appear', (text: string) => {
   cy.contains(text).should('be.visible');
 });
 
+Then('I wait for the text {string} to appear after {string}', (text: string,waitFor: string) => {
+  cy.wait(`@${waitFor}`,{ timeout: 10 * 1000 });
+  cy.contains(text).should('be.visible');
+});
+
 /* Button Step */
 
 When('I click on the {string} button', (name: string) => {
