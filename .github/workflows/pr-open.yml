@@ -82,9 +82,36 @@ jobs:
           build_args: |
             APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
 
+  pre-tools:
+    name: Pre Deploy Tools
+    needs: [build-legacydb, vars]
+    environment: dev
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scale down legacy
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=0 -n ${{ secrets.OC_NAMESPACE }}
+          undesired_replicas=0  
+
+          while true; do
+            available_replicas=$(oc get dc/nr-forest-client-${{ github.event.number }}-legacy -n ${{ secrets.OC_NAMESPACE }} -o jsonpath='{.status.availableReplicas}')
+            
+            if [[ "$available_replicas" -ge "$undesired_replicas" ]]; then
+              echo "DeploymentConfig ${{ secrets.OC_NAMESPACE }}-${{ github.event.number }}-legacy is now available with $available_replicas replicas."
+              break
+            fi
+            
+            echo "Waiting... ($available_replicas pods available)"
+            sleep 5
+          done
+
   deploy-tools:
     name: Deploy Tools
-    needs: [build-legacydb, vars]
+    needs: [pre-tools, build-legacydb, vars]
     environment: tools
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -182,7 +209,7 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
           oc create job --from=cronjob/nr-forest-client-tools-migratedb migrate-pr${{ github.event.number }}-${{ github.run_attempt }}-$(date +%s) --dry-run=client -o yaml | sed "s/value: main/value: ${ESCAPED_BRANCH_NAME}/" | sed "s/value: \"0\"/value: \"${{ github.event.number }}\"/" | oc apply -f -
-            
+
   deploy:
     name: Deploy Application
     needs: [deploy-tools, builds, vars]
