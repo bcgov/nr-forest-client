@@ -1,6 +1,14 @@
 import { Then, Given, When, DataTable, Step, BeforeStep } from "@badeball/cypress-cucumber-preprocessor";
 
+let idir = true;
+
 BeforeStep(() => { cy.wait(10); });
+BeforeStep({ tags: "@loginAsBCeID or @loginAsBCSC" }, function () {
+  idir = false;
+});
+BeforeStep({ tags: "@loginAsEditor or @loginAsViewer or @loginAsAdmin" }, function () {
+  idir = true;
+});
 
 Given('I visit {string}', (url: string) => {
   cy.visit(url).then(() => {
@@ -33,15 +41,23 @@ Then('I wait for the text {string} to appear after {string}', (text: string,wait
   cy.contains(text).should('be.visible');
 });
 
+Then('I am a {string} user', (userType: string) => {});
+
 /* Button Step */
 
 When('I click on the {string} button', (name: string) => {
-  buttonClick(name, ['input', 'button', 'cds-button', 'cds-side-nav-link']);
+  buttonClick(name, ['input', 'button', 'cds-button', 'cds-modal-footer-button', 'cds-side-nav-link']);
 });
 
 When('I click on next', () => {  
-  cy.intercept('POST',  `**/api/clients/matches`).as('matches');  
-  cy.get('cds-button[data-text="Next"]').click().then(() => {cy.wait('@matches',{ timeout: 10 * 1000 });});
+  
+  if (!idir) {
+    cy.get('cds-button[data-text="Next"]').click().then(() => {cy.wait(15);});
+  } else {
+    cy.intercept('POST',  `**/api/clients/matches`).as('matches');  
+    cy.get('cds-button[data-text="Next"]').click().then(() => {cy.wait('@matches',{ timeout: 10 * 1000 });});
+  }
+  
 });
 
 When('I submit', () => {
@@ -214,7 +230,7 @@ Then(
 
 Then('I type {string} and select {string} from the {string} form autocomplete', (search: string, value: string, input: string) => {
 
-  if(input === 'Client name') {
+  if(input === 'Client name' || input === 'BC registered business name') {
     cy.intercept('GET',  `**/api/clients/**`).as('autocomplete');
     cy.intercept('GET',  `**/api/opendata/**`).as('autocomplete');
   } else if(input === 'Street address or PO box') {
@@ -262,6 +278,14 @@ Then(
       });
     }
 
+});
+
+/* Radio and Check Input Steps */
+
+Then('I mark {string} on the {string} {string} input', (value: string, input: string, kind: string) => {
+  cy.get(`cds-radio-button-group[legend-text="${input}"]`)
+    .find(`cds-radio-button[label-text="${value}"]`)
+    .click();
 });
 
 /* Data tables */
@@ -373,32 +397,30 @@ const buttonClick = (
     throw new Error(`Button with label "${name}" not found.`);
   }
 
-  let targetElement: JQuery<HTMLElement> = null;
+   // Build a selector string that matches any of the button kinds
+  const kindSelector = kinds.join(',');
 
-  cy.get(selector).then((rootElement) => {
-    kinds.forEach((kind) => {      
-      // Find all elements that match the selector type
-      targetElement = rootElement.find(kind).filter((index, element) => {
-        return  Cypress.$(element).attr('data-text')?.includes(name) ||
-          Cypress.$(element).html().includes(name) ||
-          Cypress.$(element).text().includes(name) ||
-          Cypress.$(element).val().toString().includes(name);
-      });
-
-      if (targetElement.length > 0) {
-        // If a matching element with the correct text is found, click it
-        cy.wrap(targetElement).click();        
-        
-        if(waitForIntercept)
-          cy.wait(`@${waitForIntercept}`,{ timeout: waitForTime * 1000 });
-        else if(waitForTime)
-          cy.wait(waitForTime);
-      }else{
-        //throw new Error(`Button with label "${name}" not found.`);
-      }
+  cy.get(selector)
+    .find(kindSelector)
+    .filter(':visible') // Only consider visible buttons
+    .filter((index, element) => {
+      // Check for the button label in various places
+      return Cypress.$(element).attr('data-text')?.includes(name) ||
+            Cypress.$(element).html().includes(name) ||
+            Cypress.$(element).text().includes(name) ||
+            Cypress.$(element).val()?.toString().includes(name);
     })
-
-  });
+    .first() // Get the first matching, visible button
+    .should('be.visible') // Ensure it's visible before clicking
+    .click() // Click the button
+    .then(() => {
+      // Handle waiting for intercept or time after clicking
+      if (waitForIntercept) {
+        cy.wait(`@${waitForIntercept}`, { timeout: waitForTime * 1000 });
+      } else if (waitForTime) {
+        cy.wait(waitForTime);
+      }
+    });
 }
 
 const checkForActionableNotification = (message: string, location: string, kind: string) => {
