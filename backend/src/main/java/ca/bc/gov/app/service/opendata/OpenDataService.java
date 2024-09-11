@@ -2,7 +2,6 @@ package ca.bc.gov.app.service.opendata;
 
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.opendata.Feature;
 import ca.bc.gov.app.dto.opendata.OpenData;

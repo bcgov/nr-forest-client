@@ -243,6 +243,10 @@ describe("Staff Form", () => {
         "cognito:groups": ["CLIENT_ADMIN"],
       });
 
+      cy.intercept("GET", "**/api/submission-limit", {
+        fixture: "submissionLimitValid.json"
+      }).as("getValidSubmissionLimit");
+
       // Check if the Create client button is visible
       cy.get("#menu-list-staff-form").should("be.visible").click();
 
@@ -282,6 +286,70 @@ describe("Staff Form", () => {
 
     it("should not display any Client type specific input fields", () => {
       cy.get("#firstName").should("not.exist");
+    });
+
+  });
+
+  describe("when the user clicks the Create client button and submission limit is reached", () => {
+    beforeEach(() => {
+      cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
+        given_name: "James",
+        family_name: "Baxter",
+        "cognito:groups": ["CLIENT_ADMIN"],
+      });
+
+      cy.intercept("GET", "**/api/submission-limit", (req) => {
+        console.log("Intercepting /api/submission-limit");
+        req.reply({
+          statusCode: 400,
+          headers: {
+            "content-type": "application/json;charset=UTF-8"
+          },
+          body: [
+            {
+              fieldId: "submissionLimit",
+              errorMsg: "You can make up to 20 submissions in 24 hours. Resubmit this application in 24 hours."
+            }
+          ]
+        });
+      }).as("getIdirInvalidSubmissionLimit");
+
+      cy.get("#menu-list-staff-form").should("be.visible").click();
+
+      cy.intercept("GET", "**/api/codes/countries/CA/provinces?page=0&size=250", {
+        fixture: "provinces.json",
+      }).as("getProvinces");
+
+      cy.intercept(
+        "GET",
+        "/api/addresses?country=CA&maxSuggestions=10&searchTerm=*",
+        {
+          fixture: "addressSearch.json",
+        }
+      ).as("searchAddress");
+
+      cy.intercept("GET", "/api/addresses/V8T5J9", {
+        fixture: "address.json",
+      }).as("getAddress");
+
+      cy.intercept("GET", "/api/codes/contact-types?page=0&size=250", {
+        fixture: "roles.json",
+      }).as("getContactTypes");
+
+      cy.intercept("GET", "/api/codes/identification-types", {
+        fixture: "identificationTypes.json",
+      }).as("getIdentificationTypes");
+
+      cy.intercept("**/api/opendata/*", {
+        fixture: "firstNations.json",
+      }).as("getFirstNations");
+    });
+
+    it("should display a global error", () => {
+      cy.get("#serverValidationError")
+        .should("be.visible")
+        .and("have.attr", "kind", "error")
+        .shadow();
     });
 
   });

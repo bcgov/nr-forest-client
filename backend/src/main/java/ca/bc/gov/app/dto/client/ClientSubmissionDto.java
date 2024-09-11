@@ -7,8 +7,7 @@ import lombok.With;
 public record ClientSubmissionDto(
     ClientBusinessInformationDto businessInformation,
     ClientLocationDto location,
-    String userId,
-    String userLastName) {
+    String userId) {
   /**
    * Returns a map containing the description of the client's business information.
    *

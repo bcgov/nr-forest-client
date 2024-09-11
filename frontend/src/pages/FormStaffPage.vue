@@ -7,7 +7,7 @@ import "@carbon/web-components/es/components/tooltip/index";
 // Composables
 import { useRouter } from "vue-router";
 import { useEventBus } from "@vueuse/core";
-import { usePost } from "@/composables/useFetch";
+import { useFetchTo, usePost } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 import { isSmallScreen, isTouchScreen } from "@/composables/useScreenSize";
 import {
@@ -398,6 +398,7 @@ const goToStep = (index: number, skipCheck: boolean = false) => {
 };
 
 const submitBtnDisabled = ref(false);
+let nextBtnDisabled = ref(false);
 
 const submit = () => {
   revalidateBus.emit();
@@ -467,6 +468,37 @@ const submit = () => {
     }
   }, 1);
 };
+
+const submissionLimitCheck = ref([]);
+
+const { error: submissionLimitError, 
+        handleErrorDefault: submissionLimitHandleError 
+      } = useFetchTo(
+  "/api/submission-limit",
+  submissionLimitCheck,
+  {
+    skipDefaultErrorHandling: true,
+  }
+);
+
+watch(submissionLimitError, () => {
+  if (submissionLimitError.value.response?.status === 400) {
+    const validationErrors: ValidationMessageType[] =
+      submissionLimitError.value.response?.data;
+
+    validationErrors.forEach((errorItem: ValidationMessageType) =>
+      notificationBus.emit({
+        fieldId: "server.validation.error",
+        fieldName: "",
+        errorMsg: errorItem.errorMsg,
+      })
+    );
+
+    nextBtnDisabled.value = true;
+    return;
+  }
+  submissionLimitHandleError();
+});
 </script>
 
 <template>
@@ -671,7 +703,7 @@ const submit = () => {
                   id="nextBtn"
                   kind="primary"
                   size="lg"
-                  :disabled="progressData[currentTab].valid === false"
+                  :disabled="progressData[currentTab].valid === false || nextBtnDisabled"
                   v-on:click="onNext"
                   data-test="wizard-next-button"
                 >

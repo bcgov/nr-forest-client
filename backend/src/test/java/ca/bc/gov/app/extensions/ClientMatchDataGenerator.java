@@ -335,7 +335,6 @@ public class ClientMatchDataGenerator {
             idProvince
         ),
         getLocationDto(addressDto, contactDto),
-        null,
         null
     );
   }

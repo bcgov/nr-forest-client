@@ -1,0 +1,15 @@
+{
+  "mappings": [
+    {
+      "name": "Valid Submission Limit for IDIR",
+      "request": {
+        "url": "/api/submission-limit",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "body": "OK"
+      }
+    }
+  ]
+}
