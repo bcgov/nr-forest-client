@@ -466,8 +466,8 @@ jobs:
           path: cypress/cypress/videos
           retention-days: 7
 
-  clean-tools-1:
-    name: Clean Tools after tests
+  scale-down-after:
+    name: Scale down legacy
     needs: [cypress-run]
     environment: dev
     if: always()    
@@ -494,9 +494,9 @@ jobs:
             sleep 5
           done
 
-  clean-tools-2:
-    name: Clean Tools after tests
-    needs: [clean-tools-1]
+  recreate-database:
+    name: Recreate database
+    needs: [scale-down-after]
     environment: tools
     if: always()    
     runs-on: ubuntu-22.04
@@ -579,9 +579,9 @@ jobs:
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
           oc create job --from=cronjob/nr-forest-client-tools-migratedb migrate-pr${{ github.event.number }}-${{ github.run_attempt }}-$(date +%s) --dry-run=client -o yaml | sed "s/value: main/value: ${ESCAPED_BRANCH_NAME}/" | sed "s/value: \"0\"/value: \"${{ github.event.number }}\"/" | oc apply -f -
   
-  clean-tools:
-    name: Clean Tools after tests
-    needs: [clean-tools-2]
+  scale-up-legacy:
+    name: Scale up legacy
+    needs: [recreate-database]
     environment: dev
     if: always()    
     runs-on: ubuntu-22.04
@@ -594,4 +594,3 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
           oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=1
-

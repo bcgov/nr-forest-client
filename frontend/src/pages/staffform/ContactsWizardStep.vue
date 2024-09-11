@@ -242,10 +242,14 @@ const contactName = (contact: Contact) => {
   />
 
   <hr />
-  <h3>Additional contacts</h3>
+  <h3 data-text="Additional contacts">Additional contacts</h3>
   <div class="frame-01" v-if="otherContacts.length > 0" aria-live="off">
     <cds-accordion v-for="(contact, index) in otherContacts" :key="contact.index">
-      <div :data-scroll="`contact-${index + 1}-heading`" class="header-offset"></div>
+      <div
+        :data-scroll="`contact-${index + 1}-heading`"
+        :data-text="`${contactName(contact) || ''}`"
+        class="header-offset"
+      ></div>
       <cds-accordion-item
         :open="open[contact.index]"
         :title="contactName(contact)"
