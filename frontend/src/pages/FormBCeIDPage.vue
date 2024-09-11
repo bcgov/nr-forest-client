@@ -581,6 +581,7 @@ const setIndividualValidInd = (valid: boolean) => {
               :disabled="isFirst"
               v-on:click="onBack"
               data-test="wizard-back-button"
+              data-text="Back"
             >
             <span>Back</span>
           </cds-button>
@@ -593,6 +594,7 @@ const setIndividualValidInd = (valid: boolean) => {
               v-on:click="onNext"
               :disabled="progressData[currentTab].valid === false"
               data-test="wizard-next-button"
+              data-text="Next"
               >
               <span>Next</span>
               <ArrowRight16 slot="icon" />
@@ -605,6 +607,7 @@ const setIndividualValidInd = (valid: boolean) => {
           <cds-button
             v-if="isLast && !endAndLogOut && !mailAndLogOut"
               data-test="wizard-submit-button"
+              data-text="Submit"
               kind="primary"
               size="lg"
               @click.prevent="submit"
@@ -620,6 +623,7 @@ const setIndividualValidInd = (valid: boolean) => {
             size="lg"
             v-show="!isLast && (endAndLogOut || mailAndLogOut)"
             @click.prevent="processAndLogOut"
+            :data-text="`${endAndLogOut ? 'End application' : 'Receive email'} and logout`"
           >
             <span
               >{{ endAndLogOut ? 'End application' : 'Receive email' }} and
