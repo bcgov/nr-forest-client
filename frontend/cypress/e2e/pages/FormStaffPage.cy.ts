@@ -182,7 +182,7 @@ describe("Staff Form", () => {
         .should("contain", "Create client");
     });
 
-    /*it("CLIENT_ADMIN should be able to see the button", () => {
+    it("CLIENT_ADMIN should be able to see the button", () => {
         cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
           given_name: "James",
           family_name: "Baxter",
@@ -231,7 +231,7 @@ describe("Staff Form", () => {
       cy.get("#menu-list-staff-form").should("be.visible").click();
 
       cy.get("h1").should("be.visible").should("contain", " Create client ");
-    });*/
+    });
 
   });
 
@@ -319,9 +319,10 @@ describe("Staff Form", () => {
     });
 
     it("should display a global error", () => {
-      cy.get(".top-notification cds-actionable-notification")
+      cy.get(".top-notification")
         .should("be.visible")
-        .and("have.attr", "kind", "error");
+        .and("have.attr", "kind", "error")
+        .shadow();
     });
 
   });
