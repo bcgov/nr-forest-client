@@ -40,8 +40,8 @@ When('I click on the {string} button', (name: string) => {
 });
 
 When('I click on next', () => {  
-  cy.intercept('POST',  `**/api/clients/matches`).as('matches');
-  buttonClick('Next', ['input', 'button', 'cds-button', 'cds-side-nav-link'],'matches');
+  cy.intercept('POST',  `**/api/clients/matches`).as('matches');  
+  cy.get('cds-button[data-text="Next"]').click().then(() => {cy.wait('@matches',{ timeout: 10 * 1000 });});
 });
 
 When('I submit', () => {
@@ -326,7 +326,7 @@ Then('I add a new location called {string}', (location: string) => {
   .shadow()
   .contains('div', "Additional location").should('be.visible');
 
-  Step(this,`I type "${location}" into the "Location name" form input for the "Additional location"`);
+  Step(this,`I type "${location}" into the "Location name" form input for the "Additional location"`);  
   cy.get('cds-accordion cds-accordion-item')
   .shadow()
   .contains('div', location).should('be.visible');
@@ -376,19 +376,9 @@ const buttonClick = (
   let targetElement: JQuery<HTMLElement> = null;
 
   cy.get(selector).then((rootElement) => {
-    kinds.forEach((kind) => {
-
-      cy.log(`Checking for element: ${kind}`);
-
+    kinds.forEach((kind) => {      
       // Find all elements that match the selector type
       targetElement = rootElement.find(kind).filter((index, element) => {
-
-        cy.log(`Checking element: ${element} : ${Cypress.$(element).attr('data-text')?.includes(name)}`);
-        cy.log(`Checking element: ${element} : ${Cypress.$(element).html().includes(name)}`);
-        cy.log(`Checking element: ${element} : ${Cypress.$(element).text().includes(name)}`);
-        cy.log(`Checking element: ${element} : ${Cypress.$(element).val().toString().includes(name)}`);
-
-
         return  Cypress.$(element).attr('data-text')?.includes(name) ||
           Cypress.$(element).html().includes(name) ||
           Cypress.$(element).text().includes(name) ||
