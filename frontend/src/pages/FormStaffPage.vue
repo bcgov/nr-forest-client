@@ -639,6 +639,7 @@ const submit = () => {
                 :disabled="!isFirst"
                 v-on:click="onCancel"
                 data-test="wizard-cancel-button"
+                data-text="Cancel"
               >
                 <span>Cancel</span>
               </cds-button>
@@ -650,6 +651,7 @@ const submit = () => {
                 :disabled="isFirst"
                 v-on:click="onBack"
                 data-test="wizard-back-button"
+                data-text="Back"
               >
                 <span>Back</span>
               </cds-button>
@@ -657,6 +659,7 @@ const submit = () => {
               <cds-button
                 v-if="isLast"
                   data-test="wizard-submit-button"
+                  data-text="Submit"
                   kind="primary"
                   size="lg"
                   @click.prevent="submit"
@@ -674,6 +677,7 @@ const submit = () => {
                   :disabled="progressData[currentTab].valid === false"
                   v-on:click="onNext"
                   data-test="wizard-next-button"
+                  data-text="Next"
                 >
                   <span>Next</span>
                   <ArrowRight16 slot="icon" />

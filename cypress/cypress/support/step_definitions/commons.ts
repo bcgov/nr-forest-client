@@ -46,7 +46,7 @@ When('I click on next', () => {
 
 When('I submit', () => {
   cy.intercept('POST',  `**/api/clients/submissions/staff`).as('submit');
-  buttonClick('Create client', ['input', 'button', 'cds-button', 'cds-side-nav-link'],'submit',61,'div.form-footer-group-buttons');
+  cy.get('cds-button[data-text="Submit"]').click().then(() => {cy.wait('@submit',{ timeout: 60 * 1000 });});
 });
 
 /* Text Input Steps */
@@ -362,7 +362,13 @@ Then(
 
 /* This block is dedicated to the actual code */
 
-const buttonClick = (name: string, kinds: string[], waitForIntercept: string = null, waitForTime : number = 15,  selector: string = 'body') => {
+const buttonClick = (
+  name: string, 
+  kinds: string[], 
+  waitForIntercept: string = null, 
+  waitForTime : number = 15,  
+  selector: string = 'body'
+) => {
   if (kinds.length === 0) {
     throw new Error(`Button with label "${name}" not found.`);
   }
@@ -371,9 +377,20 @@ const buttonClick = (name: string, kinds: string[], waitForIntercept: string = n
 
   cy.get(selector).then((rootElement) => {
     kinds.forEach((kind) => {
+
+      cy.log(`Checking for element: ${kind}`);
+
       // Find all elements that match the selector type
       targetElement = rootElement.find(kind).filter((index, element) => {
-        return Cypress.$(element).html().includes(name) ||
+
+        cy.log(`Checking element: ${element} : ${Cypress.$(element).attr('data-text')?.includes(name)}`);
+        cy.log(`Checking element: ${element} : ${Cypress.$(element).html().includes(name)}`);
+        cy.log(`Checking element: ${element} : ${Cypress.$(element).text().includes(name)}`);
+        cy.log(`Checking element: ${element} : ${Cypress.$(element).val().toString().includes(name)}`);
+
+
+        return  Cypress.$(element).attr('data-text')?.includes(name) ||
+          Cypress.$(element).html().includes(name) ||
           Cypress.$(element).text().includes(name) ||
           Cypress.$(element).val().toString().includes(name);
       });
@@ -386,6 +403,8 @@ const buttonClick = (name: string, kinds: string[], waitForIntercept: string = n
           cy.wait(`@${waitForIntercept}`,{ timeout: waitForTime * 1000 });
         else if(waitForTime)
           cy.wait(waitForTime);
+      }else{
+        //throw new Error(`Button with label "${name}" not found.`);
       }
     })
 
