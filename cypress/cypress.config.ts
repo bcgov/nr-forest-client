@@ -56,5 +56,9 @@ export default defineConfig({
   },
   includeShadowDom: true,
   viewportHeight: 1080,
-  viewportWidth: 1920
+  viewportWidth: 1920,
+  retries: {    
+    runMode: 3,
+    openMode: 1,
+  },
 });
