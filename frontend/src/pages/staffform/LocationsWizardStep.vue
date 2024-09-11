@@ -286,13 +286,13 @@ const cdsAccordionItemBeingtoggled = (event: any, address: Address) => {
   <div class="frame-01" v-if="otherAddresses.length > 0" aria-live="off">
     <cds-accordion v-for="(address, index) in otherAddresses" :key="address.index">
       <div
-        :data-text="`${locationNames[address.index] || 'Additional location'}`"
+        :data-text="`${address.locationName || 'Additional location'}`"
         :data-scroll="`address-${index + 1}-heading`"
         class="header-offset"
       ></div>
       <cds-accordion-item
         :open="open[address.index]"
-        :title="locationNames[address.index] || 'Additional location'"
+        :title="address.locationName || 'Additional location'"
         size="lg"
         class="grouping-13"
         :data-focus="`address-${index + 1}-heading`"
