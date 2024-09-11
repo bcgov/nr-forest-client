@@ -515,7 +515,7 @@ const isProcessing = computed(() => {
         title="You are not authorized to modify client information"      
         >    
         <div>
-          <p>To change your role please, email Client Admin at 
+          <p>To change your role, email Client Admin at 
             <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span>
           </p>
         </div>
