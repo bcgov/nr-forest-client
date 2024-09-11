@@ -466,7 +466,7 @@ jobs:
           path: cypress/cypress/videos
           retention-days: 7
 
-  clean-tools:
+  clean-tools-1:
     name: Clean Tools after tests
     needs: [cypress-run]
     environment: dev
@@ -481,6 +481,27 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
           oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=0
+          undesired_replicas=0
+          while true; do
+            available_replicas=$(oc get dc/nr-forest-client-${{ github.event.number }}-legacy -n ${{ secrets.OC_NAMESPACE }} -o jsonpath='{.status.availableReplicas}')
+            
+            if [[ "$available_replicas" -ge "$undesired_replicas" ]]; then
+              echo "DeploymentConfig ${{ secrets.OC_NAMESPACE }}-${{ github.event.number }}-legacy is now available with $available_replicas replicas."
+              break
+            fi
+            
+            echo "Waiting... ($available_replicas pods available)"
+            sleep 5
+          done
+
+  clean-tools-2:
+    name: Clean Tools after tests
+    needs: [clean-tools-1]
+    environment: tools
+    if: always()    
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Remove the PR database
         continue-on-error: true
@@ -557,6 +578,15 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
           oc create job --from=cronjob/nr-forest-client-tools-migratedb migrate-pr${{ github.event.number }}-${{ github.run_attempt }}-$(date +%s) --dry-run=client -o yaml | sed "s/value: main/value: ${ESCAPED_BRANCH_NAME}/" | sed "s/value: \"0\"/value: \"${{ github.event.number }}\"/" | oc apply -f -
+  
+  clean-tools:
+    name: Clean Tools after tests
+    needs: [clean-tools-2]
+    environment: dev
+    if: always()    
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Start the Legacy Service
         continue-on-error: true
@@ -564,3 +594,4 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
           oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=1
+
