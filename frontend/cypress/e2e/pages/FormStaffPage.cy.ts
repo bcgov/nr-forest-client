@@ -319,7 +319,7 @@ describe("Staff Form", () => {
     });
 
     it("should display a global error", () => {
-      cy.get(".top-notification")
+      cy.get("#serverValidationError")
         .should("be.visible")
         .and("have.attr", "kind", "error")
         .shadow();
