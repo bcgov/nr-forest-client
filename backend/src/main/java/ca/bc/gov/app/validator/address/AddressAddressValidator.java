@@ -31,13 +31,20 @@ public class AddressAddressValidator implements ForestClientValidator<ClientAddr
       return Mono.just(
           new ValidationError(fieldName, "You must enter a street address or PO box number."));
     }
+    
     if (!US7ASCII_PATTERN.matcher(fieldValue).matches()) {
       return Mono.just(new ValidationError(fieldName,
           String.format("%s has an invalid character.", fieldValue)));
     }
-    if (StringUtils.length(fieldValue) > 40) {
-      return Mono.just(new ValidationError(fieldName, "This field has a 40 character limit."));
+    
+    if (StringUtils.length(fieldValue) < 4) {
+      return Mono.just(new ValidationError(fieldName, "The address must be between 4 and 40 characters."));
     }
+    
+    if (StringUtils.length(fieldValue) > 40) {
+      return Mono.just(new ValidationError(fieldName, "The address must be between 4 and 40 characters."));
+    }
+    
     return Mono.empty();
   }
 }

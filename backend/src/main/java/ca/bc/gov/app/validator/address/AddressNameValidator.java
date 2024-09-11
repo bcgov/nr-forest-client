@@ -40,6 +40,7 @@ public class AddressNameValidator implements ForestClientValidator<ClientAddress
     if (StringUtils.length(target.locationName()) > 40) {
       return Mono.just(new ValidationError(fieldName, "This field has a 40 character limit."));
     }
+    
     return Mono.empty();
   }
 }

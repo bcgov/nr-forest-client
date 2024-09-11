@@ -69,20 +69,31 @@ class AddressComplementaryInformationValidatorTest {
   }
 
   private static Stream<Arguments> validation() {
-    return
-        Stream.of(
-            Arguments.of(StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY,
-                StringUtils.EMPTY),
-            Arguments.of(StringUtils.EMPTY, "Something", "One",
-                "You must enter the first complementary address."),
-            Arguments.of("Something é", StringUtils.EMPTY, "One",
-                "Something é has an invalid character."),
-            Arguments.of("Potato".repeat(10), StringUtils.EMPTY, "One",
-                "This field has a 40 character limit."),
-            Arguments.of("Potato", "Something é", "Two", "Something é has an invalid character."),
-            Arguments.of("Potato", "Potato".repeat(10), "Two",
-                "This field has a 40 character limit.")
-        );
+    return Stream.of(
+        Arguments.of(StringUtils.EMPTY, 
+                     StringUtils.EMPTY, 
+                     StringUtils.EMPTY, 
+                     StringUtils.EMPTY),
+        Arguments.of(StringUtils.EMPTY, 
+                     "Something", 
+                     "One",
+                     "You must enter the first complementary address."),
+        Arguments.of("Something é", 
+                     StringUtils.EMPTY, 
+                     "One",
+                     "Something é has an invalid character."),
+        Arguments.of("Potato".repeat(10), 
+                     StringUtils.EMPTY, 
+                     "One",
+                     "The address must be between 4 and 40 characters."),
+        Arguments.of("Potato", 
+                     "Something é", 
+                     "Two", 
+                     "Something é has an invalid character."),
+        Arguments.of("Potato", 
+                     "Potato".repeat(10), 
+                     "Two",
+                     "The address must be between 4 and 40 characters."));
   }
 
 }
