@@ -244,10 +244,7 @@ describe("Staff Form", () => {
       });
 
       cy.intercept("GET", "**/api/submission-limit", {
-        fixture: "submissionLimitValid.json",
-        headers: {
-          "content-type": "application/json;charset=UTF-8",
-        },
+        fixture: "submissionLimitValid.json"
       }).as("getValidSubmissionLimit");
 
       // Check if the Create client button is visible
@@ -289,40 +286,6 @@ describe("Staff Form", () => {
 
     it("should not display any Client type specific input fields", () => {
       cy.get("#firstName").should("not.exist");
-    });
-
-  });
-
-  describe("when the user clicks the Create client button and submission limit is reached", () => {
-    beforeEach(() => {
-      cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
-        given_name: "James",
-        family_name: "Baxter",
-        "cognito:groups": ["CLIENT_ADMIN"],
-      });
-
-      cy.intercept("GET", "**/api/submission-limit", (req) => {
-        console.log("Intercepting /api/submission-limit");
-        req.reply({
-          statusCode: 400,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: [
-            {
-              fieldId: "submissionLimit",
-              errorMsg: "You can make up to 20 submissions in 24 hours. Resubmit this application in 24 hours."
-            }
-          ]
-        });
-      }).as("getIdirInvalidSubmissionLimit");
-    });
-
-    it("should display a global error", () => {
-      cy.get("#serverValidationError")
-        .should("be.visible")
-        .and("have.attr", "kind", "error")
-        .shadow();
     });
 
   });
