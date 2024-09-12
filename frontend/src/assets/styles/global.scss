@@ -115,6 +115,11 @@
   box-sizing: unset;
 }
 
+//This ensures that the BC Sans font applies to all text elements across the entire application
+body {
+  font-family: BC Sans, sans-serif !important;
+}
+
 b {
   font-weight: 700;
 }
