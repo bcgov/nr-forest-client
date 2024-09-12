@@ -30,7 +30,7 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 // @ts-ignore
 import Information16 from "@carbon/icons-vue/es/information/16";
 import Check16 from "@carbon/icons-vue/es/checkmark--filled/20";
-import Warning16 from "@carbon/icons-vue/es/warning--filled/20";
+import Warning20 from "@carbon/icons-vue/es/warning--filled/20";
 
 // Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
@@ -463,7 +463,7 @@ onMounted(() => {
         <div class="internal-grouping-01">
           <span class="body-compact-01">{{ standingMessage }}</span>
           <Check16 v-if="formData.businessInformation.goodStandingInd === 'Y'" class="good" />
-          <Warning16 v-if="formData.businessInformation.goodStandingInd !== 'Y'" class="warning" />
+          <Warning20 v-if="formData.businessInformation.goodStandingInd !== 'Y'" class="warning" />
         </div>
       </read-only-component>
 
