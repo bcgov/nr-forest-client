@@ -505,6 +505,7 @@ onMounted(() => {
         "
       >
         <cds-inline-notification
+          data-tex="Business information"
           v-shadow="2"
           v-if="showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R"
           low-contrast="true"
@@ -534,6 +535,7 @@ onMounted(() => {
         </cds-inline-notification>
 
         <cds-inline-notification
+          data-tex="Business information"
           v-if="showGoodStandingError"
           hide-close-button="true"
           low-contrast="true"
@@ -556,6 +558,7 @@ onMounted(() => {
         </cds-inline-notification>
 
         <cds-inline-notification
+          data-tex="Business information"
           v-if="showDuplicatedError"
           hide-close-button="true"
           low-contrast="true"
@@ -571,6 +574,7 @@ onMounted(() => {
         </cds-inline-notification>
 
         <cds-inline-notification
+          data-tex="Business information"
           v-if="showNonPersonSPError"
           hide-close-button="true"
           low-contrast="true"
@@ -585,6 +589,7 @@ onMounted(() => {
         </cds-inline-notification>
 
         <cds-inline-notification
+          data-tex="Business information"
           v-if="showUnsupportedClientTypeError && receivedClientType"
           hide-close-button="true"
           low-contrast="true"
