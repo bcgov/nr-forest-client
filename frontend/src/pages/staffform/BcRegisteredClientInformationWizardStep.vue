@@ -414,9 +414,6 @@ onMounted(() => {
       <hr class="divider" />
 
       <read-only-component label="Registration number" id="registrationNumber">
-        <template v-slot:icon>
-          <Information16 />
-        </template>
         <template v-slot:default>
         <span class="body-compact-01">{{ formData.businessInformation.registrationNumber }}</span>    
         </template>
