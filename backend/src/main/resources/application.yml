@@ -102,6 +102,10 @@ ca:
     gov:
       nrs:
         submissionLimit: ${SUBMISSION_LIMIT:7D}
+        idirSubmissionTimeWindow: ${IDIR_SUBMISSION_TIME_WINDOW:PT24H} # Time window for IDIR submissions (24 hours)
+        idirMaxSubmissions: ${IDIR_MAX_SUBMISSIONS:20} # Max submissions allowed within the time window for IDIR
+        otherSubmissionTimeWindow: ${OTHER_SUBMISSION_TIME_WINDOW:PT168H} # Time window for BCSC/BCEID submissions (168 hours = 7 days)
+        otherMaxSubmissions: ${OTHER_MAX_SUBMISSIONS:5} # Max submissions allowed within the time window for BCSC/BCEID
         self-uri: ${SELF_URI:http://localhost:8080}
         ches:
           uri: ${CHES_API_URL:http://127.0.0.1:10010/chess/uri}

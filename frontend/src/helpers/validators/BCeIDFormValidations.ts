@@ -67,8 +67,8 @@ formFieldValidations["location.addresses.*.city"] = [
 ];
 formFieldValidations["location.addresses.*.streetAddress"] = [
   isNotEmpty("Please provide a valid address or PO Box"),
-  isMinSize("The address must be between 5 and 40 characters")(5),
-  isMaxSize("The address must be between 5 and 40 characters")(40),
+  isMinSize("The address must be between 4 and 40 characters")(4),
+  isMaxSize("The address must be between 4 and 40 characters")(40),
   isAscii("address"),
 ];
 formFieldValidations[

@@ -1,7 +1,6 @@
 package ca.bc.gov.app.service.client.matches;
 
 import ca.bc.gov.app.dto.client.ClientAddressDto;
-import ca.bc.gov.app.dto.client.ClientLocationDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.dto.client.StepMatchEnum;

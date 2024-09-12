@@ -342,6 +342,7 @@ const processAndLogOut = () => {
 };
 
 const submitBtnDisabled = ref(false);
+let nextBtnDisabled = ref(false);
 
 const submit = () => {
   errorBus.emit([]);
@@ -431,6 +432,37 @@ const individualValidInd = ref(false);
 const setIndividualValidInd = (valid: boolean) => {
   individualValidInd.value = valid;
 };
+
+const submissionLimitCheck = ref([]);
+
+const { error: submissionLimitError, 
+        handleErrorDefault: submissionLimitHandleError 
+      } = useFetchTo(
+  "/api/submission-limit",
+  submissionLimitCheck,
+  {
+    skipDefaultErrorHandling: true,
+  }
+);
+
+watch(submissionLimitError, () => {
+  if (submissionLimitError.value.response?.status === 400) {
+    const validationErrors: ValidationMessageType[] =
+      submissionLimitError.value.response?.data;
+
+    validationErrors.forEach((errorItem: ValidationMessageType) =>
+      notificationBus.emit({
+        fieldId: "server.validation.error",
+        fieldName: "",
+        errorMsg: errorItem.errorMsg,
+      })
+    );
+
+    nextBtnDisabled.value = true;
+    return;
+  }
+  submissionLimitHandleError();
+});
 </script>
 
 <template>
@@ -592,7 +624,7 @@ const setIndividualValidInd = (valid: boolean) => {
               kind="primary"
               size="lg"
               v-on:click="onNext"
-              :disabled="progressData[currentTab].valid === false"
+              :disabled="progressData[currentTab].valid === false || nextBtnDisabled"
               data-test="wizard-next-button"
               data-text="Next"
               >

@@ -421,6 +421,36 @@ const updateDistrict = (value: CodeNameType | undefined) => {
     formData.businessInformation.district = value.code;
   }
 };
+
+const submissionLimitCheck = ref([]);
+
+const { error: submissionLimitError, 
+        handleErrorDefault: submissionLimitHandleError 
+      } = useFetchTo(
+  "/api/submission-limit",
+  submissionLimitCheck,
+  {
+    skipDefaultErrorHandling: true,
+  }
+);
+
+watch(submissionLimitError, () => {
+  if (submissionLimitError.value.response?.status === 400) {
+    const validationErrors: ValidationMessageType[] =
+      submissionLimitError.value.response?.data;
+
+    validationErrors.forEach((errorItem: ValidationMessageType) =>
+      notificationBus.emit({
+        fieldId: "server.validation.error",
+        fieldName: "",
+        errorMsg: errorItem.errorMsg,
+      })
+    );
+
+    return;
+  }
+  submissionLimitHandleError();
+});
 </script>
 
 <template>

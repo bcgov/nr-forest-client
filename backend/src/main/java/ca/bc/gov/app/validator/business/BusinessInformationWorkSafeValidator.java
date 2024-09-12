@@ -3,7 +3,6 @@ package ca.bc.gov.app.validator.business;
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ValidationSourceEnum;
-import ca.bc.gov.app.util.ClientValidationUtils;
 import ca.bc.gov.app.validator.ForestClientValidator;
 import io.micrometer.observation.annotation.Observed;
 import java.util.Optional;

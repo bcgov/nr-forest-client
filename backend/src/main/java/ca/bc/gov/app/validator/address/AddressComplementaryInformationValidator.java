@@ -51,8 +51,13 @@ public class AddressComplementaryInformationValidator implements
         return Mono.just(
             new ValidationError(fieldName, String.format("%s has an invalid character.", content)));
       }
+      
+      if (StringUtils.length(content) < 4) {
+        return Mono.just(new ValidationError(fieldName, "The address must be between 4 and 40 characters."));
+      }
+      
       if (StringUtils.length(content) > 40) {
-        return Mono.just(new ValidationError(fieldName, "This field has a 40 character limit."));
+        return Mono.just(new ValidationError(fieldName, "The address must be between 4 and 40 characters."));
       }
     }
     return Mono.empty();
