@@ -88,14 +88,12 @@ class AddressAddressValidatorTest {
   }
 
   private static Stream<Arguments> validation() {
-    return
-        Stream.of(
-            Arguments.of(StringUtils.EMPTY, "You must enter a street address or PO box number."),
-            Arguments.of("1234 Mainé St", "1234 Mainé St has an invalid character."),
-            Arguments.of("Avenida Bailarina Selma Parada 505, Sala 12 Conjunto 5",
-                "This field has a 40 character limit."),
-            Arguments.of("1234 Main St", StringUtils.EMPTY)
-        );
+    return Stream.of(
+        Arguments.of(StringUtils.EMPTY, "You must enter a street address or PO box number."),
+        Arguments.of("1234 Mainé St", "1234 Mainé St has an invalid character."),
+        Arguments.of("Avenida Bailarina Selma Parada 505, Sala 12 Conjunto 5",
+            "The address must be between 4 and 40 characters."),
+        Arguments.of("1234 Main St", StringUtils.EMPTY));
   }
 
 }
