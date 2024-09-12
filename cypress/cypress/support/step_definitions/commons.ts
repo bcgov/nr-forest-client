@@ -61,8 +61,12 @@ When('I click on next', () => {
 });
 
 When('I submit', () => {
+  if(idir){
   cy.intercept('POST',  `**/api/clients/submissions/staff`).as('submit');
-  cy.get('cds-button[data-text="Submit"]').click().then(() => {cy.wait('@submit',{ timeout: 60 * 1000 });});
+  } else {
+    cy.intercept('POST',  `**/api/clients/submissions`).as('submit');
+  }
+  cy.get('cds-button[data-text="Submit"]').scrollIntoView().click().then(() => {cy.wait('@submit',{ timeout: 60 * 1000 });});  
 });
 
 /* Text Input Steps */
@@ -96,12 +100,20 @@ Then(
       cy.get('div.frame-01:first').within(() => {
         Step(this, `I type "${value}" into the "${fieldLabel}" form input`);        
       });
-    } else {      
-      cy.get('cds-accordion cds-accordion-item')
-      .shadow()
-      .contains('div', sectionTitle).parent().parent().within(() => {
-        Step(this, `I type "${value}" into the "${fieldLabel}" form input`);        
-      });
+    } else {
+      
+      if(idir){
+        cy.get('cds-accordion cds-accordion-item')
+        .shadow()
+        .contains('div', sectionTitle).parent().parent().within(() => {
+          Step(this, `I type "${value}" into the "${fieldLabel}" form input`);        
+        });
+      } else {
+        cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
+          Step(this, `I type "${value}" into the "${fieldLabel}" form input`);        
+        });
+      }
+
     }
 });
 
@@ -128,11 +140,17 @@ Then(
         Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
       });
     } else {      
-      cy.get('cds-accordion cds-accordion-item')
-      .shadow()
-      .contains('div', sectionTitle).parent().parent().within(() => {
-        Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
-      });
+      if(idir){
+        cy.get('cds-accordion cds-accordion-item')
+        .shadow()
+        .contains('div', sectionTitle).parent().parent().within(() => {
+          Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
+        });
+      } else {
+        cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
+          Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
+        });
+      }
     }
 });
 
@@ -162,12 +180,18 @@ Then(
       cy.get('div.frame-01:first').within(() => {
         Step(this, `I type "${value}" into the "${fieldLabel}" form input area`);        
       });
-    } else {      
-      cy.get('cds-accordion cds-accordion-item')
-      .shadow()
-      .contains('div', sectionTitle).parent().parent().within(() => {
-        Step(this, `I type "${value}" into the "${fieldLabel}" form input area`);        
-      });
+    } else {
+      if(idir){
+        cy.get('cds-accordion cds-accordion-item')
+        .shadow()
+        .contains('div', sectionTitle).parent().parent().within(() => {
+          Step(this, `I type "${value}" into the "${fieldLabel}" form input area`);        
+        });
+      } else {
+        cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
+          Step(this, `I type "${value}" into the "${fieldLabel}" form input area`);        
+        });
+      }
     }
 
 });
@@ -190,12 +214,19 @@ Then(
       cy.get('div.frame-01:first').within(() => {
         Step(this, `I select "${value}" from the "${fieldLabel}" form input`);
       });
-    } else {      
-      cy.get('cds-accordion cds-accordion-item')
-      .shadow()
-      .contains('div', sectionTitle).parent().parent().within(() => {
-        Step(this, `I select "${value}" from the "${fieldLabel}" form input`);
-      });
+    } else {
+      
+      if(idir){
+        cy.get('cds-accordion cds-accordion-item')
+        .shadow()
+        .contains('div', sectionTitle).parent().parent().within(() => {
+          Step(this, `I select "${value}" from the "${fieldLabel}" form input`);
+        });
+      } else {
+        cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
+          Step(this, `I select "${value}" from the "${fieldLabel}" form input`);
+        });
+      }
     }
 
 });
@@ -216,12 +247,18 @@ Then(
       cy.get('div.frame-01:first').within(() => {
         Step(this, `I select "${value}" from the "${fieldLabel}" multiselect`);
       });
-    } else {      
-      cy.get('cds-accordion cds-accordion-item')
-      .shadow()
-      .contains('div', sectionTitle).parent().parent().within(() => {
-        Step(this, `I select "${value}" from the "${fieldLabel}" multiselect`);
-      });
+    } else {    
+      if(idir){
+        cy.get('cds-accordion cds-accordion-item')
+        .shadow()
+        .contains('div', sectionTitle).parent().parent().within(() => {
+          Step(this, `I select "${value}" from the "${fieldLabel}" multiselect`);
+        });
+      } else {
+        cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
+          Step(this, `I select "${value}" from the "${fieldLabel}" multiselect`);
+        });
+      }
     }
 
 });
@@ -270,12 +307,18 @@ Then(
       cy.get('div.frame-01:first').within(() => {
         Step(this, `I type "${search}" and select "${value}" from the "${fieldLabel}" form autocomplete`);        
       });
-    } else {      
-      cy.get('cds-accordion cds-accordion-item')
-      .shadow()
-      .contains('div', sectionTitle).parent().parent().within(() => {
-        Step(this, `I type "${search}" and select "${value}" from the "${fieldLabel}" form autocomplete`);        
-      });
+    } else {
+      if(idir){
+        cy.get('cds-accordion cds-accordion-item')
+        .shadow()
+        .contains('div', sectionTitle).parent().parent().within(() => {
+          Step(this, `I type "${search}" and select "${value}" from the "${fieldLabel}" form autocomplete`);        
+        });
+      } else {
+        cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
+          Step(this, `I type "${search}" and select "${value}" from the "${fieldLabel}" form autocomplete`);        
+        });
+      }
     }
 
 });
@@ -354,6 +397,31 @@ Then('I add a new location called {string}', (location: string) => {
   cy.get('cds-accordion cds-accordion-item')
   .shadow()
   .contains('div', location).should('be.visible');
+});
+
+Then('I add a new contact called {string}', (contactName: string) => {
+  Step(this,'I click on the "Add another contact" button');
+
+  if(idir){
+    
+    cy.get('cds-accordion cds-accordion-item')
+    .shadow()
+    .contains('div', "Additional location").should('be.visible');
+
+    Step(this,`I type "${contactName}" into the "Location name" form input for the "Additional location"`);  
+    cy.get('cds-accordion cds-accordion-item')
+    .shadow()
+    .contains('div', contactName).should('be.visible');
+
+  } else {
+    cy.get('div.frame-01[data-text="Additional contact"]').should('be.visible');
+    const [firstName, ...lastName] = contactName.split(' ');
+    Step(this,`I type "${firstName}" into the "First name" form input for the "Additional contact"`);  
+    cy.get(`div.frame-01[data-text="${firstName} "]`).should('be.visible');
+    Step(this,`I type "${lastName.join(' ')}" into the "Last name" form input for the "${firstName} "`);  
+
+  }
+
 });
 
 /* Error messages */
